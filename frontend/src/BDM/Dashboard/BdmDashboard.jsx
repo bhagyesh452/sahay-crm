@@ -69,7 +69,6 @@ function BdmDashboard() {
   useEffect(() => {
     fetchData()
     fetchEmployeeInfo()
-
   }, [])
 
   console.log("employeedata" , employeeDataNew)
@@ -1018,139 +1017,7 @@ function BdmDashboard() {
     <div>
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
-      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-
-      <div className='container-xl'>
-        <div className="employee-dashboard mt-2">
-          <div className="card todays-booking totalbooking" id="totalbooking"   >
-            <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-              <div className="dashboard-title">
-                <h2 className="m-0 pl-1">
-                  This Month's Bookings
-                </h2>
-              </div>
-            </div>
-            <div className="card-body">
-              <div className="row tbl-scroll">
-                <table className="table-vcenter table-nowrap admin-dash-tbl">
-                  <thead className="admin-dash-tbl-thead">
-                    <tr  >
-                      <th>SR.NO</th>
-                      <th>BDE/BDM NAME</th>
-                      <th>BRANCH</th>
-                      <th>MATURED CASES</th>
-                      <th>TARGET AMOUNT</th>
-                      <th>ACHIEVED AMOUNT</th>
-                      <th>TARGET/ACHIEVED RATIO</th>
-                      <th>LAST BOOKING DATE</th>
-                    </tr>
-                  </thead>
-                  {uniqueBDEobjects ? (
-                    <>
-                      <tbody>
-                        {employeeData &&
-                          employeeData
-                            .filter(
-                              (item) =>
-                                (item.designation ===
-                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
-                                item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
-                            )
-                            .map((obj, index) => (
-                              <>
-                                <tr>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {obj.ename}
-                                  </td>
-                                  <td>{obj.branchOffice}</td>
-                                  <td>
-                                    {functionCalculateMatured(
-                                      obj.ename
-                                    )}
-                                  </td>
-                                  <td>
-                                    ₹{" "}
-                                    {parseInt(
-                                      functionGetAmount(obj)
-                                    ).toLocaleString()}
-                                  </td>
-                                  <td>
-                                    ₹{" "}
-                                    {functionCalculateAchievedAmount(
-                                      obj.ename
-                                    ).toLocaleString()}
-                                  </td>
-                                  <td>
-                                    {" "}
-                                    {(
-                                      (functionCalculateAchievedAmount(
-                                        obj.ename
-                                      ) /
-                                        functionGetAmount(obj)) *
-                                      100
-                                    ).toFixed(2)}{" "}
-                                    %
-                                  </td>
-                                  <td>
-                                    {functionGetLastBookingDate(
-                                      obj.ename
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))}
-                      </tbody>
-                      <tfoot className="admin-dash-tbl-tfoot">
-                        <tr>
-                          <td
-                            colSpan={2}
-
-                          >
-                            Total:
-                          </td>
-                          <td>-</td>
-                          <td>
-                            {" "}
-                            {totalMaturedCount.toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{" "}
-                            {(totalTargetAmount / 2).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{" "}
-                            {(
-                              totalAchievedAmount / 2
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            {(
-                              (totalAchievedAmount /
-                                totalTargetAmount) *
-                              100
-                            ).toFixed(2)}{" "}
-                            %
-                          </td>
-                          <td>-</td>
-                        </tr>
-                      </tfoot>
-                    </>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td className="particular" colSpan={9}>
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  )}
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+     
 
       {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
 
@@ -1413,6 +1280,141 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+
+       <div className='container-xl'>
+        <div className="employee-dashboard mt-2">
+          <div className="card todays-booking totalbooking" id="totalbooking"   >
+            <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+              <div className="dashboard-title">
+                <h2 className="m-0 pl-1">
+                  This Month's Bookings
+                </h2>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row tbl-scroll">
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
+                    <tr  >
+                      <th>SR.NO</th>
+                      <th>BDE/BDM NAME</th>
+                      <th>BRANCH</th>
+                      <th>MATURED CASES</th>
+                      <th>TARGET AMOUNT</th>
+                      <th>ACHIEVED AMOUNT</th>
+                      <th>TARGET/ACHIEVED RATIO</th>
+                      <th>LAST BOOKING DATE</th>
+                    </tr>
+                  </thead>
+                  {uniqueBDEobjects ? (
+                    <>
+                      <tbody>
+                        {employeeData &&
+                          employeeData
+                            .filter(
+                              (item) =>
+                                (item.designation ===
+                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
+                                item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
+                            )
+                            .map((obj, index) => (
+                              <>
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {obj.ename}
+                                  </td>
+                                  <td>{obj.branchOffice}</td>
+                                  <td>
+                                    {functionCalculateMatured(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {parseInt(
+                                      functionGetAmount(obj)
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {functionCalculateAchievedAmount(
+                                      obj.ename
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    {" "}
+                                    {(
+                                      (functionCalculateAchievedAmount(
+                                        obj.ename
+                                      ) /
+                                        functionGetAmount(obj)) *
+                                      100
+                                    ).toFixed(2)}{" "}
+                                    %
+                                  </td>
+                                  <td>
+                                    {functionGetLastBookingDate(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))}
+                      </tbody>
+                      <tfoot className="admin-dash-tbl-tfoot">
+                        <tr>
+                          <td
+                            colSpan={2}
+
+                          >
+                            Total:
+                          </td>
+                          <td>-</td>
+                          <td>
+                            {" "}
+                            {totalMaturedCount.toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(totalTargetAmount / 2).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(
+                              totalAchievedAmount / 2
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            {(
+                              (totalAchievedAmount /
+                                totalTargetAmount) *
+                              100
+                            ).toFixed(2)}{" "}
+                            %
+                          </td>
+                          <td>-</td>
+                        </tr>
+                      </tfoot>
+                    </>
+                  ) : (
+                    <tbody>
+                      <tr>
+                        <td className="particular" colSpan={9}>
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
 
