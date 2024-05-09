@@ -697,7 +697,6 @@ function Dashboard() {
   const [selectedDataRangeForwardedEmployee, setSelectedDateRangeForwardedEmployee] = useState([]);
 
   const handleForwardedEmployeeDateRange = (values) => {
-    console.log(values);
     if (values[1]) {
       const startDate = values[0].format("MM/DD/YYYY");
       const endDate = values[1].format("MM/DD/YYYY");
@@ -794,7 +793,6 @@ function Dashboard() {
   }, []);
 
   const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
-
   const servicesByEname = followData.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
     if (acc[curr.ename]) {
