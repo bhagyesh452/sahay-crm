@@ -5910,7 +5910,7 @@ app.post(
               : existingData.moreBookings.length + 1;
 
           const htmlTemplate = fs.readFileSync(
-            "./helpers/template2.html",
+            "./helpers/templatev2.html",
             "utf-8"
           );
 
