@@ -7162,6 +7162,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
     const isAdmin = newData.isAdmin;
+    console.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
