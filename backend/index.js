@@ -5910,7 +5910,7 @@ app.post(
               : existingData.moreBookings.length + 1;
 
           const htmlTemplate = fs.readFileSync(
-            "./helpers/template2.html",
+            "./helpers/templatev2.html",
             "utf-8"
           );
 
@@ -7162,6 +7162,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
     const isAdmin = newData.isAdmin;
+    console.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
