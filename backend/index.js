@@ -8697,7 +8697,7 @@ app.put(
   async (req, res) => {
     try {
       const { CompanyName, bookingIndex } = req.params;
-      const { otherDocs, paymentReceipt, step4changed, ...newData } = req.body;
+      const { otherDocs, paymentReceipt, step4changed,remainingPayments, ...newData } = req.body;
 
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
