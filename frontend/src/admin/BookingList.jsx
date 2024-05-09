@@ -2794,6 +2794,7 @@ function BookingList() {
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
+            isAdmin={true}
           />
         </>
       )}

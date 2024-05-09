@@ -55,6 +55,7 @@ export default function AddLeadForm({
   employeeName,
   employeeEmail,
   setNowToFetch,
+  isAdmin
 }) {
   const [totalServices, setTotalServices] = useState(1);
 
@@ -207,7 +208,8 @@ export default function AddLeadForm({
           paymentReceipt:booking.paymentReceipt,
           paymentMethod:booking.paymentMethod,
           extraNotes:booking.extraNotes,
-          otherDocs:booking.otherDocs
+          otherDocs:booking.otherDocs,
+          isAdmin:isAdmin
           };
           setActiveStep(4);
           setCompleted({ 0: true, 1: true , 2 : true , 3:true});

@@ -4975,9 +4975,10 @@ app.post(
           const serviceNames = newData.services
             .map((service, index) => `${service.serviceName}`)
             .join(" , ");
+          const isAdmin = newData.isAdmin;
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [
+          const recipients = isAdmin ? ["nimesh@incscale.in"] : [
             newData.bdeEmail,
             newData.bdmEmail,
             "bookings@startupsahay.com",
@@ -5760,7 +5761,6 @@ app.post(
             ? 'style="display:block'
             : 'style="display:none';
 
-          console.log(newPageDisplay);
           const AuthorizedNumber =
             AuthorizedName === "Dhruvi Gohel"
               ? "+919016928702"
