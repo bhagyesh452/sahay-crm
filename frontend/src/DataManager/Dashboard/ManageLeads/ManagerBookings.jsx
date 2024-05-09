@@ -4,6 +4,7 @@ import Navbar from "../../Components/Navbar/Navbar.jsx";
 import AdminBookingForm from "../../../admin/AdminBookingForm.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
+import AddCircle from "@mui/icons-material/AddCircle.js";
 import PdfImageViewerAdmin from "../../../admin/PdfViewerAdmin.jsx";
 import pdfimg from "../../../static/my-images/pdf.png";
 import { FcList } from "react-icons/fc";
@@ -349,10 +350,10 @@ function ManagerBookings() {
     } else if (paymentNumber === "thirdPayment") {
       pendingPayment = object.thirdPayment;
       paymentRemarks = object.thirdPaymentRemarks;
-    } else if(paymentNumber === "fourthPayment") {
+    } else if (paymentNumber === "fourthPayment") {
       pendingPayment = object.fourthPayment;
       paymentRemarks = object.fourthPaymentRemarks;
-    }else {
+    } else {
       pendingPayment = parseInt(currentLeadform.pendingAmount);
       paymentRemarks = "Last Payment"
     }
@@ -463,14 +464,28 @@ function ManagerBookings() {
   };
 
   console.log("Remaining Object", remainingObject)
-  const [expanseObject, setExpanseObject] = useState({
-    "Company Name": "",
-    bookingIndex: 0,
-    expanse: 0
-  })
-  const functionOpenAddExpanse = (serviceObject) => {
-    const serviceName = serviceObject.serviceName;
 
+  const functionOpenAddExpanse = (serviceObject) => {
+
+  }
+  const functionDeleteRemainingPayment = async(BookingIndex) => {
+    try {
+      const response = await axios.delete(
+        `${secretKey}/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}`
+      );
+      Swal.fire(
+        "Payment Updated",
+        "Thank you, your payment has been updated successfully!",
+        "success"
+      );
+    
+    } catch (error) {
+      Swal.fire(
+        "Error Updating Payment!",
+        "Sorry, Unable to update the payment",
+        "error"
+      );
+    }
   }
   return (
     <div>
@@ -1089,22 +1104,7 @@ function ManagerBookings() {
                                               <button onClick={() => functionOpenAddExpanse(obj)} className="btn btn-link btn-small">
                                                 + Expanse
                                               </button>
-                                              {parseInt(currentLeadform.pendingAmount) !== 0 && <div
-                                                className="add-remaining-amnt ml-1"
-                                                title="Add Remaining Payment"
-                                                onClick={() =>
-                                                  functionOpenRemainingPayment(
-                                                    obj,
-                                                    "otherPayment",
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ],
-                                                    0
-                                                  )
-                                                }
-                                              >
-                                                +
-                                              </div>}
+
                                             </div>
 
                                             <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
@@ -1270,7 +1270,7 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                                 {/* add remaining Extraa */}
-                                                  {/* { 
+                                                {/* { 
                                                 <IconButton  onClick={() =>
                                                   functionOpenRemainingPayment(
                                                     obj,
@@ -1285,21 +1285,21 @@ function ManagerBookings() {
                                                   </IconButton>} */}
                                                 {/* add remaining Edit */}
                                                 {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && <div className="edit-remaining">
-                                                <IconButton onClick={() => {
-                                                  setIsUpdateMode(true)
-                                                  setTempUpdateMode(true)
-                                                  functionOpenRemainingPayment(
-                                                    obj,
-                                                    "secondPayment",
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ], 0,
-                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
-                                                  )
-                                                }
-                                                }>
-                                                  <MdModeEdit style={{ height: '14px', width: '14px' }} />
-                                                </IconButton>
+                                                  <IconButton onClick={() => {
+                                                    setIsUpdateMode(true)
+                                                    setTempUpdateMode(true)
+                                                    functionOpenRemainingPayment(
+                                                      obj,
+                                                      "secondPayment",
+                                                      currentLeadform[
+                                                      "Company Name"
+                                                      ], 0,
+                                                      currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
+                                                    )
+                                                  }
+                                                  }>
+                                                    <MdModeEdit style={{ height: '14px', width: '14px' }} />
+                                                  </IconButton>
                                                 </div>}
                                               </div>
                                             </div>
@@ -1486,8 +1486,9 @@ function ManagerBookings() {
                                         aria-controls={`collapseOne${index}`}
                                       >
                                         <div className="w-95 p-0">
-                                          <div className="booking_inner_dtl_h h-100">
+                                          <div className="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
                                             <div>Remaining Payment </div>
+
                                           </div>
                                         </div>
                                       </div>
@@ -1522,11 +1523,37 @@ function ManagerBookings() {
                                                             })()}
                                                           Remaining Payment
                                                         </div>
-                                                        <div>
-                                                          {formatDatePro(
-                                                            paymentObj.paymentDate
-                                                          )}
+                                                        <div className="d-flex align-items-center">
+                                                          <div>
+                                                            {formatDatePro(
+                                                              paymentObj.paymentDate
+                                                            )}
+                                                          </div>
+                                                          {parseInt(currentLeadform.pendingAmount) !== 0 && <div
+                                                            className="Services_Preview_action_edit mr-2"
+                                                            onClick={() =>
+                                                              functionOpenRemainingPayment(
+                                                                obj,
+                                                                "otherPayment",
+                                                                currentLeadform[
+                                                                "Company Name"
+                                                                ],
+                                                                0
+                                                              )
+                                                            }
+                                                          >
+                                                            <AddCircle />
+                                                          </div>}
+                                                          {/* {
+                                                          currentLeadform.remainingPayments.length - 1 === index && <IconButton>
+                                                            <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
+                                                          </IconButton>
+                                                        } */}
+
                                                         </div>
+
+                                                      
+
                                                       </div>
                                                     </div>
                                                   </div>
@@ -2133,11 +2160,11 @@ function ManagerBookings() {
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
                       {currentLeadform &&
                         currentLeadform.moreBookings.length !== 0 &&
-                        currentLeadform.moreBookings.map((objMain, index) => (
+                        currentLeadform.moreBookings.map((objMain, BookingIndex) => (
                           <>
                             <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
                               <div className="mul_booking_heading col-6">
-                                <b>Booking {index + 2}</b>
+                                <b>Booking {BookingIndex + 2}</b>
                               </div>
                               <div className="mul_booking_date col-6">
                                 <b>{formatDatePro(objMain.bookingDate)}</b>
@@ -2151,7 +2178,7 @@ function ManagerBookings() {
                                   <div
                                     className="Services_Preview_action_edit mr-2"
                                     onClick={() => {
-                                      setbookingIndex(index + 1);
+                                      setbookingIndex(BookingIndex + 1);
                                       setEditBookingOpen(true);
                                     }}
                                   >
@@ -2341,6 +2368,7 @@ function ManagerBookings() {
                                                   <button onClick={() => setOpenAddExpanse(true)} className="btn btn-link btn-small">
                                                     + Expanse
                                                   </button>
+
                                                 </div>
 
                                                 <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
@@ -2471,6 +2499,15 @@ function ManagerBookings() {
                                                     <div
                                                       className="add-remaining-amnt"
                                                       title="Add Remaining Payment"
+                                                      style={{
+                                                        display:
+                                                          objMain.remainingPayments.length !== 0 &&
+                                                            objMain.remainingPayments.filter(
+                                                              (item) => item.serviceName === obj.serviceName
+                                                            ).length > 0
+                                                            ? "none"
+                                                            : "block",
+                                                      }}
                                                       onClick={() =>
                                                         functionOpenRemainingPayment(
                                                           obj,
@@ -2478,13 +2515,30 @@ function ManagerBookings() {
                                                           currentLeadform[
                                                           "Company Name"
                                                           ],
-                                                          index + 1
+                                                          BookingIndex + 1
                                                         )
                                                       }
                                                     >
                                                       +
                                                     </div>
                                                   </div>
+                                                  {objMain.remainingPayments.length !== 0 && objMain.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length === 1 && <div className="edit-remaining">
+                                                    <IconButton onClick={() => {
+                                                      setIsUpdateMode(true)
+                                                      setTempUpdateMode(true)
+                                                      functionOpenRemainingPayment(
+                                                        obj,
+                                                        "secondPayment",
+                                                        currentLeadform[
+                                                        "Company Name"
+                                                        ], BookingIndex + 1,
+                                                        objMain.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
+                                                      )
+                                                    }
+                                                    }>
+                                                      <MdModeEdit style={{ height: '14px', width: '14px' }} />
+                                                    </IconButton>
+                                                  </div>}
                                                 </div>
                                               </div>
                                             </div>
@@ -2524,6 +2578,15 @@ function ManagerBookings() {
                                                     <div
                                                       className="add-remaining-amnt"
                                                       title="Add Remaining Payment"
+                                                      style={{
+                                                        display:
+                                                          objMain.remainingPayments.length !== 0 &&
+                                                            objMain.remainingPayments.filter(
+                                                              (item) => item.serviceName === obj.serviceName
+                                                            ).length > 1
+                                                            ? "none"
+                                                            : "block",
+                                                      }}
                                                       onClick={() =>
                                                         functionOpenRemainingPayment(
                                                           obj,
@@ -2531,13 +2594,30 @@ function ManagerBookings() {
                                                           currentLeadform[
                                                           "Company Name"
                                                           ],
-                                                          index + 1
+                                                          BookingIndex + 1
                                                         )
                                                       }
                                                     >
                                                       +
                                                     </div>
                                                   </div>
+                                                  {objMain.remainingPayments.length !== 0 && objMain.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length === 2 && <div className="edit-remaining">
+                                                    <IconButton onClick={() => {
+                                                      setIsUpdateMode(true)
+                                                      setTempUpdateMode(true)
+                                                      functionOpenRemainingPayment(
+                                                        obj,
+                                                        "thirdPayment",
+                                                        currentLeadform[
+                                                        "Company Name"
+                                                        ], BookingIndex + 1,
+                                                        objMain.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[1],
+                                                      )
+                                                    }
+                                                    }>
+                                                      <MdModeEdit style={{ height: '14px', width: '14px' }} />
+                                                    </IconButton>
+                                                  </div>}
                                                 </div>
                                               </div>
                                             </div>
@@ -2575,6 +2655,15 @@ function ManagerBookings() {
                                                     <div
                                                       className="add-remaining-amnt"
                                                       title="Add Remaining Payment"
+                                                      style={{
+                                                        display:
+                                                          currentLeadform.remainingPayments.length !== 0 &&
+                                                            currentLeadform.remainingPayments.filter(
+                                                              (item) => item.serviceName === obj.serviceName
+                                                            ).length === 3
+                                                            ? "none"
+                                                            : "block",
+                                                      }}
                                                       onClick={() =>
                                                         functionOpenRemainingPayment(
                                                           obj,
@@ -2582,13 +2671,30 @@ function ManagerBookings() {
                                                           currentLeadform[
                                                           "Company Name"
                                                           ],
-                                                          index + 1
+                                                          BookingIndex + 1
                                                         )
                                                       }
                                                     >
                                                       +
                                                     </div>
                                                   </div>
+                                                  {objMain.remainingPayments.length !== 0 && objMain.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length === 3 && <div className="edit-remaining">
+                                                    <IconButton onClick={() => {
+                                                      setIsUpdateMode(true)
+                                                      setTempUpdateMode(true)
+                                                      functionOpenRemainingPayment(
+                                                        obj,
+                                                        "fourthPayment",
+                                                        currentLeadform[
+                                                        "Company Name"
+                                                        ], BookingIndex + 1,
+                                                        objMain.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[2],
+                                                      )
+                                                    }
+                                                    }>
+                                                      <MdModeEdit style={{ height: '14px', width: '14px' }} />
+                                                    </IconButton>
+                                                  </div>}
                                                 </div>
                                               </div>
                                             </div>
@@ -2597,6 +2703,182 @@ function ManagerBookings() {
                                       )}
                                     </div>
                                   </div>
+                                  {objMain.remainingPayments.length !== 0 && objMain.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                                    <div
+                                      className="my-card-body accordion"
+                                      id={`accordionExample${index}`}
+                                    >
+                                      <div class="accordion-item bdr-none">
+                                        <div
+                                          id={`headingOne${index}`}
+                                          className="pr-10 accordion-header"
+                                        >
+                                          <div
+                                            className="row m-0 bdr-btm-eee accordion-button p-0"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target={`#collapseOne${index}`}
+                                            aria-expanded="true"
+                                            aria-controls={`collapseOne${index}`}
+                                          >
+                                            <div className="w-95 p-0">
+                                              <div className="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                                <div>Remaining Payment </div>
+                                                {parseInt(objMain.pendingAmount) !== 0 && <div
+                                                  className="add-remaining-amnt ml-1"
+                                                  title="Add Remaining Payment"
+                                                  onClick={() =>
+                                                    functionOpenRemainingPayment(
+                                                      obj,
+                                                      "otherPayment",
+                                                      currentLeadform[
+                                                      "Company Name"
+                                                      ],
+                                                      BookingIndex + 1
+                                                    )
+                                                  }
+                                                >
+                                                  +
+                                                </div>}
+
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div
+                                          id={`collapseOne${index}`}
+                                          class="accordion-collapse collapse show"
+                                          aria-labelledby={`headingOne${index}`}
+                                          data-bs-parent="#accordionExample"
+                                        // Add a unique key prop for each rendered element
+                                        >
+                                          {objMain.remainingPayments
+                                            .length !== 0 && objMain.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
+                                              (paymentObj, index) =>
+                                                paymentObj.serviceName ===
+                                                  obj.serviceName ? (
+                                                  <div class="accordion-body bdr-none p-0">
+                                                    <div>
+                                                      <div className="row m-0 bdr-btm-eee bdr-top-eee">
+                                                        <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                                          <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                                            <div>
+                                                              {objMain.remainingPayments.length !== 0 &&
+                                                                (() => {
+
+                                                                  if (index === 0) return "Second ";
+                                                                  else if (index === 1) return "Third ";
+                                                                  else if (index === 2) return "Fourth ";
+                                                                  else if (index > 2) return "Other ";
+                                                                  // Add more conditions as needed
+                                                                  return ""; // Return default value if none of the conditions match
+                                                                })()}
+                                                              Remaining Payment
+                                                            </div>
+                                                            <div className="d-flex align-items-center">
+                                                              <div>
+                                                              {formatDatePro(
+                                                                paymentObj.paymentDate
+                                                              )}
+                                                              </div>
+                                                              
+                                                               {/* {
+                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
+                                                            <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
+                                                          </IconButton>
+                                                        } */}
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div className="row m-0 bdr-btm-eee">
+                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100">
+                                                                Amount
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                ₹{" "}
+                                                                {paymentObj.receivedPayment.toLocaleString()}
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                Pending
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                ₹{" "}
+                                                                {objMain.remainingPayments.length !== 0 &&
+                                                                  (() => {
+                                                                    const filteredPayments = objMain.remainingPayments.filter(
+                                                                      (pay) => pay.serviceName === obj.serviceName
+                                                                    );
+
+                                                                    const filteredLength = filteredPayments.length;
+                                                                    if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
+                                                                    else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
+                                                                    else if (index === 2) return Math.round(objMain.pendingAmount);
+                                                                    // Add more conditions as needed
+                                                                    return ""; // Return default value if none of the conditions match
+                                                                  })()}
+                                                                {/* {index === 0
+                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment)
+                                                              : index === 1
+                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(currentLeadform.remainingPayments[0].receivedPayment)
+                                                              : Math.round(currentLeadform.pendingAmount)} */}
+                                                              </div>
+
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                Payment Method
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                {
+                                                                  paymentObj.paymentMethod
+                                                                }
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                Extra Remarks
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                {
+                                                                  paymentObj.extraRemarks
+                                                                }
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                ) : null // Render null for elements that don't match the condition
+                                            )}
+                                        </div>
+                                      </div>
+                                    </div>}
                                 </div>
                               ))}
 
@@ -2855,7 +3137,7 @@ function ManagerBookings() {
                                       className="upload-Docs-BTN"
                                       onClick={() => {
                                         setOpenOtherDocs(true);
-                                        setSendingIndex(index + 1);
+                                        setSendingIndex(BookingIndex + 1);
                                       }}
                                     >
                                       <IoAdd />
