@@ -322,7 +322,7 @@ function ManagerBookings() {
     paymentCount: "",
     bookingIndex: 0,
     serviceName: "",
-    withGST:false,
+    withGST: false,
     paymentMethod: "",
     extraRemarks: "",
     paymentDate: null,
@@ -349,9 +349,12 @@ function ManagerBookings() {
     } else if (paymentNumber === "thirdPayment") {
       pendingPayment = object.thirdPayment;
       paymentRemarks = object.thirdPaymentRemarks;
-    } else {
+    } else if(paymentNumber === "fourthPayment") {
       pendingPayment = object.fourthPayment;
       paymentRemarks = object.fourthPaymentRemarks;
+    }else {
+      pendingPayment = parseInt(currentLeadform.pendingAmount);
+      paymentRemarks = "Last Payment"
     }
 
     if (existingObject) {
@@ -360,7 +363,7 @@ function ManagerBookings() {
         "Company Name": companyName,
         paymentCount: paymentNumber,
         bookingIndex: bookingIndex,
-        withGST:existingObject.withGST,
+        withGST: existingObject.withGST,
         serviceName: serviceName,
         pendingAmount: existingObject.pendingPayment,
         receivedAmount: existingObject.receivedPayment,
@@ -1082,10 +1085,26 @@ function ManagerBookings() {
                                             </div>
 
                                             {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
-                                            <div>
+                                            <div className="d-flex">
                                               <button onClick={() => functionOpenAddExpanse(obj)} className="btn btn-link btn-small">
                                                 + Expanse
                                               </button>
+                                              {parseInt(currentLeadform.pendingAmount) !== 0 && <div
+                                                className="add-remaining-amnt ml-1"
+                                                title="Add Remaining Payment"
+                                                onClick={() =>
+                                                  functionOpenRemainingPayment(
+                                                    obj,
+                                                    "otherPayment",
+                                                    currentLeadform[
+                                                    "Company Name"
+                                                    ],
+                                                    0
+                                                  )
+                                                }
+                                              >
+                                                +
+                                              </div>}
                                             </div>
 
                                             <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
@@ -1223,9 +1242,9 @@ function ManagerBookings() {
                                                   ")"}
                                                 {")"}
                                               </div>
-                                              <div>
-                                                <div
-                                                  className="add-remaining-amnt"
+                                              <div className="d-flex align-items-center justify-content-end">
+                                                {/* add remaining main */}
+                                                <div className="add-remaining-amnt"
                                                   style={{
                                                     display:
                                                       currentLeadform.remainingPayments.length !== 0 &&
@@ -1250,8 +1269,22 @@ function ManagerBookings() {
                                                 >
                                                   +
                                                 </div>
-                                              </div>
-                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && <div className="edit-remaining">
+                                                {/* add remaining Extraa */}
+                                                  {/* { 
+                                                <IconButton  onClick={() =>
+                                                  functionOpenRemainingPayment(
+                                                    obj,
+                                                    "otherPayment",
+                                                    currentLeadform[
+                                                    "Company Name"
+                                                    ],
+                                                    0
+                                                  )
+                                                }>
+                                                  <FaPlus/>
+                                                  </IconButton>} */}
+                                                {/* add remaining Edit */}
+                                                {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && <div className="edit-remaining">
                                                 <IconButton onClick={() => {
                                                   setIsUpdateMode(true)
                                                   setTempUpdateMode(true)
@@ -1267,7 +1300,8 @@ function ManagerBookings() {
                                                 }>
                                                   <MdModeEdit style={{ height: '14px', width: '14px' }} />
                                                 </IconButton>
-                                              </div>}
+                                                </div>}
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -1478,10 +1512,11 @@ function ManagerBookings() {
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                            
+
                                                               if (index === 0) return "Second ";
                                                               else if (index === 1) return "Third ";
                                                               else if (index === 2) return "Fourth ";
+                                                              else if (index > 2) return "Other ";
                                                               // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
@@ -1526,14 +1561,14 @@ function ManagerBookings() {
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
-                                                               
+
                                                                 const filteredLength = filteredPayments.length;
                                                                 if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
                                                                 else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
                                                                 else if (index === 2) return Math.round(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()} 
+                                                              })()}
                                                             {/* {index === 0
                                                               ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment)
                                                               : index === 1
@@ -1827,7 +1862,7 @@ function ManagerBookings() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       {currentLeadform &&
-                                        currentLeadform.extraNotes!=="undefined" ? currentLeadform.extraNotes : "N/A"}
+                                        currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}
                                     </div>
                                   </div>
                                 </div>

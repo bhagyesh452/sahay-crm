@@ -390,8 +390,11 @@ function EmployeeTeamLeads() {
                     bdeName: bdeNameReject,
                     currentCompanyName
 
-                }
-                )
+                })
+                const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}` , {
+                    caseType : "NotForwwarded"
+                })
+                
                 //console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");

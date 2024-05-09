@@ -680,7 +680,7 @@ function EmployeeParticular() {
         companyName: data["Company Name"],
       };
 
-      console.log("updatedObj", updatedObj);
+      //console.log("updatedObj", updatedObj);
 
       // Add the promise for updating CompanyModel to the array
       updatePromises.push(
@@ -694,6 +694,8 @@ function EmployeeParticular() {
       if (data.bdmAcceptStatus === "Accept") {
         deleteCompanyIds.push(data._id);
       }
+
+
     }
 
     try {
@@ -2200,7 +2202,6 @@ function EmployeeParticular() {
                                   <td>
                                     <span>{company["Status"]}</span>
                                   </td>
-                                  {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
                                   <td>
                                     <div
                                       key={company._id}
@@ -2236,6 +2237,7 @@ function EmployeeParticular() {
                                       </span>
                                     </div>
                                   </td>
+                                  {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
                                   {dataStatus === "Forwarded" && (
                                     <td>
                                       {company.Status === "Interested" && (

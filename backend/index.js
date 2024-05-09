@@ -1369,7 +1369,7 @@ app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
           caseType: caseType,
         },
         $unset:{
-          bdmName
+          bdmName:" "
         }
       },
       { new: true }
@@ -7161,6 +7161,8 @@ app.delete("/api/redesigned-delete-model/:companyName", async (req, res) => {
 app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
+    const isAdmin = newData.isAdmin;
+    console.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
@@ -7444,13 +7446,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const servicesHtmlContent = renderServices();
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
-    const recipients = [
+    const recipients = !isAdmin ?  [
       newData.bdeEmail,
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
-      // "aakashseth452@gmail.com"
-    ];
+    ] : ["nimesh@incscale.in"];
 
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)

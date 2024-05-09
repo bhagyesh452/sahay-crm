@@ -38,7 +38,7 @@ function BdmDashboard() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData);
+      //console.log(tempData);
       setData(userData);
       setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
       setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
@@ -51,13 +51,15 @@ function BdmDashboard() {
 
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
+  const [employeeDataNew, setEmployeeDataNew] = useState([]);
 
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataFilter(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataNew(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -67,8 +69,9 @@ function BdmDashboard() {
   useEffect(() => {
     fetchData()
     fetchEmployeeInfo()
-
   }, [])
+
+  console.log("employeedata", employeeDataNew)
 
   const [moreEmpData, setmoreEmpData] = useState([])
   const [tempData, setTempData] = useState([]);
@@ -139,7 +142,7 @@ function BdmDashboard() {
     fetchCompanyData()
   }, []);
 
-  console.log(teamLeadsData)
+  //console.log(teamLeadsData)
 
   useEffect(() => {
     fetchTeamLeadsData()
@@ -189,12 +192,11 @@ function BdmDashboard() {
       const followdata = await response.json();
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
-      const filteredFollowData = followdata.filter((obj)=>employeeData.some((empObj)=>empObj.ename === obj.ename))
+      const filteredFollowData = followdata.filter((obj) => employeeDataNew.some((empObj) => empObj.ename === obj.ename))
+      console.log("filetered", filteredFollowData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-        return obj.estPaymentDate === today
-
-      }))
+        return obj.estPaymentDate === today}))
       setCompleteProjectionDataTodayNew(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -236,10 +238,14 @@ function BdmDashboard() {
 
   useEffect(() => {
     fetchFollowUpData();
-    fetchCompleteProjectionData()
   }, [data]);
 
+  useEffect(() => {
+    fetchCompleteProjectionData();
+  }, [employeeDataNew]);
+
   const [redesignedData, setRedesignedData] = useState([]);
+  const [permanentFormData, setPermanentFormData] = useState([]);
 
   const fetchRedesignedBookings = async () => {
     try {
@@ -257,9 +263,8 @@ function BdmDashboard() {
         }
       });
       setUniqueBDE(getBDEnames);
-
-
       setRedesignedData(bookingsData);
+      setPermanentFormData(bookingsData);
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -274,7 +279,7 @@ function BdmDashboard() {
     { value: 'total', label: 'Total' }
   ];
 
-  console.log("redesigneddata" , redesignedData)
+  //console.log("redesigneddata" , redesignedData)
 
 
   const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
@@ -295,6 +300,8 @@ function BdmDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
+
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -307,10 +314,12 @@ function BdmDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
         filteredFollowData = followData;
+        setRedesignedData(permanentFormData);
         break;
       default:
         filteredTeamData = teamData;
@@ -322,7 +331,7 @@ function BdmDashboard() {
   };
 
   const handleChangeForBdm = (selectedOption) => {
-    console.log(selectedOption);
+    //console.log(selectedOption);
     setSelectedMonthOptionForBdm(selectedOption.value);
 
     if (selectedOption === "current_month" || selectedOption === "last_month") {
@@ -383,7 +392,7 @@ function BdmDashboard() {
   };
 
   const handleChange = (selectedOption) => {
-    console.log(selectedOption);
+    //console.log(selectedOption);
     setSelectedMonthOptionForBdm(selectedOption.value);
 
     if (selectedOption === "current_month" || selectedOption === "last_month") {
@@ -440,7 +449,7 @@ function BdmDashboard() {
 
   const handleFilterForwardCaseBranchOffice = (branchName) => {
 
-    console.log(branchName)
+    //console.log(branchName)
 
     if (branchName === "none") {
       setForwardEmployeeData(forwardEmployeeDataFilter)
@@ -525,10 +534,10 @@ function BdmDashboard() {
 
   const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
 
-  console.log("options", options);
+  //console.log("options", options);
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-    console.log(selectedEmployeeNames, "selected employees");
+    //console.log(selectedEmployeeNames, "selected employees");
     // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
 
     const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
@@ -610,11 +619,6 @@ function BdmDashboard() {
       totalTargetAmount =
         foundObject &&
         parseInt(totalTargetAmount) + parseInt(foundObject.amount);
-      console.log(
-        "This is total Amount",
-        foundObject && foundObject.amount,
-        totalTargetAmount
-      );
       return foundObject ? foundObject.amount : 0;
     } else {
       return 0;
@@ -785,11 +789,13 @@ function BdmDashboard() {
   };
 
   const handleSortExpectedPayment = (newSortType) => {
-    console.log(newSortType);
+    //console.log(newSortType);
     setSortTypeExpectedPayment(newSortType);
   };
 
   const uniqueEnames = [...new Set(completeProjectionDataToday.map((item) => item.ename))];
+
+  console.log(uniqueEnames,"unique")
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
@@ -1011,146 +1017,14 @@ function BdmDashboard() {
     setCompleteProjectionDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
 
-  console.log("unique" , uniqueBDEobjects)
+  //console.log("unique" , uniqueBDEobjects)
 
 
   return (
     <div>
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
-      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
-      <div className='container-xl'>
-        <div className="employee-dashboard mt-2">
-          <div className="card todays-booking totalbooking" id="totalbooking"   >
-            <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-              <div className="dashboard-title">
-                <h2 className="m-0 pl-1">
-                  This Month's Bookings
-                </h2>
-              </div>
-            </div>
-            <div className="card-body">
-              <div className="row tbl-scroll">
-                <table className="table-vcenter table-nowrap admin-dash-tbl">
-                  <thead className="admin-dash-tbl-thead">
-                    <tr  >
-                      <th>SR.NO</th>
-                      <th>BDE/BDM NAME</th>
-                      <th>BRANCH</th>
-                      <th>MATURED CASES</th>
-                      <th>TARGET AMOUNT</th>
-                      <th>ACHIEVED AMOUNT</th>
-                      <th>TARGET/ACHIEVED RATIO</th>
-                      <th>LAST BOOKING DATE</th>
-                    </tr>
-                  </thead>
-                  {uniqueBDEobjects ? (
-                    <>
-                      <tbody>
-                        {employeeData &&
-                          employeeData
-                            .filter(
-                              (item) =>
-                                (item.designation ===
-                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
-                                item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
-                            )
-                            .map((obj, index) => (
-                              <>
-                                <tr>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {obj.ename}
-                                  </td>
-                                  <td>{obj.branchOffice}</td>
-                                  <td>
-                                    {functionCalculateMatured(
-                                      obj.ename
-                                    )}
-                                  </td>
-                                  <td>
-                                    ₹{" "}
-                                    {parseInt(
-                                      functionGetAmount(obj)
-                                    ).toLocaleString()}
-                                  </td>
-                                  <td>
-                                    ₹{" "}
-                                    {functionCalculateAchievedAmount(
-                                      obj.ename
-                                    ).toLocaleString()}
-                                  </td>
-                                  <td>
-                                    {" "}
-                                    {(
-                                      (functionCalculateAchievedAmount(
-                                        obj.ename
-                                      ) /
-                                        functionGetAmount(obj)) *
-                                      100
-                                    ).toFixed(2)}{" "}
-                                    %
-                                  </td>
-                                  <td>
-                                    {functionGetLastBookingDate(
-                                      obj.ename
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))}
-                      </tbody>
-                      <tfoot className="admin-dash-tbl-tfoot">
-                        <tr>
-                          <td
-                            colSpan={2}
-
-                          >
-                            Total:
-                          </td>
-                          <td>-</td>
-                          <td>
-                            {" "}
-                            {totalMaturedCount.toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{" "}
-                            {(totalTargetAmount / 2).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{" "}
-                            {(
-                              totalAchievedAmount / 2
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            {(
-                              (totalAchievedAmount /
-                                totalTargetAmount) *
-                              100
-                            ).toFixed(2)}{" "}
-                            %
-                          </td>
-                          <td>-</td>
-                        </tr>
-                      </tfoot>
-                    </>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td className="particular" colSpan={9}>
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  )}
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
 
@@ -1253,7 +1127,7 @@ function BdmDashboard() {
                               {/* ₹{(followDataToday
                                 .filter(obj => obj.ename === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
-                               ₹{handleFilterFollowDataTodayRecievedCase()}
+                              ₹{handleFilterFollowDataTodayRecievedCase()}
                             </div>
                           </div>
                         </div>
@@ -1413,6 +1287,141 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+
+      <div className='container-xl'>
+        <div className="employee-dashboard mt-2">
+          <div className="card todays-booking totalbooking" id="totalbooking"   >
+            <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+              <div className="dashboard-title">
+                <h2 className="m-0 pl-1">
+                  This Month's Bookings
+                </h2>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row tbl-scroll">
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
+                    <tr  >
+                      <th>SR.NO</th>
+                      <th>BDE/BDM NAME</th>
+                      <th>BRANCH</th>
+                      <th>MATURED CASES</th>
+                      <th>TARGET AMOUNT</th>
+                      <th>ACHIEVED AMOUNT</th>
+                      <th>TARGET/ACHIEVED RATIO</th>
+                      <th>LAST BOOKING DATE</th>
+                    </tr>
+                  </thead>
+                  {uniqueBDEobjects ? (
+                    <>
+                      <tbody>
+                        {employeeData &&
+                          employeeData
+                            .filter(
+                              (item) =>
+                                (item.designation ===
+                                  "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
+                                item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
+                            )
+                            .map((obj, index) => (
+                              <>
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {obj.ename}
+                                  </td>
+                                  <td>{obj.branchOffice}</td>
+                                  <td>
+                                    {functionCalculateMatured(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {parseInt(
+                                      functionGetAmount(obj)
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {functionCalculateAchievedAmount(
+                                      obj.ename
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    {" "}
+                                    {(
+                                      (functionCalculateAchievedAmount(
+                                        obj.ename
+                                      ) /
+                                        functionGetAmount(obj)) *
+                                      100
+                                    ).toFixed(2)}{" "}
+                                    %
+                                  </td>
+                                  <td>
+                                    {functionGetLastBookingDate(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))}
+                      </tbody>
+                      <tfoot className="admin-dash-tbl-tfoot">
+                        <tr>
+                          <td
+                            colSpan={2}
+
+                          >
+                            Total:
+                          </td>
+                          <td>-</td>
+                          <td>
+                            {" "}
+                            {totalMaturedCount.toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(totalTargetAmount / 2).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(
+                              totalAchievedAmount / 2
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            {(
+                              (totalAchievedAmount /
+                                totalTargetAmount) *
+                              100
+                            ).toFixed(2)}{" "}
+                            %
+                          </td>
+                          <td>-</td>
+                        </tr>
+                      </tfoot>
+                    </>
+                  ) : (
+                    <tbody>
+                      <tr>
+                        <td className="particular" colSpan={9}>
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
 

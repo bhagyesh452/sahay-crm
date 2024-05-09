@@ -2764,6 +2764,7 @@ function BookingList() {
             // companysEmail={companyEmail}
             // companyNumber={companyNumber}
             setNowToFetch={setNowToFetch}
+            IamAdmin={true}
           // companysInco={companyInco}
           // employeeName={data.ename}
           // employeeEmail={data.email}

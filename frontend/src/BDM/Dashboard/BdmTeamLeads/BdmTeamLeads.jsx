@@ -299,11 +299,11 @@ function BdmTeamLeads() {
           Remarks,
           bdeName: bdeNameReject,
           currentCompanyName
-
         })
-        // const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}`,{
-        //   caseType:"NotForwarded"
-        // })
+
+        const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}`,{
+          caseType:"NotForwarded"
+        })
 
 
 
@@ -515,9 +515,9 @@ function BdmTeamLeads() {
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
-    console.log(mainRemarks);
+    //console.log(mainRemarks);
     const companyId = cid;
-    console.log("Deleting Remarks with", remarks_id);
+    //console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
@@ -563,7 +563,7 @@ function BdmTeamLeads() {
     if (getBdeName.length > 0) {
       const bdeName = getBdeName[0].ename;
       setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
-      console.log("bdeename:", bdeName);
+      //console.log("bdeename:", bdeName);
     } else {
       console.log("No matching company found.");
     }
@@ -617,14 +617,14 @@ function BdmTeamLeads() {
 
   const handleDelete = async (company) => {
     const companyName = company;
-    console.log(companyName);
+    //console.log(companyName);
 
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
         `${secretKey}/delete-followup/${companyName}`
       );
-      console.log(response.data.message); // Log the response message
+      //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
       console.log("Deleted!", "Your data has been deleted.", "success");
       setCurrentProjection({
@@ -768,7 +768,7 @@ function BdmTeamLeads() {
     setBdmNewStatus(bdmStatus)
     //setIsEditFeedback(true)
   }
-  console.log("yahan locha h", feedbackPoints.length)
+  //console.log("yahan locha h", feedbackPoints.length)
 
 
   const handleCloseFeedback = () => {
@@ -847,7 +847,7 @@ function BdmTeamLeads() {
     try {
       const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
 
-      console.log(resposne.data)
+      //console.log(resposne.data)
       fetchTeamLeadsData(companyStatus)
 
     } catch (error) {

@@ -334,7 +334,41 @@ function EmployeeMaturedBookings() {
       console.error("Error uploading file:", error);
     }
   };
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3001");
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected with ID:", socket.id);
+  //     setSocketID(socket.id);
+  //   });
 
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
+  // const activeStatus = async () => {
+  //   if (data._id && socketID) {
+  //     try {
+  //       const id = data._id;
+  //       const response = await axios.put(
+  //         `${secretKey}/online-status/${id}/${socketID}`
+  //       );
+  //       //console.log(response.data); // Log response for debugging
+  //       return response.data; // Return response data if needed
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //       throw error; // Throw error for handling in the caller function
+  //     }
+  //   }
+  // };
+  // useEffect(() => {
+  //   const timerId = setTimeout(() => {
+  //     activeStatus();
+  //   }, 2000);
+
+  //   return () => {
+  //     clearTimeout(timerId);
+  //   };
+  // }, [socketID]);
 
   return (
     <div>

@@ -2513,6 +2513,9 @@ function EmployeePanel() {
             bdmName: "NoOne" // Corrected parameter name
           }
         );
+        const response2 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${companyName}` , {
+          caseType: "NotForwarded"
+        })
         // console.log("response", response.data);
         Swal.fire("Data Reversed");
         fetchNewData(empStatus);
