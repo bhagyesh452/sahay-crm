@@ -1858,14 +1858,23 @@ color: #4e884e;
 .admin-dash-tbl {
   border-radius: 10px !important;
 }
-.my-date-picker input
+.my-date-picker input, .my-date-picker select
 {
   padding: 8px !important;
+  font-size: 14px;
+}
+#demo-multiple-name
+{
+  padding: 7px !important;
   font-size: 14px;
 }
 .my-date-picker fieldset
 {
   border: none;
+}
+#demo-select-small-label.Mui-focused
+{
+  visibility: hidden;
 }
 .MuiStack-root 
 {
@@ -1875,6 +1884,7 @@ color: #4e884e;
 {
   border-radius: 6px;
 }
+
 .short-arrow-div
 {
     position: relative;

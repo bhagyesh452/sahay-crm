@@ -4975,9 +4975,10 @@ app.post(
           const serviceNames = newData.services
             .map((service, index) => `${service.serviceName}`)
             .join(" , ");
+          const isAdmin = newData.isAdmin;
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [
+          const recipients = isAdmin ? ["nimesh@incscale.in"] : [
             newData.bdeEmail,
             newData.bdmEmail,
             "bookings@startupsahay.com",
@@ -5760,7 +5761,6 @@ app.post(
             ? 'style="display:block'
             : 'style="display:none';
 
-          console.log(newPageDisplay);
           const AuthorizedNumber =
             AuthorizedName === "Dhruvi Gohel"
               ? "+919016928702"
@@ -8814,7 +8814,47 @@ app.post(
 
         return res.status(200).send("Successfully submitted more payments.");
       } else {
-        return res.status(400).send("Invalid booking index.");
+        const mainObject = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        })
+        const findObject = mainObject.moreBookings[bookingIndex-1];
+        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName)
+        const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+        const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) ;
+       findObject.remainingPayments.$push
+       
+        console.log(newReceivedAmount , newPendingAmount)
+        // Handle updating RedesignedLeadformModel for bookingIndex 0
+        // Example code: Uncomment and replace with your logic
+
+        
+      
+        // Push sendingObject into remainingPayments array
+        await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName },
+          {
+            $set: {
+              [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
+              [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
+              [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
+            }
+          }
+        );
+        const updatedObject = await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName},
+          {
+            $push: {
+              [`moreBookings.${bookingIndex-1}.remainingPayments`]: sendingObject,
+             
+            }
+          },
+         
+     
+        );
+        
+
+        return res.status(200).send("Successfully submitted more payments.");
       }
     } catch (error) {
       console.error("Error submitting more payments:", error);
@@ -8893,7 +8933,49 @@ app.post(
 
         return res.status(200).send("Successfully submitted more payments.");
       } else {
-        return res.status(400).send("Invalid booking index.");
+        console.log("Hi guyz"); 
+        const mainObject = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        })
+        const findObject = mainObject.moreBookings[bookingIndex-1];
+        const paymentObject = findObject.remainingPayments[findObject.remainingPayments.length - 1];
+        const newReceivedAmount = parseInt(findObject.receivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(sendingObject.receivedPayment);
+        const newPendingAmount = parseInt(findObject.pendingAmount) + parseInt(paymentObject.receivedPayment) - parseInt(sendingObject.receivedPayment);
+        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName);
+        // const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+        // const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18+ parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(objectData.receivedAmount);
+      
+       
+        console.log(newReceivedAmount , newPendingAmount)
+        // Handle updating RedesignedLeadformModel for bookingIndex 0
+        // Example code: Uncomment and replace with your logic
+      
+        // findObject.remainingPayments[findObject.remainingPayments.length-1] = sendingObject;
+
+      
+        const updateResult = await findObject.save();
+        await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName },
+          {
+            $set: {
+              [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
+              [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
+              [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+              [`moreBookings.${bookingIndex-1}.remainingPayments.${findObject.remainingPayments.length-1}`]: sendingObject
+            }
+          }
+        );
+      
+        // Push sendingObject into remainingPayments array
+        // const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
+        //   { "Company Name": companyName },
+        //   { $push: { remainingPayments: sendingObject } },
+        //   { new: true }
+        // );
+
+        return res.status(200).send("Successfully submitted more payments.");
       }
     } catch (error) {
       console.error("Error submitting more payments:", error);
@@ -8901,6 +8983,56 @@ app.post(
     }
   }
 );
+
+app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex', async(req,res) => {
+  const companyName = req.params.companyName;
+  const bookingIndex = req.params.bookingIndex;
+
+  const findCompany = await RedesignedLeadformModel.findOne({"Company Name":companyName});
+  if(bookingIndex === 0){
+    try {
+      const lastObject = findCompany.remainingPayments[findCompany.remainingPayments.length - 1];
+      const newReceivedAmount = parseInt(findCompany.receivedAmount) - parseInt(lastObject.receivedPayment) ;
+      const newPendingAmount = parseInt(findCompany.pendingAmount) + parseInt(lastObject.receivedPayment) ;
+      const findService = findCompany.services.find((obj)=>obj.serviceName === lastObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(findCompany.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18:  parseInt(findCompany.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment);
+
+      findCompany.remainingPayments.pop(); // Delete the last object from remainingPayments array
+      const updateResult = await findCompany.save();
+
+      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set:{receivedAmount:newReceivedAmount , pendingAmount : newPendingAmount , generatedReceivedAmount : newGeneratedReceivedAmount}})
+
+      return res.status(200).send("Successfully deleted last payment.");
+    } catch (error) {
+      console.error("Error deleting more payments:", error);
+      return res.status(500).send("Internal Server Error.");
+    }
+
+  }else {
+    try {
+      const newCompany = findCompany.moreBookings[bookingIndex - 1];
+      const lastObject = newCompany.remainingPayments[findCompany.remainingPayments.length - 1];
+      const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(lastObject.receivedPayment) ;
+      const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(lastObject.receivedPayment) ;
+      const findService = newCompany.services.find((obj)=>obj.serviceName === lastObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(lastObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(lastObject.receivedPayment);
+      findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
+      const updateResult = await findCompany.save();
+      
+      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set: {
+        [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
+        [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
+        [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+      }})
+
+
+      return res.status(200).send("Successfully deleted last payment.");
+    } catch (error) {
+      console.error("Error deleting more payments:", error);
+      return res.status(500).send("Internal Server Error.");
+    }
+  }
+})
 
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
