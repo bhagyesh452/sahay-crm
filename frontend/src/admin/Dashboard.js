@@ -4022,7 +4022,7 @@ function Dashboard() {
                               <DemoContainer
                                 components={["SingleInputDateRangeField"]}
                               >
-                                <DateRangePicker
+                                <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
                                     const startDateEmp = moment(values[0]).format(
                                       "DD/MM/YYYY"
@@ -4085,17 +4085,19 @@ function Dashboard() {
                               ))}
                             </Select>
                           </FormControl> */}
-                          <FormControl sx={{ m: 1, width: 300 }}>
+                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
+                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                             <Select
+                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
                               labelId="demo-multiple-name-label"
-                              id="demo-multiple-name"
+                              id="demo-multiple-name" 
                               multiple
                               value={personName}
                               onChange={(event) => {
                                 setPersonName(event.target.value)
                                 handleSelectForwardedEmployeeData(event.target.value)
                               }}
-                              input={<OutlinedInput label="Name" />}
+                              input={<OutlinedInput label="Name" placeholder="Slect" />}
                               MenuProps={MenuProps}
                             >
                               {options.map((name) => (

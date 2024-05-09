@@ -3112,9 +3112,9 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td className="p-0" style={{padding:'0px'}}>
+                                    <td style={{padding:'0px !important'}}>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
-                                        <IconButton className="p-0" 
+                                        <IconButton
                                           onClick={() => {
                                             functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
                                             setIsEditProjection(false)
@@ -3128,7 +3128,7 @@ function EmployeeDashboard() {
                                             }}
                                           ></RiEditCircleFill>
                                         </IconButton>) : (
-                                        <IconButton className="p-0"
+                                        <IconButton
                                           onClick={() => {
                                             functionopenprojection(obj.companyName);
                                           }}
@@ -3287,7 +3287,7 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td style={{padding:'0px'}}>
+                                    <td>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
                                         <IconButton
                                           onClick={() => {
@@ -3685,7 +3685,7 @@ function EmployeeDashboard() {
                             <td>{mainObj["Company Name"]}</td>
                             <td>{mainObj["Company Number"]}</td>
                             <td>{mainObj["Company Email"]}</td>
-                            <td style={{padding:'0px'}}>
+                            <td>
                               {followDataToday &&
                                 followDataToday.some(
                                   (item) =>
