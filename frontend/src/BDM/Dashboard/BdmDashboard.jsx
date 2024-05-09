@@ -1802,8 +1802,8 @@ function BdmDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedForwardedCases.length !== 0 &&
-                      sortedForwardedCases.map((obj, index) => (
+                    {forwardEmployeeData.length !== 0 &&
+                      forwardEmployeeData.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td style={{
                             lineHeight: "32px",
