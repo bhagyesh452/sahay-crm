@@ -3114,7 +3114,7 @@ function EmployeeDashboard() {
                                     <td>{obj.estPaymentDate}</td>
                                     <td className="p-0">
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
-                                        <IconButton className="p-0"
+                                        <IconButton className="p-0" style={{padding:'0px'}}
                                           onClick={() => {
                                             functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
                                             setIsEditProjection(false)
