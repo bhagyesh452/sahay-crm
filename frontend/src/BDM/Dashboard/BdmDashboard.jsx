@@ -4,7 +4,7 @@ import Header from '../Components/Header/Header.jsx'
 import Navbar from '../Components/Navbar/Navbar.jsx';
 import axios from "axios";
 import { debounce } from "lodash";
-import Select from "react-select";
+//import Select from "react-select";
 import Nodata from '../Components/NoData/NoData.jsx';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -18,6 +18,12 @@ import { IoClose } from "react-icons/io5";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { FcDatabase } from "react-icons/fc";
 import Calendar from "@mui/icons-material/Event";
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 function BdmDashboard() {
   const { userId } = useParams();
@@ -124,6 +130,7 @@ function BdmDashboard() {
 
   const [companyData, setCompanyData] = useState([]);
   const [companyDataFilter, setCompanyDataFilter] = useState([]);
+  const [companyDataTotal, setCompanyDataTotal] = useState([]);
 
   const fetchCompanyData = async () => {
     fetch(`${secretKey}/leads`)
@@ -131,6 +138,7 @@ function BdmDashboard() {
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
         setCompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
+        setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -196,7 +204,8 @@ function BdmDashboard() {
       console.log("filetered", filteredFollowData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-        return obj.estPaymentDate === today}))
+        return obj.estPaymentDate === today
+      }))
       setCompleteProjectionDataTodayNew(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -301,7 +310,7 @@ function BdmDashboard() {
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
 
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -314,7 +323,7 @@ function BdmDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
@@ -532,34 +541,117 @@ function BdmDashboard() {
 
   const [selectedValues, setSelectedValues] = useState([]);
 
-  const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
+  const options = forwardEmployeeDataNew.map((obj) => (obj.ename));
+  const [personName, setPersonName] = useState([])
+  //console.log("options" , options)
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  function getStyles(name, personName, theme) {
+    return {
+      fontWeight:
+        personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
+
+  const theme = useTheme();
 
   //console.log("options", options);
 
+  // const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
+
+
+  //   const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
+  //     selectedEmployeeNames.includes(company.ename)
+  //   );
+
+  //   setForwardEmployeeData(filteredForwardEmployeeData);
+
+  //   const filteredCompanyData = companyDataFilter.filter(
+  //     (obj) =>
+  //       (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+  //       forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
+  //   );
+
+  //   setCompanyData(filteredCompanyData);
+
+  //   const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
+  //     selectedEmployeeNames.includes(obj.bdmName)
+  //   );
+
+  //   setTeamLeadsData(filteredTeamLeadsData);
+  // };
+
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-    //console.log(selectedEmployeeNames, "selected employees");
-    // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
 
-    const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
-      selectedEmployeeNames.includes(company.ename)
-    );
+    // const { value } = event.target;
+    // setPersonName(value); 
+    //console.log(personName, "peersonName")
 
-    setForwardEmployeeData(filteredForwardEmployeeData);
-
+    const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
     const filteredCompanyData = companyDataFilter.filter(
       (obj) =>
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
         forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
     );
-
-    setCompanyData(filteredCompanyData);
-
-    const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
-      selectedEmployeeNames.includes(obj.bdmName)
-    );
-
-    setTeamLeadsData(filteredTeamLeadsData);
+    const filteredTeamLeadsData = teamData2.filter((obj) => selectedEmployeeNames.includes(obj.bdmName));
+    //console.log("filtetred", filteredForwardEmployeeData)
+    if (filteredForwardEmployeeData.length > 0) {
+      setForwardEmployeeData(filteredForwardEmployeeData);
+      setTeamLeadsData2(filteredTeamLeadsData);
+      setCompanyDataTotal(filteredCompanyData);
+    } else if (filteredForwardEmployeeData.length === 0) {
+      setForwardEmployeeData(forwardEmployeeDataNew)
+      setTeamLeadsData2(teamData2)
+      setCompanyDataTotal(companyDataFilter)
+    }
+    //console.log("forward", forwardEmployeeData)
   };
+
+  // ---------------------------------projection summary function-------------------------------
+
+  const [projectionNames, setProjectionNames] = useState([])
+
+  const handleSelectProjectionSummary = (selectedEmployeeNames) => {
+
+    const filteredProjectionData = completeProjectionData.filter((company) => selectedEmployeeNames.includes(company.ename))
+    const filteredEmployeeData = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
+
+    //console.log("filtetred", filteredForwardEmployeeData)
+    if (filteredProjectionData.length > 0) {
+      setCompleteProjectionDataToday(filteredProjectionData);
+      setEmployeeData(filteredEmployeeData)
+    } else if (filteredProjectionData.length === 0) {
+      setCompleteProjectionDataToday(completeProjectionDataTodayNew)
+      setEmployeeData(employeeDataFilter)
+    }
+    //console.log("forward", forwardEmployeeData)
+  };
+
+  // -----------------------------------projection summary filter search employee name ---------------------------------------------
+  const [searchTermProjection, setSearchTermProjection] = useState("")
+
+
+  const filterSearchProjection = (searchTerm) => {
+    setSearchTermProjection(searchTerm)
+    const fileteredData = completeProjectionData.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredEmployee = employeeDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    setCompleteProjectionDataToday(fileteredData)
+    setEmployeeData(filteredEmployee)
+  }
+  const debouncedFilterSearchProjection = debounce(filterSearchProjection, 100);
+
 
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
@@ -795,7 +887,7 @@ function BdmDashboard() {
 
   const uniqueEnames = [...new Set(completeProjectionDataToday.map((item) => item.ename))];
 
-  console.log(uniqueEnames,"unique")
+  console.log(uniqueEnames, "unique")
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
@@ -1540,20 +1632,7 @@ function BdmDashboard() {
                               />
                             </DemoContainer>
                           </LocalizationProvider> */}
-                {/* <div>
-                            <select className="form-select mt-1" 
-                              onChange={(e) => {
-                                handleSelectForwardedEmployeeData(e.target.value); // You missed passing the value to the function
-                              }}>
-                              <option disabled value="">Select...</option>
-                              {forwardEmployeeDataNew.map((obj) => (
-                                <option key={obj.id} value={obj.ename}>
-                                  {obj.ename}
-                                </option>
-                              ))}
-                            </select>
-                          </div> */}
-                <div className="services mt-1 mr-3" style={{ zIndex: "9999" }}>
+                {/* <div className="services mt-1 mr-3" style={{ zIndex: "9999" }}>
                   <Select
                     isMulti
                     options={options}
@@ -1565,6 +1644,32 @@ function BdmDashboard() {
                     value={selectedValues.map((value) => ({ value, label: value }))}
                     placeholder="Select..."
                   />
+                </div> */}
+                <div className='services'>
+                  <FormControl sx={{ m: 1, width: 300 }}>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      multiple
+                      value={personName}
+                      onChange={(event) => {
+                        setPersonName(event.target.value)
+                        handleSelectForwardedEmployeeData(event.target.value)
+                      }}
+                      input={<OutlinedInput label="Name" />}
+                      MenuProps={MenuProps}
+                    >
+                      {options.map((name) => (
+                        <MenuItem
+                          key={name}
+                          value={name}
+                          style={getStyles(name, personName, theme)}
+                        >
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
             </div>
@@ -1621,7 +1726,7 @@ function BdmDashboard() {
                           <td >{obj.ename}</td>
                           <td>{obj.branchOffice}</td>
                           <td >
-                            {companyData.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
+                            {companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
                           </td>
                           <td >
                             {
@@ -1649,7 +1754,7 @@ function BdmDashboard() {
                           </td>
 
                           <td>
-                            {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                            {companyDataTotal.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                           </td>
                           <td>₹ {functionCalculateGeneratedTotalRevenue(obj.ename).toLocaleString()}</td>
                         </tr>
@@ -1674,7 +1779,7 @@ function BdmDashboard() {
                         Total
                       </td>
                       <td>
-                        {companyData.filter(company =>
+                        {companyDataTotal.filter(company =>
                           (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") &&
                           forwardEmployeeDataNew.some(empObj => empObj.branchOffice === "Sindhu Bhawan" && company.ename === empObj.ename)
                         ).length}
@@ -1711,7 +1816,7 @@ function BdmDashboard() {
                         ₹{generatedTotalProjectionRecieved.toLocaleString()}
                       </td>
                       <td>
-                        {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                        {companyDataTotal.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                       </td>
                       <td>
                         ₹{generatedTotalRevenue}
@@ -1736,6 +1841,26 @@ function BdmDashboard() {
                 </h2>
               </div>
               <div className="d-flex align-items-center pr-1">
+                <div class="input-icon mr-1">
+                  <span class="input-icon-addon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                      <path d="M21 21l-6 -6"></path>
+                    </svg>
+                  </span>
+                  <input
+                    value={searchTermProjection}
+                    onChange={(e) =>
+                      debouncedFilterSearchProjection(e.target.value)
+                    }
+                    className="form-control"
+                    placeholder="Enter BDE Name..."
+                    type="text"
+                    name="bdeName-search"
+                    id="bdeName-search" />
+                </div>
+
                 <div className="date-filter">
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
@@ -1767,6 +1892,32 @@ function BdmDashboard() {
                       />
                     </DemoContainer>
                   </LocalizationProvider>
+                </div>
+                <div className='services'>
+                  <FormControl sx={{ m: 1, width: 300 }}>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      multiple
+                      value={projectionNames}
+                      onChange={(event) => {
+                        setProjectionNames(event.target.value)
+                        handleSelectProjectionSummary(event.target.value)
+                      }}
+                      input={<OutlinedInput label="Name" />}
+                      MenuProps={MenuProps}
+                    >
+                      {options.map((name) => (
+                        <MenuItem
+                          key={name}
+                          value={name}
+                          style={getStyles(name, projectionNames, theme)}
+                        >
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
             </div>
@@ -1982,18 +2133,17 @@ function BdmDashboard() {
                         ))
                     )}
                   </tbody>
-                  {sortedData && sortedData.length !== 0 && (
-                    <tfoot className="admin-dash-tbl-tfoot"    >
-                      <tr style={{ fontWeight: 500 }}>
-                        <td colSpan="2">
-                          Total
-                        </td>
-                        <td>
-                          {
-                            completeProjectionDataToday.filter((partObj) => partObj.ename)
-                              .length
-                          }
-                          {/* <FcDatabase
+                  <tfoot className="admin-dash-tbl-tfoot"    >
+                    <tr style={{ fontWeight: 500 }}>
+                      <td colSpan="2">
+                        Total
+                      </td>
+                      <td>
+                        {
+                          completeProjectionDataToday.filter((partObj) => partObj.ename)
+                            .length
+                        }
+                        {/* <FcDatabase
                           onClick={() => {
                             functionCompleteProjectionTable();
                           }}
@@ -2003,45 +2153,43 @@ function BdmDashboard() {
                             marginLeft: "55px",
                           }}
                         /> */}
-                        </td>
-                        <td>
-                          {completeProjectionDataToday.reduce(
-                            (totalServices, partObj) => {
-                              totalServices += partObj.offeredServices.length;
-                              return totalServices;
-                            },
-                            0
-                          )}
-                        </td>
-                        <td>
-                          {completeProjectionDataToday
-                            .reduce((totalOfferedPrize, partObj) => {
-                              totalOfferedPrize += partObj.offeredPrize;
-                              return totalOfferedPrize;
-                            }, 0)
-                            .toLocaleString("en-IN", numberFormatOptions)}
-                        </td>
-                        <td>
-                          {completeProjectionDataToday
-                            .reduce((totalPaymentSum, partObj) => {
-                              totalPaymentSum += partObj.totalPayment;
-                              return totalPaymentSum;
-                            }, 0)
-                            .toLocaleString("en-IN", numberFormatOptions)}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  )}
-
-                  {/* {sortedData && sortedData.length === 0 && (
-                  <tbody>
-                    <tr>
-                      <td className="particular" colSpan={9}>
-                        <Nodata />
+                      </td>
+                      <td>
+                        {completeProjectionDataToday.reduce(
+                          (totalServices, partObj) => {
+                            totalServices += partObj.offeredServices.length;
+                            return totalServices;
+                          },
+                          0
+                        )}
+                      </td>
+                      <td>
+                        {completeProjectionDataToday
+                          .reduce((totalOfferedPrize, partObj) => {
+                            totalOfferedPrize += partObj.offeredPrize;
+                            return totalOfferedPrize;
+                          }, 0)
+                          .toLocaleString("en-IN", numberFormatOptions)}
+                      </td>
+                      <td>
+                        {completeProjectionDataToday
+                          .reduce((totalPaymentSum, partObj) => {
+                            totalPaymentSum += partObj.totalPayment;
+                            return totalPaymentSum;
+                          }, 0)
+                          .toLocaleString("en-IN", numberFormatOptions)}
                       </td>
                     </tr>
-                  </tbody>
-                )} */}
+                  </tfoot>
+                  {((sortedData && sortedData.length === 0) && employeeData.length === 0) && (
+                    <tbody>
+                      <tr>
+                        <td className="particular" colSpan={9}>
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
                 </table>
               </div>
             </div>

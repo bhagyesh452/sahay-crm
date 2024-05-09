@@ -48,7 +48,20 @@ import moment from "moment";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
-import Select from "react-select";
+//import Select from "react-select";
+// import OutlinedInput from '@mui/material/OutlinedInput';
+// import InputLabel from '@mui/material/InputLabel';
+// import MenuItem from '@mui/material/MenuItem';
+// import FormControl from '@mui/material/FormControl';
+// import ListItemText from '@mui/material/ListItemText';
+// import Checkbox from '@mui/material/Checkbox';
+// import Select from '@mui/material/Select';
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
 
@@ -121,7 +134,7 @@ function Dashboard() {
   const dateRangePickerProhectionRef = useRef(null);
   const dateRangePickerEmployeeRef = useRef(null);
 
-  const [companyDataTotal , setCompanyDataTotal] = useState([])
+  const [companyDataTotal, setCompanyDataTotal] = useState([])
 
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
@@ -146,9 +159,9 @@ function Dashboard() {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
-        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive"));
-        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive"));
-        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
+        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
@@ -467,12 +480,21 @@ function Dashboard() {
     return `${day}/${month}/${year}`;
   }
 
+  function formatDateMonth(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+
   //console.log("companyData", companyData)
   //console.log("employeeData", employeeData)
 
   // ----------------------------------projection-dashboard-----------------------------------------------
 
   const [followDataToday, setfollowDataToday] = useState([]);
+  const [followDataTodayNew, setfollowDataTodayNew] = useState([]);
   const [followDataFilter, setFollowDataFilter] = useState([])
   const [followDataNew, setFollowDataNew] = useState([])
 
@@ -485,6 +507,14 @@ function Dashboard() {
       setFollowDataNew(followdata)
       //console.log("followdata", followdata)
       setfollowDataToday(
+        followdata
+          .filter((company) => {
+            // Assuming you want to filter companies with an estimated payment date for today
+            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+            return company.estPaymentDate === today;
+          })
+      );
+      setfollowDataTodayNew(
         followdata
           .filter((company) => {
             // Assuming you want to filter companies with an estimated payment date for today
@@ -542,7 +572,7 @@ function Dashboard() {
       const filteredFollowDataforwarded = followDataFilter.filter((obj) =>
         forwardEmployeeDataNew.some((empObj) =>
           empObj.branchOffice === branchName)
-        )
+      )
       //console.log(filteredFollowData)
       const filteredCompanyData = companyDataFilter.filter(obj => (
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
@@ -561,11 +591,11 @@ function Dashboard() {
   }
 
 
-  
+
   const [searchTermForwardData, setSearchTermForwardData] = useState("")
 
   // Modified filterSearch function with debounce
-  const filterSearchForwardData=(searchTerm)=> {
+  const filterSearchForwardData = (searchTerm) => {
     //console.log(searchTerm)
     setSearchTermForwardData(searchTerm);
 
@@ -574,8 +604,6 @@ function Dashboard() {
         company.ename.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-
-  
 
     setCompanyDataTotal(
       companyDataFilter.filter(
@@ -607,72 +635,159 @@ function Dashboard() {
 
   }
 
-  //console.log("followData", followData, followDataFilter)
-
   const [selectedValues, setSelectedValues] = useState([]);
+
   const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
 
-  const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
 
-  //console.log("options", options);
+
+  const options = forwardEmployeeDataNew.map((obj) => obj.ename);
+  const [personName, setPersonName] = useState([])
+  //console.log("options" , options)
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  function getStyles(name, personName, theme) {
+    return {
+      fontWeight:
+        personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
+
+  const theme = useTheme();
+
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
 
-    const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
-      selectedEmployeeNames.includes(company.ename)
-    );
+    // const { value } = event.target;
+    // setPersonName(value); 
+    //console.log(personName, "peersonName")
 
-    setForwardEmployeeData(filteredForwardEmployeeData);
-
+    const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
     const filteredCompanyData = companyDataFilter.filter(
       (obj) =>
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
         forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
     );
-
-    setCompanyData(filteredCompanyData);
-
-    const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
-      selectedEmployeeNames.includes(obj.bdmName)
-    );
-
-    setTeamLeadsData(filteredTeamLeadsData);
+    const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) => selectedEmployeeNames.includes(obj.bdmName));
+    //console.log("filtetred", filteredForwardEmployeeData)
+    if (filteredForwardEmployeeData.length > 0) {
+      setForwardEmployeeData(filteredForwardEmployeeData);
+      setTeamLeadsData(filteredTeamLeadsData);
+      setCompanyDataTotal(filteredCompanyData);
+    } else if (filteredForwardEmployeeData.length === 0) {
+      setForwardEmployeeData(forwardEmployeeDataNew)
+      setTeamLeadsData(teamLeadsDataFilter)
+      setCompanyDataTotal(companyDataFilter)
+    }
+    //console.log("forward", forwardEmployeeData)
   };
 
-  // const handleSelectForwardedEmployeeData = (employeeName) => {
+  const [selectedDataRangeForwardedEmployee, setSelectedDateRangeForwardedEmployee] = useState([]);
 
-  //   console.log(employeeName, "employee ye h")
+  const handleForwardedEmployeeDateRange = (values) => {
+    console.log(values);
+    if (values[1]) {
+      const startDate = values[0].format("MM/DD/YYYY");
+      const endDate = values[1].format("MM/DD/YYYY");
 
-  //   setForwardEmployeeData(
-  //     forwardEmployeeDataFilter.filter((company) =>
-  //       company.ename === employeeName)
-  //   )
+      const filteredDataDateRange = companyDataFilter.filter((product) => {
+        const productDate = formatDateMonth(product.bdeForwardDate);
+        // Check if the formatted productDate is within the selected date range
+        if (startDate === endDate) {
+          // If both startDate and endDate are the same, filter for transactions on that day
+          return new Date(productDate) === new Date(startDate);
+        } else if (startDate !== endDate) {
+          // If different startDate and endDate, filter within the range
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
+        } else {
+          return false;
+        }
+      });
+      const filteredTeamLeadsData = teamLeadsDataFilter.filter((product)=>{
+        const productDate = formatDateMonth(product.bdeForwardDate);
+        if(startDate === endDate){
+          return new Date(productDate) === new Date(startDate).getDate;
 
-  //   setCompanyData(
-  //     companyDataFilter.filter(
-  //       (obj) =>
-  //         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-  //         forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
-  //           (empObj.ename === employeeName)
-  //         )
-  //     )
-  //   );
+        }else if(startDate !== endDate){
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
+        }else{
+          return false;
+        }
+      })
+      
+      const  newFollowData = followDataFilter.filter((obj)=> obj.caseType === "Forwarded" || obj.caseType === "Recieved")
+      const filteredFollowData = newFollowData.filter((product)=>{
+        console.log(product.date)
+        const productDate = formatDateFinal(product.date);
+        console.log(startDate , endDate , productDate)
+        if(startDate === endDate){
+          return new Date(productDate) === new Date(startDate).getDate;
+        }else if(startDate !== endDate){
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
+        }else{
+          return false;
+        }
 
-  //   setTeamLeadsData(
-  //     teamLeadsDataFilter.filter((obj) =>
-  //       forwardEmployeeDataNew.some(
-  //         (empObj) =>
-  //           (obj.bdmName === empObj.ename) &&
-  //           empObj.ename === employeeName)
-  //     )
-  //   )
-  // }
+      })
+      setTeamLeadsData(filteredTeamLeadsData)
+      setCompanyDataTotal(filteredDataDateRange);
+      setfollowData(filteredFollowData)
+    } else {
+      return true;
+    }
+  };
+
+  // -------------------------------------projection summary select multiple name function--------------------------------------------------------------
+
+  const [projectionNames, setProjectionNames] = useState([])
+
+  const handleSelectProjectionSummary = (selectedEmployeeNames) => {
+    const filteredProjectionData = followData.filter((company) => selectedEmployeeNames.includes(company.ename))
+    const filteredEmployees = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename))
+    console.log(filteredProjectionData, "projectiondata")
+    console.log(filteredEmployees, "employees")
+    if (filteredProjectionData.length > 0 || filteredEmployees.length > 0) {
+      setfollowDataToday(filteredProjectionData);
+      setEmployeeData(filteredEmployees)
+    } else if (filteredProjectionData.length === 0 || filteredEmployees.length === 0) {
+      setfollowDataToday(followDataTodayNew)
+      setEmployeeData(employeeDataFilter)
+    }
+
+  };
+  // --------------------------------------projection summary search filter-----------------------------------
+  const [searchTermProjection, setSearchTermProjection] = useState("")
 
 
-
-
-
-  //console.log(followDataToday)
+  const filterSearchProjection = (searchTerm) => {
+    setSearchTermProjection(searchTerm)
+    const fileteredData = followData.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredEmployee = employeeDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    setfollowDataToday(fileteredData)
+    setEmployeeData(filteredEmployee)
+  }
+  const debouncedFilterSearchProjection = debounce(filterSearchProjection, 100);
 
   useEffect(() => {
     fetchFollowUpData();
@@ -1016,27 +1131,6 @@ function Dashboard() {
     key: "selection",
   };
 
-  // const handleSelect = (date) => {
-  //   const filteredDataDateRange = followData.filter(product => {
-  //     const productDate = new Date(product["estPaymentDate"]);
-  //     if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
-  //       console.log(formatDate(date.selection.startDate))
-  //       console.log(formatDate(date.selection.endDate))
-  //       console.log(formatDate(productDate))
-  //       return formatDate(productDate) === formatDate(date.selection.startDate);
-  //     } else {
-  //       return (
-  //         productDate >= date.selection.startDate &&
-  //         productDate <= date.selection.endDate
-  //       );
-  //     }
-  //   });
-  //   setStartDate(date.selection.startDate);
-  //   setEndDate(date.selection.endDate);
-  //   setFilteredDataDateRange(filteredDataDateRange);
-  //   //console.log(filteredDataDateRange)
-  // };
-
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
     const startDate = values[0];
@@ -1160,38 +1254,6 @@ function Dashboard() {
       return true;
     }
   };
-
-  // useEffect(() => {
-
-  //   const filteredDataDateRange = companyDataFilter.filter(product => {
-  //     const productDate = new Date(product["AssignDate"]);
-  //     const newproductDate = formatDateNew(productDate)
-  //     // Convert productDate to the sameformat as startDate and endDate
-  //     const formattedProductDate = dayjs(newproductDate).startOf('day');
-  //     const formattedStartDate = startDateEmployee ? dayjs(startDateEmployee).startOf('day') : null;
-  //     const formattedEndDate = endDateEmployee ? dayjs(endDateEmployee).endOf('day') : null;
-
-  //     console.log(formattedProductDate)
-  //     console.log(formattedStartDate)
-  //     console.log(formattedEndDate)
-
-  //     // Check if the formatted productDate is within the selected date range
-  //     if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
-  //       // If both startDate and endDate are the same, filter for transactions on that day
-  //       return formattedProductDate.isSame(formattedStartDate);
-  //     } else if (formattedStartDate && formattedEndDate) {
-  //       // If different startDate and endDate, filter within the range
-  //       return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
-  //     } else {
-  //       // If either startDate or endDate is null, return false
-  //       return false;
-  //     }
-  //   });
-
-  //   console.log("Filtered Data:", filteredDataDateRange);
-  //   setCompanyData(filteredDataDateRange);
-  //   setcompanyDataFilter(filteredDataDateRange);
-  // }, [startDateEmployee, endDateEmployee]);
 
   function formatDateNew(date) {
     const day = date.getDate();
@@ -1419,9 +1481,7 @@ function Dashboard() {
     offeredPaymentSumPopupDateRange,
     offeredServicesPopupDateRange,
   } = calculateSumPopupDateRange(projectedDataDateRange);
-  // console.log(totalPaymentSumPopupDateRange)
-  // console.log(offeredPaymentSumPopupDateRange)
-  // console.log(offeredServicesPopupDateRange)
+
 
   function calculateSumPopupToday(data) {
     const initialValue = {
@@ -2679,12 +2739,12 @@ function Dashboard() {
 
   // -----------------------------------employees forwarded case functions--------------------------------------------
   let generatedTotalProjection = 0;
-  const functionCaluclateTotalForwardedProjection=(isBdm , employeeName)=>{
-    
-    const filteredFollowDataForward = isBdm ? followData.filter((company)=>company.ename === employeeName && company.bdmName !== employeeName &&  company.caseType === "Forwarded" ) : followData.filter((company)=>company.ename === employeeName && company.caseType === "Forwarded")
-    const filteredFollowDataRecieved = isBdm ? followData.filter((company)=>company.ename === employeeName && company.bdmName !== employeeName &&  company.caseType === "Recieved" ) : followData.filter((company)=>(company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
-    const totalPaymentForwarded = filteredFollowDataForward.reduce((total , obj)=> total+obj.totalPayment , 0)
-    const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total , obj)=> total+obj.totalPayment/2 , 0)
+  const functionCaluclateTotalForwardedProjection = (isBdm, employeeName) => {
+
+    const filteredFollowDataForward = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Forwarded") : followData.filter((company) => company.ename === employeeName && company.caseType === "Forwarded")
+    const filteredFollowDataRecieved = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Recieved") : followData.filter((company) => (company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
+    const totalPaymentForwarded = filteredFollowDataForward.reduce((total, obj) => total + obj.totalPayment, 0)
+    const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentForwarded + totalPaymentRecieved
 
     generatedTotalProjection = generatedTotalProjection + finalPayment;
@@ -2695,8 +2755,8 @@ function Dashboard() {
 
   let generatedTotalProjectionRecieved = 0;
 
-  const functionCalculateTotalProjectionRecieved=(employeeName)=>{
-    const filterFollowDataRecieved = followData.filter((company)=>company.bdmName === employeeName && company.caseType === "Recieved")
+  const functionCalculateTotalProjectionRecieved = (employeeName) => {
+    const filterFollowDataRecieved = followData.filter((company) => company.bdmName === employeeName && company.caseType === "Recieved")
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentRecieved
     //console.log(finalPayment)
@@ -3148,7 +3208,6 @@ function Dashboard() {
                                 <path d="M21 21l-6 -6"></path>
                               </svg>
                             </span>
-
                             <input
                               value={searchTerm}
                               onChange={(e) =>
@@ -3905,6 +3964,36 @@ function Dashboard() {
                           </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
+                          <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center">
+                              <div className="filter-title mr-1">
+                                <h2 className="m-0">
+                                  Filter Branch :
+                                </h2>
+                              </div>
+                              <div className="filter-main">
+                                <select
+                                  className="form-select"
+                                  id={`branch-filter`}
+                                  value={selectedValue}
+                                  onChange={(e) => {
+                                    setSelectedValue(e.target.value)
+                                    handleFilterForwardCaseBranchOffice(e.target.value)
+                                  }}
+                                >
+                                  <option value="" disabled selected>
+                                    Select Branch
+                                  </option>
+
+                                  <option value={"Gota"}>Gota</option>
+                                  <option value={"Sindhu Bhawan"}>
+                                    Sindhu Bhawan
+                                  </option>
+                                  <option value={"none"}>None</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
                           <div class="input-icon mr-1">
                             <span class="input-icon-addon">
                               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -3924,78 +4013,45 @@ function Dashboard() {
                               name="bdeName-search"
                               id="bdeName-search" />
                           </div>
-                          <div className="filter-booking d-flex align-items-center">
-                            <div className="filter-main">
-                              <select
-                                className="form-select"
-                                id={`branch-filter`}
-                                value={selectedValue}
-                                onChange={(e) => {
-                                  setSelectedValue(e.target.value)
-                                  handleFilterForwardCaseBranchOffice(e.target.value)
-                                }}
-                              >
-                                <option value="" disabled selected>
-                                  Select Branch
-                                </option>
-
-                                <option value={"Gota"}>Gota</option>
-                                <option value={"Sindhu Bhawan"}>
-                                  Sindhu Bhawan
-                                </option>
-                                <option value={"none"}>None</option>
-                              </select>
-                            </div>
-                          </div>
-                          {/* <LocalizationProvider
-                            dateAdapter={AdapterDayjs}
-                            style={{ padding: "0px" }}
-                          >
-                            <DemoContainer
-                              components={["SingleInputDateRangeField"]}
-                            >
-                              <DateRangePicker
-                                onChange={(values) => {
-                                  const startDateEmp = moment(values[0]).format(
-                                    "DD/MM/YYYY"
-                                  );
-                                  const endDateEmp = moment(values[1]).format(
-                                    "DD/MM/YYYY"
-                                  );
-                                  setSelectedDateRangeEmployee([
-                                    startDateEmp,
-                                    endDateEmp,
-                                  ]);
-                                  handleSelectEmployee(values); // Call handleSelect with the selected values
-                                }}
-                                slots={{ field: SingleInputDateRangeField }}
-                                slotProps={{
-                                  shortcuts: {
-                                    items: shortcutsItems,
-                                  },
-                                  actionBar: { actions: [] },
-                                  textField: {
-                                    InputProps: { endAdornment: <Calendar /> },
-                                  },
-                                }}
-                              //calendars={1}
-                              />
-                            </DemoContainer>
-                          </LocalizationProvider> */}
-                          {/* <div>
-                            <select className="form-select mt-1" 
-                              onChange={(e) => {
-                                handleSelectForwardedEmployeeData(e.target.value); // You missed passing the value to the function
+                          <div className="data-filter">
+                            <LocalizationProvider
+                              dateAdapter={AdapterDayjs}
+                              sx={{
+                                padding: '0px'
                               }}>
-                              <option disabled value="">Select...</option>
-                              {forwardEmployeeDataNew.map((obj) => (
-                                <option key={obj.id} value={obj.ename}>
-                                  {obj.ename}
-                                </option>
-                              ))}
-                            </select>
-                          </div> */}
-                          <div className="services mt-1 mr-3" style={{ zIndex: "9999", display: "none" }}>
+                              <DemoContainer
+                                components={["SingleInputDateRangeField"]}
+                              >
+                                <DateRangePicker
+                                  onChange={(values) => {
+                                    const startDateEmp = moment(values[0]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    const endDateEmp = moment(values[1]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    setSelectedDateRangeForwardedEmployee([
+                                      startDateEmp,
+                                      endDateEmp,
+                                    ]);
+                                    handleForwardedEmployeeDateRange(values); // Call handleSelect with the selected values
+                                  }}
+                                  slots={{ field: SingleInputDateRangeField }}
+                                  slotProps={{
+                                    shortcuts: {
+                                      items: shortcutsItems,
+                                    },
+                                    actionBar: { actions: [] },
+                                    textField: {
+                                      InputProps: { endAdornment: <Calendar /> },
+                                    },
+                                  }}
+                                //calendars={1}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </div>
+                          {/* <div className="services mt-1 mr-3" style={{ zIndex: "9999" }}>
                             <Select
                               isMulti
                               options={options}
@@ -4008,6 +4064,51 @@ function Dashboard() {
                               placeholder="Select..."
                             />
                           </div>
+                          {/* <FormControl sx={{ m: 1, width: 300 , zIndex:"9999" }} >
+                            <Select
+                              labelId="demo-multiple-checkbox-label"
+                              id="demo-multiple-checkbox"
+                              multiple
+                              value={personName}
+                              onChange={(event)=>{
+                                setPersonName(event.target.value)
+                                handleSelectForwardedEmployeeData(event.target.value)}}
+                              input={<OutlinedInput label="Tag" />}
+                              renderValue={(selected) => selected.join(', ')}
+                              MenuProps={MenuProps}
+                            >
+                              {options.map((name) => (
+                                <MenuItem key={name} value={name}>
+                                  <Checkbox checked={personName.indexOf(name) > -1} />
+                                  <ListItemText primary={name} />
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl> */}
+                          <FormControl sx={{ m: 1, width: 300 }}>
+                            <Select
+                              labelId="demo-multiple-name-label"
+                              id="demo-multiple-name"
+                              multiple
+                              value={personName}
+                              onChange={(event) => {
+                                setPersonName(event.target.value)
+                                handleSelectForwardedEmployeeData(event.target.value)
+                              }}
+                              input={<OutlinedInput label="Name" />}
+                              MenuProps={MenuProps}
+                            >
+                              {options.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name, personName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
                         </div>
                       </div>
                       <div className='card-body'>
@@ -4048,7 +4149,7 @@ function Dashboard() {
                                       {/* ₹{(followData
                                       .filter(company => company.bdeName === obj.ename)
                                       .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
-                                     {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true , obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false , obj.ename)}`}
+                                      {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
 
                                     </td>
 
@@ -4089,7 +4190,7 @@ function Dashboard() {
                                     return total + totalPayment;
                                   }, 0)
                                 } */}
-                                ₹{generatedTotalProjection}
+                                  ₹{generatedTotalProjection}
 
                                 </td>
                                 <td>
@@ -4108,7 +4209,7 @@ function Dashboard() {
                                   {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
-                                 ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
+                                  ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
                                 </td>
                               </tr>
                             </tfoot>
@@ -4156,6 +4257,25 @@ function Dashboard() {
                               </select>
                             </div>
                           </div>
+                          <div class="input-icon mr-1">
+                            <span class="input-icon-addon">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
+                              </svg>
+                            </span>
+                            <input
+                              value={searchTermProjection}
+                              onChange={(e) =>
+                                debouncedFilterSearchProjection(e.target.value)
+                              }
+                              className="form-control"
+                              placeholder="Enter BDE Name..."
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search" />
+                          </div>
                           <div className="date-filter">
                             <LocalizationProvider
                               dateAdapter={AdapterDayjs}
@@ -4187,6 +4307,32 @@ function Dashboard() {
                                 />
                               </DemoContainer>
                             </LocalizationProvider>
+                          </div>
+                          <div>
+                            <FormControl sx={{ m: 1, width: 300 }}>
+                              <Select
+                                labelId="demo-multiple-name-label"
+                                id="demo-multiple-name"
+                                multiple
+                                value={projectionNames}
+                                onChange={(event) => {
+                                  setProjectionNames(event.target.value)
+                                  handleSelectProjectionSummary(event.target.value)
+                                }}
+                                input={<OutlinedInput label="Name" />}
+                                MenuProps={MenuProps}
+                              >
+                                {options.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, projectionNames, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
                           </div>
 
 
@@ -4406,58 +4552,55 @@ function Dashboard() {
                                   ))
                               )}
                             </tbody>
-                            {sortedData && sortedData.length !== 0 && (
-                              <tfoot className="admin-dash-tbl-tfoot"    >
-                                <tr style={{ fontWeight: 500 }}>
-                                  <td colSpan="2">
-                                    Total
-                                  </td>
-                                  <td>
-                                    {
-                                      followDataToday.filter((partObj) => partObj.ename)
-                                        .length
-                                    }
-                                    <FcDatabase
-                                      onClick={() => {
-                                        functionCompleteProjectionTable();
-                                      }}
-                                      style={{
-                                        cursor: "pointer",
-                                        marginRight: "-71px",
-                                        marginLeft: "55px",
-                                      }}
-                                    />
-                                  </td>
-                                  <td>
-                                    {followDataToday.reduce(
-                                      (totalServices, partObj) => {
-                                        totalServices += partObj.offeredServices.length;
-                                        return totalServices;
-                                      },
-                                      0
-                                    )}
-                                  </td>
-                                  <td>
-                                    {followDataToday
-                                      .reduce((totalOfferedPrize, partObj) => {
-                                        totalOfferedPrize += partObj.offeredPrize;
-                                        return totalOfferedPrize;
-                                      }, 0)
-                                      .toLocaleString("en-IN", numberFormatOptions)}
-                                  </td>
-                                  <td>
-                                    {followDataToday
-                                      .reduce((totalPaymentSum, partObj) => {
-                                        totalPaymentSum += partObj.totalPayment;
-                                        return totalPaymentSum;
-                                      }, 0)
-                                      .toLocaleString("en-IN", numberFormatOptions)}
-                                  </td>
-                                </tr>
-                              </tfoot>
-                            )}
-
-                            {/* {sortedData && sortedData.length === 0 && (
+                            <tfoot className="admin-dash-tbl-tfoot"    >
+                              <tr style={{ fontWeight: 500 }}>
+                                <td colSpan="2">
+                                  Total
+                                </td>
+                                <td>
+                                  {
+                                    followDataToday.filter((partObj) => partObj.ename)
+                                      .length
+                                  }
+                                  <FcDatabase
+                                    onClick={() => {
+                                      functionCompleteProjectionTable();
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      marginRight: "-71px",
+                                      marginLeft: "55px",
+                                    }}
+                                  />
+                                </td>
+                                <td>
+                                  {followDataToday.reduce(
+                                    (totalServices, partObj) => {
+                                      totalServices += partObj.offeredServices.length;
+                                      return totalServices;
+                                    },
+                                    0
+                                  )}
+                                </td>
+                                <td>
+                                  {followDataToday
+                                    .reduce((totalOfferedPrize, partObj) => {
+                                      totalOfferedPrize += partObj.offeredPrize;
+                                      return totalOfferedPrize;
+                                    }, 0)
+                                    .toLocaleString("en-IN", numberFormatOptions)}
+                                </td>
+                                <td>
+                                  {followDataToday
+                                    .reduce((totalPaymentSum, partObj) => {
+                                      totalPaymentSum += partObj.totalPayment;
+                                      return totalPaymentSum;
+                                    }, 0)
+                                    .toLocaleString("en-IN", numberFormatOptions)}
+                                </td>
+                              </tr>
+                            </tfoot>
+                            {((sortedData && sortedData.length === 0) && employeeData.length === 0) && (
                               <tbody>
                                 <tr>
                                   <td className="particular" colSpan={9}>
@@ -4465,7 +4608,7 @@ function Dashboard() {
                                   </td>
                                 </tr>
                               </tbody>
-                            )} */}
+                            )}
                           </table>
                         </div>
                       </div>
