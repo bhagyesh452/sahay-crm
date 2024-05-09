@@ -3112,9 +3112,9 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td className="p-0">
+                                    <td className="p-0" style={{padding:'0px'}}>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
-                                        <IconButton className="p-0" style={{padding:'0px'}}
+                                        <IconButton className="p-0" 
                                           onClick={() => {
                                             functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
                                             setIsEditProjection(false)
@@ -3287,7 +3287,7 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td>
+                                    <td style={{padding:'0px'}}>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
                                         <IconButton
                                           onClick={() => {
@@ -3685,7 +3685,7 @@ function EmployeeDashboard() {
                             <td>{mainObj["Company Name"]}</td>
                             <td>{mainObj["Company Number"]}</td>
                             <td>{mainObj["Company Email"]}</td>
-                            <td>
+                            <td style={{padding:'0px'}}>
                               {followDataToday &&
                                 followDataToday.some(
                                   (item) =>
