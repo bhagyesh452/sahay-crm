@@ -3044,7 +3044,7 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div id="row tbl-scroll table-default">
+                  <div id="table-default" className="row tbl-scroll">
                     <table className="table-vcenter table-nowrap admin-dash-tbl">
                       <thead className="admin-dash-tbl-thead" >
                         <tr
