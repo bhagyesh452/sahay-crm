@@ -4975,9 +4975,10 @@ app.post(
           const serviceNames = newData.services
             .map((service, index) => `${service.serviceName}`)
             .join(" , ");
+          const isAdmin = newData.isAdmin;
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [
+          const recipients = isAdmin ? ["nimesh@incscale.in"] : [
             newData.bdeEmail,
             newData.bdmEmail,
             "bookings@startupsahay.com",
@@ -5760,7 +5761,6 @@ app.post(
             ? 'style="display:block'
             : 'style="display:none';
 
-          console.log(newPageDisplay);
           const AuthorizedNumber =
             AuthorizedName === "Dhruvi Gohel"
               ? "+919016928702"
@@ -8648,15 +8648,19 @@ app.post(
       otherDocs,
       paymentReceipt,
       remainingPayments,
-      ...updatedDocs
+      ...boom
     } = req.body;
     const newOtherDocs = req.files["otherDocs"] || [];
     const newPaymentReceipt = req.files["paymentReceipt"] || [];
     const updatedDocWithoutId = {
-      ...updatedDocs,
+      ...boom,
       otherDocs: newOtherDocs,
       paymentReceipt: newPaymentReceipt,
+      remainingPayments:[]
     };
+    const updatedDocs = {
+      ...boom , remainingPayments : []
+    }
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
 
@@ -8697,7 +8701,7 @@ app.put(
   async (req, res) => {
     try {
       const { CompanyName, bookingIndex } = req.params;
-      const { otherDocs, paymentReceipt, step4changed, ...newData } = req.body;
+      const { otherDocs, paymentReceipt, step4changed,remainingPayments, ...newData } = req.body;
 
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
@@ -8712,16 +8716,36 @@ app.put(
       const existingDocument = await RedesignedLeadformModel.findOne({
         "Company Name": CompanyName,
       });
-
+      const moreDocument = existingDocument.moreBookings[bookingIndex -1];
       if (!existingDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-
+      console.log("This is sending :" , dataToSend , step4changed)
       // Update the booking in moreBookings array at the specified index
-      existingDocument.moreBookings[bookingIndex - 1] = dataToSend;
-
-      // Save the updated document
-      const updatedDocument = await existingDocument.save();
+      const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
+        {
+          "Company Name": CompanyName,
+        },
+        {
+          [`moreBookings.${bookingIndex -1}`]:{
+            bdeName: newData.bdeName , bdmType:newData.bdmType , bdeEmail: newData.bdeEmail,bdmName:newData.bdmName, otherBdmName:newData.otherBdmName, bdmEmail:newData.bdmEmail,bookingDate:newData.bookingDate,bookingSource:newData.bookingSource,otherBookingSource:newData.otherBookingSource,numberOfServices:newData.numberOfServices,services:newData.services,caCase:newData.caCase,caNumber:newData.caNumber,caEmail:newData.caEmail,caCommission:newData.caCommission,
+            paymentMethod:newData.paymentMethod,totalAmount:newData.totalAmount,receivedAmount:newData.receivedAmount,pendingAmount:newData.pendingAmount,
+            generatedTotalAmount:newData.generatedTotalAmount,generatedReceivedAmount:newData.generatedReceivedAmount,Step1Status:newData.Step1Status,Step2Status:newData.Step2Status,Step3Status:newData.Step3Status,Step4Status:newData.Step4Status, Step5Status:newData.Step5Status,remainingPayments:[] , otherDocs: newOtherDocs , paymentReceipt:newPaymentReceipt
+          }
+        })   : await RedesignedLeadformModel.findOneAndUpdate(
+        {
+          "Company Name": CompanyName,
+        },
+        {
+          [`moreBookings.${bookingIndex -1}`]:{
+            bdeName: newData.bdeName , bdmType:newData.bdmType , bdeEmail: newData.bdeEmail,bdmName:newData.bdmName, otherBdmName:newData.otherBdmName, bdmEmail:newData.bdmEmail,bookingDate:newData.bookingDate,bookingSource:newData.bookingSource,otherBookingSource:newData.otherBookingSource,numberOfServices:newData.numberOfServices,services:newData.services,caCase:newData.caCase,caNumber:newData.caNumber,caEmail:newData.caEmail,caCommission:newData.caCommission,
+            paymentMethod:newData.paymentMethod,totalAmount:newData.totalAmount,receivedAmount:newData.receivedAmount,pendingAmount:newData.pendingAmount,
+            generatedTotalAmount:newData.generatedTotalAmount,generatedReceivedAmount:newData.generatedReceivedAmount,Step1Status:newData.Step1Status,Step2Status:newData.Step2Status,Step3Status:newData.Step3Status,Step4Status:newData.Step4Status, Step5Status:newData.Step5Status,remainingPayments:[] , otherDocs: moreDocument.otherDocs , paymentReceipt:moreDocument.paymentReceipt
+          }
+        },
+        // Set all properties except "moreBookings"
+        { new: true } // Return the updated document
+      );
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": CompanyName,
       });

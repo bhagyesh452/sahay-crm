@@ -24,6 +24,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function BdmDashboard() {
   const { userId } = useParams();
@@ -77,7 +79,7 @@ function BdmDashboard() {
     fetchEmployeeInfo()
   }, [])
 
-  console.log("employeedata", employeeDataNew)
+  //console.log("employeedata", employeeDataNew)
 
   const [moreEmpData, setmoreEmpData] = useState([])
   const [tempData, setTempData] = useState([]);
@@ -201,7 +203,7 @@ function BdmDashboard() {
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
       const filteredFollowData = followdata.filter((obj) => employeeDataNew.some((empObj) => empObj.ename === obj.ename))
-      console.log("filetered", filteredFollowData)
+      //console.log("filetered", filteredFollowData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -595,10 +597,6 @@ function BdmDashboard() {
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
 
-    // const { value } = event.target;
-    // setPersonName(value); 
-    //console.log(personName, "peersonName")
-
     const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
     const filteredCompanyData = companyDataFilter.filter(
       (obj) =>
@@ -618,6 +616,95 @@ function BdmDashboard() {
     }
     //console.log("forward", forwardEmployeeData)
   };
+
+  function formatDateMonth(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+
+  const [selectedDataRangeForwardedEmployee, setSelectedDateRangeForwardedEmployee] = useState([]);
+
+  const handleForwardedEmployeeDateRange = (values) => {
+    if (values[1]) {
+      const startDate = values[0].format('MM/DD/YYYY')
+      const endDate = values[1].format('MM/DD/YYYY')
+
+      const filteredDataDateRange = companyDataFilter.filter((product) => {
+        const productDate = formatDateMonth(product.bdeForwardDate);
+        console.log(startDate, endDate, productDate)
+        if (startDate === endDate) {
+          return productDate === startDate;
+        } else if (startDate !== endDate) {
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
+
+        } else {
+          return false;
+        }
+      })
+
+      const filteredTeamLeadsData = teamData2.filter((product) => {
+        const productDate = formatDateMonth(product.bdeForwardDate)
+
+        if (startDate === endDate) {
+          return productDate === startDate;
+        } else if (startDate !== endDate) {
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          )
+        } else {
+          return false;
+        }
+      })
+
+      const newFollowData = completeProjectionDataNew.filter((company) => company.caseType === "Forwarded" || company.caseType === "Recieved")
+      const filtereedFollowData = newFollowData.filter((product) => {
+        const productDate = formatDateFinal(product.date)
+        if (startDate === endDate) {
+          return productDate === startDate
+        } else if (startDate !== endDate) {
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          )
+        } else {
+          return false
+        }
+
+      });
+      setCompleteProjectionData(filtereedFollowData)
+      setCompanyDataTotal(filteredDataDateRange)
+      setTeamLeadsData2(filteredTeamLeadsData)
+    } else {
+      return false;
+    }
+  }
+  const newUniqueNames = [...new Set(employeeDataFilter.map((item)=>item.ename))]
+  const [sortTypeForwardedCases, setSortTypeForwardedCases] = useState({
+    forwardedcases : "ascending"
+  })
+  const handleSortForwardedCases = (newSortType) => {
+    setSortTypeForwardedCases(newSortType);
+  };
+  
+  const sortedForwardedCases = newUniqueNames.slice().sort((a, b) => {
+    if (sortTypeForwardedCases === "ascending") {
+      return companyData.filter((obj) => obj.ename === a).length -
+        companyData.filter((obj) => obj.ename === b).length;
+    } else if (sortTypeForwardedCases === "descending") {
+      return companyData.filter((obj) => obj.ename === b).length -
+        companyData.filter((obj) => obj.ename === a).length;
+    }
+    return 0;
+  });
+
+
 
   // ---------------------------------projection summary function-------------------------------
 
@@ -887,7 +974,7 @@ function BdmDashboard() {
 
   const uniqueEnames = [...new Set(completeProjectionDataToday.map((item) => item.ename))];
 
-  console.log(uniqueEnames, "unique")
+  //console.log(uniqueEnames, "unique")
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
@@ -1571,80 +1658,44 @@ function BdmDashboard() {
                     id="bdeName-search"
                   />
                 </div>
-                {/* <div
-                  style={{ m: 1, padding: "0px" }}
-                  className="filter-booking d-flex align-items-center"
-                >
-                  <div className="filter-main">
-                    <select
-                      className="form-select mt-1"
-                      id={`branch-filter`}
-                      value={selectedValue}
-                      onChange={(e) => {
-                        setSelectedValue(e.target.value)
-                        handleFilterForwardCaseBranchOffice(e.target.value)
-                      }}
+                <div className="data-filter">
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    sx={{
+                      padding: '0px'
+                    }}>
+                    <DemoContainer
+                      components={["SingleInputDateRangeField"]}
                     >
-                      <option value="" disabled selected>
-                        Select Branch
-                      </option>
-
-                      <option value={"Gota"}>Gota</option>
-                      <option value={"Sindhu Bhawan"}>
-                        Sindhu Bhawan
-                      </option>
-                      <option value={"none"}>None</option>
-                    </select>
-                  </div>
-                </div> */}
-                {/* <LocalizationProvider
-                            dateAdapter={AdapterDayjs}
-                            style={{ padding: "0px" }}
-                          >
-                            <DemoContainer
-                              components={["SingleInputDateRangeField"]}
-                            >
-                              <DateRangePicker
-                                onChange={(values) => {
-                                  const startDateEmp = moment(values[0]).format(
-                                    "DD/MM/YYYY"
-                                  );
-                                  const endDateEmp = moment(values[1]).format(
-                                    "DD/MM/YYYY"
-                                  );
-                                  setSelectedDateRangeEmployee([
-                                    startDateEmp,
-                                    endDateEmp,
-                                  ]);
-                                  handleSelectEmployee(values); // Call handleSelect with the selected values
-                                }}
-                                slots={{ field: SingleInputDateRangeField }}
-                                slotProps={{
-                                  shortcuts: {
-                                    items: shortcutsItems,
-                                  },
-                                  actionBar: { actions: [] },
-                                  textField: {
-                                    InputProps: { endAdornment: <Calendar /> },
-                                  },
-                                }}
-                              //calendars={1}
-                              />
-                            </DemoContainer>
-                          </LocalizationProvider> */}
-                {/* <div className="services mt-1 mr-3" style={{ zIndex: "9999" }}>
-                  <Select
-                    isMulti
-                    options={options}
-                    onChange={(selectedOptions) => {
-                      setSelectedValues(selectedOptions.map((option) => option.value));
-                      const selectedEmployeeNames = selectedOptions.map((option) => option.label);
-                      handleSelectForwardedEmployeeData(selectedEmployeeNames);
-                    }}
-                    value={selectedValues.map((value) => ({ value, label: value }))}
-                    placeholder="Select..."
-                  />
-                </div> */}
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDateEmp = moment(values[0]).format(
+                            "DD/MM/YYYY"
+                          );
+                          const endDateEmp = moment(values[1]).format(
+                            "DD/MM/YYYY"
+                          );
+                          setSelectedDateRangeForwardedEmployee([
+                            startDateEmp,
+                            endDateEmp,
+                          ]);
+                          handleForwardedEmployeeDateRange(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: {
+                            InputProps: { endAdornment: <Calendar /> },
+                          },
+                        }}
+                      //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </div>
                 <div className='services'>
                   <FormControl sx={{ m: 1, width: 300 }}>
                     <Select
@@ -1706,7 +1757,43 @@ function BdmDashboard() {
                       </th>
                       <th>BDE/BDM Name</th>
                       <th >Branch Name</th>
-                      <th >Forwarded Cases</th>
+
+                      <th style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortTypeForwardedCases === "ascending") {
+                            newSortType = "descending";
+                          } else if (
+                            sortTypeForwardedCases === "descending"
+                          ) {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortForwardedCases(newSortType);
+                        }}
+                        >
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div>Forwarded Cases</div>
+                          <div className="short-arrow-div">
+                            <ArrowDropUpIcon className="up-short-arrow"
+                              style={{
+                                color:
+                                  sortTypeForwardedCases === "descending"
+                                    ? "black"
+                                    : "#9d8f8f",
+                              }}
+                            />
+                            <ArrowDropDownIcon className="down-short-arrow"
+                              style={{
+                                color:
+                                  sortTypeForwardedCases === "ascending"
+                                    ? "black"
+                                    : "#9d8f8f",
+                              }}
+                            />
+                          </div>
+                        </div></th>
                       <th >Recieved Cases</th>
                       <th >Forwarded Case Projection</th>
                       <th >Recieved Case Projection</th>
