@@ -3262,12 +3262,11 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                           </div>
                           <LocalizationProvider
                             dateAdapter={AdapterDayjs}
-                            sx={{
-                              padding: '0px'
+                           >
+                            <DemoContainer components={["SingleInputDateRangeField"]} sx={{
+                              padding: '0px',
+                              with:'220px'
                             }}>
-                            <DemoContainer
-                              components={["SingleInputDateRangeField"]} className="ddddd"
-                            >
                               <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                 onChange={(values) => {
                                   const startDateEmp = moment(values[0]).format(
@@ -3296,7 +3295,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                               />
                             </DemoContainer>
                           </LocalizationProvider>
-                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
+                          <FormControl sx={{ ml: 1, minWidth: 200 }}>
                             <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                             <Select
                               className="form-control my-date-picker my-mul-select form-control-sm p-0"
@@ -4081,13 +4080,12 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                           </div>
                           <div className="data-filter">
                             <LocalizationProvider
-                              dateAdapter={AdapterDayjs}
-                              sx={{
-                                padding: '0px'
-                              }}>
+                              dateAdapter={AdapterDayjs} >
                               <DemoContainer
-                                components={["SingleInputDateRangeField"]}
-                              >
+                                components={["SingleInputDateRangeField"]} sx={{
+                                  padding: '0px',
+                                  with:'220px'
+                                }}  >
                                 <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
                                     const startDateEmp = moment(values[0]).format(
@@ -4151,32 +4149,34 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                               ))}
                             </Select>
                           </FormControl> */}
-                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
-                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
-                            <Select
-                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
-                              labelId="demo-multiple-name-label"
-                              id="demo-multiple-name" 
-                              multiple
-                              value={personName}
-                              onChange={(event) => {
-                                setPersonName(event.target.value)
-                                handleSelectForwardedEmployeeData(event.target.value)
-                              }}
-                              input={<OutlinedInput label="Name" placeholder="Slect" />}
-                              MenuProps={MenuProps}
-                            >
-                              {options.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
+                          <div>
+                            <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                              <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                              <Select
+                                className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                labelId="demo-multiple-name-label"
+                                id="demo-multiple-name" 
+                                multiple
+                                value={personName}
+                                onChange={(event) => {
+                                  setPersonName(event.target.value)
+                                  handleSelectForwardedEmployeeData(event.target.value)
+                                }}
+                                input={<OutlinedInput label="Name" />}
+                                MenuProps={MenuProps}
+                              >
+                                {options.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, personName, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
                         </div>
                       </div>
                       <div className='card-body'>
@@ -4345,11 +4345,11 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                               id="bdeName-search" />
                           </div>
                           <div className="date-filter">
-                            <LocalizationProvider
-                              dateAdapter={AdapterDayjs}
-                              style={{ padding: "0px" }}
-                            >
-                              <DemoContainer components={["SingleInputDateRangeField"]}>
+                            <LocalizationProvider  dateAdapter={AdapterDayjs}  >
+                              <DemoContainer components={["SingleInputDateRangeField"]} sx={{
+                              padding: '0px',
+                              with:'220px'
+                            }}>
                                 <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
                                     const startDate = moment(values[0]).format(
@@ -4377,8 +4377,10 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                             </LocalizationProvider>
                           </div>
                           <div>
-                            <FormControl sx={{ m: 1, width: 300 }}>
+                            <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                               <Select
+                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
                                 labelId="demo-multiple-name-label"
                                 id="demo-multiple-name"
                                 multiple
