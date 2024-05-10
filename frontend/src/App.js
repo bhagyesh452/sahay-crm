@@ -50,6 +50,7 @@ import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
 import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.jsx";
 import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
+import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
 
 
 
@@ -124,6 +125,7 @@ function App() {
                 path="/datamanager/notification"
                 element={<NotificationDM />}
               ></Route>
+          <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
 
           
           
