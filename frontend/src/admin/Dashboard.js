@@ -436,10 +436,10 @@ function Dashboard() {
   //   setFilteredBooking(filteredDataDateRange);
   // };
 
-  console.log(bookingObject);
+  //console.log(bookingObject);
 
   const handleSelectAnother = (values) => {
-    console.log(values);
+    //console.log(values);
     if (values[1]) {
       const startDate = values[0].format("MM/DD/YYYY");
       const endDate = values[1].format("MM/DD/YYYY");
@@ -669,11 +669,6 @@ function Dashboard() {
 
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-
-    // const { value } = event.target;
-    // setPersonName(value); 
-    //console.log(personName, "peersonName")
-
     const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
     const filteredCompanyData = companyDataFilter.filter(
       (obj) =>
@@ -706,7 +701,7 @@ function Dashboard() {
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
           // If both startDate and endDate are the same, filter for transactions on that day
-          return new Date(productDate) === new Date(startDate);
+          return productDate === startDate;
         } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
           return (
@@ -720,7 +715,7 @@ function Dashboard() {
       const filteredTeamLeadsData = teamLeadsDataFilter.filter((product)=>{
         const productDate = formatDateMonth(product.bdeForwardDate);
         if(startDate === endDate){
-          return new Date(productDate) === new Date(startDate).getDate;
+          return productDate === startDate;
 
         }else if(startDate !== endDate){
           return (
@@ -734,11 +729,11 @@ function Dashboard() {
       
       const  newFollowData = followDataFilter.filter((obj)=> obj.caseType === "Forwarded" || obj.caseType === "Recieved")
       const filteredFollowData = newFollowData.filter((product)=>{
-        console.log(product.date)
+        //console.log(product.date)
         const productDate = formatDateFinal(product.date);
-        console.log(startDate , endDate , productDate)
+        //console.log(startDate , endDate , productDate)
         if(startDate === endDate){
-          return new Date(productDate) === new Date(startDate).getDate;
+          return productDate === startDate;
         }else if(startDate !== endDate){
           return (
             new Date(productDate) >= new Date(startDate) &&
@@ -764,8 +759,8 @@ function Dashboard() {
   const handleSelectProjectionSummary = (selectedEmployeeNames) => {
     const filteredProjectionData = followData.filter((company) => selectedEmployeeNames.includes(company.ename))
     const filteredEmployees = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename))
-    console.log(filteredProjectionData, "projectiondata")
-    console.log(filteredEmployees, "employees")
+    //console.log(filteredProjectionData, "projectiondata")
+    //console.log(filteredEmployees, "employees")
     if (filteredProjectionData.length > 0 || filteredEmployees.length > 0) {
       setfollowDataToday(filteredProjectionData);
       setEmployeeData(filteredEmployees)
@@ -905,7 +900,7 @@ function Dashboard() {
     //console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter((obj) => obj.ename === ename);
-    console.log("projected", projectedData);
+    //console.log("projected", projectedData);
     const projectedDataDateRange = followDataToday.filter(
       (obj) => obj.ename === ename
     );
@@ -920,7 +915,7 @@ function Dashboard() {
   //console.log(projectedEmployee)
   // console.log("Date Range", projectedDataDateRange)
 
-  console.log(projectedDataToday);
+  //console.log(projectedDataToday);
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
@@ -1015,14 +1010,14 @@ function Dashboard() {
 
   //const latestDataForCompanyDateRange = projectedDataDateRange.filter(obj => obj.companyName === viewHistoryCompanyName);
 
-  console.log("HistoryCompanyName", viewHistoryCompanyName);
+  //console.log("HistoryCompanyName", viewHistoryCompanyName);
 
   const closeProjectionHistoryTable = () => {
     setopenProjectionHistoryTable(false);
     setopenProjectionTable(true);
   };
 
-  console.log(historyDataCompany);
+  //console.log(historyDataCompany);
 
   // --------------------------------- date-range-picker-------------------------------------
 
@@ -1225,18 +1220,19 @@ function Dashboard() {
   );
 
   const handleSelectEmployee = (values) => {
-    console.log(values);
+    //console.log(values);
     if (values[1]) {
       const startDate = values[0].format("MM/DD/YYYY");
       const endDate = values[1].format("MM/DD/YYYY");
 
       const filteredDataDateRange = companyDataFilter.filter((product) => {
-        const productDate = new Date(product.AssignDate).setHours(0, 0, 0, 0);
-
+        const productDate = formatDateMonth(product.AssignDate);
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
+          console.log(startDate , endDate , productDate)
+
           // If both startDate and endDate are the same, filter for transactions on that day
-          return new Date(productDate) === new Date(startDate);
+          return productDate === startDate;
         } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
           return (
@@ -1247,6 +1243,8 @@ function Dashboard() {
           return false;
         }
       });
+      console.log(filteredDataDateRange , "fileteredData")
+      console.log(companyData , "companydata")
       setCompanyData(filteredDataDateRange);
     } else {
       return true;
@@ -2304,6 +2302,38 @@ function Dashboard() {
     );
   }
 
+const [dataValue, setDataValue] = useState("")
+
+const handleFilterBranchOfficeDataReport=(branchName)=>{
+  if(branchName === "none"){
+    setEmployeeData(employeeInfo)
+    setCompanyData(companyDataFilter)
+  }else{
+    const filterEmployeeData = employeeDataFilter.filter((obj)=>obj.branchOffice === branchName)
+    setEmployeeData(filterEmployeeData)
+    const filterCompanyData = companyDataFilter.filter((obj)=> employeeInfo.some((empObj)=> empObj.branchOffice === branchName && empObj.ename === obj.ename))
+    setCompanyData(filterCompanyData)
+    //console.log(filterEmployeeData, "employeeData")
+    //console.log(filterCompanyData, "companyData")
+    //toconsole.log(companyData , "newcompanydata")
+  }
+}
+
+const [newName, setNewName] = useState([])
+
+const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
+  const filteredEmployeeData = employeeInfo.filter((obj)=>selectedEmployeeNames.includes(obj.ename))
+  const filterCompanyData = companyDataFilter.filter((obj)=>employeeDataFilter.some((empObj)=>empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename)))
+  
+  if(filteredEmployeeData.length > 0){
+    setEmployeeData(filteredEmployeeData)
+    setCompanyData(filterCompanyData)
+  }else{
+   setEmployeeData(employeeDataFilter)
+   setCompanyData(companyDataFilter)
+  }
+}
+
 
 
   //  ---------------------------------------------status info component-------------------------------------------------
@@ -2385,28 +2415,9 @@ function Dashboard() {
   };
 
   const handleSortExpectedPayment = (newSortType) => {
-    console.log(newSortType);
+    //console.log(newSortType);
     setSortTypeExpectedPayment(newSortType);
   };
-  // const getTotalOfferedPrice = (ename) => {
-  //   return followDataToday.reduce((totalOfferedPrice, partObj) => {
-  //     if (partObj.ename === ename) {
-  //       totalOfferedPrice += partObj.offeredPrize;
-  //     }
-  //     return totalOfferedPrice;
-  //   }, 0);
-  // };
-
-  // // Function to get expected amount for a given ename
-  // const getExpectedAmount = (ename) => {
-  //   return followDataToday.reduce((totalPaymentSum, partObj) => {
-  //     if (partObj.ename === ename) {
-  //       totalPaymentSum += partObj.totalPayment;
-  //     }
-  //     return totalPaymentSum;
-  //   }, 0);
-  // };
-
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
     if (sortTypeProjection === "ascending") {
@@ -2664,11 +2675,11 @@ function Dashboard() {
       totalTargetAmount =
         foundObject &&
         Math.round(totalTargetAmount) + Math.round(foundObject.amount);
-      console.log(
-        "This is total Amount",
-        foundObject && foundObject.amount,
-        totalTargetAmount
-      );
+      // console.log(
+      //   "This is total Amount",
+      //   foundObject && foundObject.amount,
+      //   totalTargetAmount
+      // );
       return foundObject ? foundObject.amount : 0;
     } else {
       return 0;
@@ -2763,6 +2774,8 @@ function Dashboard() {
 
     return finalPayment.toLocaleString();
   }
+
+
 
 
 
@@ -3198,6 +3211,36 @@ function Dashboard() {
                           </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
+                        <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center">
+                              <div className="filter-title mr-1">
+                                <h2 className="m-0">
+                                  Filter Branch :
+                                </h2>
+                              </div>
+                              <div className="filter-main">
+                                <select
+                                  className="form-select"
+                                  id={`branch-filter`}
+                                  value={dataValue}
+                                  onChange={(e) => {
+                                    setDataValue(e.target.value)
+                                    handleFilterBranchOfficeDataReport(e.target.value)
+                                  }}
+                                >
+                                  <option value="" disabled selected>
+                                    Select Branch
+                                  </option>
+
+                                  <option value={"Gota"}>Gota</option>
+                                  <option value={"Sindhu Bhawan"}>
+                                    Sindhu Bhawan
+                                  </option>
+                                  <option value={"none"}>None</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
                           <div class="input-icon mr-1">
                             <span class="input-icon-addon">
                               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -3221,8 +3264,7 @@ function Dashboard() {
                             dateAdapter={AdapterDayjs}
                             sx={{
                               padding: '0px'
-                            }}
-                          >
+                            }}>
                             <DemoContainer
                               components={["SingleInputDateRangeField"]} className="ddddd"
                             >
@@ -3254,6 +3296,32 @@ function Dashboard() {
                               />
                             </DemoContainer>
                           </LocalizationProvider>
+                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
+                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                            <Select
+                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                              labelId="demo-multiple-name-label"
+                              id="demo-multiple-name" 
+                              multiple
+                              value={newName}
+                              onChange={(event) => {
+                                setNewName(event.target.value)
+                                handleSelectEmployeeDataReport(event.target.value)
+                              }}
+                              input={<OutlinedInput label="Name" placeholder="Slect" />}
+                              MenuProps={MenuProps}
+                            >
+                              {options.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name,newName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
                         </div>
                       </div>
                       <div className="card-body">
