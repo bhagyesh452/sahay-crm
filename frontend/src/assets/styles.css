@@ -1858,6 +1858,14 @@ color: #4e884e;
 .admin-dash-tbl {
   border-radius: 10px !important;
 }
+.my-date-picker
+{
+  max-width: 200px !important;
+}
+.admin-dash-tbl .MuiTextField-root
+{
+  max-width: 200px !important;
+}
 .my-date-picker input, .my-date-picker select
 {
   padding: 8px !important;
@@ -1865,14 +1873,19 @@ color: #4e884e;
 }
 #demo-multiple-name
 {
-  padding: 7px !important;
+  padding: 7px 26px 7px 10px !important;
   font-size: 14px;
+}
+#demo-select-small-label
+{
+  font-size: 14px;
+  top: -6px ;
 }
 .my-date-picker fieldset
 {
   border: none;
 }
-#demo-select-small-label.Mui-focused
+#demo-select-small-label.Mui-focused, #demo-select-small-label.MuiFormLabel-filled
 {
   visibility: hidden;
 }
@@ -1914,6 +1927,13 @@ color: #4e884e;
   overflow-y: scroll;
   border-radius: 10px;
 }
+
+.admin-dash-tbl .form-control.my-date-picker.form-control-sm
+{
+  max-width: 200px;
+}
+
+
 /******************** Dashboard End ********************/
 
 .hide-placeholder::-webkit-input-placeholder {
