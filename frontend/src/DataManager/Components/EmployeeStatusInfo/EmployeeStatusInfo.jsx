@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from "./Navbar";
-import Header from "./Header";
+import Navbar from "../../Components//Navbar/Navbar.jsx";
+import Header from "../../Components/Header/Header.jsx";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
-import Nodata from "../components/Nodata";
-import "../assets/styles.css";
-import '../Processing/style_processing/main_processing.css'
+import Nodata from "../../Components/Nodata/Nodata.jsx";
+import "../../../assets/styles.css";
+//import '../Processing/style_processing/main_processing.css'
+import '../../../Processing/style_processing/main_processing.css'
 import debounce from 'lodash/debounce';
 import {
     Button,
@@ -71,7 +72,7 @@ function StausInfo(props) {
 
     const currentData = companies.slice(startIndex, endIndex);
 
-
+    const dataManagerName = localStorage.getItem("dataManagerName")
 
   
 
@@ -79,8 +80,8 @@ function StausInfo(props) {
     return (
 
         <div>
-            <Header />
-            <Navbar />
+            <Header name={dataManagerName} />
+            <Navbar name={dataManagerName} />
             <div className='container-xl mt-2'>
                 <div className='card'>
                     <div className='card-header employeedashboard'>

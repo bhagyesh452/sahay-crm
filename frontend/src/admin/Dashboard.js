@@ -788,53 +788,8 @@ function Dashboard() {
   }, []);
 
   const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
-  const servicesByEname = followData.reduce((acc, curr) => {
-    // Check if ename already exists in the accumulator
-    if (acc[curr.ename]) {
-      // If exists, concatenate the services array
-      acc[curr.ename] = acc[curr.ename].concat(curr.offeredServices);
-    } else {
-      // If not exists, create a new entry with the services array
-      acc[curr.ename] = curr.offeredServices;
-    }
-    return acc;
-  }, []);
 
-  //console.log(servicesByEname)
-
-  const totalservicesByEname = followData.reduce((acc, curr) => {
-    // Concatenate all offeredServices into a single array
-    acc = acc.concat(curr.offeredServices);
-    return acc;
-  }, []);
-
-  //console.log(totalservicesByEname);
-
-  const companiesByEname = followData.reduce((accumulate, current) => {
-    if (accumulate[current.ename]) {
-      if (Array.isArray(accumulate[current.ename])) {
-        accumulate[current.ename].push(current.companyName);
-      } else {
-        accumulate[current.ename] = [
-          accumulate[current.ename],
-          current.companyName,
-        ];
-      }
-    } else {
-      accumulate[current.ename] = current.companyName;
-    }
-    return accumulate;
-  }, []);
-
-  //console.log(companiesByEname)
-
-  const totalcompaniesByEname = followData.reduce((accumulate, current) => {
-    accumulate = accumulate.concat(current.companyName);
-    return accumulate;
-  }, []);
-
-  //console.log(totalcompaniesByEname)
-
+  
   function calculateSum(data) {
     const initialValue = {};
 
