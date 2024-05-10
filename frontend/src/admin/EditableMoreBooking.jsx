@@ -1073,9 +1073,7 @@ export default function EditableMoreBooking({
           }
         });
         // console.log(activeStep, dataToSend);
-      for (const pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
+    
       
         const response = await axios.post(`${secretKey}/update-redesigned-final-form/${companysName}`, formData ,{
           headers: {
