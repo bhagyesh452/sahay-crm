@@ -1872,7 +1872,7 @@ color: #4e884e;
 {
   border: none;
 }
-#demo-select-small-label.Mui-focused
+#demo-select-small-label.Mui-focused, #demo-select-small-label.MuiFormLabel-filled
 {
   visibility: hidden;
 }

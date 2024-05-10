@@ -4085,32 +4085,34 @@ function Dashboard() {
                               ))}
                             </Select>
                           </FormControl> */}
-                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
-                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
-                            <Select
-                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
-                              labelId="demo-multiple-name-label"
-                              id="demo-multiple-name" 
-                              multiple
-                              value={personName}
-                              onChange={(event) => {
-                                setPersonName(event.target.value)
-                                handleSelectForwardedEmployeeData(event.target.value)
-                              }}
-                              input={<OutlinedInput label="Name" placeholder="Slect" />}
-                              MenuProps={MenuProps}
-                            >
-                              {options.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
+                          <div className="ml-1">
+                            <FormControl sx={{ m: 0, minWidth: 100 }}>
+                              <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                              <Select
+                                className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                labelId="demo-multiple-name-label"
+                                id="demo-multiple-name" 
+                                multiple
+                                value={personName}
+                                onChange={(event) => {
+                                  setPersonName(event.target.value)
+                                  handleSelectForwardedEmployeeData(event.target.value)
+                                }}
+                                input={<OutlinedInput label="Name" />}
+                                MenuProps={MenuProps}
+                              >
+                                {options.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, personName, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
                         </div>
                       </div>
                       <div className='card-body'>
