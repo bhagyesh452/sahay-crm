@@ -8648,16 +8648,19 @@ app.post(
       otherDocs,
       paymentReceipt,
       remainingPayments,
-      ...updatedDocs
+      ...boom
     } = req.body;
     const newOtherDocs = req.files["otherDocs"] || [];
     const newPaymentReceipt = req.files["paymentReceipt"] || [];
     const updatedDocWithoutId = {
-      ...updatedDocs,
+      ...boom,
       otherDocs: newOtherDocs,
       paymentReceipt: newPaymentReceipt,
       remainingPayments:[]
     };
+    const updatedDocs = {
+      ...boom , remainingPayments : []
+    }
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
 
