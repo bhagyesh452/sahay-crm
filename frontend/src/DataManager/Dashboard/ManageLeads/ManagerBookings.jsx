@@ -2238,7 +2238,7 @@ function ManagerBookings() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             <span>
-                                              <i>Support By</i>
+                                            <i>{objMain.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                             </span>{" "}
                                             {objMain.bdmName}
                                           </div>

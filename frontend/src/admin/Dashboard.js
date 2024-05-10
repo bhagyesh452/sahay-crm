@@ -712,34 +712,34 @@ function Dashboard() {
           return false;
         }
       });
-      const filteredTeamLeadsData = teamLeadsDataFilter.filter((product)=>{
+      const filteredTeamLeadsData = teamLeadsDataFilter.filter((product) => {
         const productDate = formatDateMonth(product.bdeForwardDate);
-        if(startDate === endDate){
+        if (startDate === endDate) {
           return productDate === startDate;
 
-        }else if(startDate !== endDate){
+        } else if (startDate !== endDate) {
           return (
             new Date(productDate) >= new Date(startDate) &&
             new Date(productDate) <= new Date(endDate)
           );
-        }else{
+        } else {
           return false;
         }
       })
-      
-      const  newFollowData = followDataFilter.filter((obj)=> obj.caseType === "Forwarded" || obj.caseType === "Recieved")
-      const filteredFollowData = newFollowData.filter((product)=>{
+
+      const newFollowData = followDataFilter.filter((obj) => obj.caseType === "Forwarded" || obj.caseType === "Recieved")
+      const filteredFollowData = newFollowData.filter((product) => {
         //console.log(product.date)
         const productDate = formatDateFinal(product.date);
         //console.log(startDate , endDate , productDate)
-        if(startDate === endDate){
+        if (startDate === endDate) {
           return productDate === startDate;
-        }else if(startDate !== endDate){
+        } else if (startDate !== endDate) {
           return (
             new Date(productDate) >= new Date(startDate) &&
             new Date(productDate) <= new Date(endDate)
           );
-        }else{
+        } else {
           return false;
         }
 
@@ -1229,7 +1229,7 @@ function Dashboard() {
         const productDate = formatDateMonth(product.AssignDate);
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
-          console.log(startDate , endDate , productDate)
+          console.log(startDate, endDate, productDate)
 
           // If both startDate and endDate are the same, filter for transactions on that day
           return productDate === startDate;
@@ -1243,8 +1243,8 @@ function Dashboard() {
           return false;
         }
       });
-      console.log(filteredDataDateRange , "fileteredData")
-      console.log(companyData , "companydata")
+      console.log(filteredDataDateRange, "fileteredData")
+      console.log(companyData, "companydata")
       setCompanyData(filteredDataDateRange);
     } else {
       return true;
@@ -2302,37 +2302,37 @@ function Dashboard() {
     );
   }
 
-const [dataValue, setDataValue] = useState("")
+  const [dataValue, setDataValue] = useState("")
 
-const handleFilterBranchOfficeDataReport=(branchName)=>{
-  if(branchName === "none"){
-    setEmployeeData(employeeInfo)
-    setCompanyData(companyDataFilter)
-  }else{
-    const filterEmployeeData = employeeDataFilter.filter((obj)=>obj.branchOffice === branchName)
-    setEmployeeData(filterEmployeeData)
-    const filterCompanyData = companyDataFilter.filter((obj)=> employeeInfo.some((empObj)=> empObj.branchOffice === branchName && empObj.ename === obj.ename))
-    setCompanyData(filterCompanyData)
-    //console.log(filterEmployeeData, "employeeData")
-    //console.log(filterCompanyData, "companyData")
-    //toconsole.log(companyData , "newcompanydata")
+  const handleFilterBranchOfficeDataReport = (branchName) => {
+    if (branchName === "none") {
+      setEmployeeData(employeeInfo)
+      setCompanyData(companyDataFilter)
+    } else {
+      const filterEmployeeData = employeeDataFilter.filter((obj) => obj.branchOffice === branchName)
+      setEmployeeData(filterEmployeeData)
+      const filterCompanyData = companyDataFilter.filter((obj) => employeeInfo.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename))
+      setCompanyData(filterCompanyData)
+      //console.log(filterEmployeeData, "employeeData")
+      //console.log(filterCompanyData, "companyData")
+      //toconsole.log(companyData , "newcompanydata")
+    }
   }
-}
 
-const [newName, setNewName] = useState([])
+  const [newName, setNewName] = useState([])
 
-const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
-  const filteredEmployeeData = employeeInfo.filter((obj)=>selectedEmployeeNames.includes(obj.ename))
-  const filterCompanyData = companyDataFilter.filter((obj)=>employeeDataFilter.some((empObj)=>empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename)))
-  
-  if(filteredEmployeeData.length > 0){
-    setEmployeeData(filteredEmployeeData)
-    setCompanyData(filterCompanyData)
-  }else{
-   setEmployeeData(employeeDataFilter)
-   setCompanyData(companyDataFilter)
+  const handleSelectEmployeeDataReport = (selectedEmployeeNames) => {
+    const filteredEmployeeData = employeeInfo.filter((obj) => selectedEmployeeNames.includes(obj.ename))
+    const filterCompanyData = companyDataFilter.filter((obj) => employeeDataFilter.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename)))
+
+    if (filteredEmployeeData.length > 0) {
+      setEmployeeData(filteredEmployeeData)
+      setCompanyData(filterCompanyData)
+    } else {
+      setEmployeeData(employeeDataFilter)
+      setCompanyData(companyDataFilter)
+    }
   }
-}
 
 
 
@@ -2587,7 +2587,29 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
       (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
 
-    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+    const moreFilteredData = filteredRedesignedData.filter(obj => {
+      const objMonth = monthNames[new Date(obj.bookingDate).getMonth()];
+      if (objMonth === currentMonth) {
+        return true; // Include objects with bookingDate of currentMonth
+      } else {
+        // Check if any object in moreBookings has bookingDate of currentMonth
+        obj.moreBookings.map((moreBookingObj) => {
+          if (monthNames[new Date(moreBookingObj.bookingDate).getMonth()] === currentMonth) {
+            if (moreBookingObj.bdeName === bdeName || moreBookingObj.bdmName === bdeName) {
+             
+              if (moreBookingObj.bdeName !== moreBookingObj.bdmName && moreBookingObj.bdmType === "Close-by") {
+                maturedCount = maturedCount + 0.5
+                return false;
+              } else  {
+                maturedCount = maturedCount + 1
+                return false
+              }
+            }
+          }
+        })
+      }
+    });
+
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -2624,24 +2646,87 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
 
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
+    let remainingAmount = 0;
     const filteredRedesignedData = redesignedData.filter(
       (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
+    const remainingData = filteredRedesignedData.filter(obj => obj.remainingPayments.lenth !== 0 && obj.remainingPayments.some(moreobj => monthNames[new Date(moreobj.paymentDate).getMonth()] === currentMonth));
 
-    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+    remainingData.length !== 0 && remainingData.forEach((obj) => {
+      obj.remainingPayments.forEach((booking) => {
+        if (monthNames[new Date(booking.paymentDate).getMonth()] === currentMonth) {
+          const findService = obj.services.find((services) => services.serviceName === booking.serviceName)
+          const tempAmount = findService.withGST ? Math.round(booking.receivedPayment) / 1.18 : Math.round(booking.receivedPayment);
+          remainingAmount = obj.bdeName === obj.bdmName ? remainingAmount + tempAmount : remainingAmount + tempAmount / 2
+        }
+      })
+    })
+
+    const moreFilteredData = filteredRedesignedData.filter(obj => {
+      const objMonth = monthNames[new Date(obj.bookingDate).getMonth()];
+      if (objMonth === currentMonth) {
+        return true; // Include objects with bookingDate of currentMonth
+      } else {
+        // Check if any object in moreBookings has bookingDate of currentMonth
+        obj.moreBookings.map((moreBookingObj) => {
+          if (monthNames[new Date(moreBookingObj.bookingDate).getMonth()] === currentMonth) {
+            if (moreBookingObj.bdeName === bdeName || moreBookingObj.bdmName === bdeName) {
+              if (moreBookingObj.remainingPayments.length !== 0) {
+                moreBookingObj.remainingPayments.map((remainingObj) => {
+                  if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth) {
+
+                    const reqService = moreBookingObj.services.find(serv => serv.serviceName === remainingObj.serviceName);
+                    if (reqService.service.withGST) {
+                      if (moreBookingObj.bdeName === moreBookingObj.bdmName) {
+                        console.log(bdeName ,"ka lafda" )
+                        remainingAmount = remainingAmount + parseInt(remainingObj.receivedPayment) / 1.18
+                      } else {
+                        console.log(bdeName ,"ka lafda" )
+                        remainingAmount = remainingAmount + (parseInt(remainingObj.receivedPayment) / 1.18) / 2
+                      }
+                    } else {
+                      if (moreBookingObj.bdeName === moreBookingObj.bdmName) {
+                        remainingAmount = remainingAmount + parseInt(remainingObj.receivedPayment)
+                      } else {
+                        remainingAmount = remainingAmount + (parseInt(remainingObj.receivedPayment) / 2)
+                      }
+                    }
+
+                  }
+                })
+              }
+              if (moreBookingObj.bdeName !== moreBookingObj.bdmName && moreBookingObj.bdmType === "Close-by") {
+                achievedAmount = achievedAmount + Math.round(moreBookingObj.generatedReceivedAmount) / 2;
+                console.log(bdeName ,"ka lafda" , moreBookingObj )
+                return false;
+              } else {
+               
+                achievedAmount = achievedAmount + Math.round(moreBookingObj.generatedReceivedAmount);
+                console.log(bdeName ,"ka lafda" )
+                return false
+              }
+            }
+          }
+        })
+      }
+    });
 
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          console.log(bdeName ,"ka lafda" )
           achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
+          console.log(bdeName ,"ka lafda" )
           achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
           if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+            console.log(bdeName ,"ka lafda" )
             achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
           } else {
+            console.log(bdeName ,"ka lafda" )
             achievedAmount += Math.round(obj.generatedReceivedAmount);
           }
         }
@@ -2651,17 +2736,22 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
               booking.bdeName !== booking.bdmName &&
               booking.bdmType === "Close-by"
             ) {
+              console.log(bdeName ,"ka lafda" )
               achievedAmount += Math.round(booking.generatedReceivedAmount / 2);
             } else {
+              console.log(bdeName ,"ka lafda" )
               achievedAmount += Math.round(booking.generatedReceivedAmount);
             }
           }
         });
       }
     });
+
+
     totalAchievedAmount =
-      Math.round(totalAchievedAmount) + Math.round(achievedAmount);
-    return achievedAmount;
+      Math.round(totalAchievedAmount) + Math.round(achievedAmount) + Math.round(remainingAmount);
+
+    return achievedAmount + Math.round(remainingAmount);
   };
 
 
@@ -3211,7 +3301,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                           </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
-                        <div className="filter-booking d-flex align-items-center">
+                          <div className="filter-booking d-flex align-items-center">
                             <div className="filter-booking mr-1 d-flex align-items-center">
                               <div className="filter-title mr-1">
                                 <h2 className="m-0">
@@ -3296,12 +3386,12 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                               />
                             </DemoContainer>
                           </LocalizationProvider>
-                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
+                          <FormControl sx={{ m: 0, minWidth: 200 }} size="small">
                             <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                             <Select
                               className="form-control my-date-picker my-mul-select form-control-sm p-0"
                               labelId="demo-multiple-name-label"
-                              id="demo-multiple-name" 
+                              id="demo-multiple-name"
                               multiple
                               value={newName}
                               onChange={(event) => {
@@ -3315,7 +3405,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                                 <MenuItem
                                   key={name}
                                   value={name}
-                                  style={getStyles(name,newName, theme)}
+                                  style={getStyles(name, newName, theme)}
                                 >
                                   {name}
                                 </MenuItem>
@@ -4151,12 +4241,12 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                               ))}
                             </Select>
                           </FormControl> */}
-                          <FormControl sx={{ m: 0, minWidth: 200 }}  size="small">
+                          <FormControl sx={{ m: 0, minWidth: 200 }} size="small">
                             <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                             <Select
                               className="form-control my-date-picker my-mul-select form-control-sm p-0"
                               labelId="demo-multiple-name-label"
-                              id="demo-multiple-name" 
+                              id="demo-multiple-name"
                               multiple
                               value={personName}
                               onChange={(event) => {
