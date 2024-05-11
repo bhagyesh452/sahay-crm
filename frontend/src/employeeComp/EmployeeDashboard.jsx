@@ -1573,8 +1573,8 @@ function EmployeeDashboard() {
       const bookingsData = response.data;
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
-      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
+      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -1592,42 +1592,107 @@ function EmployeeDashboard() {
 
     let maturedCount = 0;
     const today = new Date();
+  
+    redesignedData.map((mainBooking)=>{
+      if(istrue){
+        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            maturedCount = maturedCount + 1
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+            maturedCount = maturedCount + 0.5;
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+            if(mainBooking.bdeName === data.ename){
+              maturedCount = maturedCount + 1;
+            }
+          }
+      }
+        mainBooking.moreBookings.map((moreObject)=>{
+          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+              if(moreObject.bdeName === moreObject.bdmName){
+                maturedCount = maturedCount + 1;
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                maturedCount = maturedCount + 0.5
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                if(moreObject.bdeName === data.ename){
+                  maturedCount = maturedCount + 1;
+                }
+              }
+         
+          }
+        })
+
+      }else{
+        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
+         
+            if(mainBooking.bdeName === mainBooking.bdmName){
+              maturedCount = maturedCount + 1
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+              maturedCount = maturedCount + 0.5;
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+              if(mainBooking.bdeName === data.ename){
+                maturedCount = maturedCount + 1;
+              }
+            }
+        }
+          mainBooking.moreBookings.map((moreObject)=>{
+            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
+           
+                if(moreObject.bdeName === moreObject.bdmName){
+                  maturedCount = maturedCount + 1;
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                  maturedCount = maturedCount + 0.5
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                  if(moreObject.bdeName === data.ename){
+                    maturedCount = maturedCount + 1;
+                  }
+                }
+           
+            }
+          })
+      }
+     
+   
+      
+      
+    })
 
     // Set hours, minutes, and seconds to zero
-    const todayData = istrue
-      ? redesignedData.filter(
-        (obj) => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()
-      )
-      : redesignedData.filter(
-        (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
-      );
+    // const todayData = istrue
+    //   ? redesignedData.filter(
+    //     (obj) => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()
+    //   )
+    //   : redesignedData.filter(
+    //     (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+    //   );
 
-    todayData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          maturedCount += 0.5;
-        } else {
-          maturedCount += 1;
-        }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          maturedCount += 0.5;
-        } else {
-          maturedCount += 1;
-        }
+    // todayData.forEach((obj) => {
+    //   if (obj.moreBookings.length === 0) {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       maturedCount += 0.5;
+    //     } else {
+    //       maturedCount += 1;
+    //     }
+    //   } else {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       maturedCount += 0.5;
+    //     } else {
+    //       maturedCount += 1;
+    //     }
 
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            maturedCount += 0.5;
-          } else {
-            maturedCount += 1;
-          }
-        });
-      }
-    });
+    //     obj.moreBookings.forEach((booking) => {
+    //       if (
+    //         booking.bdeName !== booking.bdmName &&
+    //         booking.bdmType === "Close-by"
+    //       ) {
+    //         maturedCount += 0.5;
+    //       } else {
+    //         maturedCount += 1;
+    //       }
+    //     });
+    //   }
+    // });
     totalMaturedCount = totalMaturedCount + maturedCount;
     return maturedCount;
   };
@@ -1669,108 +1734,330 @@ function EmployeeDashboard() {
   };
   const functionCalculateAchievedRevenue = (istrue) => {
     let achievedAmount = 0;
+    let remainingAmount = 0;
     const today = new Date();
-    // Set hours, minutes, and seconds to zero
-    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData.filter(
-      (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
-    );
-
-    todayData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.generatedReceivedAmount);
-        }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.generatedReceivedAmount);
-        }
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
-          } else {
-            achievedAmount += Math.round(obj.generatedReceivedAmount);
+  
+    redesignedData.map((mainBooking)=>{
+      if(istrue){
+        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+            if(mainBooking.bdeName === data.ename){
+              achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+            }
           }
-        });
+        }else if(mainBooking.remainingPayments.length !== 0){
+          mainBooking.remainingPayments.map((remainingObj)=>{
+            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+              if(mainBooking.bdeName === mainBooking.bdmName){
+                  remainingAmount += Math.round(tempAmount);
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+                remainingAmount += Math.round(tempAmount)/2;
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+                if(mainBooking.bdeName === data.ename){
+                  remainingAmount += Math.round(tempAmount);
+                }
+              }         
+            }
+          })
+        }
+        mainBooking.moreBookings.map((moreObject)=>{
+          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+              if(moreObject.bdeName === moreObject.bdmName){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                if(moreObject.bdeName === data.ename){
+                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                }
+              }
+         
+          }else if(moreObject.remainingPayments.length!==0){
+           
+            moreObject.remainingPayments.map((remainingObj)=>{
+              if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+                
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if(moreObject.bdeName === moreObject.bdmName){
+                    remainingAmount += Math.round(tempAmount);
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                  remainingAmount += Math.round(tempAmount)/2;
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                  if(moreObject.bdeName === data.ename){
+                    remainingAmount += Math.round(tempAmount);
+                  }
+                }         
+              }
+            })
+          }
+        })
+
+      }else{
+        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
+         
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+            if(mainBooking.bdeName === data.ename){
+              achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+            }
+          }
+        }else if(mainBooking.remainingPayments.length !== 0){
+          mainBooking.remainingPayments.map((remainingObj)=>{
+            if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+              if(mainBooking.bdeName === mainBooking.bdmName){
+                  remainingAmount += Math.round(tempAmount);
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+                remainingAmount += Math.round(tempAmount)/2;
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+                if(mainBooking.bdeName === data.ename){
+                  remainingAmount += Math.round(tempAmount);
+                }
+              }         
+            }
+          })
+        }
+          mainBooking.moreBookings.map((moreObject)=>{
+            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
+           
+              if(moreObject.bdeName === moreObject.bdmName){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                if(moreObject.bdeName === data.ename){
+                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                }
+              }
+           
+            }else if(moreObject.remainingPayments.length!==0){
+           
+              moreObject.remainingPayments.map((remainingObj)=>{
+                if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+                  
+                  const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                  const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                  if(moreObject.bdeName === moreObject.bdmName){
+                      remainingAmount += Math.round(tempAmount);
+                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                    remainingAmount += Math.round(tempAmount)/2;
+                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                    if(moreObject.bdeName === data.ename){
+                      remainingAmount += Math.round(tempAmount);
+                    }
+                  }         
+                }
+              })
+            }
+          })
       }
-    });
-    return achievedAmount;
+     
+   
+      
+      
+    })
+    // const today = new Date();
+    // // Set hours, minutes, and seconds to zero
+    // const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData.filter(
+    //   (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+    // );
+
+    // todayData.forEach((obj) => {
+    //   if (obj.moreBookings.length === 0) {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+    //     } else {
+    //       achievedAmount += Math.round(obj.generatedReceivedAmount);
+    //     }
+    //   } else {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+    //     } else {
+    //       achievedAmount += Math.round(obj.generatedReceivedAmount);
+    //     }
+    //     obj.moreBookings.forEach((booking) => {
+    //       if (
+    //         booking.bdeName !== booking.bdmName &&
+    //         booking.bdmType === "Close-by"
+    //       ) {
+    //         achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+    //       } else {
+    //         achievedAmount += Math.round(obj.generatedReceivedAmount);
+    //       }
+    //     });
+    //   }
+    // });
+    return achievedAmount + Math.round(remainingAmount);
 };
 
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
+    let remainingAmount = 0;
     const boom = new Date();
     const today = new Date(boom);
     today.setDate(boom.getDate() - 1);
 
-    // Set hours, minutes, and seconds to zero
-    const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString());
 
-    todayData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.receivedAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.receivedAmount);
-        }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.receivedAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.receivedAmount);
-        }
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            achievedAmount += Math.round(obj.receivedAmount / 2);
-          } else {
-            achievedAmount += Math.round(obj.receivedAmount);
+    // Set hours, minutes, and seconds to zero
+    redesignedData.map((mainBooking)=>{
+      if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+        if(mainBooking.bdeName === mainBooking.bdmName){
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+          if(mainBooking.bdeName === data.ename){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           }
-        });
+        }
+      }else if(mainBooking.remainingPayments.length !== 0){
+        mainBooking.remainingPayments.map((remainingObj)=>{
+          if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+            if(mainBooking.bdeName === mainBooking.bdmName){
+                remainingAmount += Math.round(tempAmount);
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+              remainingAmount += Math.round(tempAmount)/2;
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+              if(mainBooking.bdeName === data.ename){
+                remainingAmount += Math.round(tempAmount);
+              }
+            }         
+          }
+        })
       }
-    });
-    return achievedAmount
+      mainBooking.moreBookings.map((moreObject)=>{
+        if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
+       
+            if(moreObject.bdeName === moreObject.bdmName){
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+              if(moreObject.bdeName === data.ename){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              }
+            }
+       
+        }else if(moreObject.remainingPayments.length!==0){
+         
+          moreObject.remainingPayments.map((remainingObj)=>{
+            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+              
+              const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+              if(moreObject.bdeName === moreObject.bdmName){
+                  remainingAmount += Math.round(tempAmount);
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                remainingAmount += Math.round(tempAmount)/2;
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                if(moreObject.bdeName === data.ename){
+                  remainingAmount += Math.round(tempAmount);
+                }
+              }         
+            }
+          })
+        }
+      })
+    })
+    
+    // const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString());
+
+    // todayData.forEach((obj) => {
+    //   if (obj.moreBookings.length === 0) {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       achievedAmount += Math.round(obj.receivedAmount / 2);
+    //     } else {
+    //       achievedAmount += Math.round(obj.receivedAmount);
+    //     }
+    //   } else {
+    //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+    //       achievedAmount += Math.round(obj.receivedAmount / 2);
+    //     } else {
+    //       achievedAmount += Math.round(obj.receivedAmount);
+    //     }
+    //     obj.moreBookings.forEach((booking) => {
+    //       if (
+    //         booking.bdeName !== booking.bdmName &&
+    //         booking.bdmType === "Close-by"
+    //       ) {
+    //         achievedAmount += Math.round(obj.receivedAmount / 2);
+    //       } else {
+    //         achievedAmount += Math.round(obj.receivedAmount);
+    //       }
+    //     });
+    //   }
+    // });
+    return achievedAmount + Math.round(remainingAmount)
   };
-  const functionCalculatePendingRevenue = (istrue) => {
-    let achievedAmount = 0;
+  const functionCalculatePendingRevenue = () => {
+    
+    let remainingAmount = 0;
     const today = new Date();
-    // Set hours, minutes, and seconds to zero
-    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData;
-
-    todayData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.pendingAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.pendingAmount);
+  
+    redesignedData.map((mainBooking)=>{
+      
+        if(mainBooking.remainingPayments.length !== 0){
+          mainBooking.remainingPayments.map((remainingObj)=>{
+            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+              if(mainBooking.bdeName === mainBooking.bdmName){
+                  remainingAmount += Math.round(tempAmount);
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+                remainingAmount += Math.round(tempAmount)/2;
+              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+                if(mainBooking.bdeName === data.ename){
+                  remainingAmount += Math.round(tempAmount);
+                }
+              }         
+            }
+          })
         }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += Math.round(obj.pendingAmount / 2);
-        } else {
-          achievedAmount += Math.round(obj.pendingAmount);
-        }
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            achievedAmount += Math.round(obj.pendingAmount / 2);
-          } else {
-            achievedAmount += Math.round(obj.pendingAmount);
+        mainBooking.moreBookings.map((moreObject)=>{
+           if(moreObject.remainingPayments.length!==0){
+           
+            moreObject.remainingPayments.map((remainingObj)=>{
+              if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+                
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if(moreObject.bdeName === moreObject.bdmName){
+                    remainingAmount += Math.round(tempAmount);
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                  remainingAmount += Math.round(tempAmount)/2;
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                  if(moreObject.bdeName === data.ename){
+                    remainingAmount += Math.round(tempAmount);
+                  }
+                }         
+              }
+            })
           }
-        });
-      }
-    });
-    return achievedAmount
+        })
+
+      
+     
+   
+      
+      
+    })
+    return remainingAmount
 
   };
 
@@ -1843,39 +2130,62 @@ function EmployeeDashboard() {
 
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
+    let tempBookingDate = null;
+    // Filter objects based on bdeName
+    redesignedData.map((mainBooking)=>{
+     
+      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
+  
+          const bookingDate = new Date(mainBooking.bookingDate);
+         tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+        
+      }
+        mainBooking.moreBookings.map((moreObject)=>{
+          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
+           
+              const bookingDate = new Date(moreObject.bookingDate);
+              tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+            
+          }
+        })
+      
+      
+    })
+    return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
+
 
 
     // Initialize variable to store the latest booking date
-    let lastBookingDate = null;
-    const finalData = redesignedData.filter((obj) => (monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth))
+    // let lastBookingDate = null;
+    // const finalData = redesignedData.filter((obj) => (monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth))
 
-    // Iterate through filtered data
-    finalData.forEach((obj) => {
-      if (obj.moreBookings && obj.moreBookings.length > 0) {
-        // If moreBookings exist, find the latest bookingDate
-        const latestBookingDate = obj.moreBookings.reduce(
-          (latestDate, booking) => {
-            const bookingDate = new Date(booking.bookingDate);
-            return bookingDate > latestDate ? bookingDate : latestDate;
-          },
-          new Date(0)
-        ); // Initialize with minimum date
+    // // Iterate through filtered data
+    // finalData.forEach((obj) => {
+    //   if (obj.moreBookings && obj.moreBookings.length > 0) {
+    //     // If moreBookings exist, find the latest bookingDate
+    //     const latestBookingDate = obj.moreBookings.reduce(
+    //       (latestDate, booking) => {
+    //         const bookingDate = new Date(booking.bookingDate);
+    //         return bookingDate > latestDate ? bookingDate : latestDate;
+    //       },
+    //       new Date(0)
+    //     ); // Initialize with minimum date
 
-        // Update lastBookingDate if latestBookingDate is later
-        if (latestBookingDate > lastBookingDate || !lastBookingDate) {
-          lastBookingDate = latestBookingDate;
-        }
-      } else {
-        // If no moreBookings, directly consider bookingDate
-        const bookingDate = new Date(obj.bookingDate);
-        if (bookingDate > lastBookingDate || !lastBookingDate) {
-          lastBookingDate = bookingDate;
-        }
-      }
-    });
+    //     // Update lastBookingDate if latestBookingDate is later
+    //     if (latestBookingDate > lastBookingDate || !lastBookingDate) {
+    //       lastBookingDate = latestBookingDate;
+    //     }
+    //   } else {
+    //     // If no moreBookings, directly consider bookingDate
+    //     const bookingDate = new Date(obj.bookingDate);
+    //     if (bookingDate > lastBookingDate || !lastBookingDate) {
+    //       lastBookingDate = bookingDate;
+    //     }
+    //   }
+    // });
 
-    // Return the formatted date string or an empty string if lastBookingDate is null
-    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+    // // Return the formatted date string or an empty string if lastBookingDate is null
+    // return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
   }
 
   const functionGetAmount = () => {
@@ -2313,10 +2623,10 @@ function EmployeeDashboard() {
                     <div className="d-flex align-items-center justify-content-between">
                       <div>
                         <div className="d-flex justify-content-between align-items-center">
-                          <div className="dash-card-1-head2">REMAINING PAYMENT</div>
+                          <div className="dash-card-1-head2">REMAINING COLLECTED</div>
                         </div>
                         <div className="dash-card-1-num clr-ffb900" >
-                          ₹ {functionCalculatePendingRevenue(true).toLocaleString()}
+                          ₹ {functionCalculatePendingRevenue().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
