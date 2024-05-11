@@ -2625,7 +2625,7 @@ function EmployeeDashboard() {
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">REMAINING COLLECTED</div>
                         </div>
-                        <div className="dash-card-1-num clr-ffb900" >
+                        <div className="dash-card-1-num clr-ffb900">
                           ₹ {functionCalculatePendingRevenue().toLocaleString()}
                         </div>
                       </div>

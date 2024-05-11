@@ -8789,7 +8789,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
-      const currentDate = new Date();
+      
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8800,7 +8800,7 @@ app.post(
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
         withGST: objectData.withGST,
-        paymentDate:currentDate
+        paymentDate:objectData.paymentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
@@ -8900,7 +8900,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
-      const currentDate = new Date();
+      
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8911,7 +8911,7 @@ app.post(
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
         withGST:objectData.withGST,
-        paymentDate:currentDate
+        paymentDate:objectData.paymentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 

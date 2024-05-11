@@ -406,6 +406,7 @@ function ManagerBookings() {
   formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
   formData.append("withGST", remainingObject.withGST);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
+  formData.append("paymentDate" , remainingObject["paymentDate"])
   const handleSubmitMorePayments = async () => {
     if (!remainingObject.paymentDate || !remainingObject.paymentMethod) {
       Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
