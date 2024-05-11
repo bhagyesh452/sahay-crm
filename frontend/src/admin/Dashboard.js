@@ -769,7 +769,7 @@ function Dashboard() {
   });
 
   const handleSortForwardedCases = (sortByForwarded) => {
-    console.log(sortByForwarded, "case");
+    //console.log(sortByForwarded, "case");
     setNewSortType((prevData) => ({
       ...prevData,
       forwardedcase:
@@ -891,7 +891,7 @@ function Dashboard() {
     }));
     switch (sortByForwarded) {
       case 'ascending':
-        console.log("ascending")
+        //console.log("ascending")
         const enameTotalPaymentsAscending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved' || company.caseType === 'Forwarded') {
@@ -927,7 +927,7 @@ function Dashboard() {
 
         break;
       case 'descending':
-        console.log('descendi')
+        //console.log('descendi')
         const enameTotalPaymentsDescending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved' || company.caseType === 'Forwarded') {
@@ -963,7 +963,7 @@ function Dashboard() {
 
         break;
       case 'none':
-        console.log('none')
+        //console.log('none')
         if (finalEmployeeData.length > 0) {
           setForwardEmployeeData(finalEmployeeData);
         }
@@ -990,7 +990,7 @@ function Dashboard() {
         const enameTotalPaymentsAscending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsAscending[ename]) {
               enameTotalPaymentsAscending[ename] = 0;
             }
@@ -1004,7 +1004,7 @@ function Dashboard() {
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataAscending = sortedEnameArrayAscending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
@@ -1026,7 +1026,7 @@ function Dashboard() {
         const enameTotalPaymentsDescending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsDescending[ename]) {
               enameTotalPaymentsDescending[ename] = 0;
             }
@@ -1040,7 +1040,7 @@ function Dashboard() {
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataDescending = sortedEnameArrayDescending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
@@ -1067,6 +1067,64 @@ function Dashboard() {
         break;
     }
   };
+
+  const handleSortMaturedCases=(sortTypeForwarded)=>{
+    setNewSortType((prevData) => ({
+      ...prevData,
+      maturedcase:
+        prevData.maturedcase === 'ascending'
+          ? 'descending'
+          : prevData.maturedcase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+    switch(sortTypeForwarded){
+      case 'ascending':
+        console.log("yahan chala ascedning")
+        const companyDataAscending = {};
+        companyDataTotal.forEach((company)=>{
+          if(company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured'){
+            companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
+          }
+        })
+        forwardEmployeeData.sort((a,b)=>{
+          const A = companyDataAscending[a.ename] || 0;
+          const B = companyDataAscending[b.ename] || 0;
+          return A-B;
+        });
+        break;
+        case 'descending':
+        console.log("yahan chala descending");
+        const companyDataDescending = {};
+        companyDataTotal.forEach((company) => {
+          if (company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured') {
+            companyDataDescending[company.ename] = (companyDataDescending[company.ename] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataDescending[a.ename] || 0;
+          const countB = companyDataDescending[b.ename] || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+
+      default:
+        break;
+
+    }
+
+
+  }
+
+ 
 
 
 
@@ -4810,6 +4868,7 @@ function Dashboard() {
                                     ...prevData,
                                     maturedcase: updatedSortType,
                                   }));
+                                  handleSortMaturedCases(updatedSortType)
                                 }}><div className="d-flex align-items-center justify-content-between">
                                 <div>Matured Case</div>
                                 <div className="short-arrow-div">

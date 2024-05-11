@@ -4756,7 +4756,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
         const enameTotalPaymentsAscending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsAscending[ename]) {
               enameTotalPaymentsAscending[ename] = 0;
             }
@@ -4770,7 +4770,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataAscending = sortedEnameArrayAscending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
@@ -4792,7 +4792,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
         const enameTotalPaymentsDescending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsDescending[ename]) {
               enameTotalPaymentsDescending[ename] = 0;
             }
@@ -4806,7 +4806,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataDescending = sortedEnameArrayDescending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
