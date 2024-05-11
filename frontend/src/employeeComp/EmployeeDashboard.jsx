@@ -1750,22 +1750,6 @@ function EmployeeDashboard() {
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
             }
           }
-        }else if(mainBooking.remainingPayments.length !== 0){
-          mainBooking.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(mainBooking.bdeName === mainBooking.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-                if(mainBooking.bdeName === data.ename){
-                  remainingAmount += Math.round(tempAmount);
-                }
-              }         
-            }
-          })
         }
         mainBooking.moreBookings.map((moreObject)=>{
           if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
@@ -1780,24 +1764,6 @@ function EmployeeDashboard() {
                 }
               }
          
-          }else if(moreObject.remainingPayments.length!==0){
-           
-            moreObject.remainingPayments.map((remainingObj)=>{
-              if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-                
-                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                if(moreObject.bdeName === moreObject.bdmName){
-                    remainingAmount += Math.round(tempAmount);
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  remainingAmount += Math.round(tempAmount)/2;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === data.ename){
-                    remainingAmount += Math.round(tempAmount);
-                  }
-                }         
-              }
-            })
           }
         })
 
