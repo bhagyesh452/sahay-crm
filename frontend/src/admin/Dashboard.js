@@ -154,6 +154,7 @@ function Dashboard() {
   const [forwardEmployeeData, setForwardEmployeeData] = useState([])
   const [forwardEmployeeDataFilter, setForwardEmployeeDataFilter] = useState([])
   const [forwardEmployeeDataNew, setForwardEmployeeDataNew] = useState([])
+  const [employeeDataProjectionSummary, setEmployeeDataProjectionSummary] = useState([])
 
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
@@ -165,6 +166,7 @@ function Dashboard() {
         setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
@@ -528,17 +530,11 @@ function Dashboard() {
     }
   };
 
-
-
-
-
   const handleFilterBranchOffice = (branchName) => {
     // Filter the followdataToday array based on branchName
     if (branchName === "none") {
-
-
       setfollowDataToday(followData);
-      setEmployeeData(employeeDataFilter)
+      setEmployeeDataProjectionSummary(employeeDataFilter)
 
     } else {
       //console.log("yahan chala")
@@ -550,11 +546,15 @@ function Dashboard() {
 
 
       setfollowDataToday(filteredFollowData);
-      setEmployeeData(filteredemployeedata)
+      setEmployeeDataProjectionSummary(filteredemployeedata)
 
       //console.log(filteredemployeedata)
     }
   };
+
+  //console.log(employeeData, "employee")
+
+  // --------------------------------------------------------branch office filter forwarded case-------------------------------------------
 
   const [selectedValue, setSelectedValue] = useState("")
 
@@ -752,6 +752,329 @@ function Dashboard() {
     }
   };
 
+  // ------------------------------sorting function employees forwardede data report----------------------------------
+
+  const [finalEmployeeData, setFinalEmployeeData] = useState([])
+  // const [sortTypeForwardedCases, setSortTypeForwardedCases] = useState({
+  //   forwardedcases: "ascending"
+  // })
+
+  const [newSortType, setNewSortType] = useState({
+    forwardedcase: "none",
+    recievedcase: "none",
+    maturedcase: "none",
+    forwardedprojectioncase: "none",
+    generatedrevenue: "none",
+    recievedprojectioncase: "none",
+  });
+
+  const handleSortForwardedCases = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+      ...prevData,
+      forwardedcase:
+        prevData.forwardedcase === 'ascending'
+          ? 'descending'
+          : prevData.forwardedcase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+      case 'ascending':
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
+        companyDataTotal.forEach((company) => {
+          if (company.bdmAcceptStatus === 'Pending' || company.bdmAcceptStatus === 'Accept') {
+            companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataAscending[a.ename] || 0;
+          const countB = companyDataAscending[b.ename] || 0;
+          return countA - countB;
+        });
+        break; // Add break statement here
+
+      case 'descending':
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
+        companyDataTotal.forEach((company) => {
+          if (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === 'Accept') {
+            companyDataDescending[company.ename] = (companyDataDescending[company.ename] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataDescending[a.ename] || 0;
+          const countB = companyDataDescending[b.ename] || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        //console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+
+      default:
+        break;
+    }
+  };
+  const handleSortRecievedCase = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+      ...prevData,
+      recievedcase:
+        prevData.recievedcase === 'ascending'
+          ? 'descending'
+          : prevData.recievedcase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+      case 'ascending':
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
+        teamLeadsData.forEach((company) => {
+          if (company.bdmName) {
+            companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataAscending[a.ename] || 0;
+          const countB = companyDataAscending[b.ename] || 0;
+          return countA - countB;
+        });
+        break; // Add break statement here
+
+      case 'descending':
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
+        teamLeadsData.forEach((company) => {
+          if (company.bdmName) {
+            companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataDescending[a.ename] || 0;
+          const countB = companyDataDescending[b.ename] || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        //console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+      default:
+        break;
+    }
+  };
+
+  const handleSortForwardedProjectionCase = (sortByForwarded) => {
+    // Sort the followData array based on totalPayment for each ename
+    setNewSortType((prevData) => ({
+      ...prevData,
+      forwardedprojectioncase:
+        prevData.forwardedprojectioncase === 'ascending'
+          ? 'descending'
+          : prevData.forwardedprojectioncase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+    switch (sortByForwarded) {
+      case 'ascending':
+        console.log("ascending")
+        const enameTotalPaymentsAscending = {};
+        followData.forEach((company) => {
+          if (company.caseType === 'Recieved' || company.caseType === 'Forwarded') {
+            const ename = company.ename;
+            if (!enameTotalPaymentsAscending[ename]) {
+              enameTotalPaymentsAscending[ename] = 0;
+            }
+            enameTotalPaymentsAscending[ename] += company.totalPayment;
+          }
+        });
+
+        const sortedEnameArrayAscending = Object.keys(enameTotalPaymentsAscending).sort((a, b) => {
+          return enameTotalPaymentsAscending[a] - enameTotalPaymentsAscending[b];
+        });
+
+        // Rearrange followData based on sortedEnameArray
+        const sortedFollowDataAscending = sortedEnameArrayAscending.flatMap((ename) => {
+          return followData.filter((company) => company.ename === ename);
+        });
+
+        // Set the sorted followData
+        setfollowData(sortedFollowDataAscending);
+
+        // Sort the forwardEmployeeData array based on the sorted followData
+        const sortedForwardEmployeeDataAscending = forwardEmployeeData.sort((a, b) => {
+          const totalPaymentA = enameTotalPaymentsAscending[a.ename] || 0;
+          const totalPaymentB = enameTotalPaymentsAscending[b.ename] || 0;
+          return totalPaymentA - totalPaymentB;
+        });
+
+        // Set the sorted forwardEmployeeData
+        setForwardEmployeeData(sortedForwardEmployeeDataAscending);
+
+        break;
+      case 'descending':
+        console.log('descendi')
+        const enameTotalPaymentsDescending = {};
+        followData.forEach((company) => {
+          if (company.caseType === 'Recieved' || company.caseType === 'Forwarded') {
+            const ename = company.ename;
+            if (!enameTotalPaymentsDescending[ename]) {
+              enameTotalPaymentsDescending[ename] = 0;
+            }
+            enameTotalPaymentsDescending[ename] += company.totalPayment;
+          }
+        });
+
+        const sortedEnameArrayDescending = Object.keys(enameTotalPaymentsDescending).sort((a, b) => {
+          return enameTotalPaymentsDescending[b] - enameTotalPaymentsDescending[a];
+        });
+
+        // Rearrange followData based on sortedEnameArray
+        const sortedFollowDataDescending = sortedEnameArrayDescending.flatMap((ename) => {
+          return followData.filter((company) => company.ename === ename);
+        });
+
+        // Set the sorted followData
+        setfollowData(sortedFollowDataDescending);
+
+        // Sort the forwardEmployeeData array based on the sorted followData
+        const sortedForwardEmployeeDataDescending = forwardEmployeeData.sort((a, b) => {
+          const totalPaymentA = enameTotalPaymentsDescending[a.ename] || 0;
+          const totalPaymentB = enameTotalPaymentsDescending[b.ename] || 0;
+          return totalPaymentB - totalPaymentA;
+        });
+
+        // Set the sorted forwardEmployeeData
+        setForwardEmployeeData(sortedForwardEmployeeDataDescending);
+
+        break;
+      case 'none':
+        console.log('none')
+        if (finalEmployeeData.length > 0) {
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+  const handleSortRecievedProjectionCase = (sortByForwarded) => {
+    // Sort the followData array based on totalPayment for each ename
+    setNewSortType((prevData) => ({
+      ...prevData,
+      recievedprojectioncase:
+        prevData.recievedprojectioncase === 'ascending'
+          ? 'descending'
+          : prevData.recievedprojectioncase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+    
+    switch (sortByForwarded) {
+      case 'ascending':
+        console.log("yahan chala ascending")
+        const enameTotalPaymentsAscending = {};
+        followData.forEach((company) => {
+          if (company.caseType === 'Recieved') {
+            const ename = company.ename;
+            if (!enameTotalPaymentsAscending[ename]) {
+              enameTotalPaymentsAscending[ename] = 0;
+            }
+            enameTotalPaymentsAscending[ename] += company.totalPayment;
+          }
+        });
+
+        const sortedEnameArrayAscending = Object.keys(enameTotalPaymentsAscending).sort((a, b) => {
+          return enameTotalPaymentsAscending[a] - enameTotalPaymentsAscending[b];
+        });
+
+        // Rearrange followData based on sortedEnameArray
+        const sortedFollowDataAscending = sortedEnameArrayAscending.flatMap((ename) => {
+          return followData.filter((company) => company.ename === ename);
+        });
+
+        // Set the sorted followData
+        setFollowDataFilter(sortedFollowDataAscending);
+
+        // Sort the forwardEmployeeData array based on the sorted followData
+        const sortedForwardEmployeeDataAscending = forwardEmployeeData.sort((a, b) => {
+          const totalPaymentA = enameTotalPaymentsAscending[a.ename] || 0;
+          const totalPaymentB = enameTotalPaymentsAscending[b.ename] || 0;
+          return totalPaymentA - totalPaymentB;
+        });
+
+        // Set the sorted forwardEmployeeData
+        setForwardEmployeeData(sortedForwardEmployeeDataAscending);
+
+      break;
+      case 'descending':
+        console.log("yahan chala descending")
+        const enameTotalPaymentsDescending = {};
+        followData.forEach((company) => {
+          if (company.caseType === 'Recieved') {
+            const ename = company.ename;
+            if (!enameTotalPaymentsDescending[ename]) {
+              enameTotalPaymentsDescending[ename] = 0;
+            }
+            enameTotalPaymentsDescending[ename] += company.totalPayment;
+          }
+        });
+
+        const sortedEnameArrayDescending = Object.keys(enameTotalPaymentsDescending).sort((a, b) => {
+          return enameTotalPaymentsDescending[b] - enameTotalPaymentsDescending[a];
+        });
+
+        // Rearrange followData based on sortedEnameArray
+        const sortedFollowDataDescending = sortedEnameArrayDescending.flatMap((ename) => {
+          return followData.filter((company) => company.ename === ename);
+        });
+
+        // Set the sorted followData
+        setFollowDataFilter(sortedFollowDataDescending);
+
+        // Sort the forwardEmployeeData array based on the sorted followData
+        const sortedForwardEmployeeDataDescending = forwardEmployeeData.sort((a, b) => {
+          const totalPaymentA = enameTotalPaymentsDescending[a.ename] || 0;
+          const totalPaymentB = enameTotalPaymentsDescending[b.ename] || 0;
+          return totalPaymentB - totalPaymentA;
+        });
+
+        // Set the sorted forwardEmployeeData
+        setForwardEmployeeData(sortedForwardEmployeeDataDescending);
+
+        break;
+      case 'none':
+        console.log("yahan chala none")
+        if (finalEmployeeData.length > 0) {
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+
+
+  useEffect(() => {
+    setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
+  }, [forwardEmployeeData]);
+
+
   // -------------------------------------projection summary select multiple name function--------------------------------------------------------------
 
   const [projectionNames, setProjectionNames] = useState([])
@@ -763,16 +1086,14 @@ function Dashboard() {
     //console.log(filteredEmployees, "employees")
     if (filteredProjectionData.length > 0 || filteredEmployees.length > 0) {
       setfollowDataToday(filteredProjectionData);
-      setEmployeeData(filteredEmployees)
+      setEmployeeDataProjectionSummary(filteredEmployees)
     } else if (filteredProjectionData.length === 0 || filteredEmployees.length === 0) {
       setfollowDataToday(followDataTodayNew)
-      setEmployeeData(employeeDataFilter)
+      setEmployeeDataProjectionSummary(employeeDataFilter)
     }
-
   };
-  // --------------------------------------projection summary search filter-----------------------------------
-  const [searchTermProjection, setSearchTermProjection] = useState("")
 
+  const [searchTermProjection, setSearchTermProjection] = useState("")
 
   const filterSearchProjection = (searchTerm) => {
     setSearchTermProjection(searchTerm)
@@ -783,13 +1104,11 @@ function Dashboard() {
   }
   const debouncedFilterSearchProjection = debounce(filterSearchProjection, 100);
 
+  // --------------------------------------projection summary search filter-----------------------------------
   useEffect(() => {
     fetchFollowUpData();
   }, []);
 
-  const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
-
-  
   function calculateSum(data) {
     const initialValue = {};
 
@@ -2341,7 +2660,8 @@ function Dashboard() {
   ];
 
   // -------------------------------------sorting projection summary-------------------------------------------
-  const [incoFilterNew, setIncoFilterNew] = useState("");
+  const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
+
   const [sortTypeProjection, setSortTypeProjection] = useState({
     totalCompanies: "ascending",
   });
@@ -2551,11 +2871,11 @@ function Dashboard() {
         obj.moreBookings.map((moreBookingObj) => {
           if (monthNames[new Date(moreBookingObj.bookingDate).getMonth()] === currentMonth) {
             if (moreBookingObj.bdeName === bdeName || moreBookingObj.bdmName === bdeName) {
-             
+
               if (moreBookingObj.bdeName !== moreBookingObj.bdmName && moreBookingObj.bdmType === "Close-by") {
                 maturedCount = maturedCount + 0.5
                 return false;
-              } else  {
+              } else {
                 maturedCount = maturedCount + 1
                 return false
               }
@@ -2633,10 +2953,10 @@ function Dashboard() {
                     const reqService = moreBookingObj.services.find(serv => serv.serviceName === remainingObj.serviceName);
                     if (reqService.service.withGST) {
                       if (moreBookingObj.bdeName === moreBookingObj.bdmName) {
-                        console.log(bdeName ,"ka lafda" )
+                        console.log(bdeName, "ka lafda")
                         remainingAmount = remainingAmount + parseInt(remainingObj.receivedPayment) / 1.18
                       } else {
-                        console.log(bdeName ,"ka lafda" )
+                        console.log(bdeName, "ka lafda")
                         remainingAmount = remainingAmount + (parseInt(remainingObj.receivedPayment) / 1.18) / 2
                       }
                     } else {
@@ -2652,12 +2972,12 @@ function Dashboard() {
               }
               if (moreBookingObj.bdeName !== moreBookingObj.bdmName && moreBookingObj.bdmType === "Close-by") {
                 achievedAmount = achievedAmount + Math.round(moreBookingObj.generatedReceivedAmount) / 2;
-                console.log(bdeName ,"ka lafda" , moreBookingObj )
+                console.log(bdeName, "ka lafda", moreBookingObj)
                 return false;
               } else {
-               
+
                 achievedAmount = achievedAmount + Math.round(moreBookingObj.generatedReceivedAmount);
-                console.log(bdeName ,"ka lafda" )
+                console.log(bdeName, "ka lafda")
                 return false
               }
             }
@@ -2669,19 +2989,19 @@ function Dashboard() {
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          console.log(bdeName ,"ka lafda" )
+          console.log(bdeName, "ka lafda")
           achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
-          console.log(bdeName ,"ka lafda" )
+          console.log(bdeName, "ka lafda")
           achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
           if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-            console.log(bdeName ,"ka lafda" )
+            console.log(bdeName, "ka lafda")
             achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
           } else {
-            console.log(bdeName ,"ka lafda" )
+            console.log(bdeName, "ka lafda")
             achievedAmount += Math.round(obj.generatedReceivedAmount);
           }
         }
@@ -2691,10 +3011,10 @@ function Dashboard() {
               booking.bdeName !== booking.bdmName &&
               booking.bdmType === "Close-by"
             ) {
-              console.log(bdeName ,"ka lafda" )
+              console.log(bdeName, "ka lafda")
               achievedAmount += Math.round(booking.generatedReceivedAmount / 2);
             } else {
-              console.log(bdeName ,"ka lafda" )
+              console.log(bdeName, "ka lafda")
               achievedAmount += Math.round(booking.generatedReceivedAmount);
             }
           }
@@ -2793,6 +3113,7 @@ function Dashboard() {
 
   // -----------------------------------employees forwarded case functions--------------------------------------------
   let generatedTotalProjection = 0;
+
   const functionCaluclateTotalForwardedProjection = (isBdm, employeeName) => {
 
     const filteredFollowDataForward = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Forwarded") : followData.filter((company) => company.ename === employeeName && company.caseType === "Forwarded")
@@ -3307,10 +3628,10 @@ function Dashboard() {
                           </div>
                           <LocalizationProvider
                             dateAdapter={AdapterDayjs}
-                           >
+                          >
                             <DemoContainer components={["SingleInputDateRangeField"]} sx={{
                               padding: '0px',
-                              with:'220px'
+                              with: '220px'
                             }}>
                               <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                 onChange={(values) => {
@@ -4129,7 +4450,7 @@ function Dashboard() {
                               <DemoContainer
                                 components={["SingleInputDateRangeField"]} sx={{
                                   padding: '0px',
-                                  with:'220px'
+                                  with: '220px'
                                 }}  >
                                 <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
@@ -4160,47 +4481,13 @@ function Dashboard() {
                               </DemoContainer>
                             </LocalizationProvider>
                           </div>
-                          {/* <div className="services mt-1 mr-3" style={{ zIndex: "9999" }}>
-                            <Select
-                              isMulti
-                              options={options}
-                              onChange={(selectedOptions) => {
-                                setSelectedValues(selectedOptions.map((option) => option.value));
-                                const selectedEmployeeNames = selectedOptions.map((option) => option.label);
-                                handleSelectForwardedEmployeeData(selectedEmployeeNames);
-                              }}
-                              value={selectedValues.map((value) => ({ value, label: value }))}
-                              placeholder="Select..."
-                            />
-                          </div>
-                          {/* <FormControl sx={{ m: 1, width: 300 , zIndex:"9999" }} >
-                            <Select
-                              labelId="demo-multiple-checkbox-label"
-                              id="demo-multiple-checkbox"
-                              multiple
-                              value={personName}
-                              onChange={(event)=>{
-                                setPersonName(event.target.value)
-                                handleSelectForwardedEmployeeData(event.target.value)}}
-                              input={<OutlinedInput label="Tag" />}
-                              renderValue={(selected) => selected.join(', ')}
-                              MenuProps={MenuProps}
-                            >
-                              {options.map((name) => (
-                                <MenuItem key={name} value={name}>
-                                  <Checkbox checked={personName.indexOf(name) > -1} />
-                                  <ListItemText primary={name} />
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl> */}
                           <div>
                             <FormControl sx={{ ml: 1, minWidth: 200 }}>
                               <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                               <Select
                                 className="form-control my-date-picker my-mul-select form-control-sm p-0"
                                 labelId="demo-multiple-name-label"
-                                id="demo-multiple-name" 
+                                id="demo-multiple-name"
                                 multiple
                                 value={personName}
                                 onChange={(event) => {
@@ -4234,12 +4521,230 @@ function Dashboard() {
                                 </th>
                                 <th>BDE/BDM Name</th>
                                 <th >Branch Name</th>
-                                <th >Forwarded Cases</th>
-                                <th >Recieved Cases</th>
-                                <th >Forwarded Case Projection</th>
-                                <th >Recieved Case Projection</th>
-                                <th >Matured Case</th>
-                                <th>Generated Revenue</th>
+                                <th style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let updatedSortType;
+                                    if (newSortType.forwardedcase === "ascending") {
+                                      updatedSortType = "descending";
+                                    } else if (newSortType.forwardedcase === "descending") {
+                                      updatedSortType
+                                        = "none";
+                                    } else {
+                                      updatedSortType = "ascending";
+                                    }
+                                    setNewSortType((prevData) => ({
+                                      ...prevData,
+                                      forwardedcase: updatedSortType,
+                                    }));
+                                    handleSortForwardedCases(updatedSortType);
+                                  }}
+                                >
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Forwarded Cases</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.forwardedcase === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.forwardedcase === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </th>
+                                <th style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let updatedSortType;
+                                    if (newSortType.recievedcase === "ascending") {
+                                      updatedSortType = "descending";
+                                    } else if (newSortType.recievedcase === "descending") {
+                                      updatedSortType
+                                        = "none";
+                                    } else {
+                                      updatedSortType = "ascending";
+                                    }
+                                    setNewSortType((prevData) => ({
+                                      ...prevData,
+                                      recievedcase: updatedSortType,
+                                    }));
+                                    handleSortRecievedCase(updatedSortType);
+                                  }}><div className="d-flex align-items-center justify-content-between">
+                                    <div>Recieved Cases</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.recievedcase === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.recievedcase === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div></th>
+                                <th style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let updatedSortType;
+                                    if (newSortType.forwardedprojectioncase === "ascending") {
+                                      updatedSortType = "descending";
+                                    } else if (newSortType.forwardedprojectioncase === "descending") {
+                                      updatedSortType
+                                        = "none";
+                                    } else {
+                                      updatedSortType = "ascending";
+                                    }
+                                    setNewSortType((prevData) => ({
+                                      ...prevData,
+                                      forwardedprojectioncase: updatedSortType,
+                                    }));
+                                    handleSortForwardedProjectionCase(updatedSortType);
+                                  }}>
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Forwarded Case Projection</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.forwardedprojectioncase === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.forwardedprojectioncase === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </th>
+                                <th style={{ cursor: "pointer" }} 
+                               onClick={(e) => {
+                                let updatedSortType;
+                                if (newSortType.recievedprojectioncase === "ascending") {
+                                  updatedSortType = "descending";
+                                } else if (newSortType.recievedprojectioncase === "descending") {
+                                  updatedSortType
+                                    = "none";
+                                } else {
+                                  updatedSortType = "ascending";
+                                }
+                                setNewSortType((prevData) => ({
+                                  ...prevData,
+                                  recievedprojectioncase: updatedSortType,
+                                }));
+                                handleSortRecievedProjectionCase(updatedSortType);
+                              }}><div className="d-flex align-items-center justify-content-between">
+                                    <div>Recieved Case Projection</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.recievedprojectioncase === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.recievedprojectioncase === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </th>
+                                <th style={{cursor:'pointer'}}
+                                onClick={(e)=>{
+                                  let updatedSortType;
+                                  if(newSortType.maturedcase === 'ascending'){
+                                    updatedSortType = 'descending';
+                                  }else if(newSortType.maturedcase === 'descending'){
+                                    updatedSortType = 'none'
+                                  }else{
+                                    updatedSortType = 'ascending'
+                                  }
+                                  setNewSortType((prevData) => ({
+                                    ...prevData,
+                                    maturedcase: updatedSortType,
+                                  }));
+                                }}><div className="d-flex align-items-center justify-content-between">
+                                <div>Matured Case</div>
+                                <div className="short-arrow-div">
+                                  <ArrowDropUpIcon className="up-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.recievedprojectioncase === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon className="down-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.recievedprojectioncase === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                </div>
+                              </div></th>
+                              <th style={{cursor:'pointer'}}
+                                onClick={(e)=>{
+                                  let updatedSortType;
+                                  if(newSortType.generatedrevenue === 'ascending'){
+                                    updatedSortType = 'descending';
+                                  }else if(newSortType.generatedrevenue === 'descending'){
+                                    updatedSortType = 'none'
+                                  }else{
+                                    updatedSortType = 'ascending'
+                                  }
+                                  setNewSortType((prevData) => ({
+                                    ...prevData,
+                                    generatedrevenue: updatedSortType,
+                                  }));
+                                }}><div className="d-flex align-items-center justify-content-between">
+                                <div>Generated Revenue</div>
+                                <div className="short-arrow-div">
+                                  <ArrowDropUpIcon className="up-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.generatedrevenue === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon className="down-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.generatedrevenue === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                </div>
+                              </div></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -4390,11 +4895,11 @@ function Dashboard() {
                               id="bdeName-search" />
                           </div>
                           <div className="date-filter">
-                            <LocalizationProvider  dateAdapter={AdapterDayjs}  >
+                            <LocalizationProvider dateAdapter={AdapterDayjs}  >
                               <DemoContainer components={["SingleInputDateRangeField"]} sx={{
-                              padding: '0px',
-                              with:'220px'
-                            }}>
+                                padding: '0px',
+                                with: '220px'
+                              }}>
                                 <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
                                     const startDate = moment(values[0]).format(
@@ -4423,9 +4928,9 @@ function Dashboard() {
                           </div>
                           <div>
                             <FormControl sx={{ ml: 1, minWidth: 200 }}>
-                            <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                              <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                               <Select
-                              className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                className="form-control my-date-picker my-mul-select form-control-sm p-0"
                                 labelId="demo-multiple-name-label"
                                 id="demo-multiple-name"
                                 multiple
@@ -4449,15 +4954,7 @@ function Dashboard() {
                               </Select>
                             </FormControl>
                           </div>
-
-
                         </div>
-                        {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
-                          <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                          <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                            <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                          </button>
-                        </div> */}
                       </div>
                       <div className="card-body">
                         <div id="table-default" className="row tbl-scroll" >
@@ -4619,7 +5116,7 @@ function Dashboard() {
                                     </tr>
                                   ))}
                                   {/* Map employeeData with default fields */}
-                                  {employeeData
+                                  {employeeDataProjectionSummary
                                     .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                                     .map((employee, index) => (
                                       <tr key={`employee-row-${index}`}>
@@ -4642,7 +5139,7 @@ function Dashboard() {
                                     ))}
                                 </>
                               ) : (
-                                employeeData
+                                employeeDataProjectionSummary
                                   .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                                   .map((employee, index) => (
 
