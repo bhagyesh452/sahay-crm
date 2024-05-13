@@ -603,7 +603,7 @@ function EmployeesThisMonthBooking() {
                 <>
                   <tbody>
                     {employeeData &&
-                      employeeData
+                      employeeData.sort((a,b)=>functionCalculateAchievedAmount(b.ename) - functionCalculateAchievedAmount(a.ename))
                         .filter(
                           (item) =>
                             item.designation ===
