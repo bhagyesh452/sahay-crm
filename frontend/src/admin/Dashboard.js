@@ -62,6 +62,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import EmployeeDataReport from "./DashboardReportComponents/EmployeeDataReport.jsx";
+import EmployeesForwardedDataReport from "./DashboardReportComponents/EmployeesForwardedDataReport.jsx";
 
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
 
@@ -983,10 +985,10 @@ function Dashboard() {
             ? 'none'
             : 'ascending',
     }));
-    
+
     switch (sortByForwarded) {
       case 'ascending':
-        console.log("yahan chala ascending")
+        //console.log("yahan chala ascending")
         const enameTotalPaymentsAscending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
@@ -1020,7 +1022,7 @@ function Dashboard() {
         // Set the sorted forwardEmployeeData
         setForwardEmployeeData(sortedForwardEmployeeDataAscending);
 
-      break;
+        break;
       case 'descending':
         console.log("yahan chala descending")
         const enameTotalPaymentsDescending = {};
@@ -1068,7 +1070,7 @@ function Dashboard() {
     }
   };
 
-  const handleSortMaturedCases=(sortTypeForwarded)=>{
+  const handleSortMaturedCases = (sortTypeForwarded) => {
     setNewSortType((prevData) => ({
       ...prevData,
       maturedcase:
@@ -1078,22 +1080,22 @@ function Dashboard() {
             ? 'none'
             : 'ascending',
     }));
-    switch(sortTypeForwarded){
+    switch (sortTypeForwarded) {
       case 'ascending':
         console.log("yahan chala ascedning")
         const companyDataAscending = {};
-        companyDataTotal.forEach((company)=>{
-          if(company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured'){
+        companyDataTotal.forEach((company) => {
+          if (company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured') {
             companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
           }
         })
-        forwardEmployeeData.sort((a,b)=>{
+        forwardEmployeeData.sort((a, b) => {
           const A = companyDataAscending[a.ename] || 0;
           const B = companyDataAscending[b.ename] || 0;
-          return A-B;
+          return A - B;
         });
         break;
-        case 'descending':
+      case 'descending':
         console.log("yahan chala descending");
         const companyDataDescending = {};
         companyDataTotal.forEach((company) => {
@@ -1119,11 +1121,51 @@ function Dashboard() {
       default:
         break;
 
-      }
+    }
   }
 
- 
+  const handleSortRedesignedData = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+      ...prevData,
+      generatedrevenue:
+        prevData.generatedrevenue === 'ascending'
+          ? 'descending'
+          : prevData.generatedrevenue === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
 
+    switch (sortByForwarded) {
+      case 'ascending':
+        forwardEmployeeData.sort((a, b) => {
+          const countA = functionCalculateGeneratedTotalRevenue(a.ename) || 0;
+          const countB = functionCalculateGeneratedTotalRevenue(b.ename) || 0;
+          return countA - countB;
+        });
+        break; // Add break statement here
+
+      case 'descending':
+        //console.log("yahan chala descending");
+        forwardEmployeeData.sort((a, b) => {
+          const countA = functionCalculateGeneratedTotalRevenue(a.ename) || 0;
+          const countB = functionCalculateGeneratedTotalRevenue(b.ename) || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        //console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+
+      default:
+        break;
+    }
+  };
 
 
   useEffect(() => {
@@ -2914,38 +2956,38 @@ function Dashboard() {
 
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
-    redesignedData.map((mainBooking)=>{
-     
-      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
-        if(mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName){
-          if(mainBooking.bdeName === mainBooking.bdmName){
+    redesignedData.map((mainBooking) => {
+
+      if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+        if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             maturedCount = maturedCount + 1
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
             maturedCount = maturedCount + 0.5;
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === bdeName){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === bdeName) {
               maturedCount = maturedCount + 1;
             }
           }
         }
       }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
-            if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
-              if(moreObject.bdeName === moreObject.bdmName){
+      mainBooking.moreBookings.map((moreObject) => {
+        if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+          if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+            if (moreObject.bdeName === moreObject.bdmName) {
+              maturedCount = maturedCount + 1;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              maturedCount = maturedCount + 0.5
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === bdeName) {
                 maturedCount = maturedCount + 1;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                maturedCount = maturedCount + 0.5
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === bdeName){
-                  maturedCount = maturedCount + 1;
-                }
               }
             }
           }
-        })
-      
-      
+        }
+      })
+
+
     })
 
     // const filteredRedesignedData = redesignedData.filter(
@@ -2961,7 +3003,7 @@ function Dashboard() {
     //     obj.moreBookings.map((moreBookingObj) => {
     //       if (monthNames[new Date(moreBookingObj.bookingDate).getMonth()] === currentMonth) {
     //         if (moreBookingObj.bdeName === bdeName || moreBookingObj.bdmName === bdeName) {
-             
+
     //           if (moreBookingObj.bdeName !== moreBookingObj.bdmName && moreBookingObj.bdmType === "Close-by") {
     //             maturedCount = maturedCount + 0.5
     //             return false;
@@ -3012,73 +3054,73 @@ function Dashboard() {
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
     let remainingAmount = 0;
-    
-    redesignedData.map((mainBooking)=>{
-     
-      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
-        if(mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName){
-          if(mainBooking.bdeName === mainBooking.bdmName){
+
+    redesignedData.map((mainBooking) => {
+
+      if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+        if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === bdeName){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === bdeName) {
               achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
             }
           }
         }
-      }else if(mainBooking.remainingPayments.length !== 0){
-        mainBooking.remainingPayments.map((remainingObj)=>{
-          if(monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)){
+      } else if (mainBooking.remainingPayments.length !== 0) {
+        mainBooking.remainingPayments.map((remainingObj) => {
+          if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-            if(mainBooking.bdeName === mainBooking.bdmName){
-                remainingAmount += Math.round(tempAmount);
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-              remainingAmount += Math.round(tempAmount)/2;
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-              if(mainBooking.bdeName === bdeName){
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === bdeName) {
                 remainingAmount += Math.round(tempAmount);
               }
-            }         
+            }
           }
         })
       }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
-            if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
-              if(moreObject.bdeName === moreObject.bdmName){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === bdeName){
-                  achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+      mainBooking.moreBookings.map((moreObject) => {
+        if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+          if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+            if (moreObject.bdeName === moreObject.bdmName) {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === bdeName) {
+                achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+              }
+            }
+          }
+        } else if (moreObject.remainingPayments.length !== 0) {
+
+          moreObject.remainingPayments.map((remainingObj) => {
+            if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+              const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+              const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+              if (moreObject.bdeName === moreObject.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === bdeName) {
+                  remainingAmount += Math.round(tempAmount);
                 }
               }
             }
-          }else if(moreObject.remainingPayments.length!==0){
-           
-            moreObject.remainingPayments.map((remainingObj)=>{
-              if(monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)){
-                
-                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                if(moreObject.bdeName === moreObject.bdmName){
-                    remainingAmount += Math.round(tempAmount);
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  remainingAmount += Math.round(tempAmount)/2;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === bdeName){
-                    remainingAmount += Math.round(tempAmount);
-                  }
-                }         
-              }
-            })
-          }
-        })
-      
-      
+          })
+        }
+      })
+
+
     })
 
     // const filteredRedesignedData = redesignedData.filter(
@@ -3134,7 +3176,7 @@ function Dashboard() {
     //             console.log(bdeName ,"ka lafda" , moreBookingObj )
     //             return false;
     //           } else {
-               
+
     //             achievedAmount = achievedAmount + Math.round(moreBookingObj.generatedReceivedAmount);
     //             console.log(bdeName ,"ka lafda" )
     //             return false
@@ -3211,24 +3253,24 @@ function Dashboard() {
   function functionGetLastBookingDate(bdeName) {
     let tempBookingDate = null;
     // Filter objects based on bdeName
-    redesignedData.map((mainBooking)=>{
-     
-      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
-        if(mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName){
+    redesignedData.map((mainBooking) => {
+
+      if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+        if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
           const bookingDate = new Date(mainBooking.bookingDate);
-         tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+          tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
         }
       }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
-            if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
-              const bookingDate = new Date(moreObject.bookingDate);
-              tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
-            }
+      mainBooking.moreBookings.map((moreObject) => {
+        if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+          if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+            const bookingDate = new Date(moreObject.bookingDate);
+            tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
           }
-        })
-      
-      
+        }
+      })
+
+
     })
 
     // const filteredRedesignedData = redesignedData.filter(
@@ -3318,6 +3360,52 @@ function Dashboard() {
     return finalPayment.toLocaleString();
   }
 
+  //-------------------this months booking bde search filter---------------------------
+
+
+  const [searchBookingBde, setSearchBookingBde] = useState("")
+  const filterSearchThisMonthBookingBde = (searchTerm) => {
+    setEmployeeData(employeeDataFilter.filter((obj) => obj.ename.toLowerCase().includes(searchTerm.toLowerCase())))
+
+  }
+  const debouncedFilterSearchThisMonthBookingBde = debounce(filterSearchThisMonthBookingBde, 100)
+
+  const handleThisMonthBookingDateRange = (values) => {
+    if (values[1]) {
+      const startDate = values[0].format('MM/DD/YYYY')
+      const endDate = values[1].format('MM/DD/YYYY')
+    }
+
+    const fileteredData = redesignedData.filter((product) => {
+      const productDate = formatDateMonth(product.bookingDate);
+      if (startDate === endDate) {
+        return productDate === startDate;
+
+      } else if (startDate !== endDate) {
+        return (
+          new Date(productDate) >= new Date(startDate) &&
+          new Date(productDate) <= new Date(endDate)
+        )
+      } else {
+        return false;
+      }
+    })
+  }
+
+  const [monthBookingPerson, setMonthBookingPerson] = useState([])
+  const handleSelectThisMonthBookingEmployees = (selectedEmployeeNames) => {
+    const filteredForwardEmployeeData = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
+    
+    //console.log("filtetred", filteredForwardEmployeeData)
+    if (filteredForwardEmployeeData.length > 0) {
+      setEmployeeData(employeeDataFilter);
+      
+    } else if (filteredForwardEmployeeData.length === 0) {
+      setEmployeeData(filteredForwardEmployeeData)
+     
+    }
+  
+  };
 
 
 
@@ -3382,36 +3470,123 @@ function Dashboard() {
                             This Month's Bookings
                           </h2>
                         </div>
-                        <div className="filter-booking d-flex align-items-center pr-1" >
-                          <div className="filter-title">
-                            <h2 className="m-0 mr-2">
-                              {" "}
-                              Filter Branch : {"  "}
-                            </h2>
+                        <div className="filter-booking d-flex align-items-center">
+                          <div className="filter-booking mr-1 d-flex align-items-center" >
+                            <div className="filter-title">
+                              <h2 className="m-0 mr-2">
+                                {" "}
+                                Filter Branch : {"  "}
+                              </h2>
+                            </div>
+                            <div className="filter-main ml-2">
+                              <select
+                                className="form-select"
+                                id={`branch-filter`}
+                                onChange={(e) => {
+                                  if (e.target.value === "none") {
+                                    setEmployeeData(employeeDataFilter)
+                                  } else {
+                                    setEmployeeData(employeeDataFilter.filter(obj => obj.branchOffice === e.target.value))
+                                  }
+
+                                }}
+                              >
+                                <option value="" disabled selected>
+                                  Select Branch
+                                </option>
+
+                                <option value={"Gota"}>Gota</option>
+                                <option value={"Sindhu Bhawan"}>
+                                  Sindhu Bhawan
+                                </option>
+                                <option value={"none"}>None</option>
+                              </select>
+                            </div>
                           </div>
-                          <div className="filter-main ml-2">
-                            <select
-                              className="form-select"
-                              id={`branch-filter`}
+                          <div class='input-icon mr-1'>
+                            <span class="input-icon-addon">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
+                              </svg>
+                            </span>
+                            <input
+                              value={searchBookingBde}
                               onChange={(e) => {
-                                if (e.target.value === "none") {
-                                  setEmployeeData(employeeDataFilter)
-                                } else {
-                                  setEmployeeData(employeeDataFilter.filter(obj => obj.branchOffice === e.target.value))
-                                }
-
+                                setSearchBookingBde(e.target.value)
+                                debouncedFilterSearchThisMonthBookingBde(e.target.value)
                               }}
-                            >
-                              <option value="" disabled selected>
-                                Select Branch
-                              </option>
-
-                              <option value={"Gota"}>Gota</option>
-                              <option value={"Sindhu Bhawan"}>
-                                Sindhu Bhawan
-                              </option>
-                              <option value={"none"}>None</option>
-                            </select>
+                              className="form-control"
+                              placeholder="Enter BDE Name..."
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search" />
+                          </div>
+                          <div className="data-filter">
+                            <LocalizationProvider
+                              dateAdapter={AdapterDayjs} >
+                              <DemoContainer
+                                components={["SingleInputDateRangeField"]} sx={{
+                                  padding: '0px',
+                                  with: '220px'
+                                }}  >
+                                <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                  onChange={(values) => {
+                                    const startDateEmp = moment(values[0]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    const endDateEmp = moment(values[1]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    // setSelectedDateRangeForwardedEmployee([
+                                    //   startDateEmp,
+                                    //   endDateEmp,
+                                    // ]);
+                                    handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
+                                  }}
+                                  slots={{ field: SingleInputDateRangeField }}
+                                  slotProps={{
+                                    shortcuts: {
+                                      items: shortcutsItems,
+                                    },
+                                    actionBar: { actions: [] },
+                                    textField: {
+                                      InputProps: { endAdornment: <Calendar /> },
+                                    },
+                                  }}
+                                //calendars={1}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </div>
+                          <div>
+                            <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                              <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                              <Select
+                                className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                labelId="demo-multiple-name-label"
+                                id="demo-multiple-name"
+                                multiple
+                                value={monthBookingPerson}
+                                onChange={(event) => {
+                                  setMonthBookingPerson(event.target.value)
+                                  handleSelectThisMonthBookingEmployees(event.target.value)
+                                }}
+                                input={<OutlinedInput label="Name" />}
+                                MenuProps={MenuProps}
+                              >
+                                {options.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name,monthBookingPerson, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
                           </div>
                         </div>
                       </div>
@@ -3745,7 +3920,7 @@ function Dashboard() {
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
-                  <div className="employee-dashboard mt-3" id="employeedashboardadmin">
+                  {/* <div className="employee-dashboard mt-3" id="employeedashboardadmin">
                     <div className="card">
                       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
@@ -4559,11 +4734,13 @@ function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div>  */}
+
+                  <EmployeeDataReport />
 
                   {/* ----------------------------------Employees Forwarded Data Report Section----------------------------------------------- */}
 
-                  <div className="employee-dashboard mt-3">
+                  {/* <div className="employee-dashboard mt-3">
                     <div className="card">
                       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
@@ -4571,7 +4748,7 @@ function Dashboard() {
                             Employees Forwaded Data Report
                           </h2>
                         </div>
-                        <div className="d-flex align-items-center pr-1">
+                        
                           <div className="filter-booking d-flex align-items-center">
                             <div className="filter-booking mr-1 d-flex align-items-center">
                               <div className="filter-title mr-1">
@@ -4888,41 +5065,44 @@ function Dashboard() {
                                   />
                                 </div>
                               </div></th>
-                              <th style={{cursor:'pointer'}}
-                                onClick={(e)=>{
-                                  let updatedSortType;
-                                  if(newSortType.generatedrevenue === 'ascending'){
-                                    updatedSortType = 'descending';
-                                  }else if(newSortType.generatedrevenue === 'descending'){
-                                    updatedSortType = 'none'
-                                  }else{
-                                    updatedSortType = 'ascending'
-                                  }
-                                  setNewSortType((prevData) => ({
-                                    ...prevData,
-                                    generatedrevenue: updatedSortType,
-                                  }));
-                                }}><div className="d-flex align-items-center justify-content-between">
-                                <div>Generated Revenue</div>
-                                <div className="short-arrow-div">
-                                  <ArrowDropUpIcon className="up-short-arrow"
-                                    style={{
-                                      color:
-                                        newSortType.generatedrevenue === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon className="down-short-arrow"
-                                    style={{
-                                      color:
-                                        newSortType.generatedrevenue === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                    }}
-                                  />
-                                </div>
-                              </div></th>
+                              <th style={{ cursor: "pointer" }} 
+                               onClick={(e) => {
+                                let updatedSortType;
+                                if (newSortType.generatedrevenue === "ascending") {
+                                  updatedSortType = "descending";
+                                } else if (newSortType.generatedrevenue === "descending") {
+                                  updatedSortType
+                                    = "none";
+                                } else {
+                                  updatedSortType = "ascending";
+                                }
+                                setNewSortType((prevData) => ({
+                                  ...prevData,
+                                  generatedrevenue: updatedSortType,
+                                }));
+                                handleSortRedesignedData(updatedSortType);
+                              }}><div className="d-flex align-items-center justify-content-between">
+                                    <div>Generated Revenue</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.generatedrevenue === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.generatedrevenue === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
@@ -4942,18 +5122,13 @@ function Dashboard() {
                                       {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
                                     </td>
                                     <td>
-                                      {/* ₹{(followData
-                                      .filter(company => company.bdeName === obj.ename)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                                    
                                       {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
 
                                     </td>
 
                                     <td>
-                                      {/* ₹{followDataNew
-                                      .filter(company => company.ename === obj.ename && company.bdeName)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()} */}
-                                      ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
+                                     CalculateTotalProjectionRecieved(obj.ename)}
                                     </td>
 
                                     <td>
@@ -4977,28 +5152,12 @@ function Dashboard() {
                                   {teamLeadsData.length}
                                 </td>
                                 <td>
-                                  {/* ₹{companyData
-                                  .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
-                                  .reduce((total, company) => {
-                                    const totalPayment = followData
-                                      .filter(followCompany => followCompany.companyName === company["Company Name"] && followCompany.bdeName)
-                                      .reduce((sum, obj) => sum + obj.totalPayment, 0);
-                                    return total + totalPayment;
-                                  }, 0)
-                                } */}
+                                 
                                   ₹{generatedTotalProjection}
 
                                 </td>
                                 <td>
-                                  {/* ₹{companyData
-                                    .filter(company => company.bdmAcceptStatus === "Accept")
-                                    .reduce((total, company) => {
-                                      const totalPayment = followDataNew
-                                        .filter(followCompany => followCompany.companyName === company["Company Name"])
-                                        .reduce((sum, obj) => sum + obj.totalPayment, 0);
-                                      return total + totalPayment;
-                                    }, 0)
-                                  } */}
+                                 
                                   ₹{generatedTotalProjectionRecieved}
                                 </td>
                                 <td>
@@ -5013,7 +5172,9 @@ function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
+
+                  <EmployeesForwardedDataReport />
 
                   {/* ------------------------projection-summary--------------------------------------------- */}
 
@@ -5776,12 +5937,11 @@ function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
-          <Dialog
+          {/* <Dialog
             open={openEmployeeTable}
             onClose={closeEmployeeTable}
             fullWidth
-            maxWidth="lg"
-          >
+            maxWidth="lg">
             <DialogTitle>
               <div className="title-header d-flex justify-content-between">
                 <div className="title-name">
@@ -5998,7 +6158,7 @@ function Dashboard() {
                 </table>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
 
           {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
