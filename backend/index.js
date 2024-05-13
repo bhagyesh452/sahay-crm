@@ -9007,24 +9007,100 @@ app.post(
     }
   }
 );
+app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
+  const data = req.body;
+  const companyName = req.params.CompanyName;
+  const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
+  const mainObject = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
 
-app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex', async(req,res) => {
+  if (!mainObject) {
+    return res.status(404).json({ error: "Company not found" });
+  }
+
+  if (bookingIndex === 0) {
+    const findServices = mainObject.services
+    const serviceObject = findServices.filter(service => service.serviceName === data.serviceName)[0];
+    
+    if (!serviceObject) {
+      return res.status(404).json({ error: "Service not found" });
+    }
+
+    // Update the serviceObject with new expanse amount
+    const expanse = data.expanseAmount
+    const updatedServiceObject = {
+      serviceName: serviceObject.serviceName, // Spread operator to copy all properties from serviceObject
+      totalPaymentWOGST: serviceObject.totalPaymentWOGST, // Spread operator to copy all properties from serviceObject
+      totalPaymentWGST: serviceObject.totalPaymentWGST, // Spread operator to copy all properties from serviceObject
+      withGST: serviceObject.withGST, // Spread operator to copy all properties from serviceObject
+      withDSC: serviceObject.withDSC, // Spread operator to copy all properties from serviceObject
+      paymentTerms: serviceObject.paymentTerms, // Spread operator to copy all properties from serviceObject
+      firstPayment: serviceObject.firstPayment, // Spread operator to copy all properties from serviceObject
+      secondPayment: serviceObject.secondPayment, // Spread operator to copy all properties from serviceObject
+       thirdPayment: serviceObject. thirdPayment, // Spread operator to copy all properties from serviceObject
+      fourthPayment: serviceObject.fourthPayment, // Spread operator to copy all properties from serviceObject
+      secondPaymentRemarks: serviceObject.secondPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      thirdPaymentRemarks: serviceObject.thirdPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      paymentRemarks: serviceObject.paymentRemarks, 
+      _id:serviceObject._id,// Spread operator to copy all properties from serviceObject
+      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+    };
+    console.log(updatedServiceObject);
+    // Update the services array in mainObject with the updated serviceObject
+    const updatedServices = mainObject.services.map(service => {
+      if (service.serviceName === data.serviceName) {
+        return updatedServiceObject;
+      }
+      return service;
+    });
+
+    // Update the mainObject with the updated services array
+    const updatedMainObject = await RedesignedLeadformModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { services: updatedServices },
+      { new: true } // Return the updated document
+    );
+
+    res.status(200).json(updatedMainObject);
+  } else {
+    return res.status(400).json({ error: "Invalid booking index" });
+  }
+});
+
+
+
+app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async(req,res) => {
   const companyName = req.params.companyName;
+  
   const bookingIndex = req.params.bookingIndex;
+  const serviceName = req.params.serviceName;
+  console.log("bookingIndex" , bookingIndex)
 
   const findCompany = await RedesignedLeadformModel.findOne({"Company Name":companyName});
-  if(bookingIndex === 0){
+  if(bookingIndex == 0){
     try {
-      const lastObject = findCompany.remainingPayments[findCompany.remainingPayments.length - 1];
-      const newReceivedAmount = parseInt(findCompany.receivedAmount) - parseInt(lastObject.receivedPayment) ;
-      const newPendingAmount = parseInt(findCompany.pendingAmount) + parseInt(lastObject.receivedPayment) ;
-      const findService = findCompany.services.find((obj)=>obj.serviceName === lastObject.serviceName);
-      const newGeneratedReceivedAmount = findService.withGST ? parseInt(findCompany.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18:  parseInt(findCompany.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment);
+      console.log("bhoom")
+      const newCompany = findCompany;
+      const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
+      const remainingObject = tempObject[tempObject.length - 1];
 
-      findCompany.remainingPayments.pop(); // Delete the last object from remainingPayments array
-      const updateResult = await findCompany.save();
+      const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
+      const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
+      const findService = newCompany.services.find((obj)=>obj.serviceName === remainingObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
+      console.log("this is the required object" , newGeneratedReceivedAmount);
+      const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
+      console.log("This will be the object ",newRemainingArray)
 
-      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set:{receivedAmount:newReceivedAmount , pendingAmount : newPendingAmount , generatedReceivedAmount : newGeneratedReceivedAmount}})
+      // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
+      // const updateResult = await findCompany.save();
+      
+      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set: {
+       receivedAmount: newReceivedAmount,
+        pendingAmount : newPendingAmount,
+        generatedReceivedAmount: newGeneratedReceivedAmount,
+        remainingPayments: newRemainingArray,
+      }})
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
@@ -9034,21 +9110,30 @@ app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex', asy
 
   }else {
     try {
+      
       const newCompany = findCompany.moreBookings[bookingIndex - 1];
-      const lastObject = newCompany.remainingPayments[findCompany.remainingPayments.length - 1];
-      const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(lastObject.receivedPayment) ;
-      const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(lastObject.receivedPayment) ;
-      const findService = newCompany.services.find((obj)=>obj.serviceName === lastObject.serviceName);
-      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(lastObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(lastObject.receivedPayment);
-      findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
-      const updateResult = await findCompany.save();
+      const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
+      const remainingObject = tempObject[tempObject.length - 1];
+    
+
+      const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
+      const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
+      
+      const findService = newCompany.services.find((obj)=>obj.serviceName === remainingObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
+      console.log("this is the required object" , newGeneratedReceivedAmount);
+      const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
+      console.log("This will be the object ",newRemainingArray)
+
+      // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
+      // const updateResult = await findCompany.save();
       
       const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set: {
         [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
         [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
         [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+        [`moreBookings.${bookingIndex-1}.remainingPayments`]: newRemainingArray,
       }})
-
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
