@@ -184,6 +184,7 @@ function EmployeeDataReport() {
                 company.ename.toLowerCase().includes(searchTerm.toLowerCase())
             )
         );
+        setCompanyData(companyDataFilter.filter((company)=>company.ename.toLowerCase().includes(searchTerm.toLowerCase())))
     }
 
     //--------------------------search by date range filter function-----------------------------------------------

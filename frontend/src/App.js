@@ -52,6 +52,7 @@ import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.j
 import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
+import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 
 
 
@@ -113,7 +114,7 @@ function App() {
 {/* -----------------------------------------datamanager components--------------------------------------- */}
 
           <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />  
-          <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
+          <Route path='/datamanager-dashboard/:userId/' element= {<DatamanagerDashboard />} />
           <Route
             path="/datamanager/manageleads/"
             element={<ManageLeads/>}

@@ -164,9 +164,12 @@ const handleFilterBranchOffice = (branchName) => {
   const filterSearchProjection = (searchTerm) => {
     setSearchTermProjection(searchTerm)
     const fileteredData = followData.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    console.log("filteredData" , fileteredData)
     const filteredEmployee = employeeDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase()))
+    console.log(filteredEmployee , "filtereEmployee")
     setfollowDataToday(fileteredData)
     setEmployeeData(filteredEmployee)
+    setEmployeeDataProjectionSummary(filteredEmployee)
   }
   const debouncedFilterSearchProjection = debounce(filterSearchProjection, 100);
 
@@ -459,6 +462,8 @@ const handleFilterBranchOffice = (branchName) => {
    // If sortType is "none", return original order
    return 0;
  });
+
+ console.log("sortedData" , sortedData)
 //------------------------projection table open functions--------------------------------------------------
 const functionCompleteProjectionTable = () => {
   setCompleteProjectionTable(true);

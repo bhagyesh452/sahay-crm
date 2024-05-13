@@ -184,7 +184,7 @@ function Employees({ onEyeButtonClick }) {
     const filtered = data.filter((item) =>
       item.email.toLowerCase().includes(query.toLowerCase()) ||
       item.ename.toLowerCase().includes(query.toLowerCase()) ||
-      item.number.includes(query)||
+      item.number.includes(query) ||
       item.branchOffice.toLowerCase().includes(query.toLowerCase())
     );
 
@@ -199,7 +199,7 @@ function Employees({ onEyeButtonClick }) {
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
-
+    console.log("selectedData", selectedData)
     console.log("This is elon musk", selectedData.targetDetails)
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
@@ -319,8 +319,8 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
-  const [bdmWork , setBdmWork] = useState(false)
-  
+  const [bdmWork, setBdmWork] = useState(false)
+
   const handleSubmit = async (e) => {
     console.log(jdate);
     // const referenceId = uuidv4();
@@ -336,7 +336,7 @@ function Employees({ onEyeButtonClick }) {
         branchOffice: branchOffice,
         targetDetails: targetObjects,
         bdmWork,
-        
+
       };
 
       let dataToSendUpdated = {
@@ -358,16 +358,16 @@ function Employees({ onEyeButtonClick }) {
       } else {
         dataToSend.designation = designation;
       }
-      if(designation === "Sales Manager"){
-       dataToSend.bdmWork = true
-      }else{
+      if (designation === "Sales Manager") {
+        dataToSend.bdmWork = true
+      } else {
         dataToSend.bdmWork = false
       }
-      
+
 
       if (isUpdateMode) {
-        console.log(dataToSend , "Bhoom");
-        
+        console.log(dataToSend, "Bhoom");
+
         await axios.put(
           `${secretKey}/einfo/${selectedDataId}`,
           dataToSendUpdated
@@ -540,35 +540,35 @@ function Employees({ onEyeButtonClick }) {
   }
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
- 
-  console.log("This is anytime Target Objects :" , targetObjects)
+
+  console.log("This is anytime Target Objects :", targetObjects)
   // useEffect(() => {
   //   // Create new services array based on totalServices
   //   if (!nowFetched) {
-    
+
   //     // const totalTargets = Array.from({ length: targetCount }, () => ({
   //     //   ...defaultObject,
   //     // }));
   //     const newTargets = targetObjects ;
   //     newTargets.push(defaultObject);
-     
+
   //     setTargetObjects(newTargets);
-     
+
   //   } else {
   //     setNowFetched(false)
   //   }
   // }, [targetCount]);
-  const handleAddTarget = ()=>{
+  const handleAddTarget = () => {
     const totalTargets = targetObjects;
     totalTargets.push(defaultObject);
-    setTargetCount(targetCount+1);
+    setTargetCount(targetCount + 1);
     setTargetObjects(totalTargets);
 
   }
-  const handleRemoveTarget = ()=>{
+  const handleRemoveTarget = () => {
     const totalTargets = targetObjects;
     totalTargets.pop();
-    setTargetCount(targetCount-1);
+    setTargetCount(targetCount - 1);
     setTargetObjects(totalTargets);
   }
   console.log("target objects:", targetObjects)
@@ -650,10 +650,10 @@ function Employees({ onEyeButtonClick }) {
         fetchData(); // Assuming this function fetches updated employee details
         console.log(response.data); // Log response data
         // Show success message
-        setTimeout(()=>{
+        setTimeout(() => {
           Swal.fire('BDM Work Revoked!', '', 'success');
-        },500)
-       
+        }, 500)
+
       } catch (error) {
         console.error("Error revoking BDM work:", error);
         // Show error message
@@ -999,7 +999,7 @@ function Employees({ onEyeButtonClick }) {
             </div>
             <div style={{ width: "20vw" }} className="input-icon">
               <span className="input-icon-addon">
-                
+
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="icon"
@@ -1134,7 +1134,7 @@ function Employees({ onEyeButtonClick }) {
                         Branch Office
                       </button>
                     </th>
-                    {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")  && <> <th>
+                    {(adminName === "Nimesh" || adminName === "Ronak" || adminName === "Aakash" || adminName === "shivangi") && <> <th>
                       <button
                         onClick={sortDateByAddedOn}
                         className="table-sort"
@@ -1143,23 +1143,23 @@ function Employees({ onEyeButtonClick }) {
                         Added on
                       </button>
                     </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-date">
-                        Status
-                      </button>
-                    </th>
-                    {/* <th>Team Name</th> */}
-                    <th>
-                      BDM Work
-                    </th>
-                    <th>
-                      <button
-                        className="table-sort"
-                        data-sort="sort-quantity"
-                      >
-                        Action
-                      </button>
-                    </th> </>}
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Status
+                        </button>
+                      </th>
+                      {/* <th>Team Name</th> */}
+                      <th>
+                        BDM Work
+                      </th>
+                      <th>
+                        <button
+                          className="table-sort"
+                          data-sort="sort-quantity"
+                        >
+                          Action
+                        </button>
+                      </th> </>}
                   </tr>
                 </thead>
                 {filteredData.length == 0 ? (
@@ -1185,120 +1185,120 @@ function Employees({ onEyeButtonClick }) {
                         <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                       {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")
-                        && 
-                       
-<>
-                       <td>
-                          {formatDate(item.AddedOn) === "Invalid Date"
-                            ? "06/02/2024"
-                            : formatDateFinal(item.AddedOn)}
-                        </td>
-                        {item.designation === "Sales Executive" && <td>
-                            {(item.Active && item.Active.includes("GMT")) ? (
-                              <div>
-                                <span
-                                  style={{ color: "red", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    color: "rgb(170 144 144)",
-                                  }}
-                                >
-                                  {formatDateWP(item.Active)}
-                                </span>
-                              </div>
-                            ) : (
-                              <div>
-                                <span
-                                  style={{ color: "green", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{ fontWeight: "bold", color: "green" }}
-                                >
-                                  Online
-                                </span>
-                              </div>
-                            )}
-                          </td>}
-                          {item.designation !== "Sales Executive" && <td>
-                            N/A
+                        {(adminName === "Nimesh" || adminName === "Ronak" || adminName === "Aakash" || adminName === "shivangi")
+                          &&
+
+                          <>
+                            <td>
+                              {formatDate(item.AddedOn) === "Invalid Date"
+                                ? "06/02/2024"
+                                : formatDateFinal(item.AddedOn)}
+                            </td>
+                            {item.designation === "Sales Executive" && <td>
+                              {(item.Active && item.Active.includes("GMT")) ? (
+                                <div>
+                                  <span
+                                    style={{ color: "red", marginRight: "5px" }}
+                                  >
+                                    ●
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontWeight: "bold",
+                                      color: "rgb(170 144 144)",
+                                    }}
+                                  >
+                                    {formatDateWP(item.Active)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div>
+                                  <span
+                                    style={{ color: "green", marginRight: "5px" }}
+                                  >
+                                    ●
+                                  </span>
+                                  <span
+                                    style={{ fontWeight: "bold", color: "green" }}
+                                  >
+                                    Online
+                                  </span>
+                                </div>
+                              )}
+                            </td>}
+                            {item.designation !== "Sales Executive" && <td>
+                              N/A
                             </td>}
 
-                        <td>
-                          {/* {teamData
+                            <td>
+                              {/* {teamData
                             .filter((obj) => obj.employees.some(emp => emp.ename === item.ename && emp.branchOffice === item.branchOffice))
                             .map(obj => obj.teamName)
                             .join(', ') || <span style={{color:"lightgrey"}}>No team allotted</span>
                           } */}
-                          <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                              <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
 
-                            <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
-                              onClick={(event) => {
+                                <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                  onClick={(event) => {
 
-                                handlChecked(item._id, item.bdmWork)
-                              }} />
+                                    handlChecked(item._id, item.bdmWork)
+                                  }} />
 
-                          </Stack>
-                          {/* {item.bdmWork ? (<span>BDM</span>) : (" ")} */}
-                        </td>
-                        <td>
-                          <div className="d-flex justify-content-center align-items-center">
-                            {<div className="icons-btn">
-                              <IconButton
-                                onClick={() =>
-                                  handleDeleteClick(item._id, item.ename)
-                                }
-                              >
-                                <IconTrash
-                                  style={{
-                                    cursor: "pointer",
-                                    color: "red",
-                                    width: "14px",
-                                    height: "14px",
-                                  }}
-                                />
-                              </IconButton>
-                            </div>}
-                            <div className="icons-btn">
-                              <IconButton
-                                onClick={() => {
-                                  functionopenpopup();
-                                  handleUpdateClick(item._id, item.ename);
-                                }}
-                              >
-                                <ModeEditIcon
-                                  style={{
-                                    cursor: "pointer",
-                                    color: "#a29d9d",
-                                    width: "14px",
-                                    height: "14px",
-                                  }}
-                                />
-                              </IconButton>
-                            </div>
-                            <div className="icons-btn">
-                              <Link
-                                style={{ color: "black" }}
-                                to={`/admin/employees/${item._id}`}
-                              >
-                                <IconButton>
-                                  {" "}
-                                  <IconEye
-                                    style={{
-                                      width: "14px",
-                                      height: "14px",
-                                      color: "#d6a10c",
+                              </Stack>
+                              {/* {item.bdmWork ? (<span>BDM</span>) : (" ")} */}
+                            </td>
+                            <td>
+                              <div className="d-flex justify-content-center align-items-center">
+                                {<div className="icons-btn">
+                                  <IconButton
+                                    onClick={() =>
+                                      handleDeleteClick(item._id, item.ename)
+                                    }
+                                  >
+                                    <IconTrash
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "red",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </div>}
+                                <div className="icons-btn">
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenpopup();
+                                      handleUpdateClick(item._id, item.ename);
                                     }}
-                                  />
-                                </IconButton>
-                              </Link>
-                              {/* <Link
+                                  >
+                                    <ModeEditIcon
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "#a29d9d",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </div>
+                                <div className="icons-btn">
+                                  <Link
+                                    style={{ color: "black" }}
+                                    to={`/admin/employees/${item._id}`}
+                                  >
+                                    <IconButton>
+                                      {" "}
+                                      <IconEye
+                                        style={{
+                                          width: "14px",
+                                          height: "14px",
+                                          color: "#d6a10c",
+                                        }}
+                                      />
+                                    </IconButton>
+                                  </Link>
+                                  {/* <Link
                                 style={{ color: "black" }}
                                 to={`/admin/employeeleads/${item._id}`}
                               >
@@ -1313,9 +1313,9 @@ function Employees({ onEyeButtonClick }) {
                                   />
                                 </IconButton>
                               </Link> */}
-                            </div>
-                          </div>
-                        </td></>}
+                                </div>
+                              </div>
+                            </td></>}
                       </tr>
                     ))}
                   </tbody>
