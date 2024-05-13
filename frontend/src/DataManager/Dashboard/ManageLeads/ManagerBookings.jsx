@@ -465,14 +465,27 @@ function ManagerBookings() {
   };
 
   console.log("Remaining Object", remainingObject)
+const [expanseObject, setExpanseObject] = useState({
+  serviceName : "",
+  bookingIndex : 0,
+  expanseAmount : 0
+})
+  
 
-  const functionOpenAddExpanse = (serviceObject) => {
-
+  const functionOpenAddExpanse = (bookingIndex,serviceName) => {
+  setExpanseObject({
+    ...expanseObject,
+    bookingIndex: bookingIndex,
+    serviceName: serviceName
+  })
+   setOpenAddExpanse(true)
   }
-  const functionDeleteRemainingPayment = async(BookingIndex) => {
+  const functionDeleteRemainingPayment = async(BookingIndex , serviceName) => {
+    console.log("ye ghus raha", BookingIndex , serviceName)
+    const encodedServiceName = encodeURIComponent(serviceName);
     try {
       const response = await axios.delete(
-        `${secretKey}/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}`
+        `${secretKey}/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}/${encodedServiceName}`
       );
       Swal.fire(
         "Payment Updated",
@@ -488,6 +501,25 @@ function ManagerBookings() {
       );
     }
   }
+   const submitExpanse = async()=>{
+    try {
+      const response = await axios.post(
+        `${secretKey}/redesigned-submit-expanse/${currentLeadform["Company Name"]}`, expanseObject
+      );
+      Swal.fire(
+        "Expanse Added ",
+        "Thank you, expanse has been added successfully!",
+        "success"
+      );
+    
+    } catch (error) {
+      Swal.fire(
+        "Error Adding Expanse!",
+        "Sorry, Unable to add the expanse",
+        "error"
+      );
+    }
+   }
   return (
     <div>
       <Header name={dataManagerName} />
@@ -1102,7 +1134,7 @@ function ManagerBookings() {
 
                                             {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                             <div className="d-flex">
-                                              <button onClick={() => functionOpenAddExpanse(obj)} className="btn btn-link btn-small">
+                                              <button onClick={() => functionOpenAddExpanse(0 , obj.serviceName)} className="btn btn-link btn-small">
                                                 + Expanse
                                               </button>
 
@@ -1128,13 +1160,18 @@ function ManagerBookings() {
                                               <DialogContent>
                                                 <div className="expanse-content">
                                                   <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
-                                                  <input type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
+                                                  <input value={expanseObject.expanseAmount} onChange={(e)=>{
+                                                    setExpanseObject({
+                                                      ...expanseObject,
+                                                      expanseAmount: e.target.value
+                                                    })
+                                                  }} type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
                                                 </div>
 
 
                                               </DialogContent>
                                               <div className="expanse-footer">
-                                                <button className="btn btn-primary w-100">
+                                                <button onClick={submitExpanse} className="btn btn-primary w-100">
                                                   Submit
                                                 </button>
                                               </div>
@@ -1189,7 +1226,7 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          - ₹ 500
+                                          - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
                                     </div>
@@ -1545,11 +1582,11 @@ function ManagerBookings() {
                                                           >
                                                             <AddCircle />
                                                           </div>}
-                                                          {/* {
-                                                          currentLeadform.remainingPayments.length - 1 === index && <IconButton>
+                                                          {
+                                                          currentLeadform.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(0, obj.serviceName)}>
                                                             <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
                                                           </IconButton>
-                                                        } */}
+                                                        }
 
                                                         </div>
 
@@ -2366,34 +2403,13 @@ function ManagerBookings() {
                                                 </div>
                                                 {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                                 <div>
-                                                  <button onClick={() => setOpenAddExpanse(true)} className="btn btn-link btn-small">
+                                                  <button onClick={() => functionOpenAddExpanse(BookingIndex + 1 , obj.serviceName)} className="btn btn-link btn-small">
                                                     + Expanse
                                                   </button>
 
                                                 </div>
 
-                                                <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
-                                                  fullWidth
-                                                  maxWidth="sm">
-                                                  <DialogTitle>
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                      <div className="expanse-heading">
-                                                        <h2>Service Name</h2>
-                                                      </div>
-                                                      <div className="expanse-close">
-                                                        <IconButton onClick={() => setOpenAddExpanse(false)}>
-                                                          <CloseIcon />
-                                                        </IconButton>
-                                                      </div>
-                                                    </div>
-
-
-                                                  </DialogTitle>
-                                                  <DialogContent>
-
-
-                                                  </DialogContent>
-                                                </Dialog>
+                                                
 
                                                 {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                               </div>
@@ -2442,7 +2458,7 @@ function ManagerBookings() {
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ 500
+                                              - ₹ {obj.expanses ? obj.expanses : "N/A"}
                                             </div>
                                           </div>
                                         </div>
@@ -2782,11 +2798,11 @@ function ManagerBookings() {
                                                               )}
                                                               </div>
                                                               
-                                                               {/* {
-                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
+                                                               {
+                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1 , obj.serviceName)} >
                                                             <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
                                                           </IconButton>
-                                                        } */}
+                                                        }
                                                             </div>
                                                           </div>
                                                         </div>

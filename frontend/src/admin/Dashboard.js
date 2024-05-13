@@ -2956,21 +2956,35 @@ function Dashboard() {
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
     let remainingAmount = 0;
-    
+    let expanse = 0;
     redesignedData.map((mainBooking)=>{
      
       if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
         if(mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName){
+          
           if(mainBooking.bdeName === mainBooking.bdmName){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+           
+            mainBooking.services.map(serv=>{
+              // console.log(serv.expanse , bdeName ,"this is services");
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            });
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === bdeName){
               achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+              mainBooking.services.map(serv=>{
+
+                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              })
             }
           }
         }
+        
       }else if(mainBooking.remainingPayments.length !== 0){
         mainBooking.remainingPayments.map((remainingObj)=>{
           if(monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)){
@@ -2993,11 +3007,20 @@ function Dashboard() {
             if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
               if(moreObject.bdeName === moreObject.bdmName){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === bdeName){
                   achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                  moreObject.services.map(serv=>{
+                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  })
                 }
               }
             }
@@ -3022,6 +3045,7 @@ function Dashboard() {
           }
         })
       
+        
       
     })
 
@@ -3128,8 +3152,9 @@ function Dashboard() {
 
     totalAchievedAmount =
       Math.round(totalAchievedAmount) + Math.round(achievedAmount) + Math.round(remainingAmount);
+      console.log(bdeName , "ka expanse :-", expanse)
 
-    return achievedAmount + Math.round(remainingAmount);
+    return achievedAmount + Math.round(remainingAmount) - expanse;
   };
 
   const functionGetAmount = (object) => {

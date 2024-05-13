@@ -48,6 +48,9 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
     default: "No payment remarks",
   },
+  expanse:{
+    type:Number
+  }
 });
 
 const RemainingPaymentSchema = new mongoose.Schema({
