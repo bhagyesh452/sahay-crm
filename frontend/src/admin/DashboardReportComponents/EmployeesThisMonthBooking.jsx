@@ -1,6 +1,7 @@
 import React ,{useState,useEffect}from 'react'
 import { debounce } from "lodash";
 import { useTheme } from '@mui/material/styles';
+import axios from "axios";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -82,14 +83,39 @@ function EmployeesThisMonthBooking() {
 
       useEffect(()=>{
         fetchEmployeeInfo()
-
+        fetchRedesignedBookings()
       },[])
+
+      //------------------------------fetching redesigned data-------------------------------------------------------------
+      const fetchRedesignedBookings = async () => {
+        try {
+          const response = await axios.get(
+            `${secretKey}/redesigned-final-leadData`
+          );
+          const bookingsData = response.data;
+          setBdeRedesignedData(response.data);
+    
+          const getBDEnames = new Set();
+          bookingsData.forEach((obj) => {
+            // Check if the bdeName is already in the Set
+    
+            if (!getBDEnames.has(obj.bdeName)) {
+              // If not, add it to the Set and push the object to the final array
+              getBDEnames.add(obj.bdeName);
+            }
+          });
+          setUniqueBDE(getBDEnames);
+          setRedesignedData(bookingsData);
+        } catch (error) {
+          console.log("Error Fetching Bookings Data", error);
+        }
+      };
 
       // ------------------------------------------------------- Redesigned Total Bookings Functions ------------------------------------------------------------------
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
   let totalAchievedAmount = 0;
-  const currentYear = new Date().getFullYear();
+  const currentYear = initialDate.getFullYear();
   const monthNames = [
     "January",
     "February",
@@ -104,7 +130,7 @@ function EmployeesThisMonthBooking() {
     "November",
     "December",
   ];
-  const currentMonth = monthNames[new Date().getMonth()];
+  const currentMonth = monthNames[initialDate.getMonth()];
 
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
@@ -165,7 +191,7 @@ function EmployeesThisMonthBooking() {
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
             mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
             })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === bdeName){
@@ -206,7 +232,7 @@ function EmployeesThisMonthBooking() {
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
                 moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
                 })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === bdeName){
@@ -385,6 +411,9 @@ function EmployeesThisMonthBooking() {
        }
      })
    }
+
+
+
  
    //--------------------------multiple employee selection filter function------------------------------------
    const options = employeeDataFilter.map((obj) => obj.ename);
