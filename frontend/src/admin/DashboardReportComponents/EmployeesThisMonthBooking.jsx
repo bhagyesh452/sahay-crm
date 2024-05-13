@@ -178,6 +178,43 @@ function EmployeesThisMonthBooking() {
         totalMaturedCount = totalMaturedCount + maturedCount;
         return maturedCount;
     };
+    const functionOnlyCalculateMatured = (bdeName) => {
+        let maturedCount = 0;
+        redesignedData.map((mainBooking) => {
+
+            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                    if (mainBooking.bdeName === mainBooking.bdmName) {
+                        maturedCount = maturedCount + 1
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        maturedCount = maturedCount + 0.5;
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.bdeName === bdeName) {
+                            maturedCount = maturedCount + 1;
+                        }
+                    }
+                }
+            }
+            mainBooking.moreBookings.map((moreObject) => {
+                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                        if (moreObject.bdeName === moreObject.bdmName) {
+                            maturedCount = maturedCount + 1;
+                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5
+                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                            if (moreObject.bdeName === bdeName) {
+                                maturedCount = maturedCount + 1;
+                            }
+                        }
+                    }
+                }
+            })
+
+
+        })
+        return maturedCount;
+    };
 
 
     const functionCalculateAchievedAmount = (bdeName) => {
@@ -271,8 +308,6 @@ function EmployeesThisMonthBooking() {
                     })
                 }
             })
-
-
 
         })
 
@@ -377,7 +412,105 @@ function EmployeesThisMonthBooking() {
      
 
         return achievedAmount + Math.round(remainingAmount) - expanse;
-    };
+    }
+    // const functionFilterDateRange = (bdeName , startDate , endDate) => {
+    //     let achievedAmount = 0;
+    //     let remainingAmount = 0;
+    //     let expanse = 0;
+    //     redesignedData.map((mainBooking) => {
+    //         if (new Date(bookingDate) >= startDate && new Date(start) ) {
+    //             if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+
+    //                 if (mainBooking.bdeName === mainBooking.bdmName) {
+    //                     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+
+    //                     mainBooking.services.map(serv => {
+    //                         // console.log(serv.expanse , bdeName ,"this is services");
+    //                         expanse = serv.expanse ? expanse + serv.expanse : expanse;
+    //                     });
+    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+    //                     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+    //                     mainBooking.services.map(serv => {
+    //                         expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+    //                     })
+    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+    //                     if (mainBooking.bdeName === bdeName) {
+    //                         achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+    //                         mainBooking.services.map(serv => {
+
+    //                             expanse = serv.expanse ? expanse + serv.expanse : expanse;
+    //                         })
+    //                     }
+    //                 }
+    //             }
+
+    //         } else if (mainBooking.remainingPayments.length !== 0) {
+    //             mainBooking.remainingPayments.map((remainingObj) => {
+    //                 if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+    //                     const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+    //                     const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+    //                     if (mainBooking.bdeName === mainBooking.bdmName) {
+    //                         remainingAmount += Math.round(tempAmount);
+    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+    //                         remainingAmount += Math.round(tempAmount) / 2;
+    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+    //                         if (mainBooking.bdeName === bdeName) {
+    //                             remainingAmount += Math.round(tempAmount);
+    //                         }
+    //                     }
+    //                 }
+    //             })
+    //         }
+    //         mainBooking.moreBookings.map((moreObject) => {
+    //             if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+    //                 if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+    //                     if (moreObject.bdeName === moreObject.bdmName) {
+    //                         achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+    //                         moreObject.services.map(serv => {
+    //                             expanse = serv.expanse ? expanse + serv.expanse : expanse;
+    //                         })
+    //                     } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+    //                         achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+    //                         moreObject.services.map(serv => {
+    //                             expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+    //                         })
+    //                     } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+    //                         if (moreObject.bdeName === bdeName) {
+    //                             achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+    //                             moreObject.services.map(serv => {
+    //                                 expanse = serv.expanse ? expanse + serv.expanse : expanse;
+    //                             })
+    //                         }
+    //                     }
+    //                 }
+    //             } else if (moreObject.remainingPayments.length !== 0) {
+
+    //                 moreObject.remainingPayments.map((remainingObj) => {
+    //                     if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+    //                         const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+    //                         const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+    //                         if (moreObject.bdeName === moreObject.bdmName) {
+    //                             remainingAmount += Math.round(tempAmount);
+    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+    //                             remainingAmount += Math.round(tempAmount) / 2;
+    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+    //                             if (moreObject.bdeName === bdeName) {
+    //                                 remainingAmount += Math.round(tempAmount);
+    //                             }
+    //                         }
+    //                     }
+    //                 })
+    //             }
+    //         })
+
+
+
+    //     })
+     
+
+    //     return achievedAmount + Math.round(remainingAmount) - expanse;
+    // };
 
     const functionGetAmount = (object) => {
         if (object.targetDetails.length !== 0) {
@@ -596,8 +729,8 @@ const handleSortMaturedCases = (sortByForwarded) => {
             //     }
             // });
             employeeData.sort((a, b) => {
-                const countA = companyDataAscending[a.ename] || 0;
-                const countB = companyDataAscending[b.ename] || 0;
+                const countA =  parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
+                const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
                 return countA - countB;
             });
             break; // Add break statement here
@@ -611,8 +744,8 @@ const handleSortMaturedCases = (sortByForwarded) => {
             //     }
             // });
             employeeData.sort((a, b) => {
-                const countA = companyDataDescending[a.ename] || 0;
-                const countB = companyDataDescending[b.ename] || 0;
+              const countA =  functionOnlyCalculateMatured(a.ename) || 0;
+              const countB = functionOnlyCalculateMatured(b.ename) || 0;
                 return countB - countA;
             });
             break; // Add break statement here
@@ -623,11 +756,178 @@ const handleSortMaturedCases = (sortByForwarded) => {
             //     // Restore to previous state
             //     setForwardEmployeeData(finalEmployeeData);
             // }
+            fetchEmployeeInfo()
             break; // Add break statement here
         default:
             break;
     }
 };
+const handleSortAchievedAmount = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+        ...prevData,
+        achievedamount:
+            prevData.achievedamount === 'ascending'
+                ? 'descending'
+                : prevData.achievedamount === 'descending'
+                    ? 'none'
+                    : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+        case 'ascending':
+            //console.log("yahan chala ascending");
+            const companyDataAscending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+
+            employeeData.sort((a, b) => {
+                const countA =  parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+                console.log(countA , "a")
+                const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                console.log(countB , "b")
+                return countA - countB;
+            });
+            break; // Add break statement here
+
+        case 'descending':
+            //console.log("yahan chala descending");
+            const companyDataDescending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+            employeeData.sort((a, b) => {
+              const countA =  parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                return countB - countA;
+            });
+            break; // Add break statement here
+
+        case "none":
+            //console.log("yahan chala none");
+            fetchEmployeeInfo();
+            break; // Add break statement here
+        default:
+            break;
+    }
+};
+const handleSortTargetAmount = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+        ...prevData,
+        targetamount:
+            prevData.targetamount === 'ascending'
+                ? 'descending'
+                : prevData.targetamount === 'descending'
+                    ? 'none'
+                    : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+        case 'ascending':
+            //console.log("yahan chala ascending");
+            const companyDataAscending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+
+            employeeData.sort((a, b) => {
+                const countA =  parseInt(functionGetOnlyAmount(a)) || 0;
+                console.log(countA , "a")
+                const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                console.log(countB , "b")
+                return countA - countB;
+            });
+            break; // Add break statement here
+
+        case 'descending':
+            //console.log("yahan chala descending");
+            const companyDataDescending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+            employeeData.sort((a, b) => {
+              const countA =  parseInt(functionGetOnlyAmount(a)) || 0;
+              const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                return countB - countA;
+            });
+            break; // Add break statement here
+
+        case "none":
+            //console.log("yahan chala none");
+            fetchEmployeeInfo();
+            break; // Add break statement here
+        default:
+            break;
+    }
+};
+const handleSortRatio = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+        ...prevData,
+        targetratio:
+            prevData.targetratio === 'ascending'
+                ? 'descending'
+                : prevData.targetratio === 'descending'
+                    ? 'none'
+                    : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+        case 'ascending':
+            //console.log("yahan chala ascending");
+            const companyDataAscending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+
+            employeeData.sort((a, b) => {
+                const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) /parseInt(functionGetOnlyAmount(a)) || 0;
+               
+                const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) /parseInt(functionGetOnlyAmount(b)) || 0;
+             
+                return countA - countB;
+            });
+            break; // Add break statement here
+
+        case 'descending':
+            //console.log("yahan chala descending");
+            const companyDataDescending = {};
+            // teamLeadsData.forEach((company) => {
+            //     if (company.bdmName) {
+            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+            //     }
+            // });
+            
+            employeeData.sort((a, b) => {
+              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) /parseInt(functionGetOnlyAmount(a)) || 0;
+             
+              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) /parseInt(functionGetOnlyAmount(b)) || 0;
+         
+              return countB - countA;
+          });
+            break; // Add break statement here
+
+        case "none":
+            //console.log("yahan chala none");
+            fetchEmployeeInfo();
+            break; // Add break statement here
+        default:
+            break;
+    }
+};
+
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -815,7 +1115,7 @@ const handleSortMaturedCases = (sortByForwarded) => {
                                                     ...prevData,
                                                     targetamount: updatedSortType,
                                                 }));
-                                                handleSortMaturedCases(updatedSortType);
+                                                handleSortTargetAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
                                             <div>TARGET AMOUNT</div>
                                             <div className="short-arrow-div">
@@ -852,7 +1152,7 @@ const handleSortMaturedCases = (sortByForwarded) => {
                                                     ...prevData,
                                                     achievedamount: updatedSortType,
                                                 }));
-                                                handleSortMaturedCases(updatedSortType);
+                                                handleSortAchievedAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
                                             <div>ACHIEVED AMOUNT</div>
                                             <div className="short-arrow-div">
@@ -889,7 +1189,7 @@ const handleSortMaturedCases = (sortByForwarded) => {
                                                     ...prevData,
                                                     targetratio: updatedSortType,
                                                 }));
-                                                handleSortMaturedCases(updatedSortType);
+                                                handleSortRatio(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
                                             <div>TARGET/ACHIEVED RATIO</div>
                                             <div className="short-arrow-div">
@@ -954,7 +1254,7 @@ const handleSortMaturedCases = (sortByForwarded) => {
                                     <>
                                         <tbody>
                                             {employeeData &&
-                                                employeeData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename))
+                                                employeeData
                                                     .filter(
                                                         (item) =>
                                                             item.designation ===
