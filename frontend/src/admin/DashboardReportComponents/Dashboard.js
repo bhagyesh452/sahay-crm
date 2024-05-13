@@ -25,7 +25,8 @@ import EmployeeDataReport from "./EmployeeDataReport.jsx";
 import EmployeesForwardedDataReport from "./EmployeesForwardedDataReport.jsx";
 import EmployeesProjectionSummary from "./EmployeesProjectionSummary.jsx";
 import Nodata from "../../components/Nodata.jsx";
-
+import { RiShareForward2Fill } from "react-icons/ri";
+import { RiDatabaseLine } from "react-icons/ri";
 
 
 
@@ -105,7 +106,7 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <RiShareForward2Fill style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                                             <span style={{fontSize:"12px"}}>Employees Forwarded Data Report</span>
                                         </div>
                                     }
@@ -114,7 +115,7 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <RiDatabaseLine style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                                             <span style={{fontSize:"12px"}}>Projection Summary</span>
                                         </div>
                                     }
