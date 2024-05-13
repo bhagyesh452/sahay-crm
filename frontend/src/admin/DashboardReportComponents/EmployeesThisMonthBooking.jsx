@@ -1,11 +1,61 @@
-import React from 'react'
+import React ,{useState,useEffect}from 'react'
 import { debounce } from "lodash";
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Calendar from "@mui/icons-material/Event";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import dayjs from "dayjs";
+import { IoClose } from "react-icons/io5";
+import Nodata from '../../components/Nodata';
+//import { options } from "../components/Options.js";
 
 function EmployeesThisMonthBooking() {
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
     const[employeeDataFilter , setEmployeeDataFilter] = useState([])
     const[employeeInfo , setEmployeeInfo] = useState([])
+    const [monthBookingPerson, setMonthBookingPerson] = useState([])
+    const [uniqueBDE, setUniqueBDE] = useState([]);
+    const [redesignedData, setRedesignedData] = useState([]);
+    const [companyData, setCompanyData] = useState([]);
+    const [searchBookingBde, setSearchBookingBde] = useState("")
+    const [bdeResegnedData, setBdeRedesignedData] = useState([])
+    const [initialDate, setInitialDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
+
+
+
+
+
+
+    //-----------------------dateformats-------------------------------------
+    function formatDateFinal(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+    
+      function formatDateMonth(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+        const year = date.getFullYear();
+        return `${month}/${day}/${year}`;
+      }
 
     //----------------------fetching employee info----------------------------------------
     const fetchEmployeeInfo = async () => {
@@ -255,9 +305,125 @@ function EmployeesThisMonthBooking() {
     });
     generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
     return generatedRevenue;
-
-
   }
+
+   //-------------------this months booking bde search filter---------------------------
+
+
+   const filterSearchThisMonthBookingBde = (searchTerm) => {
+     setEmployeeData(employeeDataFilter.filter((obj) => obj.ename.toLowerCase().includes(searchTerm.toLowerCase())))
+ 
+   }
+   const debouncedFilterSearchThisMonthBookingBde = debounce(filterSearchThisMonthBookingBde, 100)
+
+   //--------------------------------date range filter function---------------------------------
+   const numberFormatOptions = {
+    style: "currency",
+    currency: "INR", // Use the currency code for Indian Rupee (INR)
+    minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
+    maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
+  };
+  const shortcutsItems = [
+    {
+      label: "This Week",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("week"), today.endOf("week")];
+      },
+    },
+    {
+      label: "Last Week",
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
+      },
+    },
+    {
+      label: "Last 7 Days",
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, "day"), today];
+      },
+    },
+    {
+      label: "Current Month",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("month"), today.endOf("month")];
+      },
+    },
+    {
+      label: "Next Month",
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf("month").add(1, "day");
+        return [startOfNextMonth, startOfNextMonth.endOf("month")];
+      },
+    },
+    { label: "Reset", getValue: () => [null, null] },
+  ];
+ 
+   const handleThisMonthBookingDateRange = (values) => {
+     if (values[1]) {
+       const startDate = values[0].format('MM/DD/YYYY')
+       const endDate = values[1].format('MM/DD/YYYY')
+     }
+     setInitialDate(new Date(values[0].format('MM/DD/YYYY')))
+     const fileteredData = redesignedData.filter((product) => {
+       const productDate = formatDateMonth(product.bookingDate);
+       if (startDate === endDate) {
+         return productDate === startDate;
+ 
+       } else if (startDate !== endDate) {
+         return (
+           new Date(productDate) >= new Date(startDate) &&
+           new Date(productDate) <= new Date(endDate)
+         )
+       } else {
+         return false;
+       }
+     })
+   }
+ 
+   //--------------------------multiple employee selection filter function------------------------------------
+   const options = employeeDataFilter.map((obj) => obj.ename);
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  function getStyles(name, personName, theme) {
+    return {
+      fontWeight:
+        personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
+
+  const theme = useTheme();
+   
+   const handleSelectThisMonthBookingEmployees = (selectedEmployeeNames) => {
+ 
+     const filteredForwardEmployeeData = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
+    
+     //console.log("filtetred", filteredForwardEmployeeData)
+     if (filteredForwardEmployeeData.length > 0) {     
+     
+       setEmployeeData(filteredForwardEmployeeData);      
+     } else if (filteredForwardEmployeeData.length === 0) {
+       setEmployeeData(employeeDataFilter) 
+     }
+   
+   };
 
   return (
     <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
