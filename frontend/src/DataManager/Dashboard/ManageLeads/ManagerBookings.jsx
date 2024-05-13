@@ -2458,7 +2458,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ {obj.expanses ? obj.expanses : "N/A"}
+                                            - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                             </div>
                                           </div>
                                         </div>

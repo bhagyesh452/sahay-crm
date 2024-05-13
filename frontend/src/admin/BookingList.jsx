@@ -1201,7 +1201,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          - ₹ 500
+                                        - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
                                     </div>
@@ -2253,7 +2253,7 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ 500
+                                            - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                             </div>
                                           </div>
                                         </div>

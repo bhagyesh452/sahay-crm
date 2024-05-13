@@ -3070,7 +3070,7 @@ function Dashboard() {
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
             mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
             })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === bdeName){
@@ -3111,7 +3111,7 @@ function Dashboard() {
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
                 moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
                 })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === bdeName){
