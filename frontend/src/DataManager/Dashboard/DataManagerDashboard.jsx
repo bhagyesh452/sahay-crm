@@ -4756,7 +4756,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
         const enameTotalPaymentsAscending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsAscending[ename]) {
               enameTotalPaymentsAscending[ename] = 0;
             }
@@ -4770,7 +4770,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataAscending = sortedEnameArrayAscending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
@@ -4792,7 +4792,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
         const enameTotalPaymentsDescending = {};
         followData.forEach((company) => {
           if (company.caseType === 'Recieved') {
-            const ename = company.ename;
+            const ename = company.bdmName;
             if (!enameTotalPaymentsDescending[ename]) {
               enameTotalPaymentsDescending[ename] = 0;
             }
@@ -4806,7 +4806,7 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
 
         // Rearrange followData based on sortedEnameArray
         const sortedFollowDataDescending = sortedEnameArrayDescending.flatMap((ename) => {
-          return followData.filter((company) => company.ename === ename);
+          return followData.filter((company) => company.bdmName === ename);
         });
 
         // Set the sorted followData
@@ -4834,6 +4834,110 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
     }
   };
 
+  const handleSortMaturedCases=(sortTypeForwarded)=>{
+    setNewSortType((prevData) => ({
+      ...prevData,
+      maturedcase:
+        prevData.maturedcase === 'ascending'
+          ? 'descending'
+          : prevData.maturedcase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+    switch(sortTypeForwarded){
+      case 'ascending':
+        console.log("yahan chala ascedning")
+        const companyDataAscending = {};
+        companyDataTotal.forEach((company)=>{
+          if(company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured'){
+            companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
+          }
+        })
+        forwardEmployeeData.sort((a,b)=>{
+          const A = companyDataAscending[a.ename] || 0;
+          const B = companyDataAscending[b.ename] || 0;
+          return A-B;
+        });
+        break;
+        case 'descending':
+        console.log("yahan chala descending");
+        const companyDataDescending = {};
+        companyDataTotal.forEach((company) => {
+          if (company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured') {
+            companyDataDescending[company.ename] = (companyDataDescending[company.ename] || 0) + 1;
+          }
+        });
+        forwardEmployeeData.sort((a, b) => {
+          const countA = companyDataDescending[a.ename] || 0;
+          const countB = companyDataDescending[b.ename] || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+
+      default:
+        break;
+
+      }
+  }
+
+  const handleSortRedesignedData = (sortByForwarded) => {
+    console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
+      ...prevData,
+      generatedrevenue:
+        prevData.generatedrevenue === 'ascending'
+          ? 'descending'
+          : prevData.generatedrevenue === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
+
+    switch (sortByForwarded) {
+      case 'ascending':
+        //console.log("yahan chala ascending");
+        // const companyDataAscending = {};
+        // companyDataTotal.forEach((company) => {
+        //   if (company.bdmAcceptStatus === 'Pending' || company.bdmAcceptStatus === 'Accept') {
+        //     companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
+        //   }
+        // });
+       
+        forwardEmployeeData.sort((a, b) => {
+          const countA = functionCalculateGeneratedTotalRevenue(a.ename) || 0;
+          const countB = functionCalculateGeneratedTotalRevenue(b.ename) || 0;
+          return countA - countB;
+        });
+        break; // Add break statement here
+
+      case 'descending':
+        //console.log("yahan chala descending");
+        forwardEmployeeData.sort((a, b) => {
+          const countA = functionCalculateGeneratedTotalRevenue(a.ename) || 0;
+          const countB = functionCalculateGeneratedTotalRevenue(b.ename) || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
+
+      case "none":
+        //console.log("yahan chala none");
+        if (finalEmployeeData.length > 0) {
+          // Restore to previous state
+          setForwardEmployeeData(finalEmployeeData);
+        }
+        break; // Add break statement here
+
+      default:
+        break;
+    }
+  }
 
 
   useEffect(() => {
@@ -6371,8 +6475,80 @@ const handleSelectEmployeeDataReport=(selectedEmployeeNames)=>{
                                     </div>
                                   </div>
                                 </th>
-                                <th >Matured Case</th>
-                                <th>Generated Revenue</th>
+                                <th style={{cursor:'pointer'}}
+                                onClick={(e)=>{
+                                  let updatedSortType;
+                                  if(newSortType.maturedcase === 'ascending'){
+                                    updatedSortType = 'descending';
+                                  }else if(newSortType.maturedcase === 'descending'){
+                                    updatedSortType = 'none'
+                                  }else{
+                                    updatedSortType = 'ascending'
+                                  }
+                                  setNewSortType((prevData) => ({
+                                    ...prevData,
+                                    maturedcase: updatedSortType,
+                                  }));
+                                  handleSortMaturedCases(updatedSortType)
+                                }}><div className="d-flex align-items-center justify-content-between">
+                                <div>Matured Case</div>
+                                <div className="short-arrow-div">
+                                  <ArrowDropUpIcon className="up-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.recievedprojectioncase === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon className="down-short-arrow"
+                                    style={{
+                                      color:
+                                        newSortType.recievedprojectioncase === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                    }}
+                                  />
+                                </div>
+                              </div></th>
+                              <th style={{ cursor: "pointer" }} 
+                               onClick={(e) => {
+                                let updatedSortType;
+                                if (newSortType.generatedrevenue === "ascending") {
+                                  updatedSortType = "descending";
+                                } else if (newSortType.generatedrevenue === "descending") {
+                                  updatedSortType
+                                    = "none";
+                                } else {
+                                  updatedSortType = "ascending";
+                                }
+                                setNewSortType((prevData) => ({
+                                  ...prevData,
+                                  generatedrevenue: updatedSortType,
+                                }));
+                                handleSortRedesignedData(updatedSortType);
+                              }}><div className="d-flex align-items-center justify-content-between">
+                                    <div>Generated Revenue</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.generatedrevenue === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            newSortType.generatedrevenue === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
