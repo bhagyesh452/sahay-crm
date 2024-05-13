@@ -273,6 +273,105 @@ function EmployeesThisMonthBooking() {
 
     return achievedAmount + Math.round(remainingAmount) - expanse;
   };
+  const functionOnlyShowAchievedAmount = (bdeName) => {
+    let achievedAmount = 0;
+    let remainingAmount = 0;
+    let expanse = 0;
+    redesignedData.map((mainBooking)=>{
+     
+      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
+        if(mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName){
+          
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+           
+            mainBooking.services.map(serv=>{
+              // console.log(serv.expanse , bdeName ,"this is services");
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            });
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+            })
+          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+            if(mainBooking.bdeName === bdeName){
+              achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+              mainBooking.services.map(serv=>{
+
+                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              })
+            }
+          }
+        }
+        
+      }else if(mainBooking.remainingPayments.length !== 0){
+        mainBooking.remainingPayments.map((remainingObj)=>{
+          if(monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)){
+            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === bdeName) {
+                remainingAmount += Math.round(tempAmount);
+              }
+            }
+          }
+        })
+      }
+        mainBooking.moreBookings.map((moreObject)=>{
+          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
+            if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
+              if(moreObject.bdeName === moreObject.bdmName){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+                })
+              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                if(moreObject.bdeName === bdeName){
+                  achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                  moreObject.services.map(serv=>{
+                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  })
+                }
+              }
+            }
+          }else if(moreObject.remainingPayments.length!==0){
+           
+            moreObject.remainingPayments.map((remainingObj)=>{
+              if(monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)){
+                
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if(moreObject.bdeName === moreObject.bdmName){
+                    remainingAmount += Math.round(tempAmount);
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                  remainingAmount += Math.round(tempAmount)/2;
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                  if(moreObject.bdeName === bdeName){
+                    remainingAmount += Math.round(tempAmount);
+                  }
+                }         
+              }
+            })
+          }
+        })
+      
+        
+      
+    })
+
+    return achievedAmount + Math.round(remainingAmount) - expanse;
+  };
+
 
   const functionGetAmount = (object) => {
     if (object.targetDetails.length !== 0) {
@@ -284,6 +383,17 @@ function EmployeesThisMonthBooking() {
         foundObject &&
         Math.round(totalTargetAmount) + Math.round(foundObject.amount);
     
+      return foundObject ? foundObject.amount : 0;
+    } else {
+      return 0;
+    }
+  };
+  const functionOnlyShowAmount = (object) => {
+    if (object.targetDetails.length !== 0) {
+      const foundObject = object.targetDetails.find(
+        (item) =>
+          Math.round(item.year) === currentYear && item.month === currentMonth
+      );    
       return foundObject ? foundObject.amount : 0;
     } else {
       return 0;
@@ -603,7 +713,7 @@ function EmployeesThisMonthBooking() {
                 <>
                   <tbody>
                     {employeeData &&
-                      employeeData.sort((a,b)=>functionCalculateAchievedAmount(b.ename) - functionCalculateAchievedAmount(a.ename))
+                      employeeData.sort((a,b)=>functionOnlyShowAchievedAmount(b.ename) - functionOnlyShowAchievedAmount(a.ename))
                         .filter(
                           (item) =>
                             item.designation ===
@@ -631,17 +741,17 @@ function EmployeesThisMonthBooking() {
                               </td>
                               <td>
                                 ₹{" "}
-                                {functionCalculateAchievedAmount(
+                                {parseInt(functionCalculateAchievedAmount(
                                   obj.ename
-                                ).toLocaleString()}
+                                )).toLocaleString()}
                               </td>
                               <td>
                                 {" "}
                                 {(
-                                  (functionCalculateAchievedAmount(
+                                  (functionOnlyShowAchievedAmount(
                                     obj.ename
                                   ) /
-                                    functionGetAmount(obj)) *
+                                    functionOnlyShowAmount(obj)) *
                                   100
                                 ).toFixed(2)}{" "}
                                 %
@@ -670,12 +780,12 @@ function EmployeesThisMonthBooking() {
                       </td>
                       <td>
                         ₹{" "}
-                        {(totalTargetAmount / 2).toLocaleString()}
+                        {(totalTargetAmount ).toLocaleString()}
                       </td>
                       <td>
                         ₹{" "}
                         {(
-                          totalAchievedAmount / 2
+                          totalAchievedAmount
                         ).toLocaleString()}
                       </td>
                       <td>
