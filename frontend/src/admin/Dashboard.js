@@ -2938,7 +2938,9 @@ function Dashboard() {
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
   let totalAchievedAmount = 0;
-  const currentYear = new Date().getFullYear();
+  const [initialDate, setInitialDate] = useState(new Date());
+
+  const currentYear = initialDate.getFullYear();
   const monthNames = [
     "January",
     "February",
@@ -2953,7 +2955,8 @@ function Dashboard() {
     "November",
     "December",
   ];
-  const currentMonth = monthNames[new Date().getMonth()];
+
+  const currentMonth = monthNames[initialDate.getMonth()];
 
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
@@ -3071,7 +3074,7 @@ function Dashboard() {
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
             mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
             })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === bdeName){
@@ -3112,7 +3115,7 @@ function Dashboard() {
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
                 moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
                 })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === bdeName){
@@ -3251,7 +3254,7 @@ function Dashboard() {
 
     totalAchievedAmount =
       Math.round(totalAchievedAmount) + Math.round(achievedAmount) + Math.round(remainingAmount);
-      console.log(bdeName , "ka expanse :-", expanse)
+      
 
     return achievedAmount + Math.round(remainingAmount) - expanse;
   };
@@ -3401,7 +3404,7 @@ function Dashboard() {
       const startDate = values[0].format('MM/DD/YYYY')
       const endDate = values[1].format('MM/DD/YYYY')
     }
-
+    setInitialDate(new Date(values[0].format('MM/DD/YYYY')))
     const fileteredData = redesignedData.filter((product) => {
       const productDate = formatDateMonth(product.bookingDate);
       if (startDate === endDate) {
@@ -3419,21 +3422,20 @@ function Dashboard() {
   }
 
   const [monthBookingPerson, setMonthBookingPerson] = useState([])
+  
   const handleSelectThisMonthBookingEmployees = (selectedEmployeeNames) => {
+
     const filteredForwardEmployeeData = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
-    
+   
     //console.log("filtetred", filteredForwardEmployeeData)
-    if (filteredForwardEmployeeData.length > 0) {
-      setEmployeeData(employeeDataFilter);
-      
+    if (filteredForwardEmployeeData.length > 0) {     
+    
+      setEmployeeData(filteredForwardEmployeeData);      
     } else if (filteredForwardEmployeeData.length === 0) {
-      setEmployeeData(filteredForwardEmployeeData)
-     
+      setEmployeeData(employeeDataFilter) 
     }
   
   };
-
-
 
 
   return (
@@ -3596,6 +3598,7 @@ function Dashboard() {
                                 multiple
                                 value={monthBookingPerson}
                                 onChange={(event) => {
+                                 
                                   setMonthBookingPerson(event.target.value)
                                   handleSelectThisMonthBookingEmployees(event.target.value)
                                 }}

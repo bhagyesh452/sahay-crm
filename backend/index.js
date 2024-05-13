@@ -9045,7 +9045,7 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
       _id:serviceObject._id,// Spread operator to copy all properties from serviceObject
       expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
     };
-    console.log(updatedServiceObject);
+ 
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = mainObject.services.map(service => {
       if (service.serviceName === data.serviceName) {
@@ -9063,7 +9063,55 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
 
     res.status(200).json(updatedMainObject);
   } else {
-    return res.status(400).json({ error: "Invalid booking index" });
+    const moreObject = mainObject.moreBookings[bookingIndex -1];
+    const findServices = moreObject.services
+    const serviceObject = findServices.filter(service => service.serviceName === data.serviceName)[0];
+    
+    if (!serviceObject) {
+      return res.status(404).json({ error: "Service not found" });
+    }
+
+    // Update the serviceObject with new expanse amount
+    const expanse = data.expanseAmount
+    const updatedServiceObject = {
+      serviceName: serviceObject.serviceName, // Spread operator to copy all properties from serviceObject
+      totalPaymentWOGST: serviceObject.totalPaymentWOGST, // Spread operator to copy all properties from serviceObject
+      totalPaymentWGST: serviceObject.totalPaymentWGST, // Spread operator to copy all properties from serviceObject
+      withGST: serviceObject.withGST, // Spread operator to copy all properties from serviceObject
+      withDSC: serviceObject.withDSC, // Spread operator to copy all properties from serviceObject
+      paymentTerms: serviceObject.paymentTerms, // Spread operator to copy all properties from serviceObject
+      firstPayment: serviceObject.firstPayment, // Spread operator to copy all properties from serviceObject
+      secondPayment: serviceObject.secondPayment, // Spread operator to copy all properties from serviceObject
+       thirdPayment: serviceObject. thirdPayment, // Spread operator to copy all properties from serviceObject
+      fourthPayment: serviceObject.fourthPayment, // Spread operator to copy all properties from serviceObject
+      secondPaymentRemarks: serviceObject.secondPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      thirdPaymentRemarks: serviceObject.thirdPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
+      paymentRemarks: serviceObject.paymentRemarks, 
+      _id:serviceObject._id,// Spread operator to copy all properties from serviceObject
+      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+    };
+    console.log(updatedServiceObject);
+    // Update the services array in mainObject with the updated serviceObject
+    const updatedServices = moreObject.services.map(service => {
+      if (service.serviceName === data.serviceName) {
+        return updatedServiceObject;
+      }
+      return service;
+    });
+
+    // Update the mainObject with the updated services array
+    const updatedMainObj = await RedesignedLeadformModel.updateOne(
+      { "Company Name": companyName },
+      {
+        $set: {
+          [`moreBookings.${bookingIndex-1}.services`]: updatedServices,
+         
+        }
+      }
+    );
+
+    res.status(200).json(updatedMainObj);
   }
 });
 

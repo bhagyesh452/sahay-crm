@@ -1735,6 +1735,7 @@ function EmployeeDashboard() {
   const functionCalculateAchievedRevenue = (istrue) => {
     let achievedAmount = 0;
     let remainingAmount = 0;
+    let expanse = 0;
     const today = new Date();
   
     redesignedData.map((mainBooking)=>{
@@ -1743,11 +1744,21 @@ function EmployeeDashboard() {
          
           if(mainBooking.bdeName === mainBooking.bdmName){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+            mainBooking.services.map(serv=>{
+              // console.log(serv.expanse , bdeName ,"this is services");
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            });
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+            })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === data.ename){
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+              mainBooking.services.map(serv=>{
+                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              })
             }
           }
         }
@@ -1756,11 +1767,20 @@ function EmployeeDashboard() {
          
               if(moreObject.bdeName === moreObject.bdmName){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === data.ename){
                   achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                  moreObject.services.map(serv=>{
+                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  })
                 }
               }
          
@@ -1772,11 +1792,20 @@ function EmployeeDashboard() {
          
           if(mainBooking.bdeName === mainBooking.bdmName){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+            })
           }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
             if(mainBooking.bdeName === data.ename){
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+              mainBooking.services.map(serv=>{
+                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              })
             }
           }
         }else if(mainBooking.remainingPayments.length !== 0){
@@ -1801,11 +1830,20 @@ function EmployeeDashboard() {
            
               if(moreObject.bdeName === moreObject.bdmName){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+                })
               }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                 if(moreObject.bdeName === data.ename){
                   achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                  moreObject.services.map(serv=>{
+                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                  })
                 }
               }
            
@@ -1866,7 +1904,7 @@ function EmployeeDashboard() {
     //     });
     //   }
     // });
-    return achievedAmount + Math.round(remainingAmount);
+    return achievedAmount + Math.round(remainingAmount) - expanse;
 };
 
   const functionCalculateYesterdayRevenue = () => {
@@ -2027,17 +2065,17 @@ function EmployeeDashboard() {
 
   };
 
-  console.log(followData
-    .filter(obj => obj.bdeName === data.ename)
-    .reduce((total, obj) => total + obj.totalPayment, 0))
+  // console.log(followData
+  //   .filter(obj => obj.bdeName === data.ename)
+  //   .reduce((total, obj) => total + obj.totalPayment, 0))
 
-  console.log(followDataToday
-    .filter(obj => obj.bdeName === data.ename)
-    .reduce((total, obj) => total + obj.totalPayment, 0))
+  // console.log(followDataToday
+  //   .filter(obj => obj.bdeName === data.ename)
+  //   .reduce((total, obj) => total + obj.totalPayment, 0))
 
-  console.log("followData", followData.filter(obj => obj.bdeName === data.ename))
+  // console.log("followData", followData.filter(obj => obj.bdeName === data.ename))
 
-  console.log("followDataToday", followDataToday.filter(obj => obj.bdeName === data.ename))
+  // console.log("followDataToday", followDataToday.filter(obj => obj.bdeName === data.ename))
 
 
 
