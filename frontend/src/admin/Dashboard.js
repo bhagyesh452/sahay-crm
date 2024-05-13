@@ -64,6 +64,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import EmployeeDataReport from "./DashboardReportComponents/EmployeeDataReport.jsx";
 import EmployeesForwardedDataReport from "./DashboardReportComponents/EmployeesForwardedDataReport.jsx";
+import EmployeesProjectionSummary from "./DashboardReportComponents/EmployeesProjectionSummary.jsx";
 
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
 
@@ -5203,7 +5204,7 @@ function Dashboard() {
 
                   {/* ------------------------projection-summary--------------------------------------------- */}
 
-                  <div className="employee-dashboard mt-3"
+                  {/* <div className="employee-dashboard mt-3"
                     id="projectionsummaryadmin"   >
                     <div className="card">
                       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
@@ -5419,7 +5420,7 @@ function Dashboard() {
                                     }}
                                   />
                                 </th>
-                                {/* <th>Est. Payment Date</th> */}
+                               
                               </tr>
                             </thead>
                             <tbody>
@@ -5479,7 +5480,7 @@ function Dashboard() {
                                       </td>
                                     </tr>
                                   ))}
-                                  {/* Map employeeData with default fields */}
+                                 
                                   {employeeDataProjectionSummary
                                     .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                                     .map((employee, index) => (
@@ -5589,7 +5590,8 @@ function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
+                  <EmployeesProjectionSummary/>
 
                 </div>
               </div>

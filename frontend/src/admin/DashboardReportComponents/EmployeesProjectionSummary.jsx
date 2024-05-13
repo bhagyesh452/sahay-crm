@@ -1,9 +1,34 @@
 import React,{useState , useEffect} from 'react';
-
-
+import Nodata from '../../components/Nodata';
+import { FcDatabase } from "react-icons/fc";
+import { debounce } from "lodash";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import dayjs from "dayjs";
+import { IoClose } from "react-icons/io5";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import Calendar from "@mui/icons-material/Event";
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { options } from "../../components/Options.js";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { IconButton } from "@mui/material";
+import { MdHistory } from "react-icons/md";
+import CloseIcon from "@mui/icons-material/Close";
+import axios from 'axios';
 
 
 function EmployeesProjectionSummary() {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 const [followDataToday, setfollowDataToday] = useState([]);
   const [followDataTodayNew, setfollowDataTodayNew] = useState([]);
   const [followDataFilter, setFollowDataFilter] = useState([])
@@ -12,10 +37,70 @@ const [followDataToday, setfollowDataToday] = useState([]);
   const [searchTermProjection, setSearchTermProjection] = useState("")
   const [selectedDateRange, setSelectedDateRange] = useState([]);
   const [projectionNames, setProjectionNames] = useState([])
+  const [completeProjectionTable, setCompleteProjectionTable] = useState(false);
+  const [employeeDataProjectionSummary, setEmployeeDataProjectionSummary] = useState([])
+  const [employeeInfo, setEmployeeInfo] = useState([])
+  const [employeeData, setEmployeeData] = useState([])
+  const [employeeDataFilter, setEmployeeDataFilter] = useState([])
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [openProjectionTable, setopenProjectionTable] = useState(false);
+  const [openProjectionHistoryTable, setopenProjectionHistoryTable] = useState(false);
+  const [projectedEmployee, setProjectedEmployee] = useState([]);
+  const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
+  const [projectionEname, setProjectionEname] = useState("");
+  const [projectedDataToday, setprojectedDataToday] = useState([]);
+  const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
+  const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("");
+  const [historyDataCompany, sethistoryDataCompany] = useState([]);
+
+
+//--------------------date formats--------------------------------
+function formatDateFinal(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function formatDateMonth(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+
+//-----------------------fetching Employee Data------------------------------------------
+  const fetchEmployeeInfo = async () => {
+    fetch(`${secretKey}/einfo`)
+      .then((response) => response.json())
+      .then((data) => {
+        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        //setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        //setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        //setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        // setEmployeeDataFilter(data.filter)
+      })
+      .catch((error) => {
+        console.error(`Error Fetching Employee Data `, error);
+      });
+  };
+
+  const debounceDelay = 300;
+
+  const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
+
+  useEffect(()=>{
+    debouncedFetchEmployeeInfo()
+  },[])
   
   //-----------------------------------fetching function follow up data-----------------------------------
-
-
   const fetchFollowUpData = async () => {
     try {
       const response = await fetch(`${secretKey}/projection-data`);
@@ -86,7 +171,52 @@ const handleFilterBranchOffice = (branchName) => {
   const debouncedFilterSearchProjection = debounce(filterSearchProjection, 100);
 
   //-------------------------date -range filter function-------------------------------------------
-
+  const numberFormatOptions = {
+    style: "currency",
+    currency: "INR", // Use the currency code for Indian Rupee (INR)
+    minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
+    maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
+  };
+  const shortcutsItems = [
+    {
+      label: "This Week",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("week"), today.endOf("week")];
+      },
+    },
+    {
+      label: "Last Week",
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
+      },
+    },
+    {
+      label: "Last 7 Days",
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, "day"), today];
+      },
+    },
+    {
+      label: "Current Month",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("month"), today.endOf("month")];
+      },
+    },
+    {
+      label: "Next Month",
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf("month").add(1, "day");
+        return [startOfNextMonth, startOfNextMonth.endOf("month")];
+      },
+    },
+    { label: "Reset", getValue: () => [null, null] },
+  ];
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
     const startDate = values[0];
@@ -142,12 +272,36 @@ const handleFilterBranchOffice = (branchName) => {
   }, [startDate, endDate]);
 
   //-----------------------------------filter multiple employee selection function----------------------------------
+
+  const options = employeeDataFilter.map((obj) => obj.ename);
   
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  function getStyles(name, projectionNames, theme) {
+    return {
+      fontWeight:
+        projectionNames.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
+
+  const theme = useTheme();
 
   const handleSelectProjectionSummary = (selectedEmployeeNames) => {
     const filteredProjectionData = followData.filter((company) => selectedEmployeeNames.includes(company.ename))
     const filteredEmployees = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename))
-
+    //console.log(filteredProjectionData, "projectiondata")
+    //console.log(filteredEmployees, "employees")
     if (filteredProjectionData.length > 0 || filteredEmployees.length > 0) {
       setfollowDataToday(filteredProjectionData);
       setEmployeeDataProjectionSummary(filteredEmployees)
@@ -305,8 +459,103 @@ const handleFilterBranchOffice = (branchName) => {
    // If sortType is "none", return original order
    return 0;
  });
+//------------------------projection table open functions--------------------------------------------------
+const functionCompleteProjectionTable = () => {
+  setCompleteProjectionTable(true);
+};
+
+const closeCompleteProjectionTable = () => {
+  setCompleteProjectionTable(false);
+};
+
+const functionOpenProjectionTable = (ename) => {
+  setProjectionEname(ename);
+  //console.log("Ename:", ename)
+  setopenProjectionTable(true);
+  const projectedData = followData.filter((obj) => obj.ename === ename);
+  //console.log("projected", projectedData);
+  const projectedDataDateRange = followDataToday.filter(
+    (obj) => obj.ename === ename
+  );
+  const projectedDataToday = followDataToday.filter(
+    (obj) => obj.ename === ename
+  );
+  //console.log(projectedDataDateRange)
+  setProjectedEmployee(projectedData);
+  setProjectedDataDateRange(projectedDataDateRange);
+  setprojectedDataToday(projectedDataToday);
+};
+const closeProjectionTable = () => {
+  setopenProjectionTable(false);
+};
+
+// --------------------------------fucntion for history projection table--------------------------------
+const handleViewHistoryProjection = (companyName) => {
+  const companyHistoryName = companyName;
+
+  setviewHistoryCompanyName(companyHistoryName);
+  setopenProjectionTable(false);
+  const companyDataProjection = projectedDataToday.find(
+    (obj) => obj.companyName === companyHistoryName
+  );
+  // Check if the company data is found
+  if (companyDataProjection) {
+    // Check if the company data has a history field
+    if (companyDataProjection.history) {
+      // Access the history data
+      const historyData = companyDataProjection.history;
+      //console.log("History Data for", companyHistoryName, ":", historyData);
+      sethistoryDataCompany(historyData);
+      // Now you can use the historyData array as needed
+    } else {
+      console.log("No history found for", viewHistoryCompanyName);
+    }
+  } else {
+    console.log(
+      "Company",
+      viewHistoryCompanyName,
+      "not found in projectedDataToday"
+    );
+  }
+  setopenProjectionHistoryTable(true);
+  // Extract history from each object in followData
+};
 
 
+const latestDataForCompany = projectedDataToday.filter(
+  (obj) => obj.companyName === viewHistoryCompanyName
+);
+
+const closeProjectionHistoryTable = () => {
+  setopenProjectionHistoryTable(false);
+  setopenProjectionTable(true);
+};
+
+//----------------------------csv exporting functions------------------------------------------
+
+const exportData = async () => {
+  const sendingData = followData.filter((company) => {
+    // Assuming you want to filter companies with an estimated payment date for today
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+    return company.estPaymentDate === today;
+  });
+  // console.log("kuchbhi" , sendingData)
+  try {
+    const response = await axios.post(
+      `${secretKey}/followdataexport/`,
+      sendingData
+    );
+    //console.log("response",response.data)
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "FollowDataToday.csv");
+    document.body.appendChild(link);
+    link.click();
+  } catch (error) {
+    console.error("Error downloading CSV:", error);
+  }
+};
   return (
     <div>
           <div className="employee-dashboard mt-3"
@@ -696,6 +945,498 @@ const handleFilterBranchOffice = (branchName) => {
                       </div>
                     </div>
                   </div>
+                   {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+
+          <Dialog
+            open={openProjectionTable}
+            onClose={closeProjectionTable}
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogTitle>
+              {projectionEname} Today's Report{" "}
+              <IconButton
+                onClick={closeProjectionTable}
+                style={{ float: "right" }}
+              >
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+            </DialogTitle>
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>BDE Name</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
+                      <th>Remarks</th>
+                      <th>View History</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Map through uniqueEnames array to render rows */}
+
+                    {projectedDataToday && projectedDataToday.length > 0
+                      ? //   projectedDataDateRange.map((obj, Index) => (
+                      //     <tr key={`sub-row-${Index}`}>
+                      //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      //       {/* Render other employee data */}
+                      //       <td>{obj.ename}</td>
+                      //       <td>{obj.companyName}</td>
+                      //       <td>{obj.offeredServices.join(",")}</td>
+                      //       <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      //       <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      //       <td>{obj.estPaymentDate}</td>
+                      //       <td>{obj.lastFollowUpdate}</td>
+                      //       <td>{obj.remarks}</td>
+                      //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
+                      //     </tr>
+                      //   ))
+                      // ) :
+
+                      projectedDataToday.map((obj, Index) => (
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{formatDateFinal(obj.estPaymentDate)}</td>
+                          <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
+                          <td>{obj.remarks}</td>
+                          <td>
+                            <MdHistory
+                              style={{
+                                width: "17px",
+                                height: "17px",
+                                color: "grey",
+                              }}
+                              onClick={() =>
+                                handleViewHistoryProjection(obj.companyName)
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))
+                      : null}
+                  </tbody>
+                  {projectedEmployee && (
+                    <tfoot
+                      style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2,
+                      }}
+                    >
+                      <tr style={{ fontWeight: 500 }}>
+                        <td style={{ lineHeight: "32px" }} colSpan="2">
+                          Total
+                        </td>
+                        {/* <td>{projectedEmployee.length}</td> 
+                        <td>
+                          {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
+                        </td>*/}
+                        <td>{projectedDataToday.length}</td>
+                        {/* <td>{offeredServicesPopup.length}
+                    </td> 
+                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
+                        <td>{(offeredServicesPopupToday.length)}</td>*/}
+                        <td>
+                          {projectedDataToday.reduce(
+                            (totalServices, partObj) => {
+                              totalServices += partObj.offeredServices.length;
+                              return totalServices;
+                            },
+                            0
+                          )}
+                        </td>
+                        {/* <td>{totalPaymentSumPopup.toLocaleString()}
+                    </td> 
+                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
+                        <td>
+                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
+                        </td>
+                        {/* <td>{offeredPaymentSumPopup.toLocaleString()}
+                    </td> 
+                        <td>   &#8377;{(offeredPaymentSumPopupToday.toLocaleString())}</td>
+                         <td>
+                          &#8377;{(totalPaymentSumPopupToday.toLocaleString())}
+                        </td>*/}
+
+                        <td>
+                          &#8377;
+                          {projectedDataToday.reduce(
+                            (totalOfferedPrice, partObj) => {
+                              return totalOfferedPrice + partObj.offeredPrize;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>
+                          &#8377;
+                          {projectedDataToday.reduce(
+                            (totalTotalPayment, partObj) => {
+                              return totalTotalPayment + partObj.totalPayment;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+           {/* -------------------------------------------------------------complete projection--------------------------------------- */}
+           <Dialog
+            open={completeProjectionTable}
+            onClose={closeCompleteProjectionTable}
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogTitle>
+              Today's Report{" "}
+              <IconButton
+                onClick={closeCompleteProjectionTable}
+                style={{ float: "right" }}
+              >
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+              <button
+                style={{ float: "right" }}
+                className="btn btn-primary mr-1"
+                onClick={exportData}
+              >
+                + Export CSV
+              </button>
+            </DialogTitle>
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>BDE Name</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
+                      <th>Remarks</th>
+                      {/* <th>View History</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Map through uniqueEnames array to render rows */}
+
+                    {followDataToday && followDataToday.length > 0
+                      ? followDataToday.map((obj, Index) => (
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{obj.estPaymentDate}</td>
+                          <td>{obj.lastFollowUpdate}</td>
+                          <td>{obj.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
+                        </tr>
+                      ))
+                      : null}
+                  </tbody>
+                  {followDataToday && (
+                    <tfoot
+                      style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2,
+                      }}
+                    >
+                      <tr style={{ fontWeight: 500 }}>
+                        <td style={{ lineHeight: "32px" }} colSpan="2">
+                          Total
+                        </td>
+                        <td>{followDataToday.length}</td>
+                        <td>
+                          {followDataToday.reduce((totalServices, partObj) => {
+                            totalServices += partObj.offeredServices.length;
+                            return totalServices;
+                          }, 0)}
+                        </td>
+                        <td>
+                          &#8377;
+                          {followDataToday.reduce(
+                            (totalOfferedPrice, partObj) => {
+                              return totalOfferedPrice + partObj.offeredPrize;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>
+                          &#8377;
+                          {followDataToday.reduce(
+                            (totalTotalPayment, partObj) => {
+                              return totalTotalPayment + partObj.totalPayment;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        {/* <td>-</td> */}
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+           {/* ------------------------------------------------------projection history dialog------------------------------------------------------- */}
+
+           <Dialog
+            open={openProjectionHistoryTable}
+            onClose={closeProjectionHistoryTable}
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogTitle>
+              {viewHistoryCompanyName}
+              <IconButton
+                onClick={closeProjectionHistoryTable}
+                style={{ float: "right" }}
+              >
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+            </DialogTitle>
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>Modified At</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {projectedDataToday && projectedDataToday.length > 0
+                      ? historyDataCompany.map((obj, index) => (
+                        <tr key={`sub-row-${index}`}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.modifiedAt}</td>
+                          <td>{obj.data.companyName}</td>
+                          <td>{obj.data.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.data.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.data.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{obj.data.estPaymentDate}</td>
+                          <td>{obj.data.lastFollowUpdate}</td>
+                          <td>{obj.data.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                        </tr>
+                      ))
+                      : null}
+                    {/* Additional rendering for latest data */}
+                    {latestDataForCompany.map((obj, index) => (
+                      <tr key={`sub-row-latest-${index}`}>
+                        <td style={{ lineHeight: "32px" }}>
+                          {historyDataCompany.length + index + 1}
+                        </td>
+                        {/* Render other employee data */}
+                        <td>{obj.date}</td>
+                        <td>{obj.companyName}</td>
+                        <td>{obj.offeredServices.join(",")}</td>
+                        <td>
+                          {obj.offeredPrize.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
+                        </td>
+                        <td>
+                          {obj.totalPayment.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
+                        </td>
+                        <td>{obj.estPaymentDate}</td>
+                        <td>{obj.lastFollowUpdate}</td>
+                        <td>{obj.remarks}</td>
+                        {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
     </div>
   )
 }
