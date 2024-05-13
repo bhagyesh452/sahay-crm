@@ -585,8 +585,8 @@ function EmployeesThisMonthBooking() {
           </div>
         </div>
         <div className="card-body">
-          <div className="row tbl-scroll" style={{maxHeight:"400px"}}>
-            <table className="table-vcenter table-nowrap admin-dash-tbl">
+          <div className="row tbl-scroll">
+            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{maxHeight:"400px"}}>
               <thead className="admin-dash-tbl-thead">
                 <tr  >
                   <th>SR.NO</th>

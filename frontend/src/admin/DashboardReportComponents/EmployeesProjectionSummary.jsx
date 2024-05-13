@@ -676,7 +676,7 @@ const exportData = async () => {
                         </div>
                       </div>
                       <div className="card-body">
-                        <div id="table-default" className="row tbl-scroll" >
+                        <div id="table-default" className="row tbl-scroll"style={{maxHeight:"400px"}}>
                           <table className="table-vcenter table-nowrap admin-dash-tbl"  >
                             <thead className="admin-dash-tbl-thead">
                               <tr>
