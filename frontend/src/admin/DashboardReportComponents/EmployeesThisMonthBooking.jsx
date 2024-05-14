@@ -31,6 +31,8 @@ function EmployeesThisMonthBooking() {
     const [uniqueBDE, setUniqueBDE] = useState([]);
     const [redesignedData, setRedesignedData] = useState([]);
     const [companyData, setCompanyData] = useState([]);
+    const [bookingStartDate, setBookingStartDate] = useState(new Date());
+    const [bookingEndDate, setBookingEndDate] = useState(new Date());
     const [searchBookingBde, setSearchBookingBde] = useState("")
     const [bdeResegnedData, setBdeRedesignedData] = useState([])
     const [initialDate, setInitialDate] = useState(new Date());
@@ -41,7 +43,7 @@ function EmployeesThisMonthBooking() {
         targetamount: "none",
         achievedamount: "none",
         targetratio: "none",
-        lastbookingdate:"none"
+        lastbookingdate: "none"
     });
 
 
@@ -142,77 +144,152 @@ function EmployeesThisMonthBooking() {
 
     const functionCalculateMatured = (bdeName) => {
         let maturedCount = 0;
-        redesignedData.map((mainBooking) => {
+        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
+        if(filterOne){
+            redesignedData.map((mainBooking) => {
 
-            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-                    if (mainBooking.bdeName === mainBooking.bdmName) {
-                        maturedCount = maturedCount + 1
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                        maturedCount = maturedCount + 0.5;
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                        if (mainBooking.bdeName === bdeName) {
-                            maturedCount = maturedCount + 1;
-                        }
-                    }
-                }
-            }
-            mainBooking.moreBookings.map((moreObject) => {
-                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                        if (moreObject.bdeName === moreObject.bdmName) {
-                            maturedCount = maturedCount + 1;
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                            maturedCount = maturedCount + 0.5
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                            if (moreObject.bdeName === bdeName) {
+                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            maturedCount = maturedCount + 1
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
                                 maturedCount = maturedCount + 1;
                             }
                         }
                     }
                 }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                maturedCount = maturedCount + 1;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                maturedCount = maturedCount + 0.5
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    maturedCount = maturedCount + 1;
+                                }
+                            }
+                        }
+                    }
+                })
+    
+    
             })
+        }else{
+            redesignedData.map((mainBooking) => {
 
-
-        })
+                if ((new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) || (new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate()) ) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            maturedCount = maturedCount + 1
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                maturedCount = maturedCount + 1;
+                            }
+                        }
+                    }
+                }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if ((new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) || (new Date(moreObject.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(moreObject.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                maturedCount = maturedCount + 1;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                maturedCount = maturedCount + 0.5
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    maturedCount = maturedCount + 1;
+                                }
+                            }
+                        }
+                    }
+                })
+    
+    
+            })
+        }
         totalMaturedCount = totalMaturedCount + maturedCount;
         return maturedCount;
     };
     const functionOnlyCalculateMatured = (bdeName) => {
         let maturedCount = 0;
-        redesignedData.map((mainBooking) => {
+        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
+        if(filterOne){
+            redesignedData.map((mainBooking) => {
 
-            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-                    if (mainBooking.bdeName === mainBooking.bdmName) {
-                        maturedCount = maturedCount + 1
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                        maturedCount = maturedCount + 0.5;
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                        if (mainBooking.bdeName === bdeName) {
-                            maturedCount = maturedCount + 1;
-                        }
-                    }
-                }
-            }
-            mainBooking.moreBookings.map((moreObject) => {
-                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                        if (moreObject.bdeName === moreObject.bdmName) {
-                            maturedCount = maturedCount + 1;
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                            maturedCount = maturedCount + 0.5
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                            if (moreObject.bdeName === bdeName) {
+                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            maturedCount = maturedCount + 1
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
                                 maturedCount = maturedCount + 1;
                             }
                         }
                     }
                 }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                maturedCount = maturedCount + 1;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                maturedCount = maturedCount + 0.5
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    maturedCount = maturedCount + 1;
+                                }
+                            }
+                        }
+                    }
+                })
+    
+    
             })
+        }else{
+            redesignedData.map((mainBooking) => {
 
-
-        })
+                if (new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            maturedCount = maturedCount + 1
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                maturedCount = maturedCount + 1;
+                            }
+                        }
+                    }
+                }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if (new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                maturedCount = maturedCount + 1;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                maturedCount = maturedCount + 0.5
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    maturedCount = maturedCount + 1;
+                                }
+                            }
+                        }
+                    }
+                })
+    
+    
+            })
+        }
+     
         return maturedCount;
     };
 
@@ -221,96 +298,186 @@ function EmployeesThisMonthBooking() {
         let achievedAmount = 0;
         let remainingAmount = 0;
         let expanse = 0;
-        redesignedData.map((mainBooking) => {
+        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
+        
+        if (filterOne) {
+            redesignedData.map((mainBooking) => {
 
-            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
-                    if (mainBooking.bdeName === mainBooking.bdmName) {
-                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-
-                        mainBooking.services.map(serv => {
-                            // console.log(serv.expanse , bdeName ,"this is services");
-                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                        });
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-                        mainBooking.services.map(serv => {
-                            expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                        })
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                        if (mainBooking.bdeName === bdeName) {
-                            achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
-                            mainBooking.services.map(serv => {
-
-                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            })
-                        }
-                    }
-                }
-
-            } else if (mainBooking.remainingPayments.length !== 0) {
-                mainBooking.remainingPayments.map((remainingObj) => {
-                    if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                        const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-                        const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
                         if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingAmount += Math.round(tempAmount);
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingAmount += Math.round(tempAmount) / 2;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                remainingAmount += Math.round(tempAmount);
-                            }
-                        }
-                    }
-                })
-            }
-            mainBooking.moreBookings.map((moreObject) => {
-                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                        if (moreObject.bdeName === moreObject.bdmName) {
-                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                            moreObject.services.map(serv => {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                            mainBooking.services.map(serv => {
+                                // console.log(serv.expanse , bdeName ,"this is services");
                                 expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            })
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-                            moreObject.services.map(serv => {
+                            });
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                            mainBooking.services.map(serv => {
                                 expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
                             })
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                            if (moreObject.bdeName === bdeName) {
-                                achievedAmount += Math.round(moreObject.generatedReceivedAmount);
-                                moreObject.services.map(serv => {
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+                                mainBooking.services.map(serv => {
+
                                     expanse = serv.expanse ? expanse + serv.expanse : expanse;
                                 })
                             }
                         }
                     }
-                } else if (moreObject.remainingPayments.length !== 0) {
 
-                    moreObject.remainingPayments.map((remainingObj) => {
-                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
-
-                            const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                } else if (mainBooking.remainingPayments.length !== 0) {
+                    mainBooking.remainingPayments.map((remainingObj) => {
+                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
                             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                            if (moreObject.bdeName === moreObject.bdmName) {
+                            if (mainBooking.bdeName === mainBooking.bdmName) {
                                 remainingAmount += Math.round(tempAmount);
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
                                 remainingAmount += Math.round(tempAmount) / 2;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (mainBooking.bdeName === bdeName) {
                                     remainingAmount += Math.round(tempAmount);
                                 }
                             }
                         }
                     })
                 }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                                    moreObject.services.map(serv => {
+                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                    })
+                                }
+                            }
+                        }
+                    } else if (moreObject.remainingPayments.length !== 0) {
+
+                        moreObject.remainingPayments.map((remainingObj) => {
+                            if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                                if (moreObject.bdeName === moreObject.bdmName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                    remainingAmount += Math.round(tempAmount) / 2;
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                    if (moreObject.bdeName === bdeName) {
+                                        remainingAmount += Math.round(tempAmount);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
             })
+        } else {
+            redesignedData.map((mainBooking) => {
 
-        })
+                if (new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate) || new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate()) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+
+                            mainBooking.services.map(serv => {
+                                // console.log(serv.expanse , bdeName ,"this is services");
+                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                            });
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                            mainBooking.services.map(serv => {
+                                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                            })
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+                                mainBooking.services.map(serv => {
+
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            }
+                        }
+                    }
+
+                } else if (mainBooking.remainingPayments.length !== 0) {
+                    mainBooking.remainingPayments.map((remainingObj) => {
+                        if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+                            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                            if (mainBooking.bdeName === mainBooking.bdmName) {
+                                remainingAmount += Math.round(tempAmount);
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                                remainingAmount += Math.round(tempAmount) / 2;
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (mainBooking.bdeName === bdeName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                }
+                            }
+                        }
+                    })
+                }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if ((new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) || (new Date(moreObject.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(moreObject.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                                    moreObject.services.map(serv => {
+                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                    })
+                                }
+                            }
+                        }
+                    } else if (moreObject.remainingPayments.length !== 0) {
+
+                        moreObject.remainingPayments.map((remainingObj) => {
+                            if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                                if (moreObject.bdeName === moreObject.bdmName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                    remainingAmount += Math.round(tempAmount) / 2;
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                    if (moreObject.bdeName === bdeName) {
+                                        remainingAmount += Math.round(tempAmount);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+        }
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.round(remainingAmount) - expanse;
         return achievedAmount + Math.round(remainingAmount) - expanse;
     };
@@ -318,196 +485,191 @@ function EmployeesThisMonthBooking() {
         let achievedAmount = 0;
         let remainingAmount = 0;
         let expanse = 0;
-        redesignedData.map((mainBooking) => {
+        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
 
-            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+        if (filterOne) {
+            redesignedData.map((mainBooking) => {
 
-                    if (mainBooking.bdeName === mainBooking.bdmName) {
-                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
-                        mainBooking.services.map(serv => {
-                            // console.log(serv.expanse , bdeName ,"this is services");
-                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                        });
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-                        mainBooking.services.map(serv => {
-                            expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                        })
-                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                        if (mainBooking.bdeName === bdeName) {
-                            achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
-                            mainBooking.services.map(serv => {
-
-                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            })
-                        }
-                    }
-                }
-
-            } else if (mainBooking.remainingPayments.length !== 0) {
-                mainBooking.remainingPayments.map((remainingObj) => {
-                    if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                        const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-                        const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
                         if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingAmount += Math.round(tempAmount);
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingAmount += Math.round(tempAmount) / 2;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                remainingAmount += Math.round(tempAmount);
-                            }
-                        }
-                    }
-                })
-            }
-            mainBooking.moreBookings.map((moreObject) => {
-                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                        if (moreObject.bdeName === moreObject.bdmName) {
-                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                            moreObject.services.map(serv => {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                            mainBooking.services.map(serv => {
+                                // console.log(serv.expanse , bdeName ,"this is services");
                                 expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            })
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-                            moreObject.services.map(serv => {
+                            });
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                            mainBooking.services.map(serv => {
                                 expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
                             })
-                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                            if (moreObject.bdeName === bdeName) {
-                                achievedAmount += Math.round(moreObject.generatedReceivedAmount);
-                                moreObject.services.map(serv => {
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+                                mainBooking.services.map(serv => {
+
                                     expanse = serv.expanse ? expanse + serv.expanse : expanse;
                                 })
                             }
                         }
                     }
-                } else if (moreObject.remainingPayments.length !== 0) {
 
-                    moreObject.remainingPayments.map((remainingObj) => {
-                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
-
-                            const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                } else if (mainBooking.remainingPayments.length !== 0) {
+                    mainBooking.remainingPayments.map((remainingObj) => {
+                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
                             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                            if (moreObject.bdeName === moreObject.bdmName) {
+                            if (mainBooking.bdeName === mainBooking.bdmName) {
                                 remainingAmount += Math.round(tempAmount);
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
                                 remainingAmount += Math.round(tempAmount) / 2;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (mainBooking.bdeName === bdeName) {
                                     remainingAmount += Math.round(tempAmount);
                                 }
                             }
                         }
                     })
                 }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                                    moreObject.services.map(serv => {
+                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                    })
+                                }
+                            }
+                        }
+                    } else if (moreObject.remainingPayments.length !== 0) {
+
+                        moreObject.remainingPayments.map((remainingObj) => {
+                            if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                                if (moreObject.bdeName === moreObject.bdmName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                    remainingAmount += Math.round(tempAmount) / 2;
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                    if (moreObject.bdeName === bdeName) {
+                                        remainingAmount += Math.round(tempAmount);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
             })
+        } else {
+            redesignedData.map((mainBooking) => {
 
+                if (new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate) || new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate()) {
+                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
 
-        })
-     
+                            mainBooking.services.map(serv => {
+                                // console.log(serv.expanse , bdeName ,"this is services");
+                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                            });
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                            mainBooking.services.map(serv => {
+                                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                            })
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === bdeName) {
+                                achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
+                                mainBooking.services.map(serv => {
+
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            }
+                        }
+                    }
+
+                } else if (mainBooking.remainingPayments.length !== 0) {
+                    mainBooking.remainingPayments.map((remainingObj) => {
+                        if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+                            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                            if (mainBooking.bdeName === mainBooking.bdmName) {
+                                remainingAmount += Math.round(tempAmount);
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                                remainingAmount += Math.round(tempAmount) / 2;
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (mainBooking.bdeName === bdeName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                }
+                            }
+                        }
+                    })
+                }
+                mainBooking.moreBookings.map((moreObject) => {
+                    if ((new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) || (new Date(moreObject.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(moreObject.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                                moreObject.services.map(serv => {
+                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                                })
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    achievedAmount += Math.round(moreObject.generatedReceivedAmount);
+                                    moreObject.services.map(serv => {
+                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                                    })
+                                }
+                            }
+                        }
+                    } else if (moreObject.remainingPayments.length !== 0) {
+
+                        moreObject.remainingPayments.map((remainingObj) => {
+                            if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+
+                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                                if (moreObject.bdeName === moreObject.bdmName) {
+                                    remainingAmount += Math.round(tempAmount);
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                    remainingAmount += Math.round(tempAmount) / 2;
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                    if (moreObject.bdeName === bdeName) {
+                                        remainingAmount += Math.round(tempAmount);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+        }
 
         return achievedAmount + Math.round(remainingAmount) - expanse;
     }
-    // const functionFilterDateRange = (bdeName , startDate , endDate) => {
-    //     let achievedAmount = 0;
-    //     let remainingAmount = 0;
-    //     let expanse = 0;
-    //     redesignedData.map((mainBooking) => {
-    //         if (new Date(bookingDate) >= startDate && new Date(start) ) {
-    //             if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-
-    //                 if (mainBooking.bdeName === mainBooking.bdmName) {
-    //                     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-
-    //                     mainBooking.services.map(serv => {
-    //                         // console.log(serv.expanse , bdeName ,"this is services");
-    //                         expanse = serv.expanse ? expanse + serv.expanse : expanse;
-    //                     });
-    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-    //                     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-    //                     mainBooking.services.map(serv => {
-    //                         expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-    //                     })
-    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-    //                     if (mainBooking.bdeName === bdeName) {
-    //                         achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
-    //                         mainBooking.services.map(serv => {
-
-    //                             expanse = serv.expanse ? expanse + serv.expanse : expanse;
-    //                         })
-    //                     }
-    //                 }
-    //             }
-
-    //         } else if (mainBooking.remainingPayments.length !== 0) {
-    //             mainBooking.remainingPayments.map((remainingObj) => {
-    //                 if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-    //                     const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-    //                     const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-    //                     if (mainBooking.bdeName === mainBooking.bdmName) {
-    //                         remainingAmount += Math.round(tempAmount);
-    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-    //                         remainingAmount += Math.round(tempAmount) / 2;
-    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-    //                         if (mainBooking.bdeName === bdeName) {
-    //                             remainingAmount += Math.round(tempAmount);
-    //                         }
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //         mainBooking.moreBookings.map((moreObject) => {
-    //             if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-    //                 if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-    //                     if (moreObject.bdeName === moreObject.bdmName) {
-    //                         achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-    //                         moreObject.services.map(serv => {
-    //                             expanse = serv.expanse ? expanse + serv.expanse : expanse;
-    //                         })
-    //                     } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-    //                         achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-    //                         moreObject.services.map(serv => {
-    //                             expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-    //                         })
-    //                     } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-    //                         if (moreObject.bdeName === bdeName) {
-    //                             achievedAmount += Math.round(moreObject.generatedReceivedAmount);
-    //                             moreObject.services.map(serv => {
-    //                                 expanse = serv.expanse ? expanse + serv.expanse : expanse;
-    //                             })
-    //                         }
-    //                     }
-    //                 }
-    //             } else if (moreObject.remainingPayments.length !== 0) {
-
-    //                 moreObject.remainingPayments.map((remainingObj) => {
-    //                     if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
-
-    //                         const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-    //                         const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-    //                         if (moreObject.bdeName === moreObject.bdmName) {
-    //                             remainingAmount += Math.round(tempAmount);
-    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-    //                             remainingAmount += Math.round(tempAmount) / 2;
-    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-    //                             if (moreObject.bdeName === bdeName) {
-    //                                 remainingAmount += Math.round(tempAmount);
-    //                             }
-    //                         }
-    //                     }
-    //                 })
-    //             }
-    //         })
 
 
-
-    //     })
-     
 
     //     return achievedAmount + Math.round(remainingAmount) - expanse;
     // };
@@ -533,7 +695,7 @@ function EmployeesThisMonthBooking() {
                 (item) =>
                     Math.round(item.year) === currentYear && item.month === currentMonth
             );
-     
+
 
             return foundObject ? foundObject.amount : 0;
         } else {
@@ -645,8 +807,11 @@ function EmployeesThisMonthBooking() {
         if (values[1]) {
             const startDate = values[0].format('MM/DD/YYYY')
             const endDate = values[1].format('MM/DD/YYYY')
+            setBookingStartDate(startDate);
+            setBookingEndDate(endDate);
         }
-        setInitialDate(new Date(values[0].format('MM/DD/YYYY')))
+
+        // setInitialDate(new Date(values[0].format('MM/DD/YYYY')))
         const fileteredData = redesignedData.filter((product) => {
             const productDate = formatDateMonth(product.bookingDate);
             if (startDate === endDate) {
@@ -705,228 +870,228 @@ function EmployeesThisMonthBooking() {
 
     };
 
-   // ----------------------------sorting functions---------------------------------
+    // ----------------------------sorting functions---------------------------------
 
-const handleSortMaturedCases = (sortByForwarded) => {
-    console.log(sortByForwarded, "case");
-    setNewSortType((prevData) => ({
-        ...prevData,
-        recievedcase:
-            prevData.maturedcase === 'ascending'
-                ? 'descending'
-                : prevData.maturedcase === 'descending'
-                    ? 'none'
-                    : 'ascending',
-    }));
+    const handleSortMaturedCases = (sortByForwarded) => {
+        console.log(sortByForwarded, "case");
+        setNewSortType((prevData) => ({
+            ...prevData,
+            recievedcase:
+                prevData.maturedcase === 'ascending'
+                    ? 'descending'
+                    : prevData.maturedcase === 'descending'
+                        ? 'none'
+                        : 'ascending',
+        }));
 
-    switch (sortByForwarded) {
-        case 'ascending':
-            //console.log("yahan chala ascending");
-            const companyDataAscending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-            //     }
-            // });
-            employeeData.sort((a, b) => {
-                const countA =  parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
-                const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
-                return countA - countB;
-            });
-            break; // Add break statement here
+        switch (sortByForwarded) {
+            case 'ascending':
+                //console.log("yahan chala ascending");
+                const companyDataAscending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+                //     }
+                // });
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
+                    const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
+                    return countA - countB;
+                });
+                break; // Add break statement here
 
-        case 'descending':
-            //console.log("yahan chala descending");
-            const companyDataDescending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-            //     }
-            // });
-            employeeData.sort((a, b) => {
-              const countA =  functionOnlyCalculateMatured(a.ename) || 0;
-              const countB = functionOnlyCalculateMatured(b.ename) || 0;
-                return countB - countA;
-            });
-            break; // Add break statement here
+            case 'descending':
+                //console.log("yahan chala descending");
+                const companyDataDescending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+                //     }
+                // });
+                employeeData.sort((a, b) => {
+                    const countA = functionOnlyCalculateMatured(a.ename) || 0;
+                    const countB = functionOnlyCalculateMatured(b.ename) || 0;
+                    return countB - countA;
+                });
+                break; // Add break statement here
 
-        case "none":
-            //console.log("yahan chala none");
-            // if (finalEmployeeData.length > 0) {
-            //     // Restore to previous state
-            //     setForwardEmployeeData(finalEmployeeData);
-            // }
-            fetchEmployeeInfo()
-            break; // Add break statement here
-        default:
-            break;
-    }
-};
-const handleSortAchievedAmount = (sortByForwarded) => {
-    console.log(sortByForwarded, "case");
-    setNewSortType((prevData) => ({
-        ...prevData,
-        achievedamount:
-            prevData.achievedamount === 'ascending'
-                ? 'descending'
-                : prevData.achievedamount === 'descending'
-                    ? 'none'
-                    : 'ascending',
-    }));
+            case "none":
+                //console.log("yahan chala none");
+                // if (finalEmployeeData.length > 0) {
+                //     // Restore to previous state
+                //     setForwardEmployeeData(finalEmployeeData);
+                // }
+                fetchEmployeeInfo()
+                break; // Add break statement here
+            default:
+                break;
+        }
+    };
+    const handleSortAchievedAmount = (sortByForwarded) => {
+        console.log(sortByForwarded, "case");
+        setNewSortType((prevData) => ({
+            ...prevData,
+            achievedamount:
+                prevData.achievedamount === 'ascending'
+                    ? 'descending'
+                    : prevData.achievedamount === 'descending'
+                        ? 'none'
+                        : 'ascending',
+        }));
 
-    switch (sortByForwarded) {
-        case 'ascending':
-            //console.log("yahan chala ascending");
-            const companyDataAscending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-            //     }
-            // });
+        switch (sortByForwarded) {
+            case 'ascending':
+                //console.log("yahan chala ascending");
+                const companyDataAscending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+                //     }
+                // });
 
-            employeeData.sort((a, b) => {
-                const countA =  parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
-                console.log(countA , "a")
-                const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
-                console.log(countB , "b")
-                return countA - countB;
-            });
-            break; // Add break statement here
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+                    console.log(countA, "a")
+                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                    console.log(countB, "b")
+                    return countA - countB;
+                });
+                break; // Add break statement here
 
-        case 'descending':
-            //console.log("yahan chala descending");
-            const companyDataDescending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-            //     }
-            // });
-            employeeData.sort((a, b) => {
-              const countA =  parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
-                return countB - countA;
-            });
-            break; // Add break statement here
+            case 'descending':
+                //console.log("yahan chala descending");
+                const companyDataDescending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+                //     }
+                // });
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                    return countB - countA;
+                });
+                break; // Add break statement here
 
-        case "none":
-            //console.log("yahan chala none");
-            fetchEmployeeInfo();
-            break; // Add break statement here
-        default:
-            break;
-    }
-};
-const handleSortTargetAmount = (sortByForwarded) => {
-    console.log(sortByForwarded, "case");
-    setNewSortType((prevData) => ({
-        ...prevData,
-        targetamount:
-            prevData.targetamount === 'ascending'
-                ? 'descending'
-                : prevData.targetamount === 'descending'
-                    ? 'none'
-                    : 'ascending',
-    }));
+            case "none":
+                //console.log("yahan chala none");
+                fetchEmployeeInfo();
+                break; // Add break statement here
+            default:
+                break;
+        }
+    };
+    const handleSortTargetAmount = (sortByForwarded) => {
+        console.log(sortByForwarded, "case");
+        setNewSortType((prevData) => ({
+            ...prevData,
+            targetamount:
+                prevData.targetamount === 'ascending'
+                    ? 'descending'
+                    : prevData.targetamount === 'descending'
+                        ? 'none'
+                        : 'ascending',
+        }));
 
-    switch (sortByForwarded) {
-        case 'ascending':
-            //console.log("yahan chala ascending");
-            const companyDataAscending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-            //     }
-            // });
+        switch (sortByForwarded) {
+            case 'ascending':
+                //console.log("yahan chala ascending");
+                const companyDataAscending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+                //     }
+                // });
 
-            employeeData.sort((a, b) => {
-                const countA =  parseInt(functionGetOnlyAmount(a)) || 0;
-                console.log(countA , "a")
-                const countB = parseInt(functionGetOnlyAmount(b)) || 0;
-                console.log(countB , "b")
-                return countA - countB;
-            });
-            break; // Add break statement here
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionGetOnlyAmount(a)) || 0;
+                    console.log(countA, "a")
+                    const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                    console.log(countB, "b")
+                    return countA - countB;
+                });
+                break; // Add break statement here
 
-        case 'descending':
-            //console.log("yahan chala descending");
-            const companyDataDescending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-            //     }
-            // });
-            employeeData.sort((a, b) => {
-              const countA =  parseInt(functionGetOnlyAmount(a)) || 0;
-              const countB = parseInt(functionGetOnlyAmount(b)) || 0;
-                return countB - countA;
-            });
-            break; // Add break statement here
+            case 'descending':
+                //console.log("yahan chala descending");
+                const companyDataDescending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+                //     }
+                // });
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionGetOnlyAmount(a)) || 0;
+                    const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                    return countB - countA;
+                });
+                break; // Add break statement here
 
-        case "none":
-            //console.log("yahan chala none");
-            fetchEmployeeInfo();
-            break; // Add break statement here
-        default:
-            break;
-    }
-};
-const handleSortRatio = (sortByForwarded) => {
-    console.log(sortByForwarded, "case");
-    setNewSortType((prevData) => ({
-        ...prevData,
-        targetratio:
-            prevData.targetratio === 'ascending'
-                ? 'descending'
-                : prevData.targetratio === 'descending'
-                    ? 'none'
-                    : 'ascending',
-    }));
+            case "none":
+                //console.log("yahan chala none");
+                fetchEmployeeInfo();
+                break; // Add break statement here
+            default:
+                break;
+        }
+    };
+    const handleSortRatio = (sortByForwarded) => {
+        console.log(sortByForwarded, "case");
+        setNewSortType((prevData) => ({
+            ...prevData,
+            targetratio:
+                prevData.targetratio === 'ascending'
+                    ? 'descending'
+                    : prevData.targetratio === 'descending'
+                        ? 'none'
+                        : 'ascending',
+        }));
 
-    switch (sortByForwarded) {
-        case 'ascending':
-            //console.log("yahan chala ascending");
-            const companyDataAscending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-            //     }
-            // });
+        switch (sortByForwarded) {
+            case 'ascending':
+                //console.log("yahan chala ascending");
+                const companyDataAscending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
+                //     }
+                // });
 
-            employeeData.sort((a, b) => {
-                const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) /parseInt(functionGetOnlyAmount(a)) || 0;
-               
-                const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) /parseInt(functionGetOnlyAmount(b)) || 0;
-             
-                return countA - countB;
-            });
-            break; // Add break statement here
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
 
-        case 'descending':
-            //console.log("yahan chala descending");
-            const companyDataDescending = {};
-            // teamLeadsData.forEach((company) => {
-            //     if (company.bdmName) {
-            //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-            //     }
-            // });
-            
-            employeeData.sort((a, b) => {
-              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) /parseInt(functionGetOnlyAmount(a)) || 0;
-             
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) /parseInt(functionGetOnlyAmount(b)) || 0;
-         
-              return countB - countA;
-          });
-            break; // Add break statement here
+                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
 
-        case "none":
-            //console.log("yahan chala none");
-            fetchEmployeeInfo();
-            break; // Add break statement here
-        default:
-            break;
-    }
-};
+                    return countA - countB;
+                });
+                break; // Add break statement here
+
+            case 'descending':
+                //console.log("yahan chala descending");
+                const companyDataDescending = {};
+                // teamLeadsData.forEach((company) => {
+                //     if (company.bdmName) {
+                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
+                //     }
+                // });
+
+                employeeData.sort((a, b) => {
+                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
+
+                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+
+                    return countB - countA;
+                });
+                break; // Add break statement here
+
+            case "none":
+                //console.log("yahan chala none");
+                fetchEmployeeInfo();
+                break; // Add break statement here
+            default:
+                break;
+        }
+    };
 
 
     return (
@@ -1020,7 +1185,7 @@ const handleSortRatio = (sortByForwarded) => {
                                                     InputProps: { endAdornment: <Calendar /> },
                                                 },
                                             }}
-                                        //calendars={1}
+                                            calendars={1}
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
@@ -1080,26 +1245,26 @@ const handleSortRatio = (sortByForwarded) => {
                                                 }));
                                                 handleSortMaturedCases(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                            <div>MATURED CASES</div>
-                                            <div className="short-arrow-div">
-                                                <ArrowDropUpIcon className="up-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.maturedcase === "descending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                                <ArrowDropDownIcon className="down-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.maturedcase === "ascending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                            </div>
-                                        </div></th>
+                                                <div>MATURED CASES</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.maturedcase === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.maturedcase === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
@@ -1117,26 +1282,26 @@ const handleSortRatio = (sortByForwarded) => {
                                                 }));
                                                 handleSortTargetAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                            <div>TARGET AMOUNT</div>
-                                            <div className="short-arrow-div">
-                                                <ArrowDropUpIcon className="up-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.targetamount === "descending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                                <ArrowDropDownIcon className="down-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.targetamount === "ascending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                            </div>
-                                        </div></th>
+                                                <div>TARGET AMOUNT</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.targetamount === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.targetamount === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
@@ -1154,26 +1319,26 @@ const handleSortRatio = (sortByForwarded) => {
                                                 }));
                                                 handleSortAchievedAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                            <div>ACHIEVED AMOUNT</div>
-                                            <div className="short-arrow-div">
-                                                <ArrowDropUpIcon className="up-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.achievedamount === "descending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                                <ArrowDropDownIcon className="down-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.achievedamount === "ascending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                            </div>
-                                        </div></th>
+                                                <div>ACHIEVED AMOUNT</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.achievedamount === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.achievedamount === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
@@ -1191,26 +1356,26 @@ const handleSortRatio = (sortByForwarded) => {
                                                 }));
                                                 handleSortRatio(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                            <div>TARGET/ACHIEVED RATIO</div>
-                                            <div className="short-arrow-div">
-                                                <ArrowDropUpIcon className="up-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.targetratio === "descending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                                <ArrowDropDownIcon className="down-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.targetratio === "ascending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                            </div>
-                                        </div></th>
+                                                <div>TARGET/ACHIEVED RATIO</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.targetratio === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.targetratio === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
@@ -1228,26 +1393,26 @@ const handleSortRatio = (sortByForwarded) => {
                                                 }));
                                                 handleSortMaturedCases(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                            <div>LAST BOOKING DATE</div>
-                                            <div className="short-arrow-div">
-                                                <ArrowDropUpIcon className="up-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.lastbookingdate === "descending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                                <ArrowDropDownIcon className="down-short-arrow"
-                                                    style={{
-                                                        color:
-                                                            newSortType.lastbookingdate === "ascending"
-                                                                ? "black"
-                                                                : "#9d8f8f",
-                                                    }}
-                                                />
-                                            </div>
-                                        </div></th>
+                                                <div>LAST BOOKING DATE</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.lastbookingdate === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.lastbookingdate === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                     </tr>
                                 </thead>
                                 {uniqueBDEobjects ? (
@@ -1321,7 +1486,7 @@ const handleSortRatio = (sortByForwarded) => {
                                                 </td>
                                                 <td>
                                                     ₹{" "}
-                                                    {(totalTargetAmount ).toLocaleString()}
+                                                    {(totalTargetAmount).toLocaleString()}
                                                 </td>
                                                 <td>
                                                     ₹{" "}
