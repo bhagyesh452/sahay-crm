@@ -1249,17 +1249,11 @@ function EmployeesForwardedDataReport() {
                                                     {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
                                                 </td>
                                                 <td>
-                                                    {/* ₹{(followData
-                                      .filter(company => company.bdeName === obj.ename)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
                                                     {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
 
                                                 </td>
 
                                                 <td>
-                                                    {/* ₹{followDataNew
-                                      .filter(company => company.ename === obj.ename && company.bdeName)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()} */}
                                                     ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
                                                 </td>
 
@@ -1270,7 +1264,7 @@ function EmployeesForwardedDataReport() {
                                             </tr>
                                         ))}
                                 </tbody>
-                                <tfoot className="admin-dash-tbl-tfoot"    >
+                                <tfoot className="admin-dash-tbl-tfoot">
                                     <tr>
                                         <td
                                             colSpan="3"

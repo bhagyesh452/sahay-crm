@@ -2077,6 +2077,7 @@ function BdmDashboard() {
                 </div>
                 <div>
                   <FormControl sx={{ m: 1, width: 200 }}>
+                  <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                     <Select className="form-control my-date-picker my-mul-select form-control-sm p-0"
                       labelId="demo-multiple-name-label"
                       id="demo-multiple-name"
@@ -2104,34 +2105,12 @@ function BdmDashboard() {
               </div>
             </div>
             <div className='card-body'>
-              <div className="row tbl-scroll"
-                style={{
-                  overflowX: "auto",
-                  overflowY: "auto",
-                  maxHeight: "60vh",
-                  lineHeight: "32px",
-                }}>
-                <table style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                  marginBottom: "5px",
-                  lineHeight: "32px",
-                  position: "relative", // Make the table container relative
-                }}
-                  className="table-vcenter table-nowrap">
-                  <thead style={{
-                    position: "sticky", // Make the header sticky
-                    top: "-1px", // Stick it at the top
-                    backgroundColor: "#ffb900",
-                    color: "black",
-                    fontWeight: "bold",
-                    zIndex: 1, // Ensure it's above other content
-                  }}>
+              <div className="row tbl-scroll">
+                <table
+                className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
                     <tr>
-                      <th style={{
-                        lineHeight: "32px",
-                      }}>
+                      <th>
                         Sr.No
                       </th>
                       <th>BDE/BDM Name</th>
@@ -2368,11 +2347,7 @@ function BdmDashboard() {
                     {forwardEmployeeData.length !== 0 &&
                       forwardEmployeeData.map((obj, index) => (
                         <tr key={`row-${index}`}>
-                          <td style={{
-                            lineHeight: "32px",
-                            color: "black",
-                            textDecoration: "none",
-                          }} >{index + 1}</td>
+                          <td >{index + 1}</td>
                           <td >{obj.ename}</td>
                           <td>{obj.branchOffice}</td>
                           <td >
@@ -2404,21 +2379,9 @@ function BdmDashboard() {
                       ))}
                   </tbody>
 
-                  <tfoot
-                    style={{
-                      position: "sticky", // Make the footer sticky
-                      bottom: -1, // Stick it at the bottom
-                      backgroundColor: "#f6f2e9",
-                      color: "black",
-                      fontWeight: 500,
-                      zIndex: 2, // Ensure it's above the content
-                    }}
-                  >
+                  <tfoot className="admin-dash-tbl-tfoot">
                     <tr style={{ fontWeight: 500 }}>
-                      <td
-                        style={{ lineHeight: "32px" }}
-                        colSpan="3"
-                      >
+                      <td colSpan={3}>
                         Total
                       </td>
                       <td>
@@ -2519,7 +2482,8 @@ function BdmDashboard() {
                   </LocalizationProvider>
                 </div>
                 <div className='services'>
-                  <FormControl sx={{ m: 1, width: 300 }}>
+                  <FormControl sx={{ m: 1, width: 200 }}>
+                  <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                     <Select
                       labelId="demo-multiple-name-label"
                       id="demo-multiple-name"

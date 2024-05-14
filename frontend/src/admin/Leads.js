@@ -345,7 +345,7 @@ function Leads() {
   //     setDataStatus("Assigned")
   //   }
   // }, [searchText])
-  
+
   useEffect(() => {
     if (filteredData.length === 0 && dataStatus === "Assigned") {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));
@@ -454,7 +454,7 @@ function Leads() {
     }
   });
 
-const mainAdminName =  localStorage.getItem("adminName");
+  const mainAdminName = localStorage.getItem("adminName");
 
 
   // const filteredData = mainData.filter((company) => {
@@ -555,7 +555,7 @@ const mainAdminName =  localStorage.getItem("adminName");
             "Director Email(Third)": row[16],
             "UploadedBy": adminName ? adminName : "Admin"
           }));
-         
+
         setCsvData(formattedJsonData);
       };
 
@@ -1380,91 +1380,91 @@ const mainAdminName =  localStorage.getItem("adminName");
     e.preventDefault();
     const adminName = localStorage.getItem("adminName");
     try {
-        let validationError = false;
+      let validationError = false;
 
-        if (companyName === "") {
-            validationError = true;
-            Swal.fire("Please Enter Company Name");
-        } else if (!companynumber || !/^\d{10}$/.test(companynumber)) {
-            validationError = true;
-            Swal.fire("Company Number is required and should be 10 digits");
-        } else if (companyEmail === "") {
-            validationError = true;
-            Swal.fire("Company Email is required");
-        } else if (companyCity === "") {
-            validationError = true;
-            Swal.fire("City is required");
-        } else if (companyState === "") {
-            validationError = true;
-            Swal.fire("State is required");
-        } else if (directorNumberFirstModify && !/^\d{10}$/.test(directorNumberFirstModify)) {
-            validationError = true;
-            Swal.fire("First Director Number should be 10 digits");
-        } else if (directorNumberSecondModify && !/^\d{10}$/.test(directorNumberSecondModify)) {
-            validationError = true;
-            Swal.fire("Second Director Number should be 10 digits");
-        } else if (directorNumberThirdModify && !/^\d{10}$/.test(directorNumberThirdModify)) {
-            validationError = true;
-            Swal.fire("Third Director Number should be 10 digits");
+      if (companyName === "") {
+        validationError = true;
+        Swal.fire("Please Enter Company Name");
+      } else if (!companynumber || !/^\d{10}$/.test(companynumber)) {
+        validationError = true;
+        Swal.fire("Company Number is required and should be 10 digits");
+      } else if (companyEmail === "") {
+        validationError = true;
+        Swal.fire("Company Email is required");
+      } else if (companyCity === "") {
+        validationError = true;
+        Swal.fire("City is required");
+      } else if (companyState === "") {
+        validationError = true;
+        Swal.fire("State is required");
+      } else if (directorNumberFirstModify && !/^\d{10}$/.test(directorNumberFirstModify)) {
+        validationError = true;
+        Swal.fire("First Director Number should be 10 digits");
+      } else if (directorNumberSecondModify && !/^\d{10}$/.test(directorNumberSecondModify)) {
+        validationError = true;
+        Swal.fire("Second Director Number should be 10 digits");
+      } else if (directorNumberThirdModify && !/^\d{10}$/.test(directorNumberThirdModify)) {
+        validationError = true;
+        Swal.fire("Third Director Number should be 10 digits");
+      }
+
+      if (!validationError) {
+        const dateObject = new Date(companyIncoDate);
+
+        // Check if the parsed Date object is valid
+        if (!isNaN(dateObject.getTime())) {
+          // Date object is valid, proceed with further processing
+          // Format the date as yyyy-mm-ddThh:mm:ss.000
+          const isoDateString = dateObject.toISOString();
+
+          // Update dataToSendUpdated with the formatted date
+          let dataToSendUpdated = {
+            "Company Name": companyName,
+            "Company Email": companyEmail,
+            "Company Number": companynumber,
+            "Company Incorporation Date ": isoDateString, // Updated format
+            "City": companyCity,
+            "State": companyState,
+            "Company Address": cAddress,
+            'Director Name(First)': directorNameFirstModify,
+            'Director Number(First)': directorNumberFirstModify,
+            'Director Email(First)': directorEmailFirstModify,
+            'Director Name(Second)': directorNameSecondModify,
+            'Director Number(Second)': directorNumberSecondModify,
+            'Director Email(Second)': directorEmailSecondModify,
+            'Director Name(Third)': directorNameThirdModify,
+            'Director Number(Third)': directorNumberThirdModify,
+            'Director Email(Third)': directorEmailThirdModify,
+            "UploadedBy": adminName ? adminName : "Admin"
+          };
+
+          if (isUpdateMode) {
+            await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+            Swal.fire({
+              title: "Data Updated!",
+              text: "You have successfully updated the name!",
+              icon: "success",
+            });
+          }
+
+          // Reset the form and any error messages
+          setIsUpdateMode(false);
+          fetchDatadebounce();
+          functioncloseModifyPopup();
+        } else {
+          // Date string couldn't be parsed into a valid Date object
+          console.error("Invalid Company Incorporation Date string:", companyIncoDate);
         }
-
-        if (!validationError) {
-            const dateObject = new Date(companyIncoDate);
-
-            // Check if the parsed Date object is valid
-            if (!isNaN(dateObject.getTime())) {
-                // Date object is valid, proceed with further processing
-                // Format the date as yyyy-mm-ddThh:mm:ss.000
-                const isoDateString = dateObject.toISOString();
-
-                // Update dataToSendUpdated with the formatted date
-                let dataToSendUpdated = {
-                    "Company Name": companyName,
-                    "Company Email": companyEmail,
-                    "Company Number": companynumber,
-                    "Company Incorporation Date ": isoDateString, // Updated format
-                    "City": companyCity,
-                    "State": companyState,
-                    "Company Address": cAddress,
-                    'Director Name(First)': directorNameFirstModify,
-                    'Director Number(First)': directorNumberFirstModify,
-                    'Director Email(First)': directorEmailFirstModify,
-                    'Director Name(Second)': directorNameSecondModify,
-                    'Director Number(Second)': directorNumberSecondModify,
-                    'Director Email(Second)': directorEmailSecondModify,
-                    'Director Name(Third)': directorNameThirdModify,
-                    'Director Number(Third)': directorNumberThirdModify,
-                    'Director Email(Third)': directorEmailThirdModify,
-                    "UploadedBy": adminName ? adminName : "Admin"
-                };
-
-                if (isUpdateMode) {
-                    await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
-                    Swal.fire({
-                        title: "Data Updated!",
-                        text: "You have successfully updated the name!",
-                        icon: "success",
-                    });
-                }
-
-                // Reset the form and any error messages
-                setIsUpdateMode(false);
-                fetchDatadebounce();
-                functioncloseModifyPopup();
-            } else {
-                // Date string couldn't be parsed into a valid Date object
-                console.error("Invalid Company Incorporation Date string:", companyIncoDate);
-            }
-        }
+      }
     } catch (error) {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Something went wrong!",
-        });
-        console.error("Internal server error", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+      console.error("Internal server error", error);
     }
-};
+  };
 
 
   const [selectedDataId, setSelectedDataId] = useState()
@@ -1668,7 +1668,7 @@ const mainAdminName =  localStorage.getItem("adminName");
   }, 10);
 
   const debouncedSetCompanyIncoDate = debounce((value) => {
-   setCompanyIncoDate(value);
+    setCompanyIncoDate(value);
   }, 10);
 
   const [errorCompnayNumber, setErrorCompnayNumber] = useState('');
@@ -2445,13 +2445,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                         Company Incorporation Date
                       </label>
                       <input
-                       value={companyIncoDate}
-                       onChange={(e) => {
-                        debouncedSetCompanyIncoDate(e.target.value)
-                       }}
-                       type="date"
-                       className="form-control"
-                       disabled={!isEditProjection}
+                        value={companyIncoDate}
+                        onChange={(e) => {
+                          debouncedSetCompanyIncoDate(e.target.value)
+                        }}
+                        type="date"
+                        className="form-control"
+                        disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -2489,13 +2489,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                     <div className="mb-3">
                       <label className="form-label">Company Address</label>
                       <input
-                       value={cAddress}
-                       onChange={(e) => {
-                        debouncedSetCAddress(e.target.value);
-                       }}
-                       type="text"
-                       className="form-control"
-                       disabled={!isEditProjection}
+                        value={cAddress}
+                        onChange={(e) => {
+                          debouncedSetCAddress(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -2593,13 +2593,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <div className="mb-3">
                         <label className="form-label">Director's Number(Second)</label>
                         <input
-                         value={directorNumberSecondModify}
-                         onChange={(e) => {
-                          debounceSetSecondDirectorNumberModify(e.target.value);
-                         }}
-                         type="number"
-                         className="form-control"
-                         disabled={!isEditProjection}
+                          value={directorNumberSecondModify}
+                          onChange={(e) => {
+                            debounceSetSecondDirectorNumberModify(e.target.value);
+                          }}
+                          type="number"
+                          className="form-control"
+                          disabled={!isEditProjection}
                         />
                         {errorDirectorNumberSecondModify && <p style={{ color: 'red' }}>{errorDirectorNumberSecondModify}</p>}
                       </div>
@@ -2608,13 +2608,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <div className="mb-3">
                         <label className="form-label">Director's Email(Second)</label>
                         <input
-                         value={directorEmailSecondModify}
-                         onChange={(e) => {
-                          debounceSetSecondDirectorEmailModify(e.target.value);
-                         }}
-                         type="email"
-                         className="form-control"
-                         disabled={!isEditProjection}
+                          value={directorEmailSecondModify}
+                          onChange={(e) => {
+                            debounceSetSecondDirectorEmailModify(e.target.value);
+                          }}
+                          type="email"
+                          className="form-control"
+                          disabled={!isEditProjection}
                         />
                       </div>
                     </div>
@@ -2652,13 +2652,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                     <div className="mb-3">
                       <label className="form-label">Director's Name(Third)</label>
                       <input
-                         value={directorNameThirdModify}
-                         onChange={(e) => {
+                        value={directorNameThirdModify}
+                        onChange={(e) => {
                           debounceSetThirdDirectorNameModify(e.target.value);
-                         }}
-                         type="text"
-                         className="form-control"
-                         disabled={!isEditProjection}
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -2666,13 +2666,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                     <div className="mb-3">
                       <label className="form-label">Director's Number(Third)</label>
                       <input
-                         value={directorNumberThirdModify}
-                         onChange={(e) => {
+                        value={directorNumberThirdModify}
+                        onChange={(e) => {
                           debounceSetThirdDirectorNumberModify(e.target.value);
-                         }}
-                         type="number"
-                         className="form-control"
-                         disabled={!isEditProjection}
+                        }}
+                        type="number"
+                        className="form-control"
+                        disabled={!isEditProjection}
                       />
                       {errorDirectorNumberThirdModify && <p style={{ color: 'red' }}>{errorDirectorNumberThirdModify}</p>}
                     </div>
@@ -3055,7 +3055,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       </button>
                     </div>
                   </div>
-                  <div style={{ margin: "0px 10px" }} className="addLeads">
+                  <div style={{ margin: "0px 2px" }} className="addLeads">
                     <div className="btn-list">
                       <button
                         onClick={handleDeleteSelection}
@@ -3074,7 +3074,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       </a>
                     </div>
                   </div>
-                  <div style={{ margin: "0px 10px" }} className="addLeads">
+                  <div style={{ margin: "0px 2px" }} className="addLeads">
                     <div className="btn-list">
                       <button
                         onClick={functionopenpopupEmp}
@@ -3093,7 +3093,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       </a>
                     </div>
                   </div>
-                  <div style={{ margin: "0px 10px" }} className="addLeads">
+                  <div style={{ margin: "0px 2px" }} className="addLeads">
                     <div className="btn-list">
                       <button
                         onClick={
@@ -3106,7 +3106,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
                         {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        <svg
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="icon"
                           width="24"
@@ -3121,7 +3121,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                           <path d="M12 5l0 14" />
                           <path d="M5 12l14 0" />
-                        </svg>
+                        </svg> */}
                         Add Leads
                       </button>
                       <a
@@ -3135,17 +3135,14 @@ const mainAdminName =  localStorage.getItem("adminName");
                       </a>
                     </div>
                   </div>
-                  <div className="importCSV mr-1">
+                  <div className="importCSV" style={{ margin: "0px 2px" }}>
                     <div className="btn-list">
                       <button
                         onClick={handleImportClick}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
                         {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        <svg
-                          style={{
-                            verticalAlign: "middle",
-                          }}
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="icon"
                           width="24"
@@ -3160,7 +3157,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                           <path d="M12 5l0 14" />
                           <path d="M5 12l14 0" />
-                        </svg>
+                        </svg> */}
                         {/* <FontAwesomeIcon icon={faHouseLock} /> */}
                         Import CSV
                       </button>
@@ -3175,63 +3172,45 @@ const mainAdminName =  localStorage.getItem("adminName");
                       </a>
                     </div>
                   </div>
-                  <div>
-                    <button
-                      className="btn btn-primary mr-1"
-                      onClick={exportData}>
-                      + Export CSV
-                    </button>
+                  <div className="importCSV" style={{ margin: "0px 2px" }}>
+                    <div className="btn-list">
+                      <button
+                        onClick={exportData}
+                        className="btn btn-primary d-none d-sm-inline-block"
+                      >
+                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                        {/* <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M12 5l0 14" />
+                          <path d="M5 12l14 0" />
+                        </svg> */}
+                        {/* <FontAwesomeIcon icon={faHouseLock} /> */}
+                        Export CSV
+                      </button>
+                      <a
+                        href="#"
+                        className="btn btn-primary d-sm-none btn-icon"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-report"
+                        aria-label="Create new report"
+                      >
+                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* <div style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-                className="features">
-                <div
-                  style={{
-                    width: "15vw",
-                    margin: "0px 10px",
-                    display: visibilityOther,
-                  }}
-                  className="input-icon">
-                  <span className="input-icon-addon">
-
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="20"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                      <path d="M21 21l-6 -6" />
-                    </svg>
-                  </span>
-                  <input
-                    type="text"
-                    value={searchText}
-                    onChange={(e) => {
-                      // filterSearch(e.target.value)
-                      setSearchText(e.target.value);
-                      setCurrentPage(0);
-                    }}
-                    className="form-control"
-                    placeholder="Search…"
-                    aria-label="Search in website"
-                  />
-                </div>
-              </div> */}
               <div
                 style={{
                   display: "flex",
@@ -3243,7 +3222,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
                   className="features">
-                  <div style={{ display: "flex" }} className="feature1">
+                  <div style={{ display: "flex", marginBottom: "20px" }} className="feature1" >
                     <div
                       className="form-control"
                       style={{ height: "fit-content", width: "15vw" }}>
@@ -3360,7 +3339,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       }}
                       className="results"
                     >
-                     {dataStatus + ":" } <b>{filteredData.length}</b> ,{dataStatus === "Unassigned" ? "Assigned" : "Unassigned"} : {anotherMainCount.length}
+                      {dataStatus + ":"} <b>{filteredData.length}</b> ,{dataStatus === "Unassigned" ? "Assigned" : "Unassigned"} : {anotherMainCount.length}
                     </div>
                   ) : (
                     <div></div>
@@ -3459,7 +3438,7 @@ const mainAdminName =  localStorage.getItem("adminName");
             </div>
           </div>
         </div>
-         {/* table body */}
+        {/* table body */}
         <div className="page-body">
           <div className="container-xl">
             <div class="card-header  my-tab">
@@ -3581,9 +3560,9 @@ const mainAdminName =  localStorage.getItem("adminName");
                         <th>Company Email</th>
                         <th>Status</th>
                         {dataStatus !== "Unassigned" && <th>Remarks</th>}
-                      
+
                         <th>Uploaded By</th>
-                        {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
+                        {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 
                         <th>
                           {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
@@ -3661,7 +3640,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                             <td>{company["State"]}</td>
                             <td>{company["Company Email"]}</td>
                             <td>{company["Status"]}</td>
-                            {dataStatus!=="Unassigned" && <td >
+                            {dataStatus !== "Unassigned" && <td >
                               <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                 <p className="rematkText text-wrap m-0">
                                   {company["Remarks"]}{" "}
@@ -3682,12 +3661,12 @@ const mainAdminName =  localStorage.getItem("adminName");
                                 </div>
                               </div>
                             </td>}
-                            
+
                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
+                            {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                             <td>{formatDateFinal(company["AssignDate"])}</td>
                             <td>
-                            {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash" || mainAdminName === "shivangi") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
+                              {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash" || mainAdminName === "shivangi") && <> <IconButton onClick={() => handleDeleteClick(company._id)}>
                                 <DeleteIcon
                                   style={{
                                     width: "14px",
@@ -3698,24 +3677,24 @@ const mainAdminName =  localStorage.getItem("adminName");
                                   Delete
                                 </DeleteIcon>
                               </IconButton>
-                              <IconButton onClick={
-                                data.length === "0"
-                                  ? Swal.fire("Please Import Some data first")
-                                  : () => {
-                                    functionopenModifyPopup();
-                                    handleUpdateClick(company._id);
-                                  }
-                              }>
-                                < ModeEditIcon
-                                  style={{
-                                    width: "14px",
-                                    height: "14px",
-                                    color: "grey",
-                                  }}
-                                >
-                                  Delete
-                                </ ModeEditIcon>
-                              </IconButton> </>}
+                                <IconButton onClick={
+                                  data.length === "0"
+                                    ? Swal.fire("Please Import Some data first")
+                                    : () => {
+                                      functionopenModifyPopup();
+                                      handleUpdateClick(company._id);
+                                    }
+                                }>
+                                  < ModeEditIcon
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "grey",
+                                    }}
+                                  >
+                                    Delete
+                                  </ ModeEditIcon>
+                                </IconButton> </>}
                               <Link to={`/admin/leads/${company._id}`}>
                                 <IconButton>
                                   <IconEye
@@ -3808,7 +3787,7 @@ const mainAdminName =  localStorage.getItem("adminName");
         </div>
       </div>
 
-     
+
     </div>
   );
 }
