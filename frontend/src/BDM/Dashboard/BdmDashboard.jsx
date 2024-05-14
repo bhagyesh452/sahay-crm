@@ -429,23 +429,60 @@ function BdmDashboard() {
 
   let generatedTotalRevenue = 0;
 
-  function functionCalculateGeneratedRevenue(isBdm) {
-
+  function functionCalculateGeneratedRevenue(bdeName) {
     let generatedRevenue = 0;
-    const requiredObj = moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
     requiredObj.forEach((object) => {
-      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
-      if (newObject) {
-        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+      redesignedData.map((mainBooking) => {
+          if(object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName )){
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)/2
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === bdeName) {
+                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+              }
+          }
+          }        
+          // mainBooking.remainingPayments.length!==0 && mainBooking.remainingPayments.map((boom)=>{
+            
+          //   const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+          //                       if (moreObject.bdeName === moreObject.bdmName) {
+          //                           remainingAmount += Math.round(tempAmount);
+          //                       } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+          //                           remainingAmount += Math.round(tempAmount) / 2;
+          //                       } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+          //                           if (moreObject.bdeName === bdeName) {
+          //                               remainingAmount += Math.round(tempAmount);
+          //                           }
+          //                       }
+          // })
+     
+    mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject)=>{
+      if(moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
+        if (moreObject.bdeName === moreObject.bdmName) {
+          generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+      } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+        generatedRevenue += parseInt(moreObject.generatedReceivedAmount)/2
+      } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+          if (moreObject.bdeName === bdeName) {
+            generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+          }
       }
+      }
+    })
+    })
+
+      
 
     });
-
+    generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
     //  console.log("This is generated Revenue",requiredObj);
 
-  }
+}
 
   function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;
@@ -1954,7 +1991,7 @@ function BdmDashboard() {
                           <div className="dash-card-2-head">GENERATED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
+                              ₹ {functionCalculateGeneratedRevenue(data.ename).toLocaleString()}
 
                             </div>
                           </div>
@@ -2693,7 +2730,7 @@ function BdmDashboard() {
                           <td>
                             {companyDataTotal.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                           </td>
-                          <td>₹ {functionCalculateGeneratedTotalRevenue(obj.ename).toLocaleString()}</td>
+                          <td>₹ {functionCalculateGeneratedRevenue(obj.ename).toLocaleString()}</td>
                         </tr>
                       ))}
                   </tbody>

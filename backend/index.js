@@ -4463,7 +4463,7 @@ app.post(
                   existingData.generatedTotalAmount,
                 generatedReceivedAmount:
                   newData.generatedReceivedAmount ||
-                  existingData.generatedReceivedAmount,
+                  existingData.generatedReceivedAmount || 0,
                 Step3Status: true,
               },
             },
@@ -5842,7 +5842,7 @@ app.post(
               </b>
             </p>
             <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
             } else if (incomeTaxServices !== "") {
@@ -8521,7 +8521,67 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     </section>
   </div>` : "";
 
-    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+    // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+    const servicesShubhi = [
+      "Pitch Deck Development ",
+      "Financial Modeling",
+      "DPR Development",
+      "CMA Report Development",
+      "Company Profile Write-Up",
+      "Company Brochure",
+      "Product Catalog",
+      "Logo Design",
+      "Business Card Design",
+      "Letter Head Design",
+      "Broucher Design",
+      "Business Profile",
+      "Seed Funding Support",
+      "Angel Funding Support",
+      "VC Funding Support",
+      "Crowd Funding Support",
+      "I-Create",
+      "Nidhi Seed Support Scheme  ",
+      "Nidhi Prayash Yojna",
+      "NAIF",
+      "Raftaar",
+      "CSR Funding",
+      "Stand-Up India",
+      "PMEGP",
+      "USAID",
+      "UP Grant",
+      "DBS Grant",
+      "MSME Innovation",
+      "MSME Hackathon",
+      "Gujarat Grant",
+      "CGTMSC",
+      "Income Tax Exemption",
+      "Mudra Loan",
+      "SIDBI Loan",
+      "Incubation Support",
+      "Digital Marketing",
+      "SEO Services",
+      "Branding Services",
+      "Social Promotion Management",
+      "Email Marketing",
+      "Digital Content",
+      "Lead Generation",
+      "Whatsapp Marketing",
+      "Website Development",
+      "App Design & Development",
+      "Web Application Development",
+      "Software Development",
+      "CRM Development",
+      "ERP Development",
+      "E-Commerce Website",
+      "Product Development"
+    ];
+    const mailName = newData.services.some((service) => {
+     
+      return servicesShubhi.includes(service);
+    })
+      ? "Shubhi Banthiya"
+      : "Dhruvi Gohel";
+    
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8587,8 +8647,8 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
                     <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                     <div class="signature">
                         <div>Best regards,</div>
-                        <div>Shubhi Banthiya – Relationship Manager</div>
-                        <div>+91 9998992601</div>
+                        <div>${mailName} – Relationship Manager</div>
+                        <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
                         <div>Start-Up Sahay Private Limited</div>
                     </div>
                 </div>
