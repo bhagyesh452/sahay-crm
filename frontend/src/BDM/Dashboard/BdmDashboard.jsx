@@ -429,23 +429,34 @@ function BdmDashboard() {
 
   let generatedTotalRevenue = 0;
 
-  function functionCalculateGeneratedRevenue(isBdm) {
-
+  function functionCalculateGeneratedRevenue(bdeName) {
     let generatedRevenue = 0;
-    const requiredObj = moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
     requiredObj.forEach((object) => {
-      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
-      if (newObject) {
-        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
-      }
+      redesignedData.map((mainBooking) => {
+          if(object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName )){
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)/2
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === bdeName) {
+                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+              }
+          }
+          }
+          
+        
+    })
+      
 
     });
-
+    generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
     //  console.log("This is generated Revenue",requiredObj);
 
-  }
+}
 
   function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;

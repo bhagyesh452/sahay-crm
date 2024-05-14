@@ -4463,7 +4463,7 @@ app.post(
                   existingData.generatedTotalAmount,
                 generatedReceivedAmount:
                   newData.generatedReceivedAmount ||
-                  existingData.generatedReceivedAmount,
+                  existingData.generatedReceivedAmount || 0,
                 Step3Status: true,
               },
             },
