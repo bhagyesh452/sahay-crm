@@ -79,19 +79,19 @@ function Employees({ onEyeButtonClick }) {
   // }
   const handleEyeButtonClick = (id) => {
     onEyeButtonClick(id);
-    console.log(id);
+    //console.log(id);
   };
   useEffect(() => {
     const socket = io("http://localhost:3001");
     socket.on("employee-entered", () => {
-      console.log("One user Entered");
+      //console.log("One user Entered");
       setTimeout(() => {
-        fetchData();
+        //fetchData();
       }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
     });
 
     socket.on("user-disconnected", () => {
-      fetchData();
+      //fetchData();
     });
 
     return () => {
@@ -125,7 +125,7 @@ function Employees({ onEyeButtonClick }) {
         await Promise.all(
           companyDdata.map(async (item) => {
             await axios.delete(`${secretKey}/newcompanynamedelete/${item._id}`);
-            console.log(`Deleted name for ${item._id}`);
+            //console.log(`Deleted name for ${item._id}`);
           })
         );
         Swal.fire({
@@ -134,7 +134,7 @@ function Employees({ onEyeButtonClick }) {
           icon: "success",
         });
 
-        console.log("All ename updates completed successfully");
+        //console.log("All ename updates completed successfully");
       } catch (error) {
         console.error("Error updating enames:", error.message);
         Swal.fire("Error deleting the employee");
@@ -147,6 +147,7 @@ function Employees({ onEyeButtonClick }) {
     // Cancel the delete operation and close the modal
     setIsModalOpen(false);
   };
+  const [bdmWork, setBdmWork] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedFormat, setSortedFormat] = useState({
     ename: "ascending",
@@ -200,7 +201,7 @@ function Employees({ onEyeButtonClick }) {
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
     console.log("selectedData", selectedData)
-    console.log("This is elon musk", selectedData.targetDetails)
+    
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -220,7 +221,7 @@ function Employees({ onEyeButtonClick }) {
     setEname(selectedData.ename);
     setNumber(selectedData.number);
     setPassword(selectedData.password);
-
+    setBdmWork(selectedData.bdmWork)
     setDesignation(selectedData.designation);
     setBranchOffice(selectedData.branchOffice);
 
@@ -232,13 +233,6 @@ function Employees({ onEyeButtonClick }) {
 
     // setJdate('2004-04-04');
     setJdate(formattedDateString);
-
-    // // Get individual date components
-
-    // // Create the formatted date string in "dd-mm-yyyy" format
-
-    // console.log(formattedDateString); // Output: "04-01-2024"
-    //     console.log(jdate);
   };
 
   const handleDelete = async (id) => {
@@ -269,6 +263,7 @@ function Employees({ onEyeButtonClick }) {
     fetchData();
     fetchCData();
   }, []);
+  
   function formatDateWP(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -319,10 +314,10 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
-  const [bdmWork, setBdmWork] = useState(false)
+ 
 
   const handleSubmit = async (e) => {
-    console.log(jdate);
+    
     // const referenceId = uuidv4();
     const AddedOn = new Date().toLocaleDateString();
     try {
@@ -362,16 +357,19 @@ function Employees({ onEyeButtonClick }) {
         dataToSend.bdmWork = true
       } else {
         dataToSend.bdmWork = false
-      }
-
+      }  
+      console.log(isUpdateMode , "updateMode")
 
       if (isUpdateMode) {
-        console.log(dataToSend, "Bhoom");
-
-        await axios.put(
+        //console.log(dataToSend, "Bhoom");
+        //console.log("updateddata",dataToSendUpdated)
+       const response =  await axios.put(
           `${secretKey}/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
+
+        //console.log(response.data,"updateddata")
+
         Swal.fire({
           title: "Data Updated Succesfully!",
           text: "You have successfully updated the name!",
@@ -388,25 +386,24 @@ function Employees({ onEyeButtonClick }) {
                 await axios.put(`${secretKey}/newcompanyname/${item._id}`, {
                   ename,
                 });
-                console.log(`Updated ename for ${item._id}`);
+                //console.log(`Updated ename for ${item._id}`);
               })
             );
-
-            console.log("All ename updates completed successfully");
           } catch (error) {
             console.error("Error updating enames:", error.message);
             // Handle the error as needed
           }
         }
       } else {
-        await axios.post(`${secretKey}/einfo`, dataToSend);
+        const response = await axios.post(`${secretKey}/einfo`, dataToSend);
+        //console.log(response.data , "datatosend")
         Swal.fire({
           title: "Data Added!",
           text: "You have successfully added the data!",
           icon: "success",
         });
       }
-      console.log("datatosend", dataToSend);
+      //console.log("datatosend", dataToSend);
 
       setEmail("");
       setEname("");
@@ -421,7 +418,7 @@ function Employees({ onEyeButtonClick }) {
       setTargetObjects([defaultObject])
       fetchData();
       closepopup();
-      console.log("Data sent successfully");
+      //console.log("Data sent successfully");
     } catch {
       Swal.fire({
         icon: "error",
@@ -523,7 +520,7 @@ function Employees({ onEyeButtonClick }) {
   const fetchTeamData = async () => {
     const response = await axios.get(`${secretKey}/teaminfo`);
 
-    console.log(response.data);
+    //console.log(response.data);
     setTeamData(response.data);
   };
 
@@ -541,23 +538,6 @@ function Employees({ onEyeButtonClick }) {
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
 
-  console.log("This is anytime Target Objects :", targetObjects)
-  // useEffect(() => {
-  //   // Create new services array based on totalServices
-  //   if (!nowFetched) {
-
-  //     // const totalTargets = Array.from({ length: targetCount }, () => ({
-  //     //   ...defaultObject,
-  //     // }));
-  //     const newTargets = targetObjects ;
-  //     newTargets.push(defaultObject);
-
-  //     setTargetObjects(newTargets);
-
-  //   } else {
-  //     setNowFetched(false)
-  //   }
-  // }, [targetCount]);
   const handleAddTarget = () => {
     const totalTargets = targetObjects;
     totalTargets.push(defaultObject);
@@ -571,7 +551,7 @@ function Employees({ onEyeButtonClick }) {
     setTargetCount(targetCount - 1);
     setTargetObjects(totalTargets);
   }
-  console.log("target objects:", targetObjects)
+  //console.log("target objects:", targetObjects)
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
 
@@ -620,9 +600,6 @@ function Employees({ onEyeButtonClick }) {
 
 
   const handlChecked = async (employeeId, bdmWork) => {
-    console.log(employeeId)
-    console.log(bdmWork)
-
     if (!bdmWork) {
       try {
         const response = await axios.post(`${secretKey}/post-bdmwork-request/${employeeId}`, {
@@ -631,7 +608,7 @@ function Employees({ onEyeButtonClick }) {
 
         fetchData()
 
-        console.log(response.data)
+        //console.log(response.data)
         setTimeout(() => {
           Swal.fire('BDM Work Assigned!', '', 'success');
 
@@ -648,8 +625,6 @@ function Employees({ onEyeButtonClick }) {
           bdmWork: false
         });
         fetchData(); // Assuming this function fetches updated employee details
-        console.log(response.data); // Log response data
-        // Show success message
         setTimeout(() => {
           Swal.fire('BDM Work Revoked!', '', 'success');
         }, 500)
@@ -1231,21 +1206,13 @@ function Employees({ onEyeButtonClick }) {
                             </td>}
 
                             <td>
-                              {/* {teamData
-                            .filter((obj) => obj.employees.some(emp => emp.ename === item.ename && emp.branchOffice === item.branchOffice))
-                            .map(obj => obj.teamName)
-                            .join(', ') || <span style={{color:"lightgrey"}}>No team allotted</span>
-                          } */}
                               <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-
                                 <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                                   onClick={(event) => {
-
                                     handlChecked(item._id, item.bdmWork)
                                   }} />
 
                               </Stack>
-                              {/* {item.bdmWork ? (<span>BDM</span>) : (" ")} */}
                             </td>
                             <td>
                               <div className="d-flex justify-content-center align-items-center">
@@ -1298,21 +1265,6 @@ function Employees({ onEyeButtonClick }) {
                                       />
                                     </IconButton>
                                   </Link>
-                                  {/* <Link
-                                style={{ color: "black" }}
-                                to={`/admin/employeeleads/${item._id}`}
-                              >
-                                <IconButton>
-                                  {" "}
-                                  <IconEye
-                                    style={{
-                                      width: "14px",
-                                      height: "14px",
-                                      color: "#d6a10c",
-                                    }}
-                                  />
-                                </IconButton>
-                              </Link> */}
                                 </div>
                               </div>
                             </td></>}
