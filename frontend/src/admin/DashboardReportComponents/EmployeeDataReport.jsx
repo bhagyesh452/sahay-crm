@@ -75,7 +75,7 @@ function EmployeeDataReport() {
         const date = new Date(inputDate);
         const convertedDate = date.toLocaleDateString();
         return convertedDate;
-      };
+    };
 
     //-------fetching employees info--------------------------------------------
 
@@ -184,7 +184,7 @@ function EmployeeDataReport() {
                 company.ename.toLowerCase().includes(searchTerm.toLowerCase())
             )
         );
-        setCompanyData(companyDataFilter.filter((company)=>company.ename.toLowerCase().includes(searchTerm.toLowerCase())))
+        setCompanyData(companyDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase())))
     }
 
     //--------------------------search by date range filter function-----------------------------------------------
@@ -841,7 +841,7 @@ function EmployeeDataReport() {
         setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
     }, [employeeData]);
 
-    
+
     //---------------------------------------employee table open functions------------------------------------
     const functionOpenEmployeeTable = (employee) => {
         setOpenEmployeeTable(true);
@@ -852,13 +852,13 @@ function EmployeeDataReport() {
     };
 
     const formattedDates =
-    companyData.length !== 0 &&
-    selectedEmployee !== "" &&
-    companyData
-      .filter((data) => data.ename === selectedEmployee) // Filter data based on ename
-      .map((data) => formatDate(data.AssignDate));
+        companyData.length !== 0 &&
+        selectedEmployee !== "" &&
+        companyData
+            .filter((data) => data.ename === selectedEmployee) // Filter data based on ename
+            .map((data) => formatDate(data.AssignDate));
 
-  const uniqueArray = formattedDates && [...new Set(formattedDates)];
+    const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
     const properCompanyData =
         selectedEmployee !== "" &&
@@ -987,7 +987,7 @@ function EmployeeDataReport() {
                         </div>
                     </div>
                     <div className="card-body">
-                        <div className="row tbl-scroll" style={{maxHeight:"400px"}}>
+                        <div className="row tbl-scroll" style={{ maxHeight: "400px" }}>
                             <table className="table-vcenter table-nowrap admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead" >
                                     <tr>

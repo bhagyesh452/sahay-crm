@@ -1,4 +1,4 @@
-import React , {useState , useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { debounce } from "lodash";
 import Calendar from "@mui/icons-material/Event";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -64,15 +64,15 @@ function EmployeesForwardedDataReport() {
         const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
-      }
-    
-      function formatDateMonth(timestamp) {
+    }
+
+    function formatDateMonth(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
-      }
+    }
 
 
     //----------------------fetching employees info--------------------------------------
@@ -140,47 +140,48 @@ function EmployeesForwardedDataReport() {
         debouncedFetchEmployeeInfo();
     }, []);
 
-//--------------------------------bde search forward data-------------------------
-  const filterSearchForwardData = (searchTerm) => {
-    //console.log(searchTerm)
-    setSearchTermForwardData(searchTerm);
+    //--------------------------------bde search forward data-------------------------
 
-    setForwardEmployeeData(
-      forwardEmployeeDataFilter.filter((company) =>
-        company.ename.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
+    const filterSearchForwardData = (searchTerm) => {
+        //console.log(searchTerm)
+        setSearchTermForwardData(searchTerm);
 
-    setCompanyDataTotal(
-      companyDataFilter.filter(
-        (obj) =>
-          (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-          forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
-            empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-      )
-    );
+        setForwardEmployeeData(
+            forwardEmployeeDataFilter.filter((company) =>
+                company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        );
 
-    setTeamLeadsData(
-      teamLeadsDataFilter.filter((obj) =>
-        forwardEmployeeDataNew.some(
-          (empObj) =>
-            (obj.bdmName === empObj.ename) &&
-            empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      )
-    );
-    // setfollowData(
-    //   followDataFilter.filter(obj =>
-    //     forwardEmployeeDataNew.some(empObj =>
-    //       (empObj.ename === obj.ename || empObj.bdeName === obj.ename) &&
-    //       (empObj.ename.toLowerCase().includes(searchTerm.toLowerCase()) || empObj.bdeName.toLowerCase().includes(searchTerm.toLowerCase()))
-    //     )
-    //   )
-    // );
+        setCompanyDataTotal(
+            companyDataFilter.filter(
+                (obj) =>
+                    (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+                    forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
+                        empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+            )
+        );
 
-  }
-  const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
+        setTeamLeadsData(
+            teamLeadsDataFilter.filter((obj) =>
+                forwardEmployeeDataNew.some(
+                    (empObj) =>
+                        (obj.bdmName === empObj.ename) &&
+                        empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            )
+        );
+        // setfollowData(
+        //   followDataFilter.filter(obj =>
+        //     forwardEmployeeDataNew.some(empObj =>
+        //       (empObj.ename === obj.ename || empObj.bdeName === obj.ename) &&
+        //       (empObj.ename.toLowerCase().includes(searchTerm.toLowerCase()) || empObj.bdeName.toLowerCase().includes(searchTerm.toLowerCase()))
+        //     )
+        //   )
+        // );
+
+    }
+    const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
 
     //-------- filter branch office function-------------------------------------
 
@@ -221,84 +222,84 @@ function EmployeesForwardedDataReport() {
 
     const fetchFollowUpData = async () => {
         try {
-          const response = await fetch(`${secretKey}/projection-data`);
-          const followdata = await response.json();
-          setfollowData(followdata);
-          setFollowDataFilter(followdata)
-          setFollowDataNew(followdata)
-          //console.log("followdata", followdata)
-          setfollowDataToday(
-            followdata
-              .filter((company) => {
-                // Assuming you want to filter companies with an estimated payment date for today
-                const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                return company.estPaymentDate === today;
-              })
-          );
-          setfollowDataTodayNew(
-            followdata
-              .filter((company) => {
-                // Assuming you want to filter companies with an estimated payment date for today
-                const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                return company.estPaymentDate === today;
-              })
-          );
+            const response = await fetch(`${secretKey}/projection-data`);
+            const followdata = await response.json();
+            setfollowData(followdata);
+            setFollowDataFilter(followdata)
+            setFollowDataNew(followdata)
+            //console.log("followdata", followdata)
+            setfollowDataToday(
+                followdata
+                    .filter((company) => {
+                        // Assuming you want to filter companies with an estimated payment date for today
+                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+                        return company.estPaymentDate === today;
+                    })
+            );
+            setfollowDataTodayNew(
+                followdata
+                    .filter((company) => {
+                        // Assuming you want to filter companies with an estimated payment date for today
+                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+                        return company.estPaymentDate === today;
+                    })
+            );
         } catch (error) {
-          console.error("Error fetching data:", error);
-          return { error: "Error fetching data" };
+            console.error("Error fetching data:", error);
+            return { error: "Error fetching data" };
         }
-      };
+    };
 
-      useEffect(() => {
+    useEffect(() => {
         fetchFollowUpData();
-      }, []);
+    }, []);
     //-----------------------------date range filter function---------------------------------
     const numberFormatOptions = {
         style: "currency",
         currency: "INR", // Use the currency code for Indian Rupee (INR)
         minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
         maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
-      };
-      const shortcutsItems = [
+    };
+    const shortcutsItems = [
         {
-          label: "This Week",
-          getValue: () => {
-            const today = dayjs();
-            return [today.startOf("week"), today.endOf("week")];
-          },
+            label: "This Week",
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf("week"), today.endOf("week")];
+            },
         },
         {
-          label: "Last Week",
-          getValue: () => {
-            const today = dayjs();
-            const prevWeek = today.subtract(7, "day");
-            return [prevWeek.startOf("week"), prevWeek.endOf("week")];
-          },
+            label: "Last Week",
+            getValue: () => {
+                const today = dayjs();
+                const prevWeek = today.subtract(7, "day");
+                return [prevWeek.startOf("week"), prevWeek.endOf("week")];
+            },
         },
         {
-          label: "Last 7 Days",
-          getValue: () => {
-            const today = dayjs();
-            return [today.subtract(7, "day"), today];
-          },
+            label: "Last 7 Days",
+            getValue: () => {
+                const today = dayjs();
+                return [today.subtract(7, "day"), today];
+            },
         },
         {
-          label: "Current Month",
-          getValue: () => {
-            const today = dayjs();
-            return [today.startOf("month"), today.endOf("month")];
-          },
+            label: "Current Month",
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf("month"), today.endOf("month")];
+            },
         },
         {
-          label: "Next Month",
-          getValue: () => {
-            const today = dayjs();
-            const startOfNextMonth = today.endOf("month").add(1, "day");
-            return [startOfNextMonth, startOfNextMonth.endOf("month")];
-          },
+            label: "Next Month",
+            getValue: () => {
+                const today = dayjs();
+                const startOfNextMonth = today.endOf("month").add(1, "day");
+                return [startOfNextMonth, startOfNextMonth.endOf("month")];
+            },
         },
         { label: "Reset", getValue: () => [null, null] },
-      ];
+    ];
 
     const handleForwardedEmployeeDateRange = (values) => {
         if (values[1]) {
@@ -363,29 +364,29 @@ function EmployeesForwardedDataReport() {
 
     //---------------------------------multiple bde name filter function---------------------------------
 
-  const options = forwardEmployeeDataNew.map((obj) => obj.ename);
-  
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
+    const options = forwardEmployeeDataNew.map((obj) => obj.ename);
 
-  function getStyles(name, personName, theme) {
-    return {
-      fontWeight:
-        personName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
     };
-  }
 
-  const theme = useTheme();
+    function getStyles(name, personName, theme) {
+        return {
+            fontWeight:
+                personName.indexOf(name) === -1
+                    ? theme.typography.fontWeightRegular
+                    : theme.typography.fontWeightMedium,
+        };
+    }
+
+    const theme = useTheme();
 
     const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
         const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
@@ -612,6 +613,7 @@ function EmployeesForwardedDataReport() {
                 break;
         }
     };
+    
     const handleSortRecievedProjectionCase = (sortByForwarded) => {
         // Sort the followData array based on totalPayment for each ename
         setNewSortType((prevData) => ({
@@ -720,7 +722,7 @@ function EmployeesForwardedDataReport() {
         }));
         switch (sortTypeForwarded) {
             case 'ascending':
-                console.log("yahan chala ascedning")
+                //console.log("yahan chala ascedning")
                 const companyDataAscending = {};
                 companyDataTotal.forEach((company) => {
                     if (company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured') {
@@ -734,7 +736,7 @@ function EmployeesForwardedDataReport() {
                 });
                 break;
             case 'descending':
-                console.log("yahan chala descending");
+                //console.log("yahan chala descending");
                 const companyDataDescending = {};
                 companyDataTotal.forEach((company) => {
                     if (company.bdmAcceptStatus === 'Accept' && company.Status === 'Matured') {
@@ -810,57 +812,57 @@ function EmployeesForwardedDataReport() {
         setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
     }, [forwardEmployeeData]);
 
-//------------------------------------generated revenue caluclate function--------------------------------------
-let generatedTotalRevenue = 0;
+    //------------------------------------generated revenue caluclate function--------------------------------------
+    let generatedTotalRevenue = 0;
 
 
-  function functionCalculateGeneratedTotalRevenue(ename) {
-    const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
-    let generatedRevenue = 0;
-    const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
-    requiredObj.forEach((object) => {
-      const newObject = filterData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === ename);
-      if (newObject) {
-        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
-      }
+    function functionCalculateGeneratedTotalRevenue(ename) {
+        const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
+        let generatedRevenue = 0;
+        const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+        requiredObj.forEach((object) => {
+            const newObject = filterData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === ename);
+            if (newObject) {
+                generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+            }
 
-    });
-    generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
-    return generatedRevenue;
-    //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
-    //  console.log("This is generated Revenue",requiredObj);
+        });
+        generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
+        return generatedRevenue;
+        //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+        //  console.log("This is generated Revenue",requiredObj);
 
-  }
+    }
 
-  //---------------------------function calculate total projection forwared-----------------------------------------
-  let generatedTotalProjection = 0;
+    //---------------------------function calculate total projection forwared-----------------------------------------
+    let generatedTotalProjection = 0;
 
-  const functionCaluclateTotalForwardedProjection = (isBdm, employeeName) => {
+    const functionCaluclateTotalForwardedProjection = (isBdm, employeeName) => {
 
-    const filteredFollowDataForward = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Forwarded") : followData.filter((company) => company.ename === employeeName && company.caseType === "Forwarded")
-    const filteredFollowDataRecieved = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Recieved") : followData.filter((company) => (company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
-    const totalPaymentForwarded = filteredFollowDataForward.reduce((total, obj) => total + obj.totalPayment, 0)
-    const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
-    const finalPayment = totalPaymentForwarded + totalPaymentRecieved
+        const filteredFollowDataForward = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Forwarded") : followData.filter((company) => company.ename === employeeName && company.caseType === "Forwarded")
+        const filteredFollowDataRecieved = isBdm ? followData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Recieved") : followData.filter((company) => (company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
+        const totalPaymentForwarded = filteredFollowDataForward.reduce((total, obj) => total + obj.totalPayment, 0)
+        const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+        const finalPayment = totalPaymentForwarded + totalPaymentRecieved
 
-    generatedTotalProjection = generatedTotalProjection + finalPayment;
+        generatedTotalProjection = generatedTotalProjection + finalPayment;
 
-    return finalPayment.toLocaleString();
+        return finalPayment.toLocaleString();
 
-  }
-  //---------------------------function calculate total projection recieved-----------------------------------------
-  let generatedTotalProjectionRecieved = 0;
+    }
+    //---------------------------function calculate total projection recieved-----------------------------------------
+    let generatedTotalProjectionRecieved = 0;
 
-  const functionCalculateTotalProjectionRecieved = (employeeName) => {
-    const filterFollowDataRecieved = followData.filter((company) => company.bdmName === employeeName && company.caseType === "Recieved")
-    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
-    const finalPayment = totalPaymentRecieved
-    //console.log(finalPayment)
-    //console.log( filterFollowDataRecieved)
-    generatedTotalProjectionRecieved = generatedTotalProjectionRecieved + finalPayment
+    const functionCalculateTotalProjectionRecieved = (employeeName) => {
+        const filterFollowDataRecieved = followData.filter((company) => company.bdmName === employeeName && company.caseType === "Recieved")
+        const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+        const finalPayment = totalPaymentRecieved
+        //console.log(finalPayment)
+        //console.log( filterFollowDataRecieved)
+        generatedTotalProjectionRecieved = generatedTotalProjectionRecieved + finalPayment
 
-    return finalPayment.toLocaleString();
-  }
+        return finalPayment.toLocaleString();
+    }
 
     return (
         <div>
@@ -990,7 +992,7 @@ let generatedTotalRevenue = 0;
                         </div>
                     </div>
                     <div className='card-body'>
-                        <div className="row tbl-scroll" style={{maxHeight:"400px"}}>
+                        <div className="row tbl-scroll" style={{ maxHeight: "400px" }}>
                             <table className="table-vcenter table-nowrap admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead">
                                     <tr>
@@ -1075,7 +1077,8 @@ let generatedTotalRevenue = 0;
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
+                                            </div>
+                                        </th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
