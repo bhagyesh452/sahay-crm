@@ -468,15 +468,18 @@ function ManagerBookings() {
 const [expanseObject, setExpanseObject] = useState({
   serviceName : "",
   bookingIndex : 0,
-  expanseAmount : 0
+  expanseAmount : 0,
+  serviceID: ""
 })
   
 
-  const functionOpenAddExpanse = (bookingIndex,serviceName) => {
+  const functionOpenAddExpanse = (bookingIndex,serviceName, serviceID) => {
+
   setExpanseObject({
     ...expanseObject,
     bookingIndex: bookingIndex,
-    serviceName: serviceName
+    serviceName: serviceName,
+    serviceID: serviceID
   })
    setOpenAddExpanse(true)
   }
@@ -1136,7 +1139,7 @@ const [expanseObject, setExpanseObject] = useState({
 
                                             {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                             <div className="d-flex">
-                                              <button onClick={() => functionOpenAddExpanse(0 , obj.serviceName)} className="btn btn-link btn-small">
+                                              <button onClick={() => functionOpenAddExpanse(0 , obj.serviceName , obj._id)} className="btn btn-link btn-small">
                                                 + Expanse
                                               </button>
 
@@ -2405,13 +2408,11 @@ const [expanseObject, setExpanseObject] = useState({
                                                 </div>
                                                 {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                                 <div>
-                                                  <button onClick={() => functionOpenAddExpanse(BookingIndex + 1 , obj.serviceName)} className="btn btn-link btn-small">
+                                                  <button onClick={() => functionOpenAddExpanse(BookingIndex + 1 , obj.serviceName, obj._id)} className="btn btn-link btn-small">
                                                     + Expanse
                                                   </button>
 
-                                                </div>
-
-                                                
+                                                </div>                                              
 
                                                 {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                               </div>

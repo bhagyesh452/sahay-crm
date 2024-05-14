@@ -9012,14 +9012,19 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
   const companyName = req.params.CompanyName;
   const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
   const mainObject = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+  const serviceID =  data.serviceID
+
 
   if (!mainObject) {
     return res.status(404).json({ error: "Company not found" });
   }
 
   if (bookingIndex === 0) {
+    
     const findServices = mainObject.services
-    const serviceObject = findServices.filter(service => service.serviceName === data.serviceName)[0];
+    const serviceObject = findServices.filter(service => (service._id).toString() === serviceID)[0];
+   
+    
     
     if (!serviceObject) {
       return res.status(404).json({ error: "Service not found" });
@@ -9048,7 +9053,7 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
  
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = mainObject.services.map(service => {
-      if (service.serviceName === data.serviceName) {
+      if (service._id == serviceID) {
         return updatedServiceObject;
       }
       return service;
@@ -9065,7 +9070,7 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
   } else {
     const moreObject = mainObject.moreBookings[bookingIndex -1];
     const findServices = moreObject.services
-    const serviceObject = findServices.filter(service => service.serviceName === data.serviceName)[0];
+    const serviceObject = findServices.filter(service => (service._id).toString() === serviceID)[0];
     
     if (!serviceObject) {
       return res.status(404).json({ error: "Service not found" });
@@ -9094,7 +9099,7 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
     console.log(updatedServiceObject);
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = moreObject.services.map(service => {
-      if (service.serviceName === data.serviceName) {
+      if (service._id == serviceID) {
         return updatedServiceObject;
       }
       return service;
