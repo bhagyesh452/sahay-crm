@@ -511,6 +511,8 @@ const [expanseObject, setExpanseObject] = useState({
         "Thank you, expanse has been added successfully!",
         "success"
       );
+      setNowToFetch(true);
+      setOpenAddExpanse(false);
     
     } catch (error) {
       Swal.fire(
@@ -1146,7 +1148,7 @@ const [expanseObject, setExpanseObject] = useState({
                                               <DialogTitle>
                                                 <div className="d-flex align-items-center justify-content-between">
                                                   <div className="expanse-heading">
-                                                    <h2>Service Name</h2>
+                                                    <h2>{expanseObject.serviceName}</h2>
                                                   </div>
                                                   <div className="expanse-close">
                                                     <IconButton onClick={() => setOpenAddExpanse(false)}>
