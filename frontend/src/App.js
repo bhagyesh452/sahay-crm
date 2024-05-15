@@ -53,6 +53,7 @@ import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx"
 import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
+import TestLeads from "./admin/TestLeads.jsx";
 
 
 
@@ -163,6 +164,7 @@ function App() {
                 path="/admin/employees/:id/login-details"
                 element={<LoginDetails />}
               />
+              {/* <Route path="/admin/leads" element={<Leads />} /> */}
               <Route path="/admin/leads" element={<Leads />} />
               <Route path="/admin/team" element={<Team />} />
               <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
