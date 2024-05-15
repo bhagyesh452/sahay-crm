@@ -750,7 +750,6 @@ function EmployeesThisMonthBooking() {
 
     const filterSearchThisMonthBookingBde = (searchTerm) => {
         setEmployeeData(employeeDataFilter.filter((obj) => obj.ename.toLowerCase().includes(searchTerm.toLowerCase())))
-
     }
     const debouncedFilterSearchThisMonthBookingBde = debounce(filterSearchThisMonthBookingBde, 100)
 

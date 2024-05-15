@@ -9255,39 +9255,31 @@ app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serv
   }
 })
 
-app.post("/api/generate-pdf", async (req, res) => {
+app.get("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";
   const senderName = "Chaganlal";
 
   try {
     // Read the HTML template
-    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-    const filledHtml = htmlTemplate
-      .replace("{{Company Name}}", clientName)
-      .replace("{{Services}}", clientAddress);
+    const htmlTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
+    const pdfFilePath = `./test.pdf`;
     pdf
-      .create(filledHtml, { format: "Letter" })
-      .toFile("./foo5.pdf", async (err, response) => {
+    .create(htmlTemplate, {
+      format: "Letter",
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: "./dev/null",
+        },
+      },
+    })
+    .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
           res.status(500).send("Error generating PDF");
         } else {
           try {
-            setTimeout(() => {
-              const mainBuffer = fs.readFileSync("./foo5.pdf");
-              sendMail2(
-                ["nimesh@incscale.in"],
-                `Mail Testing`,
-                ``,
-                `
-              <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-                <h1> Smile:-) </h1>       
-              </div>
-            `,
-                mainBuffer
-              );
-            }, 5000);
+
 
             res.setHeader("Content-Type", "application/pdf");
             res.setHeader(
