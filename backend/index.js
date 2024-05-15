@@ -8439,7 +8439,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer" style="margin-bottom:50px , margin-top:0px">
+            <div class="section_footer">
             <p class="Declaration_text_data Signature">
               Client's Signature:__________________________________
             </p>
