@@ -1488,6 +1488,8 @@ app.get("/api/leads", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 app.get("/api/leads/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   try {
