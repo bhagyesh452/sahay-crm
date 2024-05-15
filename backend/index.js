@@ -8572,8 +8572,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       "Product Development"
     ];
     const mailName = newData.services.some((service) => {
-   
-      return servicesShubhi.includes(service);
+      return servicesShubhi.includes(service.serviceName);
     })
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
