@@ -5597,10 +5597,7 @@ app.post(
                     ${newData.extraNotes !== "" ? newData.extraNotes : "N/A"}
                   </div>
                 </div>
-              </div>
-    
-          
-             
+              </div>        
             </div>
           </div>
           <!-- Step 4 Ends -->
@@ -5647,34 +5644,34 @@ app.post(
               if (rowSpan === 3) {
                 paymentServices = `
           <tr>
-            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td>${newData.services[i].secondPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
           </tr>
            <tr>
-           <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-           <td>${newData.services[i].thirdPaymentRemarks}</td>
+           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+           <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
            </tr>
            <tr>
-           <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
-           <td>${newData.services[i].fourthPaymentRemarks}</td>
+           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+           <td style="border-right:1px solid #ddd">${newData.services[i].fourthPaymentRemarks}</td>
            </tr>
           `;
               } else if (rowSpan === 2) {
                 paymentServices = `
           <tr>
-            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td>${newData.services[i].secondPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
           </tr>
           <tr>
-            <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-            <td>${newData.services[i].thirdPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
           </tr>
           `;
               } else {
                 paymentServices = `
           <tr>
-            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td>${
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${
               newData.services[i].paymentTerms !== "Full Advanced"
                 ? newData.services[i].secondPaymentRemarks
                 : "100% Advance Payment"
@@ -5697,10 +5694,10 @@ app.post(
                   <td>Remarks</td>
                 </tr>
                 <tr>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      <th rowspan='4'>₹ ${
                         newData.services[i].totalPaymentWGST
                       } /-</th>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      <th rowspan='4'>₹ ${
                         newData.services[i].paymentTerms === "Full Advanced"
                           ? parseInt(
                               newData.services[i].totalPaymentWGST
@@ -8115,33 +8112,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${newData.services[i].secondPaymentRemarks}</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td >${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-          <td>${newData.services[i].thirdPaymentRemarks}</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+          <td >${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;
         } else {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td >₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${
             newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
@@ -8481,7 +8478,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:80px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
