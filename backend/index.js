@@ -8319,12 +8319,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       : 'style="display:none';
 
     console.log(newPageDisplay);
-    const AuthorizedNumber =
-      AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    const AuthorizedEmail =
-      AuthorizedName === "Dhruvi Gohel"
-        ? "dhruvi@startupsahay.com"
-        : "rm@startupsahay.com";
+  
+  
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -8576,11 +8572,18 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       "Product Development"
     ];
     const mailName = newData.services.some((service) => {
-     
+      console.log(service , servicesShubhi.includes(service))
       return servicesShubhi.includes(service);
     })
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
+
+      const AuthorizedEmail =
+      mailName === "Dhruvi Gohel"
+        ? "dhruvi@startupsahay.com"
+        : "rm@startupsahay.com";
+        const AuthorizedNumber =
+        mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
     
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -8592,7 +8595,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Services}}", serviceList)
       .replace("{{page-display}}", newPageDisplay)
       .replace("{{pagination}}", pagination)
-      .replace("{{Authorized-Person}}", AuthorizedName)
+      .replace("{{Authorized-Person}}", mailName)
       .replace("{{Authorized-Number}}", AuthorizedNumber)
       .replace("{{Authorized-Email}}", AuthorizedEmail)
       .replace("{{Main-page}}", mainPage)
