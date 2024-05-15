@@ -8242,7 +8242,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
         
         servicesHtml += `
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="margin-top:80px;">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
@@ -8478,7 +8478,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:80px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
