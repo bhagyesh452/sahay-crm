@@ -3708,21 +3708,6 @@ function Leads() {
                                 </IconButton>
                               </Link>
                             </td>
-
-
-                            {/* <Link to={`/admin/leads/${company._id}`}>
-                                <IconButton>
-                                  <IconEye
-                                    style={{
-                                      width: "18px",
-                                      height: "18px",
-                                      color: "#d6a10c",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </IconButton>
-                              </Link> */}
-
                           </tr>
                         ))}
                       </tbody>

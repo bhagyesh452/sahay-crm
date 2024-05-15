@@ -45,7 +45,7 @@ function EmployeesThisMonthBooking() {
         targetratio: "none",
         lastbookingdate: "none"
     });
-
+const [finalEmployeeData , setFinalEmployeeData]=useState([])
 
 
 
@@ -887,11 +887,6 @@ function EmployeesThisMonthBooking() {
             case 'ascending':
                 //console.log("yahan chala ascending");
                 const companyDataAscending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-                //     }
-                // });
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
                     const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
@@ -902,11 +897,7 @@ function EmployeesThisMonthBooking() {
             case 'descending':
                 //console.log("yahan chala descending");
                 const companyDataDescending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-                //     }
-                // });
+               
                 employeeData.sort((a, b) => {
                     const countA = functionOnlyCalculateMatured(a.ename) || 0;
                     const countB = functionOnlyCalculateMatured(b.ename) || 0;
@@ -915,12 +906,12 @@ function EmployeesThisMonthBooking() {
                 break; // Add break statement here
 
             case "none":
-                //console.log("yahan chala none");
-                // if (finalEmployeeData.length > 0) {
-                //     // Restore to previous state
-                //     setForwardEmployeeData(finalEmployeeData);
-                // }
-                fetchEmployeeInfo()
+                console.log("yahan chala none");
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
+                //fetchEmployeeInfo()
                 break; // Add break statement here
             default:
                 break;
@@ -942,12 +933,6 @@ function EmployeesThisMonthBooking() {
             case 'ascending':
                 //console.log("yahan chala ascending");
                 const companyDataAscending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-                //     }
-                // });
-
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
                     console.log(countA, "a")
@@ -960,11 +945,6 @@ function EmployeesThisMonthBooking() {
             case 'descending':
                 //console.log("yahan chala descending");
                 const companyDataDescending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-                //     }
-                // });
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
                     const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
@@ -974,7 +954,10 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
@@ -996,12 +979,6 @@ function EmployeesThisMonthBooking() {
             case 'ascending':
                 //console.log("yahan chala ascending");
                 const companyDataAscending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-                //     }
-                // });
-
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionGetOnlyAmount(a)) || 0;
                     console.log(countA, "a")
@@ -1014,11 +991,7 @@ function EmployeesThisMonthBooking() {
             case 'descending':
                 //console.log("yahan chala descending");
                 const companyDataDescending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-                //     }
-                // });
+                
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionGetOnlyAmount(a)) || 0;
                     const countB = parseInt(functionGetOnlyAmount(b)) || 0;
@@ -1028,7 +1001,10 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
@@ -1050,12 +1026,7 @@ function EmployeesThisMonthBooking() {
             case 'ascending':
                 //console.log("yahan chala ascending");
                 const companyDataAscending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-                //     }
-                // });
-
+                
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
 
@@ -1068,11 +1039,7 @@ function EmployeesThisMonthBooking() {
             case 'descending':
                 //console.log("yahan chala descending");
                 const companyDataDescending = {};
-                // teamLeadsData.forEach((company) => {
-                //     if (company.bdmName) {
-                //         companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-                //     }
-                // });
+               
 
                 employeeData.sort((a, b) => {
                     const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
@@ -1085,13 +1052,18 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
         }
     };
-
+    useEffect(() => {
+        setFinalEmployeeData([...employeeData]); // Store original state of employeeData
+    }, [employeeData]);
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
