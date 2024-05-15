@@ -5599,10 +5599,7 @@ app.post(
                     ${newData.extraNotes !== "" ? newData.extraNotes : "N/A"}
                   </div>
                 </div>
-              </div>
-    
-          
-             
+              </div>        
             </div>
           </div>
           <!-- Step 4 Ends -->
@@ -5649,34 +5646,34 @@ app.post(
               if (rowSpan === 3) {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-            <td>${newData.services[i].secondPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
           </tr>
            <tr>
-           <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
-           <td>${newData.services[i].thirdPaymentRemarks}</td>
+           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+           <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
            </tr>
            <tr>
-           <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
-           <td>${newData.services[i].fourthPaymentRemarks}</td>
+           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+           <td style="border-right:1px solid #ddd">${newData.services[i].fourthPaymentRemarks}</td>
            </tr>
           `;
               } else if (rowSpan === 2) {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-            <td>${newData.services[i].secondPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
           </tr>
           <tr>
-            <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
-            <td>${newData.services[i].thirdPaymentRemarks}</td>
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
           </tr>
           `;
               } else {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-            <td>${
+            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+            <td style="border-right:1px solid #ddd">${
               newData.services[i].paymentTerms !== "Full Advanced"
                 ? newData.services[i].secondPaymentRemarks
                 : "100% Advance Payment"
@@ -5699,15 +5696,15 @@ app.post(
                   <td>Remarks</td>
                 </tr>
                 <tr>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      <th rowspan='4'>₹ ${
                         newData.services[i].totalPaymentWGST
                       } /-</th>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      <th rowspan='4'>₹ ${
                         newData.services[i].paymentTerms === "Full Advanced"
-                          ? Number(
+                          ? parseInt(
                               newData.services[i].totalPaymentWGST
-                            ).toFixed(2)
-                          : Number(newData.services[i].firstPayment).toFixed(2)
+                            ).toLocaleString()
+                          : parseInt(newData.services[i].firstPayment).toLocaleString()
                       }/-</th>
                 </tr>
                 ${paymentServices}
@@ -8117,33 +8114,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${newData.services[i].secondPaymentRemarks}</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td >${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-          <td>${newData.services[i].thirdPaymentRemarks}</td>
+          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+          <td >${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;
         } else {
           paymentServices = `
         <tr>
-          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td >₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${
             newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
@@ -8247,7 +8244,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
         
         servicesHtml += `
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="margin-top:80px;">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
@@ -8321,12 +8318,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       : 'style="display:none';
 
     console.log(newPageDisplay);
-    const AuthorizedNumber =
-      AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    const AuthorizedEmail =
-      AuthorizedName === "Dhruvi Gohel"
-        ? "dhruvi@startupsahay.com"
-        : "rm@startupsahay.com";
+  
+  
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -8445,7 +8438,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer" style="margin-bottom:50px , margin-top:0px">
+            <div class="section_footer1">
             <p class="Declaration_text_data Signature">
               Client's Signature:__________________________________
             </p>
@@ -8487,7 +8480,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main" style="margin-top:40px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -8513,7 +8506,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
-      <div class="section_footer">
+      <div class="section_footer2">
         <p class="Declaration_text_data Signature">
           Client's Signature:__________________________________
         </p>
@@ -8578,11 +8571,17 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       "Product Development"
     ];
     const mailName = newData.services.some((service) => {
-     
-      return servicesShubhi.includes(service);
+      return servicesShubhi.includes(service.serviceName);
     })
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
+
+      const AuthorizedEmail =
+      mailName === "Dhruvi Gohel"
+        ? "dhruvi@startupsahay.com"
+        : "rm@startupsahay.com";
+        const AuthorizedNumber =
+        mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
     
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -8594,7 +8593,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Services}}", serviceList)
       .replace("{{page-display}}", newPageDisplay)
       .replace("{{pagination}}", pagination)
-      .replace("{{Authorized-Person}}", AuthorizedName)
+      .replace("{{Authorized-Person}}", mailName)
       .replace("{{Authorized-Number}}", AuthorizedNumber)
       .replace("{{Authorized-Email}}", AuthorizedEmail)
       .replace("{{Main-page}}", mainPage)

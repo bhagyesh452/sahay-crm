@@ -3691,9 +3691,8 @@ function Leads() {
                                       height: "14px",
                                       color: "grey",
                                     }}
-                                  >
-                                    Delete
-                                  </ ModeEditIcon>
+                                  />
+                                 
                                 </IconButton> </>}
                               <Link to={`/admin/leads/${company._id}`}>
                                 <IconButton>
