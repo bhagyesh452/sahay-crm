@@ -1094,8 +1094,10 @@ function EmployeesThisMonthBooking() {
 
 
     return (
-        <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-            <div className="employee-dashboard mt-2">
+        <div>
+            
+            {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+            <div className="employee-dashboard">
                 <div className="card todays-booking totalbooking" id="totalbooking"   >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
                         <div className="dashboard-title">
@@ -1221,9 +1223,9 @@ function EmployeesThisMonthBooking() {
                     </div>
                     <div className="card-body">
                         <div className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
+                            <table className="table-vcenter table-nowrap admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead">
-                                    <tr  >
+                                    <tr>
                                         <th>SR.NO</th>
                                         <th>BDE/BDM NAME</th>
                                         <th>BRANCH</th>
@@ -1518,8 +1520,11 @@ function EmployeesThisMonthBooking() {
                         </div>
                     </div>
                 </div>
-            </div></div>
-    )
+            </div>
+
+
+        </div>
+        )
 }
 
 export default EmployeesThisMonthBooking

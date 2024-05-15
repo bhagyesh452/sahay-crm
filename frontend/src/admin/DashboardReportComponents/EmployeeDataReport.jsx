@@ -866,7 +866,7 @@ function EmployeeDataReport() {
 
     return (
         <div>
-            <div className="employee-dashboard mt-3" id="employeedashboardadmin">
+            <div className="employee-dashboard" id="employeedashboardadmin">
                 <div className="card">
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
@@ -987,7 +987,7 @@ function EmployeeDataReport() {
                         </div>
                     </div>
                     <div className="card-body">
-                        <div className="row tbl-scroll" style={{ maxHeight: "400px" }}>
+                        <div className="row tbl-scroll">
                             <table className="table-vcenter table-nowrap admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead" >
                                     <tr>

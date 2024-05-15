@@ -1923,7 +1923,7 @@ color: #4e884e;
 }
 .tbl-scroll
 {
-  max-height: 300px;
+  max-height: calc(100vh - 306px);
   overflow-y: scroll;
   border-radius: 10px;
 }
@@ -1932,7 +1932,10 @@ color: #4e884e;
 {
   max-width: 200px;
 }
-
+.mat-tab-inner .MuiBox-root
+{
+  padding:16px !important;
+}
 
 /******************** Dashboard End ********************/
 
