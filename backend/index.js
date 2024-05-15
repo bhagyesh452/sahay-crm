@@ -8481,7 +8481,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main" style="margin-top:40px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
