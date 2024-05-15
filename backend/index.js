@@ -8439,7 +8439,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer">
+            <div class="section_footer1">
             <p class="Declaration_text_data Signature">
               Client's Signature:__________________________________
             </p>
@@ -8507,7 +8507,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
-      <div class="section_footer">
+      <div class="section_footer2">
         <p class="Declaration_text_data Signature">
           Client's Signature:__________________________________
         </p>

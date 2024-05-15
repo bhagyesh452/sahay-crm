@@ -64,11 +64,19 @@
         color: #4f4f4f;
         line-height: 18px;
       }
-      .section_footer
+      .section_footer1
       {
         width: 100%;
         position: absolute;
-        bottom: 60px;
+        bottom: 50px;
+        left:0;
+        page-break-after: always;       
+      }
+      .section_footer2
+      {
+        width: 100%;
+        position: absolute;
+        bottom: 10px;
         left:0;
         page-break-after: always;       
       }
@@ -223,7 +231,7 @@
       </div>
      {{Total-Payment}}
       {{Conditional}}
-      <div class="section_footer">
+      <div class="section_footer2">
         <p class="Declaration_text_data Signature">
           Client's Signature:__________________________________
         </p>
