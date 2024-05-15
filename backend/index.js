@@ -5647,33 +5647,33 @@ app.post(
               if (rowSpan === 3) {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
             <td>${newData.services[i].secondPaymentRemarks}</td>
           </tr>
            <tr>
-           <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+           <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
            <td>${newData.services[i].thirdPaymentRemarks}</td>
            </tr>
            <tr>
-           <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+           <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
            <td>${newData.services[i].fourthPaymentRemarks}</td>
            </tr>
           `;
               } else if (rowSpan === 2) {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
             <td>${newData.services[i].secondPaymentRemarks}</td>
           </tr>
           <tr>
-            <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+            <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
             <td>${newData.services[i].thirdPaymentRemarks}</td>
           </tr>
           `;
               } else {
                 paymentServices = `
           <tr>
-            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
             <td>${
               newData.services[i].paymentTerms !== "Full Advanced"
                 ? newData.services[i].secondPaymentRemarks
@@ -5702,10 +5702,10 @@ app.post(
                       } /-</th>
                       <th style="vertical-align: top;" rowspan='4'>₹ ${
                         newData.services[i].paymentTerms === "Full Advanced"
-                          ? Number(
+                          ? parseInt(
                               newData.services[i].totalPaymentWGST
-                            ).toFixed(2)
-                          : Number(newData.services[i].firstPayment).toFixed(2)
+                            ).toLocaleString()
+                          : parseInt(newData.services[i].firstPayment).toLocaleString()
                       }/-</th>
                 </tr>
                 ${paymentServices}
