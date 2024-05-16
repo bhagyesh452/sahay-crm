@@ -9554,7 +9554,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         }
         
         servicesHtml += `
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="margin-top:0px">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
