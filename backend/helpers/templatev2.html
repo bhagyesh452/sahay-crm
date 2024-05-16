@@ -14,11 +14,11 @@
       }
       .PDF_main
       {
-        width: 83%;
+        width: 100%;
         margin: 0 auto;
         position: relative;
-        padding: 40px 40px;
-        height: 680px;
+        padding: 10px 40px;
+        /* height: 680px; */
       }
       .mt-2
       {
@@ -63,22 +63,6 @@
         color: #4f4f4f;
         line-height: 18px;
       }
-      .section_footer1
-      {
-        width: 100%;
-        position: absolute;
-        bottom: 110px;
-        left:0;
-        page-break-after: always;       
-      }
-      .section_footer2
-      {
-        width: 100%;
-        position: absolute;
-        bottom: 70px;
-        left:0;
-        page-break-after: always;       
-      }
       .Signature
       {
         margin-bottom: 10px;
@@ -86,7 +70,7 @@
       }
       .table-data
       {
-        margin-top: 20px;
+        margin-top: 10px;
       }
       table {
           border-collapse: collapse;
@@ -103,6 +87,7 @@
       .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
           border: 1px solid #ddd;
           font-size: 12px;
+          padding:6px;
           padding:6px;
       }
       .text-left
@@ -232,14 +217,8 @@
       <div class="table-data">
         {{Service-Details}}
       </div>
-     {{Total-Payment}}
+      {{Total-Payment}}
       {{Conditional}}
-      <div class="section_footer2">
-        <p class="Declaration_text_data Signature">
-          Client's Signature:__________________________________
-        </p>
-        <p style="text-align: center;">{{pagination}}</p>
-      </div>
     </section>
   </div>
   {{Third-Page}}
