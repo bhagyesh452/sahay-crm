@@ -9790,7 +9790,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" >
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -9918,7 +9918,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
         orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
         border: "10mm", // Set the page border size (e.g., 10mm)
         header: {
-          height: "70px",
+          height: "55px",
           contents: ``, // Customize the header content
         },
         paginationOffset: 1,       // Override the initial pagination number
