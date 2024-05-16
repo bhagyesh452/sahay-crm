@@ -8399,7 +8399,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         
         `;
         } else if (
-          newData.services[i].serviceName === "Income Tax Excemption"
+          newData.services[i].serviceName === "Income Tax Exemption"
         ) {
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
@@ -8451,7 +8451,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-        <div class="PDF_main" style="margin-top : 50px">
+        <div class="PDF_main">
           <section>
             <div class="date_div">
               <p>${todaysDate}</p>
@@ -8471,12 +8471,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer1">
-            <p class="Declaration_text_data Signature">
-              Client's Signature:__________________________________
-            </p>
-            <p style="text-align: center;">${newData.services.length > 1 ? "Page 1/3" : "Page 1/2"}</p>
-          </div>
+         
             
           </section>
         
@@ -8513,7 +8508,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -8539,12 +8534,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
-      <div class="section_footer2">
-        <p class="Declaration_text_data Signature">
-          Client's Signature:__________________________________
-        </p>
-        <p style="text-align: center;">Page 3/3</p>
-      </div>
+     
 
     </section>
   </div>` : "";
@@ -8616,7 +8606,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-    const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
+    const htmlNewTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
     const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8638,16 +8628,35 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
+    const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+    const options = {
+      format: "A4", // Set the page format to A4 size
+      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+      border: "10mm", // Set the page border size (e.g., 10mm)
+      header: {
+        height: "70px",
+        contents: ``, // Customize the header content
+      },
+      paginationOffset: 1,       // Override the initial pagination number
+"footer": {
+  "height": "100px",
+  "contents": {
+    first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+    2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+    3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+    default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+    last: '<span style="color: #444;">2</span>/<span>2</span>'
+  }
+},
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: "./dev/null",
+        },
+      },
+    };
 
     pdf
-      .create(filledHtml, {
-        format: "Letter",
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: "./dev/null",
-          },
-        },
-      })
+      .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
@@ -9334,6 +9343,24 @@ app.get("/api/generate-pdf", async (req, res) => {
               "paymentRemarks": "",
               "expanse": 100,
               "_id": "663a121cf012a01385573381"
+          },
+          {
+              "serviceName": "ISO Certificate",
+              "totalPaymentWOGST": 20000,
+              "totalPaymentWGST": 23600,
+              "withGST": true,
+              "withDSC": true,
+              "paymentTerms": "two-part",
+              "firstPayment": 10000,
+              "secondPayment": 10000,
+              "thirdPayment": 1800,
+              "fourthPayment": 1800,
+              "secondPaymentRemarks": "After Application",
+              "thirdPaymentRemarks": "",
+              "fourthPaymentRemarks": "",
+              "paymentRemarks": "",
+              "expanse": 100,
+              "_id": "663a121cf012a01385573381"
           }
       ],
       "caCase": "No",
@@ -9881,44 +9908,45 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional);
-    // Read the HTML template
-    // const htmlTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
-    const options = {
-      format: "A4", // Set the page format to A4 size
-      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-      border: "10mm", // Set the page border size (e.g., 10mm)
-      header: {
-        height: "70px",
-        contents: ``, // Customize the header content
-      },
-      footer: {
-        height: "100px",
-        contents: {
-          default: `<div>
-          <p>
-            Client's Signature:__________________________________
-          </p>
-          <p style="text-align: center;">Page ${count++}/3</p>
-        </div>`, // Customize the footer content with page number
+
+      let currentPage = 1; // Initialize current page number
+
+    
+      
+      const options = {
+        format: "A4", // Set the page format to A4 size
+        orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+        border: "10mm", // Set the page border size (e.g., 10mm)
+        header: {
+          height: "70px",
+          contents: ``, // Customize the header content
         },
-      },
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: "./dev/null",
+        paginationOffset: 1,       // Override the initial pagination number
+  "footer": {
+    "height": "100px",
+    "contents": {
+      first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${newData.services.length > 1 ? "3" : "2"}</p></div>`,
+      2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${newData.services.length > 1 ? "3" : "2"}</p></div>`, // Any page number is working. 1-based index
+      3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+      default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+      last: '<span style="color: #444;">2</span>/<span>2</span>'
+    }
+  },
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: "./dev/null",
+          },
         },
-      },
-    };
-    const pdfFilePath = `./test1.pdf`;
-    pdf
-    .create(filledHtml, options)
-    .toFile(pdfFilePath, async (err, response) => {
+      };
+      
+      const pdfFilePath = `./test1.pdf`;
+      
+      pdf.create(filledHtml, options).toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
           res.status(500).send("Error generating PDF");
         } else {
           try {
-
-
             res.setHeader("Content-Type", "application/pdf");
             res.setHeader(
               "Content-Disposition",
@@ -9927,10 +9955,13 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
             res.send(response); // Send the PDF file
           } catch (emailError) {
             console.error("Error sending email:", emailError);
-            res.status(500).send("Error sending email with PDF attachment");
+            res
+              .status(500)
+              .send("Error sending email with PDF attachment");
           }
         }
       });
+      
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Error generating PDF");

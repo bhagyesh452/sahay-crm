@@ -87,7 +87,7 @@ function TestLeads() {
         fetchData(currentPage - 1);
     };
 
-    const currentData = mainData.slice(startIndex, endIndex);
+    //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
         const date = new Date(timestamp);
@@ -97,13 +97,28 @@ function TestLeads() {
         return `${day}/${month}/${year}`;
     }
 
-    const handleFilterSearch = (searchName) => {
-        // Filter through the completeLeads dataset
-        const filteredData = completeLeads.filter((company) =>
-            company["Company Name"].toLowerCase().includes(searchName.toLowerCase())
-        );
-        setData(filteredData); // Update the displayed data
+    const handleFilterSearch = async (searchQuery) => {
+        try {
+            setCurrentDataLoading(true);
+            const response = await axios.get(`${secretKey}/search-leads`, {
+                params: { searchQuery }
+            });
+            console.log(searchQuery , "serach")
+            setData(response.data);
+            // if(response.data.length > 0){
+
+            //    
+            // }else{
+            //     setData(mainData)
+            // }
+            
+        } catch (error) {
+            console.error('Error searching leads:', error.message);
+        } finally {
+            setCurrentDataLoading(false);
+        }
     };
+
     return (
         <div>
             <Header />
