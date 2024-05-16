@@ -5834,7 +5834,7 @@ app.post(
                 servicesHtml = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                  Start-Up India Certification Support Service Acknowledgement:
+                  Start-Up India Certification Acknowledgement:
                 </b>
               </p>
               <p class="Declaration_text_data">
@@ -5857,7 +5857,7 @@ app.post(
                 fundingServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                ${newData.services[i].serviceName} Support Services Acknowledgement:   
+                ${newData.services[i].serviceName} Acknowledgement:   
                 </b>
               </p>
               <p class="Declaration_text_data">
@@ -8367,7 +8367,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           servicesHtml = `
           <p class="Declaration_text_head mt-2">
           <b>
-            Start-Up India Certification Support Service Acknowledgement:
+            Start-Up India Certification Acknowledgement:
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -8390,7 +8390,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          ${newData.services[i].serviceName} Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -8423,7 +8423,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        ${fundingServicesArray} Support Services Acknowledgement:    
+        ${fundingServicesArray} Acknowledgement:    
         </b>
       </p>
       <p class="Declaration_text_data">
@@ -8445,7 +8445,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
-    const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
+    const conditional = newData.services.length < 3 ? `<div class="Declaration_text">
 <p class="Declaration_text_data">
   I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
 </p>
@@ -8478,7 +8478,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         
         </div>
       `;
-    const totalPaymentHtml = newData.services.length < 2 ? ` <div class="table-data">
+    const totalPaymentHtml = newData.services.length < 3 ? ` <div class="table-data">
 <table class="table table-bordered">
   <thead>
     <th colspan="3">Total Payment Details</th>
@@ -8504,12 +8504,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : `${newData.bdeName} && ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-    const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
+    const pagination = newData.services.length > 2 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
+    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -9647,7 +9647,7 @@ app.get("/api/generate-pdf", async (req, res) => {
           servicesHtml = `
           <p class="Declaration_text_head mt-2">
           <b>
-            Start-Up India Certification Support Service Acknowledgement:
+            Start-Up India Certification Acknowledgement:
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -9670,7 +9670,7 @@ app.get("/api/generate-pdf", async (req, res) => {
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          ${newData.services[i].serviceName}  Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -9702,7 +9702,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        ${fundingServicesArray} Support Services Acknowledgement:    
+        ${fundingServicesArray} Acknowledgement:    
         </b>
       </p>
       <p class="Declaration_text_data">
