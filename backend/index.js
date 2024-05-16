@@ -8121,7 +8121,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
+      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
       for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -8211,7 +8211,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let servicesHtml = "";
       let paymentServices = "";
 
-      for (let i = 1; i < newData.services.length; i++) {
+      for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -8607,7 +8607,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"])
-      .replace("{{Conditional}}", conditional);
+      .replace("{{Conditional}}", conditional)
+      .replace("{{Company Email}}", newData["Company Email"]);
+      
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
