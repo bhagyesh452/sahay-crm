@@ -5970,7 +5970,8 @@ app.post(
             .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
             .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
             .replace("{{Service-Details}}", paymentDetails)
-            .replace("{{Company Number}}", newData["Company Number"]);
+            .replace("{{Company Number}}", newData["Company Number"])
+            .replace("{{Company Email}}", newData["Company Email"]);
 
           console.log("This will be generating", filledHtml);
 
