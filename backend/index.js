@@ -5793,7 +5793,7 @@ app.post(
           const AuthorizedName = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
-              "Income Tax Excemption",
+              "Income Tax Exemption",
             ];
             return tempServices.includes(service);
           })
@@ -5804,7 +5804,7 @@ app.post(
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
-              "Income Tax Excemption",
+              "Income Tax Exemption",
               "Start-Up India Certificate",
             ];
             return tempServices.includes(service.serviceName);
@@ -5866,7 +5866,7 @@ app.post(
               
               `;
               } else if (
-                newData.services[i].serviceName === "Income Tax Excemption"
+                newData.services[i].serviceName === "Income Tax Exemption"
               ) {
                 incomeTaxServices = `
                 <p class="Declaration_text_head mt-2">
@@ -8332,7 +8332,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Incubation Support",
     ];
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -8342,7 +8342,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "Income Tax Excemption",
+        "Income Tax Exemption",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
@@ -9611,7 +9611,7 @@ app.get("/api/generate-pdf", async (req, res) => {
       "Incubation Support",
     ];
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -9621,7 +9621,7 @@ app.get("/api/generate-pdf", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "Income Tax Excemption",
+        "Income Tax Exemption",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
@@ -9678,7 +9678,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         
         `;
         } else if (
-          newData.services[i].serviceName === "Income Tax Excemption"
+          newData.services[i].serviceName === "Income Tax Exemption"
         ) {
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
@@ -9705,7 +9705,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
       } else if (incomeTaxServices !== "") {

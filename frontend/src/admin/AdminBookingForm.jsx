@@ -3155,7 +3155,7 @@ export default function AdminBookingForm({
                                           </div>
                                         </div>
                                       </div>
-                                      {leadData.caCase &&  <>
+                                      {leadData.caCase === "Yes" &&  <>
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
