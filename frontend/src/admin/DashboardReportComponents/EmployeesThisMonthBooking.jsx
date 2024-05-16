@@ -1429,7 +1429,7 @@ function EmployeesThisMonthBooking() {
                                                         (item) =>
                                                             item.designation ===
                                                             "Sales Executive" &&
-                                                            item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
+                                                            item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString())) 
                                                     )
                                                     .map((obj, index) => (
                                                         <>

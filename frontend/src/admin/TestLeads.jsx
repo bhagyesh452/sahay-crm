@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 
 import Nodata from '../components/Nodata';
+import { Page } from 'react-pdf';
 
 
 function TestLeads() {
@@ -26,8 +27,9 @@ function TestLeads() {
     const [data, setData] = useState([])
     const [mainData, setmainData] = useState([])
     const [dataStatus, setDataStatus] = useState("")
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [completeLeads, setCompleteLeads] = useState([]);
+    const[totalCount , setTotalCount] = useState()
     const itemsPerPage = 50;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -40,17 +42,21 @@ function TestLeads() {
         
 
     }
-    const fetchData = async () => {
+    const fetchData = async(page) => {
         try {
             // Set isLoading to true while fetching data
             //setIsLoading(true);
+            
+            console.log("page" , page)
+
             setCurrentDataLoading(true)
 
-            const response = await axios.get(`${secretKey}/new-leads?page=${currentPage}&limit=${itemsPerPage}`);
+            const response = await axios.get(`${secretKey}/new-leads?page=${page}&limit=${itemsPerPage}`);
             console.log("data", response.data.data)
             // Set the retrieved data in the state
             setData(response.data.data);
-            setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
+            setTotalCount(response.data.totalPages)
+            setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
             setDataStatus("Unassigned")
 
             // Set isLoading back to false after data is fetched
@@ -63,9 +69,10 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     };
+    
 
     useEffect(() => {
-        fetchData(0)
+        fetchData(1)
         fetchTotalLeads()
     }, [])
 
@@ -78,7 +85,6 @@ function TestLeads() {
         setCurrentPage(currentPage - 1);
         fetchData(currentPage - 1);
     };
-console.log(completeLeads)
 
     const currentData = mainData.slice(startIndex, endIndex);
 
@@ -169,7 +175,7 @@ console.log(completeLeads)
                     <IconButton onClick={handlePreviousPage} disabled={currentPage === 0}>
                         <IconChevronLeft />
                     </IconButton>
-                    <span>Page {currentPage + 1} /{parseInt(completeLeads.length/itemsPerPage)}</span>
+                    <span>Page {currentPage} /{totalCount}</span>
                     <IconButton onClick={handleNextPage} disabled={data.length < itemsPerPage}>
                         <IconChevronRight />
                     </IconButton>

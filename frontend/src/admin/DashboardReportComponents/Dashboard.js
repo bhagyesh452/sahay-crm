@@ -126,13 +126,13 @@ function Dashboard() {
                         <CustomTabPanel value={value} index={0} className="mat-tab-inner">
                             <EmployeesThisMonthBooking />
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={1}>
+                        <CustomTabPanel value={value} index={1} className="mat-tab-inner">
                             <EmployeeDataReport/>
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={2}>
+                        <CustomTabPanel value={value} index={2} className="mat-tab-inner">
                             <EmployeesForwardedDataReport />
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={3}>
+                        <CustomTabPanel value={value} index={3} className="mat-tab-inner">
                             <EmployeesProjectionSummary/>
                         </CustomTabPanel>
                     </div>
