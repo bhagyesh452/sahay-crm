@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Demo</title>
+  <style>
+      body
+      {
+        font-size:16px;
+        padding:0px;
+        margin:0px;
+        font-family: Arial, sans-serif;
+      }
+      .PDF_main
+      {
+        
+        margin: 0 auto;
+        page-break-after: always;
+        /* height: 680px; */
+      }
+      .mt-2
+      {
+        margin-top:20px
+      }
+      p,h4,table,th,td
+      {
+        font-size:16px !important;
+        line-height: 22px !important;
+        letter-spacing: 1px !important;
+      }
+      .date_div
+      {
+        width: 100%;
+        font-size:16px !important;
+      }
+      .date_div p
+      {
+        margin: 0px !important;
+        text-align:right;
+      }
+      .pdf_heading
+      {
+        text-align: center;
+        width: 100%;
+        margin-top: 20px;
+      }
+      .pdf_heading h4
+      {
+        margin: 0px !important;
+      }
+      .Declaration_text
+      {
+        margin-top: 10px;
+      }
+      .Declaration_text_head
+      {
+        color: #373737;
+        font-size: 18px;
+      }
+      .Declaration_text_data
+      {
+        font-size: 16px;
+        color: #4f4f4f;
+        line-height: 21px;
+      }
+      .Signature
+      {
+        margin-bottom: 10px;
+        margin-left: 40px;
+      }
+      .table-data
+      {
+        margin-top: 20px;
+      }
+      table {
+          border-collapse: collapse;
+          border-spacing: 0;
+      }
+      .table {
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: 20px;
+      }
+      /* .table-bordered {
+          border: 1px solid #ddd;
+      } */
+      .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+          border: 1px solid #ddd !important;
+          font-size: 14px;
+          padding:6px;
+          border-collapse: collapse;
+      } 
+      .text-left
+      {
+        text-align: left;
+      }
+      .s_Provider_left
+      {
+        width: 40%;
+      }
+      .s_Provider_right
+      {
+        width: 60%;
+      }
+  </style>
+</head>
+<body>
+  {{Main-page}}
+
+  <div class="PDF_main">
+    <section>
+      <p class="Declaration_text_head">
+        <b>
+          Service And Payment Terms Acknowledgment
+        </b>
+      </p>
+      <!-- service provider -->
+      <div class="table-data">
+        <table class="table table-bordered">
+          <thead>
+            <th colspan="2">Services Provider Details : START-UP SAHAY PRIVATE LIMITED</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left s_Provider_left">Contact Details:</td>
+              <td class="text-left s_Provider_right">
+                Mo: {{Authorized-Number}} | Email: {{Authorized-Email}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- service provider -->
+      <div class="table-data">
+        <table class="table table-bordered">
+          <thead>
+            <th colspan="2">Services Receiver Details : {{Company Name}}</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left s_Provider_left">Contact Details:</td>
+              <td class="text-left s_Provider_right">{{Company Number}}</td>
+            </tr>
+            <tr>
+              <td class="text-left s_Provider_left">Authorized Person Name:</td>
+              <td class="text-left s_Provider_right"></td>
+            </tr>
+            <tr>
+              <td class="text-left s_Provider_left">Authorized Person's Designation:</td>
+              <td class="text-left s_Provider_right"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-data">
+        {{Service-Details}}
+      </div>
+     {{Total-Payment}}
+      {{Conditional}}
+     
+    </section>
+  </div>
+  {{Third-Page}}
+</body>
+</html>
