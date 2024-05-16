@@ -8280,7 +8280,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
 
         servicesHtml += `
-        <table class="table table-bordered" style="margin-top:80px;">
+        <table class="table table-bordered">
             <thead>
               <td colspan="4">Service Name : ${newData.services[i].serviceName
           }</td>
@@ -9822,7 +9822,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
 
     </section>
   </div>` : "";
-  console.log(thirdPage)
+
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const servicesShubhi = [
       "Pitch Deck Development ",
