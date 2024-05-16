@@ -8606,7 +8606,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-    const htmlNewTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
+    const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
