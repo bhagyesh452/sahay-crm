@@ -29,25 +29,26 @@ function TestLeads() {
     const [dataStatus, setDataStatus] = useState("")
     const [currentPage, setCurrentPage] = useState(1);
     const [completeLeads, setCompleteLeads] = useState([]);
-    const[totalCount , setTotalCount] = useState()
-    const itemsPerPage = 50;
+    const [totalCount, setTotalCount] = useState()
+    const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
+    const [searchText, setSearchText] = useState("")
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    
-    const fetchTotalLeads=async()=>{
+
+    const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/leads`)
         setCompleteLeads(response.data)
-        
+
 
     }
-    const fetchData = async(page) => {
+    const fetchData = async (page) => {
         try {
             // Set isLoading to true while fetching data
             //setIsLoading(true);
-            
-            console.log("page" , page)
+
+            console.log("page", page)
 
             setCurrentDataLoading(true)
 
@@ -56,7 +57,7 @@ function TestLeads() {
             // Set the retrieved data in the state
             setData(response.data.data);
             setTotalCount(response.data.totalPages)
-            setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+            setmainData(response.data.data);
             setDataStatus("Unassigned")
 
             // Set isLoading back to false after data is fetched
@@ -69,7 +70,7 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     };
-    
+
 
     useEffect(() => {
         fetchData(1)
@@ -96,11 +97,31 @@ function TestLeads() {
         return `${day}/${month}/${year}`;
     }
 
-    
+    const handleFilterSearch = (searchName) => {
+        // Filter through the completeLeads dataset
+        const filteredData = completeLeads.filter((company) =>
+            company["Company Name"].toLowerCase().includes(searchName.toLowerCase())
+        );
+        setData(filteredData); // Update the displayed data
+    };
     return (
         <div>
             <Header />
             <Navbar />
+            <div className='w-25 my-3'>
+                <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => {
+                        setSearchText(e.target.value);
+                        handleFilterSearch(e.target.value)
+                        //setCurrentPage(0);
+                    }}
+                    className="form-control"
+                    placeholder="Search…"
+                    aria-label="Search in website"
+                />
+            </div>
             <table
                 style={{
                     width: "100%",
@@ -172,7 +193,7 @@ function TestLeads() {
                         </tbody>
                     </table>
                 )}
-           {data.length !== 0 && (
+            {data.length !== 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                     <IconButton onClick={handlePreviousPage} disabled={currentPage === 0}>
                         <IconChevronLeft />

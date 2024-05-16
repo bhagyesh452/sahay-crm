@@ -131,6 +131,8 @@ function Leads() {
       setCurrentDataLoading(false)
     }
   };
+
+
   //console.log("Main-Data" , mainData)
 
   const fetchData = debounce(async () => {
@@ -2909,14 +2911,6 @@ function Leads() {
                   </div>
                 </div>
               </div>
-              {/* <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              <button onClick={handleButtonClick}>Choose File</button> */}
-
               {selectedOption === "someoneElse" && (
                 <div>
                   {newempData.length !== 0 ? (
@@ -3105,23 +3099,7 @@ function Leads() {
                         }
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M12 5l0 14" />
-                          <path d="M5 12l14 0" />
-                        </svg> */}
+                       
                         Add Leads
                       </button>
                       <a
@@ -3141,24 +3119,8 @@ function Leads() {
                         onClick={handleImportClick}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M12 5l0 14" />
-                          <path d="M5 12l14 0" />
-                        </svg> */}
-                        {/* <FontAwesomeIcon icon={faHouseLock} /> */}
+                      
+                       
                         Import CSV
                       </button>
                       <a
@@ -3168,7 +3130,7 @@ function Leads() {
                         data-bs-target="#modal-report"
                         aria-label="Create new report"
                       >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                       
                       </a>
                     </div>
                   </div>
@@ -3178,24 +3140,7 @@ function Leads() {
                         onClick={exportData}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M12 5l0 14" />
-                          <path d="M5 12l14 0" />
-                        </svg> */}
-                        {/* <FontAwesomeIcon icon={faHouseLock} /> */}
+                      
                         Export CSV
                       </button>
                       <a
