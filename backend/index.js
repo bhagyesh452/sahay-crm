@@ -5737,7 +5737,6 @@ app.post(
                   <td>Remarks</td>
                 </tr>
                 <tr>
-<<<<<<< HEAD
                       <td rowspan='4'>₹ ${
                         newData.services[i].totalPaymentWGST
                       } /-</td>
@@ -5748,16 +5747,6 @@ app.post(
                             ).toLocaleString()
                           : parseInt(newData.services[i].firstPayment).toLocaleString()
                       }/-</td>
-=======
-                      <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
-                } /-</th>
-                      <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
-                  ? parseInt(
-                    newData.services[i].totalPaymentWGST
-                  ).toLocaleString()
-                  : parseInt(newData.services[i].firstPayment).toLocaleString()
-                }/-</th>
->>>>>>> 773a1e6cbdc55b73285595c4b29c191c4dd1bb5b
                 </tr>
                 ${paymentServices}
               </tbody>
@@ -5861,7 +5850,7 @@ app.post(
                 </b>
               </p>
               <p class="Declaration_text_data">
-              I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+              I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
               </p>
               
               `;
@@ -8419,7 +8408,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
       } 
@@ -8431,7 +8420,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
       </p>
   `;
       }
@@ -9393,7 +9382,7 @@ app.get("/api/generate-pdf", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
+      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
       for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -9463,6 +9452,7 @@ app.get("/api/generate-pdf", async (req, res) => {
             <tr>
               <td>Total Payment</td>
               <td>Advanced Payment</td>
+              <td>Advanced Payment</td>
               <td>Pending payment</td>
               <td>Remarks</td>
             </tr>
@@ -9488,7 +9478,7 @@ app.get("/api/generate-pdf", async (req, res) => {
       let servicesHtml = "";
       let paymentServices = "";
      
-      for (let i = 1; i < newData.services.length; i++) {
+      for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
