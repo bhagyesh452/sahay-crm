@@ -8371,15 +8371,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           </b>
         </p>
         <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]} , acknowledge that START-UP
-          SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
-          consultancy services. These services involve preparing necessary documents and content for
-          the application, utilizing their infrastructure, experience, manpower, and expertise. I
-
-          understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
-          up India certificate is issued free of charge by the government, and I have not been charged
-
-          for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+        I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
         </p>
         
         `;
