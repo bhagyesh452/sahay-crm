@@ -1080,7 +1080,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
       }
 
     );
-  
+
     // await FollowUpModel.findOneAndUpdate( { companyName : companyName },
     // {
     //   $set: {
@@ -1088,7 +1088,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     //   },
     // },
     // { new: true })
-    
+
 
     //console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
@@ -1114,14 +1114,14 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
   }
 });
 
-app.get("/api/teamleadsdata",async(req,res)=>{
-  try{
+app.get("/api/teamleadsdata", async (req, res) => {
+  try {
     const data = await TeamLeadsModel.find()
     res.status(200).send(data)
 
-  }catch(error){
-    console.log("error fetching team leads data" , error.message)
-    res.status(500).json({error : "Internal server error"})
+  } catch (error) {
+    console.log("error fetching team leads data", error.message)
+    res.status(500).json({ error: "Internal server error" })
   }
 })
 
@@ -1308,7 +1308,7 @@ app.post("/api/post-bdmAcceptStatusupate/:id", async (req, res) => {
 
   try {
     // Update the status field in the database based on the employee id
-    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus : bdmAcceptStatus });
+    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus });
 
     // Create and save a new document in the RecentUpdatesModel collectio
 
@@ -1323,11 +1323,11 @@ app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   const companyId = req.params.companyId;
 
   //console.log(companyId)
-  const { newStatus } = req.body; 
+  const { newStatus } = req.body;
   //console.log(newStatus)                // Assuming the new status is under the key 'bdmStatus' in the request body
   try {
-    const update = await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmStatus: newStatus , Status : newStatus });
-    
+    const update = await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmStatus: newStatus, Status: newStatus });
+
     //console.log(update)
 
     res.status(200).json({ message: "Data updated successfully" });
@@ -1360,7 +1360,7 @@ app.post(`/api/post-followup-forwardeddata/:cname`, async (req, res) => {
 
 app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
   const companyName = req.params.cname;
-  const { caseType} = req.body;
+  const { caseType } = req.body;
   try {
     const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
       { companyName: companyName },
@@ -1368,8 +1368,8 @@ app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
         $set: {
           caseType: caseType,
         },
-        $unset:{
-          bdmName:" "
+        $unset: {
+          bdmName: " "
         }
       },
       { new: true }
@@ -1489,6 +1489,58 @@ app.get("/api/leads", async (req, res) => {
   }
 });
 
+app.get('/api/new-leads', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
+
+    // Query the database to get paginated data
+    const employees = await CompanyModel.find()
+      .skip(skip)
+      .limit(limit);
+
+    // Get total count of documents for pagination
+    const totalCount = await CompanyModel.countDocuments();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+    console.log(employees)
+    console.log(totalCount)
+    console.log(totalPages)
+    console.log(page)
+    // Return paginated data along with pagination metadata
+    res.json({
+      data: employees,
+      currentPage: page,
+      totalPages: totalPages,
+      totalCount: totalCount,
+    });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// app.get("/api/new-leads", async (req, res) => {
+//   try {
+//     const { page, limit } = req.query;
+//     const pageNumber = parseInt(page) || 1;
+//     const itemsPerPage = parseInt(limit) || 50;
+//     const startIndex = (pageNumber-1) * itemsPerPage;
+// console.log(page)
+//     const data = await CompanyModel.find()
+//       .skip(startIndex)
+//       .limit(itemsPerPage)
+//       .lean();
+
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 
 app.get("/api/leads/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
@@ -1533,23 +1585,23 @@ app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
   }
 });
 
-app.get("/api/new-leads", async (req, res) => {
-  try {
-    const { startIndex, endIndex } = req.query;
-    const start = parseInt(startIndex) || 0;
-    const end = parseInt(endIndex) || 500;
+// app.get("/api/new-leads", async (req, res) => {
+//   try {
+//     const { startIndex, endIndex } = req.query;
+//     const start = parseInt(startIndex) || 0;
+//     const end = parseInt(endIndex) || 500;
 
-    const data = await CompanyModel.find({ ename: "Not Alloted" })
-      .skip(start)
-      .limit(end - start)
-      .lean();
+//     const data = await CompanyModel.find({ ename: "Not Alloted" })
+//       .skip(start)
+//       .limit(end - start)
+//       .lean();
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 app.get("/api/leads2", async (req, res) => {
   try {
@@ -1573,6 +1625,8 @@ app.get("/api/leads2", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 app.get("/api/projection-data", async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
@@ -1588,18 +1642,18 @@ app.get("/api/projection-data", async (req, res) => {
   }
 });
 
-app.get(`/api/projection-data-company/:companyName` , async(req,res)=>{
-   const companyName = req.params.companyName;
+app.get(`/api/projection-data-company/:companyName`, async (req, res) => {
+  const companyName = req.params.companyName;
 
-   try{
-    const response =  await FollowUpModel.find({
-      companyName : companyName
+  try {
+    const response = await FollowUpModel.find({
+      companyName: companyName
     })
     res.json(response);
 
-   }catch(error){
-    res.status(500).json({error : "Internal Server Error" })
-   }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" })
+  }
 
 })
 
@@ -2037,7 +2091,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
     // Extract the companyIds from the request body
     const { companyIds } = req.body;
 
-    console.log("companycom" , companyIds )
+    console.log("companycom", companyIds)
 
     // Validate that companyIds is an array
     if (!Array.isArray(companyIds)) {
@@ -2208,7 +2262,7 @@ app.put("/api/neweinfo/:id", async (req, res) => {
           existing["Company Name"] === data["Company Name"] &&
           existing["Company Number"] === data["Company Number"] &&
           existing["Company Incorporation Date  "] ===
-            data["Company Incorporation Date  "] &&
+          data["Company Incorporation Date  "] &&
           existing["Company Email"] === data["Company Email"] &&
           existing.City === data.City &&
           existing.State === data.State
@@ -4481,12 +4535,12 @@ app.post(
 
         newData.otherDocs =
           req.files["otherDocs"] === undefined ||
-          req.files["otherDocs"].length === 0
+            req.files["otherDocs"].length === 0
             ? []
             : req.files["otherDocs"].map((file) => file);
         newData.paymentReceipt =
           req.files["paymentReceipt"] === undefined ||
-          req.files["paymentReceipt"].length === 0
+            req.files["paymentReceipt"].length === 0
             ? []
             : req.files["paymentReceipt"].map((file) => file);
 
@@ -4772,13 +4826,12 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${
-                newData.services[i].serviceName === "Start Up Certificate"
+              ${newData.services[i].serviceName === "Start Up Certificate"
                   ? newData.services[i].withDSC
                     ? "Start Up Certificate With DSC"
                     : "Start Up Certificate Without DCS"
                   : newData.services[i].serviceName
-              }
+                }
             </div>
           </div>
         </div>
@@ -4841,10 +4894,9 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${
-                  newData.services[i].paymentTerms === "Full Advanced"
-                    ? "Full Advanced"
-                    : "Part-Payment"
+                ${newData.services[i].paymentTerms === "Full Advanced"
+                  ? "Full Advanced"
+                  : "Part-Payment"
                 }
             </div>
           </div>
@@ -4887,17 +4939,15 @@ app.post(
                 ">
                 ₹ ${parseInt(
                   newData.services[i].secondPayment
-                ).toLocaleString()} - ${
-                isNaN(new Date(newData.services[i].secondPaymentRemarks))
+                ).toLocaleString()} - ${isNaN(new Date(newData.services[i].secondPaymentRemarks))
                   ? newData.services[i].secondPaymentRemarks
                   : `Payment On ${newData.services[i].secondPaymentRemarks}`
-              }
+                }
             </div>
           </div>
         </div>
-        <div style="display: ${
-          newData.services[i].thirdPayment === 0 ? "none" : "flex"
-        }; flex-wrap: wrap">
+        <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"
+                }; flex-wrap: wrap">
           <div style="width: 25%">
             <div style="
                   border: 1px solid #ccc;
@@ -4913,17 +4963,15 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ₹ ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
-                isNaN(new Date(newData.services[i].thirdPaymentRemarks))
+                ₹ ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${isNaN(new Date(newData.services[i].thirdPaymentRemarks))
                   ? newData.services[i].thirdPaymentRemarks
                   : `Payment On ${newData.services[i].thirdPaymentRemarks}`
-              }
+                }
             </div>
           </div>
         </div>
-        <div style="display: ${
-          newData.services[i].fourthPayment === 0 ? "none" : "flex"
-        }; flex-wrap: wrap">
+        <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"
+                }; flex-wrap: wrap">
           <div style="width: 25%">
             <div style="
                   border: 1px solid #ccc;
@@ -4941,11 +4989,10 @@ app.post(
                 ">
                 ₹ ${parseInt(
                   newData.services[i].fourthPayment
-                ).toLocaleString()} - ${
-                isNaN(new Date(newData.services[i].fourthPaymentRemarks))
+                ).toLocaleString()} - ${isNaN(new Date(newData.services[i].fourthPaymentRemarks))
                   ? newData.services[i].fourthPaymentRemarks
                   : `Payment On ${newData.services[i].fourthPaymentRemarks}`
-              }
+                }
             </div>
           </div>
         </div>
@@ -5276,11 +5323,10 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                       ${
-                         newData.bdmType === "Close-by"
-                           ? "Closed-by"
-                           : "Supported-by"
-                       } 
+                       ${newData.bdmType === "Close-by"
+              ? "Closed-by"
+              : "Supported-by"
+            } 
                   </div>
                 </div>
               </div>
@@ -5398,9 +5444,8 @@ app.post(
                   </div>
                 </div>
             </div>
-             <div style="display: ${
-               newData.caCase === "Yes" ? "flex" : "none"
-             }; flex-wrap: wrap">
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
+            }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -5420,8 +5465,7 @@ app.post(
                   </div>
                 </div>
             </div>
-            <div style="display: ${
-              newData.caCase === "Yes" ? "flex" : "none"
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
             }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -5442,8 +5486,7 @@ app.post(
                   </div>
                 </div>
             </div>
-            <div style="display: ${
-              newData.caCase === "Yes" ? "flex" : "none"
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
             }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -5673,19 +5716,17 @@ app.post(
                 paymentServices = `
           <tr>
             <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td style="border-right:1px solid #ddd">${
-              newData.services[i].paymentTerms !== "Full Advanced"
-                ? newData.services[i].secondPaymentRemarks
-                : "100% Advance Payment"
-            }</td>
+            <td style="border-right:1px solid #ddd">${newData.services[i].paymentTerms !== "Full Advanced"
+                    ? newData.services[i].secondPaymentRemarks
+                    : "100% Advance Payment"
+                  }</td>
           </tr>
           `;
               }
               servicesHtml += `
           <table style="margin-top:20px">
               <thead>
-                <td colspan="4">Service Name : ${
-                  newData.services[i].serviceName
+                <td colspan="4">Service Name : ${newData.services[i].serviceName
                 }</td>
               </thead>
               <tbody>
@@ -5696,16 +5737,14 @@ app.post(
                   <td>Remarks</td>
                 </tr>
                 <tr>
-                      <th rowspan='4'>₹ ${
-                        newData.services[i].totalPaymentWGST
-                      } /-</th>
-                      <th rowspan='4'>₹ ${
-                        newData.services[i].paymentTerms === "Full Advanced"
-                          ? parseInt(
-                              newData.services[i].totalPaymentWGST
-                            ).toLocaleString()
-                          : parseInt(newData.services[i].firstPayment).toLocaleString()
-                      }/-</th>
+                      <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                } /-</th>
+                      <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                  ? parseInt(
+                    newData.services[i].totalPaymentWGST
+                  ).toLocaleString()
+                  : parseInt(newData.services[i].firstPayment).toLocaleString()
+                }/-</th>
                 </tr>
                 ${paymentServices}
               </tbody>
@@ -7236,13 +7275,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${
-              newData.services[i].serviceName === "Start-Up India Certificate"
-                ? newData.services[i].withDSC
-                  ? "Start-Up India Certificate With DSC"
-                  : "Start-Up India Certificate Without DSC"
-                : newData.services[i].serviceName
-            }
+            ${newData.services[i].serviceName === "Start-Up India Certificate"
+            ? newData.services[i].withDSC
+              ? "Start-Up India Certificate With DSC"
+              : "Start-Up India Certificate Without DSC"
+            : newData.services[i].serviceName
+          }
           </div>
         </div>
       </div>
@@ -7263,8 +7301,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 padding: 5px 10px;
               ">
               ₹ ${parseInt(
-                newData.services[i].totalPaymentWGST
-              ).toLocaleString()}
+            newData.services[i].totalPaymentWGST
+          ).toLocaleString()}
           </div>
         </div>
       </div>
@@ -7305,11 +7343,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-           ${
-             newData.services[i].paymentTerms === "Full Advanced"
-               ? "Full Advanced"
-               : "Part-Payment"
-           }
+           ${newData.services[i].paymentTerms === "Full Advanced"
+            ? "Full Advanced"
+            : "Part-Payment"
+          }
           </div>
         </div>
       </div>
@@ -7350,18 +7387,16 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 padding: 5px 10px;
               ">
               ₹ ${parseInt(
-                newData.services[i].secondPayment
-              ).toLocaleString()} - ${
-          isNaN(new Date(newData.services[i].secondPaymentRemarks))
+            newData.services[i].secondPayment
+          ).toLocaleString()} - ${isNaN(new Date(newData.services[i].secondPaymentRemarks))
             ? newData.services[i].secondPaymentRemarks
             : `Payment On ${newData.services[i].secondPaymentRemarks}`
-        }
+          }
           </div>
         </div>
       </div>
-      <div style="display: ${
-        newData.services[i].thirdPayment === 0 ? "none" : "flex"
-      }; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"
+          }; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -7378,18 +7413,16 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 padding: 5px 10px;
               ">
               ₹ ${parseInt(
-                newData.services[i].thirdPayment
-              ).toLocaleString()} - ${
-          isNaN(new Date(newData.services[i].thirdPaymentRemarks))
+            newData.services[i].thirdPayment
+          ).toLocaleString()} - ${isNaN(new Date(newData.services[i].thirdPaymentRemarks))
             ? newData.services[i].thirdPaymentRemarks
             : `Payment On ${newData.services[i].thirdPaymentRemarks}`
-        }
+          }
           </div>
         </div>
       </div>
-      <div style="display: ${
-        newData.services[i].fourthPayment === 0 ? "none" : "flex"
-      }; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"
+          }; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -7406,12 +7439,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 padding: 5px 10px;
               ">
               ₹ ${parseInt(
-                newData.services[i].fourthPayment
-              ).toLocaleString()} - ${
-          isNaN(new Date(newData.services[i].fourthPaymentRemarks))
+            newData.services[i].fourthPayment
+          ).toLocaleString()} - ${isNaN(new Date(newData.services[i].fourthPaymentRemarks))
             ? newData.services[i].fourthPaymentRemarks
             : `Payment On ${newData.services[i].fourthPaymentRemarks}`
-        }
+          }
           </div>
         </div>
       </div>
@@ -7445,7 +7477,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const servicesHtmlContent = renderServices();
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
-    const recipients = !isAdmin ?  [
+    const recipients = !isAdmin ? [
       newData.bdeEmail,
       newData.bdmEmail,
       "bookings@startupsahay.com",
@@ -7744,11 +7776,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${
-                      newData.bdmType === "Close-by"
-                        ? "Closed-by"
-                        : "Supported-by"
-                    }
+                    ${newData.bdmType === "Close-by"
+        ? "Closed-by"
+        : "Supported-by"
+      }
                 </div>
               </div>
             </div>
@@ -7864,9 +7895,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-             <div style="display: ${
-               newData.caCase === "Yes" ? "flex" : "none"
-             }; flex-wrap: wrap">
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
+      }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -7886,9 +7916,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-            <div style="display: ${
-              newData.caCase === "Yes" ? "flex" : "none"
-            }; flex-wrap: wrap">
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
+      }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -7908,9 +7937,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-            <div style="display: ${
-              newData.caCase === "Yes" ? "flex" : "none"
-            }; flex-wrap: wrap">
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"
+      }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -8141,20 +8169,18 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           paymentServices = `
         <tr>
           <td >₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${
-            newData.services[i].paymentTerms !== "Full Advanced"
+          <td>${newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
               : "100% Advance Payment"
-          }</td>
+            }</td>
         </tr>
         `;
         }
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${
-                newData.services[i].serviceName
-              }</td>
+              <td colspan="4">Service Name : ${newData.services[i].serviceName
+          }</td>
             </thead>
             <tbody>
               <tr>
@@ -8164,14 +8190,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${
-                      newData.services[i].totalPaymentWGST
-                    } /-</th>
-                    <th rowspan='4'>₹ ${
-                      newData.services[i].paymentTerms === "Full Advanced"
-                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                        : parseInt(newData.services[i].firstPayment).toLocaleString()
-                    }/-</th>
+                    <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+          } /-</th>
+                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+            ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+            : parseInt(newData.services[i].firstPayment).toLocaleString()
+          }/-</th>
               </tr>
               ${paymentServices}
             </tbody>
@@ -8183,7 +8207,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderMorePaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-     
+
       for (let i = 1; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -8234,21 +8258,19 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           paymentServices = `
         <tr>
           <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${
-            newData.services[i].paymentTerms !== "Full Advanced"
+          <td>${newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
               : "100% Advance Payment"
-          }</td>
+            }</td>
         </tr>
         `;
         }
-        
+
         servicesHtml += `
         <table class="table table-bordered" style="margin-top:80px;">
             <thead>
-              <td colspan="4">Service Name : ${
-                newData.services[i].serviceName
-              }</td>
+              <td colspan="4">Service Name : ${newData.services[i].serviceName
+          }</td>
             </thead>
             <tbody>
               <tr>
@@ -8258,14 +8280,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${
-                     parseInt( newData.services[i].totalPaymentWGST).toLocaleString()
-                    } /-</th>
-                    <th rowspan='4'>₹ ${
-                      newData.services[i].paymentTerms === "Full Advanced"
-                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                        : parseInt(newData.services[i].firstPayment).toLocaleString()
-                    }/-</th>
+                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</th>
+                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+            ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+            : parseInt(newData.services[i].firstPayment).toLocaleString()
+          }/-</th>
               </tr>
               ${paymentServices}
             </tbody>
@@ -8318,8 +8338,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       : 'style="display:none';
 
     console.log(newPageDisplay);
-  
-  
+
+
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -8410,7 +8430,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
-const conditional = newData.services.length < 2 ?  `<div class="Declaration_text">
+    const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
 <p class="Declaration_text_data">
   I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
 </p>
@@ -8449,7 +8469,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
         
         </div>
       `;
-const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
+    const totalPaymentHtml = newData.services.length < 2 ? ` <div class="table-data">
 <table class="table table-bordered">
   <thead>
     <th colspan="3">Total Payment Details</th>
@@ -8475,7 +8495,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
         : `${newData.bdeName} && ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-      const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
+    const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
@@ -8576,13 +8596,13 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
 
-      const AuthorizedEmail =
+    const AuthorizedEmail =
       mailName === "Dhruvi Gohel"
         ? "dhruvi@startupsahay.com"
         : "rm@startupsahay.com";
-        const AuthorizedNumber =
-        mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    
+    const AuthorizedNumber =
+      mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8624,7 +8644,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "bhagyesh@startupsahay.com","kumarronak597@gmail.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
@@ -8635,16 +8655,14 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
                     <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                     <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                     <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p style="display:${
-                      serviceNames == "Start-Up India Certificate"
-                        ? "none"
-                        : "block"
-                    }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                    <p style="display:${
-                      serviceNames == "Start-Up India Certificate"
-                        ? "none"
-                        : "block"
-                    }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                    <p style="display:${serviceNames == "Start-Up India Certificate"
+                  ? "none"
+                  : "block"
+                }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                    <p style="display:${serviceNames == "Start-Up India Certificate"
+                  ? "none"
+                  : "block"
+                }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
                     <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                     <div class="signature">
                         <div>Best regards,</div>
@@ -8717,10 +8735,10 @@ app.post(
       ...boom,
       otherDocs: newOtherDocs,
       paymentReceipt: newPaymentReceipt,
-      remainingPayments:[]
+      remainingPayments: []
     };
     const updatedDocs = {
-      ...boom , remainingPayments : []
+      ...boom, remainingPayments: []
     }
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
@@ -8762,7 +8780,7 @@ app.put(
   async (req, res) => {
     try {
       const { CompanyName, bookingIndex } = req.params;
-      const { otherDocs, paymentReceipt, step4changed,remainingPayments, ...newData } = req.body;
+      const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
 
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
@@ -8777,36 +8795,36 @@ app.put(
       const existingDocument = await RedesignedLeadformModel.findOne({
         "Company Name": CompanyName,
       });
-      const moreDocument = existingDocument.moreBookings[bookingIndex -1];
+      const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
       if (!existingDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-      console.log("This is sending :" , dataToSend , step4changed)
+      console.log("This is sending :", dataToSend, step4changed)
       // Update the booking in moreBookings array at the specified index
       const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
         {
           "Company Name": CompanyName,
         },
         {
-          [`moreBookings.${bookingIndex -1}`]:{
-            bdeName: newData.bdeName , bdmType:newData.bdmType , bdeEmail: newData.bdeEmail,bdmName:newData.bdmName, otherBdmName:newData.otherBdmName, bdmEmail:newData.bdmEmail,bookingDate:newData.bookingDate,bookingSource:newData.bookingSource,otherBookingSource:newData.otherBookingSource,numberOfServices:newData.numberOfServices,services:newData.services,caCase:newData.caCase,caNumber:newData.caNumber,caEmail:newData.caEmail,caCommission:newData.caCommission,
-            paymentMethod:newData.paymentMethod,totalAmount:newData.totalAmount,receivedAmount:newData.receivedAmount,pendingAmount:newData.pendingAmount,
-            generatedTotalAmount:newData.generatedTotalAmount,generatedReceivedAmount:newData.generatedReceivedAmount,Step1Status:newData.Step1Status,Step2Status:newData.Step2Status,Step3Status:newData.Step3Status,Step4Status:newData.Step4Status, Step5Status:newData.Step5Status,remainingPayments:[] , otherDocs: newOtherDocs , paymentReceipt:newPaymentReceipt
+          [`moreBookings.${bookingIndex - 1}`]: {
+            bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
+            paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
+            generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: newOtherDocs, paymentReceipt: newPaymentReceipt
           }
-        })   : await RedesignedLeadformModel.findOneAndUpdate(
-        {
-          "Company Name": CompanyName,
-        },
-        {
-          [`moreBookings.${bookingIndex -1}`]:{
-            bdeName: newData.bdeName , bdmType:newData.bdmType , bdeEmail: newData.bdeEmail,bdmName:newData.bdmName, otherBdmName:newData.otherBdmName, bdmEmail:newData.bdmEmail,bookingDate:newData.bookingDate,bookingSource:newData.bookingSource,otherBookingSource:newData.otherBookingSource,numberOfServices:newData.numberOfServices,services:newData.services,caCase:newData.caCase,caNumber:newData.caNumber,caEmail:newData.caEmail,caCommission:newData.caCommission,
-            paymentMethod:newData.paymentMethod,totalAmount:newData.totalAmount,receivedAmount:newData.receivedAmount,pendingAmount:newData.pendingAmount,
-            generatedTotalAmount:newData.generatedTotalAmount,generatedReceivedAmount:newData.generatedReceivedAmount,Step1Status:newData.Step1Status,Step2Status:newData.Step2Status,Step3Status:newData.Step3Status,Step4Status:newData.Step4Status, Step5Status:newData.Step5Status,remainingPayments:[] , otherDocs: moreDocument.otherDocs , paymentReceipt:moreDocument.paymentReceipt
-          }
-        },
-        // Set all properties except "moreBookings"
-        { new: true } // Return the updated document
-      );
+        }) : await RedesignedLeadformModel.findOneAndUpdate(
+          {
+            "Company Name": CompanyName,
+          },
+          {
+            [`moreBookings.${bookingIndex - 1}`]: {
+              bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
+              paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
+              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt
+            }
+          },
+          // Set all properties except "moreBookings"
+          { new: true } // Return the updated document
+        );
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": CompanyName,
       });
@@ -8850,7 +8868,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
-      
+
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8861,7 +8879,7 @@ app.post(
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
         withGST: objectData.withGST,
-        paymentDate:objectData.paymentDate
+        paymentDate: objectData.paymentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
@@ -8870,13 +8888,13 @@ app.post(
         const findObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         })
-        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName)
+        const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName)
         const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
-        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) ;
-       
-       
-        console.log(newReceivedAmount , newPendingAmount)
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
+
+
+        console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
         await RedesignedLeadformModel.updateOne(
@@ -8885,11 +8903,11 @@ app.post(
             $set: {
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
-              generatedReceivedAmount : newGeneratedReceivedAmount
+              generatedReceivedAmount: newGeneratedReceivedAmount
             },
           }
         );
-      
+
         // Push sendingObject into remainingPayments array
         const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
           { "Company Name": companyName },
@@ -8902,42 +8920,42 @@ app.post(
         const mainObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         })
-        const findObject = mainObject.moreBookings[bookingIndex-1];
-        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName)
+        const findObject = mainObject.moreBookings[bookingIndex - 1];
+        const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName)
         const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
-        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) ;
-       findObject.remainingPayments.$push
-       
-        console.log(newReceivedAmount , newPendingAmount)
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
+        findObject.remainingPayments.$push
+
+        console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
-        
-      
+
+
         // Push sendingObject into remainingPayments array
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
             $set: {
-              [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
-              [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
-              [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
+              [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
+              [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
+              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
             }
           }
         );
         const updatedObject = await RedesignedLeadformModel.updateOne(
-          { "Company Name": companyName},
+          { "Company Name": companyName },
           {
             $push: {
-              [`moreBookings.${bookingIndex-1}.remainingPayments`]: sendingObject,
-             
+              [`moreBookings.${bookingIndex - 1}.remainingPayments`]: sendingObject,
+
             }
           },
-         
-     
+
+
         );
-        
+
 
         return res.status(200).send("Successfully submitted more payments.");
       }
@@ -8961,7 +8979,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
-      
+
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8971,31 +8989,31 @@ app.post(
         receivedPayment: objectData.receivedAmount,
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
-        withGST:objectData.withGST,
-        paymentDate:objectData.paymentDate
+        withGST: objectData.withGST,
+        paymentDate: objectData.paymentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
       if (bookingIndex == 0) {
-        console.log("Hi guyz"); 
+        console.log("Hi guyz");
         const findObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         });
         const paymentObject = findObject.remainingPayments[findObject.remainingPayments.length - 1];
         const newReceivedAmount = parseInt(findObject.receivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(sendingObject.receivedPayment);
         const newPendingAmount = parseInt(findObject.pendingAmount) + parseInt(paymentObject.receivedPayment) - parseInt(sendingObject.receivedPayment);
-        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName);
+        const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName);
         // const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
         // const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
 
-        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18+ parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18 + parseInt(objectData.receivedAmount);
-      
-       
-        console.log(newReceivedAmount , newPendingAmount)
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount);
+
+
+        console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
-      
-        findObject.remainingPayments[findObject.remainingPayments.length-1] = sendingObject;
+
+        findObject.remainingPayments[findObject.remainingPayments.length - 1] = sendingObject;
         const updateResult = await findObject.save();
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
@@ -9003,12 +9021,12 @@ app.post(
             $set: {
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
-              generatedReceivedAmount : newGeneratedReceivedAmount,
+              generatedReceivedAmount: newGeneratedReceivedAmount,
 
             },
           }
         );
-      
+
         // Push sendingObject into remainingPayments array
         // const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
         //   { "Company Name": companyName },
@@ -9018,41 +9036,41 @@ app.post(
 
         return res.status(200).send("Successfully submitted more payments.");
       } else {
-        console.log("Hi guyz"); 
+        console.log("Hi guyz");
         const mainObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         })
-        const findObject = mainObject.moreBookings[bookingIndex-1];
+        const findObject = mainObject.moreBookings[bookingIndex - 1];
         const paymentObject = findObject.remainingPayments[findObject.remainingPayments.length - 1];
         const newReceivedAmount = parseInt(findObject.receivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(sendingObject.receivedPayment);
         const newPendingAmount = parseInt(findObject.pendingAmount) + parseInt(paymentObject.receivedPayment) - parseInt(sendingObject.receivedPayment);
-        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName);
+        const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName);
         // const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
         // const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
 
-        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18+ parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(objectData.receivedAmount);
-      
-       
-        console.log(newReceivedAmount , newPendingAmount)
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(objectData.receivedAmount);
+
+
+        console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
-      
+
         // findObject.remainingPayments[findObject.remainingPayments.length-1] = sendingObject;
 
-      
+
         const updateResult = await findObject.save();
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
             $set: {
-              [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
-              [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
-              [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
-              [`moreBookings.${bookingIndex-1}.remainingPayments.${findObject.remainingPayments.length-1}`]: sendingObject
+              [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
+              [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
+              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+              [`moreBookings.${bookingIndex - 1}.remainingPayments.${findObject.remainingPayments.length - 1}`]: sendingObject
             }
           }
         );
-      
+
         // Push sendingObject into remainingPayments array
         // const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
         //   { "Company Name": companyName },
@@ -9068,12 +9086,12 @@ app.post(
     }
   }
 );
-app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
+app.post('/api/redesigned-submit-expanse/:CompanyName', async (req, res) => {
   const data = req.body;
   const companyName = req.params.CompanyName;
   const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
   const mainObject = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
-  const serviceID =  data.serviceID
+  const serviceID = data.serviceID
 
 
   if (!mainObject) {
@@ -9081,12 +9099,12 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
   }
 
   if (bookingIndex === 0) {
-    
+
     const findServices = mainObject.services
     const serviceObject = findServices.filter(service => (service._id).toString() === serviceID)[0];
-   
-    
-    
+
+
+
     if (!serviceObject) {
       return res.status(404).json({ error: "Service not found" });
     }
@@ -9102,16 +9120,16 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
       paymentTerms: serviceObject.paymentTerms, // Spread operator to copy all properties from serviceObject
       firstPayment: serviceObject.firstPayment, // Spread operator to copy all properties from serviceObject
       secondPayment: serviceObject.secondPayment, // Spread operator to copy all properties from serviceObject
-       thirdPayment: serviceObject. thirdPayment, // Spread operator to copy all properties from serviceObject
+      thirdPayment: serviceObject.thirdPayment, // Spread operator to copy all properties from serviceObject
       fourthPayment: serviceObject.fourthPayment, // Spread operator to copy all properties from serviceObject
       secondPaymentRemarks: serviceObject.secondPaymentRemarks, // Spread operator to copy all properties from serviceObject
       thirdPaymentRemarks: serviceObject.thirdPaymentRemarks, // Spread operator to copy all properties from serviceObject
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
-      paymentRemarks: serviceObject.paymentRemarks, 
-      _id:serviceObject._id,// Spread operator to copy all properties from serviceObject
+      paymentRemarks: serviceObject.paymentRemarks,
+      _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
       expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
     };
- 
+
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = mainObject.services.map(service => {
       if (service._id == serviceID) {
@@ -9129,10 +9147,10 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
 
     res.status(200).json(updatedMainObject);
   } else {
-    const moreObject = mainObject.moreBookings[bookingIndex -1];
+    const moreObject = mainObject.moreBookings[bookingIndex - 1];
     const findServices = moreObject.services
     const serviceObject = findServices.filter(service => (service._id).toString() === serviceID)[0];
-    
+
     if (!serviceObject) {
       return res.status(404).json({ error: "Service not found" });
     }
@@ -9148,13 +9166,13 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
       paymentTerms: serviceObject.paymentTerms, // Spread operator to copy all properties from serviceObject
       firstPayment: serviceObject.firstPayment, // Spread operator to copy all properties from serviceObject
       secondPayment: serviceObject.secondPayment, // Spread operator to copy all properties from serviceObject
-       thirdPayment: serviceObject. thirdPayment, // Spread operator to copy all properties from serviceObject
+      thirdPayment: serviceObject.thirdPayment, // Spread operator to copy all properties from serviceObject
       fourthPayment: serviceObject.fourthPayment, // Spread operator to copy all properties from serviceObject
       secondPaymentRemarks: serviceObject.secondPaymentRemarks, // Spread operator to copy all properties from serviceObject
       thirdPaymentRemarks: serviceObject.thirdPaymentRemarks, // Spread operator to copy all properties from serviceObject
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
-      paymentRemarks: serviceObject.paymentRemarks, 
-      _id:serviceObject._id,// Spread operator to copy all properties from serviceObject
+      paymentRemarks: serviceObject.paymentRemarks,
+      _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
       expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
     };
     console.log(updatedServiceObject);
@@ -9171,8 +9189,8 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
       { "Company Name": companyName },
       {
         $set: {
-          [`moreBookings.${bookingIndex-1}.services`]: updatedServices,
-         
+          [`moreBookings.${bookingIndex - 1}.services`]: updatedServices,
+
         }
       }
     );
@@ -9183,15 +9201,15 @@ app.post('/api/redesigned-submit-expanse/:CompanyName' , async (req, res) => {
 
 
 
-app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async(req,res) => {
+app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async (req, res) => {
   const companyName = req.params.companyName;
-  
+
   const bookingIndex = req.params.bookingIndex;
   const serviceName = req.params.serviceName;
-  console.log("bookingIndex" , bookingIndex)
+  console.log("bookingIndex", bookingIndex)
 
-  const findCompany = await RedesignedLeadformModel.findOne({"Company Name":companyName});
-  if(bookingIndex == 0){
+  const findCompany = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+  if (bookingIndex == 0) {
     try {
       console.log("bhoom")
       const newCompany = findCompany;
@@ -9200,21 +9218,23 @@ app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serv
 
       const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
       const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
-      const findService = newCompany.services.find((obj)=>obj.serviceName === remainingObject.serviceName);
-      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      console.log("this is the required object" , newGeneratedReceivedAmount);
+      const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
+      console.log("this is the required object", newGeneratedReceivedAmount);
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      console.log("This will be the object ",newRemainingArray)
+      console.log("This will be the object ", newRemainingArray)
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
-      
-      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set: {
-       receivedAmount: newReceivedAmount,
-        pendingAmount : newPendingAmount,
-        generatedReceivedAmount: newGeneratedReceivedAmount,
-        remainingPayments: newRemainingArray,
-      }})
+
+      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({ "Company Name": companyName }, {
+        $set: {
+          receivedAmount: newReceivedAmount,
+          pendingAmount: newPendingAmount,
+          generatedReceivedAmount: newGeneratedReceivedAmount,
+          remainingPayments: newRemainingArray,
+        }
+      })
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
@@ -9222,32 +9242,34 @@ app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serv
       return res.status(500).send("Internal Server Error.");
     }
 
-  }else {
+  } else {
     try {
-      
+
       const newCompany = findCompany.moreBookings[bookingIndex - 1];
       const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
       const remainingObject = tempObject[tempObject.length - 1];
-    
+
 
       const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
       const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
-      
-      const findService = newCompany.services.find((obj)=>obj.serviceName === remainingObject.serviceName);
-      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment)/1.18:  parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      console.log("this is the required object" , newGeneratedReceivedAmount);
+
+      const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
+      const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
+      console.log("this is the required object", newGeneratedReceivedAmount);
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      console.log("This will be the object ",newRemainingArray)
+      console.log("This will be the object ", newRemainingArray)
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
-      
-      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({"Company Name":companyName} , {$set: {
-        [`moreBookings.${bookingIndex-1}.receivedAmount`]: newReceivedAmount,
-        [`moreBookings.${bookingIndex-1}.pendingAmount`]: newPendingAmount,
-        [`moreBookings.${bookingIndex-1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
-        [`moreBookings.${bookingIndex-1}.remainingPayments`]: newRemainingArray,
-      }})
+
+      const newUpdatedArray = await RedesignedLeadformModel.findOneAndUpdate({ "Company Name": companyName }, {
+        $set: {
+          [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
+          [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
+          [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+          [`moreBookings.${bookingIndex - 1}.remainingPayments`]: newRemainingArray,
+        }
+      })
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
