@@ -9490,6 +9490,7 @@ app.get("/api/generate-pdf", async (req, res) => {
       }
       return servicesHtml;
     };
+  
     const renderMorePaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
@@ -9790,7 +9791,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" >
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin:0px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -9821,7 +9822,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
 
     </section>
   </div>` : "";
-
+  console.log(thirdPage)
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const servicesShubhi = [
       "Pitch Deck Development ",
