@@ -5889,7 +5889,7 @@ app.post(
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
-              ${fundingServicesArray} Support Services Acknowledgement:    
+              ${fundingServicesArray} Acknowledgement:    
               </b>
             </p>
             <p class="Declaration_text_data">
@@ -8401,6 +8401,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         } else if (
           newData.services[i].serviceName === "Income Tax Exemption"
         ) {
+      
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
           <b>
@@ -8429,7 +8430,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
-      } else if (incomeTaxServices !== "") {
+      } 
+      if (incomeTaxServices !== "") {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -8467,8 +8469,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 related process works.
               </p>
               <p class="Declaration_text_data">
-                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
-                application if required on my behalf, as I am not familiar with the process.
+              As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
               </p>
             </div>
          
