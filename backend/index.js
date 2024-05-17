@@ -22,7 +22,6 @@ const RequestGModel = require("./models/RequestG");
 const { exec } = require("child_process");
 const jwt = require("jsonwebtoken");
 const onlyAdminModel = require("./models/AdminTable");
-const LeadModel = require("./models/Leadform");
 const DeletedDatabase = require("./models/DeletedCollection");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
@@ -40,7 +39,6 @@ const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
-const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const EditableDraftModel = require("./models/EditableDraftModel");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
@@ -2624,749 +2622,73 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post(
-  "/api/lead-form",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const {
-        bdmName,
-        bdmEmail,
-        bdmType,
-        supportedBy,
-        bookingDate,
-        caCase,
-        caNumber,
-        caEmail,
-        caCommission,
-        companyName,
-        contactNumber,
-        companyEmail,
-        services,
-        originalTotalPayment,
-        totalPayment,
-        paymentTerms,
-        paymentMethod,
-        firstPayment,
-        secondPayment,
-        thirdPayment,
-        fourthPayment,
-        paymentRemarks,
-        bookingSource,
-        cPANorGSTnum,
-        incoDate,
-        extraNotes,
-        empName,
-        empEmail,
-        bookingTime,
-      } = req.body;
-      const bdeName = empName;
-      const bdeEmail = empEmail;
-
-      const otherDocs =
-        req.files["otherDocs"] && req.files["otherDocs"].length > 0
-          ? req.files["otherDocs"].map((file) => file.filename)
-          : [];
-
-      const extraDocuments = req.files["otherDocs"];
-      const paymentDoc = req.files["paymentReceipt"];
-      // console.log(extraDocuments, paymentDoc);
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null; // Array of files for 'file2'
-
-      // Your processing logic here
-
-      const employee = new LeadModel({
-        bdeName,
-        bdeEmail,
-        bdmName,
-        bdmEmail,
-        bdmType,
-        supportedBy,
-        bookingDate,
-        caCase,
-        caNumber,
-        caEmail,
-        caCommission,
-        companyName,
-        contactNumber,
-        companyEmail,
-        services,
-        originalTotalPayment,
-        totalPayment,
-        paymentTerms,
-        paymentMethod: paymentMethod[0],
-        firstPayment,
-        secondPayment,
-        thirdPayment,
-        fourthPayment,
-        paymentRemarks,
-        bookingSource,
-        cPANorGSTnum,
-        incoDate,
-        extraNotes,
-        bookingTime,
-        otherDocs,
-        paymentReceipt,
-      });
-
-      const display = caCase === "No" ? "none" : "flex";
-      const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
-
-      const savedEmployee = await employee.save();
-
-      // const recipients = [
-      //   "bookings@startupsahay.com",
-      //   "documents@startupsahay.com",
-      //   `${bdmEmail}`,
-      //   `${bdeName}`,
-      // ];
-
-      // sendMail(
-      //   recipients,
-      //   "Mail received",
-      //   ``,
-      //   `<div style="width: 80%; margin: 50px auto;">
-      //       <h2 style="text-align: center;">Lead Information</h2>
-      //       <div style="display: flex;">
-      //           <div style="width: 48%;">
-      //               <label>BDE Name:</label>
-      //               <div style="    padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${empName}
-      //               </div>
-      //           </div>
-      //           <div style="width: 48%;margin-left: 15px;">
-      //               <label>BDE Email Address:</label>
-      //               <div style="    padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${empEmail}
-      //               </div>
-      //           </div>
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%;">
-      //               <label>BDM Name:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${bdmName}
-      //               </div>
-      //           </div>
-      //           <div style="width: 48%;margin-left: 15px;">
-      //               <label>BDM Email Address:</label>
-      //               <div style="    padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${bdmEmail}
-      //               </div>
-      //           </div>
-      //       </div>
-      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%;">
-      //               <label>Booking Date:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${bookingDate}
-      //               </div>
-      //           </div>
-
-      //       </div>
-
-      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      //       </div>
-
-      //       <div style="display: flex; margin-top: 20px;" id="cacase">
-      //           <div style="width: 48%;">
-      //               <label>CA Case: ${caCase}</label>
-
-      //           </div>
-
-      //       </div>
-      //       <div id="ca-case-option" style="display: ${display}; margin-top: 20px;" >
-      //           <div style="width: 30%;">
-      //               <label>Enter CA's number:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${caNumber}
-      //               </div>
-      //           </div>
-      //           <div style="width: 30%; margin-left: 10px;">
-      //               <label>Enter CA's Email:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${caEmail}
-      //               </div>
-      //           </div>
-      //           <div style="width: 38%; margin-left: 10px;">
-      //               <label>Enter CA's Commission:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${caCommission}
-      //               </div>
-      //           </div>
-
-      //       </div>
-      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      //       </div>
-
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 30%;">
-      //               <label>Enter Company's Name:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${companyName}
-      //               </div>
-      //           </div>
-      //           <div style="width: 30%; margin-left: 10px;">
-      //               <label>Enter Contact Number:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${contactNumber}
-      //               </div>
-      //           </div>
-      //           <div style="width: 38%; margin-left: 10px;">
-      //               <label>Enter Company's Email id:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${companyEmail}
-      //               </div>
-      //           </div>
-
-      //       </div>
-
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%;">
-      //               <label>Services:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${services}
-      //               </div>
-      //           </div>
-
-      //       </div>
-      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%; ">
-      //               <label>Total Payment:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${originalTotalPayment}
-      //               </div>
-      //           </div>
-      //           <div style="width: 48%;  margin-left: 10px;">
-      //               <label>Total Payment Including GST</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${totalPayment}
-      //               </div>
-      //           </div>
-
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%; ">
-      //               <label>Payment Terms: ${paymentTerms}</label>
-
-      //           </div>
-
-      //       </div>
-      //       <div style="display: ${displayPayment}; margin-top: 20px;">
-      //           <div style="width: 24%; ">
-      //               <label>First Payment:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${firstPayment}
-      //               </div>
-      //               <small style="background: #e7e7e7;
-      //               padding: 2px 8px;
-      //               margin: 4px 0;
-      //               color: rgb(63, 66, 21);
-      //               display: inline-block;
-      //               border-radius: 4px;">
-      //               ${(firstPayment * 100) / totalPayment}% Amount
-      //               </small>
-      //           </div>
-      //           <div style="width: 24%;  margin-left: 10px;">
-      //               <label>Second Payment</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${secondPayment}
-      //               </div>
-      //               <small style="background: #e7e7e7;
-      //               padding: 2px 8px;
-      //               margin: 4px 0;
-      //               color: rgb(63, 66, 21);
-      //               display: inline-block;
-      //               border-radius: 4px;">
-      //               ${(secondPayment * 100) / totalPayment}% Amount
-      //               </small>
-      //           </div>
-      //           <div style="width: 24%;  margin-left: 10px;">
-      //               <label>Third Payment</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${thirdPayment}
-      //               </div>
-      //               <small style="background: #e7e7e7;
-      //               padding: 2px 8px;
-      //               margin: 4px 0;
-      //               color: rgb(63, 66, 21);
-      //               display: inline-block;
-      //               border-radius: 4px;">
-      //               ${(thirdPayment * 100) / totalPayment}% Amount
-      //               </small>
-      //           </div>
-      //           <div style="width: 24%;  margin-left: 10px;">
-      //               <label>Fourth Payment</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${fourthPayment}
-      //               </div>
-      //               <small style="background: #e7e7e7;
-      //               padding: 2px 8px;
-      //               margin: 4px 0;
-      //               color: rgb(63, 66, 21);
-      //               display: inline-block;
-      //               border-radius: 4px;">
-      //               ${(fourthPayment * 100) / totalPayment}% Amount
-      //               </small>
-      //           </div>
-
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //       <div style="width: 33%; ">
-      //               <label>Payment Remarks:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${paymentRemarks}
-      //               </div>
-      //           </div>
-
-      //  </div>
-      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      //       </div>
-
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 33%; ">
-      //               <label>Payment Method:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${paymentMethod[0]}
-      //               </div>
-      //           </div>
-      //           <div style="width: 33%;  margin-left: 10px;">
-      //               <label>Booking Source</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${bookingSource}
-      //               </div>
-      //           </div>
-      //           <div style="width: 33%;  margin-left: 10px;">
-      //               <label>Company Pan or GST number</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${cPANorGSTnum}
-      //               </div>
-      //           </div>
-
-      //       </div>
-      //       <div style="display: flex; margin-top: 20px;">
-      //           <div style="width: 48%; ">
-      //               <label>Company Incorporation Date:</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${incoDate}
-      //               </div>
-      //           </div>
-      //           <div style="width: 48%;  margin-left: 10px;">
-      //               <label>Any Extra Notes</label>
-      //               <div style=" padding: 8px 10px;
-      //                   background: #fff7e8;
-      //                   margin-top: 10px;
-      //                   border-radius: 6px;
-      //                   color: #724f0d;">
-      //                   ${extraNotes}
-      //               </div>
-      //           </div>
-
-      //       </div>
-
-      //   </div>
-
-      //   `,
-      //   extraDocuments,
-      //   paymentDoc
-      // );
-
-      console.log("Data sent Via Email");
-      res
-        .status(200)
-        .json(savedEmployee || { message: "Data sent successfully" });
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-      console.error("Error saving employee:", error.message);
-    }
-  }
-);
-app.post(
-  "/api/lead-form2",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const {
-        bdmName,
-        bdmEmail,
-        bdmType,
-        supportedBy,
-        bookingDate,
-        caCase,
-        caNumber,
-        caEmail,
-        caCommission,
-        companyName,
-        contactNumber,
-        companyEmail,
-        services,
-        originalTotalPayment,
-        totalPayment,
-        paymentTerms,
-        paymentMethod,
-        firstPayment,
-        secondPayment,
-        thirdPayment,
-        fourthPayment,
-        paymentRemarks,
-        bookingSource,
-        cPANorGSTnum,
-        incoDate,
-        extraNotes,
-        empName,
-        empEmail,
-        bookingTime,
-        otherDocs,
-        paymentReceipt,
-      } = req.body;
-      const bdeName = empName;
-      const bdeEmail = empEmail;
-
-      const employee = new BookingsRequestModel({
-        bdeName,
-        bdeEmail,
-        bdmName,
-        bdmEmail,
-        bdmType,
-        supportedBy,
-        bookingDate,
-        caCase,
-        caNumber,
-        caEmail,
-        caCommission,
-        companyName,
-        contactNumber,
-        companyEmail,
-        services,
-        originalTotalPayment,
-        totalPayment,
-        paymentTerms,
-        paymentMethod: paymentMethod[0],
-        firstPayment,
-        secondPayment,
-        thirdPayment,
-        fourthPayment,
-        paymentRemarks,
-        bookingSource,
-        cPANorGSTnum,
-        incoDate,
-        extraNotes,
-        bookingTime,
-        otherDocs,
-        paymentReceipt,
-      });
-
-      const display = caCase === "No" ? "none" : "flex";
-      const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
-
-      const savedEmployee = await employee.save();
-
-      // console.log("Data Request Sent Successfully");
-      res
-        .status(200)
-        .json(savedEmployee || { message: "Data sent successfully" });
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-      console.error("Error saving employee:", error.message);
-    }
-  }
-);
-
 // --------------------api for importing excel data on processing dashboard----------------------------
-app.get("/api/booking-model-filter", async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
+// app.get("/api/booking-model-filter", async (req, res) => {
+//   try {
+//     const { startDate, endDate } = req.query;
 
-    // Convert start and end dates to JavaScript Date objects
-    const formattedStartDate = new Date(startDate);
-    const formattedEndDate = new Date(endDate);
+//     // Convert start and end dates to JavaScript Date objects
+//     const formattedStartDate = new Date(startDate);
+//     const formattedEndDate = new Date(endDate);
 
-    // Convert the start date to match the format of the bookingDate field
-    const formattedBookingStartDate = formattedStartDate
-      .toISOString()
-      .split("T")[0];
+//     // Convert the start date to match the format of the bookingDate field
+//     const formattedBookingStartDate = formattedStartDate
+//       .toISOString()
+//       .split("T")[0];
 
-    // Define the filter criteria based on the date range
-    let filterCriteria = {};
-    if (formattedStartDate.getTime() === formattedEndDate.getTime()) {
-      // If start and end dates are the same, filter by a single date
-      filterCriteria = { bookingDate: formattedBookingStartDate };
-    } else {
-      // If start and end dates are different, filter by a date range
-      filterCriteria = {
-        bookingDate: {
-          $gte: formattedBookingStartDate,
-          $lte: formattedEndDate.toISOString().split("T")[0],
-        },
-      };
-    }
+//     // Define the filter criteria based on the date range
+//     let filterCriteria = {};
+//     if (formattedStartDate.getTime() === formattedEndDate.getTime()) {
+//       // If start and end dates are the same, filter by a single date
+//       filterCriteria = { bookingDate: formattedBookingStartDate };
+//     } else {
+//       // If start and end dates are different, filter by a date range
+//       filterCriteria = {
+//         bookingDate: {
+//           $gte: formattedBookingStartDate,
+//           $lte: formattedEndDate.toISOString().split("T")[0],
+//         },
+//       };
+//     }
 
-    // Fetch leads from the database filtered by the specified date range
-    const leads = await LeadModel.find(filterCriteria);
+//     // Fetch leads from the database filtered by the specified date range
+//     const leads = await LeadModel.find(filterCriteria);
 
-    res.json({ leads });
-  } catch (error) {
-    console.error("Error fetching leads:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     res.json({ leads });
+//   } catch (error) {
+//     console.error("Error fetching leads:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
-app.post("/api/upload/lead-form", async (req, res) => {
-  let successCounter = 0;
-  let errorCounter = 0;
 
-  try {
-    const excelData = req.body; // Assuming req.body is an array of objects
+// app.post("/api/accept-booking-request/:companyName", async (req, res) => {
+//   const companyName = req.params.companyName;
+//   const requestData = req.body;
 
-    for (const data of excelData) {
-      try {
-        // Destructure data object
-        const {
-          bdeName,
-          bdeEmail,
-          bdmName,
-          bdmEmail,
-          bdmType,
-          supportedBy,
-          bookingDate,
-          caCase,
-          caNumber,
-          caEmail,
-          caCommission,
-          companyName,
-          contactNumber,
-          companyEmail,
-          services,
-          originalTotalPayment,
-          totalPayment,
-          paymentTerms,
-          paymentMethod,
-          firstPayment,
-          secondPayment,
-          thirdPayment,
-          fourthPayment,
-          paymentRemarks,
-          bookingSource,
-          cPANorGSTnum,
-          incoDate,
-          extraNotes,
-          bookingTime,
-          imported,
-        } = data;
+//   try {
+//     // Find the data to be moved from BookingsRequestModel
 
-        // Create a new LeadModel instance with the data
-        const employee = new LeadModel({
-          bdeName,
-          bdeEmail,
-          bdmName,
-          bdmEmail,
-          bdmType,
-          supportedBy,
-          bookingDate,
-          caCase,
-          caNumber,
-          caEmail,
-          caCommission,
-          companyName,
-          contactNumber,
-          companyEmail,
-          services,
-          originalTotalPayment,
-          totalPayment,
-          paymentTerms,
-          paymentMethod,
-          firstPayment,
-          secondPayment,
-          thirdPayment,
-          fourthPayment,
-          paymentRemarks,
-          bookingSource,
-          cPANorGSTnum,
-          incoDate,
-          extraNotes,
-          bookingTime,
-          imported,
-        });
+//     // Update leadModel data with data from BookingsRequestModel
+//     const { _id, ...updatedData } = requestData;
 
-        // Save the employee data to the database
-        await employee.save();
+//     // Update leadModel data with data from BookingsRequestModel
+//     const updatedLead = await LeadModel.findOneAndUpdate(
+//       { companyName },
+//       { $set: updatedData },
+//       { new: true }
+//     );
 
-        socketIO.emit("importcsv", employee);
-        // console.log(excelData)
-        // Increment the success counter
-        successCounter++;
-      } catch (error) {
-        // If an error occurs during data insertion, check if it's due to duplicate companyName
-        if (
-          error.code === 11000 &&
-          error.keyPattern &&
-          error.keyPattern.companyName
-        ) {
-          // Duplicate companyName detected, save the data to LeadModel_2
-          try {
-            await LeadModel_2.create(data);
-            console.log(
-              "Data saved to LeadModel_2 due to duplicate companyName:",
-              data
-            );
-            successCounter++; // Increment success counter as data was successfully saved to LeadModel_2
-          } catch (err) {
-            // Error saving to LeadModel_2
-            console.error("Error saving data to LeadModel_2:", err.message);
-            errorCounter++; // Increment error counter
-          }
-        } else {
-          // Error other than duplicate companyName, increment error counter
-          errorCounter++;
-          console.error("Error saving employee:", error.message);
-        }
-      }
-    }
+//     // Delete the data from BookingsRequestModel
+//     await BookingsRequestModel.findOneAndDelete({ companyName });
 
-    // Respond with success and error counters
-    res.status(200).json({
-      message: "Data sent successfully",
-      successCounter,
-      errorCounter,
-    });
-  } catch (error) {
-    // If an error occurs at the outer try-catch block, handle it here
-    console.error("Error saving employees:", error.message);
-    res.status(500).json({ error: "Internal Server Error", errorCounter });
-  }
-});
-
-app.post("/api/accept-booking-request/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
-  const requestData = req.body;
-
-  try {
-    // Find the data to be moved from BookingsRequestModel
-
-    // Update leadModel data with data from BookingsRequestModel
-    const { _id, ...updatedData } = requestData;
-
-    // Update leadModel data with data from BookingsRequestModel
-    const updatedLead = await LeadModel.findOneAndUpdate(
-      { companyName },
-      { $set: updatedData },
-      { new: true }
-    );
-
-    // Delete the data from BookingsRequestModel
-    await BookingsRequestModel.findOneAndDelete({ companyName });
-
-    // Send success response with the updated lead data
-    res.status(200).json(updatedLead);
-  } catch (error) {
-    console.error("Error accepting booking request:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+//     // Send success response with the updated lead data
+//     res.status(200).json(updatedLead);
+//   } catch (error) {
+//     console.error("Error accepting booking request:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 app.get("/api/drafts-search/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
 
@@ -3384,119 +2706,13 @@ app.get("/api/drafts-search/:companyName", async (req, res) => {
 
 // ---------------------------api to fetch companies in processing dashboard-----------------------------------
 
-app.get("/api/companies", async (req, res) => {
-  try {
-    // Fetch all companies from the LeadModel
-    const companies = await LeadModel.find();
-    // Count the total number of companies
-    const totalCompanies = companies.length;
 
-    // Construct response JSON with company names and count
-    const response = {
-      totalCompanies: totalCompanies,
-      companies: companies,
-    };
 
-    res.json(response);
-  } catch (error) {
-    console.error("Error fetching companies:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
-app.get("/api/company/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
 
-  try {
-    // Fetch details for the specified company name from the LeadModel
-    const companyDetails = await LeadModel.findOne({ companyName });
 
-    if (!companyDetails) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-    res.json(companyDetails);
-  } catch (error) {
-    console.error("Error fetching company details:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-app.get("/api/company-ename/:ename", async (req, res) => {
-  const bdeName = req.params.ename;
 
-  try {
-    // Fetch details for the specified company name from the LeadModel
-    const companyDetails = await LeadModel.find({ bdeName });
-    if (!companyDetails) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-    res.json(companyDetails);
-  } catch (error) {
-    console.error("Error fetching company details:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-app.get("/api/duplicate-company/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
 
-  try {
-    // Fetch details for the specified company name from the LeadModel
-    const companyDetails = await LeadModel_2.find({ companyName }).lean();
-
-    if (!companyDetails) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-    res.json(companyDetails);
-  } catch (error) {
-    console.error("Error fetching company details:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.delete("/api/reverse-delete/:companyName", async (req, res) => {
-  try {
-    const { companyName } = req.params;
-
-    // Find the deleted company by companyName in DeletedModel
-    const deletedCompany = await DeletedDatabase.findOneAndDelete({
-      companyName,
-    });
-
-    if (deletedCompany) {
-      // Move the deleted company from DeletedModel to LeadModel
-      await LeadModel.create(deletedCompany.toObject());
-      res.json({ message: "Company restored successfully" });
-    } else {
-      res.status(404).json({ message: "Company not found in deleted records" });
-    }
-  } catch (error) {
-    console.error("Error reversing delete:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.delete("/api/company-delete/:id", async (req, res) => {
-  try {
-    const _id = req.params.id;
-    const deletedCompany = await LeadModel.findByIdAndDelete({ _id });
-    if (deletedCompany) {
-      // Move the deleted company to the DeletedModel collection
-      await DeletedDatabase.create(deletedCompany.toObject());
-      // Find the same company name in the CompanyModel and update its Status to "Untouched"
-      const companyName = deletedCompany.companyName;
-
-      await CompanyModel.findOneAndDelete({ "Company Name": companyName });
-
-      socketIO.emit("companydeleted");
-
-      res.status(200).json({ message: "Company Deleted Successfully" });
-    } else {
-      res.status(404).json({ message: "Company not found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 app.post("/api/deleterequestbybde", async (req, res) => {
   try {
@@ -3722,133 +2938,10 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
 
 // ---------------------------to update the read status of companies-------------------------------------
 
-app.put("/api/read/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
-  // console.log(companyName)
-  try {
-    // Find the company in the database based on its name
-    const companyDetails = await LeadModel.findOne({ companyName });
-    // console.log(companyDetails)
 
-    // If company is found, update its read status to true
-    if (companyDetails) {
-      companyDetails.read = true; // Update the read status to true
-      // Save the updated company back to the database
-      await companyDetails.save();
-      socketIO.emit("read", companyDetails);
-      res.json(companyDetails); // Send the updated company as the response
-    } else {
-      // If company is not found, return a 404 error
-      res.status(404).json({ error: "Company not found" });
-    }
-  } catch (error) {
-    console.error("Error updating company:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 // ----------------------------api to download csv from processing dashboard--------------------------
 
-app.get("/api/exportdatacsv", async (req, res) => {
-  try {
-    const leads = await LeadModel.find({});
-    const csvData = [];
-
-    // Push the headers as the first row
-    csvData.push([
-      "SR. NO",
-      "BDE NAME",
-      "BDE'S EMAIL ID",
-      "BDM NAME",
-      "BDM'S EMAIL ID",
-      "BDM TYP",
-      "SUPPORTED BY",
-      "BOOKING DATE",
-      "CA CASE? (Yes Or No)",
-      "CA NUMBER",
-      "CA'S EMAIL ID",
-      "CA'S CAMMISSION",
-      "COMPANY NAME",
-      "COMPANY'S NUMBER",
-      "COMPANY'S EMAIL ID",
-      "SERVICES",
-      "TOTAL PAYMENT WITH GST",
-      "TOTAL PAYMENT WITHOUT GST",
-      "PAYMENT TERMS",
-      "PAYMENT METHOD",
-      "FIRST PAYMENT",
-      "SECOND PAYMENT",
-      "THIRD PAYMENT",
-      "FOURTH PAYMENT",
-      "PAYMENT REMARK",
-      "PAYMENT RECEIPT",
-      "BOOKING SOURCE",
-      "COMPANY PAN OR GST NUMBER",
-      "INCORPORATION DATE",
-      "EXTRA NOTES IF ANY",
-      "OTHER DOCS",
-      "BOOKING TIME",
-    ]);
-
-    const baseDocumentURL = "https://startupsahay.in/api/recieptpdf/";
-    const DocumentURL = "https://startupsahay.in/api/otherpdf/";
-
-    // Push each lead as a row into the csvData array
-    leads.forEach((lead, index) => {
-      const otherDocsUrls = lead.otherDocs.map((doc) => `${DocumentURL}${doc}`);
-      const rowData = [
-        index + 1,
-        lead.bdeName,
-        lead.bdeEmail,
-        lead.bdmName,
-        lead.bdmEmail,
-        lead.bdmType,
-        lead.supportedBy,
-        lead.bookingDate,
-        lead.caCase,
-        lead.caNumber,
-        lead.caEmail,
-        lead.caCommission,
-        lead.companyName,
-        lead.contactNumber,
-        lead.companyEmail,
-        `"${lead.services.join(",")}"`,
-        lead.originalTotalPayment,
-        lead.totalPayment,
-        lead.paymentTerms,
-        lead.paymentMethod,
-        lead.firstPayment,
-        lead.secondPayment,
-        lead.thirdPayment,
-        lead.fourthPayment,
-        lead.paymentRemarks,
-        lead.paymentReceipt ? `${baseDocumentURL}${lead.paymentReceipt}` : "", // ? baseDocumentURL + lead.paymentReceipt : '',  Concatenate base URL with document name
-        lead.bookingSource,
-        lead.cPANorGSTnum,
-        lead.incoDate,
-        lead.extraNotes,
-        `"${otherDocsUrls.join(",")}"`, // Assuming otherDocs is an array
-        lead.bookingTime,
-      ];
-      csvData.push(rowData);
-      // console.log("rowData:" , rowData)
-    });
-
-    // Use fast-csv to stringify the csvData array
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader("Content-Disposition", "attachment; filename=leads.csv");
-
-    const csvString = csvData.map((row) => row.join(",")).join("\n");
-    // Send response with CSV data
-    // Send response with CSV data
-    res.status(200).end(csvString);
-    // console.log(csvString)
-    // Here you're ending the response
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
 app.post("/api/exportLeads/", async (req, res) => {
   try {
@@ -4048,7 +3141,7 @@ app.post(
   }
 );
 
-app.post("/api/redesigned-leadform", async (req, res) => {
+app.post("/api/bookings/redesigned-leadform", async (req, res) => {
   try {
     const newData = req.body; // Assuming the request body contains the data to be saved
 
@@ -4215,7 +3308,7 @@ app.post("/api/redesigned-leadform", async (req, res) => {
 
 // ---------------------------------------------------- New Booking Form  ---------------------------------------------------------------
 
-app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
+app.get("/api/bookings/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
     const companyName = req.params.CompanyName;
 
@@ -4278,7 +3371,7 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
   }
 });
 
-app.post("/api/redesigned-importData", async (req, res) => {
+app.post("/api/bookings/redesigned-importData", async (req, res) => {
   try {
     const data = req.body;
     let leadData = [];
@@ -4445,7 +3538,7 @@ app.post("/api/redesigned-importData", async (req, res) => {
 });
 
 app.post(
-  "/api/redesigned-leadData/:CompanyName/:step",
+  "/api/bookings/redesigned-leadData/:CompanyName/:step",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 2 },
@@ -4654,7 +3747,7 @@ app.post(
 );
 
 app.post(
-  "/api/redesigned-addmore-booking/:CompanyName/:step",
+  "/api/bookings/redesigned-addmore-booking/:CompanyName/:step",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 2 },
@@ -6452,7 +5545,7 @@ app.delete("/api/delete-inform-Request/:id", async (req, res) => {
 
 // --------------------------------------- Redesigned Form Section -----------------------------------------------
 app.post(
-  "/api/redesigned-edit-leadData/:CompanyName/:step",
+  "/api/bookings/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 2 },
@@ -6715,7 +5808,6 @@ app.get("/api/editable-LeadData", async (req, res) => {
   }
 });
 
-// app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 //   try {
 
 //     const newData = req.body;
@@ -7273,7 +6365,7 @@ app.get("/api/editable-LeadData", async (req, res) => {
 //     res.status(500).send('Error creating/updating data'); // Send an error response
 //   }
 // });
-app.get("/api/redesigned-final-leadData", async (req, res) => {
+app.get("/api/bookings/redesigned-final-leadData", async (req, res) => {
   try {
     const allData = await RedesignedLeadformModel.find();
     res.status(200).json(allData);
@@ -7282,7 +6374,7 @@ app.get("/api/redesigned-final-leadData", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
-app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
+app.get("/api/bookings/redesigned-final-leadData/:companyName", async (req, res) => {
   try {
     const companyName = req.params.companyName;
     const allData = await RedesignedLeadformModel.findOne({
@@ -7295,7 +6387,7 @@ app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
-app.delete("/api/redesigned-delete-booking/:companyId", async (req, res) => {
+app.delete("/api/bookings/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
@@ -7321,7 +6413,7 @@ app.delete("/api/redesigned-delete-booking/:companyId", async (req, res) => {
   }
 });
 app.delete(
-  "/api/redesigned-delete-all-booking/:companyId/:bookingIndex",
+  "/api/bookings/redesigned-delete-all-booking/:companyId/:bookingIndex",
   async (req, res) => {
     try {
       const companyID = req.params.companyId;
@@ -7393,7 +6485,7 @@ app.delete(
 
 // Deleting booking for particular id
 app.delete(
-  "/api/redesigned-delete-particular-booking/:company/:companyId",
+  "/api/bookings/redesigned-delete-particular-booking/:company/:companyId",
   async (req, res) => {
     try {
       const company = req.params.company;
@@ -7417,7 +6509,7 @@ app.delete(
   }
 );
 // Backend: API endpoint for deleting a draft
-app.delete("/api/redesigned-delete-model/:companyName", async (req, res) => {
+app.delete("/api/bookings/redesigned-delete-model/:companyName", async (req, res) => {
   try {
     const companyName = req.params.companyName;
     // Assuming RedesignedDraftModel is your Mongoose model for drafts
@@ -7437,7 +6529,7 @@ app.delete("/api/redesigned-delete-model/:companyName", async (req, res) => {
   }
 });
 
-app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
+app.post("/api/bookings/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
     const isAdmin = newData.isAdmin;
@@ -9103,7 +8195,7 @@ app.delete(
 //  ------------------------------------------- Update more bookings Payment -------------------------------------------------------------------
 
 app.post(
-  "/api/redesigned-submit-morePayments/:CompanyName",
+  "/api/bookings/redesigned-submit-morePayments/:CompanyName",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -9214,7 +8306,7 @@ app.post(
   }
 );
 app.post(
-  "/api/redesigned-update-morePayments/:CompanyName",
+  "/api/bookings/redesigned-update-morePayments/:CompanyName",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -9334,7 +8426,7 @@ app.post(
     }
   }
 );
-app.post('/api/redesigned-submit-expanse/:CompanyName', async (req, res) => {
+app.post('/api/bookings/redesigned-submit-expanse/:CompanyName', async (req, res) => {
   const data = req.body;
   const companyName = req.params.CompanyName;
   const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
@@ -9449,7 +8541,7 @@ app.post('/api/redesigned-submit-expanse/:CompanyName', async (req, res) => {
 
 
 
-app.delete('/api/redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async (req, res) => {
+app.delete('/api/bookings//redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async (req, res) => {
   const companyName = req.params.companyName;
 
   const bookingIndex = req.params.bookingIndex;

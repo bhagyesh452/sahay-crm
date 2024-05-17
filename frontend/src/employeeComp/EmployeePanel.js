@@ -229,28 +229,28 @@ function EmployeePanel() {
   }
 
 
-  useEffect(() => {
-    const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
-    socket.on("connect", () => {
-      console.log("Socket connected with ID:", socket.id);
-      setSocketID(socket.id);
-    });
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected with ID:", socket.id);
+  //     setSocketID(socket.id);
+  //   });
 
-    socket.on("request-seen", () => {
-      // Call fetchRequestDetails function to update request details
-      fetchRequestDetails();
-    });
+  //   socket.on("request-seen", () => {
+  //     // Call fetchRequestDetails function to update request details
+  //     fetchRequestDetails();
+  //   });
 
-    socket.on("data-sent", () => {
-      fetchRequestDetails();
-      playNotificationSound();
-    });
+  //   socket.on("data-sent", () => {
+  //     fetchRequestDetails();
+  //     playNotificationSound();
+  //   });
 
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   // Clean up the socket connection when the component unmounts
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -1595,7 +1595,7 @@ function EmployeePanel() {
     try {
       //console.log(maturedID);
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
       //console.log(data);
@@ -1630,43 +1630,6 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-  useEffect(() => {
-    const employeeName = data.ename;
-    if (employeeName) {
-      const fetchCompanies = async () => {
-        try {
-          const response = await fetch(`${secretKey}/companies`);
-          const data = await response.json();
-
-          // Filter and format the data based on employeeName
-          const formattedData = data.companies
-            .filter(
-              (entry) =>
-                entry.bdeName === employeeName || entry.bdmName === employeeName
-            )
-            .map((entry) => ({
-              "Company Name": entry.companyName,
-              "Company Number": entry.contactNumber,
-              "Company Email": entry.companyEmail,
-              "Company Incorporation Date": entry.incoDate,
-              City: "NA",
-              State: "NA",
-              ename: employeeName,
-              AssignDate: entry.bookingDate,
-              Status: "Matured",
-              Remarks: "No Remarks Added",
-            }));
-
-          setCompanies(formattedData);
-        } catch (error) {
-          console.error("Error fetching companies:", error);
-          setCompanies([]);
-        }
-      };
-
-      fetchCompanies();
-    }
-  }, [data]);
 
   //console.log(companies);
 
@@ -2208,20 +2171,7 @@ function EmployeePanel() {
   // console.log(paymentLink)
 
   // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
-  const handleEditClick = async (company) => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
-      );
-      const data = response.data.find((obj) => obj.company === company);
-      setCurrentForm(data);
 
-      setOpenBooking(true);
-
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
 
   const handleOpenEditForm = () => {
     setOpenBooking(false);
