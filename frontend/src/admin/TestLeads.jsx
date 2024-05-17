@@ -24,6 +24,11 @@ import { IoFilterOutline } from "react-icons/io5";
 import { TbFileImport } from "react-icons/tb";
 import { TbFileExport } from "react-icons/tb";
 import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
+
+
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -231,11 +236,13 @@ function TestLeads() {
                 <div page-header d-print-none>
                     <div className="container-xl">
                         <div class="d-grid gap-4 d-md-block mt-3">
-                            <button class="btn btn-primary mr-1" type="button"><span><TiUserAddOutline style={{marginRight:"7px",height:"20px", width:"20px"}} /></span>Add Leads</button>
-                            <div class="btn-group" role="group" aria-label="Basic example">
+                            <button class="btn btn-primary mr-1" type="button"><span><TiUserAddOutline style={{marginRight:"7px",height:"16.5px", width:"16.5px",marginBottom:"2px"}} /></span>Add Leads</button>
+                            <div class="btn-group" role="group" aria-label="Basic example" style={{height:"39px"}}>
                                 <button type="button" class="btn"><span><IoFilterOutline style={{marginRight:"7px"}} /></span>Filter</button>
                                 <button type="button" class="btn"><span><TbFileImport style={{marginRight:"7px"}} /></span>Import Leads</button>
                                 <button type="button" class="btn"><span><TbFileExport style={{marginRight:"7px"}} /></span>Export Leads</button>
+                                <button type="button" class="btn"><span><MdOutlinePostAdd style={{marginRight:"7px",height:"20px" , width:"17px" , opacity:"0.9"}} /></span>Assign Leads</button>
+                                <button type="button" class="btn"><span><MdOutlineDeleteSweep style={{marginRight:"7px",height:"18px" , width:"18px" , opacity:"0.9"}} /></span>Delete Leads</button>
                             </div>
                         </div>
                     </div>
