@@ -159,7 +159,6 @@ function App() {
                 path="/admin/employeeleads/:id"
                 element={<AdminEmployeeTeamLeads />}
               />
-              
               <Route
                 path="/admin/employees/:id/login-details"
                 element={<LoginDetails />}
