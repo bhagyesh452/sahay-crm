@@ -1494,33 +1494,67 @@ app.get('/api/new-leads', async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Items per page
     const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus } = req.query
 
+    //console.log("dataStatus" , dataStatus)
     // Query the database to get paginated data
-    const employees = await CompanyModel.find()
+    let query = {};
+   
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+      
+    } else if (dataStatus === "Assigned") {
+      query = { ename: { $ne: "Not Alloted" } };
+      
+    }
+    const employees = await CompanyModel.find(query)
       .skip(skip)
       .limit(limit);
-
+    // console.log("employees" , employees)
     // Get total count of documents for pagination
-    const totalCount = await CompanyModel.countDocuments();
-
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({ename: { $ne: "Not Alloted" }});
+    const totalCount = await CompanyModel.countDocuments(query)
+    //console.log(unAssignedCount , assignedCount)
     // Calculate total pages
     const totalPages = Math.ceil(totalCount / limit);
-    console.log(employees)
-    console.log(totalCount)
-    console.log(totalPages)
-    console.log(page)
     // Return paginated data along with pagination metadata
     res.json({
       data: employees,
       currentPage: page,
       totalPages: totalPages,
-      totalCount: totalCount,
+      unAssignedCount : unAssignedCount,
+      assignedCount : assignedCount
     });
   } catch (error) {
     console.error('Error fetching employee data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+app.get('/api/search-leads', async (req, res) => {
+  try {
+    const { searchQuery } = req.query;
+    console.log(searchQuery , "search")
+    
+    let searchResults;
+    if (searchQuery && searchQuery.trim() !== '') {
+      // Perform database query to search for leads matching the searchQuery
+      searchResults = await CompanyModel.find({
+        'Company Name': { $regex: new RegExp(searchQuery, 'i') } // Case-insensitive search
+      }).limit(500).lean();
+    } else {
+      // If search query is empty, fetch 500 data from CompanyModel
+      searchResults = await CompanyModel.find().limit(500).lean();
+    }
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // app.get("/api/new-leads", async (req, res) => {
 //   try {
