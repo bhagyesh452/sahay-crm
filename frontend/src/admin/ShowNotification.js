@@ -38,7 +38,7 @@ function ShowNotification() {
   };
   const fetchCompareBooking = async()=>{
     try{
-      const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
       if(moreBookingCase){
         const bookingObject = response.data.find(obj=> obj["Company Name"] === currentCompany);
         setCompareBooking(bookingObject.moreBooking[bookingIndex-1]);
