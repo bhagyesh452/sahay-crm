@@ -1494,33 +1494,67 @@ app.get('/api/new-leads', async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Items per page
     const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus } = req.query
 
+    //console.log("dataStatus" , dataStatus)
     // Query the database to get paginated data
-    const employees = await CompanyModel.find()
+    let query = {};
+   
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+      
+    } else if (dataStatus === "Assigned") {
+      query = { ename: { $ne: "Not Alloted" } };
+      
+    }
+    const employees = await CompanyModel.find(query)
       .skip(skip)
       .limit(limit);
-
+    // console.log("employees" , employees)
     // Get total count of documents for pagination
-    const totalCount = await CompanyModel.countDocuments();
-
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({ename: { $ne: "Not Alloted" }});
+    const totalCount = await CompanyModel.countDocuments(query)
+    //console.log(unAssignedCount , assignedCount)
     // Calculate total pages
     const totalPages = Math.ceil(totalCount / limit);
-    console.log(employees)
-    console.log(totalCount)
-    console.log(totalPages)
-    console.log(page)
     // Return paginated data along with pagination metadata
     res.json({
       data: employees,
       currentPage: page,
       totalPages: totalPages,
-      totalCount: totalCount,
+      unAssignedCount : unAssignedCount,
+      assignedCount : assignedCount
     });
   } catch (error) {
     console.error('Error fetching employee data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+app.get('/api/search-leads', async (req, res) => {
+  try {
+    const { searchQuery } = req.query;
+    console.log(searchQuery , "search")
+    
+    let searchResults;
+    if (searchQuery && searchQuery.trim() !== '') {
+      // Perform database query to search for leads matching the searchQuery
+      searchResults = await CompanyModel.find({
+        'Company Name': { $regex: new RegExp(searchQuery, 'i') } // Case-insensitive search
+      }).limit(500).lean();
+    } else {
+      // If search query is empty, fetch 500 data from CompanyModel
+      searchResults = await CompanyModel.find().limit(500).lean();
+    }
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // app.get("/api/new-leads", async (req, res) => {
 //   try {
@@ -5658,21 +5692,22 @@ app.post(
             let servicesHtml = "";
             for (let i = 0; i < newData.services.length; i++) {
               servicesHtml += `
-          <span>Service ${i + 1}: ${newData.services[i].serviceName}</span>,  
-          `;
+              <span>Service ${i + 1}: ${newData.services[i].serviceName}</span>,  
+              `;
             }
             return servicesHtml;
           };
           const renderPaymentDetails = () => {
             let servicesHtml = "";
             let paymentServices = "";
-            for (let i = 0; i < newData.services.length; i++) {
+            const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
+            for (let i = 0; i < serviceLength; i++) {
               const Amount =
                 newData.services[i].paymentTerms === "Full Advanced"
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-
+      
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -5685,84 +5720,159 @@ app.post(
               } else {
                 rowSpan = 1;
               }
-
+      
               if (rowSpan === 3) {
                 paymentServices = `
-          <tr>
-            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
-          </tr>
-           <tr>
-           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-           <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
-           </tr>
-           <tr>
-           <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
-           <td style="border-right:1px solid #ddd">${newData.services[i].fourthPaymentRemarks}</td>
-           </tr>
-          `;
+              <tr>
+                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].secondPaymentRemarks}</td>
+              </tr>
+              <tr>
+               <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+               <td>${newData.services[i].thirdPaymentRemarks}</td>
+              </tr>
+              <tr>
+               <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+               <td>${newData.services[i].fourthPaymentRemarks}</td>
+              </tr>
+              `;
               } else if (rowSpan === 2) {
                 paymentServices = `
-          <tr>
-            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td style="border-right:1px solid #ddd">${newData.services[i].secondPaymentRemarks}</td>
-          </tr>
-          <tr>
-            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
-            <td style="border-right:1px solid #ddd">${newData.services[i].thirdPaymentRemarks}</td>
-          </tr>
-          `;
+              <tr>
+                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td >${newData.services[i].secondPaymentRemarks}</td>
+              </tr>
+              <tr>
+                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+                <td >${newData.services[i].thirdPaymentRemarks}</td>
+              </tr>
+              `;
               } else {
                 paymentServices = `
-          <tr>
-            <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-            <td style="border-right:1px solid #ddd">${newData.services[i].paymentTerms !== "Full Advanced"
+              <tr>
+                <td >₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].paymentTerms !== "Full Advanced"
                     ? newData.services[i].secondPaymentRemarks
                     : "100% Advance Payment"
                   }</td>
-          </tr>
-          `;
+              </tr>
+              `;
               }
               servicesHtml += `
-          <table style="margin-top:20px">
-              <thead>
-                <td colspan="4">Service Name : ${newData.services[i].serviceName
+              <table class="table table-bordered">
+                  <thead>
+                    <td colspan="4">Service Name : ${newData.services[i].serviceName
                 }</td>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Total Payment</td>
-                  <td>Advanced Payment</td>
-                  <td>Pending payment</td>
-                  <td>Remarks</td>
-                </tr>
-                <tr>
-<<<<<<< HEAD
-                      <td rowspan='4'>₹ ${
-                        newData.services[i].totalPaymentWGST
-                      } /-</td>
-                      <td rowspan='4'>₹ ${
-                        newData.services[i].paymentTerms === "Full Advanced"
-                          ? parseInt(
-                              newData.services[i].totalPaymentWGST
-                            ).toLocaleString()
-                          : parseInt(newData.services[i].firstPayment).toLocaleString()
-                      }/-</td>
-=======
-                      <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total Payment</td>
+                      <td>Advanced Payment</td>
+                      <td>Pending payment</td>
+                      <td>Remarks</td>
+                    </tr>
+                    <tr>
+                          <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
                 } /-</th>
-                      <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
-                  ? parseInt(
-                    newData.services[i].totalPaymentWGST
-                  ).toLocaleString()
+                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                  ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
                 }/-</th>
->>>>>>> 773a1e6cbdc55b73285595c4b29c191c4dd1bb5b
-                </tr>
-                ${paymentServices}
-              </tbody>
-          </table>
-          `;
+                    </tr>
+                    ${paymentServices}
+                  </tbody>
+              </table>
+              `;
+            }
+            return servicesHtml;
+          };
+          const renderMorePaymentDetails = () => {
+            let servicesHtml = "";
+            let paymentServices = "";
+      
+            for (let i = 2; i < newData.services.length; i++) {
+              const Amount =
+                newData.services[i].paymentTerms === "Full Advanced"
+                  ? newData.services[i].totalPaymentWGST
+                  : newData.services[i].firstPayment;
+              let rowSpan;
+      
+              if (newData.services[i].paymentTerms === "two-part") {
+                if (
+                  newData.services[i].thirdPayment !== 0 &&
+                  newData.services[i].fourthPayment === 0
+                ) {
+                  rowSpan = 2;
+                } else if (newData.services[i].fourthPayment !== 0) {
+                  rowSpan = 3;
+                }
+              } else {
+                rowSpan = 1;
+              }
+      
+              if (rowSpan === 3) {
+                paymentServices = `
+              <tr>
+                <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].secondPaymentRemarks}</td>
+              </tr>
+              <tr>
+               <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+               <td>${newData.services[i].thirdPaymentRemarks}</td>
+              </tr>
+              <tr>
+               <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+               <td>${newData.services[i].fourthPaymentRemarks}</td>
+              </tr>
+              `;
+              } else if (rowSpan === 2) {
+                paymentServices = `
+              <tr>
+                <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].secondPaymentRemarks}</td>
+              </tr>
+              <tr>
+                <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].thirdPaymentRemarks}</td>
+              </tr>
+              `;
+              } else {
+                paymentServices = `
+              <tr>
+                <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td>${newData.services[i].paymentTerms !== "Full Advanced"
+                    ? newData.services[i].secondPaymentRemarks
+                    : "100% Advance Payment"
+                  }</td>
+              </tr>
+              `;
+              }
+      
+              servicesHtml += `
+              <table class="table table-bordered">
+                  <thead>
+                    <td colspan="4">Service Name : ${newData.services[i].serviceName
+                }</td>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total Payment</td>
+                      <td>Advanced Payment</td>
+                      <td>Pending payment</td>
+                      <td>Remarks</td>
+                    </tr>
+                    <tr>
+                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                } /-</th>
+                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                  ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                  : parseInt(newData.services[i].firstPayment).toLocaleString()
+                }/-</th>
+                    </tr>
+                    ${paymentServices}
+                  </tbody>
+              </table>
+              `;
             }
             return servicesHtml;
           };
@@ -5791,42 +5901,34 @@ app.post(
             "Incubation Support",
           ];
           const AuthorizedName = newData.services.some((service) => {
-            const tempServices = [
-              ...allowedServiceNames,
-              "Income Tax Excemption",
-            ];
+            const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
             return tempServices.includes(service);
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
-
+      
           console.log(newData.services);
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
-              "Income Tax Excemption",
+              "Income Tax Exemption",
               "Start-Up India Certificate",
             ];
             return tempServices.includes(service.serviceName);
           })
             ? 'style="display:block'
             : 'style="display:none';
-
-          const AuthorizedNumber =
-            AuthorizedName === "Dhruvi Gohel"
-              ? "+919016928702"
-              : "+919998992601";
-          const AuthorizedEmail =
-            AuthorizedName === "Dhruvi Gohel"
-              ? "dhruvi@startupsahay.com"
-              : "rm@startupsahay.com";
-
+      
+          console.log(newPageDisplay);
+      
+      
+      
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServices = "";
             let fundingServicesArray = "";
             let incomeTaxServices = "";
-
+      
             for (let i = 0; i < newData.services.length; i++) {
               if (
                 newData.services[i].serviceName === "Start-Up India Certificate"
@@ -5834,19 +5936,11 @@ app.post(
                 servicesHtml = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                  Start-Up India Certification Support Service Acknowledgement:
+                  Start-Up India Certification Acknowledgement:
                 </b>
               </p>
               <p class="Declaration_text_data">
-                I, Director of ${newData["Company Name"]} , acknowledge that START-UP
-                SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
-                consultancy services. These services involve preparing necessary documents and content for
-                the application, utilizing their infrastructure, experience, manpower, and expertise. I
-      
-                understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
-                up India certificate is issued free of charge by the government, and I have not been charged
-      
-                for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
               </p>
               
               `;
@@ -5857,7 +5951,7 @@ app.post(
                 fundingServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                ${newData.services[i].serviceName} Support Services Acknowledgement:   
+                ${newData.services[i].serviceName} Acknowledgement:   
                 </b>
               </p>
               <p class="Declaration_text_data">
@@ -5866,8 +5960,9 @@ app.post(
               
               `;
               } else if (
-                newData.services[i].serviceName === "Income Tax Excemption"
+                newData.services[i].serviceName === "Income Tax Exemption"
               ) {
+            
                 incomeTaxServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
@@ -5875,7 +5970,7 @@ app.post(
                 </b>
               </p>
               <p class="Declaration_text_data">
-              I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
               </p>
             `;
               } else {
@@ -5884,19 +5979,20 @@ app.post(
             `;
               }
             }
-
+      
             if (fundingServicesArray !== "") {
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
-              ${fundingServicesArray} Support Services Acknowledgement:    
+              ${fundingServicesArray} Acknowledgement:    
               </b>
             </p>
             <p class="Declaration_text_data">
             I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
-            } else if (incomeTaxServices !== "") {
+            } 
+            if (incomeTaxServices !== "") {
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
@@ -5904,68 +6000,180 @@ app.post(
               </b>
             </p>
             <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+            I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
             </p>
         `;
             }
             return servicesHtml;
           };
-
+          const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
+      <p class="Declaration_text_data">
+        I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+      </p>
+      </div>` : "";
           const serviceKawali = renderServiceKawali();
-          const todaysDate = new Date().toLocaleDateString();
+          const currentDate = new Date();
+      
+          const dateOptions = { day: "numeric", month: "long", year: "numeric" };
+          const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const mainPageHtml = `
-          <div class="PDF_main">
-          <section>
-            <div class="date_div">
-              <p>${todaysDate}</p>
-            </div>
-            <div class="pdf_heading">
-              <h3>Self Declaration</h3>
-            </div>
-            <div class="Declaration_text">
-              ${serviceKawali}
-              <p class="Declaration_text_data">
-                I, understands that because of government regulations and portal, I have no objections if the
-                process takes longer than initially committed, knowing it's just how government schemes
-                related process works.
-              </p>
-              <p class="Declaration_text_data">
-                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
-                application if required on my behalf, as I am not familiar with the process.
-              </p>
-            </div>
-            <div class="section_footer">
-              <p class="Declaration_text_data Signature">
-                Client's Signature:__________________________________
-              </p>
-              <p style="text-align: center;">Page 1/2</p>
-            </div>
-          </section>
-        </div>
-      `;
-
+              <div class="PDF_main">
+                <section>
+                  <div class="date_div">
+                    <p>${todaysDate}</p>
+                  </div>
+                  <div class="pdf_heading">
+                    <h3>Self Declaration</h3>
+                  </div>
+                  <div class="Declaration_text">
+                    ${serviceKawali}
+                    <p class="Declaration_text_data">
+                      I, understands that because of government regulations and portal, I have no objections if the
+                      process takes longer than initially committed, knowing it's just how government schemes
+                      related process works.
+                    </p>
+                    <p class="Declaration_text_data">
+                    As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
+                    </p>
+                  </div>
+               
+                  
+                </section>
+              
+              </div>
+            `;
+          const totalPaymentHtml = newData.services.length < 2 ? ` <div class="table-data">
+      <table class="table table-bordered">
+        <thead>
+          <th colspan="3">Total Payment Details</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total Payment</td>
+            <td>Advanced Payment</td>
+            <td>Pending Payment</td>
+          </tr>
+          <tr><td>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+            <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+            <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>` : ""
           const mainPage =
             newPageDisplay === 'style="display:block' ? mainPageHtml : "";
           const bdNames =
             newData.bdeName == newData.bdmName
               ? newData.bdeName
-              : `${newData.bdeName} & ${newData.bdmName}`;
-          const pagination =
+              : `${newData.bdeName} && ${newData.bdmName}`;
+          const waitpagination =
             newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+          const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
           // Render services HTML content
           const serviceList = renderServiceList();
           const paymentDetails = renderPaymentDetails();
-          const pdfIndex =
-            !existingData.moreBookings || existingData.moreBookings.length === 0
-              ? 1
-              : existingData.moreBookings.length + 1;
-
-          const htmlTemplate = fs.readFileSync(
-            "./helpers/templatev2.html",
-            "utf-8"
-          );
-
-          const filledHtml = htmlTemplate
+          const morePaymentDetails = renderMorePaymentDetails();
+          const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
+          <section>
+            ${morePaymentDetails}
+             <div class="table-data">
+      <table class="table table-bordered">
+        <thead>
+          <th colspan="3">Total Payment Details</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total Payment</td>
+            <td>Advanced Payment</td>
+            <td>Pending Payment</td>
+          </tr>
+          <tr> <td>  ₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+            <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+            <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+            <div class="Declaration_text">
+              <p class="Declaration_text_data">
+                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+              </p>
+            </div>
+           
+      
+          </section>
+        </div>` : "";
+      
+          // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+          const servicesShubhi = [
+            "Pitch Deck Development ",
+            "Financial Modeling",
+            "DPR Development",
+            "CMA Report Development",
+            "Company Profile Write-Up",
+            "Company Brochure",
+            "Product Catalog",
+            "Logo Design",
+            "Business Card Design",
+            "Letter Head Design",
+            "Broucher Design",
+            "Business Profile",
+            "Seed Funding Support",
+            "Angel Funding Support",
+            "VC Funding Support",
+            "Crowd Funding Support",
+            "I-Create",
+            "Nidhi Seed Support Scheme  ",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
+            "CSR Funding",
+            "Stand-Up India",
+            "PMEGP",
+            "USAID",
+            "UP Grant",
+            "DBS Grant",
+            "MSME Innovation",
+            "MSME Hackathon",
+            "Gujarat Grant",
+            "CGTMSC",
+            "Income Tax Exemption",
+            "Mudra Loan",
+            "SIDBI Loan",
+            "Incubation Support",
+            "Digital Marketing",
+            "SEO Services",
+            "Branding Services",
+            "Social Promotion Management",
+            "Email Marketing",
+            "Digital Content",
+            "Lead Generation",
+            "Whatsapp Marketing",
+            "Website Development",
+            "App Design & Development",
+            "Web Application Development",
+            "Software Development",
+            "CRM Development",
+            "ERP Development",
+            "E-Commerce Website",
+            "Product Development"
+          ];
+          const mailName = newData.services.some((service) => {
+            return servicesShubhi.includes(service.serviceName);
+          })
+            ? "Shubhi Banthiya"
+            : "Dhruvi Gohel";
+      
+          const AuthorizedEmail =
+            mailName === "Dhruvi Gohel"
+              ? "dhruvi@startupsahay.com"
+              : "rm@startupsahay.com";
+          const AuthorizedNumber =
+            mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+      
+          const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
+          const filledHtml = htmlNewTemplate
+            .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
@@ -5973,77 +6181,98 @@ app.post(
             .replace("{{Services}}", serviceList)
             .replace("{{page-display}}", newPageDisplay)
             .replace("{{pagination}}", pagination)
-            .replace("{{Authorized-Person}}", AuthorizedName)
+            .replace("{{Authorized-Person}}", mailName)
             .replace("{{Authorized-Number}}", AuthorizedNumber)
             .replace("{{Authorized-Email}}", AuthorizedEmail)
             .replace("{{Main-page}}", mainPage)
-            .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-            .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-            .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+            .replace("{{Total-Payment}}", totalPaymentHtml)
             .replace("{{Service-Details}}", paymentDetails)
-            .replace("{{Company Number}}", newData["Company Number"]);
-
-          console.log("This will be generating", filledHtml);
-
-          //   const pdfFilePath = path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`);
-
-          //     // Check if the directory exists, create it if not
-          //     const documentDirectory = path.dirname(pdfFilePath);
-          //     if (!fs.existsSync(documentDirectory)) {
-          //       fs.mkdirSync(documentDirectory, { recursive: true });
-
-          //     }
-          //     console.log("Here the path is created:-" ,path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`) );
-          //  pdf
-          //   .create(filledHtml, { format: "Letter" })
-          //   .toFile(
-          //     path.join(__dirname, "./Document", `${newData["Company Name"]}-Rebooking.pdf`),
-          //     async (err, response) => {
-          //       if (err) {
-          //         console.error("Error generating PDF:", err);
-          //         res.status(500).send("Error generating PDF");
-          //       } else {
-          //         try {
-          //           setTimeout(() => {
-          //             const mainBuffer = fs.readFileSync(
-          //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
-          //             );
-          //             sendMail2(
-          //               ["nimesh@incscale.in","aakashseth452@gmail.com"],
-          //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-          //               ``,
-          //               `
-          //               <div class="container">
-
-          //               <p>Dear ${newData["Company Name"]},</p>
-          //               <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
-          //               <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-          //               <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
-          //               <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-          //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-          //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
-          //               <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-          //               <div class="signature">
-          //                   <div>Best regards,</div>
-          //                   <div>${AuthorizedName} - Relationship Manager</div>
-          //                   <div>${AuthorizedNumber}</div>
-          //                   <div>Start-Up Sahay Private Limited</div>
-          //               </div>
-          //           </div>
-          //         `,
-          //               mainBuffer
-          //             );
-          //           }, 4000);
-          //         } catch (emailError) {
-          //           console.error("Error sending email:", emailError);
-          //           res.status(500).send("Error sending email with PDF attachment");
-          //         }
-          //       }
-          //     }
-          //   );
-
-          res.status(200).json(updatedData);
-          return true; // Respond with updated data
+            .replace("{{Third-Page}}", thirdPage)
+            .replace("{{Company Number}}", newData["Company Number"])
+            .replace("{{Conditional}}", conditional)
+            .replace("{{Company Email}}", newData["Company Email"]);
+            
+      
+          //   console.log("This is html file reading:-", filledHtml);
+          const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
+          const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+          const options = {
+            format: "A4", // Set the page format to A4 size
+            orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+            border: "10mm", // Set the page border size (e.g., 10mm)
+            header: {
+              height: "70px",
+              contents: ``, // Customize the header content
+            },
+            paginationOffset: 1,       // Override the initial pagination number
+      "footer": {
+        "height": "100px",
+        "contents": {
+          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+          last: '<span style="color: #444;">2</span>/<span>2</span>'
+        }
+      },
+            childProcessOptions: {
+              env: {
+                OPENSSL_CONF: "./dev/null",
+              },
+            },
+          };
+      
+          pdf
+            .create(filledHtml, options)
+            .toFile(pdfFilePath, async (err, response) => {
+              if (err) {
+                console.error("Error generating PDF:", err);
+                res.status(500).send("Error generating PDF");
+              } else {
+                try {
+                  setTimeout(() => {
+                    const mainBuffer = fs.readFileSync(pdfFilePath);
+                    sendMail2(
+                      ["nimesh@incscale.in", "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
+                      `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                      ``,
+                      `
+                        <div class="container">
+      
+                          <p>Dear ${newData["Company Name"]},</p>
+                          <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                          <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                          <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
+                          <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                          <p style="display:${serviceNames == "Start-Up India Certificate"
+                        ? "none"
+                        : "block"
+                      }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                          <p style="display:${serviceNames == "Start-Up India Certificate"
+                        ? "none"
+                        : "block"
+                      }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                          <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
+                          <div class="signature">
+                              <div>Best regards,</div>
+                              <div>${mailName} – Relationship Manager</div>
+                              <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
+                              <div>Start-Up Sahay Private Limited</div>
+                          </div>
+                      </div>
+                    `,
+                      mainBuffer
+                    );
+                  }, 4000);
+                } catch (emailError) {
+                  console.error("Error sending email:", emailError);
+                  res.status(500).send("Error sending email with PDF attachment");
+                }
+              }
+            });
+      
+          // Send success response
+          res.status(201).send("Data sent");
         } else {
           res.status(404).json("Company Not found");
           return true;
@@ -8131,7 +8360,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
+      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
       for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -8221,7 +8450,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let servicesHtml = "";
       let paymentServices = "";
 
-      for (let i = 1; i < newData.services.length; i++) {
+      for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -8280,7 +8509,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
 
         servicesHtml += `
-        <table class="table table-bordered" style="margin-top:80px;">
+        <table class="table table-bordered">
             <thead>
               <td colspan="4">Service Name : ${newData.services[i].serviceName
           }</td>
@@ -8332,7 +8561,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Incubation Support",
     ];
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -8342,7 +8571,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "Income Tax Excemption",
+        "Income Tax Exemption",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
@@ -8367,19 +8596,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           servicesHtml = `
           <p class="Declaration_text_head mt-2">
           <b>
-            Start-Up India Certification Support Service Acknowledgement:
+            Start-Up India Certification Acknowledgement:
           </b>
         </p>
         <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]} , acknowledge that START-UP
-          SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
-          consultancy services. These services involve preparing necessary documents and content for
-          the application, utilizing their infrastructure, experience, manpower, and expertise. I
-
-          understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
-          up India certificate is issued free of charge by the government, and I have not been charged
-
-          for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+        I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
         </p>
         
         `;
@@ -8390,7 +8611,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          ${newData.services[i].serviceName} Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -8399,8 +8620,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         
         `;
         } else if (
-          newData.services[i].serviceName === "Income Tax Excemption"
+          newData.services[i].serviceName === "Income Tax Exemption"
         ) {
+      
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
           <b>
@@ -8408,7 +8630,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           </b>
         </p>
         <p class="Declaration_text_data">
-        I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+        I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
         </p>
       `;
         } else {
@@ -8422,14 +8644,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        ${fundingServicesArray} Support Services Acknowledgement:    
+        ${fundingServicesArray} Acknowledgement:    
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
-      } else if (incomeTaxServices !== "") {
+      } 
+      if (incomeTaxServices !== "") {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -8437,7 +8660,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
       </p>
   `;
       }
@@ -8449,9 +8672,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </p>
 </div>` : "";
     const serviceKawali = renderServiceKawali();
-    const todaysDate = new Date().toLocaleDateString();
+    const currentDate = new Date();
+
+    const dateOptions = { day: "numeric", month: "long", year: "numeric" };
+    const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
     const mainPageHtml = `
-        <div class="PDF_main" style="margin-top : 50px">
+        <div class="PDF_main">
           <section>
             <div class="date_div">
               <p>${todaysDate}</p>
@@ -8467,16 +8693,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 related process works.
               </p>
               <p class="Declaration_text_data">
-                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
-                application if required on my behalf, as I am not familiar with the process.
+              As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
               </p>
             </div>
-            <div class="section_footer1">
-            <p class="Declaration_text_data Signature">
-              Client's Signature:__________________________________
-            </p>
-            <p style="text-align: center;">${newData.services.length > 1 ? "Page 1/3" : "Page 1/2"}</p>
-          </div>
+         
             
           </section>
         
@@ -8513,7 +8733,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin-top:40px">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -8539,12 +8759,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
-      <div class="section_footer2">
-        <p class="Declaration_text_data Signature">
-          Client's Signature:__________________________________
-        </p>
-        <p style="text-align: center;">Page 3/3</p>
-      </div>
+     
 
     </section>
   </div>` : "";
@@ -8634,20 +8849,41 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"])
-      .replace("{{Conditional}}", conditional);
+      .replace("{{Conditional}}", conditional)
+      .replace("{{Company Email}}", newData["Company Email"]);
+      
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
+    const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+    const options = {
+      format: "A4", // Set the page format to A4 size
+      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+      border: "10mm", // Set the page border size (e.g., 10mm)
+      header: {
+        height: "70px",
+        contents: ``, // Customize the header content
+      },
+      paginationOffset: 1,       // Override the initial pagination number
+"footer": {
+  "height": "100px",
+  "contents": {
+    first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+    2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+    3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+    default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+    last: '<span style="color: #444;">2</span>/<span>2</span>'
+  }
+},
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: "./dev/null",
+        },
+      },
+    };
 
     pdf
-      .create(filledHtml, {
-        format: "Letter",
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: "./dev/null",
-          },
-        },
-      })
+      .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
@@ -9334,6 +9570,24 @@ app.get("/api/generate-pdf", async (req, res) => {
               "paymentRemarks": "",
               "expanse": 100,
               "_id": "663a121cf012a01385573381"
+          },
+          {
+              "serviceName": "ISO Certificate",
+              "totalPaymentWOGST": 20000,
+              "totalPaymentWGST": 23600,
+              "withGST": true,
+              "withDSC": true,
+              "paymentTerms": "two-part",
+              "firstPayment": 10000,
+              "secondPayment": 10000,
+              "thirdPayment": 1800,
+              "fourthPayment": 1800,
+              "secondPaymentRemarks": "After Application",
+              "thirdPaymentRemarks": "",
+              "fourthPaymentRemarks": "",
+              "paymentRemarks": "",
+              "expanse": 100,
+              "_id": "663a121cf012a01385573381"
           }
       ],
       "caCase": "No",
@@ -9373,7 +9627,7 @@ app.get("/api/generate-pdf", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
+      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
       for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -9443,6 +9697,7 @@ app.get("/api/generate-pdf", async (req, res) => {
             <tr>
               <td>Total Payment</td>
               <td>Advanced Payment</td>
+              <td>Advanced Payment</td>
               <td>Pending payment</td>
               <td>Remarks</td>
             </tr>
@@ -9463,11 +9718,12 @@ app.get("/api/generate-pdf", async (req, res) => {
       }
       return servicesHtml;
     };
+  
     const renderMorePaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
      
-      for (let i = 1; i < newData.services.length; i++) {
+      for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -9527,7 +9783,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         }
         
         servicesHtml += `
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="margin-top:0px">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
@@ -9583,7 +9839,7 @@ app.get("/api/generate-pdf", async (req, res) => {
       "Incubation Support",
     ];
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -9593,7 +9849,7 @@ app.get("/api/generate-pdf", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "Income Tax Excemption",
+        "Income Tax Exemption",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
@@ -9618,7 +9874,7 @@ app.get("/api/generate-pdf", async (req, res) => {
           servicesHtml = `
           <p class="Declaration_text_head mt-2">
           <b>
-            Start-Up India Certification Support Service Acknowledgement:
+            Start-Up India Certification Acknowledgement:
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -9641,7 +9897,7 @@ app.get("/api/generate-pdf", async (req, res) => {
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          ${newData.services[i].serviceName}  Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -9650,7 +9906,7 @@ app.get("/api/generate-pdf", async (req, res) => {
         
         `;
         } else if (
-          newData.services[i].serviceName === "Income Tax Excemption"
+          newData.services[i].serviceName === "Income Tax Exemption"
         ) {
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
@@ -9673,11 +9929,11 @@ app.get("/api/generate-pdf", async (req, res) => {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        ${fundingServicesArray} Support Services Acknowledgement:    
+        ${fundingServicesArray} Acknowledgement:    
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
       } else if (incomeTaxServices !== "") {
@@ -9763,7 +10019,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
+    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main" style="margin:0px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -9881,44 +10137,45 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional);
-    // Read the HTML template
-    // const htmlTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
-    const options = {
-      format: "A4", // Set the page format to A4 size
-      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-      border: "10mm", // Set the page border size (e.g., 10mm)
-      header: {
-        height: "70px",
-        contents: ``, // Customize the header content
-      },
-      footer: {
-        height: "100px",
-        contents: {
-          default: `<div>
-          <p>
-            Client's Signature:__________________________________
-          </p>
-          <p style="text-align: center;">Page ${count++}/3</p>
-        </div>`, // Customize the footer content with page number
+
+      let currentPage = 1; // Initialize current page number
+
+    
+      
+      const options = {
+        format: "A4", // Set the page format to A4 size
+        orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+        border: "10mm", // Set the page border size (e.g., 10mm)
+        header: {
+          height: "55px",
+          contents: ``, // Customize the header content
         },
-      },
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: "./dev/null",
+        paginationOffset: 1,       // Override the initial pagination number
+  "footer": {
+    "height": "100px",
+    "contents": {
+      first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${newData.services.length > 1 ? "3" : "2"}</p></div>`,
+      2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${newData.services.length > 1 ? "3" : "2"}</p></div>`, // Any page number is working. 1-based index
+      3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+      default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+      last: '<span style="color: #444;">2</span>/<span>2</span>'
+    }
+  },
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: "./dev/null",
+          },
         },
-      },
-    };
-    const pdfFilePath = `./test1.pdf`;
-    pdf
-    .create(filledHtml, options)
-    .toFile(pdfFilePath, async (err, response) => {
+      };
+      
+      const pdfFilePath = `./test1.pdf`;
+      
+      pdf.create(filledHtml, options).toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
           res.status(500).send("Error generating PDF");
         } else {
           try {
-
-
             res.setHeader("Content-Type", "application/pdf");
             res.setHeader(
               "Content-Disposition",
@@ -9927,10 +10184,13 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
             res.send(response); // Send the PDF file
           } catch (emailError) {
             console.error("Error sending email:", emailError);
-            res.status(500).send("Error sending email with PDF attachment");
+            res
+              .status(500)
+              .send("Error sending email with PDF attachment");
           }
         }
       });
+      
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Error generating PDF");
