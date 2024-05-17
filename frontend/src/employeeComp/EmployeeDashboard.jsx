@@ -2437,7 +2437,7 @@ function EmployeeDashboard() {
     <div className="admin-dashboard">
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      <div className="page-wrapper">
+      <div className="page-wrapper display-none">
         {/* Lead Report Dashboard Numbers */}
         <div className="dashboard-headings container-xl">
           <h3 className="m-0">Leads Report</h3>
@@ -4174,7 +4174,9 @@ function EmployeeDashboard() {
           </div>
         </div>
       </div>
-
+      <div className="page-wrapper">
+                  
+      </div>   
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer
