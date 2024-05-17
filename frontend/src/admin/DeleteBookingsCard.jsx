@@ -37,7 +37,7 @@ function DeleteBookingsCard({
     // Assuming you have an API endpoint for deleting a company
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
+        `${secretKey}/bookings/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
         {
           method: "DELETE",
           headers: {

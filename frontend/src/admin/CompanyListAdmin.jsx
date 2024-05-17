@@ -263,7 +263,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
       confirmButtonText: 'Yes, Confirm deletion!'
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
+        fetch(`${secretKey}/bookings/redesigned-delete-booking/${companyId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

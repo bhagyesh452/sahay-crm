@@ -9,7 +9,6 @@ import "../../../dist/css/tabler-flags.min.css?1684106062";
 import "../../../dist/css/tabler-payments.min.css?1684106062";
 import "../../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../../dist/css/demo.min.css?1684106062";
-
 import "../../../assets/styles.css";
 import "../../../assets/table.css";
 // import EmployeeTable from "./EmployeeTable";

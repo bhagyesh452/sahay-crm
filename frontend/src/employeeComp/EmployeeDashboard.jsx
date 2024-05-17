@@ -1568,7 +1568,7 @@ function EmployeeDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
 
@@ -1642,19 +1642,15 @@ function EmployeeDashboard() {
                 if(moreObject.bdeName === moreObject.bdmName){
                   maturedCount = maturedCount + 1;
                 }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  maturedCount = maturedCount + 0.5
+                  maturedCount = maturedCount + 0.5;
                 }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                   if(moreObject.bdeName === data.ename){
                     maturedCount = maturedCount + 1;
                   }
-                }
-           
+                }         
             }
           })
-      }
-     
-   
-      
+        }    
       
     })
 

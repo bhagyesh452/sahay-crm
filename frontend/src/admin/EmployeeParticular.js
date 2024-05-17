@@ -182,7 +182,7 @@ function EmployeeParticular() {
     try {
       //console.log(maturedID);
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
       setCurrentForm(data);
@@ -846,7 +846,7 @@ function EmployeeParticular() {
     if (confirmDelete.isConfirmed) {
       try {
         const response = await fetch(
-          `${secretKey}/redesigned-delete-booking/${companyId}`,
+          `${secretKey}/bookings/redesigned-delete-booking/${companyId}`,
           {
             method: "DELETE",
             headers: {

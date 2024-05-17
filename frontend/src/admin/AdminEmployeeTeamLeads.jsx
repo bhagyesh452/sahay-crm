@@ -787,7 +787,7 @@ function AdminEmployeeTeamLeads() {
         try {
             console.log(maturedID);
             const response = await axios.get(
-                `${secretKey}/redesigned-final-leadData`
+                `${secretKey}/bookings/redesigned-final-leadData`
             );
             const data = response.data.find((obj) => obj.company === maturedID);
             console.log(data);

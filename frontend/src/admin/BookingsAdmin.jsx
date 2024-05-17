@@ -47,7 +47,7 @@ function BookingsAdmin() {
 
   const fetchReData = async () => {
     try {
-      const response = await fetch(`${secretKey}/redesigned-final-leadData`);
+      const response = await fetch(`${secretKey}/bookings/redesigned-final-leadData`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

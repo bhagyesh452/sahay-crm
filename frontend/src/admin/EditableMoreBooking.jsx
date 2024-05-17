@@ -118,7 +118,7 @@ export default function EditableMoreBooking({
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData/${companysName}`
+        `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
       );
       const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex-1]: response.data;
       console.log("Here is the data",data);
@@ -550,7 +550,7 @@ export default function EditableMoreBooking({
   //         console.log("This is sending", dataToSend);
   //         try {
   //           const response = await axios.post(
-  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step1`,
+  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step1`,
   //             dataToSend
   //           );
   //           // Handle response data as needed
@@ -592,7 +592,7 @@ export default function EditableMoreBooking({
   //         console.log("This is sending", dataToSend);
   //         try {
   //           const response = await axios.post(
-  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step2`,
+  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step2`,
   //             dataToSend
   //           );
   //           // Handle response data as needed
@@ -656,7 +656,7 @@ export default function EditableMoreBooking({
   //         console.log("This is sending", dataToSend);
   //         try {
   //           const response = await axios.post(
-  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step3`,
+  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step3`,
   //             dataToSend
   //           );
   //           // Handle response data as needed
@@ -715,7 +715,7 @@ export default function EditableMoreBooking({
   //         try {
   //           console.log("Api is about to work")
   //           const response = await axios.post(
-  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
+  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step4`,
   //             formData
   //           );
   //           // Handle successful upload
@@ -732,7 +732,7 @@ export default function EditableMoreBooking({
   //     if (activeStep === 4) {
   //       try {
   //       //   const response = await axios.post(
-  //       //     `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //       //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
   //       //     leadData
   //       //   );
         
@@ -742,7 +742,7 @@ export default function EditableMoreBooking({
   //           services:leadData.services
   //         }
   //         const response = await axios.post(
-  //           `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, dataSending
+  //           `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step5`, dataSending
   //         );
   //         console.log(response.data);
   //         Swal.fire({
@@ -856,7 +856,7 @@ export default function EditableMoreBooking({
   //       };
   //       try {
   //         const response = await axios.post(
-  //           `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //           `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
   //           leadData
   //         );
   //         console.log(response.data);
@@ -878,7 +878,7 @@ export default function EditableMoreBooking({
   //     } else {
   //       try {
   //         const response = await axios.post(
-  //           `${secretKey}/redesigned-leadData/${companysName}`,
+  //           `${secretKey}/bookings/redesigned-leadData/${companysName}`,
   //           formData,
   //           {
   //             headers: {
@@ -1142,7 +1142,7 @@ export default function EditableMoreBooking({
   const handleResetDraft = async () => {
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-model/${companysName}`,
+        `${secretKey}/bookings/redesigned-delete-model/${companysName}`,
         {
           method: "DELETE",
           headers: {
