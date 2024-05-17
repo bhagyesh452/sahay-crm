@@ -5771,18 +5771,6 @@ app.post(
                   <td>Remarks</td>
                 </tr>
                 <tr>
-<<<<<<< HEAD
-                      <td rowspan='4'>₹ ${
-                        newData.services[i].totalPaymentWGST
-                      } /-</td>
-                      <td rowspan='4'>₹ ${
-                        newData.services[i].paymentTerms === "Full Advanced"
-                          ? parseInt(
-                              newData.services[i].totalPaymentWGST
-                            ).toLocaleString()
-                          : parseInt(newData.services[i].firstPayment).toLocaleString()
-                      }/-</td>
-=======
                       <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
                 } /-</th>
                       <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
@@ -5791,7 +5779,6 @@ app.post(
                   ).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
                 }/-</th>
->>>>>>> 773a1e6cbdc55b73285595c4b29c191c4dd1bb5b
                 </tr>
                 ${paymentServices}
               </tbody>
