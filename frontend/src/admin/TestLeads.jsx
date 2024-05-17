@@ -132,6 +132,23 @@ function TestLeads() {
         }
     };
 
+
+    //--------------------function to add leads-------------------------------------
+    const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return (
         <div>
             <Header />
@@ -239,10 +256,10 @@ function TestLeads() {
                             <button class="btn btn-primary mr-1" type="button"><span><TiUserAddOutline style={{marginRight:"7px",height:"16.5px", width:"16.5px",marginBottom:"2px"}} /></span>Add Leads</button>
                             <div class="btn-group" role="group" aria-label="Basic example" style={{height:"39px"}}>
                                 <button type="button" class="btn"><span><IoFilterOutline style={{marginRight:"7px"}} /></span>Filter</button>
-                                <button type="button" class="btn"><span><TbFileImport style={{marginRight:"7px"}} /></span>Import Leads</button>
-                                <button type="button" class="btn"><span><TbFileExport style={{marginRight:"7px"}} /></span>Export Leads</button>
-                                <button type="button" class="btn"><span><MdOutlinePostAdd style={{marginRight:"7px",height:"20px" , width:"17px" , opacity:"0.9"}} /></span>Assign Leads</button>
-                                <button type="button" class="btn"><span><MdOutlineDeleteSweep style={{marginRight:"7px",height:"18px" , width:"18px" , opacity:"0.9"}} /></span>Delete Leads</button>
+                                <button type="button" class="btn"><span><TbFileImport style={{marginRight:"7px", opacity:"0.6"}} /></span>Import Leads</button>
+                                <button type="button" class="btn"><span><TbFileExport style={{marginRight:"7px", opacity:"0.6"}} /></span>Export Leads</button>
+                                <button type="button" class="btn"><span><MdOutlinePostAdd style={{marginRight:"7px",height:"20px" , width:"16px" , opacity:"0.6"}} /></span>Assign Leads</button>
+                                <button type="button" class="btn"><span><MdOutlineDeleteSweep style={{marginRight:"7px",height:"18px" , width:"17px" , opacity:"0.6"}} /></span>Delete Leads</button>
                             </div>
                         </div>
                     </div>
