@@ -1551,10 +1551,9 @@ app.get('/api/search-leads', async (req, res) => {
     res.json(searchResults);
   } catch (error) {
     console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
-
 
 // app.get("/api/new-leads", async (req, res) => {
 //   try {

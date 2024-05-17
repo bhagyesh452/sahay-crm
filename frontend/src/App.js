@@ -159,13 +159,12 @@ function App() {
                 path="/admin/employeeleads/:id"
                 element={<AdminEmployeeTeamLeads />}
               />
-              
               <Route
                 path="/admin/employees/:id/login-details"
                 element={<LoginDetails />}
               />
               {/* <Route path="/admin/leads" element={<Leads />} /> */}
-              <Route path="/admin/leads" element={<TestLeads />} />
+              <Route path="/admin/leads" element={<Leads />} />
               <Route path="/admin/team" element={<Team />} />
               <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
               <Route path="/admin/bookings" element={<BookingList />} />
