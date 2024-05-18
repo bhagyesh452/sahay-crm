@@ -1018,7 +1018,7 @@ function Leads() {
       selectedRows.includes(row._id)
     );
 
-    console.log("selectedObjecyt", selectedObjects)
+    //console.log("selectedObjecyt", selectedObjects)
     // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
@@ -1043,9 +1043,7 @@ function Leads() {
 
     if (userConfirmed) {
       handleAssignData();
-    } else {
-
-    }
+    } 
   };
 
   const handleAssignData = async () => {

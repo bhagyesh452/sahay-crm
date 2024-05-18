@@ -57,22 +57,19 @@ function TestLeads() {
 
     const fetchData = async (page) => {
         try {
-            // Set isLoading to true while fetching data
-            //setIsLoading(true);
-
-            //console.log("page", page)
-
             setCurrentDataLoading(true)
-            console.log("dataStatus", dataStatus)
+            //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
+            //console.log(response.data.unAssignedCount)
+            
             setData(response.data.data);
             setTotalCount(response.data.totalPages)
             setTotalCompaniesUnaasigned(response.data.unAssignedCount)
             setTotalCompaniesAssigned(response.data.assignedCount)
             setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
-            console.log("mainData", mainData)
+            //console.log("mainData", mainData)
             //setDataStatus("Unassigned")
 
             // Set isLoading back to false after data is fetched
@@ -184,7 +181,7 @@ function TestLeads() {
         setFirstPlus(true);
         setSecondPlus(false);
         setOpenThirdMinus(false)
-        fetchData(1);
+        //fetchData(1);
         setError('')
         setErrorDirectorNumberFirst("");
         setErrorDirectorNumberSecond("");
@@ -262,7 +259,7 @@ function TestLeads() {
                     "Director Email(Third)": directorEmailThird,
                 })
                 .then((response) => {
-                    console.log("response", response);
+                    //console.log("response", response);
                     console.log("Data sent Successfully");
                     Swal.fire({
                         title: "Data Added!",
@@ -567,7 +564,7 @@ const handleFileChange = (event) => {
       // If all checkboxes are already selected, clear the selection; otherwise, select all
       //console.log(id)
       const response = await axios.get(`${secretKey}/admin-leads/getIds?dataStatus=${dataStatus}`)
-      console.log(response.data)
+      //console.log(response.data)
       setAllIds(response.data)
       setSelectedRows((prevSelectedRows) =>
         prevSelectedRows.length === response.data.length
@@ -632,6 +629,110 @@ const handleFileChange = (event) => {
       console.error("Error downloading CSV:", error);
     }
   };
+  //--------------------function to assign leads to employees---------------------
+  const[openAssignLeadsDialog , setOpenAssignLeadsDialog] = useState(false)
+  const [employeeSelection, setEmployeeSelection] = useState("")
+
+  function closeAssignLeadsDialog(){
+    setOpenAssignLeadsDialog(false)
+    fetchData(1)
+    setEmployeeSelection("")
+  }
+  const handleconfirmAssign = async () => {
+    const selectedObjects = data.filter((row) =>
+      selectedRows.includes(row._id)
+    );
+
+    //console.log("selectedObjecyt", selectedObjects)
+    // Check if no data is selected
+    if (selectedObjects.length === 0) {
+      Swal.fire("Empty Data!");
+      closeAssignLeadsDialog();
+      return; // Exit the function early if no data is selected
+    }
+
+    const alreadyAssignedData = selectedObjects.filter(
+      (obj) => obj.ename && obj.ename !== "Not Alloted"
+    );
+
+    // If all selected data is not already assigned, proceed with assignment
+    if (alreadyAssignedData.length === 0) {
+      handleAssignData();
+      return; // Exit the function after handling assignment
+    }
+
+    // If some selected data is already assigned, show confirmation dialog
+    const userConfirmed = window.confirm(
+      `Some data is already assigned. Do you want to continue?`
+    );
+
+    if (userConfirmed) {
+      handleAssignData();
+    } 
+  };
+
+  const handleAssignData = async () => {
+    const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
+    const currentDataStatus = dataStatus;
+    try {
+      const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
+        employeeSelection,
+        selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
+        title,
+        date,
+        time,
+      });
+      Swal.fire("Data Assigned");
+      setOpenAssignLeadsDialog(false);
+      fetchData(1);
+      setSelectedRows([]);
+      setDataStatus(currentDataStatus);
+      setEmployeeSelection("")
+    } catch (err) {
+      console.log("Internal server Error", err);
+      Swal.fire("Error Assigning Data");
+    }
+  };
+
+  //-------------------------function to delete leads-------------------------
+
+  const handleDeleteSelection = async () => {
+    if (selectedRows.length !== 0) {
+      // Show confirmation dialog using SweetAlert2
+      Swal.fire({
+        title: "Confirm Deletion",
+        text: "Are you sure you want to delete the selected rows?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete",
+        cancelButtonText: "No, cancel",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // If user confirms, proceed with deletion
+            const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
+              data: { selectedRows }, // Pass selected rows to the server
+            });
+            //console.log(response.data)
+            // Store backup process
+            // After deletion, fetch updated data
+            fetchData(1);
+            setSelectedRows([]); // Clear selectedRows state
+          } catch (error) {
+            console.error("Error deleting rows:", error.message);
+          }
+        }
+      });
+    } else {
+      // If no rows are selected, show an alert
+      Swal.fire("Select some rows first!");
+    }
+  };
+
+
 
 
     return (
@@ -651,7 +752,7 @@ const handleFileChange = (event) => {
                     placeholder="Search…"
                     aria-label="Search in website"
                 />
-            </div> */}
+            </div> 
             {/* <table
                 style={{
                     width: "100%",
@@ -738,7 +839,7 @@ const handleFileChange = (event) => {
                 <div page-header d-print-none>
                     <div className="container-xl d-flex" style={{gap:"20px"}}>
                         <div class="d-grid gap-4 d-md-block mt-3">
-                            <button class="btn btn-primary mr-1" type="button" onClick={() => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
+                            <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0'? Swal.fire('Please import some data first !'):()=> setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
                             <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
                                 <button type="button" class="btn"><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
                                 <button type="button" class="btn" onClick={()=>{
@@ -746,8 +847,8 @@ const handleFileChange = (event) => {
                                     setCsvData([])
                                     }}><span><TbFileImport style={{ marginRight: "7px", opacity: "0.6" }} /></span>Import Leads</button>
                                 <button type="button" class="btn" onClick={()=>exportData()}><span><TbFileExport style={{ marginRight: "7px", opacity: "0.6" }} /></span>Export Leads</button>
-                                <button type="button" class="btn"><span><MdOutlinePostAdd style={{ marginRight: "7px", height: "20px", width: "16px", opacity: "0.6" }} /></span>Assign Leads</button>
-                                <button type="button" class="btn"><span><MdOutlineDeleteSweep style={{ marginRight: "7px", height: "18px", width: "17px", opacity: "0.6" }} /></span>Delete Leads</button>
+                                <button type="button" class="btn" onClick={()=>setOpenAssignLeadsDialog(true)}><span><MdOutlinePostAdd style={{ marginRight: "7px", height: "20px", width: "16px", opacity: "0.6" }} /></span>Assign Leads</button>
+                                <button type="button" class="btn" onClick={()=>handleDeleteSelection()}><span><MdOutlineDeleteSweep style={{ marginRight: "7px", height: "18px", width: "17px", opacity: "0.6" }} /></span>Delete Leads</button>
                             </div>
                         </div>
                         <div className='w-25'>
@@ -784,6 +885,7 @@ const handleFileChange = (event) => {
                                         data-bs-toggle="tab"
                                         onClick={() => {
                                             setDataStatus("Unassigned")
+                                            setCurrentPage(1)
                                         }}
                                     >
                                         UnAssigned
@@ -803,6 +905,7 @@ const handleFileChange = (event) => {
                                         data-bs-toggle="tab"
                                         onClick={() => {
                                             setDataStatus("Assigned")
+                                            setCurrentPage(1)
                                         }}>
                                         Assigned
                                         <span className="no_badge">
@@ -960,7 +1063,7 @@ const handleFileChange = (event) => {
                                                             onMouseUp={handleMouseUp}
                                                             />
                                                         </td>
-                                                        <td>{index + 1}</td>
+                                                        <td>{startIndex -500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
                                                         <td>{company["Company Number"]}</td>
                                                         <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
@@ -1055,7 +1158,7 @@ const handleFileChange = (event) => {
                                 )}
                             {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <IconButton onClick={handlePreviousPage} disabled={currentPage === 0}>
+                                    <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </IconButton>
                                     <span>Page {currentPage} /{totalCount}</span>
@@ -1574,6 +1677,59 @@ const handleFileChange = (event) => {
               Submit
             </button>
           </Dialog>
+
+          {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
+          <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Assign Data{" "}
+          <IconButton onClick={closeAssignLeadsDialog} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            {empData.length !== 0 ? (
+              <>
+                <div className="dialogAssign">
+                  <div className="selector form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={employeeSelection}
+                      onChange={(e) => {
+                        setEmployeeSelection(e.target.value);
+                      }}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select employee
+                      </option>
+                      {empData.map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <h1>No Employees Found</h1>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+        <div className="btn-list">
+          <button
+            style={{ width: "100vw", borderRadius: "0px" }}
+            onClick={handleconfirmAssign}
+            className="btn btn-primary ms-auto"
+          >
+            Assign Data
+          </button>
+        </div>
+      </Dialog>
 
         </div>
     )

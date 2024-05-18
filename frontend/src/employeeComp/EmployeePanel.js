@@ -1630,44 +1630,6 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-  useEffect(() => {
-    const employeeName = data.ename;
-    if (employeeName) {
-      const fetchCompanies = async () => {
-        try {
-          const response = await fetch(`${secretKey}/companies`);
-          const data = await response.json();
-
-          // Filter and format the data based on employeeName
-          const formattedData = data.companies
-            .filter(
-              (entry) =>
-                entry.bdeName === employeeName || entry.bdmName === employeeName
-            )
-            .map((entry) => ({
-              "Company Name": entry.companyName,
-              "Company Number": entry.contactNumber,
-              "Company Email": entry.companyEmail,
-              "Company Incorporation Date": entry.incoDate,
-              City: "NA",
-              State: "NA",
-              ename: employeeName,
-              AssignDate: entry.bookingDate,
-              Status: "Matured",
-              Remarks: "No Remarks Added",
-            }));
-
-          setCompanies(formattedData);
-        } catch (error) {
-          console.error("Error fetching companies:", error);
-          setCompanies([]);
-        }
-      };
-
-      fetchCompanies();
-    }
-  }, [data]);
-
   //console.log(companies);
 
   // const handleProjectionSubmit = async () => {
@@ -4443,89 +4405,6 @@ function EmployeePanel() {
                                   </>
                                 )} */}
                                 {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
-                              </tr>
-                            ))}
-                          </tbody>
-                        )}
-                        {dataStatus === "null" && companies.length !== 0 && (
-                          <tbody>
-                            {companies.map((company, index) => (
-                              <tr
-                                key={index}
-                                style={{ border: "1px solid #ddd" }}
-                              >
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
-                                <td>{company["Company Number"]}</td>
-                                <td>
-                                  <span>{company["Status"]}</span>
-                                </td>
-                                <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {company.Remarks}
-                                    </p>
-                                  </div>
-                                </td>
-
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date"]
-                                  )}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
-
-                                <td>
-                                  {/* <button
-                                  style={{
-                                    padding: "5px",
-                                    fontSize: "12px",
-                                    backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                  className="btn btn-primary d-none d-sm-inline-block"
-                                  onClick={() => {
-                                    functionopenAnchor();
-                                    setMaturedCompanyName(
-                                      company["Company Name"]
-                                    );
-                                  }}
-                                >
-                                  View
-                                </button> */}
-                                  <HiOutlineEye
-                                    style={{
-                                      fontSize: "15px",
-                                      color: "#fbb900",
-                                      //backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    //className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                  />
-                                </td>
                               </tr>
                             ))}
                           </tbody>
