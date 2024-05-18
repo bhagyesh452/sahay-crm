@@ -111,7 +111,7 @@ function EmployeesThisMonthBooking() {
             );
             const bookingsData = response.data;
             setBdeRedesignedData(response.data);
-
+            console.log("Get done" , bookingsData)
             const getBDEnames = new Set();
             bookingsData.forEach((obj) => {
                 // Check if the bdeName is already in the Set
