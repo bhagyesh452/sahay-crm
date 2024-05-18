@@ -52,6 +52,8 @@ const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
 const InformBDEModel = require("./models/InformBDE.js");
 const { dataform_v1beta1 } = require("googleapis");
+const AdminLeadsAPI = require('./helpers/AdminLeadsAPI.js')
+const { Parser } = require('json2csv');
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -67,6 +69,7 @@ app.use(
     extended: true,
   })
 );
+app.use('/api/admin-leads', AdminLeadsAPI);
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -484,22 +487,28 @@ app.post("/api/leads", async (req, res) => {
       }
     }
     if (duplicateEntries.length > 0) {
+      //console.log("yahan chala csv pr")
+      //console.log(duplicateEntries , "duplicate")
+      const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV
-      const csvString = createCSVString(duplicateEntries);
+      const csvString = json2csvParser.parse(duplicateEntries);
+     // console.log(csvString , "csv")
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
         "attachment; filename=DuplicateEntries.csv"
       );
       res.status(200).end(csvString);
-
+    
       //console.log("csvString" , csvString)
     } else {
+     // console.log("yahan chala counter pr")
       res.status(200).json({
         message: "Data sent successfully",
         counter: counter,
         successCounter: successCounter,
       });
+      
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -707,24 +716,24 @@ app.post("/api/change-edit-request/:companyName", async (req, res) => {
   }
 });
 
-app.post("/api/manual", async (req, res) => {
-  const receivedData = req.body;
-  //console.log("receiveddata" , receivedData)
+// app.post("/api/admin-leads/manual", async (req, res) => {
+//   const receivedData = req.body;
+//   //console.log("receiveddata" , receivedData)
 
-  // console.log(receivedData);
+//   // console.log(receivedData);
 
-  try {
-    const employee = new CompanyModel(receivedData);
-    const savedEmployee = await employee.save();
-    // console.log("Data sent");
-    res
-      .status(200)
-      .json(savedEmployee || { message: "Data sent successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error saving employee:", error.message);
-  }
-});
+//   try {
+//     const employee = new CompanyModel(receivedData);
+//     const savedEmployee = await employee.save();
+//     // console.log("Data sent");
+//     res
+//       .status(200)
+//       .json(savedEmployee || { message: "Data sent successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//     console.error("Error saving employee:", error.message);
+//   }
+// });
 
 app.post("/api/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -1499,13 +1508,13 @@ app.get('/api/new-leads', async (req, res) => {
     //console.log("dataStatus" , dataStatus)
     // Query the database to get paginated data
     let query = {};
-   
+
     if (dataStatus === "Unassigned") {
       query = { ename: "Not Alloted" };
-      
+
     } else if (dataStatus === "Assigned") {
       query = { ename: { $ne: "Not Alloted" } };
-      
+
     }
     const employees = await CompanyModel.find(query)
       .skip(skip)
@@ -1513,7 +1522,7 @@ app.get('/api/new-leads', async (req, res) => {
     // console.log("employees" , employees)
     // Get total count of documents for pagination
     const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-    const assignedCount = await CompanyModel.countDocuments({ename: { $ne: "Not Alloted" }});
+    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
     const totalCount = await CompanyModel.countDocuments(query)
     //console.log(unAssignedCount , assignedCount)
     // Calculate total pages
@@ -1523,8 +1532,8 @@ app.get('/api/new-leads', async (req, res) => {
       data: employees,
       currentPage: page,
       totalPages: totalPages,
-      unAssignedCount : unAssignedCount,
-      assignedCount : assignedCount
+      unAssignedCount: unAssignedCount,
+      assignedCount: assignedCount
     });
   } catch (error) {
     console.error('Error fetching employee data:', error);
@@ -1535,8 +1544,8 @@ app.get('/api/new-leads', async (req, res) => {
 app.get('/api/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
-    console.log(searchQuery , "search")
-    
+    console.log(searchQuery, "search")
+
     let searchResults;
     if (searchQuery && searchQuery.trim() !== '') {
       // Perform database query to search for leads matching the searchQuery
@@ -1551,8 +1560,8 @@ app.get('/api/search-leads', async (req, res) => {
     res.json(searchResults);
   } catch (error) {
     console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // app.get("/api/new-leads", async (req, res) => {
@@ -1636,28 +1645,28 @@ app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
 //   }
 // });
 
-app.get("/api/leads2", async (req, res) => {
-  try {
-    // Get the query parameters for pagination
-    const { startIndex, endIndex } = req.query;
+// app.get("/api/leads2", async (req, res) => {
+//   try {
+//     // Get the query parameters for pagination
+//     const { startIndex, endIndex } = req.query;
 
-    // Convert startIndex and endIndex to numbers
-    const start = parseInt(startIndex);
-    const end = parseInt(endIndex);
+//     // Convert startIndex and endIndex to numbers
+//     const start = parseInt(startIndex);
+//     const end = parseInt(endIndex);
 
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.find()
-      .skip(start)
-      .limit(end - start)
-      .lean();
+//     // Fetch data using lean queries to retrieve plain JavaScript objects
+//     const data = await CompanyModel.find()
+//       .skip(start)
+//       .limit(end - start)
+//       .lean();
 
-    // Send the data as the API response
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Send the data as the API response
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 app.get("/api/projection-data", async (req, res) => {
@@ -5706,7 +5715,7 @@ app.post(
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-      
+
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -5719,7 +5728,7 @@ app.post(
               } else {
                 rowSpan = 1;
               }
-      
+
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -5788,14 +5797,14 @@ app.post(
           const renderMorePaymentDetails = () => {
             let servicesHtml = "";
             let paymentServices = "";
-      
+
             for (let i = 2; i < newData.services.length; i++) {
               const Amount =
                 newData.services[i].paymentTerms === "Full Advanced"
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-      
+
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -5808,7 +5817,7 @@ app.post(
               } else {
                 rowSpan = 1;
               }
-      
+
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -5846,7 +5855,7 @@ app.post(
               </tr>
               `;
               }
-      
+
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -5905,7 +5914,7 @@ app.post(
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
-      
+
           console.log(newData.services);
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
@@ -5917,17 +5926,17 @@ app.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
-      
+
           console.log(newPageDisplay);
-      
-      
-      
+
+
+
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServices = "";
             let fundingServicesArray = "";
             let incomeTaxServices = "";
-      
+
             for (let i = 0; i < newData.services.length; i++) {
               if (
                 newData.services[i].serviceName === "Start-Up India Certificate"
@@ -5961,7 +5970,7 @@ app.post(
               } else if (
                 newData.services[i].serviceName === "Income Tax Exemption"
               ) {
-            
+
                 incomeTaxServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
@@ -5978,7 +5987,7 @@ app.post(
             `;
               }
             }
-      
+
             if (fundingServicesArray !== "") {
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
@@ -5990,7 +5999,7 @@ app.post(
             I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
-            } 
+            }
             if (incomeTaxServices !== "") {
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
@@ -6012,7 +6021,7 @@ app.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
-      
+
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const mainPageHtml = `
@@ -6102,7 +6111,7 @@ app.post(
       
           </section>
         </div>` : "";
-      
+
           // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
           const servicesShubhi = [
             "Pitch Deck Development ",
@@ -6162,14 +6171,14 @@ app.post(
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
-      
+
           const AuthorizedEmail =
             mailName === "Dhruvi Gohel"
               ? "dhruvi@startupsahay.com"
               : "rm@startupsahay.com";
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-      
+
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
             .replace("{{Company Name}}", newData["Company Name"])
@@ -6190,11 +6199,11 @@ app.post(
             .replace("{{Company Number}}", newData["Company Number"])
             .replace("{{Conditional}}", conditional)
             .replace("{{Company Email}}", newData["Company Email"]);
-            
-      
+
+
           //   console.log("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-          const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+          const pagelength = newData.services.length === 1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length === 1 && mailName === "Shubhi Banthiya" : 2 : 3
           const options = {
             format: "A4", // Set the page format to A4 size
             orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -6204,23 +6213,23 @@ app.post(
               contents: ``, // Customize the header content
             },
             paginationOffset: 1,       // Override the initial pagination number
-      "footer": {
-        "height": "100px",
-        "contents": {
-          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
-          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-          last: '<span style="color: #444;">2</span>/<span>2</span>'
-        }
-      },
+            "footer": {
+              "height": "100px",
+              "contents": {
+                first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+                2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+                3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+                default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+                last: '<span style="color: #444;">2</span>/<span>2</span>'
+              }
+            },
             childProcessOptions: {
               env: {
                 OPENSSL_CONF: "./dev/null",
               },
             },
           };
-      
+
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -6269,7 +6278,7 @@ app.post(
                 }
               }
             });
-      
+
           // Send success response
           res.status(201).send("Data sent");
         } else {
@@ -8621,7 +8630,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         } else if (
           newData.services[i].serviceName === "Income Tax Exemption"
         ) {
-      
+
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
           <b>
@@ -8650,7 +8659,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
-      } 
+      }
       if (incomeTaxServices !== "") {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
@@ -8850,11 +8859,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional)
       .replace("{{Company Email}}", newData["Company Email"]);
-      
+
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-    const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+    const pagelength = newData.services.length === 1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length === 1 && mailName === "Shubhi Banthiya" : 2 : 3
     const options = {
       format: "A4", // Set the page format to A4 size
       orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -8864,16 +8873,16 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         contents: ``, // Customize the header content
       },
       paginationOffset: 1,       // Override the initial pagination number
-"footer": {
-  "height": "100px",
-  "contents": {
-    first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-    2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-    3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
-    default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-    last: '<span style="color: #444;">2</span>/<span>2</span>'
-  }
-},
+      "footer": {
+        "height": "100px",
+        "contents": {
+          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+          last: '<span style="color: #444;">2</span>/<span>2</span>'
+        }
+      },
       childProcessOptions: {
         env: {
           OPENSSL_CONF: "./dev/null",
@@ -9552,42 +9561,42 @@ app.get("/api/generate-pdf", async (req, res) => {
       "bookingSource": "Reference",
       "numberOfServices": 2,
       "services": [
-          {
-              "serviceName": "Start-Up India Certificate",
-              "totalPaymentWOGST": 20000,
-              "totalPaymentWGST": 23600,
-              "withGST": true,
-              "withDSC": true,
-              "paymentTerms": "two-part",
-              "firstPayment": 10000,
-              "secondPayment": 10000,
-              "thirdPayment": 1800,
-              "fourthPayment": 1800,
-              "secondPaymentRemarks": "After Application",
-              "thirdPaymentRemarks": "",
-              "fourthPaymentRemarks": "",
-              "paymentRemarks": "",
-              "expanse": 100,
-              "_id": "663a121cf012a01385573381"
-          },
-          {
-              "serviceName": "ISO Certificate",
-              "totalPaymentWOGST": 20000,
-              "totalPaymentWGST": 23600,
-              "withGST": true,
-              "withDSC": true,
-              "paymentTerms": "two-part",
-              "firstPayment": 10000,
-              "secondPayment": 10000,
-              "thirdPayment": 1800,
-              "fourthPayment": 1800,
-              "secondPaymentRemarks": "After Application",
-              "thirdPaymentRemarks": "",
-              "fourthPaymentRemarks": "",
-              "paymentRemarks": "",
-              "expanse": 100,
-              "_id": "663a121cf012a01385573381"
-          }
+        {
+          "serviceName": "Start-Up India Certificate",
+          "totalPaymentWOGST": 20000,
+          "totalPaymentWGST": 23600,
+          "withGST": true,
+          "withDSC": true,
+          "paymentTerms": "two-part",
+          "firstPayment": 10000,
+          "secondPayment": 10000,
+          "thirdPayment": 1800,
+          "fourthPayment": 1800,
+          "secondPaymentRemarks": "After Application",
+          "thirdPaymentRemarks": "",
+          "fourthPaymentRemarks": "",
+          "paymentRemarks": "",
+          "expanse": 100,
+          "_id": "663a121cf012a01385573381"
+        },
+        {
+          "serviceName": "ISO Certificate",
+          "totalPaymentWOGST": 20000,
+          "totalPaymentWGST": 23600,
+          "withGST": true,
+          "withDSC": true,
+          "paymentTerms": "two-part",
+          "firstPayment": 10000,
+          "secondPayment": 10000,
+          "thirdPayment": 1800,
+          "fourthPayment": 1800,
+          "secondPaymentRemarks": "After Application",
+          "thirdPaymentRemarks": "",
+          "fourthPaymentRemarks": "",
+          "paymentRemarks": "",
+          "expanse": 100,
+          "_id": "663a121cf012a01385573381"
+        }
       ],
       "caCase": "No",
       "paymentMethod": "PayU",
@@ -9602,18 +9611,18 @@ app.get("/api/generate-pdf", async (req, res) => {
       "remainingPayments": [],
       "generatedReceivedAmount": 9322.033898305084,
       "generatedTotalAmount": 22000
-  }
-  
-  const totalAmount = newData.services.reduce(
-    (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
-    0
-  );
-  const receivedAmount = newData.services.reduce((acc, curr) => {
-    return curr.paymentTerms === "Full Advanced"
-      ? acc + parseInt(curr.totalPaymentWGST)
-      : acc + parseInt(curr.firstPayment);
-  }, 0);
-  const pendingAmount = totalAmount - receivedAmount;
+    }
+
+    const totalAmount = newData.services.reduce(
+      (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
+      0
+    );
+    const receivedAmount = newData.services.reduce((acc, curr) => {
+      return curr.paymentTerms === "Full Advanced"
+        ? acc + parseInt(curr.totalPaymentWGST)
+        : acc + parseInt(curr.firstPayment);
+    }, 0);
+    const pendingAmount = totalAmount - receivedAmount;
     const renderServiceList = () => {
       let servicesHtml = "";
       for (let i = 0; i < newData.services.length; i++) {
@@ -9677,20 +9686,18 @@ app.get("/api/generate-pdf", async (req, res) => {
           paymentServices = `
         <tr>
           <td >₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${
-            newData.services[i].paymentTerms !== "Full Advanced"
+          <td>${newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
               : "100% Advance Payment"
-          }</td>
+            }</td>
         </tr>
         `;
         }
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${
-                newData.services[i].serviceName
-              }</td>
+              <td colspan="4">Service Name : ${newData.services[i].serviceName
+          }</td>
             </thead>
             <tbody>
             <tr>
@@ -9702,13 +9709,13 @@ app.get("/api/generate-pdf", async (req, res) => {
             </tr>
             <tr>
                   <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
-            } /-</th>
+          } /-</th>
                   <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
-              ? parseInt(
-                newData.services[i].totalPaymentWGST
-              ).toLocaleString()
-              : parseInt(newData.services[i].firstPayment).toLocaleString()
-            }/-</th>
+            ? parseInt(
+              newData.services[i].totalPaymentWGST
+            ).toLocaleString()
+            : parseInt(newData.services[i].firstPayment).toLocaleString()
+          }/-</th>
             </tr>
             ${paymentServices}
           </tbody>
@@ -9717,11 +9724,11 @@ app.get("/api/generate-pdf", async (req, res) => {
       }
       return servicesHtml;
     };
-  
+
     const renderMorePaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-     
+
       for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -9772,21 +9779,19 @@ app.get("/api/generate-pdf", async (req, res) => {
           paymentServices = `
         <tr>
           <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
-          <td>${
-            newData.services[i].paymentTerms !== "Full Advanced"
+          <td>${newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
               : "100% Advance Payment"
-          }</td>
+            }</td>
         </tr>
         `;
         }
-        
+
         servicesHtml += `
         <table class="table table-bordered" style="margin-top:0px">
             <thead>
-              <td colspan="4">Service Name : ${
-                newData.services[i].serviceName
-              }</td>
+              <td colspan="4">Service Name : ${newData.services[i].serviceName
+          }</td>
             </thead>
             <tbody>
               <tr>
@@ -9796,14 +9801,12 @@ app.get("/api/generate-pdf", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <td rowspan='4'>₹ ${
-                     parseInt( newData.services[i].totalPaymentWGST).toLocaleString()
-                    } /-</td>
-                    <td rowspan='4'>₹ ${
-                      newData.services[i].paymentTerms === "Full Advanced"
-                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                        : parseInt(newData.services[i].firstPayment).toLocaleString()
-                    }/-</td>
+                    <td rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</td>
+                    <td rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+            ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+            : parseInt(newData.services[i].firstPayment).toLocaleString()
+          }/-</td>
               
                   ${paymentServices}
               </tr>
@@ -9857,8 +9860,8 @@ app.get("/api/generate-pdf", async (req, res) => {
       : 'style="display:none';
 
     console.log(newPageDisplay);
-  
-  
+
+
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -9949,7 +9952,7 @@ app.get("/api/generate-pdf", async (req, res) => {
       }
       return servicesHtml;
     };
-const conditional = newData.services.length < 2 ?  `<div class="Declaration_text">
+    const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
 <p class="Declaration_text_data">
   I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
 </p>
@@ -9986,7 +9989,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
   
   </div>
       `;
-const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
+    const totalPaymentHtml = newData.services.length < 2 ? ` <div class="table-data">
 <table class="table table-bordered">
   <thead>
     <th colspan="3">Total Payment Details</th>
@@ -10013,7 +10016,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
         : `${newData.bdeName} && ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-      const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
+    const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
@@ -10110,13 +10113,13 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
 
-      const AuthorizedEmail =
+    const AuthorizedEmail =
       mailName === "Dhruvi Gohel"
         ? "dhruvi@startupsahay.com"
         : "rm@startupsahay.com";
-        const AuthorizedNumber =
-        mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    
+    const AuthorizedNumber =
+      mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+
     const htmlNewTemplate = fs.readFileSync("./helpers/demo.html", "utf-8");
     const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
@@ -10137,59 +10140,59 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional);
 
-      let currentPage = 1; // Initialize current page number
+    let currentPage = 1; // Initialize current page number
 
-    
-      
-      const options = {
-        format: "A4", // Set the page format to A4 size
-        orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-        border: "10mm", // Set the page border size (e.g., 10mm)
-        header: {
-          height: "55px",
-          contents: ``, // Customize the header content
-        },
-        paginationOffset: 1,       // Override the initial pagination number
-  "footer": {
-    "height": "100px",
-    "contents": {
-      first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${newData.services.length > 1 ? "3" : "2"}</p></div>`,
-      2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${newData.services.length > 1 ? "3" : "2"}</p></div>`, // Any page number is working. 1-based index
-      3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
-      default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-      last: '<span style="color: #444;">2</span>/<span>2</span>'
-    }
-  },
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: "./dev/null",
-          },
-        },
-      };
-      
-      const pdfFilePath = `./test1.pdf`;
-      
-      pdf.create(filledHtml, options).toFile(pdfFilePath, async (err, response) => {
-        if (err) {
-          console.error("Error generating PDF:", err);
-          res.status(500).send("Error generating PDF");
-        } else {
-          try {
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader(
-              "Content-Disposition",
-              "attachment; filename=generated_document.pdf"
-            );
-            res.send(response); // Send the PDF file
-          } catch (emailError) {
-            console.error("Error sending email:", emailError);
-            res
-              .status(500)
-              .send("Error sending email with PDF attachment");
-          }
+
+
+    const options = {
+      format: "A4", // Set the page format to A4 size
+      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+      border: "10mm", // Set the page border size (e.g., 10mm)
+      header: {
+        height: "55px",
+        contents: ``, // Customize the header content
+      },
+      paginationOffset: 1,       // Override the initial pagination number
+      "footer": {
+        "height": "100px",
+        "contents": {
+          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${newData.services.length > 1 ? "3" : "2"}</p></div>`,
+          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${newData.services.length > 1 ? "3" : "2"}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+          last: '<span style="color: #444;">2</span>/<span>2</span>'
         }
-      });
-      
+      },
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: "./dev/null",
+        },
+      },
+    };
+
+    const pdfFilePath = `./test1.pdf`;
+
+    pdf.create(filledHtml, options).toFile(pdfFilePath, async (err, response) => {
+      if (err) {
+        console.error("Error generating PDF:", err);
+        res.status(500).send("Error generating PDF");
+      } else {
+        try {
+          res.setHeader("Content-Type", "application/pdf");
+          res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=generated_document.pdf"
+          );
+          res.send(response); // Send the PDF file
+        } catch (emailError) {
+          console.error("Error sending email:", emailError);
+          res
+            .status(500)
+            .send("Error sending email with PDF attachment");
+        }
+      }
+    });
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Error generating PDF");

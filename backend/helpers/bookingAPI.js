@@ -3,7 +3,7 @@ var router = express.Router();
 const dotenv = require('dotenv');
 dotenv.config(); // Load environment variables from .env file
 
-router.get('/', async function(req, res, next) {
+router.get('/', async function(req, res) {
 
     try {
         res.status(200).json({ message:"Boom Baam" });
@@ -11,11 +11,6 @@ router.get('/', async function(req, res, next) {
       } catch (err) {
         console.log('Error logging in with OAuth2 user', err);
     }
-
-
-
-  
-
 
 });
 
