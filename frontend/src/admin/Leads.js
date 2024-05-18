@@ -1212,7 +1212,7 @@ function Leads() {
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 

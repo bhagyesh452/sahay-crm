@@ -323,7 +323,7 @@ function EmployeeTeamLeads() {
 
     const fetchRemarksHistory = async () => {
         try {
-            const response = await axios.get(`${secretKey}/remarks-history`);
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
             setRemarksHistory(response.data.reverse());
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -371,11 +371,11 @@ function EmployeeTeamLeads() {
                     bdmAcceptStatus: "NotForwarded",
                     bdmName: "NoOne",
                 })
-                const response2 = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
+                const response2 = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
                     Remarks,
                 });
                 const response3 = await axios.post(
-                    `${secretKey}/remarks-history-bdm/${cid}`,
+                    `${secretKey}/remarks/remarks-history-bdm/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
@@ -385,7 +385,7 @@ function EmployeeTeamLeads() {
                 );
 
                 const response4 = await axios.post(
-                    `${secretKey}/remarks-history/${cid}`, {
+                    `${secretKey}/remarks/remarks-history/${cid}`, {
                     Remarks,
                     bdeName: bdeNameReject,
                     currentCompanyName
@@ -417,11 +417,11 @@ function EmployeeTeamLeads() {
                 setIsDeleted(false)
 
             } else {
-                const response = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
+                const response = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
                     Remarks,
                 });
                 const response2 = await axios.post(
-                    `${secretKey}/remarks-history-bdm/${cid}`,
+                    `${secretKey}/remarks/remarks-history-bdm/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
@@ -655,9 +655,9 @@ function EmployeeTeamLeads() {
         //console.log("Deleting Remarks with", remarks_id);
         try {
             // Send a delete request to the backend to delete the item with the specified ID
-            await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+            await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
             if (mainRemarks) {
-                await axios.delete(`${secretKey}/remarks-delete-bdm/${companyId}`);
+                await axios.delete(`${secretKey}/remarks/remarks-delete-bdm/${companyId}`);
             }
             // Set the deletedItemId state to trigger re-fetching of remarks history
             Swal.fire("Remarks Deleted");
@@ -1029,7 +1029,7 @@ function EmployeeTeamLeads() {
         };
 
         try {
-            const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+            const response = await axios.post(`${secretKey}/remarks/post-feedback-remarks/${companyFeedbackId}`, data
             );
 
             if (response.status === 200) {

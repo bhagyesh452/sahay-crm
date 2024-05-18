@@ -337,7 +337,7 @@ function AdminEmployeeTeamLeads() {
 
     const fetchRemarksHistory = async () => {
         try {
-            const response = await axios.get(`${secretKey}/remarks-history`);
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
             setRemarksHistory(response.data.reverse());
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -420,7 +420,7 @@ function AdminEmployeeTeamLeads() {
                     Remarks,
                 });
                 const response2 = await axios.post(
-                    `${secretKey}/remarks-history/${cid}`,
+                    `${secretKey}/remarks/remarks-history/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
@@ -697,9 +697,9 @@ function AdminEmployeeTeamLeads() {
         console.log("Deleting Remarks with", remarks_id);
         try {
             // Send a delete request to the backend to delete the item with the specified ID
-            await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+            await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
             if (mainRemarks) {
-                await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+                await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
             }
             // Set the deletedItemId state to trigger re-fetching of remarks history
             Swal.fire("Remarks Deleted");
