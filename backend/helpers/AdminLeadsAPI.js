@@ -34,13 +34,21 @@ router.post("/manual", async (req, res) => {
 
   router.get('/getIds', async (req, res) => {
     try {
+      const { dataStatus } = req.query;
+  
+      let query = {};
+      if (dataStatus === 'Unassigned') {
+        query = { ename: 'Not Alloted' };
+      } else if (dataStatus === 'Assigned') {
+        query = { ename: { $ne: 'Not Alloted' } };
+      }
+  
       // Query the collection to get only the _id fields
-      const getId = await CompanyModel.find({}, '_id');
-      
+      const getId = await CompanyModel.find(query, '_id');
+  
       // Extract the _id values into an array
       const allIds = getId.map(doc => doc._id);
-    
-      //console.log(allIds)
+  
       // Send the array of IDs as a response
       res.status(200).json(allIds);
     } catch (error) {
@@ -48,5 +56,6 @@ router.post("/manual", async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   });
+  
 
   module.exports = router;

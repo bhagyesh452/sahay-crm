@@ -559,18 +559,20 @@ const handleFileChange = (event) => {
   //----------------------function for export leads data-------------------------------------
   const [selectedRows, setSelectedRows] = useState([]);
   const [startRowIndex, setStartRowIndex] = useState(null);
+  const [allIds , setAllIds] = useState([])
   
   const handleCheckboxChange = async(id) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
       // If all checkboxes are already selected, clear the selection; otherwise, select all
       //console.log(id)
-      const response = await axios.get(`${secretKey}/admin-leads/getIds`)
+      const response = await axios.get(`${secretKey}/admin-leads/getIds?dataStatus=${dataStatus}`)
       console.log(response.data)
+      setAllIds(response.data)
       setSelectedRows((prevSelectedRows) =>
-        prevSelectedRows.length === data.length
+        prevSelectedRows.length === response.data.length
           ? []
-          : data.map((row) => row._id)
+          : response.data
       );
     } else {
       // Toggle the selection status of the row with the given id
@@ -583,6 +585,7 @@ const handleFileChange = (event) => {
       });
     }
   };
+
   const handleMouseDown = (id) => {
     // Initiate drag selection
     setStartRowIndex(data.findIndex((row) => row._id === id));
@@ -832,8 +835,9 @@ const handleFileChange = (event) => {
                                                 <th>
                                                     <input
                                                         type="checkbox"
-                                                    checked={selectedRows.length === data.length}
+                                                    checked={selectedRows.length === allIds.length && selectedRows.length !== 0}
                                                     onChange={() => handleCheckboxChange("all")}
+                                                    defaultChecked={false}
                                                     />
                                                 </th>
                                                 <th>Sr.No</th>
