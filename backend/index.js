@@ -1333,6 +1333,8 @@ app.get('/api/new-leads', async (req, res) => {
     const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
     const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
     const totalCount = await CompanyModel.countDocuments(query)
+
+    //console.log(totalCount , unAssignedCount, assignedCount)
     //console.log(unAssignedCount , assignedCount)
     // Calculate total pages
     const totalPages = Math.ceil(totalCount / limit);
@@ -1702,36 +1704,36 @@ app.delete("/api/leads/:id", async (req, res) => {
 });
 // delete selected rows
 
-app.delete("/api/delete-rows", async (req, res) => {
-  const { selectedRows } = req.body;
+// app.delete("/api/delete-rows", async (req, res) => {
+//   const { selectedRows } = req.body;
 
-  try {
-    // Use Mongoose to delete rows by their IDs
-    await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+//   try {
+//     // Use Mongoose to delete rows by their IDs
+//     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
 
-    // Trigger backup on the server
-    exec(
-      `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("Error creating backup:", error);
-          // Respond with an error if backup fails
-          res.status(500).json({ error: "Error creating backup." });
-        } else {
-          // console.log("Backup created successfully:", stdout);
-          // Respond with success message if backup is successful
-          res.status(200).json({
-            message:
-              "Rows deleted successfully and backup created successfully.",
-          });
-        }
-      }
-    );
-  } catch (error) {
-    console.error("Error deleting rows:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     // Trigger backup on the server
+//     exec(
+//       `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
+//       (error, stdout, stderr) => {
+//         if (error) {
+//           console.error("Error creating backup:", error);
+//           // Respond with an error if backup fails
+//           res.status(500).json({ error: "Error creating backup." });
+//         } else {
+//           // console.log("Backup created successfully:", stdout);
+//           // Respond with success message if backup is successful
+//           res.status(200).json({
+//             message:
+//               "Rows deleted successfully and backup created successfully.",
+//           });
+//         }
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Error deleting rows:", error.message);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.post("/api/undo", (req, res) => {
   // Run mongorestore command to restore the data
@@ -1812,32 +1814,32 @@ app.put("/api/leads/:id", async (req, res) => {
 
 // Assigning data
 
-app.post("/api/postData", async (req, res) => {
-  const { employeeSelection, selectedObjects, title, date, time } = req.body;
-  // If not assigned, post data to MongoDB or perform any desired action
-  const updatePromises = selectedObjects.map((obj) => {
-    // Add AssignData property with the current date
-    const updatedObj = {
-      ...obj,
-      ename: employeeSelection,
-      AssignDate: new Date(),
-    };
-    return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
-  });
+// app.post("/api/postData", async (req, res) => {
+//   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+//   // If not assigned, post data to MongoDB or perform any desired action
+//   const updatePromises = selectedObjects.map((obj) => {
+//     // Add AssignData property with the current date
+//     const updatedObj = {
+//       ...obj,
+//       ename: employeeSelection,
+//       AssignDate: new Date(),
+//     };
+//     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+//   });
 
-  // Add the recent update to the RecentUpdatesModel
-  const newUpdate = new RecentUpdatesModel({
-    title: title,
-    date: date,
-    time: time,
-  });
-  await newUpdate.save();
+//   // Add the recent update to the RecentUpdatesModel
+//   const newUpdate = new RecentUpdatesModel({
+//     title: title,
+//     date: date,
+//     time: time,
+//   });
+//   await newUpdate.save();
 
-  // Execute all update promises
-  await Promise.all(updatePromises);
+//   // Execute all update promises
+//   await Promise.all(updatePromises);
 
-  res.json({ message: "Data posted successfully" });
-});
+//   res.json({ message: "Data posted successfully" });
+// });
 
 app.post(`/api/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
