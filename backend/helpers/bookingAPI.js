@@ -5,7 +5,6 @@ const multer = require("multer");
 dotenv.config(); // Load environment variables from .env file
 const CompanyModel = require("../models/Leads");
 
-<<<<<<< HEAD
 const fs = require("fs");
 const { sendMail } = require("./sendMail");
 const RequestDeleteByBDE = require("../models/Deleterequestbybde");
@@ -15,9 +14,6 @@ const RedesignedDraftModel = require("../models/RedesignedDraftModel");
 const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
-=======
-router.get('/', async function(req, res) {
->>>>>>> b065aa0c836677cedb235b324992e1e35c3bef7e
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -31,7 +27,6 @@ const storage = multer.diskStorage({
       destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
     }
 
-<<<<<<< HEAD
     // Create the directory if it doesn't exist
     if (!fs.existsSync(destinationPath)) {
       fs.mkdirSync(destinationPath, { recursive: true });
@@ -43,8 +38,6 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now();
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
-=======
->>>>>>> b065aa0c836677cedb235b324992e1e35c3bef7e
 });
 
 const upload = multer({ storage: storage });
