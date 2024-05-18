@@ -274,7 +274,6 @@ function Leads() {
   };
   const closepopup = () => {
     openchange(false);
-
     setCsvData([]);
   };
 
@@ -911,6 +910,7 @@ function Leads() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [startRowIndex, setStartRowIndex] = useState(null);
+  
   const handleCheckboxChange = (id) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
@@ -3099,7 +3099,7 @@ function Leads() {
                         }
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                       
+
                         Add Leads
                       </button>
                       <a
@@ -3119,8 +3119,8 @@ function Leads() {
                         onClick={handleImportClick}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                      
-                       
+
+
                         Import CSV
                       </button>
                       <a
@@ -3130,7 +3130,7 @@ function Leads() {
                         data-bs-target="#modal-report"
                         aria-label="Create new report"
                       >
-                       
+
                       </a>
                     </div>
                   </div>
@@ -3140,7 +3140,7 @@ function Leads() {
                         onClick={exportData}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                      
+
                         Export CSV
                       </button>
                       <a
@@ -3637,7 +3637,7 @@ function Leads() {
                                       color: "grey",
                                     }}
                                   />
-                                 
+
                                 </IconButton> </>}
                               <Link to={`/admin/leads/${company._id}`}>
                                 <IconButton>
