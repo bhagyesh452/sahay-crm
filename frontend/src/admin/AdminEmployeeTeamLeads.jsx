@@ -384,18 +384,17 @@ function AdminEmployeeTeamLeads() {
                 const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
                     bdmAcceptStatus: "NotForwarded",
                 })
-                const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+                const response2 = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
                     Remarks,
                 });
                 const response3 = await axios.post(
-                    `${secretKey}/remarks-history/${cid}`,
+                    `${secretKey}/remarks/remarks-history/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
 
                     }
                 );
-                console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -417,7 +416,7 @@ function AdminEmployeeTeamLeads() {
                 setIsDeleted(false)
 
             } else {
-                const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+                const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
                     Remarks,
                 });
                 const response2 = await axios.post(
@@ -1004,7 +1003,7 @@ function AdminEmployeeTeamLeads() {
         };
 
         try {
-            const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+            const response = await axios.post(`${secretKey}/remarks/post-feedback-remarks/${companyFeedbackId}`, data
             );
 
             if (response.status === 200) {

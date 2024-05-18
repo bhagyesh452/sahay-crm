@@ -757,7 +757,7 @@ app.post("/api/update-status/:id", async (req, res) => {
   }
 });
 
-app.post("/api/update-remarks/:id", async (req, res) => {
+app.post("/api/remarks/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
 
@@ -780,7 +780,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
 
 // ------------------------------------------update-remarks-bdm-------------------------
 
-app.post("/api/update-remarks-bdm/:id", async (req, res) => {
+app.post("/api/remarks/update-remarks-bdm/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
 
@@ -803,7 +803,7 @@ app.post("/api/update-remarks-bdm/:id", async (req, res) => {
 
 // --------------------------------remarks-history-bdm-------------------------------------
 
-app.post("/api/remarks-history-bdm/:companyId", async (req, res) => {
+app.post("/api/remarks/remarks-history-bdm/:companyId", async (req, res) => {
   const { companyId } = req.params;
   const { Remarks, remarksBdmName, currentCompanyName } = req.body;
 
@@ -834,7 +834,7 @@ app.post("/api/remarks-history-bdm/:companyId", async (req, res) => {
   }
 });
 
-app.delete("/api/delete-remarks-history/:id", async (req, res) => {
+app.delete("/api/remarks/delete-remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   try {
     // Update remarks and fetch updated data in a single operation
@@ -851,7 +851,7 @@ app.delete("/api/delete-remarks-history/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/remarks-delete/:companyId", async (req, res) => {
+app.delete("/api/remarks/remarks-delete/:companyId", async (req, res) => {
   const { companyId } = req.params;
 
   try {
@@ -877,7 +877,7 @@ app.delete("/api/remarks-delete/:companyId", async (req, res) => {
 
 // -------------------------------bdm-remarks-delete--------------------------------------
 
-app.delete("/api/remarks-delete-bdm/:companyId", async (req, res) => {
+app.delete("/api/remarks/remarks-delete-bdm/:companyId", async (req, res) => {
   const { companyId } = req.params;
 
   try {
@@ -907,6 +907,52 @@ app.delete("/api/remarks-delete-bdm/:companyId", async (req, res) => {
   }
 });
 
+// -------------------------------  Feedback Remarks  -----------------------------------
+
+app.post("/api/remarks/post-feedback-remarks/:companyId", async (req, res) => {
+  const companyId = req.params.companyId;
+  const feedbackPoints = req.body.feedbackPoints;
+  const feedbackRemarks = req.body.feedbackRemarks;
+  //console.log("feedbackPoints" , feedbackPoints)
+  try {
+    await TeamLeadsModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
+
+    await CompanyModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
+
+    res.status(200).json({ message: "Feedback updated successfully" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/remarks/post-feedback-remarks/:companyId", async (req, res) => {
+  const companyId = req.params.companyId;
+  const { feedbackPoints, feedbackRemarks } = req.body;
+
+  try {
+    await TeamLeadsModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
+
+    await CompanyModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
+
+    res.status(200).json({ message: "Feedback updated successfully" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
@@ -1438,50 +1484,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
   }
 });
 
-app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
-  const companyId = req.params.companyId;
-  const feedbackPoints = req.body.feedbackPoints;
-  const feedbackRemarks = req.body.feedbackRemarks;
-  //console.log("feedbackPoints" , feedbackPoints)
-  try {
-    await TeamLeadsModel.findByIdAndUpdate(companyId, {
-      feedbackPoints: feedbackPoints,
-      feedbackRemarks: feedbackRemarks,
-    });
 
-    await CompanyModel.findByIdAndUpdate(companyId, {
-      feedbackPoints: feedbackPoints,
-      feedbackRemarks: feedbackRemarks,
-    });
-
-    res.status(200).json({ message: "Feedback updated successfully" });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
-  const companyId = req.params.companyId;
-  const { feedbackPoints, feedbackRemarks } = req.body;
-
-  try {
-    await TeamLeadsModel.findByIdAndUpdate(companyId, {
-      feedbackPoints: feedbackPoints,
-      feedbackRemarks: feedbackRemarks,
-    });
-
-    await CompanyModel.findByIdAndUpdate(companyId, {
-      feedbackPoints: feedbackPoints,
-      feedbackRemarks: feedbackRemarks,
-    });
-
-    res.status(200).json({ message: "Feedback updated successfully" });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 // ------------------------------------------------------team api end----------------------------------
 
