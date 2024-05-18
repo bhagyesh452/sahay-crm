@@ -40,7 +40,7 @@ router.post("/manual", async (req, res) => {
       // Extract the _id values into an array
       const allIds = getId.map(doc => doc._id);
     
-      //console.log(allIds)
+      //cd backendconsole.log(allIds)
       // Send the array of IDs as a response
       res.status(200).json(allIds);
     } catch (error) {
