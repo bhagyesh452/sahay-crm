@@ -276,7 +276,7 @@ function BdmDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
       const getBDEnames = new Set();

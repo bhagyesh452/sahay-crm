@@ -87,7 +87,7 @@ function EmployeeMaturedBookings() {
     try {
       console.log("abhi hua")
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
       console.log(redesignedData);
@@ -242,7 +242,7 @@ function EmployeeMaturedBookings() {
   const handleEditClick = async (company , index) => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);

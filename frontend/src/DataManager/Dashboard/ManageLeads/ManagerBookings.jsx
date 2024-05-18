@@ -98,7 +98,7 @@ function ManagerBookings() {
   const fetchRedesignedFormData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const sortedData = response.data.reverse(); // Reverse the order of data
 
@@ -201,7 +201,7 @@ function ManagerBookings() {
     if (confirmation.isConfirmed) {
       if (id) {
         fetch(
-          `${secretKey}/redesigned-delete-particular-booking/${company}/${id}`,
+          `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -220,7 +220,7 @@ function ManagerBookings() {
             console.error("Error during delete request:", error);
           });
       } else {
-        fetch(`${secretKey}/redesigned-delete-booking/${company}`, {
+        fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -415,7 +415,7 @@ function ManagerBookings() {
     if (!tempUpdateMode) {
       try {
         const response = await axios.post(
-          `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
+          `${secretKey}/bookings/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
           formData,
           {
             headers: {
@@ -439,7 +439,7 @@ function ManagerBookings() {
     } else {
       try {
         const response = await axios.post(
-          `${secretKey}/redesigned-update-morePayments/${remainingObject["Company Name"]}`,
+          `${secretKey}/bookings/redesigned-update-morePayments/${remainingObject["Company Name"]}`,
           formData,
           {
             headers: {
@@ -488,7 +488,7 @@ const [expanseObject, setExpanseObject] = useState({
     const encodedServiceName = encodeURIComponent(serviceName);
     try {
       const response = await axios.delete(
-        `${secretKey}/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}/${encodedServiceName}`
+        `${secretKey}/bookings/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}/${encodedServiceName}`
       );
       Swal.fire(
         "Payment Updated",
@@ -507,7 +507,7 @@ const [expanseObject, setExpanseObject] = useState({
    const submitExpanse = async()=>{
     try {
       const response = await axios.post(
-        `${secretKey}/redesigned-submit-expanse/${currentLeadform["Company Name"]}`, expanseObject
+        `${secretKey}/bookings/redesigned-submit-expanse/${currentLeadform["Company Name"]}`, expanseObject
       );
       Swal.fire(
         "Expanse Added ",

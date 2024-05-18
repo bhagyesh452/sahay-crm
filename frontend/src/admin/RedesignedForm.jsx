@@ -127,7 +127,7 @@ export default function RedesignedForm({
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-leadData/${companysName}`
+        `${secretKey}/bookings/redesigned-leadData/${companysName}`
       );
       const data = response.data[0] ? response.data[0] : response.data
       console.log("Fetched Data", data);
@@ -581,7 +581,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step1`,
+              `${secretKey}/bookings/redesigned-leadData/${companysName}/step1`,
               dataToSend
             );
             // Handle response data as needed
@@ -624,7 +624,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step2`,
+              `${secretKey}/bookings/redesigned-leadData/${companysName}/step2`,
               dataToSend
             );
             // Handle response data as needed
@@ -732,7 +732,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step3`,
+              `${secretKey}/bookings/redesigned-leadData/${companysName}/step3`,
               dataToSend
             );
             // Handle response data as needed
@@ -790,7 +790,7 @@ export default function RedesignedForm({
         }
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step4`,
+            `${secretKey}/bookings/redesigned-leadData/${companysName}/step4`,
             formData
           );
           // Handle successful upload
@@ -808,11 +808,11 @@ export default function RedesignedForm({
 
          
           const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             leadData
           );
           const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step5`
+            `${secretKey}/bookings/redesigned-leadData/${companysName}/step5`
           );
 
           console.log(response.data);
@@ -929,7 +929,7 @@ export default function RedesignedForm({
         };
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             leadData
           );
           console.log(response.data);
@@ -951,7 +951,7 @@ export default function RedesignedForm({
       } else {
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}`,
+            `${secretKey}/bookings/redesigned-leadData/${companysName}`,
             formData,
             {
               headers: {
@@ -985,7 +985,7 @@ export default function RedesignedForm({
   const handleResetDraft = async () => {
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-model/${companysName}`,
+        `${secretKey}/bookings/redesigned-delete-model/${companysName}`,
         {
           method: "DELETE",
           headers: {

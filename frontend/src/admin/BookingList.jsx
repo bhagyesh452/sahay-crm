@@ -98,7 +98,7 @@ function BookingList() {
   const fetchRedesignedFormData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const sortedData = response.data.reverse(); // Reverse the order of data
 
@@ -211,7 +211,7 @@ function BookingList() {
     if (confirmation.isConfirmed) {
       if (id) {
         fetch(
-          `${secretKey}/redesigned-delete-particular-booking/${company}/${id}`,
+          `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -230,7 +230,7 @@ function BookingList() {
             console.error("Error during delete request:", error);
           });
       } else {
-        fetch(`${secretKey}/redesigned-delete-booking/${company}`, {
+        fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -400,7 +400,7 @@ function BookingList() {
   const handleSubmitImport = async () => {
     if (excelData.length !== 0) {
       try {
-        const response = await axios.post(`${secretKey}/redesigned-importData`, excelData);
+        const response = await axios.post(`${secretKey}/bookings/redesigned-importData`, excelData);
         Swal.fire("Success", "Bookings Uploaded Successfully", "success");
         fetchRedesignedFormData();
         closepopup();

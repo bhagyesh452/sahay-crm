@@ -157,7 +157,7 @@ function EmployeeLeads() {
     const fetchRedesignedFormData = async () => {
         try {
             console.log(maturedID);
-            const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data.find(obj => obj.company === maturedID);
             setCurrentForm(data);
 
@@ -685,7 +685,7 @@ function EmployeeLeads() {
 
         if (confirmDelete.isConfirmed) {
             try {
-                const response = await fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
+                const response = await fetch(`${secretKey}/bookings/redesigned-delete-booking/${companyId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
