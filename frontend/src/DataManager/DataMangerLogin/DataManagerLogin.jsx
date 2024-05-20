@@ -25,7 +25,7 @@ function DataManagerLogin({ setManagerToken}) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       setData(response.data);
     } catch (error) {
       console.log(error);

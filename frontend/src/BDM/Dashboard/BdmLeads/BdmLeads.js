@@ -214,7 +214,7 @@ function BdmLeads() {
   //console.log("kuchlikho", currentProjection)
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
       setTotalBookings(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -360,7 +360,7 @@ function BdmLeads() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -376,7 +376,7 @@ function BdmLeads() {
   const fetchProjections = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       setProjectionData(response.data);
     } catch (error) {
@@ -395,7 +395,7 @@ function BdmLeads() {
 
       console.log("status", status)
 
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       //console.log("tempData", tempData)
 
@@ -540,7 +540,7 @@ function BdmLeads() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
         console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -572,7 +572,7 @@ function BdmLeads() {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestgData`);
+      const response = await axios.get(`${secretKey}/requests/requestgData`);
       const sortedData = response.data.sort((a, b) => {
         // Assuming 'timestamp' is the field indicating the time of creation or update
         return new Date(b.date) - new Date(a.date);
@@ -592,9 +592,10 @@ function BdmLeads() {
   }, [userId]);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+  
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -802,7 +803,7 @@ function BdmLeads() {
   
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp") {
-          response = await axios.delete(`${secretKey}/post-deletecompany-interested/${employeeId}`);
+          response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
           const response2 = await axios.post(
             `${secretKey}/update-status/${employeeId}`,
             {
@@ -812,20 +813,20 @@ function BdmLeads() {
               time,
               
             })
-            const response3 = await axios.post(`${secretKey}/post-bdmAcceptStatusupate/${employeeId}` , {
+            const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
               bdmAcceptStatus : "NotForwarded"
             })
           
           
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-          response = await axios.post(`${secretKey}/post-update-bdmstatusfrombde/${employeeId}` , {
+          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
             newStatus
           });
 
           //console.log(response.data)
          
           const response2 = await axios.post(
-            `${secretKey}/update-status/${employeeId}`,
+            `${secretKey}/company-data/update-status/${employeeId}`,
             {
               newStatus,
               title,
@@ -840,7 +841,7 @@ function BdmLeads() {
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
-          `${secretKey}/update-status/${employeeId}`,
+          `${secretKey}/company-data/update-status/${employeeId}`,
           {
             newStatus,
             title,
@@ -867,7 +868,7 @@ function BdmLeads() {
 
   const fetchBookingDeleteRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
       setRequestDeletes(response.data); // Assuming your data is returned as an array
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -929,9 +930,9 @@ function BdmLeads() {
     console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
-      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
       if (mainRemarks) {
-        await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+        await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
       }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
@@ -955,11 +956,11 @@ function BdmLeads() {
     }
     try {
       // Make an API call to update the employee status in the database
-      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+      const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
         Remarks,
       });
       const response2 = await axios.post(
-        `${secretKey}/remarks-history/${cid}`,
+        `${secretKey}/remarks/remarks-history/${cid}`,
         {
           Remarks,
         }
@@ -1060,7 +1061,7 @@ function BdmLeads() {
       try {
         // Make API call using Axios
         const response = await axios.post(
-          `${secretKey}/requestData`,
+          `${secretKey}/requests/requestData`,
 
           {
             selectedYear,
@@ -1082,7 +1083,7 @@ function BdmLeads() {
     } else {
       try {
         // Make API call using Axios
-        const response = await axios.post(`${secretKey}/requestgData`, {
+        const response = await axios.post(`${secretKey}/requests/requestgData`, {
           numberOfData,
           name,
           cTime,
@@ -1108,7 +1109,7 @@ function BdmLeads() {
   const handleSubmitData = (e) => {
     e.preventDefault();
     axios
-      .post(`${secretKey}/manual`, {
+      .post(`${secretKey}/admin-leads/manual`, {
         "Company Name": cname,
         "Company Number": cnumber,
         "Company Email": cemail,
@@ -1203,7 +1204,7 @@ function BdmLeads() {
           ename: data.ename, // Replace 'Your Ename Value' with the actual value
         };
 
-        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+        const response = await fetch(`${secretKey}/requests/deleterequestbybde`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1335,7 +1336,7 @@ function BdmLeads() {
       // Move setLoading outside of the loop
 
       try {
-        await axios.post(`${secretKey}/requestCompanyData`, updatedCsvdata);
+        await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
         console.log("Data sent successfully");
         Swal.fire({
           title: "Request Sent!",
@@ -1360,7 +1361,7 @@ function BdmLeads() {
   };
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestApprovals(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === data.ename)) {
@@ -1570,7 +1571,7 @@ function BdmLeads() {
       } else {
         // Send data to backend API
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1611,7 +1612,7 @@ function BdmLeads() {
       const id = requestData._id;
 
       // Send a POST request to set the AssignRead property to true for the object with the given ID
-      await axios.post(`${secretKey}/setMarktrue/${id}`);
+      await axios.post(`${secretKey}/requests/setMarktrue/${id}`);
 
       // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
     } catch (error) {
@@ -1843,7 +1844,7 @@ function BdmLeads() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion

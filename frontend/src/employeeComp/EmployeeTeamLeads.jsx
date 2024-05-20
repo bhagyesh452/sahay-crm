@@ -145,7 +145,7 @@ function EmployeeTeamLeads() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Set the retrieved data in the state
             const tempData = response.data;
@@ -164,7 +164,7 @@ function EmployeeTeamLeads() {
         // console.log("This is bdm", bdmName);
         try {
             const response = await axios.get(
-                `${secretKey}/matured-get-requests-byBDM/${bdmName}`
+                `${secretKey}/bdm-data/matured-get-requests-byBDM/${bdmName}`
             );
             const mainData = response.data[0]
             setBDMrequests(mainData);
@@ -181,7 +181,7 @@ function EmployeeTeamLeads() {
     const fetchProjections = async () => {
         try {
             const response = await axios.get(
-                `${secretKey}/projection-data/${data.ename}`
+                `${secretKey}/projection/projection-data/${data.ename}`
             );
             const response2 = await axios.get(`${secretKey}/projection-data`)
             setProjectionData(response.data);
@@ -198,7 +198,7 @@ function EmployeeTeamLeads() {
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
         try {
-            const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
+            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             //console.log(response.data)
 
 
@@ -367,7 +367,7 @@ function EmployeeTeamLeads() {
         }
         try {
             if (isDeleted) {
-                const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
+                const response = await axios.post(`${secretKey}/bdm-data/teamleads-rejectdata/${cid}`, {
                     bdmAcceptStatus: "NotForwarded",
                     bdmName: "NoOne",
                 })
@@ -391,7 +391,7 @@ function EmployeeTeamLeads() {
                     currentCompanyName
 
                 })
-                const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}` , {
+                const response5 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${currentCompanyName}` , {
                     caseType : "NotForwwarded"
                 })
                 
@@ -474,7 +474,7 @@ function EmployeeTeamLeads() {
 
         const DT = new Date();
         try {
-            const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
+            const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
                 newBdmStatus,
                 companyId,
                 oldStatus,
@@ -487,7 +487,7 @@ function EmployeeTeamLeads() {
             console.log(filteredProjectionData)
 
             if(filteredProjectionData.length !== 0){
-                const response2 = await axios.post(`${secretKey}/post-followupupdate-bdmaccepted/${cName}` , {
+                const response2 = await axios.post(`${secretKey}/projection/post-followupupdate-bdmaccepted/${cName}` , {
                     caseType :"Recieved"
                 })  
             }
@@ -606,7 +606,7 @@ function EmployeeTeamLeads() {
 
             if (bdmnewstatus !== "Matured") {
                 const response = await axios.post(
-                    `${secretKey}/bdm-status-change/${companyId}`,
+                    `${secretKey}/bdm-data/bdm-status-change/${companyId}`,
                     {
                         bdeStatus,
                         bdmnewstatus,
@@ -698,7 +698,7 @@ function EmployeeTeamLeads() {
     const functionopenprojection = async (comName) => {
         let companyBdeProjection;
         try {
-            const response = await axios.get(`${secretKey}/projection-data-company/${comName}`)
+            const response = await axios.get(`${secretKey}/projection/projection-data-company/${comName}`)
             companyBdeProjection = response.data
             setBdeProjection(response.data)
             //console.log("responseprojection", response.data)
@@ -840,7 +840,7 @@ function EmployeeTeamLeads() {
         try {
             // Send a DELETE request to the backend API endpoint
             const response = await axios.delete(
-                `${secretKey}/delete-followup/${companyName}`
+                `${secretKey}/projection/delete-followup/${companyName}`
             );
             //console.log(response.data.message); // Log the response message
             // Show a success message after successful deletion
@@ -916,7 +916,7 @@ function EmployeeTeamLeads() {
             } else {
                 // Send data to backend API
                 const response = await axios.post(
-                    `${secretKey}/update-followup`,
+                    `${secretKey}/projection/update-followup`,
                     finalData
                 );
 
@@ -1055,7 +1055,7 @@ function EmployeeTeamLeads() {
             bdmNextFollowUpDate: nextFollowUpdate
         }
         try {
-            const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
+            const resposne = await axios.post(`${secretKey}/bdm-data/post-bdmnextfollowupdate/${companyId}`, data)
 
             //console.log(resposne.data)
             fetchTeamLeadsData(companyStatus)

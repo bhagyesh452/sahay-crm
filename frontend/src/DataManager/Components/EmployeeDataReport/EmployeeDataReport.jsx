@@ -48,18 +48,8 @@ export default function EmployeeDataReport() {
       const [selectedEmployee, setSelectedEmployee] = useState("");
 
 
-
-
-
-
-
-
-
-
-
-
       const fetchCompanyData = async () => {
-        fetch(`${secretKey}/leads`)
+        await axios.get(`${secretKey}/company-data/leads`)
           .then((response) => response.json())
           .then((data) => {
             setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -72,7 +62,7 @@ export default function EmployeeDataReport() {
       };
 
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/einfo`)
+        await axios.get(`${secretKey}/employee/einfo`)
           .then((response) => response.json())
           .then((data) => {
             setEmployeeData(data);

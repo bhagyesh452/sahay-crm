@@ -298,7 +298,7 @@ app.post("/api/processingLogin", async (req, res) => {
 
 
 // **************************************  Socket IO Active Status  **************************************************
-app.put("/api/online-status/:id/:socketID", async (req, res) => {
+app.put("/api/employee/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
   console.log("kuhi", socketID);
@@ -416,7 +416,7 @@ function createCSVString(data) {
   return csvData.map((row) => row.join(",")).join("\n");
 }
 
-app.post("/api/employee-history", async (req, res) => {
+app.post("/api/employee/employee-history", async (req, res) => {
   const csvData = req.body;
 
   try {
@@ -491,7 +491,7 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/requestCompanyData", async (req, res) => {
+app.post("/api/requests/requestCompanyData", async (req, res) => {
   const csvData = req.body;
   let dataArray = [];
   if (Array.isArray(csvData)) {
@@ -566,7 +566,7 @@ app.post("/api/change-edit-request/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/update-status/:id", async (req, res) => {
+app.post("/api/company-data/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time } = req.body; // Destructure the required properties from req.body
 
@@ -704,7 +704,7 @@ app.get("/api/teams/teaminfo/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/teams/teamleadsdata", async (req, res) => {
+app.get("/api/bdm-data/teamleadsdata", async (req, res) => {
   try {
     const data = await TeamLeadsModel.find()
     res.status(200).send(data)
@@ -730,7 +730,7 @@ app.get("/api/teams/teamleadsdata", async (req, res) => {
 //   }
 // });
 
-app.post("/api/forwardtobdmdata", async (req, res) => {
+app.post("/api/bdm-data/forwardtobdmdata", async (req, res) => {
   const {
     selectedData,
     bdmName,
@@ -783,7 +783,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
   }
 });
 
-app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
+app.get("/api/bdm-data/forwardedbybdedata/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
   //console.log(bdmName)
   try {
@@ -801,7 +801,7 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
 
 
 
-app.post("/api/update-bdm-status/:id", async (req, res) => {
+app.post("/api/bdm-data/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
   const {
     newBdmStatus,
@@ -833,7 +833,7 @@ app.post("/api/update-bdm-status/:id", async (req, res) => {
   }
 });
 
-app.post("/api/bdm-status-change/:id", async (req, res) => {
+app.post("/api/bdm-data/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
   const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate } =
     req.body; // Destructure the required properties from req.body
@@ -859,7 +859,7 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
+app.post(`/api/bdm-data/teamleads-reversedata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { companyName, bdmAcceptStatus, bdmName } = req.body;
   try {
@@ -878,7 +878,7 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   }
 });
 
-app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
+app.post(`/api/bdm-data/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { bdmAcceptStatus, bdmName, remarks } = req.body;
   try {
@@ -960,7 +960,7 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 //   }
 // });
 
-app.delete(`/api/post-deletecompany-interested/:companyId`, async (req, res) => {
+app.delete(`/api/bdm-data/post-deletecompany-interested/:companyId`, async (req, res) => {
   const companyId = req.params.companyId; // Correctly access teamId from req.params
 
   try {
@@ -978,7 +978,7 @@ app.delete(`/api/post-deletecompany-interested/:companyId`, async (req, res) => 
   }
 });
 
-app.post("/api/post-bdmAcceptStatusupate/:id", async (req, res) => {
+app.post("/api/bdm-data/post-bdmAcceptStatusupate/:id", async (req, res) => {
   const { id } = req.params;
   const { bdmAcceptStatus } = req.body; // Destructure the required properties from req.body
 
@@ -1013,7 +1013,7 @@ app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   }
 });
 
-app.post(`/api/post-followup-forwardeddata/:cname`, async (req, res) => {
+app.post(`/api/projection/post-followup-forwardeddata/:cname`, async (req, res) => {
   const companyName = req.params.cname;
   const { caseType, bdmName } = req.body;
   try {
@@ -1034,7 +1034,7 @@ app.post(`/api/post-followup-forwardeddata/:cname`, async (req, res) => {
   }
 });
 
-app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
+app.post(`/api/projection/post-updaterejectedfollowup/:cname`, async (req, res) => {
   const companyName = req.params.cname;
   const { caseType } = req.body;
   try {
@@ -1057,7 +1057,7 @@ app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
   }
 });
 
-app.post(`/api/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
+app.post(`/api/projection/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
   const companyName = req.params.cname;
   const { caseType } = req.body;
   try {
@@ -1080,7 +1080,7 @@ app.post(`/api/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
 
 
 
-app.put("/api/teaminfo/:teamId", async (req, res) => {
+app.put("/api/teams/teaminfo/:teamId", async (req, res) => {
   const teamId = req.params.teamId;
 
   const dataToUpdated = req.body;
@@ -1136,7 +1136,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 
 // ------------------------------api to get leads on the basis of ename------------------------
 
-app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
+app.get("/api/company-data/specific-ename-status/:ename/:status", async (req, res) => {
   const ename = req.params.ename;
   const status = req.params.status;
 
@@ -1488,7 +1488,7 @@ app.get("/api/leads/:companyName", async (req, res) => {
   }
 });
 // 3. Update a Company 
-app.put("/api/leads/:id", async (req, res) => {
+app.put("/api/company-data/leads/:id", async (req, res) => {
   const id = req.params.id;
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
@@ -1624,7 +1624,7 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 // 7. Read Muultiple Companies 
-app.get("/api/leads", async (req, res) => {
+app.get("/api/company-data/leads", async (req, res) => {
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
     const data = await CompanyModel.find().lean();
@@ -1635,8 +1635,9 @@ app.get("/api/leads", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 //8. Read Multiple companies New
-app.get('/api/new-leads', async (req, res) => {
+app.get('/api/company-data/new-leads', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Items per page
@@ -1683,7 +1684,7 @@ app.get('/api/new-leads', async (req, res) => {
   }
 });
 //9. Filtere search for Reading Multiple Companies
-app.get('/api/search-leads', async (req, res) => {
+app.get('/api/company-data/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
     const { field } = req.query;
@@ -1748,7 +1749,7 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 //11. Assign company to new employee
-app.post("/api/assign-new", async (req, res) => {
+app.post("/api/company-data/assign-new", async (req, res) => {
   const { newemployeeSelection, data } = req.body;
 
   try {
@@ -1819,7 +1820,7 @@ app.post("/api/assign-new", async (req, res) => {
 // });
 
 // **************************************************************  Follow UPDATE content  **************************************************************
-app.post(`/api/post-bdenextfollowupdate/:id`, async (req, res) => {
+app.post(`/api/company-data/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
 
   const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate);
@@ -1838,7 +1839,7 @@ app.post(`/api/post-bdenextfollowupdate/:id`, async (req, res) => {
   }
 });
 
-app.post(`/api/post-bdmnextfollowupdate/:id`, async (req, res) => {
+app.post(`/api/bdm-data/post-bdmnextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
 
   const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate);
@@ -1947,7 +1948,7 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
 
 
 // *************************************************  Fetching Company Data   ***********************************************************
-app.get("/api/employees/:ename", async (req, res) => {
+app.get("/api/company-data/employees/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
 
@@ -1967,7 +1968,7 @@ app.get("/api/employees/:ename", async (req, res) => {
   }
 });
 
-app.put("/api/newcompanyname/:id", async (req, res) => {
+app.put("/api/company-data/newcompanyname/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const { ename } = req.body;
@@ -1998,7 +1999,7 @@ app.put("/api/newcompanyname/:id", async (req, res) => {
 
 // api call for employee requesting for the data
 
-app.post("/api/requestData", async (req, res) => {
+app.post("/api/requests/requestData", async (req, res) => {
   const { selectedYear, companyType, numberOfData, name, cTime, cDate } =
     req.body;
 
@@ -2026,7 +2027,7 @@ app.post("/api/requestData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post("/api/setMarktrue/:id", async (req, res) => {
+app.post("/api/requests/setMarktrue/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -2048,7 +2049,7 @@ app.post("/api/setMarktrue/:id", async (req, res) => {
   }
 });
 
-app.post("/api/requestgData", async (req, res) => {
+app.post("/api/requests/requestgData", async (req, res) => {
   const { numberOfData, name, cTime, cDate } = req.body;
 
   try {
@@ -2073,7 +2074,7 @@ app.post("/api/requestgData", async (req, res) => {
   }
 });
 
-app.get("/api/requestData", async (req, res) => {
+app.get("/api/requests/requestData", async (req, res) => {
   try {
     // Retrieve all data from RequestModel
     const allData = await RequestModel.find();
@@ -2083,7 +2084,7 @@ app.get("/api/requestData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/requestgData", async (req, res) => {
+app.get("/api/requests/requestgData", async (req, res) => {
   try {
     // Retrieve all data from RequestModel
     const allData = await RequestGModel.find();
@@ -2094,7 +2095,7 @@ app.get("/api/requestgData", async (req, res) => {
   }
 });
 
-app.put("/api/requestData/:id", async (req, res) => {
+app.put("/api/requests/requestData/:id", async (req, res) => {
   const { id } = req.params;
   const { read, assigned } = req.body;
 
@@ -2237,7 +2238,7 @@ app.delete("/api/delete-data/:ename", async (req, res) => {
 });
 // ---------------------------api to fetch companies in processing dashboard-----------------------------------
 
-app.post("/api/deleterequestbybde", async (req, res) => {
+app.post("/api/requests/deleterequestbybde", async (req, res) => {
   try {
     const {
       companyName,
@@ -2282,7 +2283,7 @@ app.post("/api/deleterequestbybde", async (req, res) => {
   }
 });
 
-app.get("/api/deleterequestbybde", async (req, res) => {
+app.get("/api/requests/deleterequestbybde", async (req, res) => {
   try {
     const company = await RequestDeleteByBDE.find();
     res.json(company);
@@ -2434,7 +2435,7 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
 });
 
 // ************************************************ Export APIs ***********************************************
-app.post("/api/exportLeads/", async (req, res) => {
+app.post("/api/admin-leads/exportLeads/", async (req, res) => {
   try {
     const selectedIds = req.body;
 
@@ -2518,7 +2519,7 @@ app.post("/api/exportLeads/", async (req, res) => {
 
 
 // *********************************************  Bookings Section  *****************************************************
-app.post("/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
+app.post("/api/bookings/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2871,7 +2872,7 @@ app.post("/api/matured-case-request", async (req, res) => {
     res.status(500).json({ success: false, message: "Error saving request" });
   }
 });
-app.get("/api/inform-bde-requests/:bdeName", async (req, res) => {
+app.get("/api//bdm-data/inform-bde-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
     const request = await InformBDEModel.find({
@@ -2898,7 +2899,7 @@ app.get("/api/matured-get-requests/:bdeName", async (req, res) => {
       .json({ success: false, message: "Error fetching the data" });
   }
 });
-app.get("/api/matured-get-requests-byBDM/:bdmName", async (req, res) => {
+app.get("/api/bdm-data/matured-get-requests-byBDM/:bdmName", async (req, res) => {
   try {
     const bdmName = req.params.bdmName;
     const request = await RequestMaturedModel.find({
@@ -2912,7 +2913,7 @@ app.get("/api/matured-get-requests-byBDM/:bdmName", async (req, res) => {
       .json({ success: false, message: "Error fetching the data" });
   }
 });
-app.post("/api/update-bdm-Request/:id", async (req, res) => {
+app.post("/api/requests/update-bdm-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
     const { requestStatus } = req.body;
@@ -2943,7 +2944,7 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-inform-Request/:id", async (req, res) => {
+app.delete("/api/requests/delete-inform-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
 
@@ -2994,7 +2995,7 @@ app.post("/api/edit-moreRequest/:companyName/:bookingIndex",
     }
   }
 );
-app.get("/api/editable-LeadData", async (req, res) => {
+app.get("/api/bookings/editable-LeadData", async (req, res) => {
   try {
     const data = await EditableDraftModel.find(); // Fetch all data from the collection
     res.json(data); // Send the data as JSON response
@@ -3003,7 +3004,7 @@ app.get("/api/editable-LeadData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/requestCompanyData", async (req, res) => {
+app.get("/api/requests/requestCompanyData", async (req, res) => {
   try {
     const data = await CompanyRequestModel.find();
     res.json(data);
@@ -3031,7 +3032,7 @@ app.post("/api/undo", (req, res) => {
   );
 });
 
-app.get("/api/recent-updates", async (req, res) => {
+app.get("/api/requests/recent-updates", async (req, res) => {
   try {
     // Fetch all data from the RecentUpdatesModel
     const recentUpdates = await RecentUpdatesModel.find();
@@ -3044,7 +3045,7 @@ app.get("/api/recent-updates", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/card-leads", async (req, res) => {
+app.get("/api/company-data/card-leads", async (req, res) => {
   try {
     const { dAmount } = req.query; // Get the dAmount parameter from the query
 

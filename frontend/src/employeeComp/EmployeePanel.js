@@ -255,38 +255,21 @@ function EmployeePanel() {
     openchange(true);
   };
 
-
-  //console.log("projectingcompnay", projectingCompany)
-
-  //console.log("kuchlikho", currentProjection)
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
       setTotalBookings(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  // const fetchBDMbookingRequests = async () => {
-  //   const bdeName = data.ename;
-  //   try {
-  //     const response = await axios.get(
-  //       `${secretKey}/matured-get-requests/${bdeName}`
-  //     );
-  //     setBDMrequests(response.data[0]);
-  //     if (response.data.length !== 0) {
-  //       setOpenbdmRequest(true);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
+  
   const fetchBDMbookingRequests = async () => {
     const bdeName = data.ename;
     try {
       const response = await axios.get(
-        `${secretKey}/inform-bde-requests/${bdeName}`
+        `${secretKey}/bdm-data/inform-bde-requests/${bdeName}`
       );
       setBDMrequests(response.data[0]);
       if (response.data.length !== 0) {
@@ -506,7 +489,7 @@ function EmployeePanel() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -542,7 +525,7 @@ function EmployeePanel() {
     const ename = data.ename;
     //console.log("ename", ename)
     try {
-      const response = await axios.get(`${secretKey}/teaminfo/${ename}`);
+      const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
 
       //console.log("teamdata", response.data)
       setTeamInfo(response.data);
@@ -566,7 +549,7 @@ function EmployeePanel() {
   const fetchProjections = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       setProjectionData(response.data);
     } catch (error) {
@@ -733,7 +716,7 @@ function EmployeePanel() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
         console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -765,7 +748,7 @@ function EmployeePanel() {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestgData`);
+      const response = await axios.get(`${secretKey}/requests/requestgData`);
       const sortedData = response.data.sort((a, b) => {
         // Assuming 'timestamp' is the field indicating the time of creation or update
         return new Date(b.date) - new Date(a.date);
@@ -951,7 +934,7 @@ function EmployeePanel() {
   
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp") {
-          response = await axios.delete(`${secretKey}/post-deletecompany-interested/${employeeId}`);
+          response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
           const response2 = await axios.post(
             `${secretKey}/update-status/${employeeId}`,
             {
@@ -961,20 +944,20 @@ function EmployeePanel() {
               time,
               
             })
-            const response3 = await axios.post(`${secretKey}/post-bdmAcceptStatusupate/${employeeId}` , {
+            const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
               bdmAcceptStatus : "NotForwarded"
             })
           
           
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-          response = await axios.post(`${secretKey}/post-update-bdmstatusfrombde/${employeeId}` , {
+          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
             newStatus
           });
 
           //console.log(response.data)
          
           const response2 = await axios.post(
-            `${secretKey}/update-status/${employeeId}`,
+            `${secretKey}/company-data/update-status/${employeeId}`,
             {
               newStatus,
               title,
@@ -989,7 +972,7 @@ function EmployeePanel() {
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
-          `${secretKey}/update-status/${employeeId}`,
+          `${secretKey}/company-data/update-status/${employeeId}`,
           {
             newStatus,
             title,
@@ -1016,7 +999,7 @@ function EmployeePanel() {
   
   const fetchBookingDeleteRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
       setRequestDeletes(response.data); // Assuming your data is returned as an array
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1226,7 +1209,7 @@ function EmployeePanel() {
       try {
         // Make API call using Axios
         const response = await axios.post(
-          `${secretKey}/requestData`,
+          `${secretKey}/requests/requestData`,
 
           {
             selectedYear,
@@ -1248,7 +1231,7 @@ function EmployeePanel() {
     } else {
       try {
         // Make API call using Axios
-        const response = await axios.post(`${secretKey}/requestgData`, {
+        const response = await axios.post(`${secretKey}/requests/requestgData`, {
           numberOfData,
           name,
           cTime,
@@ -1312,7 +1295,7 @@ function EmployeePanel() {
         "Director Email(Third)": directorEmailThird,
         "UploadedBy": data.ename
       }
-      await axios.post(`${secretKey}/requestCompanyData`, dataToSend).then((response) => {
+      await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
         //console.log("response", response);
         console.log("Data sent Successfully");
         Swal.fire({
@@ -1418,7 +1401,7 @@ function EmployeePanel() {
           ename: data.ename, // Replace 'Your Ename Value' with the actual value
         };
 
-        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+        const response = await fetch(`${secretKey}/requests/deleterequestbybde`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1575,7 +1558,7 @@ function EmployeePanel() {
   };
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestApprovals(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === data.ename)) {
@@ -1756,7 +1739,7 @@ function EmployeePanel() {
       } else {
         // Send data to backend API
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1797,7 +1780,7 @@ function EmployeePanel() {
       const id = requestData._id;
 
       // Send a POST request to set the AssignRead property to true for the object with the given ID
-      await axios.post(`${secretKey}/setMarktrue/${id}`);
+      await axios.post(`${secretKey}/requests/setMarktrue/${id}`);
 
       // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
     } catch (error) {
@@ -2031,7 +2014,7 @@ function EmployeePanel() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -2058,23 +2041,23 @@ function EmployeePanel() {
   };
   //console.log("projections", currentProjection);
 
-  const handleSendEmail = async () => {
-    try {
-      const response = await fetch(`${secretKey}/generate-pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/pdf",
-        },
-      });
+  // const handleSendEmail = async () => {
+  //   try {
+  //     const response = await fetch(`${secretKey}/generate-pdf`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/pdf",
+  //       },
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to send email");
-      }
-      console.log("Mail Sent");
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  };
+  //     if (!response.ok) {
+  //       throw new Error("Failed to send email");
+  //     }
+  //     console.log("Mail Sent");
+  //   } catch (error) {
+  //     console.error("Error sending email:", error);
+  //   }
+  // };
 
   const formatDatePro = (dateString) => {
     const [day, month, year] = dateString.split("/");
@@ -2402,7 +2385,7 @@ function EmployeePanel() {
     //console.log("selecteddatawithbdm", selectedDataWithBdm);
   
     try {
-      const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
+      const response = await axios.post(`${secretKey}/bdm-data/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
         bdmName: selectedBDM,
         companyId: forwardCompanyId,
@@ -2412,7 +2395,7 @@ function EmployeePanel() {
         companyName:forwardedCompany,
         // Assuming bdmName is defined elsewhere in your component
       });
-      const response2 = await axios.post(`${secretKey}/post-followup-forwardeddata/${forwardedCompany}`,{
+      const response2 = await axios.post(`${secretKey}/projection/post-followup-forwardeddata/${forwardedCompany}`,{
         caseType:"Forwarded",
         bdmName:selectedBDM
       })
@@ -2454,14 +2437,14 @@ function EmployeePanel() {
     if (bdmAcceptStatus === "Pending") {
       try {
         const response = await axios.post(
-          `${secretKey}/teamleads-reversedata/${companyId}`,
+          `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
           {
             companyName,
             bdmAcceptStatus: "NotForwarded",
             bdmName: "NoOne" // Corrected parameter name
           }
         );
-        const response2 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${companyName}` , {
+        const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}` , {
           caseType: "NotForwarded"
         })
         // console.log("response", response.data);
@@ -2593,7 +2576,7 @@ function EmployeePanel() {
       const id = BDMrequests._id;
       // Send a POST request to your backend API to update the object
       const response = await axios.post(
-        `${secretKey}/update-bdm-Request/${id}`,
+        `${secretKey}/requests/update-bdm-Request/${id}`,
         {
           requestStatus: "Accepted",
         }
@@ -2611,30 +2594,30 @@ function EmployeePanel() {
   };
 
   // Function to handle reject request
-  const handleRejectRequest = async () => {
-    try {
-      const id = BDMrequests._id;
-      // Send a DELETE request to your backend API to delete the object
-      const response = await axios.delete(
-        `${secretKey}/delete-bdm-Request/${id}`
-      );
-      Swal.fire("Rejected!", "Successfully Denied the Request", "success");
-      setOpenbdmRequest(false);
-      //console.log(response.data); // Log the response data if needed
-      // Optionally, you can update the UI or perform any other actions after the request is successful
-    } catch (error) {
-      Swal.fire("Error!", "Error Rejecting the Request", "error");
-      setOpenbdmRequest(false);
-      console.error("Error rejecting request:", error);
-      // Handle the error or display a message to the user
-    }
-  };
+  // const handleRejectRequest = async () => {
+  //   try {
+  //     const id = BDMrequests._id;
+  //     // Send a DELETE request to your backend API to delete the object
+  //     const response = await axios.delete(
+  //       `${secretKey}/delete-bdm-Request/${id}`
+  //     );
+  //     Swal.fire("Rejected!", "Successfully Denied the Request", "success");
+  //     setOpenbdmRequest(false);
+  //     //console.log(response.data); // Log the response data if needed
+  //     // Optionally, you can update the UI or perform any other actions after the request is successful
+  //   } catch (error) {
+  //     Swal.fire("Error!", "Error Rejecting the Request", "error");
+  //     setOpenbdmRequest(false);
+  //     console.error("Error rejecting request:", error);
+  //     // Handle the error or display a message to the user
+  //   }
+  // };
   const handleDoneInform = async () => {
     try {
       const id = BDMrequests._id;
       // Send a DELETE request to your backend API to delete the object
       const response = await axios.delete(
-        `${secretKey}/delete-inform-Request/${id}`
+        `${secretKey}/requests/delete-inform-Request/${id}`
       );
 
       setOpenbdmRequest(false);
@@ -2658,7 +2641,7 @@ function EmployeePanel() {
       bdeNextFollowUpDate: nextFollowUpdate
     }
     try {
-      const resposne = await axios.post(`${secretKey}/post-bdenextfollowupdate/${companyId}`, data)
+      const resposne = await axios.post(`${secretKey}/company-data/post-bdenextfollowupdate/${companyId}`, data)
 
       //console.log(resposne.data)
       fetchNewData(companyStatus)
@@ -6013,7 +5996,7 @@ function EmployeePanel() {
 
                 <div className="compose-more-options d-flex align-items-center ">
                   <button
-                    onClick={handleSendEmail}
+                    //onClick={handleSendEmail}
                     type="submit"
                     className="send-btn"
                   >

@@ -108,7 +108,7 @@ function EmployeeLeads() {
     // Function to fetch employee details by id
     const fetchEmployeeDetails = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Filter the response data to find _id values where designation is "Sales Executive"
             const salesExecutivesIds = response.data
@@ -217,7 +217,7 @@ function EmployeeLeads() {
 
             setLoading(true)
             const response = await axios.get(
-                `${secretKey}/employees/${employeeName}`
+                `${secretKey}/company-data/employees/${employeeName}`
             );
 
             // Sort the data by AssignDate property
@@ -408,7 +408,7 @@ function EmployeeLeads() {
 
     const fetchnewData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Set the retrieved data in the state
 
@@ -456,7 +456,7 @@ function EmployeeLeads() {
     };
     const fetchProjections = async () => {
         try {
-            const response = await axios.get(`${secretKey}/projection-data`);
+            const response = await axios.get(`${secretKey}/projection/projection-data`);
             setProjectionData(response.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
@@ -546,7 +546,7 @@ function EmployeeLeads() {
 
             // Add the promise for updating CompanyModel to the array
             updatePromises.push(
-                axios.post(`${secretKey}/assign-new`, {
+                axios.post(`${secretKey}/company-data/assign-new`, {
                     newemployeeSelection,
                     data: updatedObj,
                 })

@@ -181,7 +181,7 @@ console.log(companyData)
  
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -197,7 +197,7 @@ console.log(companyData)
     try {
       // Make an API call to update the employee status in the database
       const response = await axios.post(
-        `${secretKey}/update-status/${companysId}`,
+        `${secretKey}/company-data/update-status/${companysId}`,
         {
           newStatus,
         }

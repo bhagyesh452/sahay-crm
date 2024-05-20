@@ -62,7 +62,7 @@ function TestLeads() {
     const [cstat, setCstat] = useState("");
 
     const fetchTotalLeads = async () => {
-        const response = await axios.get(`${secretKey}/leads`)
+        const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
     }
 
@@ -71,7 +71,7 @@ function TestLeads() {
         try {
             setCurrentDataLoading(true)
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
+            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
@@ -149,7 +149,7 @@ function TestLeads() {
         try {
             setCurrentDataLoading(true);
 
-            const response = await axios.get(`${secretKey}/search-leads`, {
+            const response = await axios.get(`${secretKey}/company-data/search-leads`, {
                 params: { searchQuery , field:"Company Name" }
             });
 
@@ -441,10 +441,10 @@ function TestLeads() {
 
                 try {
                     const response = await axios.post(
-                        `${secretKey}/leads`,
+                        `${secretKey}/company-data/leads`,
                         updatedCsvdata
                     );
-                    await axios.post(`${secretKey}/employee-history`, newArray);
+                    await axios.post(`${secretKey}/employee/employee-history`, newArray);
                     // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
                     const counter = response.data.counter;
@@ -510,7 +510,7 @@ function TestLeads() {
 
                 try {
                     const response = await axios.post(
-                        `${secretKey}/leads`,
+                        `${secretKey}/company-data/leads`,
                         csvdata
                     );
 
@@ -637,7 +637,7 @@ function TestLeads() {
     const exportData = async () => {
         try {
             const response = await axios.post(
-                `${secretKey}/exportLeads/`,
+                `${secretKey}/admin-leads/exportLeads/`,
                 selectedRows
             );
             //console.log("response",response.data)
@@ -737,14 +737,28 @@ function TestLeads() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
+
+                        Swal.fire({
+                            title: 'Deleting...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                              Swal.showLoading();
+                            }
+                          });
                         // If user confirms, proceed with deletion
                         const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
                             data: { selectedRows }, // Pass selected rows to the server
                         });
+
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Selected rows have been deleted.',
+                            icon: 'success',
+                          });
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        fetchData(1);
+                        await fetchData(1);
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -770,7 +784,7 @@ function TestLeads() {
             });
 
             if (result.isConfirmed) {
-                await axios.delete(`${secretKey}/leads/${id}`);
+                await axios.delete(`${secretKey}/company-data/leads/${id}`);
 
                 Swal.fire(
                     'Deleted!',
@@ -955,7 +969,7 @@ function TestLeads() {
                     };
 
                     if (isUpdateMode) {
-                        await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+                        await axios.put(`${secretKey}/company-data/leads/${selectedDataId}`, dataToSendUpdated);
                         Swal.fire({
                             title: "Data Updated!",
                             text: "You have successfully updated the name!",

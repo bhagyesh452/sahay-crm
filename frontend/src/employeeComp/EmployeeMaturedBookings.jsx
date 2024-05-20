@@ -53,7 +53,7 @@ function EmployeeMaturedBookings() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -219,7 +219,7 @@ function EmployeeMaturedBookings() {
         //   },
         //   body: JSON.stringify(sendingData),
         // });
-        const response = await axios.post(`${secretKey}/deleterequestbybde` , sendingData);
+        const response = await axios.post(`${secretKey}/requests/deleterequestbybde` , sendingData);
        
        
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
@@ -263,13 +263,13 @@ function EmployeeMaturedBookings() {
   const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const [selectedDocuments, setSelectedDocuments] = useState([]);
@@ -310,7 +310,7 @@ function EmployeeMaturedBookings() {
       console.log(currentLeadform["Company Name"] , sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
       const response = await axios.post(
-        `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
+        `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
        formData
       );
       
@@ -1551,7 +1551,7 @@ function EmployeeMaturedBookings() {
                                                 ".jpeg"
                                               ) ? (
                                               <img
-                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
@@ -1587,7 +1587,7 @@ function EmployeeMaturedBookings() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                              src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                               alt={pdfimg}
                                             ></img>
                                           )}
@@ -2420,7 +2420,7 @@ function EmployeeMaturedBookings() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                               alt={"MyImg"}
                                             ></img>
                                           )}
@@ -2455,7 +2455,7 @@ function EmployeeMaturedBookings() {
                                           />
                                         ) : (
                                           <img
-                                            src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                            src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                             alt={pdfimg}
                                           ></img>
                                         )}
