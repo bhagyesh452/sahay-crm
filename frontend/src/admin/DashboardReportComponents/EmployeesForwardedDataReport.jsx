@@ -78,7 +78,7 @@ function EmployeesForwardedDataReport() {
     //----------------------fetching employees info--------------------------------------
 
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/einfo`)
+        fetch(`${secretKey}/employee/einfo`)
             .then((response) => response.json())
             .then((data) => {
                 setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
@@ -103,7 +103,7 @@ function EmployeesForwardedDataReport() {
 
     const fetchTeamLeadsData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/teamleadsdata`)
+            const response = await axios.get(`$/teams/teamleadsdata`)
             setTeamLeadsData(response.data)
             setTeamLeadsDataFilter(response.data)
 
@@ -222,7 +222,7 @@ function EmployeesForwardedDataReport() {
 
     const fetchFollowUpData = async () => {
         try {
-            const response = await fetch(`${secretKey}/projection-data`);
+            const response = await fetch(`/projection/projection-data`);
             const followdata = await response.json();
             setfollowData(followdata);
             setFollowDataFilter(followdata)

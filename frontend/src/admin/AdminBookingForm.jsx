@@ -104,7 +104,7 @@ export default function AdminBookingForm({
 
   const fetchDataEmp = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -295,13 +295,13 @@ export default function AdminBookingForm({
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);

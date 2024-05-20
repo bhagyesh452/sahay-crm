@@ -105,6 +105,55 @@ app.get("/api", (req, res) => {
   res.send("hello from backend!");
 });
 
+//  ***********************************************   Format Dates   *********************************************************
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function formatDateNew(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const formattedDay = day < 10 ? "0" + day : day;
+  const formattedMonth = month < 10 ? "0" + month : month;
+  return `${formattedDay}/${formattedMonth}/${year}`;
+}
+
+// ************************************   Storage Section  ***********************************************
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Determine the destination path based on the fieldname and company name
+    const companyName = req.params.CompanyName;
+    let destinationPath = "";
+
+    if (file.fieldname === "otherDocs") {
+      destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+    }
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// ***************************************   Login Section  **********************************************
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
@@ -128,134 +177,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
     res.status(401).json({ message: "Invalid credentials" });
   }
 });
-
-// Login for employee
-
-// app.post("/api/employeelogin", async (req, res) => {
-//   const { email, password } = req.body;
-
-//   // Replace this with your actual Employee authentication logic
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//     designation: "Sales Executive",
-//   });
-//   // console.log(user);
-
-//   if (user) {
-//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "10h",
-//     });
-//     res.json({ newtoken });
-//     socketIO.emit('Employee-login');
-
-//   } else {
-//     res.status(401).json({ message: "Invalid credentials" });
-//   }
-// });
-
-// -------------------------------api for payment link---------------------------------
-
-// const CASHFREE_API_KEY = '218584e2c3a22f9395f52faa1b485812';
-// const CASHFREE_SECRET_KEY = 'd501ddfae2bdb6fabb52844038e67b592fb09398';
-
-// app.post('/api/generatePaymentLink', async (req, res) => {
-//   console.log(req.body)
-//   try {
-//     const { orderId, amount, customerName, customerEmail, customerPhone } = req.body;
-
-//     const data = {
-//       appId: CASHFREE_API_KEY,
-//       orderId,
-//       orderAmount: amount.toString(),
-//       orderCurrency: 'INR',
-//       orderNote: 'Payment for services',
-//       customerName,
-//       customerPhone,
-//       customerEmail,
-//     };
-//     const config = {
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'x-client-id': CASHFREE_API_KEY,
-//         'x-client-secret': CASHFREE_SECRET_KEY,
-//       },
-//     };
-
-//     const response = await axios.post('https://test.cashfree.com/api/v1/order/create', data, config);
-//     const paymentLink = response.data;
-//     console.log(paymentLink)
-//     res.json({ paymentLink });
-//   } catch (error) {
-//     console.error('Error generating payment link:', error);
-//     res.status(500).json({ error: 'Could not generate payment link' });
-//   }
-// });
-// ---------------------------------------------------------- Kam ka code -------------------------------------------------------
-// Cashfree.XClientId = process.env.CLIENT_ID;
-// Cashfree.XClientSecret = process.env.CLIENT_SECRET;
-// Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
-
-// function generateOrderId() {
-//   const uniqueId = crypto.randomBytes(16).toString('hex');
-
-//   const hash = crypto.createHash('sha256');
-//   hash.update(uniqueId);
-
-//   const orderId = hash.digest('hex');
-//   console.log(orderId)
-//   return orderId.substr(0, 12);
-// }
-
-// app.get('/api/payment', async (req, res) => {
-
-//   try {
-
-//     let request = {
-//       "order_amount": 1.00,
-//       "order_currency": "INR",
-//       "order_id": await generateOrderId(),
-//       "customer_details": {
-//         "customer_id": "webcodder01",
-//         "customer_phone": "9999999999",
-//         "customer_name": "Web Codder",
-//         "customer_email": "webcodder@example.com"
-//       },
-//     }
-
-//     Cashfree.PGCreateOrder("2022-09-01", request).then(response => {
-//       console.log(response.data);
-//       res.json(response.data);
-
-//     }).catch(error => {
-//       console.error(error.response.data.message);
-//     })
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-
-// })
-
-// app.post('/api/verify', async (req, res) => {
-//   try {
-
-//     let { orderId } = req.body;
-
-//     Cashfree.PGOrderFetchPayments("2023-08-01", orderId).then((response) => {
-
-//       res.json(response.data);
-//     }).catch(error => {
-//       console.error(error.response.data.message);
-//     })
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })
-
-//----------------------------------------------------- Kam Ka code End -------------------------------------------------------------
-
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
   //console.log(email , password)
@@ -281,7 +202,6 @@ app.post("/api/employeelogin", async (req, res) => {
     socketIO.emit("Employee-login");
   }
 });
-
 app.post("/api/datamanagerlogin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -310,7 +230,6 @@ app.post("/api/datamanagerlogin", async (req, res) => {
     // socketIO.emit("Employee-login");
   }
 });
-
 app.post("/api/bdmlogin", async (req, res) => {
   const { email, password } = req.body;
   //console.log(email,password)
@@ -335,8 +254,26 @@ app.post("/api/bdmlogin", async (req, res) => {
     //socketIO.emit("Employee-login");
   }
 });
+app.post("/api/processingLogin", async (req, res) => {
+  const { username, password } = req.body;
 
-// app.post("/api/datamanagerlogin", async (req, res) => {
+  // Replace this with your actual Employee authentication logic
+  const user = await adminModel.findOne({
+    email: username,
+    password: password,
+    designation: "Admin Team",
+  });
+
+  if (user) {
+    const ename = user.ename;
+    const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    res.json({ processingToken, ename });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
 //   const { email, password } = req.body;
 //   console.log(email,password)
 //   // Replace this with your actual Employee authentication logic
@@ -359,6 +296,8 @@ app.post("/api/bdmlogin", async (req, res) => {
 //   }
 // });
 
+
+// **************************************  Socket IO Active Status  **************************************************
 app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
@@ -390,131 +329,36 @@ app.put("/api/online-status/:id/disconnect", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post("/api/processingLogin", async (req, res) => {
-  const { username, password } = req.body;
-
-  // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({
-    email: username,
-    password: password,
-    designation: "Admin Team",
-  });
-
-  if (user) {
-    const ename = user.ename;
-    const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "10h",
+//  ******************************************************************* Login Details ***************************************************************************
+app.post("/api/loginDetails", (req, res) => {
+  const { ename, date, time, address } = req.body;
+  const newLoginDetails = new LoginDetails({ ename, date, time, address });
+  newLoginDetails
+    .save()
+    .then((savedLoginDetails) => {
+      // console.log("Login details saved to database:", savedLoginDetails);
+      res.json(savedLoginDetails);
+    })
+    .catch((error) => {
+      console.error("Failed to save login details to database:", error);
+      res.status(500).json({ error: "Failed to save login details" });
     });
-    res.json({ processingToken, ename });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
-  }
 });
 
-const deleteAllData = async () => {
-  try {
-    const result = await CompanyModel.deleteMany({});
-    // console.log(` documents deleted successfully.`);
-  } catch (error) {
-    console.error("Error deleting documents:", error.message);
-  } finally {
-    mongoose.connection.close();
-  }
-};
-
-// deleteAllData();
-
-// app.post("/api/leads", async (req, res) => {
-//   const csvData = req.body;
-//   let counter = 0;
-//   let sucessCounter = 0;
-
-//   try {
-//     for (const employeeData of csvData) {
-//       try {
-//         const employeeWithAssignData = {
-//           ...employeeData,
-//           AssignDate: new Date(),
-//         };
-//         const employee = new CompanyModel(employeeWithAssignData);
-//         const savedEmployee = await employee.save();
-//         sucessCounter++;
-//       } catch (error) {
-//         console.error("Error saving employee:", error.message);
-//         counter++;
-//         // res.status(500).json({ error: 'Internal Server Error' });
-
-//         // Handle the error for this specific entry, but continue with the next one
-//       }
-//     }
-//     res.status(200).json({
-//       message: "Data sent successfully",
-//       counter: counter,
-//       sucessCounter: sucessCounter,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: "Internal Server Error" });
-//     console.error("Error in bulk save:", error.message);
-//   }
-// });
-
-app.post("/api/leads", async (req, res) => {
-  const csvData = req.body;
-  //console.log("csvdata" , csvData)
-  let counter = 0;
-  let successCounter = 0;
-  let duplicateEntries = []; // Array to store duplicate entries
-
-  try {
-    for (const employeeData of csvData) {
-      //console.log("employee" , employeeData)
-      try {
-        const employeeWithAssignData = {
-          ...employeeData,
-          AssignDate: new Date(),
-          "Company Name": employeeData["Company Name"].toUpperCase(),
-        };
-        const employee = new CompanyModel(employeeWithAssignData);
-        //console.log("newemployee" , employee)
-        const savedEmployee = await employee.save();
-        //console.log("saved" , savedEmployee)
-        successCounter++;
-      } catch (error) {
-        duplicateEntries.push(employeeData);
-        //console.log("kuch h ye" , duplicateEntries);
-        console.error("Error saving employee:", error.message);
-        counter++;
-      }
-    }
-    if (duplicateEntries.length > 0) {
-      //console.log("yahan chala csv pr")
-      //console.log(duplicateEntries , "duplicate")
-      const json2csvParser = new Parser();
-      // If there are duplicate entries, create and send CSV
-      const csvString = json2csvParser.parse(duplicateEntries);
-     // console.log(csvString , "csv")
-      res.setHeader("Content-Type", "text/csv");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=DuplicateEntries.csv"
-      );
-      res.status(200).end(csvString);
-    
-      //console.log("csvString" , csvString)
-    } else {
-     // console.log("yahan chala counter pr")
-      res.status(200).json({
-        message: "Data sent successfully",
-        counter: counter,
-        successCounter: successCounter,
-      });
-      
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error in bulk save:", error.message);
-  }
+app.get("/api/loginDetails", (req, res) => {
+  LoginDetails.find()
+    .then((loginDetails) => {
+      res.json(loginDetails);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch login details from database:", error);
+      res.status(500).json({ error: "Failed to fetch login details" });
+    });
 });
+
+
+//  *************************************************  Company Data POSTING Request  ******************************************************
+
 
 function createCSVString(data) {
   const csvData = [];
@@ -612,20 +456,7 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
   }
 });
 
-app.get("/api/specific-company/:companyId", async (req, res) => {
-  try {
-    const companyId = req.params.companyId;
-    // Assuming CompanyModel.findById() is used to find a company by its ID
-    const company = await CompanyModel.findById(companyId);
-    if (!company) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-    res.json(company);
-  } catch (error) {
-    console.error("Error fetching company:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+
 // app.get("/api/insert-bdmName", async (req, res) => {
 //   try {
 //     // Find RedesignedLeadformModel documents where bdmName and bdeName are not the same
@@ -760,28 +591,7 @@ app.post("/api/update-status/:id", async (req, res) => {
 
 app.use("/api/remarks" , RemarksAPI);
 
-app.post("/api/einfo", async (req, res) => {
-  try {
-    adminModel.create(req.body).then((respond) => {
-      res.json(respond);
-      console.log("newemployee", req.body);
-      //console.log("respond" , respond)
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
-app.get("/api/einfo", async (req, res) => {
-  try {
-    const data = await adminModel.find();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 app.post("/api/post-bdmwork-request/:eid", async (req, res) => {
   const eid = req.params.eid;
@@ -841,7 +651,11 @@ app.post("/api/post-bdmwork-revoke/:eid", async (req, res) => {
 //   }
 // });
 
-app.post("/api/teaminfo", async (req, res) => {
+
+
+
+// ************************************************************************  Teams Section ********************************************************************************************
+app.post("/api/teams/teaminfo", async (req, res) => {
   const teamData = req.body;
   // Assuming `formatDate()` is a function that formats the current date
 
@@ -862,7 +676,7 @@ app.post("/api/teaminfo", async (req, res) => {
   }
 });
 
-app.get("/api/teaminfo", async (req, res) => {
+app.get("/api/teams/teaminfo", async (req, res) => {
   try {
     const data = await TeamModel.find();
     //console.log("teamdata" , data)
@@ -873,7 +687,7 @@ app.get("/api/teaminfo", async (req, res) => {
   }
 });
 
-app.get("/api/teaminfo/:ename", async (req, res) => {
+app.get("/api/teams/teaminfo/:ename", async (req, res) => {
   const ename = req.params.ename;
   //console.log(ename)
   //console.log(ename)
@@ -890,6 +704,16 @@ app.get("/api/teaminfo/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get("/api/teams/teamleadsdata", async (req, res) => {
+  try {
+    const data = await TeamLeadsModel.find()
+    res.status(200).send(data)
+
+  } catch (error) {
+    console.log("error fetching team leads data", error.message)
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
 
 // app.post("/api/forwardtobdmdata", async (req, res) => {
 //   const selectedData = req.body;
@@ -975,16 +799,7 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
   }
 });
 
-app.get("/api/teamleadsdata", async (req, res) => {
-  try {
-    const data = await TeamLeadsModel.find()
-    res.status(200).send(data)
 
-  } catch (error) {
-    console.log("error fetching team leads data", error.message)
-    res.status(500).json({ error: "Internal server error" })
-  }
-})
 
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -1295,85 +1110,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 
 // ------------------------------------------------------team api end----------------------------------
 
-app.get("/api/leads", async (req, res) => {
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.find().lean();
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get('/api/new-leads', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1; // Page number
-    const limit = parseInt(req.query.limit) || 500; // Items per page
-    const skip = (page - 1) * limit; // Number of documents to skip
-    const { dataStatus } = req.query
-
-    //console.log("dataStatus" , dataStatus)
-    // Query the database to get paginated data
-    let query = {};
-
-    if (dataStatus === "Unassigned") {
-      query = { ename: "Not Alloted" };
-
-    } else if (dataStatus === "Assigned") {
-      query = { ename: { $ne: "Not Alloted" } };
-
-    }
-    const employees = await CompanyModel.find(query)
-      .skip(skip)
-      .limit(limit);
-    // console.log("employees" , employees)
-    // Get total count of documents for pagination
-    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
-    const totalCount = await CompanyModel.countDocuments(query)
-
-    //console.log(totalCount , unAssignedCount, assignedCount)
-    //console.log(unAssignedCount , assignedCount)
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-    // Return paginated data along with pagination metadata
-    res.json({
-      data: employees,
-      currentPage: page,
-      totalPages: totalPages,
-      unAssignedCount: unAssignedCount,
-      assignedCount: assignedCount
-    });
-  } catch (error) {
-    console.error('Error fetching employee data:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.get('/api/search-leads', async (req, res) => {
-  try {
-    const { searchQuery } = req.query;
-    console.log(searchQuery, "search")
-
-    let searchResults;
-    if (searchQuery && searchQuery.trim() !== '') {
-      // Perform database query to search for leads matching the searchQuery
-      searchResults = await CompanyModel.find({
-        'Company Name': { $regex: new RegExp(searchQuery, 'i') } // Case-insensitive search
-      }).limit(500).lean();
-    } else {
-      // If search query is empty, fetch 500 data from CompanyModel
-      searchResults = await CompanyModel.find().limit(500).lean();
-    }
-
-    res.json(searchResults);
-  } catch (error) {
-    console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
 
 // app.get("/api/new-leads", async (req, res) => {
 //   try {
@@ -1395,20 +1132,7 @@ app.get('/api/search-leads', async (req, res) => {
 // });
 
 
-app.get("/api/leads/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.findOne({
-      "Company Name": companyName,
-    }).lean();
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 // ------------------------------api to get leads on the basis of ename------------------------
 
@@ -1480,147 +1204,10 @@ app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
 // });
 
 
-app.get("/api/projection-data", async (req, res) => {
-  try {
-    // Fetch all data from the FollowUpModel
-    const followUps = await FollowUpModel.find();
+// ****************************************  Projection Section's Hadi *********************************************************
 
-    //console.log(query)
-    // Return the data as JSON response
-    res.json(followUps);
-  } catch (error) {
-    // If there's an error, send a 500 internal server error response
-    console.error("Error fetching FollowUp data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get(`/api/projection-data-company/:companyName`, async (req, res) => {
-  const companyName = req.params.companyName;
-
-  try {
-    const response = await FollowUpModel.find({
-      companyName: companyName
-    })
-    res.json(response);
-
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" })
-  }
-
-})
-
-app.get("/api/card-leads", async (req, res) => {
-  try {
-    const { dAmount } = req.query; // Get the dAmount parameter from the query
-
-    // Fetch data from the database with the specified limit
-    const data = await CompanyModel.find({
-      ename: { $in: ["Select Employee", "Not Alloted"] },
-    })
-      .limit(parseInt(dAmount))
-      .lean();
-
-    // Send the data as the API response
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/api/projection-data/:ename", async (req, res) => {
-  try {
-    const ename = req.params.ename;
-    // Fetch data from the FollowUpModel based on the employeeName if provided
-    const followUps = await FollowUpModel.find({
-      $or: [
-        { ename: ename }, // First condition
-        { bdeName: ename }, // Second condition
-        { bdmName: ename }, // Second condition
-        // Add more conditions if needed
-      ],
-    });
-    // Return the data as JSON response
-    res.json(followUps);
-  } catch (error) {
-    // If there's an error, send a 500 internal server error response
-    console.error("Error fetching FollowUp data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// ----------------------------------api to delete projection data-----------------------------------
-
-app.delete("/api/delete-followup/:companyName", async (req, res) => {
-  try {
-    // Extract the company name from the request parameters
-    const { companyName } = req.params;
-
-    // Check if a document with the given company name exists
-    const existingData = await FollowUpModel.findOne({ companyName });
-
-    if (existingData) {
-      // If the document exists, delete it
-      await FollowUpModel.findOneAndDelete({ companyName });
-      res.status(200).json({ message: "Data deleted successfully" });
-    } else {
-      // If no document with the given company name exists, return a 404 Not Found response
-      res.status(404).json({ error: "Company not found" });
-    }
-  } catch (error) {
-    // If there's an error during the deletion process, send a 500 Internal Server Error response
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Backend API to update or add data to FollowUpModel
-// app.post('/api/update-followup', async (req, res) => {
-//   try {
-//     const { companyName } = req.body;
-//     const todayDate = new Date();
-//     const time = todayDate.toLocaleTimeString();
-//     const date = todayDate.toLocaleDateString();
-//     const finalData = { ...req.body, date, time };
-
-//     // Check if a document with companyName exists
-//     const existingData = await FollowUpModel.findOne({ companyName });
-
-//     if (existingData) {
-//       // Update existing document
-//       await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
-//       res.status(200).json({ message: 'Data updated successfully' });
-//     } else {
-//       // Create new document
-//       await FollowUpModel.create(finalData);
-//       res.status(201).json({ message: 'New data added successfully' });
-//     }
-//   } catch (error) {
-//     console.error('Error updating or adding data:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
-function formatDate(timestamp) {
-  const date = new Date(timestamp);
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-}
-
-function formatDateNew(timestamp) {
-  const date = new Date(timestamp);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const formattedDay = day < 10 ? "0" + day : day;
-  const formattedMonth = month < 10 ? "0" + month : month;
-  return `${formattedDay}/${formattedMonth}/${year}`;
-}
-
-app.post("/api/update-followup", async (req, res) => {
+// 1. ADD PROJECTION
+app.post("/api/projection/update-followup", async (req, res) => {
   try {
     const { companyName } = req.body;
     const todayDate = new Date();
@@ -1657,102 +1244,199 @@ app.post("/api/update-followup", async (req, res) => {
   }
 });
 
-app.get("/api/requestCompanyData", async (req, res) => {
+// 2. Delete Projection
+app.delete("/api/projection/delete-followup/:companyName", async (req, res) => {
   try {
-    const data = await CompanyRequestModel.find();
+    // Extract the company name from the request parameters
+    const { companyName } = req.params;
+
+    // Check if a document with the given company name exists
+    const existingData = await FollowUpModel.findOne({ companyName });
+
+    if (existingData) {
+      // If the document exists, delete it
+      await FollowUpModel.findOneAndDelete({ companyName });
+      res.status(200).json({ message: "Data deleted successfully" });
+    } else {
+      // If no document with the given company name exists, return a 404 Not Found response
+      res.status(404).json({ error: "Company not found" });
+    }
+  } catch (error) {
+    // If there's an error during the deletion process, send a 500 Internal Server Error response
+    console.error("Error deleting data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// 3. Read Projections
+app.get("/api/projection/projection-data/:ename", async (req, res) => {
+  try {
+    const ename = req.params.ename;
+    // Fetch data from the FollowUpModel based on the employeeName if provided
+    const followUps = await FollowUpModel.find({
+      $or: [
+        { ename: ename }, // First condition
+        { bdeName: ename }, // Second condition
+        { bdmName: ename }, // Second condition
+        // Add more conditions if needed
+      ],
+    });
+    // Return the data as JSON response
+    res.json(followUps);
+  } catch (error) {
+    // If there's an error, send a 500 internal server error response
+    console.error("Error fetching FollowUp data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/projection/projection-data", async (req, res) => {
+  try {
+    // Fetch all data from the FollowUpModel
+    const followUps = await FollowUpModel.find();
+
+    //console.log(query)
+    // Return the data as JSON response
+    res.json(followUps);
+  } catch (error) {
+    // If there's an error, send a 500 internal server error response
+    console.error("Error fetching FollowUp data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get(`/api/projection/projection-data-company/:companyName`, async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    const response = await FollowUpModel.find({
+      companyName: companyName
+    })
+    res.json(response);
+
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+
+})
+
+app.post("/api/projection/followdataexport/", async (req, res) => {
+  try {
+    const leads = req.body;
+
+    // const leads = await FollowUpModel.find({
+    // });
+
+    const csvData = [];
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Employee Name",
+      "Company Name",
+      "Offered Services",
+      "Offered Prize",
+      "Expected Amount",
+      "Estimated Payment Date",
+      "Last Follow Up Date",
+      "Remarks",
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead.ename,
+        lead.companyName,
+        `"${lead.offeredServices.join(",")}"`,
+        lead.offeredPrize,
+        lead.totalPayment,
+        lead.estPaymentDate,
+        lead.lastFollowUpdate,
+        lead.remarks,
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=FollowDataToday.csv"
+    );
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
+    // Send response with CSV data
+    // Send response with CSV data
+    //console.log(csvString)
+    res.status(200).end(csvString);
+    // console.log(csvString)
+    // Here you're ending the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+// ----------------------------------api to delete projection data-----------------------------------
+
+
+
+// Backend API to update or add data to FollowUpModel
+// app.post('/api/update-followup', async (req, res) => {
+//   try {
+//     const { companyName } = req.body;
+//     const todayDate = new Date();
+//     const time = todayDate.toLocaleTimeString();
+//     const date = todayDate.toLocaleDateString();
+//     const finalData = { ...req.body, date, time };
+
+//     // Check if a document with companyName exists
+//     const existingData = await FollowUpModel.findOne({ companyName });
+
+//     if (existingData) {
+//       // Update existing document
+//       await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
+//       res.status(200).json({ message: 'Data updated successfully' });
+//     } else {
+//       // Create new document
+//       await FollowUpModel.create(finalData);
+//       res.status(201).json({ message: 'New data added successfully' });
+//     }
+//   } catch (error) {
+//     console.error('Error updating or adding data:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
+
+
+
+//  ***************************************************  Employee's Hadi(CRUD Operation)  ******************************************************
+
+// 1. Create an Employee
+app.post("/api/employee/einfo", async (req, res) => {
+  try {
+    adminModel.create(req.body).then((respond) => {
+      res.json(respond);
+      console.log("newemployee", req.body);
+      //console.log("respond" , respond)
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// 2. Read the Employee
+app.get("/api/employee/einfo", async (req, res) => {
+  try {
+    const data = await adminModel.find();
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-app.delete("/api/einfo/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    // Use findByIdAndDelete to delete the document by its ID
-    const deletedData = await adminModel.findByIdAndDelete(id);
-
-    if (!deletedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
-
-    res.json({ message: "Data deleted successfully", deletedData });
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-// delete from leads
-
-app.delete("/api/leads/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    // Use findByIdAndDelete to delete the document by its ID
-    const deletedData = await CompanyModel.findByIdAndDelete(id);
-    if (!deletedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
-
-    res.json({ message: "Data deleted successfully", deletedData });
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-// delete selected rows
-
-// app.delete("/api/delete-rows", async (req, res) => {
-//   const { selectedRows } = req.body;
-
-//   try {
-//     // Use Mongoose to delete rows by their IDs
-//     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-
-//     // Trigger backup on the server
-//     exec(
-//       `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
-//       (error, stdout, stderr) => {
-//         if (error) {
-//           console.error("Error creating backup:", error);
-//           // Respond with an error if backup fails
-//           res.status(500).json({ error: "Error creating backup." });
-//         } else {
-//           // console.log("Backup created successfully:", stdout);
-//           // Respond with success message if backup is successful
-//           res.status(200).json({
-//             message:
-//               "Rows deleted successfully and backup created successfully.",
-//           });
-//         }
-//       }
-//     );
-//   } catch (error) {
-//     console.error("Error deleting rows:", error.message);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-app.post("/api/undo", (req, res) => {
-  // Run mongorestore command to restore the data
-  exec(
-    `mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
-  `,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error("Error restoring data:", error);
-        res.status(500).json({ error: "Error restoring data." });
-      } else {
-        // console.log("Data restored successfully:", stdout);
-        res.status(200).json({ message: "Data restored successfully." });
-      }
-    }
-  );
-});
-
-app.put("/api/einfo/:id", async (req, res) => {
+// 3. Update the Employee
+app.put("/api/employee/einfo/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -1770,7 +1454,40 @@ app.put("/api/einfo/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+// 4. Delete an Employee 
+app.delete("/api/employee/einfo/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    // Use findByIdAndDelete to delete the document by its ID
+    const deletedData = await adminModel.findByIdAndDelete(id);
 
+    if (!deletedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+
+    res.json({ message: "Data deleted successfully", deletedData });
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// ***************************************************************  Company Data's Hadi  *************************************************************
+// 2. Read a Company
+app.get("/api/leads/:companyName", async (req, res) => {
+  const companyName = req.params.companyName;
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.findOne({
+      "Company Name": companyName,
+    }).lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// 3. Update a Company 
 app.put("/api/leads/:id", async (req, res) => {
   const id = req.params.id;
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
@@ -1794,8 +1511,268 @@ app.put("/api/leads/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+// 4. Delete a Company
+app.delete("/api/leads/:id", async (req, res) => {
+  const id = req.params.id;
 
-// app.put('/ecompany/:ename', async (req, res) => {
+  try {
+    // Use findByIdAndDelete to delete the document by its ID
+    const deletedData = await CompanyModel.findByIdAndDelete(id);
+    if (!deletedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+
+    res.json({ message: "Data deleted successfully", deletedData });
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// 5. ADD Multiple Companies
+app.post("/api/company", async (req, res) => {
+  const { newemployeeSelection, csvdata } = req.body;
+
+  try {
+    const insertedCompanies = [];
+    let counter = 0;
+    for (const company of csvdata) {
+      // Check for duplicate based on some unique identifier, like company name
+      const isDuplicate = await CompanyModel.exists({
+        "Company Name": company["Company Name"].trim().toLowerCase(),
+      });
+
+      if (!isDuplicate) {
+        // If not a duplicate, add ename and insert into the database
+        const companyWithEname = {
+          ...company,
+          ename: newemployeeSelection,
+          AssignDate: new Date(),
+        };
+
+        const insertedCompany = await CompanyModel.create(companyWithEname);
+        insertedCompanies.push(insertedCompany);
+      } else {
+        console.log(
+          `Duplicate entry found for company name: ${company["Company Name"]}. Skipped.`
+        );
+        counter++;
+      }
+    }
+
+    res.json(insertedCompanies, counter);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// 6. ADD Multiple Companies(Pata nai kyu he)
+app.post("/api/leads", async (req, res) => {
+  const csvData = req.body;
+  //console.log("csvdata" , csvData)
+  let counter = 0;
+  let successCounter = 0;
+  let duplicateEntries = []; // Array to store duplicate entries
+
+  try {
+    for (const employeeData of csvData) {
+      //console.log("employee" , employeeData)
+      try {
+        const employeeWithAssignData = {
+          ...employeeData,
+          AssignDate: new Date(),
+          "Company Name": employeeData["Company Name"].toUpperCase(),
+        };
+        const employee = new CompanyModel(employeeWithAssignData);
+        //console.log("newemployee" , employee)
+        const savedEmployee = await employee.save();
+        //console.log("saved" , savedEmployee)
+        successCounter++;
+      } catch (error) {
+        duplicateEntries.push(employeeData);
+        //console.log("kuch h ye" , duplicateEntries);
+        console.error("Error saving employee:", error.message);
+        counter++;
+      }
+    }
+    if (duplicateEntries.length > 0) {
+      //console.log("yahan chala csv pr")
+      //console.log(duplicateEntries , "duplicate")
+      const json2csvParser = new Parser();
+      // If there are duplicate entries, create and send CSV
+      const csvString = json2csvParser.parse(duplicateEntries);
+     // console.log(csvString , "csv")
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=DuplicateEntries.csv"
+      );
+      res.status(200).end(csvString);
+    
+      //console.log("csvString" , csvString)
+    } else {
+     // console.log("yahan chala counter pr")
+      res.status(200).json({
+        message: "Data sent successfully",
+        counter: counter,
+        successCounter: successCounter,
+      });
+      
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in bulk save:", error.message);
+  }
+});
+// 7. Read Muultiple Companies 
+app.get("/api/leads", async (req, res) => {
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+//8. Read Multiple companies New
+app.get('/api/new-leads', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus } = req.query
+
+    //console.log("dataStatus" , dataStatus)
+    // Query the database to get paginated data
+    let query = {};
+
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+
+    } else if (dataStatus === "Assigned") {
+      query = { ename: { $ne: "Not Alloted" } };
+
+    }
+    const employees = await CompanyModel.find(query)
+    .sort({ AssignDate: -1 })  // Sort in descending order by the specified field
+    .skip(skip)
+    .limit(limit);
+  
+    // console.log("employees" , employees)
+    // Get total count of documents for pagination
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
+    const totalCount = await CompanyModel.countDocuments(query)
+
+    //console.log(totalCount , unAssignedCount, assignedCount)
+    //console.log(unAssignedCount , assignedCount)
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+    // Return paginated data along with pagination metadata
+    res.json({
+      data: employees,
+      currentPage: page,
+      totalPages: totalPages,
+      unAssignedCount: unAssignedCount,
+      assignedCount: assignedCount
+    });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+//9. Filtere search for Reading Multiple Companies
+app.get('/api/search-leads', async (req, res) => {
+  try {
+    const { searchQuery } = req.query;
+    const { field } = req.query;
+    console.log(searchQuery , "search")
+
+    let searchResults;
+    if (field === "Company Name" || field === "Company Email") {
+      if (searchQuery && searchQuery.trim() !== '') {
+        // Perform database query to search for leads matching the searchQuery
+        const query = {};
+        query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
+    
+        searchResults = await CompanyModel.find(query).limit(500).lean();
+      } else {
+        // If search query is empty, fetch 500 data from CompanyModel
+        searchResults = await CompanyModel.find().limit(500).lean();
+      }
+    }
+    else if (field === "Company Number") {
+      if (searchQuery && searchQuery.trim() !== '') {
+        // Check if the searchQuery is a valid number
+        const searchNumber = Number(searchQuery);
+    
+        if (!isNaN(searchNumber)) {
+          // Perform database query to search for leads matching the searchQuery as a number
+          searchResults = await CompanyModel.find({
+            'Company Number': searchNumber
+          }).limit(500).lean();
+        } else {
+          // If the searchQuery is not a number, perform a regex search (if needed for some reason)
+          searchResults = await CompanyModel.find({
+            'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
+          }).limit(500).lean();
+        }
+      } else {
+        // If search query is empty, fetch 500 data from CompanyModel
+        searchResults = await CompanyModel.find().limit(500).lean();
+      }
+    }
+    
+  
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+//10. Search for Specific Company
+app.get("/api/specific-company/:companyId", async (req, res) => {
+  try {
+    const companyId = req.params.companyId;
+    // Assuming CompanyModel.findById() is used to find a company by its ID
+    const company = await CompanyModel.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(company);
+  } catch (error) {
+    console.error("Error fetching company:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+//11. Assign company to new employee
+app.post("/api/assign-new", async (req, res) => {
+  const { newemployeeSelection, data } = req.body;
+
+  try {
+    // Add AssignDate property with the current date
+    const updatedObj = {
+      ...data,
+      ename: newemployeeSelection,
+      AssignDate: new Date(),
+    };
+
+    // Update CompanyModel for the specific data
+    await CompanyModel.updateOne({ _id: data._id }, updatedObj);
+
+    // Delete objects from RemarksHistory collection that match the "Company Name"
+    await RemarksHistory.deleteMany({ companyID: data._id });
+
+    res.status(200).json({ message: "Data updated successfully" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 //   const name = req.params.id;
 
 //   try {
@@ -1841,6 +1818,7 @@ app.put("/api/leads/:id", async (req, res) => {
 //   res.json({ message: "Data posted successfully" });
 // });
 
+// **************************************************************  Follow UPDATE content  **************************************************************
 app.post(`/api/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
 
@@ -1879,66 +1857,6 @@ app.post(`/api/post-bdmnextfollowupdate/:id`, async (req, res) => {
   }
 });
 
-app.get("/api/recent-updates", async (req, res) => {
-  try {
-    // Fetch all data from the RecentUpdatesModel
-    const recentUpdates = await RecentUpdatesModel.find();
-
-    // Send the retrieved data as a response
-    res.status(200).json(recentUpdates);
-  } catch (error) {
-    // Handle any errors that occur during the database query
-    console.error("Error fetching recent updates:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.delete("/api/delete-data/:ename", async (req, res) => {
-  const { ename } = req.params;
-
-  try {
-    // Delete all data objects with the given ename
-    await CompanyRequestModel.deleteMany({ ename });
-
-    // Send success response
-    res.status(200).send("Data deleted successfully");
-  } catch (error) {
-    // Send error response
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/api/assign-new", async (req, res) => {
-  const { newemployeeSelection, data } = req.body;
-
-  try {
-    // Add AssignDate property with the current date
-    const updatedObj = {
-      ...data,
-      ename: newemployeeSelection,
-      AssignDate: new Date(),
-    };
-
-    // Update CompanyModel for the specific data
-    await CompanyModel.updateOne({ _id: data._id }, updatedObj);
-
-    // Delete objects from RemarksHistory collection that match the "Company Name"
-    await RemarksHistory.deleteMany({ companyID: data._id });
-
-    res.status(200).json({ message: "Data updated successfully" });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// Define the route handler for deleting companies
-// Assuming you have already set up your Express app and imported necessary modules
-
-// Import the TeamLeadsModel
-// Define the route handler for deleting companies
-
-
 app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
   try {
     // Extract the companyIds from the request body
@@ -1966,8 +1884,6 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 app.post("/api/assign-leads-newbdm", async (req, res) => {
   const { newemployeeSelection, data, bdmAcceptStatus } = req.body;
@@ -2029,44 +1945,8 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
   }
 });
 
-app.post("/api/company", async (req, res) => {
-  const { newemployeeSelection, csvdata } = req.body;
 
-  try {
-    const insertedCompanies = [];
-    let counter = 0;
-    for (const company of csvdata) {
-      // Check for duplicate based on some unique identifier, like company name
-      const isDuplicate = await CompanyModel.exists({
-        "Company Name": company["Company Name"].trim().toLowerCase(),
-      });
-
-      if (!isDuplicate) {
-        // If not a duplicate, add ename and insert into the database
-        const companyWithEname = {
-          ...company,
-          ename: newemployeeSelection,
-          AssignDate: new Date(),
-        };
-
-        const insertedCompany = await CompanyModel.create(companyWithEname);
-        insertedCompanies.push(insertedCompany);
-      } else {
-        console.log(
-          `Duplicate entry found for company name: ${company["Company Name"]}. Skipped.`
-        );
-        counter++;
-      }
-    }
-
-    res.json(insertedCompanies, counter);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// get the company data,
+// *************************************************  Fetching Company Data   ***********************************************************
 app.get("/api/employees/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
@@ -2083,55 +1963,6 @@ app.get("/api/employees/:ename", async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// for inserting more values to einfo
-app.put("/api/neweinfo/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const existingData = await adminModel.findById(id);
-
-    if (!existingData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
-
-    // Map the incoming data to a format suitable for comparison
-    const incomingData = req.body.cInfo.map((data) => ({
-      "Company Name": data["Company Name"],
-      "Company Number": data["Company Number"],
-      "Company Incorporation Date  ": data["Company Incorporation Date  "],
-      "Company Email": data["Company Email"],
-      City: data.City,
-      State: data.State,
-    }));
-
-    // Filter out existing entries from the incoming data
-    const newData = incomingData.filter((data) => {
-      return !existingData.cInfo.some((existing) => {
-        return (
-          existing["Company Name"] === data["Company Name"] &&
-          existing["Company Number"] === data["Company Number"] &&
-          existing["Company Incorporation Date  "] ===
-          data["Company Incorporation Date  "] &&
-          existing["Company Email"] === data["Company Email"] &&
-          existing.City === data.City &&
-          existing.State === data.State
-        );
-      });
-    });
-
-    // Add the filtered data to the existing array
-    existingData.cInfo.push(...newData);
-
-    // Save the updated document
-    const updatedData = await existingData.save();
-
-    res.json({ message: "Data updated successfully", updatedData });
-  } catch (error) {
-    console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -2310,66 +2141,6 @@ app.put("/api/requestgData/:id", async (req, res) => {
   }
 });
 
-app.get("/api/edata-particular/:ename", async (req, res) => {
-  try {
-    const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({
-      $or: [{ ename: ename }, { maturedBdmName: ename }],
-    });
-    res.json(filteredEmployeeData);
-  } catch (error) {
-    console.error("Error fetching employee data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    // Find the document by id and update the ename field to null or an empty string
-    const updatedData = await CompanyModel.findByIdAndUpdate(
-      id,
-      { ename: "Not Alloted" },
-      { new: true }
-    );
-
-    res.json({ message: "Ename deleted successfully", updatedData });
-  } catch (error) {
-    console.error("Error deleting ename:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // Determine the destination path based on the fieldname and company name
-    const companyName = req.params.CompanyName;
-    let destinationPath = "";
-
-    if (file.fieldname === "otherDocs") {
-      destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
-    } else if (file.fieldname === "paymentReceipt") {
-      destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
-    }
-
-    // Create the directory if it doesn't exist
-    if (!fs.existsSync(destinationPath)) {
-      fs.mkdirSync(destinationPath, { recursive: true });
-    }
-
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
-// --------------------api for importing excel data on processing dashboard----------------------------
 // app.get("/api/booking-model-filter", async (req, res) => {
 //   try {
 //     const { startDate, endDate } = req.query;
@@ -2450,16 +2221,21 @@ app.get("/api/drafts-search/:companyName", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+app.delete("/api/delete-data/:ename", async (req, res) => {
+  const { ename } = req.params;
 
+  try {
+    // Delete all data objects with the given ename
+    await CompanyRequestModel.deleteMany({ ename });
+
+    // Send success response
+    res.status(200).send("Data deleted successfully");
+  } catch (error) {
+    // Send error response
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 // ---------------------------api to fetch companies in processing dashboard-----------------------------------
-
-
-
-
-
-
-
-
 
 app.post("/api/deleterequestbybde", async (req, res) => {
   try {
@@ -2546,34 +2322,8 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-//  ******************************************************************* Login Details ***************************************************************************
-app.post("/api/loginDetails", (req, res) => {
-  const { ename, date, time, address } = req.body;
-  const newLoginDetails = new LoginDetails({ ename, date, time, address });
-  newLoginDetails
-    .save()
-    .then((savedLoginDetails) => {
-      // console.log("Login details saved to database:", savedLoginDetails);
-      res.json(savedLoginDetails);
-    })
-    .catch((error) => {
-      console.error("Failed to save login details to database:", error);
-      res.status(500).json({ error: "Failed to save login details" });
-    });
-});
 
-app.get("/api/loginDetails", (req, res) => {
-  LoginDetails.find()
-    .then((loginDetails) => {
-      res.json(loginDetails);
-    })
-    .catch((error) => {
-      console.error("Failed to fetch login details from database:", error);
-      res.status(500).json({ error: "Failed to fetch login details" });
-    });
-});
-
-// ------------------------------------pdf files reader-------------------------------------
+// ********************************************************pdf files reader *************************************************************************************
 
 app.get("/api/pdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
@@ -2632,7 +2382,7 @@ app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
   });
 });
 
-app.get("/api/recieptpdf/:CompanyName/:filename", (req, res) => {
+app.get("/api/bookings/recieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
   const companyName = req.params.CompanyName;
   const pdfPath = path.join(
@@ -2653,7 +2403,7 @@ app.get("/api/recieptpdf/:CompanyName/:filename", (req, res) => {
   });
 });
 
-app.get("/api/otherpdf/:CompanyName/:filename", (req, res) => {
+app.get("/api/bookings/otherpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
   const companyName = req.params.CompanyName;
   const pdfPath = path.join(
@@ -2766,66 +2516,9 @@ app.post("/api/exportLeads/", async (req, res) => {
   }
 });
 
-app.post("/api/followdataexport/", async (req, res) => {
-  try {
-    const leads = req.body;
 
-    // const leads = await FollowUpModel.find({
-    // });
-
-    const csvData = [];
-    // Push the headers as the first row
-    csvData.push([
-      "SR. NO",
-      "Employee Name",
-      "Company Name",
-      "Offered Services",
-      "Offered Prize",
-      "Expected Amount",
-      "Estimated Payment Date",
-      "Last Follow Up Date",
-      "Remarks",
-    ]);
-
-    // Push each lead as a row into the csvData array
-    leads.forEach((lead, index) => {
-      const rowData = [
-        index + 1,
-        lead.ename,
-        lead.companyName,
-        `"${lead.offeredServices.join(",")}"`,
-        lead.offeredPrize,
-        lead.totalPayment,
-        lead.estPaymentDate,
-        lead.lastFollowUpdate,
-        lead.remarks,
-      ];
-      csvData.push(rowData);
-      // console.log("rowData:" , rowData)
-    });
-
-    // Use fast-csv to stringify the csvData array
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=FollowDataToday.csv"
-    );
-
-    const csvString = csvData.map((row) => row.join(",")).join("\n");
-    // Send response with CSV data
-    // Send response with CSV data
-    //console.log(csvString)
-    res.status(200).end(csvString);
-    // console.log(csvString)
-    // Here you're ending the response
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.post(
-  "/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
+// *********************************************  Bookings Section  *****************************************************
+app.post("/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2881,10 +2574,131 @@ app.post(
     }
   }
 );
+app.post("/api/update-redesigned-final-form/:CompanyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    // Assuming updatedBooking contains the updated data
+    const companyName = req.params.CompanyName; // Get the _id from the request parameters
+    const {
+      _id,
+      moreBookings,
+      step4changed,
+      otherDocs,
+      paymentReceipt,
+      remainingPayments,
+      ...boom
+    } = req.body;
+    const newOtherDocs = req.files["otherDocs"] || [];
+    const newPaymentReceipt = req.files["paymentReceipt"] || [];
+    const updatedDocWithoutId = {
+      ...boom,
+      otherDocs: newOtherDocs,
+      paymentReceipt: newPaymentReceipt,
+      remainingPayments: []
+    };
+    const updatedDocs = {
+      ...boom, remainingPayments: []
+    }
+    const goingToUpdate =
+      step4changed === "true" ? updatedDocWithoutId : updatedDocs;
+
+    try {
+      // Find the document by _id and update it with the updatedBooking data
+
+      const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+        {
+          "Company Name": companyName,
+        },
+        goingToUpdate,
+        // Set all properties except "moreBookings"
+        { new: true } // Return the updated document
+      );
+
+      if (!updatedDocument) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+        "Company Name": companyName,
+      });
+
+      res
+        .status(200)
+        .json({ message: "Document updated successfully", updatedDocument });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+app.put("/api/update-more-booking/:CompanyName/:bookingIndex",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { CompanyName, bookingIndex } = req.params;
+      const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
+
+      const newOtherDocs = req.files["otherDocs"] || [];
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const latestData = {
+        ...newData,
+        otherDocs: newOtherDocs,
+        paymentReceipt: newPaymentReceipt,
+      };
+
+      const dataToSend = step4changed === "true" ? latestData : newData;
+      // Find the document by companyName
+      const existingDocument = await RedesignedLeadformModel.findOne({
+        "Company Name": CompanyName,
+      });
+      const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
+      if (!existingDocument) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      console.log("This is sending :", dataToSend, step4changed)
+      // Update the booking in moreBookings array at the specified index
+      const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
+        {
+          "Company Name": CompanyName,
+        },
+        {
+          [`moreBookings.${bookingIndex - 1}`]: {
+            bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
+            paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
+            generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: newOtherDocs, paymentReceipt: newPaymentReceipt
+          }
+        }) : await RedesignedLeadformModel.findOneAndUpdate(
+          {
+            "Company Name": CompanyName,
+          },
+          {
+            [`moreBookings.${bookingIndex - 1}`]: {
+              bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
+              paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
+              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt
+            }
+          },
+          // Set all properties except "moreBookings"
+          { new: true } // Return the updated document
+        );
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+        "Company Name": CompanyName,
+      });
+
+      res.status(200).json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating more booking:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 app.use("/api/bookings" , bookingsAPI)
 
-
-// Use the googleAuth router for Google OAuth routes
 
 // app.get('/dashboard', async function(req, res, next) {
 //   const code = req.query.code;
@@ -3022,7 +2836,7 @@ app.use("/api/bookings" , bookingsAPI)
 
 
 // ---------------------------- BDM Booking Request Section -----------------------------------------------
-
+// ********************************************  Bookings Requests Section *********************************************
 app.post("/api/matured-case-request", async (req, res) => {
   try {
     // Extract data from the request body sent by the frontend
@@ -3057,17 +2871,6 @@ app.post("/api/matured-case-request", async (req, res) => {
     res.status(500).json({ success: false, message: "Error saving request" });
   }
 });
-
-// app.get("/api/matured-get-requests", async (req, res) => {
-//   try {
-//     const request = await RequestMaturedModel.find();
-//     res.status(200).json(request);
-//   } catch (error) {
-//     res
-//       .status(400)
-//       .json({ success: false, message: "Error fetching the data" });
-//   }
-// });
 app.get("/api/inform-bde-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
@@ -3109,7 +2912,6 @@ app.get("/api/matured-get-requests-byBDM/:bdmName", async (req, res) => {
       .json({ success: false, message: "Error fetching the data" });
   }
 });
-
 app.post("/api/update-bdm-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
@@ -3141,32 +2943,6 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-// app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
-//   try {
-//     const _id = req.params.id;
-
-//     // Find the BDM request by ID and delete it
-//     const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
-//     const changeStatus = await TeamLeadsModel.findOneAndUpdate(
-//       {
-//         "Company Name": deletedRequest["Company Name"],
-//       },
-//       {
-//         bdmOnRequest: false,
-//       },
-//       { new: true }
-//     );
-
-//     if (!deletedRequest) {
-//       return res.status(404).json({ message: "BDM request not found" });
-//     }
-
-//     res.status(200).json({ message: "BDM request deleted successfully" });
-//   } catch (error) {
-//     console.error("Error deleting BDM request:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
 app.delete("/api/delete-inform-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
@@ -3184,11 +2960,21 @@ app.delete("/api/delete-inform-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-// --------------------------------------- Redesigned Form Section -----------------------------------------------
-
-app.post(
-  "/api/edit-moreRequest/:companyName/:bookingIndex",
+app.delete("/api/delete-redesigned-booking-request/:CompanyName",
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+        "Company Name": companyName,
+      });
+      res.status(200).json({ message: "Document updated successfully" });
+    } catch {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+app.post("/api/edit-moreRequest/:companyName/:bookingIndex",
   async (req, res) => {
     try {
       const { companyName, bookingIndex } = req.params;
@@ -3217,727 +3003,65 @@ app.get("/api/editable-LeadData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-//   try {
-
-//     const newData = req.body;
-//     const createdData = await RedesignedLeadformModel.create(newData);
-
-//     const renderServices = ()=>{
-//       const services = [];
-
-//         for(let i = 0; i < newData.numberOfServices; i++){
-//           services.push(
-
-//           )
-
-//         }
-
-//     }
-//     res.status(201).send("Data sent");
-
-//      const recipients = [
-//         `${newData.bdmEmail}`,
-//         `${newData.bdeName}`,
-//       ];
-//     sendMail(
-//         recipients,
-//         "Mail received",
-//         ``,
-//         ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
-//         <h3 style="text-align: center">Booking Form Deatils</h3>
-//         <div style="
-//               width: 95%;
-//               margin: 0 auto;
-//               padding: 20px 20px;
-//               background: #fff;
-//               border-radius: 10px;
-//             ">
-//           <!--Step One Start-->
-//           <div style="width: 98%; margin: 0 auto">
-//             <!-- Step's heading -->
-//             <div style="display: flex; align-items: center">
-//               <div style="
-//                     width: 30px;
-//                     height: 30px;
-//                     line-height: 30px;
-//                     border-radius: 100px;
-//                     background: #fbb900;
-//                     text-align: center;
-//                     font-weight: bold;
-//                     color: #fff;
-//                   ">
-//                 1
-//               </div>
-//               <div style="margin-left: 10px">Company's Basic Informations</div>
-//             </div>
-//             <!-- Step's Table -->
-//             <div style="
-//                   background: #f7f7f7;
-//                   padding: 15px;
-//                   border-radius: 10px;
-//                   position: relative;
-//                   margin-top: 15px;
-//                 ">
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Company Name
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     ${newData["Company Name"]}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Email Address:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData["Company Email"]}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Phone No:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData["Company Number"]}
-//                   </div>
-//                 </div>
-//               </div>
-
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Incorporation date:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData["incoDate"]}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Company's PAN:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.panNumber}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Company's GST:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.gstNumber}
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//           <!--Step One End-->
-
-//           <!--Step Two Start-->
-//           <div style="width: 98%; margin: 10px auto">
-//             <!-- Step's heading -->
-//             <div style="display: flex; align-items: center">
-//               <div style="
-//                     width: 30px;
-//                     height: 30px;
-//                     line-height: 30px;
-//                     border-radius: 100px;
-//                     background: #fbb900;
-//                     text-align: center;
-//                     font-weight: bold;
-//                     color: #fff;
-//                   ">
-//                 2
-//               </div>
-//               <div style="margin-left: 10px">Booking Details</div>
-//             </div>
-//             <!-- Step's Table -->
-//             <div style="
-//                   background: #f7f7f7;
-//                   padding: 15px;
-//                   border-radius: 10px;
-//                   position: relative;
-//                   margin-top: 15px;
-//                 ">
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     BDE Name:
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bdeName}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     BDE Email
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bdmEmail ? newData.bdmEmail : "-"}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     BDM Name
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bdmName}
-//                   </div>
-//                 </div>
-//               </div>
-
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     BDM Email
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bdmEmail ? newData.bdmEmail : "-"}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                    Booking Date
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bookingDate}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Lead Source
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bookingSource}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Other Lead Source
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.bookingSource}
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//           <!-- Step 2 Ends -->
-
-//           <!--Step 3 Start-->
-//           <div style="width: 98%; margin: 10px auto">
-//             <!-- Step's heading -->
-//             <div style="display: flex; align-items: center">
-//               <div style="
-//                     width: 30px;
-//                     height: 30px;
-//                     line-height: 30px;
-//                     border-radius: 100px;
-//                     background: #fbb900;
-//                     text-align: center;
-//                     font-weight: bold;
-//                     color: #fff;
-//                   ">
-//                 3
-//               </div>
-//               <div style="margin-left: 10px">Services And Payment Details</div>
-//             </div>
-//             <!-- Step's Table -->
-//             <div style="
-//                   background: #f7f7f7;
-//                   padding: 15px;
-//                   border-radius: 10px;
-//                   position: relative;
-//                   margin-top: 15px;
-//                 ">
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     Total Selected Services
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                       ${newData.numberOfServices}
-//                   </div>
-//                 </div>
-//               </div>
-//              ${renderServices()}
-
-//             </div>
-//           </div>
-//           <!-- Step 3 Ends -->
-
-//           <!--Step 4 Start-->
-//           <div style="width: 98%; margin: 10px auto">
-//             <!-- Step's heading -->
-//             <div style="display: flex; align-items: center">
-//               <div style="
-//                     width: 30px;
-//                     height: 30px;
-//                     line-height: 30px;
-//                     border-radius: 100px;
-//                     background: #fbb900;
-//                     text-align: center;
-//                     font-weight: bold;
-//                     color: #fff;
-//                   ">
-//                 4
-//               </div>
-//               <div style="margin-left: 10px">Payment Summery</div>
-//             </div>
-//             <!-- Step's Table -->
-//             <div style="
-//                   background: #f7f7f7;
-//                   padding: 15px;
-//                   border-radius: 10px;
-//                   position: relative;
-//                   margin-top: 15px;
-//                 ">
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 33%; display: flex;">
-//                   <div style="width: 25%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                       Total Payment
-//                     </div>
-//                   </div>
-//                   <div style="width: 75%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                       ₹ 38000
-//                     </div>
-//                   </div>
-//                 </div>
-//                 <div style="width: 34%; display: flex;">
-//                   <div style="width: 28%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                      Received Payment
-//                     </div>
-//                   </div>
-//                   <div style="width: 72%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                       ₹ 38000
-//                     </div>
-//                   </div>
-
-//                 </div>
-//                 <div style="width: 33%; display: flex;">
-//                   <div style="width: 28%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                       Pending Payment
-//                     </div>
-//                   </div>
-//                   <div style="width: 72%">
-//                     <div style="
-//                           border: 1px solid #ccc;
-//                           font-size: 12px;
-//                           padding: 5px 10px;
-//                         ">
-//                      ₹ 38000
-//                     </div>
-//                   </div>
-
-//                 </div>
-
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                    Payment Method
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     With DSC
-//                   </div>
-//                 </div>
-//               </div>
-//               <div style="display: flex; flex-wrap: wrap">
-//                 <div style="width: 25%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                   Extra Remarks
-//                   </div>
-//                 </div>
-//                 <div style="width: 75%">
-//                   <div style="
-//                         border: 1px solid #ccc;
-//                         font-size: 12px;
-//                         padding: 5px 10px;
-//                       ">
-//                     XYZ
-//                   </div>
-//                 </div>
-//               </div>
-
-//             </div>
-//           </div>
-//           <!-- Step 4 Ends -->
-//         </div>
-//       </div>
-
-//         `,
-//         newData.otherDocs,
-//         newData.paymentReceipt
-//       );
-
-//   } catch (error) {
-//     console.error('Error creating/updating data:', error);
-//     res.status(500).send('Error creating/updating data'); // Send an error response
-//   }
-// });
-
-// function generatePdf(htmlContent) {
-//   return
-
-//     pdf.create(htmlContent).toStream(function(err, stream){
-//       stream.pipe(fs.createWriteStream('./foo.pdf'));
-//     });
-
-// }
-
-function generatePdf(htmlContent) {
-  if (!htmlContent) {
-    console.error("Error: HTML content is required");
-    return; // Exit the function if htmlContent is not provided
-  } else {
-    pdf
-      .create(htmlContent, { format: "Letter" })
-      .toFile("./foo5.pdf", function (err, res) {
-        if (err) return console.log(err);
-        console.log(res);
-      });
+app.get("/api/requestCompanyData", async (req, res) => {
+  try {
+    const data = await CompanyRequestModel.find();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
-app.post(
-  "/api/update-redesigned-final-form/:CompanyName",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    // Assuming updatedBooking contains the updated data
-    const companyName = req.params.CompanyName; // Get the _id from the request parameters
-    const {
-      _id,
-      moreBookings,
-      step4changed,
-      otherDocs,
-      paymentReceipt,
-      remainingPayments,
-      ...boom
-    } = req.body;
-    const newOtherDocs = req.files["otherDocs"] || [];
-    const newPaymentReceipt = req.files["paymentReceipt"] || [];
-    const updatedDocWithoutId = {
-      ...boom,
-      otherDocs: newOtherDocs,
-      paymentReceipt: newPaymentReceipt,
-      remainingPayments: []
-    };
-    const updatedDocs = {
-      ...boom, remainingPayments: []
-    }
-    const goingToUpdate =
-      step4changed === "true" ? updatedDocWithoutId : updatedDocs;
+});
 
-    try {
-      // Find the document by _id and update it with the updatedBooking data
-
-      const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
-        {
-          "Company Name": companyName,
-        },
-        goingToUpdate,
-        // Set all properties except "moreBookings"
-        { new: true } // Return the updated document
-      );
-
-      if (!updatedDocument) {
-        return res.status(404).json({ error: "Document not found" });
+//  ********************************************  Unused APIs (Pata nai kyu hee)          *********************************************************
+app.post("/api/undo", (req, res) => {
+  // Run mongorestore command to restore the data
+  exec(
+    `mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
+  `,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error("Error restoring data:", error);
+        res.status(500).json({ error: "Error restoring data." });
+      } else {
+        // console.log("Data restored successfully:", stdout);
+        res.status(200).json({ message: "Data restored successfully." });
       }
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-
-      res
-        .status(200)
-        .json({ message: "Document updated successfully", updatedDocument });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
     }
-  }
-);
-app.put(
-  "/api/update-more-booking/:CompanyName/:bookingIndex",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const { CompanyName, bookingIndex } = req.params;
-      const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
+  );
+});
 
-      const newOtherDocs = req.files["otherDocs"] || [];
-      const newPaymentReceipt = req.files["paymentReceipt"] || [];
-      const latestData = {
-        ...newData,
-        otherDocs: newOtherDocs,
-        paymentReceipt: newPaymentReceipt,
-      };
+app.get("/api/recent-updates", async (req, res) => {
+  try {
+    // Fetch all data from the RecentUpdatesModel
+    const recentUpdates = await RecentUpdatesModel.find();
 
-      const dataToSend = step4changed === "true" ? latestData : newData;
-      // Find the document by companyName
-      const existingDocument = await RedesignedLeadformModel.findOne({
-        "Company Name": CompanyName,
-      });
-      const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
-      if (!existingDocument) {
-        return res.status(404).json({ error: "Document not found" });
-      }
-      console.log("This is sending :", dataToSend, step4changed)
-      // Update the booking in moreBookings array at the specified index
-      const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
-        {
-          "Company Name": CompanyName,
-        },
-        {
-          [`moreBookings.${bookingIndex - 1}`]: {
-            bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
-            paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-            generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: newOtherDocs, paymentReceipt: newPaymentReceipt
-          }
-        }) : await RedesignedLeadformModel.findOneAndUpdate(
-          {
-            "Company Name": CompanyName,
-          },
-          {
-            [`moreBookings.${bookingIndex - 1}`]: {
-              bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
-              paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt
-            }
-          },
-          // Set all properties except "moreBookings"
-          { new: true } // Return the updated document
-        );
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": CompanyName,
-      });
+    // Send the retrieved data as a response
+    res.status(200).json(recentUpdates);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    console.error("Error fetching recent updates:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+app.get("/api/card-leads", async (req, res) => {
+  try {
+    const { dAmount } = req.query; // Get the dAmount parameter from the query
 
-      res.status(200).json(updatedDocument);
-    } catch (error) {
-      console.error("Error updating more booking:", error);
-      res.status(500).send("Internal Server Error");
-    }
+    // Fetch data from the database with the specified limit
+    const data = await CompanyModel.find({
+      ename: { $in: ["Select Employee", "Not Alloted"] },
+    })
+      .limit(parseInt(dAmount))
+      .lean();
+
+    // Send the data as the API response
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
-);
-app.delete(
-  "/api/delete-redesigned-booking-request/:CompanyName",
-  async (req, res) => {
-    try {
-      const companyName = req.params.CompanyName;
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-      res.status(200).json({ message: "Document updated successfully" });
-    } catch {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
+});
 
 
 
