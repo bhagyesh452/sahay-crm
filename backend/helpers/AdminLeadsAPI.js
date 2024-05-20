@@ -94,30 +94,51 @@ router.post("/manual", async (req, res) => {
     try {
       // Use Mongoose to delete rows by their IDs
       await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-  
+      res.status(200).json({
+        message:
+          "Rows deleted successfully and backup created successfully.",
+      });
       // Trigger backup on the server
-      exec(
-        `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error("Error creating backup:", error);
-            // Respond with an error if backup fails
-            res.status(500).json({ error: "Error creating backup." });
-          } else {
-            // console.log("Backup created successfully:", stdout);
-            // Respond with success message if backup is successful
-            res.status(200).json({
-              message:
-                "Rows deleted successfully and backup created successfully.",
-            });
-          }
-        }
-      );
+      // exec(
+      //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
+      //   (error, stdout, stderr) => {
+      //     if (error) {
+      //       console.error("Error creating backup:", error);
+      //       // Respond with an error if backup fails
+      //       res.status(500).json({ error: "Error creating backup." });
+      //     } else {
+      //       // console.log("Backup created successfully:", stdout);
+      //       // Respond with success message if backup is successful
+      //       res.status(200).json({
+      //         message:
+      //           "Rows deleted successfully and backup created successfully.",
+      //       });
+      //     }
+      //   }
+      // );
     } catch (error) {
       console.error("Error deleting rows:", error.message);
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
+
+  router.get('/searchCompany', async (req, res) => {
+    try {
+      const { id } = req.query;
+  
+      // Check if ID is provided and is a valid MongoDB ObjectId
+  
+      // Search for the company in the database
+      const company = await CompanyModel.findById(id);
+  
+      // Return the company data
+      res.status(200).json(company);
+    } catch (error) {
+      console.error('Error searching for company:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
   
   
 
