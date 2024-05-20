@@ -81,23 +81,23 @@ function Employees({ onEyeButtonClick }) {
     onEyeButtonClick(id);
     //console.log(id);
   };
-  useEffect(() => {
-    const socket = io("http://localhost:3001");
-    socket.on("employee-entered", () => {
-      //console.log("One user Entered");
-      setTimeout(() => {
-        //fetchData();
-      }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
-    });
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3001");
+  //   socket.on("employee-entered", () => {
+  //     //console.log("One user Entered");
+  //     setTimeout(() => {
+  //       //fetchData();
+  //     }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
+  //   });
 
-    socket.on("user-disconnected", () => {
-      //fetchData();
-    });
+  //   socket.on("user-disconnected", () => {
+  //     //fetchData();
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -361,6 +361,11 @@ function Employees({ onEyeButtonClick }) {
       console.log(isUpdateMode , "updateMode")
 
       if (isUpdateMode) {
+
+        if (dataToSend.ename === "") {
+          Swal.fire("Invalid Details","Please Enter Details Properly" , "warning");
+          return true;
+        } 
         //console.log(dataToSend, "Bhoom");
         //console.log("updateddata",dataToSendUpdated)
        const response =  await axios.put(

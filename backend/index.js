@@ -1862,7 +1862,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
     // Extract the companyIds from the request body
     const { companyIds } = req.body;
 
-    console.log("companycom", companyIds)
+    //console.log("companycom", companyIds)
 
     // Validate that companyIds is an array
     if (!Array.isArray(companyIds)) {
