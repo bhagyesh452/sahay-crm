@@ -124,7 +124,7 @@ function EmployeeParticular() {
   // Function to fetch employee details by id
   const fetchEmployeeDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Filter the response data to find _id values where designation is "Sales Executive"
       const salesExecutivesIds = response.data
@@ -242,7 +242,7 @@ function EmployeeParticular() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${secretKey}/employees/${employeeName}`
+        `${secretKey}/employee/${employeeName}`
       );
 
       // Sort the data by AssignDate property

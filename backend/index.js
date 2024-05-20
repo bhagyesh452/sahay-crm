@@ -416,7 +416,7 @@ function createCSVString(data) {
   return csvData.map((row) => row.join(",")).join("\n");
 }
 
-app.post("/api/employee-history", async (req, res) => {
+app.post("/api/employee/employee-history", async (req, res) => {
   const csvData = req.body;
 
   try {
@@ -439,7 +439,7 @@ app.post("/api/employee-history", async (req, res) => {
   }
 });
 
-app.get("/api/employee-history/:companyName", async (req, res) => {
+app.get("/api/employee/employee-history/:companyName", async (req, res) => {
   try {
     // Extract the companyName from the URL parameter
     const { companyName } = req.params;
@@ -491,7 +491,7 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/requestCompanyData", async (req, res) => {
+app.post("/api/requests/requestCompanyData", async (req, res) => {
   const csvData = req.body;
   let dataArray = [];
   if (Array.isArray(csvData)) {
@@ -529,7 +529,7 @@ app.post("/api/requestCompanyData", async (req, res) => {
   }
 });
 
-app.post("/api/change-edit-request/:companyName", async (req, res) => {
+app.post("/api/requests/change-edit-request/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   const companyObject = req.body;
 
@@ -566,7 +566,7 @@ app.post("/api/change-edit-request/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/update-status/:id", async (req, res) => {
+app.post("/api/company-data/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time } = req.body; // Destructure the required properties from req.body
 
@@ -730,7 +730,7 @@ app.get("/api/teams/teamleadsdata", async (req, res) => {
 //   }
 // });
 
-app.post("/api/forwardtobdmdata", async (req, res) => {
+app.post("/api/bdm-data/forwardtobdmdata", async (req, res) => {
   const {
     selectedData,
     bdmName,
@@ -783,7 +783,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
   }
 });
 
-app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
+app.get("/api/bdm-data/forwardedbybdedata/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
   //console.log(bdmName)
   try {
@@ -801,7 +801,7 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
 
 
 
-app.post("/api/update-bdm-status/:id", async (req, res) => {
+app.post("/api/bdm-data/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
   const {
     newBdmStatus,
@@ -833,7 +833,7 @@ app.post("/api/update-bdm-status/:id", async (req, res) => {
   }
 });
 
-app.post("/api/bdm-status-change/:id", async (req, res) => {
+app.post("/api/bdm-data/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
   const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate } =
     req.body; // Destructure the required properties from req.body
@@ -878,7 +878,7 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   }
 });
 
-app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
+app.post(`/api/bdm-data/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { bdmAcceptStatus, bdmName, remarks } = req.body;
   try {
@@ -942,7 +942,7 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
   }
 });
 
-// app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
+// app.delete(`/api/bdm-data/delete-bdm-busy/:companyId`, async (req, res) => {
 //   const companyId = req.params.companyId; // Correctly access teamId from req.params
 
 //   try {
@@ -1473,7 +1473,7 @@ app.delete("/api/employee/einfo/:id", async (req, res) => {
 });
 // ***************************************************************  Company Data's Hadi  *************************************************************
 // 2. Read a Company
-app.get("/api/leads/:companyName", async (req, res) => {
+app.get("/api/company-data/leads/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
@@ -1488,7 +1488,7 @@ app.get("/api/leads/:companyName", async (req, res) => {
   }
 });
 // 3. Update a Company 
-app.put("/api/leads/:id", async (req, res) => {
+app.put("/api/company-data/leads/:id", async (req, res) => {
   const id = req.params.id;
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
@@ -1512,7 +1512,7 @@ app.put("/api/leads/:id", async (req, res) => {
   }
 });
 // 4. Delete a Company
-app.delete("/api/leads/:id", async (req, res) => {
+app.delete("/api/company-data/leads/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -1529,7 +1529,7 @@ app.delete("/api/leads/:id", async (req, res) => {
   }
 });
 // 5. ADD Multiple Companies
-app.post("/api/company", async (req, res) => {
+app.post("/api/company-data/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
 
   try {
@@ -1566,7 +1566,7 @@ app.post("/api/company", async (req, res) => {
   }
 });
 // 6. ADD Multiple Companies(Pata nai kyu he)
-app.post("/api/leads", async (req, res) => {
+app.post("/api/company-data/leads", async (req, res) => {
   const csvData = req.body;
   //console.log("csvdata" , csvData)
   let counter = 0;
@@ -1624,7 +1624,7 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 // 7. Read Muultiple Companies 
-app.get("/api/leads", async (req, res) => {
+app.get("/api/company-data/leads", async (req, res) => {
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
     const data = await CompanyModel.find().lean();
@@ -1636,7 +1636,7 @@ app.get("/api/leads", async (req, res) => {
   }
 });
 //8. Read Multiple companies New
-app.get('/api/new-leads', async (req, res) => {
+app.get('/api/company-data/new-leads', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Items per page
@@ -1683,7 +1683,7 @@ app.get('/api/new-leads', async (req, res) => {
   }
 });
 //9. Filtere search for Reading Multiple Companies
-app.get('/api/search-leads', async (req, res) => {
+app.get('/api/company-data/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
     const { field } = req.query;
@@ -1733,7 +1733,7 @@ app.get('/api/search-leads', async (req, res) => {
   }
 });
 //10. Search for Specific Company
-app.get("/api/specific-company/:companyId", async (req, res) => {
+app.get("/api/company-data/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Assuming CompanyModel.findById() is used to find a company by its ID
@@ -1748,7 +1748,7 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 //11. Assign company to new employee
-app.post("/api/assign-new", async (req, res) => {
+app.post("/api/company-data/assign-new", async (req, res) => {
   const { newemployeeSelection, data } = req.body;
 
   try {
@@ -1885,7 +1885,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
   }
 });
 
-app.post("/api/assign-leads-newbdm", async (req, res) => {
+app.post("/api/bdm-data/assign-leads-newbdm", async (req, res) => {
   const { newemployeeSelection, data, bdmAcceptStatus } = req.body;
 
   console.log(newemployeeSelection, data, bdmAcceptStatus);
@@ -1947,7 +1947,7 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
 
 
 // *************************************************  Fetching Company Data   ***********************************************************
-app.get("/api/employees/:ename", async (req, res) => {
+app.get("/api/employee/employees/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
 
@@ -2221,7 +2221,7 @@ app.get("/api/drafts-search/:companyName", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-data/:ename", async (req, res) => {
+app.delete("/api/requests/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 
   try {
@@ -2291,7 +2291,7 @@ app.get("/api/deleterequestbybde", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/editRequestByBde", async (req, res) => {
+app.get("/api/requests/editRequestByBde", async (req, res) => {
   try {
     const company = await BookingsRequestModel.find();
     res.json(company);
@@ -2518,7 +2518,7 @@ app.post("/api/exportLeads/", async (req, res) => {
 
 
 // *********************************************  Bookings Section  *****************************************************
-app.post("/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
+app.post("/api/bookings/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2574,7 +2574,7 @@ app.post("/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
     }
   }
 );
-app.post("/api/update-redesigned-final-form/:CompanyName",
+app.post("/api/bookings/update-redesigned-final-form/:CompanyName",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2633,7 +2633,7 @@ app.post("/api/update-redesigned-final-form/:CompanyName",
     }
   }
 );
-app.put("/api/update-more-booking/:CompanyName/:bookingIndex",
+app.put("/api/bookings/update-more-booking/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2837,7 +2837,7 @@ app.use("/api/bookings" , bookingsAPI)
 
 // ---------------------------- BDM Booking Request Section -----------------------------------------------
 // ********************************************  Bookings Requests Section *********************************************
-app.post("/api/matured-case-request", async (req, res) => {
+app.post("/api/bdm-data/matured-case-request", async (req, res) => {
   try {
     // Extract data from the request body sent by the frontend
     const { companyName, requestStatus, bdeName, bdmName, date } = req.body;
@@ -2898,7 +2898,7 @@ app.get("/api/matured-get-requests/:bdeName", async (req, res) => {
       .json({ success: false, message: "Error fetching the data" });
   }
 });
-app.get("/api/matured-get-requests-byBDM/:bdmName", async (req, res) => {
+app.get("/api/bdm-data/matured-get-requests-byBDM/:bdmName", async (req, res) => {
   try {
     const bdmName = req.params.bdmName;
     const request = await RequestMaturedModel.find({
@@ -2943,7 +2943,7 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-inform-Request/:id", async (req, res) => {
+app.delete("/api/requests/delete-inform-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
 
@@ -2960,7 +2960,7 @@ app.delete("/api/delete-inform-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-redesigned-booking-request/:CompanyName",
+app.delete("/api/bookings/delete-redesigned-booking-request/:CompanyName",
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
@@ -2974,7 +2974,7 @@ app.delete("/api/delete-redesigned-booking-request/:CompanyName",
     }
   }
 );
-app.post("/api/edit-moreRequest/:companyName/:bookingIndex",
+app.post("/api/request/edit-moreRequest/:companyName/:bookingIndex",
   async (req, res) => {
     try {
       const { companyName, bookingIndex } = req.params;

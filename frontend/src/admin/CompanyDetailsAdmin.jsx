@@ -209,7 +209,7 @@ const CompanyDetailsAdmin = ({ company }) => {
     try {
 
       const response = await axios.post(`${secretKey}/upload/lead-form`, excelData);
-      await axios.post(`${secretKey}/leads`, transformedData)
+      await axios.post(`${secretKey}/company-data/leads`, transformedData)
       console.log(response.data.successCounter, response.data.errorCounter)
       if (response.data.errorCounter === 0) {
         Swal.fire({
@@ -244,13 +244,13 @@ const CompanyDetailsAdmin = ({ company }) => {
   const handleViewPdfReciepts = (paymentreciept) => {
     const pathname = paymentreciept;
     console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${pathname}`, "_blank");
   }
   // console.log(company.paymentReceipt)
   const copyToClipboard = (value) => {

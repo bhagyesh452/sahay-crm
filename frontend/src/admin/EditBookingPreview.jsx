@@ -18,13 +18,13 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
@@ -37,7 +37,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
   const handleRejectClick = async ()=>{
 
     try {
-      const response = await axios.delete(`${secretKey}/delete-redesigned-booking-request/${existingBooking["Company Name"]}`);
+      const response = await axios.delete(`${secretKey}/bookings/delete-redesigned-booking-request/${existingBooking["Company Name"]}`);
      Swal.fire({title:"Request Deleted" , icon:"success"}) // Display success message
     } catch (error) {
       console.log("Error updating data" ,error) ;
@@ -134,7 +134,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
       });
       if(requestedBooking.bookingIndex === 0){
         try {
-          const response = await axios.post(`${secretKey}/update-redesigned-final-form/${updatedBooking["Company Name"]}`, formData);
+          const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${updatedBooking["Company Name"]}`, formData);
          Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
         } catch (error) {
           console.log("Error updating data" ,error) ;
@@ -142,7 +142,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
         }
       }else {
         try {
-          const response = await axios.put(`${secretKey}/update-more-booking/${updatedBooking["Company Name"]}/${updatedBooking.bookingIndex}`, formData);
+          const response = await axios.put(`${secretKey}/bookings/update-more-booking/${updatedBooking["Company Name"]}/${updatedBooking.bookingIndex}`, formData);
          Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
         } catch (error) {
           console.log("Error updating data" ,error) ;

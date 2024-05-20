@@ -60,7 +60,7 @@ function BookingList() {
       //setIsLoading(true);
       //setCurrentDataLoading(true)
 
-      const response = await axios.get(`${secretKey}/leads`);
+      const response = await axios.get(`${secretKey}/company-data/leads`);
 
       // Set the retrieved data in the state
       setData(response.data);
@@ -186,13 +186,13 @@ function BookingList() {
   const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
   // ------------------------------------------------- Delete booking ----------------------------------------------
@@ -459,7 +459,7 @@ function BookingList() {
       console.log(formData);
       setCurrentCompanyName(currentLeadform["Company Name"])
       const response = await fetch(
-        `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
+        `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
         {
           method: "POST",
           body: formData,
@@ -1784,7 +1784,7 @@ function BookingList() {
                                                 ".jpeg"
                                               ) ? (
                                               <img
-                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
@@ -1830,7 +1830,7 @@ function BookingList() {
                                               remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
                                               remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
                                               <img
-                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
@@ -1870,7 +1870,7 @@ function BookingList() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                              src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                               alt={pdfimg}
                                             ></img>
                                           )}
@@ -2744,7 +2744,7 @@ function BookingList() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                               alt={"MyImg"}
                                             ></img>
                                           )}
@@ -2779,7 +2779,7 @@ function BookingList() {
                                           />
                                         ) : (
                                           <img
-                                            src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                            src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                             alt={pdfimg}
                                           ></img>
                                         )}

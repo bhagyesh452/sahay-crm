@@ -103,7 +103,7 @@ export default function EditableMoreBooking({
 
   const fetchDataEmp = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -503,13 +503,13 @@ export default function EditableMoreBooking({
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -994,7 +994,7 @@ export default function EditableMoreBooking({
         }
     
     try {
-      const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+      const response = await axios.post(`${secretKey}/request/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
       console.log('Data created:', response.data);
       Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
       setFormOpen(false)
@@ -1075,7 +1075,7 @@ export default function EditableMoreBooking({
         // console.log(activeStep, dataToSend);
     
       
-        const response = await axios.post(`${secretKey}/update-redesigned-final-form/${companysName}`, formData ,{
+        const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData ,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -1110,7 +1110,7 @@ export default function EditableMoreBooking({
         }
       });
       try {
-        const response = await axios.put(`${secretKey}/update-more-booking/${companysName}/${bookingIndex}`, formData ,{
+        const response = await axios.put(`${secretKey}/bookings/update-more-booking/${companysName}/${bookingIndex}`, formData ,{
           headers: {
             "Content-Type": "multipart/form-data",
           },

@@ -19,7 +19,7 @@ function EditBookingsCard({ name, date, time, request, companyName , setCurrentC
   const [openCompare, setOpenCompare] = useState(false);
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editRequestByBde`);
+      const response = await axios.get(`${secretKey}/requests/editRequestByBde`);
       setCompany(response.data.find((obj) => obj.companyName === companyName));
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -57,7 +57,7 @@ console.log("Company data current:" , companyName)
   const handleRejectRequest = async()=>{
     const id = company._id ;
     try {
-      const response = await axios.delete(`${secretKey}/delete-edit-request/${id}`);
+      const response = await axios.delete(`${secretKey}/requests/delete-edit-request/${id}`);
       Swal.fire({
         title:"Request Rejected!",
         icon:'success'
@@ -77,7 +77,7 @@ console.log("Company data current:" , companyName)
     try {
       
       // Make API call to move data from BookingsRequestModel to leadModel
-      const response = await axios.post(`${secretKey}/accept-booking-request/${company.companyName}` , company);
+      const response = await axios.post(`${secretKey}/bookings/accept-booking-request/${company.companyName}` , company);
   
       // Show success message
       Swal.fire({
