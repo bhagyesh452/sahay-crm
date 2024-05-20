@@ -2089,22 +2089,33 @@ app.delete("/api/delete-data/:ename", async (req, res) => {
 });
 
 app.post("/api/assign-new", async (req, res) => {
-  const { newemployeeSelection, data } = req.body;
+  const { data } = req.body;
+  const { ename } = req.body;
+  //console.log("data" , data)
+  //console.log("ename" , ename)
+
 
   try {
     // Add AssignDate property with the current date
-    const updatedObj = {
-      ...data,
-      ename: newemployeeSelection,
-      AssignDate: new Date(),
-    };
-
-    // Update CompanyModel for the specific data
-    await CompanyModel.updateOne({ _id: data._id }, updatedObj);
-
-    // Delete objects from RemarksHistory collection that match the "Company Name"
-    await RemarksHistory.deleteMany({ companyID: data._id });
-
+    for (const employeeData of data) {
+      //console.log("employee" , employeeData)
+      try {
+       const companyName = employeeData["Company Name"];
+        const employee = await CompanyModel.findOneAndUpdate({"Company Name":companyName} , {$set:{ename:ename}});
+        //console.log("yahan kuch locha h" , employee)
+        const deleteTeams = TeamLeadsModel.findByIdAndDelete(employee._id);
+        //console.log("newemployee" , employee)
+        await RemarksHistory.deleteOne({ companyID: employee._id });
+        
+        //console.log("saved" , savedEmployee)
+     
+      } catch (error) {
+   
+        //console.log("kuch h ye" , duplicateEntries);
+        console.error("Error Assigning Data:", error.message);
+      
+      }
+    }
     res.status(200).json({ message: "Data updated successfully" });
   } catch (error) {
     console.error("Error updating data:", error);
@@ -2124,7 +2135,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
     // Extract the companyIds from the request body
     const { companyIds } = req.body;
 
-    console.log("companycom", companyIds)
+    //console.log("companycom", companyIds)
 
     // Validate that companyIds is an array
     if (!Array.isArray(companyIds)) {
@@ -6064,7 +6075,7 @@ app.post(
           const bdNames =
             newData.bdeName == newData.bdmName
               ? newData.bdeName
-              : `${newData.bdeName} && ${newData.bdmName}`;
+              : `${newData.bdeName} & ${newData.bdmName}`;
           const waitpagination =
             newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
           const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
@@ -6220,7 +6231,7 @@ app.post(
               },
             },
           };
-      
+          const clientMail = newData.caCase == "Yes" ? newData.caEmail : "nimesh@incscale.in"
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -6232,7 +6243,7 @@ app.post(
                   setTimeout(() => {
                     const mainBuffer = fs.readFileSync(pdfFilePath);
                     sendMail2(
-                      ["nimesh@incscale.in", "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
+                      [clientMail, "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
                       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                       ``,
                       `
@@ -8724,7 +8735,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const bdNames =
       newData.bdeName == newData.bdmName
         ? newData.bdeName
-        : `${newData.bdeName} && ${newData.bdmName}`;
+        : `${newData.bdeName} & ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
     const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
@@ -8888,6 +8899,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       },
     };
 
+    const clientMail = newData.caCase == "Yes" ? newData.caEmail : "nimesh@incscale.in"
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -8899,7 +8911,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
+                [clientMail, "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
@@ -10017,7 +10029,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const bdNames =
       newData.bdeName == newData.bdmName
         ? newData.bdeName
-        : `${newData.bdeName} && ${newData.bdmName}`;
+        : `${newData.bdeName} & ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
       const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination

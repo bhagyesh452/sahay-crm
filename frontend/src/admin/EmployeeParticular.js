@@ -664,73 +664,52 @@ function EmployeeParticular() {
         }
       });
 
-    console.log("csvdata", csvdata);
-
     // Create an array to store promises for updating CompanyModel
-    const updatePromises = [];
-    const deleteCompanyIds = []; // Store company IDs to be deleted
-
-    for (const data of csvdata) {
-      console.log("data", data);
-      const updatedObj = {
-        ...data,
-        date: currentDate,
-        time: currentTime,
-        ename: newemployeeSelection,
-        companyName: data["Company Name"],
-      };
-
-      //console.log("updatedObj", updatedObj);
-
-      // Add the promise for updating CompanyModel to the array
-      updatePromises.push(
-        axios.post(`${secretKey}/assign-new`, {
-          newemployeeSelection,
-          data: updatedObj,
-        })
-      );
-
-      // Push company ID to the array for deletion if it's not null, empty, or length 0
-      if (data.bdmAcceptStatus === "Accept") {
-        deleteCompanyIds.push(data._id);
-      }
-
-
-    }
+    // Store company IDs to be deleted
 
     try {
-      // Wait for all update promises to resolve
-      await Promise.all(updatePromises);
-
-      // Make an API call to delete companies from Team Leads Model if deleteCompanyIds is not empty
-      if (deleteCompanyIds.length > 0) {
-        await axios.post(`${secretKey}/delete-companies-teamleads-assignednew`, {
-          companyIds: deleteCompanyIds,
-        });
-      }
-
-      // Clear the selection
-      setnewEmployeeSelection("Not Alloted");
-
+      Swal.fire({
+        title: 'Assigning...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    
+      const response = await axios.post(`${secretKey}/assign-new`, {
+        ename: newemployeeSelection,
+        data: csvdata,
+      });
+    
+      // Close the loading Swal
+      Swal.close();
+    
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-
+    
+      // Reset the new employee selection
+      setnewEmployeeSelection("Not Alloted");
+    
       // Fetch updated employee details and new data
       fetchEmployeeDetails();
       fetchNewData();
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
-
+    
+      // Close the loading Swal
+      Swal.close();
+    
       Swal.fire({
         title: "Error!",
         text: "Failed to update employee data. Please try again later.",
         icon: "error",
       });
     }
+    
   };
 
 
