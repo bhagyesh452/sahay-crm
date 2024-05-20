@@ -38,7 +38,7 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus , c
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/card-leads` , damount);
+      const response = await axios.get(`${secretKey}/company-data/card-leads` , damount);
 
       // Set the retrieved data in the state
     
@@ -108,7 +108,7 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus , c
             }
           );
           fetchData();
-          await axios.put(`${secretKey}/requestData/${id}`, {
+          await axios.put(`${secretKey}/requests/requestData/${id}`, {
           read: true,
           assigned:true
         })

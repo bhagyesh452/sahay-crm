@@ -23,7 +23,7 @@ import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
-import NewLeads from "./admin/NewLeads.jsx";
+//import NewLeads from "./admin/NewLeads.jsx";
 import RedesignedForm from "./admin/RedesignedForm.jsx";
 import DrawerComponent from "./components/Drawer.js";
 import NotFound from "./NotFound.js";
@@ -150,7 +150,7 @@ function App() {
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
               <Route path="/admin/admin-user" element={<NewEmployee/>} />
-              <Route path="/admin/new-leads" element={<NewLeads />} />
+              {/* <Route path="/admin/new-leads" element={<NewLeads />} /> */}
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}

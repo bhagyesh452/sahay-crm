@@ -53,7 +53,7 @@ function Header({ name, designation}) {
 
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestAppData(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === curr.ename)) {

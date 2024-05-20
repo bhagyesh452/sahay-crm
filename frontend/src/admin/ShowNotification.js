@@ -30,7 +30,7 @@ function ShowNotification() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestData`);
+      const response = await axios.get(`${secretKey}/requests/requestData`);
       setRequestData(response.data.reverse());
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -38,7 +38,7 @@ function ShowNotification() {
   };
   const fetchCompareBooking = async()=>{
     try{
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
       if(moreBookingCase){
         const bookingObject = response.data.find(obj=> obj["Company Name"] === currentCompany);
         setCompareBooking(bookingObject.moreBooking[bookingIndex-1]);
@@ -61,7 +61,7 @@ function ShowNotification() {
   
   const fetchRequestGDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestgData`);
+      const response = await axios.get(`${secretKey}/requests/requestgData`);
       setRequestGData(response.data.reverse());
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -69,7 +69,7 @@ function ShowNotification() {
   };
   const fetchDataDelete = async () => {
     try {
-      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
       setDeleteData(response.data.reverse()); // Assuming your data is returned as an array
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -77,7 +77,7 @@ function ShowNotification() {
   };
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
       setTotalBookings(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.requestBy === curr.requestBy)) {
@@ -102,7 +102,7 @@ function ShowNotification() {
 
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestApprovals(response.data.reverse());
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === curr.ename)) {

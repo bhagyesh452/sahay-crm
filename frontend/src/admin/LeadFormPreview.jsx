@@ -45,13 +45,13 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
   
@@ -93,7 +93,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
       }
       console.log(formData);
       const response = await fetch(
-        `${secretKey}/uploadotherdocsAttachment/${currentLeadForm["Company Name"]}/${sendingIndex}`,
+        `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadForm["Company Name"]}/${sendingIndex}`,
         {
           method: "POST",
           body: formData,
@@ -656,7 +656,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     />
                   ) : (
                     <img
-                      src={`${secretKey}/recieptpdf/${currentLeadForm["Company Name"]}/${currentLeadForm.paymentReceipt[0].filename}`}
+                      src={`${secretKey}/bookings/recieptpdf/${currentLeadForm["Company Name"]}/${currentLeadForm.paymentReceipt[0].filename}`}
                       alt={pdfimg}
                     ></img>
                   )}
@@ -677,7 +677,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                       <PdfImageViewerAdmin  type="pdf" path={obj.filename} companyName = {currentLeadForm["Company Name"]} />
                     ) : (
                       <img
-                        src={`${secretKey}/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
+                        src={`${secretKey}/bookings/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
                         alt={pdfimg}
                       ></img>
                     )}
@@ -1238,7 +1238,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                           />
                         ) : (
                           <img
-                            src={`${secretKey}/recieptpdf/${currentLeadForm["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                            src={`${secretKey}/bookings/recieptpdf/${currentLeadForm["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                             alt={pdfimg}
                           ></img>
                         )}
@@ -1265,7 +1265,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                             />
                           ) : (
                             <img
-                              src={`${secretKey}/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
+                              src={`${secretKey}/bookings/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
                               alt={pdfimg}
                             ></img>
                           )}

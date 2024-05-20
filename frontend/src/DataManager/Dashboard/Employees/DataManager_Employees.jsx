@@ -138,7 +138,7 @@ function Employees({ onEyeButtonClick }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       const filterresponse = response.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager");
       //console.log(filterresponse)
       //console.log(response.data)
@@ -208,7 +208,7 @@ function Employees({ onEyeButtonClick }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${secretKey}/einfo/${id}`);
+      await axios.delete(`${secretKey}/employee/einfo/${id}`);
       // Refresh the data after successful deletion
       fetchData();
       Swal.fire({
@@ -274,7 +274,7 @@ function Employees({ onEyeButtonClick }) {
   }
   const fetchCData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/leads`);
+      const response = await axios.get(`${secretKey}/company-data/leads`);
 
       setCData(response.data);
     } catch (error) {
@@ -314,7 +314,7 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
-        await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSendUpdated);
+        await axios.put(`${secretKey}/employee/einfo/${selectedDataId}`, dataToSendUpdated);
         Swal.fire({
           title: "Data Updated Succesfully!",
           text: "You have successfully updated the name!",
@@ -328,7 +328,7 @@ function Employees({ onEyeButtonClick }) {
             // Update companyData in the second database
             await Promise.all(
               companyData.map(async (item) => {
-                await axios.put(`${secretKey}/newcompanyname/${item._id}`, {
+                await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
                   ename,
                 });
                 console.log(`Updated ename for ${item._id}`);
@@ -342,7 +342,7 @@ function Employees({ onEyeButtonClick }) {
           }
         }
       } else {
-        await axios.post(`${secretKey}/einfo`, dataToSend);
+        await axios.post(`${secretKey}/employee/einfo`, dataToSend);
         Swal.fire({
           title: "Data Added!",
           text: "You have successfully added the data!",

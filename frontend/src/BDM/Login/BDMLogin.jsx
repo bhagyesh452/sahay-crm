@@ -33,7 +33,7 @@ export default function BDMLogin({ setBdmToken }) {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
             //console.log(response.data)
             setData(response.data)
 

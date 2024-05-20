@@ -137,7 +137,7 @@ function EmployeeDashboard() {
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
@@ -156,7 +156,7 @@ function EmployeeDashboard() {
 
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
       setmoreEmpData(tempData)
@@ -232,7 +232,7 @@ function EmployeeDashboard() {
   const fetchTeamLeadsData = async () => {
 
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
       setTeamLeadsData(response.data)
       setTeamData(response.data)
 
@@ -398,7 +398,7 @@ function EmployeeDashboard() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
         //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -447,7 +447,7 @@ function EmployeeDashboard() {
     try {
       setprojectionLoading(true);
       const response = await fetch(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setFollowData(followdata);
@@ -603,7 +603,7 @@ function EmployeeDashboard() {
         });
       } else {
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1469,7 +1469,7 @@ function EmployeeDashboard() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion

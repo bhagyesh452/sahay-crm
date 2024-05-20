@@ -51,7 +51,7 @@ function Team() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
             //console.log(response.data)
             setEmployeeData(response.data)
             setEmployeeDataFilter(response.data)
@@ -64,7 +64,7 @@ function Team() {
 
     const fecthTeamData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/teaminfo`)
+            const response = await axios.get(`${secretKey}/teams/teaminfo`)
 
             console.log("teamdata", response.data)
             const allEnames = response.data.flatMap(team => team.employees.map(employee => employee.ename));
@@ -271,7 +271,7 @@ function Team() {
             }
 
             if (isEditMode && updatedTeamData) {
-                await axios.put(`${secretKey}/teaminfo/${teamId}`, updatedTeamData);
+                await axios.put(`${secretKey}/teams/teaminfo/${teamId}`, updatedTeamData);
                 Swal.fire({
                     title: "Data Updated Succesfully!",
                     text: "You have successfully updated the name!",
@@ -279,7 +279,7 @@ function Team() {
                 });
                 console.log("updatedData", updatedTeamData)
             } else {
-                const response = await axios.post(`${secretKey}/teaminfo`, teamData);
+                const response = await axios.post(`${secretKey}/teams/teaminfo`, teamData);
                 Swal.fire({
                     title: "Data Added!",
                     text: "You have successfully created a team!",

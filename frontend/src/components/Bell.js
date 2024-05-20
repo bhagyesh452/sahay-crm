@@ -23,7 +23,7 @@ export default function Bell({ data, gdata }) {
     try {
       // Update the notification in the backend (set 'read' to true)
       if (read === false) {
-        await axios.put(`${secretKey}/requestData/${id}`, {
+        await axios.put(`${secretKey}/requests/requestData/${id}`, {
           read: true,
         });
 

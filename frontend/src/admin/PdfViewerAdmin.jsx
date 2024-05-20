@@ -21,7 +21,7 @@ function PdfImageViewerAdmin(props) {
    const specificpath = props.type
    const companyName = props.companyName
     try {
-      const response = await axios.get(`${secretKey}/${specificpath}/${companyName}/${path}`, {
+      const response = await axios.get(`${secretKey}/bookings/${specificpath}/${companyName}/${path}`, {
         responseType: "blob"
       });
       const blob = response.data;
