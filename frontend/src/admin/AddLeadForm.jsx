@@ -629,6 +629,10 @@ export default function AddLeadForm({
         }
       }
       if (activeStep === 2) {
+        if(!leadData.caCase){
+          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+          return true;
+        }
 
 let isValid = true;
       for (let service of leadData.services) {

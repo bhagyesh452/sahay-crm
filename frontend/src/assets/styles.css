@@ -1948,3 +1948,7 @@ td input
   background: none;
   border: none;
 }
+.swal2-confirm 
+{
+  background-color: #f9d206 !important;
+}

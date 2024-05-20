@@ -903,7 +903,11 @@ export default function EditableMoreBooking({
   //     // Handle error if needed
   //   }
     if(activeStep === 2){
-      console.log("2nd step chala")
+      if(!leadData.caCase){
+        Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+        return true;
+      }
+     
       setLeadData((prevState) => ({
         ...prevState,
        receivedAmount : parseInt( leadData.services

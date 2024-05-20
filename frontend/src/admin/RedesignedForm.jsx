@@ -638,7 +638,10 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 2) {
-
+        if(!leadData.caCase){
+          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+          return true;
+        }
         let isValid = true;
               for (let service of leadData.services) {
         
@@ -2409,6 +2412,7 @@ export default function RedesignedForm({
                                             type="radio"
                                             name="ca-case"
                                             onChange={(e) => {
+                                              Swal.fire({text:"Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues."})
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
                                                 caCase: e.target.value, // Set the value based on the selected radio button
@@ -3200,7 +3204,7 @@ export default function RedesignedForm({
                                           </div>
                                         </div>
                                       </div>
-                                      {obj.caCase &&  <>
+                                      {obj.caCase === "Yes" &&  <>
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
