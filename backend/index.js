@@ -1684,7 +1684,7 @@ app.get('/api/new-leads', async (req, res) => {
   }
 });
 //9. Filtere search for Reading Multiple Companies
-app.get('/api/search-leads', async (req, res) => {
+app.get('/api/company-data/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
     const { field } = req.query;
@@ -1734,7 +1734,7 @@ app.get('/api/search-leads', async (req, res) => {
   }
 });
 //10. Search for Specific Company
-app.get("/api/specific-company/:companyId", async (req, res) => {
+app.get("/api/company-data/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Assuming CompanyModel.findById() is used to find a company by its ID
@@ -2304,7 +2304,7 @@ app.get("/api/requests/deleterequestbybde", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/editRequestByBde", async (req, res) => {
+app.get("/api/requests/editRequestByBde", async (req, res) => {
   try {
     const company = await BookingsRequestModel.find();
     res.json(company);
