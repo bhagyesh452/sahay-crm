@@ -63,7 +63,7 @@ function DeleteBookingsCard({
   const handleDeleteRequest = async () => {
     try {
       const response = await axios.delete(
-        `${secretKey}/deleterequestbybde/${companyName}`
+        `${secretKey}/requests/deleterequestbybde/${companyName}`
       );
       console.log("Deleted company:", response.data);
       Swal.fire({ title: "Success", icon: "success" });

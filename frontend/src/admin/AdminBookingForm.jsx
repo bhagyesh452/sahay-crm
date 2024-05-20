@@ -1557,7 +1557,7 @@ export default function AdminBookingForm({
       const companyName = companyNewName;
       // console.log("gadbadyahin hain")
       try {
-        const response = await axios.get(`${secretKey}/leads/${companyName}`);
+        const response = await axios.get(`${secretKey}/company-data/leads/${companyName}`);
         console.log(response.data);
         setFoundCompany(response.data);
         setLeadData((prevLeadData) => ({

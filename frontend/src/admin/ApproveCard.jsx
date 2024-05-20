@@ -69,7 +69,7 @@ function ApproveCard({ name, date, time }) {
   };
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestData(response.data.filter((obj) => obj.ename === name));
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -84,14 +84,14 @@ function ApproveCard({ name, date, time }) {
     const ename = name;
     if (updatedCsvdata.length !== 0) {
       try {
-        await axios.post(`${secretKey}/leads`, updatedCsvdata);
+        await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
         console.log("Data sent successfully");
         Swal.fire({
           title: "Data Send!",
           text: "Data successfully sent to the Employee",
           icon: "success",
         });
-        await axios.delete(`${secretKey}/delete-data/${ename}`);
+        await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
         fetchApproveRequests();
         closepopup();
       } catch (error) {
@@ -114,7 +114,7 @@ function ApproveCard({ name, date, time }) {
     const ename = name;
     try {
       // Make a DELETE request to the backend endpoint
-      const response = await axios.delete(`${secretKey}/delete-data/${ename}`);
+      const response = await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
       fetchApproveRequests();
       closepopup();
       if(response.status===200){
@@ -136,7 +136,7 @@ function ApproveCard({ name, date, time }) {
   const handleSaveCompany = async () => {
  
     try {
-        const response = await axios.post(`${secretKey}/change-edit-request/${editableCompany}`, companyObject);
+        const response = await axios.post(`${secretKey}/requests/change-edit-request/${editableCompany}`, companyObject);
         fetchApproveRequests();
         setEditableCompany("");
         setCompanyObject({

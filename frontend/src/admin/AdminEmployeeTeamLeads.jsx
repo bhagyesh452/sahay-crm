@@ -150,7 +150,7 @@ function AdminEmployeeTeamLeads() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Set the retrieved data in the state
             const tempData = response.data;
@@ -194,10 +194,10 @@ function AdminEmployeeTeamLeads() {
 
     const fetchBDMbookingRequests = async () => {
         const bdmName = data.ename;
-        console.log("This is bdm", bdmName);
+      
         try {
             const response = await axios.get(
-                `${secretKey}/matured-get-requests-byBDM/${bdmName}`
+                `${secretKey}/bdm-data/matured-get-requests-byBDM/${bdmName}`
             );
             const mainData = response.data[0]
             setBDMrequests(mainData);
@@ -214,9 +214,9 @@ function AdminEmployeeTeamLeads() {
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
         try {
-            const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
+            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
 
-            console.log("teamdata", response.data)
+            
 
             setTeamData(response.data)
             if (bdmNewStatus === "Untouched") {
@@ -381,7 +381,7 @@ function AdminEmployeeTeamLeads() {
         }
         try {
             if (isDeleted) {
-                const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
+                const response = await axios.post(`${secretKey}/bdm-data/teamleads-rejectdata/${cid}`, {
                     bdmAcceptStatus: "NotForwarded",
                 })
                 const response2 = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
@@ -525,7 +525,7 @@ function AdminEmployeeTeamLeads() {
         newBdmStatus
     ) => {
         try {
-            const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
+            const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
                 newBdmStatus,
                 companyId,
                 oldStatus,
@@ -600,7 +600,7 @@ function AdminEmployeeTeamLeads() {
 
             if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
                 const response = await axios.post(
-                    `${secretKey}/bdm-status-change/${companyId}`,
+                    `${secretKey}/bdm-data/bdm-status-change/${companyId}`,
                     {
                         bdeStatus,
                         bdmnewstatus,
@@ -627,7 +627,7 @@ function AdminEmployeeTeamLeads() {
             } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
 
                 const response = await axios.delete(
-                    `${secretKey}/delete-bdm-busy/${companyId}`)
+                    `${secretKey}/bdm-data/delete-bdm-busy/${companyId}`)
                 console.log("yahan dikha", bdmnewstatus)
                 // Check if the API call was successful
                 if (response.status === 200) {
@@ -658,7 +658,7 @@ function AdminEmployeeTeamLeads() {
 
                 // Make API call to send the request
                 axios
-                    .post(`${secretKey}/matured-case-request`, requestData)
+                    .post(`${secretKey}/bdm-data/matured-case-request`, requestData)
                     .then((response) => {
                         if (response.status === 200) {
                             // Assuming fetchData is a function to fetch updated employee data
@@ -809,7 +809,7 @@ function AdminEmployeeTeamLeads() {
         try {
             // Send a DELETE request to the backend API endpoint
             const response = await axios.delete(
-                `${secretKey}/delete-followup/${companyName}`
+                `${secretKey}/projection/delete-followup/${companyName}`
             );
             console.log(response.data.message); // Log the response message
             // Show a success message after successful deletion
@@ -880,7 +880,7 @@ function AdminEmployeeTeamLeads() {
             } else {
                 // Send data to backend API
                 const response = await axios.post(
-                    `${secretKey}/update-followup`,
+                    `${secretKey}/projection/update-followup`,
                     finalData
                 );
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -908,7 +908,7 @@ function AdminEmployeeTeamLeads() {
     const fetchProjections = async () => {
         try {
             const response = await axios.get(
-                `${secretKey}/projection-data/${data.ename}`
+                `${secretKey}/projection/projection-data/${data.ename}`
             );
             setProjectionData(response.data);
         } catch (error) {
@@ -1146,7 +1146,7 @@ function AdminEmployeeTeamLeads() {
             console.log(newemployeeSelection, data, bdmAcceptStatus)
             // Add the promise for updating CompanyModel to the array
             updatePromises.push(
-                axios.post(`${secretKey}/assign-leads-newbdm`, {
+                axios.post(`${secretKey}/bdm-data/assign-leads-newbdm`, {
                     newemployeeSelection,
                     data: updatedObj,
                     bdmAcceptStatus,
