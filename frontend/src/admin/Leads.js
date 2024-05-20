@@ -910,7 +910,7 @@ function Leads() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [startRowIndex, setStartRowIndex] = useState(null);
-  
+
   const handleCheckboxChange = (id) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
@@ -1043,7 +1043,7 @@ function Leads() {
 
     if (userConfirmed) {
       handleAssignData();
-    } 
+    }
   };
 
   const handleAssignData = async () => {
@@ -1208,6 +1208,7 @@ function Leads() {
   const [cstat, setCstat] = useState("");
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+  
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks/remarks-history`);
