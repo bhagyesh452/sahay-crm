@@ -98,7 +98,7 @@ function TestLeads() {
     const fetchEmployeesData = async () => {
         try {
 
-            const response = await axios.get(`${secretKey}/einfo`)
+            const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
 
         } catch (error) {
@@ -108,7 +108,7 @@ function TestLeads() {
 
     const fetchRemarksHistory = async () => {
         try {
-            const response = await axios.get(`${secretKey}/remarks-history`);
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
             setRemarksHistory(response.data);
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -150,7 +150,7 @@ function TestLeads() {
             setCurrentDataLoading(true);
 
             const response = await axios.get(`${secretKey}/search-leads`, {
-                params: { searchQuery }
+                params: { searchQuery , field:"Company Name" }
             });
 
             if (!searchQuery.trim()) {
@@ -843,7 +843,7 @@ function TestLeads() {
 
         // // Find the selected data object
 
-        const selectedData = dataStatus.find((item) => item._id === id);
+        const selectedData = data.find((item) => item._id === id);
 
         //console.log(selectedData["Company Incorporation Date  "])
         //console.log(selectedData)
