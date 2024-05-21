@@ -1385,6 +1385,7 @@ app.post("/api/projection/followdataexport/", async (req, res) => {
 
 
 // Backend API to update or add data to FollowUpModel
+// Backend API to update or add data to FollowUpModel
 // app.post('/api/update-followup', async (req, res) => {
 //   try {
 //     const { companyName } = req.body;
@@ -2452,87 +2453,6 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
 });
 
 // ************************************************ Export APIs ***********************************************
-app.post("/api/exportLeads/", async (req, res) => {
-  try {
-    const selectedIds = req.body;
-
-    const leads = await CompanyModel.find({
-      _id: { $in: selectedIds },
-    });
-
-    const csvData = [];
-    // Push the headers as the first row
-    csvData.push([
-      "SR. NO",
-      "Company Name",
-      "Company Number",
-      "Company Email",
-      "Company Incorporation Date  ",
-      "City",
-      "State",
-      "Company Address",
-      "Director Name(First)",
-      "Director Number(First)",
-      "Director Email(First)",
-      "Director Name(Second)",
-      "Director Number(Second)",
-      "Director Email(Second)",
-      "Director Name(Third)",
-      "Director Number(Third)",
-      "Director Email(Third)",
-      "ename",
-      "AssignDate",
-      "Status",
-      "Remarks",
-    ]);
-
-    // Push each lead as a row into the csvData array
-    leads.forEach((lead, index) => {
-      const rowData = [
-        index + 1,
-        lead["Company Name"],
-        lead["Company Number"],
-        lead["Company Email"],
-        lead["Company Incorporation Date  "],
-        lead["City"],
-        lead["State"],
-        `"${lead["Company Address"]}"`,
-        lead["Director Name(First)"],
-        lead["Director Number(First)"],
-        lead["Director Email(First)"],
-        lead["Director Name(Second)"],
-        lead["Director Number(Second)"],
-        lead["Director Email(Second)"],
-        lead["Director Name(Third)"],
-        lead["Director Number(Third)"],
-        lead["Director Email(Third)"],
-        lead["AssignDate"],
-        lead["Status"],
-        `"${lead["Remarks"]}"`,
-      ];
-      csvData.push(rowData);
-      // console.log("rowData:" , rowData)
-    });
-
-    // Use fast-csv to stringify the csvData array
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=UnAssignedLeads_Admin.csv"
-    );
-
-    const csvString = csvData.map((row) => row.join(",")).join("\n");
-    // Send response with CSV data
-    // Send response with CSV data
-    //console.log(csvString)
-    res.status(200).end(csvString);
-    // console.log(csvString)
-    // Here you're ending the response
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
 
 // *********************************************  Bookings Section  *****************************************************
