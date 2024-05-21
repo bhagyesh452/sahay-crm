@@ -994,7 +994,7 @@ export default function EditableMoreBooking({
         }
     
     try {
-      const response = await axios.post(`${secretKey}/request/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+      const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
       console.log('Data created:', response.data);
       Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
       setFormOpen(false)

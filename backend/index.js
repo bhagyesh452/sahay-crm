@@ -2512,129 +2512,7 @@ app.post("/api/bookings/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
     }
   }
 );
-app.post("/api/update-redesigned-final-form/:CompanyName",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    // Assuming updatedBooking contains the updated data
-    const companyName = req.params.CompanyName; // Get the _id from the request parameters
-    const {
-      _id,
-      moreBookings,
-      step4changed,
-      otherDocs,
-      paymentReceipt,
-      remainingPayments,
-      ...boom
-    } = req.body;
-    const newOtherDocs = req.files["otherDocs"] || [];
-    const newPaymentReceipt = req.files["paymentReceipt"] || [];
-    const updatedDocWithoutId = {
-      ...boom,
-      otherDocs: newOtherDocs,
-      paymentReceipt: newPaymentReceipt,
-      remainingPayments: []
-    };
-    const updatedDocs = {
-      ...boom, remainingPayments: []
-    }
-    const goingToUpdate =
-      step4changed === "true" ? updatedDocWithoutId : updatedDocs;
 
-    try {
-      // Find the document by _id and update it with the updatedBooking data
-
-      const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
-        {
-          "Company Name": companyName,
-        },
-        goingToUpdate,
-        // Set all properties except "moreBookings"
-        { new: true } // Return the updated document
-      );
-
-      if (!updatedDocument) {
-        return res.status(404).json({ error: "Document not found" });
-      }
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-
-      res
-        .status(200)
-        .json({ message: "Document updated successfully", updatedDocument });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
-app.put("/api/update-more-booking/:CompanyName/:bookingIndex",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const { CompanyName, bookingIndex } = req.params;
-      const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
-
-      const newOtherDocs = req.files["otherDocs"] || [];
-      const newPaymentReceipt = req.files["paymentReceipt"] || [];
-      const latestData = {
-        ...newData,
-        otherDocs: newOtherDocs,
-        paymentReceipt: newPaymentReceipt,
-      };
-
-      const dataToSend = step4changed === "true" ? latestData : newData;
-      // Find the document by companyName
-      const existingDocument = await RedesignedLeadformModel.findOne({
-        "Company Name": CompanyName,
-      });
-      const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
-      if (!existingDocument) {
-        return res.status(404).json({ error: "Document not found" });
-      }
-      console.log("This is sending :", dataToSend, step4changed)
-      // Update the booking in moreBookings array at the specified index
-      const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
-        {
-          "Company Name": CompanyName,
-        },
-        {
-          [`moreBookings.${bookingIndex - 1}`]: {
-            bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
-            paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-            generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: newOtherDocs, paymentReceipt: newPaymentReceipt
-          }
-        }) : await RedesignedLeadformModel.findOneAndUpdate(
-          {
-            "Company Name": CompanyName,
-          },
-          {
-            [`moreBookings.${bookingIndex - 1}`]: {
-              bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
-              paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt
-            }
-          },
-          // Set all properties except "moreBookings"
-          { new: true } // Return the updated document
-        );
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": CompanyName,
-      });
-
-      res.status(200).json(updatedDocument);
-    } catch (error) {
-      console.error("Error updating more booking:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  }
-);
 app.use("/api/bookings" , bookingsAPI)
 
 
@@ -2898,21 +2776,8 @@ app.delete("/api/requests/delete-inform-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-redesigned-booking-request/:CompanyName",
-  async (req, res) => {
-    try {
-      const companyName = req.params.CompanyName;
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-      res.status(200).json({ message: "Document updated successfully" });
-    } catch {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
-app.post("/api/edit-moreRequest/:companyName/:bookingIndex",
+
+app.post("/api/requests/edit-moreRequest/:companyName/:bookingIndex",
   async (req, res) => {
     try {
       const { companyName, bookingIndex } = req.params;
