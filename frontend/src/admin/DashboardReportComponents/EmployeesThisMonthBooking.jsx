@@ -70,7 +70,7 @@ function EmployeesThisMonthBooking() {
 
     //----------------------fetching employee info----------------------------------------
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/employees/einfo`)
+        fetch(`${secretKey}/employee/einfo`)
             .then((response) => response.json())
             .then((data) => {
                 setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));

@@ -183,7 +183,7 @@ function EmployeeTeamLeads() {
             const response = await axios.get(
                 `${secretKey}/projection/projection-data/${data.ename}`
             );
-            const response2 = await axios.get(`${secretKey}/projection-data`)
+            const response2 = await axios.get(`${secretKey}/projection/projection-data`)
             setProjectionData(response.data);
             setProjectionDataNew(response2.data)
         } catch (error) {
@@ -460,7 +460,7 @@ function EmployeeTeamLeads() {
         //   // After updating, you can disable the button
     };
 
-    console.log(projectionDataNew)
+    //console.log(projectionDataNew)
 
     const handleAcceptClick = async (
         companyId,

@@ -962,10 +962,10 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 
 app.delete(`/api/bdm-data/post-deletecompany-interested/:companyId`, async (req, res) => {
   const companyId = req.params.companyId; // Correctly access teamId from req.params
-
+console.log("chal" , companyId)
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    //console.log(existingData);
+    console.log(existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
@@ -1057,7 +1057,7 @@ app.post(`/api/projection/post-updaterejectedfollowup/:cname`, async (req, res) 
   }
 });
 
-app.post(`/api/bdm-data/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
+app.post(`/api/projection/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
   const companyName = req.params.cname;
   const { caseType } = req.body;
   try {
@@ -2884,7 +2884,7 @@ app.post("/api/bdm-data/matured-case-request", async (req, res) => {
     res.status(500).json({ success: false, message: "Error saving request" });
   }
 });
-app.get("/api//bdm-data/inform-bde-requests/:bdeName", async (req, res) => {
+app.get("/api/bdm-data/inform-bde-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
     const request = await InformBDEModel.find({
@@ -3057,7 +3057,7 @@ app.get("/api/requests/recent-updates", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/card-leads", async (req, res) => {
+app.get("/api/company-data/card-leads", async (req, res) => {
   try {
     const { dAmount } = req.query; // Get the dAmount parameter from the query
 
@@ -3074,6 +3074,18 @@ app.get("/api/card-leads", async (req, res) => {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+app.get("/api/company-data/edata-particular/:ename", async (req, res) => {
+  try {
+    const { ename } = req.params;
+    const filteredEmployeeData = await CompanyModel.find({
+      $or: [{ ename: ename }, { maturedBdmName: ename }],
+    });
+    res.json(filteredEmployeeData);
+  } catch (error) {
+    console.error("Error fetching employee data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 

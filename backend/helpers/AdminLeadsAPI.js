@@ -16,7 +16,6 @@ router.get('/', async function(req,res){
     }
 
 })
-
 router.post("/manual", async (req, res) => {
     const receivedData = req.body;
     //console.log("receiveddata" , receivedData)

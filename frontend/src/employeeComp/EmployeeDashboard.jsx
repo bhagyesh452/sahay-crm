@@ -201,7 +201,7 @@ function EmployeeDashboard() {
 
   const fetchEmployeeData = async () => {
     setLoading(true);
-    fetch(`${secretKey}/edata-particular/${data.ename}`)
+    fetch(`${secretKey}/company-data/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
         setEmpData(data);
@@ -241,7 +241,7 @@ function EmployeeDashboard() {
     }
   }
 
-  console.log(teamLeadsData)
+  //console.log(teamLeadsData)
 
   useEffect(() => {
     fetchTeamLeadsData()
@@ -283,26 +283,26 @@ function EmployeeDashboard() {
 
   // ---------------------------Bookings Part --------------------------------------
 
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      try {
-        setLoading(true);
-        //setuniqueArrayLoading(true)// Set loading to true before fetching
-        const response = await axios.get(
-          `${secretKey}/company-ename/${data.ename}`
-        );
-        setTotalBooking(response.data);
-        setFilteredBooking(response.data);
-      } catch (error) {
-        console.error("Error fetching company details:", error.message);
-      } finally {
-        setLoading(false);
-        //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
-      }
-    };
+  // useEffect(() => {
+  //   const fetchBookingDetails = async () => {
+  //     try {
+  //       setLoading(true);
+  //       //setuniqueArrayLoading(true)// Set loading to true before fetching
+  //       // const response = await axios.get(
+  //       //   `${secretKey}/company-ename/${data.ename}`
+  //       // );
+  //       setTotalBooking(response.data);
+  //       setFilteredBooking(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching company details:", error.message);
+  //     } finally {
+  //       setLoading(false);
+  //       //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
+  //     }
+  //   };
 
-    fetchBookingDetails();
-  }, [data.ename]);
+  //   fetchBookingDetails();
+  // }, [data.ename]);
 
   //console.log("filteredBookings", filteredBooking)
 
@@ -667,7 +667,7 @@ function EmployeeDashboard() {
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
 
-  console.log("selectedDates", selectedDateRange);
+  //console.log("selectedDates", selectedDateRange);
 
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
@@ -715,7 +715,7 @@ function EmployeeDashboard() {
     setFollowDataFilter(filteredDataDateRange);
   }, [startDate, endDate]);
 
-  console.log(totalBooking);
+  //console.log(totalBooking);
 
   const handleSelectAnother = (values) => {
     console.log(values);
