@@ -150,7 +150,7 @@ function TestLeads() {
             setCurrentDataLoading(true);
 
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery , field:"Company Name" }
+                params: { searchQuery, field: "Company Name" }
             });
 
             if (!searchQuery.trim()) {
@@ -742,9 +742,9 @@ function TestLeads() {
                             title: 'Deleting...',
                             allowOutsideClick: false,
                             didOpen: () => {
-                              Swal.showLoading();
+                                Swal.showLoading();
                             }
-                          });
+                        });
                         // If user confirms, proceed with deletion
                         const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
                             data: { selectedRows }, // Pass selected rows to the server
@@ -754,7 +754,7 @@ function TestLeads() {
                             title: 'Deleted!',
                             text: 'Selected rows have been deleted.',
                             icon: 'success',
-                          });
+                        });
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
@@ -997,7 +997,7 @@ function TestLeads() {
     };
 
     //-----------------------function to open popup remarks--------------------------------
-    
+
     const functionopenpopupremarks = (companyID, companyStatus) => {
         openchangeRemarks(true);
         setFilteredRemarks(
@@ -1034,7 +1034,12 @@ function TestLeads() {
                                 <button type="button" class="btn" onClick={() => handleDeleteSelection()}><span><MdOutlineDeleteSweep style={{ marginRight: "7px", height: "18px", width: "17px", opacity: "0.6" }} /></span>Delete Leads</button>
                             </div>
                         </div>
-                        <div className='w-25'>
+                        {selectedRows.length !== 0 && (
+                            <div className="form-control mt-3" style={{width:"192px" , height:"38px"}} >
+                                Total Data Selected : {selectedRows.length}
+                            </div>
+                        )}
+                        <div className='w-25 mt-3'>
                             <input
                                 type="text"
                                 value={searchText}
@@ -1233,7 +1238,7 @@ function TestLeads() {
                                                                 <div
                                                                     onClick={() => {
                                                                         functionopenpopupremarks(company._id, company.Status);
-                                                                    }} 
+                                                                    }}
                                                                     style={{ cursor: "pointer" }}>
                                                                     <IconEye
 
@@ -1346,12 +1351,12 @@ function TestLeads() {
             <Dialog open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAddLeadsDialog} >
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAddLeadsDialog} >
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1702,12 +1707,12 @@ function TestLeads() {
             <Dialog open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Import CSV DATA{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeBulkLeadsCSVPopup}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeBulkLeadsCSVPopup}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1860,12 +1865,12 @@ function TestLeads() {
             <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAssignLeadsDialog}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -2301,13 +2306,13 @@ function TestLeads() {
             >
                 <DialogTitle>
                     Remarks
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} 
-                    onClick={closepopupRemarks}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
+                        onClick={closepopupRemarks}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>

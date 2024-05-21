@@ -556,30 +556,6 @@ app.post("/api/requests/change-edit-request/:companyName", async (req, res) => {
   }
 });
 
-// app.post("/api/admin-leads/manual", async (req, res) => {
-//   const receivedData = req.body;
-//   //console.log("receiveddata" , receivedData)
-
-//   // console.log(receivedData);
-
-//   try {
-//     const employee = new CompanyModel(receivedData);
-//     const savedEmployee = await employee.save();
-//     // console.log("Data sent");
-//     res
-//       .status(200)
-//       .json(savedEmployee || { message: "Data sent successfully" });
-//   } catch (error) {
-//     res.status(500).json({ error: "Internal Server Error" });
-//     console.error("Error saving employee:", error.message);
-//   }
-// });
-
-
-
-
-
-
 app.post("/api/employee/post-bdmwork-request/:eid", async (req, res) => {
   const eid = req.params.eid;
   const { bdmWork } = req.body;
