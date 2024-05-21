@@ -5791,7 +5791,7 @@ app.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                 } /-</th>
                           <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
@@ -8451,7 +8451,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
           } /-</th>
                     <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
@@ -8894,9 +8894,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 "footer": {
   "height": "100px",
   "contents": {
-    first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-    2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-    3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+    first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+    2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+    3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
     default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
     last: '<span style="color: #444;">2</span>/<span>2</span>'
   }
