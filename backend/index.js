@@ -75,6 +75,10 @@ app.use(
   })
 );
 app.use('/api/admin-leads', AdminLeadsAPI);
+app.use("/api/remarks" , RemarksAPI);
+app.use("/api/bookings" , bookingsAPI)
+app.use('/api/company-data' , companyAPI)
+app.use('/api/bdm-data' , bdmAPI)
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -571,30 +575,8 @@ app.post("/api/requests/change-edit-request/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/company-data/update-status/:id", async (req, res) => {
-  const { id } = req.params;
-  const { newStatus, title, date, time } = req.body; // Destructure the required properties from req.body
 
-  try {
-    // Update the status field in the database based on the employee id
-    await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
 
-    // Create and save a new document in the RecentUpdatesModel collection
-    const newUpdate = new RecentUpdatesModel({
-      title: title,
-      date: date,
-      time: time,
-    });
-    await newUpdate.save();
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.use("/api/remarks" , RemarksAPI);
 
 
 
@@ -709,202 +691,7 @@ app.get("/api/teams/teaminfo/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/bdm-data/teamleadsdata", async (req, res) => {
-  try {
-    const data = await TeamLeadsModel.find()
-    res.status(200).send(data)
 
-  } catch (error) {
-    console.log("error fetching team leads data", error.message)
-    res.status(500).json({ error: "Internal server error" })
-  }
-})
-
-// app.post("/api/forwardtobdmdata", async (req, res) => {
-//   const selectedData = req.body;
-//   console.log("selectedData" , selectedData)
-
-//   try {
-//     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
-//     const newLead = await TeamLeadsModel.create(selectedData);
-//     console.log("newLead" , newLead)
-//     res.status(201).json(newLead);
-//   } catch (error) {
-//     console.error('Error creating new lead:', error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-app.post("/api/bdm-data/forwardtobdmdata", async (req, res) => {
-  const {
-    selectedData,
-    bdmName,
-    companyId,
-    bdmAcceptStatus,
-    bdeForwardDate,
-    bdeOldStatus,
-    companyName,
-  } = req.body;
-  //console.log("selectedData", selectedData);
-  console.log(companyName)
-  try {
-    // Assuming TeamLeadsModel has a schema similar to the selectedData structure
-    const newLeads = await Promise.all(
-      selectedData.map(async (data) => {
-        const newData = {
-          ...data,
-          bdmName,
-          bdeForwardDate: new Date(bdeForwardDate),
-        }; // Add bdmName to each data object
-        return await TeamLeadsModel.create(newData);
-      })
-    );
-
-    await CompanyModel.findByIdAndUpdate(
-      { _id: companyId },
-      {
-        bdmAcceptStatus: bdmAcceptStatus,
-        bdeForwardDate: new Date(bdeForwardDate),
-        bdeOldStatus: bdeOldStatus,
-        bdmName: bdmName,
-      }
-
-    );
-
-    // await FollowUpModel.findOneAndUpdate( { companyName : companyName },
-    // {
-    //   $set: {
-    //     bdmName: bdmName,
-    //   },
-    // },
-    // { new: true })
-
-
-    //console.log("newLeads", newLeads);
-    res.status(201).json(newLeads);
-  } catch (error) {
-    console.error("Error creating new leads:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/api/bdm-data/forwardedbybdedata/:bdmName", async (req, res) => {
-  const bdmName = req.params.bdmName;
-  //console.log(bdmName)
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await TeamLeadsModel.find({
-      bdmName: bdmName,
-    }).lean();
-
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-
-
-app.post("/api/bdm-data/update-bdm-status/:id", async (req, res) => {
-  const { id } = req.params;
-  const {
-    newBdmStatus,
-    companyId,
-    oldStatus,
-    bdmAcceptStatus,
-    bdmStatusChangeDate,
-    bdmStatusChangeTime,
-  } = req.body; // Destructure the required properties from req.body
-
-  try {
-    // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, {
-      bdmStatus: oldStatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: bdmStatusChangeTime,
-    });
-
-    await CompanyModel.findByIdAndUpdate(id, {
-      bdmAcceptStatus: bdmAcceptStatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: bdmStatusChangeTime,
-    });
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/api/bdm-data/bdm-status-change/:id", async (req, res) => {
-  const { id } = req.params;
-  const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate } =
-    req.body; // Destructure the required properties from req.body
-
-  try {
-    // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, {
-      bdmStatus: bdmnewstatus,
-      Status: bdmnewstatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: time,
-    });
-
-    await CompanyModel.findByIdAndUpdate(id, {
-      Status: bdmnewstatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: time,
-    });
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-app.post(`/api/bdm-data/teamleads-reversedata/:id`, async (req, res) => {
-  const id = req.params.id; // Corrected params extraction
-  const { companyName, bdmAcceptStatus, bdmName } = req.body;
-  try {
-    // Assuming TeamLeadsModel and CompanyModel are Mongoose models
-    await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
-
-    await CompanyModel.findByIdAndUpdate(id, {
-      bdmAcceptStatus: bdmAcceptStatus,
-      bdmName: bdmName,
-    }); // Corrected update
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post(`/api/bdm-data/teamleads-rejectdata/:id`, async (req, res) => {
-  const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus, bdmName, remarks } = req.body;
-  try {
-    // Assuming TeamLeadsModel and CompanyModel are Mongoose models
-    await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
-
-    await CompanyModel.findByIdAndUpdate(id, {
-      bdmAcceptStatus: bdmAcceptStatus,
-      bdmName: bdmName,
-    });
-
-    await RemarksHistory.findByIdAndUpdate(id, {
-      remarks: remarks,
-    }); // Corrected update
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 // app.delete("/api/delete-followup/:companyName", async (req, res) => {
 //   try {
@@ -965,40 +752,7 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 //   }
 // });
 
-app.delete(`/api/bdm-data/post-deletecompany-interested/:companyId`, async (req, res) => {
-  const companyId = req.params.companyId; // Correctly access teamId from req.params
-console.log("chal" , companyId)
-  try {
-    const existingData = await TeamLeadsModel.findById(companyId);
-    //console.log(existingData);
 
-    if (existingData) {
-      await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
-      res.status(200).json({ message: "Deleted Successfully" });
-    } else {
-      res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/api/bdm-data/post-bdmAcceptStatusupate/:id", async (req, res) => {
-  const { id } = req.params;
-  const { bdmAcceptStatus } = req.body; // Destructure the required properties from req.body
-
-  try {
-    // Update the status field in the database based on the employee id
-    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus });
-
-    // Create and save a new document in the RecentUpdatesModel collectio
-
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 app.post("/api/projection/post-bdmacceptted-revertbackprojection", async(req,res)=>{
   const { cname } = req.params
   try{
@@ -1163,31 +917,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 
 // ------------------------------api to get leads on the basis of ename------------------------
 
-app.get("/api/company-data/specific-ename-status/:ename/:status", async (req, res) => {
-  const ename = req.params.ename;
-  const status = req.params.status;
 
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    if (status === "complete") {
-      const data = await CompanyModel.find({ ename: ename }).lean();
-
-      res.send(data);
-      //console.log("Data" ,data)
-    } else {
-      const data = await CompanyModel.find({
-        ename: ename,
-        Status: status,
-      }).lean();
-
-      res.send(data);
-      //console.log("Data" ,data)
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 // app.get("/api/new-leads", async (req, res) => {
 //   try {
@@ -1500,62 +1230,10 @@ app.delete("/api/employee/einfo/:id", async (req, res) => {
   }
 });
 // ***************************************************************  Company Data's Hadi  *************************************************************
-// 2. Read a Company
-app.get("/api/company-data/leads/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.findOne({
-      "Company Name": companyName,
-    }).lean();
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-// 3. Update a Company 
-app.put("/api/company-data/leads/:id", async (req, res) => {
-  const id = req.params.id;
-  //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
-  try {
-    req.body["Company Incorporation Date  "] = new Date(
-      req.body["Company Incorporation Date "]
-    );
-    const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
-    console.log(updatedData);
 
-    if (!updatedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
 
-    res.json({ message: "Data updated successfully", updatedData });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-// 4. Delete a Company
-app.delete("/api/company-data/leads/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    // Use findByIdAndDelete to delete the document by its ID
-    const deletedData = await CompanyModel.findByIdAndDelete(id);
-    if (!deletedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
-
-    res.json({ message: "Data deleted successfully", deletedData });
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 // 5. ADD Multiple Companies
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -1593,224 +1271,15 @@ app.post("/api/company", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-// 6. ADD Multiple Companies(Pata nai kyu he)
-app.post("/api/company-data/leads", async (req, res) => {
-  const csvData = req.body;
-  //console.log("csvdata" , csvData)
-  let counter = 0;
-  let successCounter = 0;
-  let duplicateEntries = []; // Array to store duplicate entries
-
-  try {
-    for (const employeeData of csvData) {
-      //console.log("employee" , employeeData)
-      try {
-        const employeeWithAssignData = {
-          ...employeeData,
-          AssignDate: new Date(),
-          "Company Name": employeeData["Company Name"].toUpperCase(),
-        };
-        const employee = new CompanyModel(employeeWithAssignData);
-        //console.log("newemployee" , employee)
-        const savedEmployee = await employee.save();
-        //console.log("saved" , savedEmployee)
-        successCounter++;
-      } catch (error) {
-        duplicateEntries.push(employeeData);
-        //console.log("kuch h ye" , duplicateEntries);
-        console.error("Error saving employee:", error.message);
-        counter++;
-      }
-    }
-    if (duplicateEntries.length > 0) {
-      //console.log("yahan chala csv pr")
-      //console.log(duplicateEntries , "duplicate")
-      const json2csvParser = new Parser();
-      // If there are duplicate entries, create and send CSV
-      const csvString = json2csvParser.parse(duplicateEntries);
-     // console.log(csvString , "csv")
-      res.setHeader("Content-Type", "text/csv");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=DuplicateEntries.csv"
-      );
-      res.status(200).end(csvString);
-    
-      //console.log("csvString" , csvString)
-    } else {
-     // console.log("yahan chala counter pr")
-      res.status(200).json({
-        message: "Data sent successfully",
-        counter: counter,
-        successCounter: successCounter,
-      });
-      
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error in bulk save:", error.message);
-  }
-});
-// 7. Read Muultiple Companies 
-app.get("/api/company-data/leads", async (req, res) => {
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.find().lean();
-
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-//8. Read Multiple companies New
-app.get('/api/company-data/new-leads', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1; // Page number
-    const limit = parseInt(req.query.limit) || 500; // Items per page
-    const skip = (page - 1) * limit; // Number of documents to skip
-    const { dataStatus } = req.query
-
-    //console.log("dataStatus" , dataStatus)
-    // Query the database to get paginated data
-    let query = {};
-
-    if (dataStatus === "Unassigned") {
-      query = { ename: "Not Alloted" };
-
-    } else if (dataStatus === "Assigned") {
-      query = { ename: { $ne: "Not Alloted" } };
-
-    }
-    const employees = await CompanyModel.find(query)
-    .sort({ AssignDate: -1 })  // Sort in descending order by the specified field
-    .skip(skip)
-    .limit(limit);
-  
-    // console.log("employees" , employees)
-    // Get total count of documents for pagination
-    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
-    const totalCount = await CompanyModel.countDocuments(query)
-
-    //console.log(totalCount , unAssignedCount, assignedCount)
-    //console.log(unAssignedCount , assignedCount)
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-    // Return paginated data along with pagination metadata
-    res.json({
-      data: employees,
-      currentPage: page,
-      totalPages: totalPages,
-      unAssignedCount: unAssignedCount,
-      assignedCount: assignedCount
-    });
-  } catch (error) {
-    console.error('Error fetching employee data:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-//9. Filtere search for Reading Multiple Companies
-app.get('/api/company-data/search-leads', async (req, res) => {
-  try {
-    const { searchQuery } = req.query;
-    const { field } = req.query;
-    console.log(searchQuery , "search")
-
-    let searchResults;
-    if (field === "Company Name" || field === "Company Email") {
-      if (searchQuery && searchQuery.trim() !== '') {
-        // Perform database query to search for leads matching the searchQuery
-        const query = {};
-        query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
-    
-        searchResults = await CompanyModel.find(query).limit(500).lean();
-      } else {
-        // If search query is empty, fetch 500 data from CompanyModel
-        searchResults = await CompanyModel.find().limit(500).lean();
-      }
-    }
-    else if (field === "Company Number") {
-      if (searchQuery && searchQuery.trim() !== '') {
-        // Check if the searchQuery is a valid number
-        const searchNumber = Number(searchQuery);
-    
-        if (!isNaN(searchNumber)) {
-          // Perform database query to search for leads matching the searchQuery as a number
-          searchResults = await CompanyModel.find({
-            'Company Number': searchNumber
-          }).limit(500).lean();
-        } else {
-          // If the searchQuery is not a number, perform a regex search (if needed for some reason)
-          searchResults = await CompanyModel.find({
-            'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
-          }).limit(500).lean();
-        }
-      } else {
-        // If search query is empty, fetch 500 data from CompanyModel
-        searchResults = await CompanyModel.find().limit(500).lean();
-      }
-    }
-    
-  
-
-    res.json(searchResults);
-  } catch (error) {
-    console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-//10. Search for Specific Company
-app.get("/api/company-data/specific-company/:companyId", async (req, res) => {
-  try {
-    const companyId = req.params.companyId;
-    // Assuming CompanyModel.findById() is used to find a company by its ID
-    const company = await CompanyModel.findById(companyId);
-    if (!company) {
-      return res.status(404).json({ error: "Company not found" });
-    }
-    res.json(company);
-  } catch (error) {
-    console.error("Error fetching company:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-//11. Assign company to new employee
-app.post("/api/company-data/assign-new", async (req, res) => {
-  const { data } = req.body;
-  const { ename } = req.body;
-  //console.log("data" , data)
-  //console.log("ename" , ename)
 
 
-  try {
-    // Add AssignDate property with the current date
-    for (const employeeData of data) {
-      //console.log("employee" , employeeData)
-      try {
-       const companyName = employeeData["Company Name"];
-        const employee = await CompanyModel.findOneAndUpdate({"Company Name":companyName} , {$set:{ename:ename}});
-        //console.log("yahan kuch locha h" , employee)
-        const deleteTeams = TeamLeadsModel.findByIdAndDelete(employee._id);
-        //console.log("newemployee" , employee)
-        await RemarksHistory.deleteOne({ companyID: employee._id });
-        
-        //console.log("saved" , savedEmployee)
-     
-      } catch (error) {
-   
-        //console.log("kuch h ye" , duplicateEntries);
-        console.error("Error Assigning Data:", error.message);
-      
-      }
-    }
-    res.status(200).json({ message: "Data updated successfully" });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+
+
+
+
+
+
+
 
 
 
@@ -1860,43 +1329,8 @@ app.post("/api/company-data/assign-new", async (req, res) => {
 // });
 
 // **************************************************************  Follow UPDATE content  **************************************************************
-app.post(`/api/company-data/post-bdenextfollowupdate/:id`, async (req, res) => {
-  const companyId = req.params.id;
 
-  const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate);
 
-  console.log(bdeNextFollowUpDate);
-
-  try {
-    await CompanyModel.findByIdAndUpdate(companyId, {
-      bdeNextFollowUpDate: bdeNextFollowUpDate,
-    });
-
-    res.status(200).json({ message: "Date Updated successfully" });
-  } catch (error) {
-    console.error("Error fetching Date:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post(`/api/bdm-data/post-bdmnextfollowupdate/:id`, async (req, res) => {
-  const companyId = req.params.id;
-
-  const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate);
-
-  console.log(bdmNextFollowUpDate);
-
-  try {
-    await TeamLeadsModel.findByIdAndUpdate(companyId, {
-      bdmNextFollowUpDate: bdmNextFollowUpDate,
-    });
-
-    res.status(200).json({ message: "Date Updated successfully" });
-  } catch (error) {
-    console.error("Error fetching Date:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
   try {
@@ -1926,116 +1360,11 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
   }
 });
 
-app.post("/api/bdm-data/assign-leads-newbdm", async (req, res) => {
-  const { newemployeeSelection, data, bdmAcceptStatus } = req.body;
 
-  console.log(newemployeeSelection, data, bdmAcceptStatus);
-
-  if (newemployeeSelection !== "Not Alloted") {
-    try {
-      // Add AssignDate property with the current date
-      const updatedObj = {
-        ...data,
-        bdmName: newemployeeSelection,
-        AssignDate: new Date(),
-      };
-
-      //console.log("updated" , updatedObj)
-
-      // Update TeamLeadsModel for the specific data
-      await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
-
-      await CompanyModel.findByIdAndUpdate(
-        { _id: data._id },
-        { bdmName: newemployeeSelection }
-      );
-
-      // Delete objects from RemarksHistory collection that match the "Company Name"
-      //await RemarksHistory.deleteMany({ companyID: data._id });
-
-      res.status(200).json({ message: "Data updated successfully" });
-    } catch (error) {
-      console.error("Error updating data:", error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  } else {
-    try {
-      // If newemployeeSelection is "Not Alloted", delete the company record and update AssignDate
-      const updatedObj = {
-        ...data,
-        ename: newemployeeSelection,
-        AssignDate: new Date(),
-        bdmAcceptStatus: bdmAcceptStatus,
-        bdmName: "NoOne",
-      };
-      //console.log("updated" , updatedObj)
-      // Delete the record from TeamLeadsModel
-      await TeamLeadsModel.findByIdAndDelete({ _id: data._id });
-
-      // Update the record in CompanyModel
-      await CompanyModel.findByIdAndUpdate({ _id: data._id }, updatedObj);
-
-      // Delete records from RemarksHistory collection that match the companyID
-      await RemarksHistory.deleteMany({ companyID: data._id });
-
-      res.status(200).json({ message: "Data updated successfully" });
-    } catch (error) {
-      console.error("Error updating data:", error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-});
 
 
 // *************************************************  Fetching Company Data   ***********************************************************
-app.get("/api/company-data/employees/:ename", async (req, res) => {
-  try {
-    const employeeName = req.params.ename;
 
-    // Fetch data from companyModel where ename matches employeeName
-    const data = await CompanyModel.find({
-      $or: [
-        { ename: employeeName },
-        { maturedBdmName: employeeName },
-        { multiBdmName: { $in: [employeeName] } },
-      ],
-    });
-    //console.log(data)
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.put("/api/company-data/newcompanyname/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { ename } = req.body;
-
-    // Validate if 'ename' is provided
-    if (!ename) {
-      return res.status(400).json({ error: "Ename is required for update" });
-    }
-
-    // Find and update the company data
-    const updatedData = await CompanyModel.findByIdAndUpdate(
-      id,
-      { ename: ename },
-      { new: true }
-    );
-
-    // Check if data was found and updated
-    if (!updatedData) {
-      return res.status(404).json({ error: "Company data not found" });
-    }
-
-    res.json({ message: "Company data updated successfully", updatedData });
-  } catch (error) {
-    console.error("Error updating company data:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 // api call for employee requesting for the data
 
@@ -2533,223 +1862,9 @@ app.post("/api/bookings/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
       res.status(500).send("Error updating otherDocs.");
     }
   }
-);
-
-app.use("/api/bookings" , bookingsAPI)
-
-
-// app.get('/dashboard', async function(req, res, next) {
-//   const code = req.query.code;
-
-//   console.log(code);
-//   // try {
-//   //   const oAuth2Client = new OAuth2Client(
-//   //     process.env.GOOGLE_CLIENT_ID,
-//   //     process.env.GOOGLE_CLIENT_SECRET,
-//   //     'http://localhost:3001/auth/google/callback'
-//   //   );
-
-//   //   const { tokens } = await oAuth2Client.getToken(code);
-//   //   // Set the access token on the OAuth2 client
-//   //   oAuth2Client.setCredentials(tokens);
-
-//   //   console.info('Tokens acquired.');
-//   //   console.log('Access Token:', tokens.access_token);
-//   //   console.log('Refresh Token:', tokens.refresh_token);
-
-//   //   // Get user data using the access token
-//   //   await getUserData(tokens.access_token);
-//   // } catch (err) {
-//   //   console.log('Error logging in with OAuth2 user', err);
-//   // }
-
-//   // res.redirect(303, 'http://localhost:5173/');
-// });
-
-// passport.use(new GoogleStrategy({
-//   clientID: process.env.GOOGLE_CLIENT_ID,
-//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//   callbackURL: '/auth/google/callback',
-//   scope: ["profile", "email"],
-//   accessType: 'offline',
-// },
-// async (accessToken, refreshToken, profile, done) => {
-//   console.log('accessToken:', accessToken);
-//   console.log('refreshToken:', refreshToken);
-//   await getUserData(accessToken);
-
-//   const user = {
-//     id: profile.id,
-//     email: profile.emails[0].value,
-//   };
-//   console.log("user:", user);
-//   return done(null, user);
-// }));
-
-// async function getUserData(access_token) {
-//   try {
-//     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
-//     const data = await response.json();
-//     console.log("All the data", data);
-//   } catch (error) {
-//     console.error('Error fetching user data:', error);
-//   }
-// }
-
-// passport.serializeUser((user, done) => {
-//   done(null, user);
-// });
-
-// passport.deserializeUser((user, done) => {
-//   done(null, user);
-// });
-
-// app.get('/auth/google',
-//   passport.authenticate('google', {
-//     scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
-//     prompt: 'consent'
-//   }));
-
-// // Google OAuth callback route
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/login' }),
-//   (req, res) => {
-//     // Check if the referer header is present in the request
-//     const referer = req.headers.referer;
-
-//     if (referer) {
-//       // Redirect to the previous page
-//       res.redirect('/dashboard');
-//     } else {
-//       // If referer is not available, redirect to a default URL
-//       res.redirect('/'); // You can change this to any default URL you prefer
-//     }
-//   }
-// );
-
-// app.use('/oauth', authRouter);
-// app.use('/request', requestRouter);
-
-// // Initialize Nodemailer transporter using user's credentials
-// function createTransporter(user) {
-//   return nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//       type: 'OAuth2',
-//       user: user.email,
-//       clientId: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//       refreshToken: user.refreshToken,
-//       accessToken: user.accessToken
-//     }
-//   });
-// }
-
-// // Send email route
-// app.post('/api/send-email', (req, res) => {
-//   // Authenticate user based on session or request data
-//   const user = req.body; // Assuming user is authenticated
-//   // Create Nodemailer transporter using user's credentials
-//   const transporter = createTransporter(user);
-//   console.log(transporter)
-//   // Send email using transporter
-//   transporter.sendMail({
-//     from: user.email,
-//     to: 'aakashseth454@gmail.com',
-//     subject: 'Test Email',
-//     text: 'This is a test email sent from Nodemailer using Gmail OAuth 2.0.'
-//   }, (error, info) => {
-//     if (error) {
-//       console.error(error);
-//       res.status(500).send('Error sending email');
-//     } else {
-//       console.log('Email sent:', info.response);
-//       res.status(200).send('Email sent successfully');
-//     }
-//   });
-// });
-
-// ---------------------------------------------------- New Booking Form  ---------------------------------------------------------------
-
-
-
-// ---------------------------- BDM Booking Request Section -----------------------------------------------
+)
 // ********************************************  Bookings Requests Section *********************************************
-app.post("/api/bdm-data/matured-case-request", async (req, res) => {
-  try {
-    // Extract data from the request body sent by the frontend
-    const { companyName, requestStatus, bdeName, bdmName, date } = req.body;
 
-    // Create a new instance of RequestMaturedModel
-    const newRequest = new RequestMaturedModel({
-      "Company Name": companyName,
-      requestStatus,
-      bdeName,
-      bdmName,
-      date,
-    });
-    // Save the new request to the database
-    await newRequest.save();
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
-      {
-        "Company Name": companyName,
-      },
-      {
-        bdmOnRequest: true,
-      },
-      { new: true }
-    );
-
-    // Send a success response back to the frontend
-    res
-      .status(200)
-      .json({ success: true, message: "Request saved successfully" });
-  } catch (error) {
-    console.error("Error saving request:", error);
-    res.status(500).json({ success: false, message: "Error saving request" });
-  }
-});
-app.get("/api/bdm-data/inform-bde-requests/:bdeName", async (req, res) => {
-  try {
-    const bdeName = req.params.bdeName;
-    const request = await InformBDEModel.find({
-      bdeName,
-    });
-    res.status(200).json(request);
-  } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Error fetching the data" });
-  }
-});
-app.get("/api/matured-get-requests/:bdeName", async (req, res) => {
-  try {
-    const bdeName = req.params.bdeName;
-    const request = await RequestMaturedModel.find({
-      bdeName,
-      requestStatus: "Pending",
-    });
-    res.status(200).json(request);
-  } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Error fetching the data" });
-  }
-});
-app.get("/api/bdm-data/matured-get-requests-byBDM/:bdmName", async (req, res) => {
-  try {
-    const bdmName = req.params.bdmName;
-    const request = await RequestMaturedModel.find({
-      bdmName,
-      requestStatus: "Accepted",
-    });
-    res.status(200).json(request);
-  } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Error fetching the data" });
-  }
-});
 app.post("/api/requests/update-bdm-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
@@ -2869,38 +1984,6 @@ app.get("/api/requests/recent-updates", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get("/api/company-data/card-leads", async (req, res) => {
-  try {
-    const { dAmount } = req.query; // Get the dAmount parameter from the query
-
-    // Fetch data from the database with the specified limit
-    const data = await CompanyModel.find({
-      ename: { $in: ["Select Employee", "Not Alloted"] },
-    })
-      .limit(parseInt(dAmount))
-      .lean();
-
-    // Send the data as the API response
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-app.get("/api/company-data/edata-particular/:ename", async (req, res) => {
-  try {
-    const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({
-      $or: [{ ename: ename }, { maturedBdmName: ename }],
-    });
-    res.json(filteredEmployeeData);
-  } catch (error) {
-    console.error("Error fetching employee data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
 
 http.listen(3001, function () {
   console.log("Server started...");
