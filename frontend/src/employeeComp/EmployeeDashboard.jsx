@@ -8,7 +8,7 @@ import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from "react-date-range";
 import { FaRegCalendar } from "react-icons/fa";
-import { Drawer, IconButton } from "@mui/material";
+import { Drawer, IconButton, colors } from "@mui/material";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
@@ -59,18 +59,149 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
+import roundImgOrg from "../static/my-images/circle-orange.svg";
+import roundImggreen from "../static/my-images/Circle-Green.svg"
+//icons
+import { IoFileTrayFullOutline } from "react-icons/io5";
+import { CiViewList } from "react-icons/ci";
+import { MdImportantDevices } from "react-icons/md";
+import { LiaAlgolia } from "react-icons/lia";
+import { LiaClipboardCheckSolid } from "react-icons/lia";
+import { RiFileCloseLine } from "react-icons/ri";
 
 
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const xLabels = [
-  'Page A',
-  'Page B',
-  'Page C',
-  'Page D',
-  'Page E',
-  'Page F',
-  'Page G',
+//PIA CHART IMPORT
+import { PieChart } from '@mui/x-charts/PieChart';
+import { useDrawingArea } from '@mui/x-charts/hooks';
+import { styled } from '@mui/material/styles';
+
+
+//SPEDOMETER IMPORT
+import GaugeComponent from 'react-gauge-component'
+
+
+// LINE CHART
+import {
+  GaugeContainer,
+  GaugeValueArc,
+  GaugeReferenceArc,
+  useGaugeState,
+} from '@mui/x-charts/Gauge';
+import { GoArrowUp } from "react-icons/go";
+import { LineChart } from '@mui/x-charts/LineChart';
+
+
+
+// PIA Chart Code Start
+
+const data_my = [
+  { value: 100, color:'#1ac9bd', label:'General'},
+  { value: 20, color:'#ffb900', label:'Interested'},
+  { value: 25, color:'#4299e1', label:'Follow Up'},
+  { value: 5, color: '#1cba19', label:'Matured'},
+  { value: 30, color:'#e65b5b', label:'Not Interested'},
+  { value: 20, color:'#00d19d', label:'BDM Forwarded'},
 ];
+
+const size = {
+  width: 350,
+  height: 220,
+  viewBox: "0 0 250 200",
+};
+
+const StyledText = styled('text')(({ theme }) => ({
+  fill: theme.palette.text.primary,
+  textAnchor: 'middle',
+  dominantBaseline: 'central',
+  fontSize: 20,
+}));
+
+function PieCenterLabel({ children }) {
+  const { width, height, left, top } = useDrawingArea();
+  return (
+    <StyledText x={left + width / 2} y={top + height / 2}>
+      {children}
+    </StyledText>
+  );
+}
+
+
+
+
+
+// LINE CHART CODE START
+const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
+const ProjectionData =  [10000, 10033, 50000, 52330, 85200, 32100, 42500];
+const xLabels = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  // '8',
+  // '9',
+  // '10',
+  // '11',
+  // '12',
+  // '13',
+  // '14',
+  // '15',
+  // '16',
+  // '17',
+  // '18',
+  // '19',
+  // '20',
+  // '21',
+  // '22',
+  // '23',
+  // '24',
+  // '25',
+  // '26',
+  // '27',
+  // '28',
+  // '29',
+  // '30',
+  // '31',
+];
+const yLabels = [
+  '100000',
+  '75000',
+  '50000',
+  '25000',
+  '10000',
+  '5000',
+  '0',
+];
+// LINE CHART CODE END
+
+// SPEEDO METER CODE STRAT
+function GaugePointer() {
+  const { valueAngle, outerRadius, cx, cy } = useGaugeState();
+
+  if (valueAngle === null) {
+    // No value to display
+    return null;
+  }
+
+  const target = {
+    x: cx + outerRadius * Math.sin(valueAngle),
+    y: cy - outerRadius * Math.cos(valueAngle),
+  };
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={5} fill="red" />
+      <path
+        d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
+        stroke="red"
+        strokeWidth={3}
+      />
+    </g>
+  );
+}
+// SPEEDO METER CODE END
+
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -151,6 +282,14 @@ function EmployeeDashboard() {
   const [tempData, setTempData] = useState([]);
   const [loadingNew, setLoadingNew] = useState([]);
   const [moreEmpData, setmoreEmpData] = useState([])
+
+
+  const [speed, setSpeed] = useState(0);
+  //----------SPEEDO METER-------------------------------------------------------------------------------------------
+
+ 
+
+  //----------SPEEDO METER-------------------------------------------------------------------------------------------
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -4175,7 +4314,516 @@ function EmployeeDashboard() {
         </div>
       </div>
       <div className="page-wrapper">
-                  
+        <div className="Dash-Main mt-3">
+          <div className="container-xl">
+            <div className="row">
+              <div className="col-sm-12">
+                {/* sales report */}
+                <div className="row">
+                  <div className="col-sm-12">
+                    <div className="dash-card">
+                      <div className="row">
+                        {/* sales report data*/}
+                        <div className="col-sm-5">
+                          <div className="dash-sales-report-data">
+                            <div className="dash-srd-head-name">
+                              <div className="d-flex align-items-top justify-content-between">
+                                <div>
+                                  <h2 className="m-0">Sales Report</h2>
+                                  <div className="dash-select-filter">
+                                    <select class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                                      <option value="1" selected>Today</option>
+                                      <option value="2">This Month</option>
+                                      <option value="3">Last Month</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="dash-select-filte-show-hide">
+                                  <div class="form-check form-switch d-flex align-items-center justify-content-center mt-1 mb-0">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Show Numbers</label>
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"/>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="dash-srd-body-data">
+                              <div className="row">
+                                <div className="col-sm-7 p-0">
+                                  <div className="dsrd-body-data-num">
+                                      <label className="m-0 dash-Revenue-label">Revenue</label>
+                                      <h2 className="m-0 dash-Revenue-amnt">₹ XXXXXX /-</h2>
+                                      <div className="d-flex aling-items-center mt-1">
+                                        <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
+                                          <GoArrowUp /> 
+                                          <div>20%</div>
+                                        </div>
+                                        <div className="dsrd-Revenue-lastmonthfixamnt">
+                                          vs Last Month: ₹ 3,00,000
+                                        </div>
+                                      </div>
+                                      <div className="dsrd-TARGET-INCENTIVE">
+                                        TARGET - <b>₹ 1,45,000</b> | INCENTIVE - <b>₹ 1,0000</b>
+                                      </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-5 p-0">
+                                  <div>
+                                    <GaugeComponent
+                                    width="226.7375030517578"
+                                    height="178.5768051147461"
+                                        marginInPercent={{top: 0.03, bottom: 0.05, left: 0.07, right: 0.07 }}
+                                        value={25}
+                                        type="radial"
+                                        labels={{
+                                          tickLabels: {
+                                            type: "inner",
+                                            ticks: [
+                                              { value: 20 },
+                                              { value: 40 },
+                                              { value: 60 },
+                                              { value: 80 },
+                                              { value: 100 }
+                                            ]
+                                          }
+                                        }}
+                                        arc={{
+                                          colorArray: ['#EA4228','#5BE12C'],
+                                          subArcs: [{limit: 10}, {limit: 30}, {}, {}, {}],
+                                          padding: 0.02,
+                                          width: 0.1
+                                        }}
+                                        pointer={{
+                                          elastic: true,
+                                          animationDelay: 0,
+                                          length:0.60,
+                                        }}
+                                        className="my-speed"
+                                      />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="dash-srd-body-footer">
+                              <div className="row"> 
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-1cba19">
+                                    <div className="dsrd-mini-card-num">
+                                        07
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                        Mature Leads
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-00d19d">
+                                    <div className="dsrd-mini-card-num">
+                                      ₹ 20,000
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                      Advance collected
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-e65b5b">
+                                    <div className="dsrd-mini-card-num">
+                                      ₹ 20,000
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                      Remaining Collected
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-a0b1ad">
+                                    <div className="dsrd-mini-card-num">
+                                      ₹ 10,000
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                      Yesterday Collected
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-ffb900">
+                                    <div className="dsrd-mini-card-num">
+                                      ₹ 10,000
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                      Projected Amount
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="dsrd-mini-card bdr-l-clr-4299e1">
+                                    <div className="dsrd-mini-card-num">
+                                        07/05/2012
+                                    </div>
+                                    <div className="dsrd-mini-card-name">
+                                      Last Booking Date
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* sales report chart*/}
+                        <div className="col-sm-7">
+                          <div className="dash-sales-report-chart">
+                            <div className="d-flex justify-content-end">
+                              <div className="dash-select-filter mt-2">
+                                <select class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                                  <option value="1" selected>This week</option>
+                                  <option value="2">This Month</option>
+                                  <option value="3">Last Month</option>
+                                </select>
+                              </div>
+                            </div>
+                            <Box>
+                              <LineChart
+                                height={320}
+                                margin={{ left: 60}}
+                                series={[
+                                  { data: AchivedData, label: 'Achived', color:'#1cba19', stroke: 2 },
+                                  { data: ProjectionData, label: 'Projection', color:'#ffb900', stroke: 3 },
+                                ]}
+                                xAxis={[{ scaleType: 'point', data: xLabels , label:'Days', 
+                                    axisLine: {
+                                      stroke: '#eee', // Color for the x-axis line
+                                      fill: '#ccc'
+                                    },
+                                    tick: {
+                                      stroke: '#eee', // Color for the x-axis ticks
+                                      fontSize: '10px',
+                                      fill: '#eee', // Color for the x-axis labels
+                                    },
+                                }]}
+                                yAxis={[{ data: yLabels, 
+                                  axisLine: {
+                                    stroke: '#eee !important', // Color for the y-axis line
+                                  },
+                                  tick: {
+                                    stroke: '#eee', // Color for the y-axis ticks
+                                    fontSize: '10px',
+                                    fill: '#eee', // Color for the y-axis labels
+                                  },
+                                  }]}
+                                grid={{ vertical: false, horizontal: true, color:'#eee'  }}
+                              />
+                            </Box>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Lead reports */}
+                <div className="row mt-3 mb-4">
+                  {/* calling data report */}
+                  <div className="col-sm-4">
+                    <div className="dash-card">
+                      <div className="dash-card-head">
+                        <h2 className="m-0">
+                          Calling Data Report
+                        </h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="row align-items-center">
+                          <div className="col-sm-5 align-self-stretch">
+                            <div className="call-dr-names mb-2">
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-1ac9bd">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    General
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    100
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-ffb900">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Interested
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    20
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-4299e1">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Follow Up
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    25
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-1cba19">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Matured
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    5
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-e65b5b">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Not Interested
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    30
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-dots clr-bg-00d19d">
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    BDM Forwarded
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num">
+                                    20
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-sm-7 align-self-stretch">
+                            <div className="call-dr-chart mt-1">
+                              <PieChart series={[{ data:data_my, innerRadius: 80,labelComponent: null }]} {...size} slotProps={{
+                                legend: { hidden: true },
+                              }}>
+                                <PieCenterLabel>Total: 200</PieCenterLabel>
+                              </PieChart>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-4">
+                    <div className="dash-card">
+                      <div className="dash-card-head d-flex align-items-center justify-content-between">
+                        <h2 className="m-0">
+                          <select class="head-select form-select" id="head-select">
+                            <option value="1" selected>Forworded to BDM</option>
+                            <option value="2">Received as BDM</option>
+                          </select>
+                        </h2>
+                        <div className="dash-select-filter">
+                          <select class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                            <option value="1" selected>Today</option>
+                            <option value="2">This Month</option>
+                            <option value="3">Last Month</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="row m-0 align-items-center">
+                          <div className="col-sm-7 p-0 align-self-stretch h-100">
+                            <div className="bdm-f-r-revenue h-100">
+                              <div className="bdm-f-r-revenue-projected">
+                                <div className="roundImggreen">
+                                  <div className="roundImggreen-inner-text">₹ 30,000/-</div>
+                                </div>
+                                <div className="roundImggreen-text">Projected <br/>Revenue</div>
+                              </div>
+                              <div className="bdm-f-r-revenue-generated">
+                                <div className="roundImgOrg">
+                                  <div className="roundImgOrg-inner-text">₹ 50,200/-</div>
+                                </div>
+                                <div className="roundImgOrg-text">Generated <br/>Revenue</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-sm-5 p-0 align-self-stretch">
+                            <div className="call-dr-names">
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-1ac9bd clr-1ac9bd">
+                                    <CiViewList />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    General
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-1ac9bd" >
+                                    100
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-ffb900 clr-ffb900">
+                                    <MdImportantDevices />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Interested
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-ffb900" >
+                                    20
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-4299e1 clr-4299e1">
+                                    <LiaAlgolia />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Follow Up
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-4299e1">
+                                    25
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-1cba19 clr-1cba19">
+                                    <LiaClipboardCheckSolid />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Matured
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-1cba19">
+                                    5
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-e65b5b clr-e65b5b">
+                                    <RiFileCloseLine />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Not Interested
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-e65b5b">
+                                    30
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between"> 
+                                  <div className="color-squre-dots clr-bg-light-00d19d clr-00d19d">
+                                    <IoFileTrayFullOutline />
+                                  </div>  
+                                  <div className="call-dr-name">
+                                    Total
+                                  </div>
+                                </div> 
+                                <div className="call-dr-num clr-00d19d">
+                                    200
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-4">
+                    <div className="dash-card">
+                      <div className="dash-card-head d-flex align-items-center justify-content-between">
+                        <h2 className="m-0">
+                          Top Selling Services
+                        </h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="top-selling-s">
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-1cba19">
+                            <div className="d-flex align-items-center justify-content-between"> 
+                              <div className="top-selling-s-no bdr-l-clr-1cba19">
+                                1
+                              </div>  
+                              <div className="top-selling-s-name">
+                                Start-Up India Certificate
+                              </div>
+                            </div> 
+                            <div className="top-selling-s-num clr-bg-1cba19">
+                                10
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-00d19d">
+                            <div className="d-flex align-items-center justify-content-between"> 
+                              <div className="top-selling-s-no bdr-l-clr-00d19d">
+                                2
+                              </div>  
+                              <div className="top-selling-s-name">
+                                Seed Fund Support
+                              </div>
+                            </div> 
+                            <div className="top-selling-s-num clr-bg-00d19d">
+                                8
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-fff536">
+                            <div className="d-flex align-items-center justify-content-between"> 
+                              <div className="top-selling-s-no bdr-l-clr-fff536">
+                                3
+                              </div>  
+                              <div className="top-selling-s-name">
+                                Website Development
+                              </div>
+                            </div> 
+                            <div className="top-selling-s-num clr-bg-fff536">
+                                5
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-ffb900">
+                            <div className="d-flex align-items-center justify-content-between"> 
+                              <div className="top-selling-s-no bdr-l-clr-ffb900">
+                                4
+                              </div>  
+                              <div className="top-selling-s-name">
+                                Income TAX Exemption
+                              </div>
+                            </div> 
+                            <div className="top-selling-s-num clr-bg-ffb900">
+                                4
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-e65b5b">
+                            <div className="d-flex align-items-center justify-content-between"> 
+                              <div className="top-selling-s-no bdr-l-clr-e65b5b">
+                               5
+                              </div>  
+                              <div className="top-selling-s-name">
+                                ISO Certificate
+                              </div>
+                            </div> 
+                            <div className="top-selling-s-num clr-bg-e65b5b">
+                                3
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>   
       {/* Drawer for Follow Up Projection  */}
       <div>
