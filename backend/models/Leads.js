@@ -14,6 +14,9 @@ const CompanySchema = new mongoose.Schema({
   "Company Incorporation Date  ": {
     type: Date,
   },
+  CInumber:{
+    type:Number,
+  },
   City: {
     type: String,
   },

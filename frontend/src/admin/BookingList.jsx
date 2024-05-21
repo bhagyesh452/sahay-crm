@@ -138,10 +138,10 @@ function BookingList() {
 
   };
   const calculateTotalAmount = (obj) => {
-    let total = Number(obj.totalAmount);
+    let total = parseInt(obj.totalAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       total += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.totalAmount),
+        (acc, booking) => acc + parseInt(booking.totalAmount),
         0
       );
     }
@@ -149,10 +149,10 @@ function BookingList() {
   };
 
   const calculateReceivedAmount = (obj) => {
-    let received = Number(obj.receivedAmount);
+    let received = parseInt(obj.receivedAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       received += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.receivedAmount),
+        (acc, booking) => acc + parseInt(booking.receivedAmount),
         0
       );
     }
@@ -160,10 +160,10 @@ function BookingList() {
   };
 
   const calculatePendingAmount = (obj) => {
-    let pending = Number(obj.pendingAmount);
+    let pending = parseInt(obj.pendingAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       pending += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.pendingAmount),
+        (acc, booking) => acc + parseInt(booking.pendingAmount),
         0
       );
     }
@@ -802,7 +802,7 @@ function BookingList() {
                             </div>
                           </div>
                           <div className="row m-0 bdr-btm-eee">
-                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                            <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h h-100">
@@ -845,11 +845,11 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-2 col-sm-6 p-0 align-self-stretch">
+                            <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-5 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    PAN
+                                    PAN/GST
                                   </div>
                                 </div>
                                 <div class="col-sm-7 align-self-stretch p-0">
@@ -865,26 +865,7 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
-                              <div class="row m-0 h-100">
-                                <div class="col-sm-4 align-self-stretch p-0">
-                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    GST
-                                  </div>
-                                </div>
-                                <div class="col-sm-8 align-self-stretch p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    {currentLeadform &&
-                                      Object.keys(currentLeadform).length !== 0
-                                      ? currentLeadform.gstNumber
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                        ? leadFormData[0].gstNumber
-                                        : "-"}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                           
                           </div>
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-4 col-sm-6 p-0">
@@ -896,7 +877,7 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    ₹ {calculateTotalAmount(currentLeadform)}
+                                    ₹ {parseInt(calculateTotalAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -910,7 +891,7 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {calculateReceivedAmount(currentLeadform)}
+                                    ₹ {parseInt(calculateReceivedAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -924,7 +905,7 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {calculatePendingAmount(currentLeadform)}
+                                    ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>

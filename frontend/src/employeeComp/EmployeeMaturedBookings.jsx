@@ -716,7 +716,7 @@ function EmployeeMaturedBookings() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    ₹ {calculateTotalAmount(currentLeadform)}
+                                  ₹ {parseInt(calculateTotalAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -730,7 +730,7 @@ function EmployeeMaturedBookings() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {calculateReceivedAmount(currentLeadform)}
+                                  ₹ {parseInt(calculateReceivedAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -744,7 +744,7 @@ function EmployeeMaturedBookings() {
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {calculatePendingAmount(currentLeadform)}
+                                  ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>

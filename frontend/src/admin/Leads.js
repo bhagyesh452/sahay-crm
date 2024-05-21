@@ -78,6 +78,7 @@ function Leads() {
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
+  const [ciNumber, setCiNumber] = useState(0);
   const [directorNameFirst, setDirectorNameFirst] = useState("");
   const [directorNameSecond, setDirectorNameSecond] = useState("");
   const [directorNameThird, setDirectorNameThird] = useState("");
@@ -555,6 +556,7 @@ function Leads() {
             "Director Name(Third)": row[14],
             "Director Number(Third)": row[15],
             "Director Email(Third)": row[16],
+             CInumber:row[17],
             "UploadedBy": adminName ? adminName : "Admin"
           }));
 
@@ -605,7 +607,7 @@ function Leads() {
 
     return formattedDate;
   }
-  //console.log(csvdata)
+  console.log(csvdata)
 
   const handleUploadData = async (e) => {
     // Get current date and time
@@ -852,6 +854,7 @@ function Leads() {
           "Director Name(Third)": directorNameThird,
           "Director Number(Third)": directorNumberThird,
           "Director Email(Third)": directorEmailThird,
+          "CInumber":ciNumber
         })
         .then((response) => {
           console.log("response", response);
@@ -1571,6 +1574,9 @@ function Leads() {
   const debouncedSetAddress = debounce((value) => {
     setCompanyAddress(value);
   }, 10);
+  const debouncedSetCIN = debounce((value) => {
+    setCiNumber(value);
+  }, 10);
 
   const debouncedSetIncoDate = debounce((value) => {
     setCidate(value);
@@ -2136,7 +2142,7 @@ function Leads() {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
                     <div className="mb-3">
                       <label className="form-label">Company Address</label>
                       <input
@@ -2150,6 +2156,21 @@ function Leads() {
                       />
                     </div>
                   </div>
+                  <div className="col-lg-6">
+                  <div className="mb-3">
+                      <label className="form-label">CI Number</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="ci-text-input"
+                        placeholder="Enter CI Number"
+                        onChange={(e) => {
+                          debouncedSetCIN(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
                 </div>
                 <div className="row">
                   <div className="col-4">

@@ -1149,10 +1149,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                              <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1164,13 +1164,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1260,10 +1260,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                               <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1275,13 +1275,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1364,10 +1364,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                               <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1379,13 +1379,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">

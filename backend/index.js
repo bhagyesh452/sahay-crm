@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const compression = require("compression");
+const { Parser } = require('json2csv');
 const pdf = require("html-pdf");
 // const { Server } = require("socket.io");
 // const http = require("http");
@@ -484,22 +485,28 @@ app.post("/api/leads", async (req, res) => {
       }
     }
     if (duplicateEntries.length > 0) {
+      //console.log("yahan chala csv pr")
+      //console.log(duplicateEntries , "duplicate")
+      const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV
-      const csvString = createCSVString(duplicateEntries);
+      const csvString = json2csvParser.parse(duplicateEntries);
+     // console.log(csvString , "csv")
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
         "attachment; filename=DuplicateEntries.csv"
       );
       res.status(200).end(csvString);
-
+    
       //console.log("csvString" , csvString)
     } else {
+     // console.log("yahan chala counter pr")
       res.status(200).json({
         message: "Data sent successfully",
         counter: counter,
         successCounter: successCounter,
       });
+      
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -527,6 +534,7 @@ function createCSVString(data) {
     "Director Name(Third)",
     "Director Number(Third)",
     "Director Email(Third)",
+    "CInumber",
     "ename",
     "AssignDate",
     "Status",
@@ -552,6 +560,7 @@ function createCSVString(data) {
       lead["Director Name(Third)"],
       lead["Director Number(Third)"],
       lead["Director Email(Third)"],
+      lead["CInumber"],
       lead["ename"],
       lead["AssignDate"],
       lead["Status"],
@@ -6218,9 +6227,9 @@ app.post(
       "footer": {
         "height": "100px",
         "contents": {
-          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
           default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
           last: '<span style="color: #444;">2</span>/<span>2</span>'
         }

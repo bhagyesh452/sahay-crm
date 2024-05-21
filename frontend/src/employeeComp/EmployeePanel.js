@@ -1276,7 +1276,10 @@ function EmployeePanel() {
 
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
-    } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
+    } else if (!cidate) {
+      Swal.fire("Company Incorporation Date is required");
+    } 
+    else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
       Swal.fire("Company Number is required");
     } else if (cemail === "") {
       Swal.fire("Company Email is required");
@@ -5303,7 +5306,7 @@ function EmployeePanel() {
                   <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
-                        Company Incorporation Date
+                        Company Incorporation Date <span style={{ color: "red" }}>*</span>
                       </label>
                       <input
                         onChange={(e) => {

@@ -1355,10 +1355,10 @@ let isValid = true;
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1370,13 +1370,13 @@ let isValid = true;
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1461,10 +1461,10 @@ let isValid = true;
                               id="optional-remarks-3"
                             >
                              
-                              <option value="" selected disabled>
+                             <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1476,13 +1476,13 @@ let isValid = true;
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1559,10 +1559,10 @@ let isValid = true;
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1574,13 +1574,13 @@ let isValid = true;
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
