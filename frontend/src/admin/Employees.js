@@ -157,7 +157,7 @@ function Employees({ onEyeButtonClick }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
 
@@ -237,7 +237,7 @@ function Employees({ onEyeButtonClick }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${secretKey}/einfo/${id}`);
+      await axios.delete(`${secretKey}/employee/einfo/${id}`);
       // Refresh the data after successful deletion
       fetchData();
       Swal.fire({
@@ -306,7 +306,7 @@ function Employees({ onEyeButtonClick }) {
   }
   const fetchCData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/leads`);
+      const response = await axios.get(`${secretKey}/company-data/leads`);
 
       setCData(response.data);
     } catch (error) {
@@ -369,7 +369,7 @@ function Employees({ onEyeButtonClick }) {
         //console.log(dataToSend, "Bhoom");
         //console.log("updateddata",dataToSendUpdated)
        const response =  await axios.put(
-          `${secretKey}/einfo/${selectedDataId}`,
+          `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
 
@@ -388,7 +388,7 @@ function Employees({ onEyeButtonClick }) {
             // Update companyData in the second database
             await Promise.all(
               companyData.map(async (item) => {
-                await axios.put(`${secretKey}/newcompanyname/${item._id}`, {
+                await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
                   ename,
                 });
                 //console.log(`Updated ename for ${item._id}`);
@@ -400,7 +400,7 @@ function Employees({ onEyeButtonClick }) {
           }
         }
       } else {
-        const response = await axios.post(`${secretKey}/einfo`, dataToSend);
+        const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
         //console.log(response.data , "datatosend")
         Swal.fire({
           title: "Data Added!",
@@ -523,7 +523,7 @@ function Employees({ onEyeButtonClick }) {
   const [teamData, setTeamData] = useState([]);
 
   const fetchTeamData = async () => {
-    const response = await axios.get(`${secretKey}/teaminfo`);
+    const response = await axios.get(`${secretKey}/teams/teaminfo`);
 
     //console.log(response.data);
     setTeamData(response.data);
@@ -607,7 +607,7 @@ function Employees({ onEyeButtonClick }) {
   const handlChecked = async (employeeId, bdmWork) => {
     if (!bdmWork) {
       try {
-        const response = await axios.post(`${secretKey}/post-bdmwork-request/${employeeId}`, {
+        const response = await axios.post(`${secretKey}/employee/post-bdmwork-request/${employeeId}`, {
           bdmWork: true
         });
 
@@ -626,7 +626,7 @@ function Employees({ onEyeButtonClick }) {
       }
     } else {
       try {
-        const response = await axios.post(`${secretKey}/post-bdmwork-revoke/${employeeId}`, {
+        const response = await axios.post(`${secretKey}/employee/post-bdmwork-revoke/${employeeId}`, {
           bdmWork: false
         });
         fetchData(); // Assuming this function fetches updated employee details

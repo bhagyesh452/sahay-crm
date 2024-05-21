@@ -97,7 +97,7 @@ function EmployeeDataReport() {
     //----------------------------fetching company data ---------------------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/leads`)
+        fetch(`${secretKey}/company-data/leads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
