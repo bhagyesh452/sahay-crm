@@ -103,7 +103,7 @@ function EmployeesForwardedDataReport() {
 
     const fetchTeamLeadsData = async () => {
         try {
-            const response = await axios.get(`$/teams/teamleadsdata`)
+            const response = await axios.get(`${secretKey}/bdm-data/teamleadsdata`)
             setTeamLeadsData(response.data)
             setTeamLeadsDataFilter(response.data)
 
@@ -222,7 +222,7 @@ function EmployeesForwardedDataReport() {
 
     const fetchFollowUpData = async () => {
         try {
-            const response = await fetch(`/projection/projection-data`);
+            const response = await fetch(`${secretKey}/projection/projection-data`);
             const followdata = await response.json();
             setfollowData(followdata);
             setFollowDataFilter(followdata)

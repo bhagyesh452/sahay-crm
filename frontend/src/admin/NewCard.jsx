@@ -131,7 +131,7 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus , c
     }
   };
 
-  console.log(selectedRows)
+  //console.log(selectedRows)
 
   const [filteredData, setfilteredData] = useState([]);
 
