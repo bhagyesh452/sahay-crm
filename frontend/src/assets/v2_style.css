@@ -1,0 +1,403 @@
+.display-none
+{
+    display: none;
+}
+/**********Dashboard**********/
+.dash-card
+{
+    background: #fff;
+    border: 1px solid #E9EFF4;
+    border-radius: 14px;
+    box-shadow: 1px 1px 1px #E9EFF4;
+}
+.dash-sales-report-data
+{
+    padding: 10px 16px;
+    border-right: 1px solid #eee;
+}
+.dash-select-filter .my-filter-select
+{
+    font-size: 10px;
+    padding: 3px 0px 3px 7px;
+    border-radius: 2px !important;
+    width: 90px;
+    margin-top: 4px;
+    background-position: right 7px center;
+    background-size: 8px 11px;
+    background-color: #FFF7E5;
+    border: none !important;
+    color: #ffb900;
+}
+.dash-select-filter .my-filter-select:focus
+{
+    outline: none  !important;
+    box-shadow: none !important;
+}
+.dash-select-filte-show-hide .form-check .form-check-input
+{
+    float: none;
+    margin-left: 0px;
+    margin-top: 1px;
+    height: 1rem;
+    box-shadow: 2px 3px 10px -2px #c4c4c4;
+}
+.dash-select-filte-show-hide .form-check .form-check-label
+{
+    margin-right: 6px;
+    font-size: 12px;
+}
+.dash-srd-body-data
+{
+    width: 100%;
+    border: 1px solid #e9eff4;
+    margin-top: 10px;
+    border-radius: 14px;
+    padding: 5px 12px;
+}
+.dsrd-body-data-num .dash-Revenue-label
+{
+    font-size: 10px;
+    color: #818181;
+}
+.dsrd-body-data-num .dash-Revenue-amnt
+{
+    font-size: 24px;
+    color: #FFB400;
+    margin-top: 6px !important;
+}
+.dsrd-Revenue-up-ration
+{
+    font-size: 10px;
+    background: #EBFFE7;
+    padding: 2px 6px;
+    border-radius: 33px;
+    color: #37C61F;
+    font-weight: 500;
+    margin-top: 2px;
+}
+.dsrd-Revenue-up-ration svg
+{
+    height: 14px;
+    margin-right: 2px;
+}
+.dsrd-Revenue-lastmonthfixamnt
+{
+    font-size: 10px;
+    margin-left: 6px;
+    line-height: 20px;
+}
+.dsrd-TARGET-INCENTIVE
+{
+    font-size: 12px;
+    margin-top: 50px;
+}
+.dash-srd-body-footer
+{
+    margin-top: 20px;
+}
+.dsrd-mini-card
+{
+    padding: 0 0 2px 16px;
+    margin: 8px 12px;
+    border-left: 4px solid #cccc;
+}
+.dsrd-mini-card-num
+{
+    font-size: 16px;
+    font-weight: 600;
+}
+.dsrd-mini-card-name
+{
+    font-size: 12px;
+}
+.clr-fff536 {
+  color: #ede105;
+}
+.clr-bg-1ac9bd
+{
+  background-color: #1ac9bd;
+}
+.clr-bg-ffb900
+{
+  background-color: #ffb900;
+}
+.clr-bg-4299e1
+{
+  background-color: #4299e1;
+}
+.clr-bg-1cba19
+{
+  background-color:#1cba19
+}
+.clr-bg-e65b5b
+{
+  background-color: #e65b5b;
+}
+.clr-bg-00d19d
+{
+  background-color: #00d19d;
+}
+.clr-bg-a0b1ad
+{
+  background-color:#a0b1ad;
+}
+.clr-bg-fff536 {
+    background-color: #e5da06;
+}
+.clr-bg-light-1ac9bd
+{
+  background-color: #1ac9bd24;
+}
+.clr-bg-light-ffb900
+{
+  background-color: #ffbb0024;
+}
+.clr-bg-light-4299e1
+{
+  background-color: #4299e124;
+}
+.clr-bg-light-1cba19
+{
+  background-color:#1cba1924;
+}
+.clr-bg-light-e65b5b
+{
+  background-color: #e65b5b24;
+}
+.clr-bg-light-00d19d
+{
+  background-color: #00d19d24;
+}
+.clr-bg-light-a0b1ad
+{
+  background-color:#a0b1ad24;
+}
+.clr-bg-light-fff536 {
+  background-color: #fff53636;
+}
+.bdr-l-clr-1ac9bd
+{
+  border-color:  #1ac9bd !important;
+}
+.bdr-l-clr-ffb900
+{
+  border-color:  #ffb900 !important;
+}
+.bdr-l-clr-4299e1
+{
+  border-color:  #4299e1 !important;
+}
+.bdr-l-clr-1cba19
+{
+  border-color: #1cba19 !important;
+}
+.bdr-l-clr-e65b5b
+{
+  border-color:  #e65b5b !important;
+}
+.bdr-l-clr-00d19d
+{
+  border-color:  #00d19d !important;
+}
+.bdr-l-clr-a0b1ad
+{
+  border-color: #a0b1ad !important;
+}
+.bdr-l-clr-fff536 {
+  border-color: #ede105  !important;
+}
+.dash-sales-report-chart
+{
+    padding:4px 16px 4px 0px;
+}
+.ash-sales-report-chart svg
+{
+    padding: 10px;
+}
+.MuiChartsAxis-label
+{
+    font-size: 12px !important;
+}
+.dsrd-body-data-num
+{
+  padding: 0px 8px;
+}
+.my-speed
+{
+    width: 224px;
+    height: 154px;
+}
+.my-speed .value-text text
+{
+    text-shadow: none !important;
+    fill: #ffb900 !important;
+}
+.my-speed .pointer circle
+{
+    fill: #ffb900;
+}
+.MuiChartsAxis-line, .MuiChartsAxis-tick {
+    stroke: rgb(233 233 233 / 87%)  !important;
+}
+.MuiChartsAxis-tickLabel
+{
+    font-size: 10px !important;
+}
+/* .MuiChartsLegend-series rect
+{
+    width: 10px !important;
+    height: 10px !important;
+} */
+.MuiChartsLegend-series text, .MuiChartsAxis-label text
+{
+    font-size: 12px  !important;
+}
+.my-speed .tick-value text
+{
+    /* fill: #ffb900 !important; */
+}
+.my-speed .tick-line
+{ 
+    stroke: #ffb900 !important;
+}
+.dash-card-head
+{
+    padding: 10px 16px;
+}
+.dash-card-body
+{
+    padding: 10px 16px;
+}
+.call-dr-card
+{
+    padding: 8px 0px;
+}
+.color-dots
+{
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin-right: 12px;
+}
+.color-squre-dots
+{
+    width: 30px;
+    height: 30px;
+    margin-right: 12px;
+    line-height: 27px;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 18px;
+}
+.call-dr-name
+{
+    font-size: 12px;
+}
+.call-dr-num
+{
+    font-size: 12px;
+    font-weight: 500;
+}
+.my-speed svg
+{
+    height: 154px;
+}
+#head-select
+{
+    border: none !important;
+}
+.bdm-f-r-revenue
+{
+    position: relative;
+}
+.roundImggreen
+{
+    background: url(../static/my-images/circle-orange.svg);
+    height: 106px;
+    width: 106px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.roundImggreen-inner-text
+{
+    text-align: center;
+    line-height: 106px;
+    font-weight: 600;
+    color: #fff;
+    font-size: 12px;
+}
+.roundImgOrg-inner-text
+{
+    text-align: center;
+    line-height: 130px;
+    font-weight: 600;
+    color: #fff;
+    font-size: 14px;
+}
+.roundImggreen-text, .roundImgOrg-text
+{
+    font-size: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-top: 7px;
+}
+.bdm-f-r-revenue-projected
+{
+    position: absolute;
+    top: 82px;
+    left: 0;
+}
+.bdm-f-r-revenue-generated
+{ 
+    position: absolute;
+    right: 18px;
+    top: 0px;
+}
+.roundImgOrg
+{
+    background: url(../static/my-images/Circle-Green.svg);
+    height: 130px;
+    width: 130px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.top-selling-s
+{
+
+}
+.top-selling-s-cards
+{   
+    padding: 8px 11px;
+    border-radius: 100px;
+    margin: 4px 0;
+}
+.top-selling-s-no
+{
+    width: 25px;
+    height: 25px;
+    border-radius: 100px;
+    text-align: center;
+    line-height: 25px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 10px;
+    border: 1px dashed;
+}
+.top-selling-s-name
+{
+    font-size: 12px;
+}
+.top-selling-s-num
+{
+    font-size: 14px;
+    font-weight: 600;
+    width: 25px;
+    height: 25px;
+    border-radius: 100px;
+    text-align: center;
+    line-height: 25px;
+    color: #fff;
+}

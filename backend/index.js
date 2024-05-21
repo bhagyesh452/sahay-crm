@@ -58,6 +58,7 @@ const EmployeeAPI = require('./helpers/EmployeeAPI.js');
 const ProjectionAPI = require('./helpers/ProjectionAPI.js');
 const RequestAPI = require('./helpers/RequestAPI.js');
 const companyAPI = require('./helpers/Company_dataAPI.js')
+const TeamsAPI = require('./helpers/TeamsAPI.js')
 const { Parser } = require('json2csv');
 // const { Cashfree } = require('cashfree-pg');
 
@@ -78,6 +79,8 @@ app.use('/api/admin-leads', AdminLeadsAPI);
 app.use("/api/remarks" , RemarksAPI);
 app.use("/api/bookings" , bookingsAPI)
 app.use('/api/company-data' , companyAPI)
+app.use('/api/requests' , RequestAPI)
+app.use('/api/teams' , TeamsAPI)
 app.use('/api/bdm-data' , bdmAPI)
 
 // app.use(session({
@@ -500,61 +503,7 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
 //   }
 // });
 
-app.post("/api/requests/requestCompanyData", async (req, res) => {
-  const csvData = req.body;
-  let dataArray = [];
-  if (Array.isArray(csvData)) {
-    dataArray = csvData;
-  } else if (typeof csvData === "object" && csvData !== null) {
-    dataArray.push(csvData);
-  } else {
-    // Handle invalid input
-    console.error("Invalid input: csvData must be an array or an object.");
-  }
 
-  try {
-    for (const employeeData of dataArray) {
-      try {
-        const employeeWithAssignData = {
-          ...employeeData,
-          AssignDate: new Date(),
-        };
-        //console.log("employeedata" , employeeData)
-        const employee = new CompanyRequestModel(employeeWithAssignData);
-        const savedEmployee = await employee.save();
-        //console.log("savedemployee" , savedEmployee)
-      } catch (error) {
-        console.error("Error saving employee:", error.message);
-        // res.status(500).json({ error: 'Internal Server Error' });
-
-        // Handle the error for this specific entry, but continue with the next one
-      }
-    }
-
-    res.status(200).json({ message: "Data sent successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error in bulk save:", error.message);
-  }
-});
-
-app.post("/api/requests/change-edit-request/:companyName", async (req, res) => {
-  const companyName = req.params.companyName;
-  const companyObject = req.body;
-
-  try {
-    const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
-      { "Company Name": companyName },
-      { $set: companyObject },
-      { new: true }
-    );
-
-    res.status(200).json(updatedCompany);
-  } catch (error) {
-    console.error("Error updating company:", error);
-    res.status(500).json({ error: "Error updating company" });
-  }
-});
 
 app.post("/api/employee/post-bdmwork-request/:eid", async (req, res) => {
   const eid = req.params.eid;
@@ -618,55 +567,7 @@ app.post("/api/employee/post-bdmwork-revoke/:eid", async (req, res) => {
 
 
 // ************************************************************************  Teams Section ********************************************************************************************
-app.post("/api/teams/teaminfo", async (req, res) => {
-  const teamData = req.body;
-  // Assuming `formatDate()` is a function that formats the current date
 
-  try {
-    const newTeam = await TeamModel.create({
-      modifiedAt: formatDate(Date.now()),
-      ...teamData,
-    });
-    //console.log("newTeam", newTeam);
-    res.status(201).json(newTeam);
-  } catch (error) {
-    console.error("Error creating team:", error.message);
-    if (teamData.teamName === "") {
-      return res.status(500).json({ message: "Please Enter Team Name" });
-    } else {
-      return res.status(500).json({ message: "Duplicate Entries Found" });
-    }
-  }
-});
-
-app.get("/api/teams/teaminfo", async (req, res) => {
-  try {
-    const data = await TeamModel.find();
-    //console.log("teamdata" , data)
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/api/teams/teaminfo/:ename", async (req, res) => {
-  const ename = req.params.ename;
-  //console.log(ename)
-  //console.log(ename)
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await TeamModel.findOne({
-      "employees.ename": ename, // Using dot notation to query field inside array of objects
-    }).lean();
-
-    res.send(data);
-    //console.log("ename wala data" ,data)
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 
 // app.delete("/api/delete-followup/:companyName", async (req, res) => {
@@ -729,29 +630,7 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 // });
 
 
-app.post("/api/projection/post-bdmacceptted-revertbackprojection", async(req,res)=>{
-  const { cname } = req.params
-  try{
-    const findData = await FollowUpModel.findOne(cname) 
-    if(findData){
-      const newData = await FollowUpModel.findByIdAndUpdate(cname , {
-        $set:{
-          caseType : "Forwarded",
-        },
-        $unset:{
-          bdmName: ""
-        }
-      })
-      res.status(200).save(newData)
-    }else{
-      res.status(400).json({error:"Projection does not exist"})
-    }
 
-  }catch(error){
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-
-})
 app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   const companyId = req.params.companyId;
 
@@ -770,69 +649,7 @@ app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   }
 });
 
-app.post(`/api/projection/post-followup-forwardeddata/:cname`, async (req, res) => {
-  const companyName = req.params.cname;
-  const { caseType, bdmName } = req.body;
-  try {
-    const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
-      { companyName: companyName },
-      {
-        $set: {
-          caseType: caseType,
-          bdmName: bdmName
-        }
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedFollowUp); // Assuming you want to send the updated data back
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
-app.post(`/api/projection/post-updaterejectedfollowup/:cname`, async (req, res) => {
-  const companyName = req.params.cname;
-  const { caseType } = req.body;
-  try {
-    const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
-      { companyName: companyName },
-      {
-        $set: {
-          caseType: caseType,
-        },
-        $unset: {
-          bdmName: " "
-        }
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedFollowUp); // Assuming you want to send the updated data back
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post(`/api/projection/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
-  const companyName = req.params.cname;
-  const { caseType } = req.body;
-  try {
-    const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
-      { companyName: companyName },
-      {
-        $set: {
-          caseType: caseType,
-        }
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedFollowUp); // Assuming you want to send the updated data back
-  } catch (error) {
-    console.error("Error updating status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 
 
@@ -939,175 +756,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 
 // ****************************************  Projection Section's Hadi *********************************************************
 
-// 1. ADD PROJECTION
-app.post("/api/projection/update-followup", async (req, res) => {
-  try {
-    const { companyName } = req.body;
-    const todayDate = new Date();
-    const time = todayDate.toLocaleTimeString();
-    const date = todayDate.toLocaleDateString();
-    const finalData = { ...req.body, date, time };
 
-    console.log(finalData)
-
-    // Check if a document with companyName exists
-    const existingData = await FollowUpModel.findOne({ companyName });
-
-    if (existingData) {
-      // Update existing document
-      const previousData = { ...existingData.toObject() };
-      //console.log(previousData)
-      existingData.history.push({
-        modifiedAt: formatDate(Date.now()),
-        data: previousData,
-      });
-      console.log(existingData);
-      existingData.set(finalData);
-      await existingData.save();
-      res.status(200).json({ message: "Data updated successfully" });
-    } else {
-      // Create new document
-      const newData = new FollowUpModel(finalData);
-      await newData.save();
-      res.status(201).json({ message: "New data added successfully" });
-    }
-  } catch (error) {
-    console.error("Error updating or adding data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// 2. Delete Projection
-app.delete("/api/projection/delete-followup/:companyName", async (req, res) => {
-  try {
-    // Extract the company name from the request parameters
-    const { companyName } = req.params;
-
-    // Check if a document with the given company name exists
-    const existingData = await FollowUpModel.findOne({ companyName });
-
-    if (existingData) {
-      // If the document exists, delete it
-      await FollowUpModel.findOneAndDelete({ companyName });
-      res.status(200).json({ message: "Data deleted successfully" });
-    } else {
-      // If no document with the given company name exists, return a 404 Not Found response
-      res.status(404).json({ error: "Company not found" });
-    }
-  } catch (error) {
-    // If there's an error during the deletion process, send a 500 Internal Server Error response
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-// 3. Read Projections
-app.get("/api/projection/projection-data/:ename", async (req, res) => {
-  try {
-    const ename = req.params.ename;
-    // Fetch data from the FollowUpModel based on the employeeName if provided
-    const followUps = await FollowUpModel.find({
-      $or: [
-        { ename: ename }, // First condition
-        { bdeName: ename }, // Second condition
-        { bdmName: ename }, // Second condition
-        // Add more conditions if needed
-      ],
-    });
-    // Return the data as JSON response
-    res.json(followUps);
-  } catch (error) {
-    // If there's an error, send a 500 internal server error response
-    console.error("Error fetching FollowUp data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-app.get("/api/projection/projection-data", async (req, res) => {
-  try {
-    // Fetch all data from the FollowUpModel
-    const followUps = await FollowUpModel.find();
-
-    //console.log(query)
-    // Return the data as JSON response
-    res.json(followUps);
-  } catch (error) {
-    // If there's an error, send a 500 internal server error response
-    console.error("Error fetching FollowUp data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get(`/api/projection/projection-data-company/:companyName`, async (req, res) => {
-  const companyName = req.params.companyName;
-
-  try {
-    const response = await FollowUpModel.find({
-      companyName: companyName
-    })
-    res.json(response);
-
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" })
-  }
-
-})
-
-app.post("/api/projection/followdataexport/", async (req, res) => {
-  try {
-    const leads = req.body;
-
-    // const leads = await FollowUpModel.find({
-    // });
-
-    const csvData = [];
-    // Push the headers as the first row
-    csvData.push([
-      "SR. NO",
-      "Employee Name",
-      "Company Name",
-      "Offered Services",
-      "Offered Prize",
-      "Expected Amount",
-      "Estimated Payment Date",
-      "Last Follow Up Date",
-      "Remarks",
-    ]);
-
-    // Push each lead as a row into the csvData array
-    leads.forEach((lead, index) => {
-      const rowData = [
-        index + 1,
-        lead.ename,
-        lead.companyName,
-        `"${lead.offeredServices.join(",")}"`,
-        lead.offeredPrize,
-        lead.totalPayment,
-        lead.estPaymentDate,
-        lead.lastFollowUpdate,
-        lead.remarks,
-      ];
-      csvData.push(rowData);
-      // console.log("rowData:" , rowData)
-    });
-
-    // Use fast-csv to stringify the csvData array
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=FollowDataToday.csv"
-    );
-
-    const csvString = csvData.map((row) => row.join(",")).join("\n");
-    // Send response with CSV data
-    // Send response with CSV data
-    //console.log(csvString)
-    res.status(200).end(csvString);
-    // console.log(csvString)
-    // Here you're ending the response
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
 // ----------------------------------api to delete projection data-----------------------------------
 
 
@@ -1344,148 +993,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
 
 // api call for employee requesting for the data
 
-app.post("/api/requests/requestData", async (req, res) => {
-  const { selectedYear, companyType, numberOfData, name, cTime, cDate } =
-    req.body;
 
-  try {
-    // Create a new RequestModel instance
-    const newRequest = new RequestModel({
-      year: selectedYear,
-      ctype: companyType,
-      dAmount: numberOfData,
-      ename: name,
-      cTime: cTime,
-      cDate: cDate,
-      AssignRead: false,
-    });
-
-    // Save the data to MongoDB
-    const savedRequest = await newRequest.save();
-
-    // Emit a socket event to notify clients about the new request
-    socketIO.emit("newRequest", savedRequest);
-
-    res.json(savedRequest);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-app.post("/api/requests/setMarktrue/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    // Find the object by ID and update the AssignRead property to true
-    const updatedObject = await RequestGModel.findByIdAndUpdate(
-      id,
-      { AssignRead: true },
-      { new: true } // Return the updated object after the update operation
-    );
-    // Optionally, you can send the updated object back in the response
-    res.json(updatedObject);
-    socketIO.emit("request-seen");
-  } catch (error) {
-    // Handle any errors that occur during the update operation
-    console.error("Error updating object:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the object." });
-  }
-});
-
-app.post("/api/requests/requestgData", async (req, res) => {
-  const { numberOfData, name, cTime, cDate } = req.body;
-
-  try {
-    // Create a new RequestModel instance
-    const newRequest = new RequestGModel({
-      dAmount: numberOfData,
-      ename: name,
-      cTime: cTime,
-      cDate: cDate,
-    });
-
-    // Save the data to MongoDB
-    const savedRequest = await newRequest.save();
-    socketIO.emit("newRequest", savedRequest);
-    // Emit a socket.io message when a new request is posted
-    // io.emit('newRequest', savedRequest);
-
-    res.json(savedRequest);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.get("/api/requests/requestData", async (req, res) => {
-  try {
-    // Retrieve all data from RequestModel
-    const allData = await RequestModel.find();
-    res.json(allData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-app.get("/api/requests/requestgData", async (req, res) => {
-  try {
-    // Retrieve all data from RequestModel
-    const allData = await RequestGModel.find();
-    res.json(allData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.put("/api/requests/requestData/:id", async (req, res) => {
-  const { id } = req.params;
-  const { read, assigned } = req.body;
-
-  try {
-    // Update the 'read' property in the MongoDB model
-    const updatedNotification = await RequestModel.findByIdAndUpdate(
-      id,
-      { read, assigned },
-      { new: true }
-    );
-
-    if (!updatedNotification) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
-
-    res.json(updatedNotification);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.put("/api/requestgData/:id", async (req, res) => {
-  const { id } = req.params;
-  const { read, assigned } = req.body;
-
-  try {
-    // Update the 'read' property in the MongoDB model
-    const updatedNotification = await RequestGModel.findByIdAndUpdate(
-      id,
-      { read, assigned },
-      { new: true }
-    );
-
-    if (!updatedNotification) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
-
-    res.json(updatedNotification);
-    socketIO.emit("data-sent");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 // app.get("/api/booking-model-filter", async (req, res) => {
 //   try {
@@ -1567,85 +1075,7 @@ app.get("/api/drafts-search/:companyName", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/requests/delete-data/:ename", async (req, res) => {
-  const { ename } = req.params;
 
-  try {
-    // Delete all data objects with the given ename
-    await CompanyRequestModel.deleteMany({ ename });
-
-    // Send success response
-    res.status(200).send("Data deleted successfully");
-  } catch (error) {
-    // Send error response
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-// ---------------------------api to fetch companies in processing dashboard-----------------------------------
-
-app.post("/api/requests/deleterequestbybde", async (req, res) => {
-  try {
-    const {
-      companyName,
-      Id,
-      companyID,
-      time,
-      date,
-      request,
-      ename,
-      bookingIndex,
-    } = req.body;
-
-    // Check if the request already exists
-    const findRequest = await RequestDeleteByBDE.findOne({
-      companyName,
-      bookingIndex,
-      request: false,
-    });
-    if (findRequest) {
-      return res.status(400).json({ message: "Request already exists" });
-    }
-
-    // Create a new delete request object
-    const deleteRequest = new RequestDeleteByBDE({
-      companyName,
-      Id,
-      companyID,
-      time,
-      date,
-      request,
-      ename,
-      bookingIndex,
-    });
-
-    // Save the delete request to the database
-    await deleteRequest.save();
-
-    res.status(200).json({ message: "Delete request created successfully" });
-  } catch (error) {
-    console.error("Error creating delete request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.get("/api/requests/deleterequestbybde", async (req, res) => {
-  try {
-    const company = await RequestDeleteByBDE.find();
-    res.json(company);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-app.get("/api/requests/editRequestByBde", async (req, res) => {
-  try {
-    const company = await BookingsRequestModel.find();
-    res.json(company);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
   try {
@@ -1728,47 +1158,9 @@ app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
   });
 });
 
-app.get("/api/bookings/recieptpdf/:CompanyName/:filename", (req, res) => {
-  const filepath = req.params.filename;
-  const companyName = req.params.CompanyName;
-  const pdfPath = path.join(
-    __dirname,
-    `BookingsDocument/${companyName}/PaymentReceipts`,
-    filepath
-  );
 
-  // Check if the file exists
-  fs.access(pdfPath, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(404).json({ error: "File not found" });
-    }
 
-    // If the file exists, send it
-    res.sendFile(pdfPath);
-  });
-});
 
-app.get("/api/bookings/otherpdf/:CompanyName/:filename", (req, res) => {
-  const filepath = req.params.filename;
-  const companyName = req.params.CompanyName;
-  const pdfPath = path.join(
-    __dirname,
-    `BookingsDocument/${companyName}/ExtraDocs`,
-    filepath
-  );
-
-  // Check if the file exists
-  fs.access(pdfPath, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(404).json({ error: "File not found" });
-    }
-
-    // If the file exists, send it
-    res.sendFile(pdfPath);
-  });
-});
 
 app.get("/download/recieptpdf/:fileName", (req, res) => {
   const fileName = req.params.filePath;
@@ -1783,151 +1175,11 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
 
 
 // *********************************************  Bookings Section  *****************************************************
-app.post("/api/bookings/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const companyName = req.params.CompanyName;
-      const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
 
-      // Check if company name is provided
-      if (!companyName) {
-        return res.status(404).send("Company name not provided");
-      }
-
-      // Find the company by its name
-      const company = await RedesignedLeadformModel.findOne({
-        "Company Name": companyName,
-      });
-
-      // Check if company exists
-      if (!company) {
-        return res.status(404).send("Company not found");
-      }
-
-      // Get the uploaded files
-      const newOtherDocs = req.files["otherDocs"] || []; // Default to empty array
-
-      // Check if bookingIndex is valid
-      if (bookingIndex === 0) {
-        // Update the main company's otherDocs directly
-        company.otherDocs = company.otherDocs.concat(newOtherDocs);
-      } else if (
-        bookingIndex > 0 &&
-        bookingIndex <= company.moreBookings.length
-      ) {
-        // Update the otherDocs in the appropriate moreBookings object
-        company.moreBookings[bookingIndex - 1].otherDocs =
-          company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
-      } else {
-        return res.status(400).send("Invalid booking index");
-      }
-
-      // Save the updated company document
-      await company.save();
-
-      // Emit socket event
-      socketIO.emit("veiwotherdocs", company);
-
-      res.status(200).send("Documents uploaded and updated successfully!");
-    } catch (error) {
-      console.error("Error updating otherDocs:", error);
-      res.status(500).send("Error updating otherDocs.");
-    }
-  }
-)
 // ********************************************  Bookings Requests Section *********************************************
 
-app.post("/api/requests/update-bdm-Request/:id", async (req, res) => {
-  try {
-    const _id = req.params.id;
-    const { requestStatus } = req.body;
 
-    // Find the BDM request by ID and update the requestStatus
-    const updatedRequest = await RequestMaturedModel.findByIdAndUpdate(
-      _id,
-      { requestStatus },
-      { new: true } // Return the updated document
-    );
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
-      {
-        "Company Name": updatedRequest["Company Name"],
-      },
-      {
-        bdmOnRequest: false,
-      },
-      { new: true }
-    );
 
-    if (!updatedRequest) {
-      return res.status(404).json({ message: "BDM request not found" });
-    }
-
-    res.status(200).json(updatedRequest);
-  } catch (error) {
-    console.error("Error updating BDM request:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-app.delete("/api/requests/delete-inform-Request/:id", async (req, res) => {
-  try {
-    const _id = req.params.id;
-
-    // Find the BDM request by ID and delete it
-    const deletedRequest = await InformBDEModel.findByIdAndDelete(_id);
-
-    if (!deletedRequest) {
-      return res.status(404).json({ message: "BDM request not found" });
-    }
-
-    res.status(200).json({ message: "BDM request deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting BDM request:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-app.post("/api/requests/edit-moreRequest/:companyName/:bookingIndex",
-  async (req, res) => {
-    try {
-      const { companyName, bookingIndex } = req.params;
-      const newData = req.body;
-      const requestDate = new Date();
-      const createdData = await EditableDraftModel.create({
-        "Company Name": companyName,
-        bookingIndex,
-        requestDate,
-        ...newData,
-      });
-
-      res.status(201).json(createdData);
-    } catch (error) {
-      console.error("Error creating data:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  }
-);
-app.get("/api/bookings/editable-LeadData", async (req, res) => {
-  try {
-    const data = await EditableDraftModel.find(); // Fetch all data from the collection
-    res.json(data); // Send the data as JSON response
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-app.get("/api/requests/requestCompanyData", async (req, res) => {
-  try {
-    const data = await CompanyRequestModel.find();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 //  ********************************************  Unused APIs (Pata nai kyu hee)          *********************************************************
 app.post("/api/undo", (req, res) => {
@@ -1947,19 +1199,6 @@ app.post("/api/undo", (req, res) => {
   );
 });
 
-app.get("/api/requests/recent-updates", async (req, res) => {
-  try {
-    // Fetch all data from the RecentUpdatesModel
-    const recentUpdates = await RecentUpdatesModel.find();
-
-    // Send the retrieved data as a response
-    res.status(200).json(recentUpdates);
-  } catch (error) {
-    // Handle any errors that occur during the database query
-    console.error("Error fetching recent updates:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 http.listen(3001, function () {
   console.log("Server started...");

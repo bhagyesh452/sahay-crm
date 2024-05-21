@@ -54,6 +54,7 @@ import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 import TestLeads from "./admin/TestLeads.jsx";
+import "../src/assets/v2_style.css"
 
 
 

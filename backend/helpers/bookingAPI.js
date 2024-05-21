@@ -62,8 +62,19 @@ function formatDateNew(timestamp) {
 }
 
 // ***************************************************************** Get Requests *****************************************************************
-// Get Request for bookings Draft 
 
+
+// Edit Request for Booking
+router.get("/editable-LeadData", async (req, res) => {
+  try {
+    const data = await EditableDraftModel.find(); // Fetch all data from the collection
+    res.json(data); // Send the data as JSON response
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// Get Request for bookings Draft 
 router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
     const companyName = req.params.CompanyName;
@@ -4646,6 +4657,107 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
     }
   }
 })
+
+// **************************************************  Upload Documents ********************************************************************************
+router.post("/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
+
+      // Check if company name is provided
+      if (!companyName) {
+        return res.status(404).send("Company name not provided");
+      }
+
+      // Find the company by its name
+      const company = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+
+      // Check if company exists
+      if (!company) {
+        return res.status(404).send("Company not found");
+      }
+
+      // Get the uploaded files
+      const newOtherDocs = req.files["otherDocs"] || []; // Default to empty array
+
+      // Check if bookingIndex is valid
+      if (bookingIndex === 0) {
+        // Update the main company's otherDocs directly
+        company.otherDocs = company.otherDocs.concat(newOtherDocs);
+      } else if (
+        bookingIndex > 0 &&
+        bookingIndex <= company.moreBookings.length
+      ) {
+        // Update the otherDocs in the appropriate moreBookings object
+        company.moreBookings[bookingIndex - 1].otherDocs =
+          company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
+      } else {
+        return res.status(400).send("Invalid booking index");
+      }
+
+      // Save the updated company document
+      await company.save();
+
+      // Emit socket event
+      socketIO.emit("veiwotherdocs", company);
+
+      res.status(200).send("Documents uploaded and updated successfully!");
+    } catch (error) {
+      console.error("Error updating otherDocs:", error);
+      res.status(500).send("Error updating otherDocs.");
+    }
+  }
+);
+router.get("/recieptpdf/:CompanyName/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/PaymentReceipts`,
+    filepath
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
+router.get("/otherpdf/:CompanyName/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/ExtraDocs`,
+    filepath
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
+
 
 
 module.exports = router;
