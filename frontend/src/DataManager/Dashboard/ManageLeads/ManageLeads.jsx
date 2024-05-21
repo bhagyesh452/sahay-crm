@@ -1,28 +1,12 @@
-import React from "react";
-import Papa from "papaparse";
-import Header from "../../Components//Header/Header.jsx";
+import React, { useState, useEffect } from 'react';
+import Header from "../../Components/Header/Header.jsx";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
-import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
+import axios from 'axios';
 import { IconChevronLeft } from "@tabler/icons-react";
 import debounce from 'lodash/debounce';
 import { IconChevronRight } from "@tabler/icons-react";
-import CircularProgress from "@mui/material/CircularProgress";
-import UndoIcon from "@mui/icons-material/Undo";
-import Box from "@mui/material/Box";
-import { IconEye } from "@tabler/icons-react";
-import { useRef, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
-import DatePicker from "react-datepicker";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
-import "react-datepicker/dist/react-datepicker.css";
-import "../../../assets/styles.css";
-import Swal from "sweetalert2";
-import ClipLoader from "react-spinners/ClipLoader";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { useParams } from "react-router-dom";
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faHouseLock } from '@fortawesome/free-solid-svg-icons'
-
 import {
     Button,
     Dialog,
@@ -34,47 +18,168 @@ import {
     InputLabel,
     FormControl,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import Modal from "react-modal";
+import Nodata from "../../../components/Nodata.jsx";
+import { Page } from 'react-pdf';
+import { IoFilterOutline } from "react-icons/io5";
+import { TbFileImport } from "react-icons/tb";
+import { TbFileExport } from "react-icons/tb";
+import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
+import Swal from "sweetalert2";
+import Papa from "papaparse";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { Link, json } from "react-router-dom";
-import Nodata from "../../Components/Nodata/Nodata.jsx";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import { IconEye } from "@tabler/icons-react";
+import { MdDeleteOutline } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
+import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
+import { IoIosClose } from "react-icons/io";
 
 function ManageLeads() {
-    const [open, openchange] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [month, setMonth] = useState(0);
-    const [year, setYear] = useState();
-    const [openNew, openchangeNew] = useState(false);
-    const [openPopupModify, setopenPopupModify] = useState(false);
-    const [openEmp, openchangeEmp] = useState(false);
-    const [openConf, openChangeConf] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [csvdata, setCsvData] = useState([]);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [data, setData] = useState([]);
-    const [openAssign, setOpenAssign] = useState(false);
-    const fileInputRef = useRef(null);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [currentPage, setCurrentPage] = useState(0);
-    const [searchText, setSearchText] = useState("");
-    const [citySearch, setcitySearch] = useState("");
-    const [selectedField, setSelectedField] = useState("Company Name");
-    const [employeeSelection, setEmployeeSelection] = useState("Not Alloted");
-    const [incoFilter, setIncoFilter] = useState("");
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
-
-    const [newemployeeSelection, setnewEmployeeSelection] =
-        useState("Not Alloted");
-    const [newempData, setnewEmpData] = useState([]);
-    // const [currentData, setCurrentData] = useState([]);
-
-    const [newDate, setNewDate] = useState([null]);
+    const [data, setData] = useState([])
+    const [mainData, setmainData] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [completeLeads, setCompleteLeads] = useState([]);
+    const [totalCount, setTotalCount] = useState()
+    const itemsPerPage = 500;
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const [searchText, setSearchText] = useState("")
     const [dataStatus, setDataStatus] = useState("Unassigned");
+    const [totalCompaniesUnassigned, setTotalCompaniesUnaasigned] = useState()
+    const [totalCompaniesAssigned, setTotalCompaniesAssigned] = useState()
+    const [empData, setEmpData] = useState([])
+    const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [remarksHistory, setRemarksHistory] = useState([]);
+    const [filteredRemarks, setFilteredRemarks] = useState([]);
+    const [cid, setcid] = useState("");
+    const [cstat, setCstat] = useState("");
 
-    // Manual Data
-    const [sortOrder, setSortOrder] = useState("asc");
+    const fetchTotalLeads = async () => {
+        const response = await axios.get(`${secretKey}/company-data/leads`)
+        setCompleteLeads(response.data)
+    }
+
+
+    const fetchData = async (page) => {
+        try {
+            setCurrentDataLoading(true)
+            //console.log("dataStatus", dataStatus)
+            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
+            //console.log("data", response.data.data)
+            // Set the retrieved data in the state
+            //console.log(response.data.unAssignedCount)
+
+            setData(response.data.data);
+            setTotalCount(response.data.totalPages)
+            setTotalCompaniesUnaasigned(response.data.unAssignedCount)
+            setTotalCompaniesAssigned(response.data.assignedCount)
+            setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
+            //console.log("mainData", mainData)
+            //setDataStatus("Unassigned")
+
+            // Set isLoading back to false after data is fetched
+            //setIsLoading(false);
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+            // Set isLoading back to false if an error occurs
+            //setIsLoading(false);
+        } finally {
+            setCurrentDataLoading(false)
+        }
+    };
+
+    const fetchEmployeesData = async () => {
+        try {
+
+            const response = await axios.get(`${secretKey}/employee/einfo`)
+            setEmpData(response.data)
+
+        } catch (error) {
+            console.log("Error fetching data", error.message)
+        }
+    }
+
+    const fetchRemarksHistory = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
+            setRemarksHistory(response.data);
+            setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
+
+
+        } catch (error) {
+            console.error("Error fetching remarks history:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData(1)
+        fetchTotalLeads()
+        fetchEmployeesData()
+        fetchRemarksHistory()
+    }, [dataStatus])
+
+    const handleNextPage = () => {
+        setCurrentPage(currentPage + 1);
+        fetchData(currentPage + 1);
+    };
+
+    const handlePreviousPage = () => {
+        setCurrentPage(currentPage - 1);
+        fetchData(currentPage - 1);
+    };
+
+    //const currentData = mainData.slice(startIndex, endIndex);
+
+    function formatDateFinal(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    const handleFilterSearch = async (searchQuery) => {
+        try {
+            setCurrentDataLoading(true);
+
+            const response = await axios.get(`${secretKey}/company-data/search-leads`, {
+                params: { searchQuery , field:"Company Name" }
+            });
+
+            if (!searchQuery.trim()) {
+                // If search query is empty, reset data to mainData
+                fetchData(1)
+            } else {
+                // Set data to the search results
+                setData(response.data);
+            }
+        } catch (error) {
+            console.error('Error searching leads:', error.message);
+        } finally {
+            setCurrentDataLoading(false);
+        }
+    };
+
+
+    //--------------------function to add leads-------------------------------------
+    const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
+    const [error, setError] = useState('');
+    const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+    const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+    const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+    const [openSecondDirector, setOpenSecondDirector] = useState(false)
+    const [openFirstDirector, setOpenFirstDirector] = useState(true)
+    const [openThirdDirector, setOpenThirdDirector] = useState(false)
+    const [firstPlus, setFirstPlus] = useState(true)
+    const [secondPlus, setSecondPlus] = useState(false)
+    const [openThirdMinus, setOpenThirdMinus] = useState(false)
     const [cname, setCname] = useState("");
     const [cemail, setCemail] = useState("");
     const [companyAddress, setCompanyAddress] = useState("");
@@ -92,363 +197,123 @@ function ManageLeads() {
     const [openRemarks, openchangeRemarks] = useState(false);
     const [city, setCity] = useState("");
     const [cidate, setCidate] = useState(null);
-    const itemsPerPage = 500;
-    const [visibility, setVisibility] = useState("none");
-    const [visibilityOther, setVisibilityOther] = useState("block");
-    const [visibilityOthernew, setVisibilityOthernew] = useState("none");
-    const [subFilterValue, setSubFilterValue] = useState("");
-    const [openIncoDate, setOpenIncoDate] = useState(false);
 
-    // Requested Details
-    const [requestData, setRequestData] = useState([]);
-    const [requestGData, setRequestGData] = useState([]);
-    const [mainData, setmainData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false)
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-    const name = useParams();
-    const designation = useParams();
-
-    //fetch data
-    const fetchDatadebounce = async () => {
-        try {
-            // Set isLoading to true while fetching data
-            setIsLoading(true);
-            setCurrentDataLoading(true)
-
-            const response = await axios.get(`${secretKey}/leads`);
-
-            // Set the retrieved data in the state
-            setData(response.data.reverse());
-            // setData(
-            //     response.data.sort((a, b) => {
-            //         const dateA = a["AssignDate"] || "";
-            //         const dateB = b["AssignDate"] || "";
-            //         return dateB.localeCompare(dateA);
-            //     })
-            // );
-            setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
-            // setmainData(
-            //     response.data.sort((a, b) => {
-            //         const dateA = a["AssignDate"] || "";
-            //         const dateB = b["AssignDate"] || "";
-            //         return dateB.localeCompare(dateA);
-            //     })
-            // );
-            // Set isLoading back to false after data is fetched
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-            // Set isLoading back to false if an error occurs
-            setIsLoading(false);
-        } finally {
-            setCurrentDataLoading(false)
-        }
-    };
-
-    //console.log("Main-Data" , mainData)
-
-    const fetchData = debounce(async () => {
-        const data = await fetchDatadebounce();
-        if (data) {
-            setData(data.reverse());
-            // setData(
-            //     data.sort((a, b) => {
-            //         const dateA = a["AssignDate"] || "";
-            //         const dateB = b["AssignDate"] || "";
-            //         return dateB.localeCompare(dateA);
-            //     })
-            // );
-            setmainData(data.filter((item) => item.ename === 'Not Alloted'));
-            // setmainData(
-            //     mainData.sort((a, b) => {
-            //         const dateA = a["AssignDate"] || "";
-            //         const dateB = b["AssignDate"] || "";
-            //         return dateB.localeCompare(dateA);
-            //     })
-            // );
-        }
-    }, 300); // Adjust debounce delay as needed
-
-    // Fetch data automatically when the component mounts
-
-    const handleSort = (sortType) => {
-        switch (sortType) {
-            case "oldest":
-                setIncoFilter("oldest");
-                setmainData(
-                    mainData.sort((a, b) => {
-                        const dateA = a["Company Incorporation Date  "] || "";
-                        const dateB = b["Company Incorporation Date  "] || "";
-                        return dateA.localeCompare(dateB);
-                    })
-                );
-                setOpenIncoDate(!openIncoDate)
-                break;
-            case "newest":
-                setIncoFilter("newest");
-                setmainData(
-                    mainData.sort((a, b) => {
-                        const dateA = a["Company Incorporation Date  "] || "";
-                        const dateB = b["Company Incorporation Date  "] || "";
-                        return dateB.localeCompare(dateA);
-                    })
-                );
-                setOpenIncoDate(!openIncoDate)
-                break;
-            case "none":
-                setIncoFilter("none");
-                setmainData(
-                    mainData.sort((a, b) => {
-                        const dateA = a["AssignDate"] || "";
-                        const dateB = b["AssignDate"] || "";
-                        return dateB.localeCompare(dateA);
-                    })
-                );
-                setOpenIncoDate(!openIncoDate)
-                break;
-            default:
-                break;
-        }
-    };
-    const handleSortAssign = (sortType) => {
-        switch (sortType) {
-            case "oldest":
-
-                setmainData(
-                    mainData.sort((a, b) => {
-                        const dateA = a["AssignDate"] || "";
-                        const dateB = b["AssignDate"] || "";
-                        return dateA.localeCompare(dateB);
-                    })
-                );
-                setOpenIncoDate(!openIncoDate)
-                break;
-            case "newest":
-
-                setmainData(
-                    mainData.sort((a, b) => {
-                        const dateA = a["AssignDate"] || "";
-                        const dateB = b["AssignDate"] || "";
-                        return dateB.localeCompare(dateA);
-                    })
-                );
-                setOpenIncoDate(!openIncoDate)
-                break;
-            default:
-                break;
-        }
-    };
-
-    useEffect(() => {
-        // Fetch data from the Node.js server
-        // Call the fetchData function
-        fetchData();
-        fetchnewData();
-        fetchRequestDetails();
-        fetchRequestGDetails();
-        fetchRemarksHistory();
-    }, []);
-    // const fileInputRef = useRef(null);
-    const functionopenpopup = () => {
-        openchange(true);
-        setCsvData([]);
-    };
-    const functionopenpopupEmp = () => {
-        openchangeEmp(true);
-    };
-    const handleFieldChange = (event) => {
-        if (event.target.value === "Company Incorporation Date  ") {
-            setSelectedField(event.target.value);
-            setVisibility("block");
-            setVisibilityOther("none");
-            setSubFilterValue("");
-        } else {
-            setSelectedField(event.target.value);
-            setVisibility("none");
-            setVisibilityOther("block");
-            setSubFilterValue("");
-        }
-
-
-    };
-
-    const functionopenModifyPopup = () => {
-        setopenPopupModify(true)
-    }
-
-    const functioncloseModifyPopup = () => {
-        setopenPopupModify(false);
-        setIsEditProjection(false);
-    }
-
-    const functionopenpopupNew = () => {
-        openchangeNew(true);
-    };
-    const functionopenpopupConf = () => {
-        openChangeConf(true);
-    };
-    const closepopup = () => {
-        openchange(false);
-
-        setCsvData([]);
-    };
-    const closepopupNew = () => {
-        openchangeNew(false);
+    function closeAddLeadsDialog() {
+        setOpenAddLeadsDialog(false)
         setOpenFirstDirector(true);
         setOpenSecondDirector(false);
         setOpenThirdDirector(false);
         setFirstPlus(true);
         setSecondPlus(false);
         setOpenThirdMinus(false)
-        fetchData();
-    };
-    const closepopupEmp = () => {
-        openchangeEmp(false);
-        fetchData();
-    };
-    const closepopupConf = () => {
-        openChangeConf(false);
-        fetchData();
-    };
+        //fetchData(1);
+        setError('')
+        setErrorDirectorNumberFirst("");
+        setErrorDirectorNumberSecond("");
+        setErrorDirectorNumberThird("");
+    }
 
-    const handleImportClick = () => {
-        // fileInputRef.current.click();
-        functionopenpopup();
+    const functionOpenSecondDirector = () => {
+        setOpenSecondDirector(true);
+        setFirstPlus(false);
+        setSecondPlus(true);
     };
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
-
-    // -------------------- SEARCH BAR-------------------------
-
-    const handleSearch = (e) => {
-        const query = e.target.value;
-        setSearchQuery(query);
-
-        // Filter the data based on the search query (case-insensitive partial match)
-        const filtered = "ahmedabad";
+    const functionOpenThirdDirector = () => {
+        setOpenSecondDirector(true);
+        setOpenThirdDirector(true);
+        setFirstPlus(false);
+        setSecondPlus(false);
+        setOpenThirdMinus(true);
     };
 
-    const handleDateChange = (e) => {
-        const dateValue = e.target.value;
-        setCurrentPage(0);
+    const functionCloseSecondDirector = () => {
+        setOpenFirstDirector(false);
+        //setOpenThirdMinus(true);
+        setOpenThirdMinus(false);
+        setOpenSecondDirector(false);
+        setSecondPlus(false);
+        setFirstPlus(true)
+    }
+    const functionCloseThirdDirector = () => {
+        setOpenSecondDirector(true);
+        setOpenThirdDirector(false);
+        setFirstPlus(false);
+        setOpenThirdMinus(false)
+        setSecondPlus(true)
+    }
 
-        // Check if the dateValue is not an empty string
-        if (dateValue) {
-            const dateObj = new Date(dateValue);
-            const formattedDate = dateObj.toISOString().split("T")[0];
-            setSearchText(formattedDate);
+    const handleSubmitData = (e) => {
+        e.preventDefault();
+
+        if (cname === "") {
+            Swal.fire("Please Enter Company Name");
+        } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
+            Swal.fire("Company Number is required");
+        } else if (cemail === "") {
+            Swal.fire("Company Email is required");
+        } else if (city === "") {
+            Swal.fire("City is required");
+        } else if (state === "") {
+            Swal.fire("State is required");
+        } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
+            Swal.fire("First Director Number should be 10 digits");
+        } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
+            Swal.fire("Second Director Number should be 10 digits");
+        } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
+            Swal.fire("Third Director Number should be 10 digits");
         } else {
-            // Handle the case when the date is cleared
-            setSearchText("");
+            axios
+                .post(`${secretKey}/admin-leads/manual`, {
+                    "Company Name": cname.toUpperCase().trim(),
+                    "Company Number": cnumber,
+                    "Company Email": cemail,
+                    "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+                    City: city,
+                    State: state,
+                    ename: data.ename,
+                    AssignDate: new Date(),
+                    "Company Address": companyAddress,
+                    "Director Name(First)": directorNameFirst,
+                    "Director Number(First)": directorNumberFirst,
+                    "Director Email(First)": directorEmailFirst,
+                    "Director Name(Second)": directorNameSecond,
+                    "Director Number(Second)": directorNumberSecond,
+                    "Director Email(Second)": directorEmailSecond,
+                    "Director Name(Third)": directorNameThird,
+                    "Director Number(Third)": directorNumberThird,
+                    "Director Email(Third)": directorEmailThird,
+                })
+                .then((response) => {
+                    //console.log("response", response);
+                    console.log("Data sent Successfully");
+                    Swal.fire({
+                        title: "Data Added!",
+                        text: "Successfully added new Data!",
+                        icon: "success",
+                    });
+                    fetchData(1);
+                    closeAddLeadsDialog();
+                })
+                .catch((error) => {
+                    console.error("Error sending data:", error);
+                    Swal.fire("An error occurred. Please try again later.");
+                });
         }
     };
 
-    const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    //------------------------------function add leads through csv-----------------------------------
 
-    const filteredData = mainData.filter((company) => {
-        const fieldValue = company[selectedField];
-        if (selectedField === "State" && citySearch) {
-            // Handle filtering by both State and City
-            const stateMatches = fieldValue
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-            const cityMatches = company.City.toLowerCase().includes(
-                citySearch.toLowerCase()
-            );
-            return stateMatches && cityMatches;
-        } else if (selectedField === "Company Incorporation Date  ") {
-            // Assuming you have the month value in a variable named `month`
-            if (month == 0) {
-                return true;
-            } else if (year == 0) {
-                return true;
-            }
-            const selectedDate = new Date(fieldValue);
-            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-            const selectedYear = selectedDate.getFullYear();
+    const [openBulkLeadsCSVPopup, setOpenBulkLeadsCSVPopup] = useState(false)
+    const [selectedOption, setSelectedOption] = useState("direct");
+    const [csvdata, setCsvData] = useState([]);
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-            // console.log(selectedMonth);
-            //
-
-            // Use the provided month variable in the comparison
-            return (
-                selectedMonth.toString().includes(month) &&
-                selectedYear.toString().includes(year)
-            );
-        } else {
-            // Your existing filtering logic for other fields
-            if (typeof fieldValue === "string") {
-                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-            } else if (typeof fieldValue === "number") {
-                return fieldValue.toString().includes(searchText);
-            } else if (fieldValue instanceof Date) {
-                // Handle date fields
-
-                return fieldValue.includes(searchText);
-            }
-
-            return false;
-        }
-    });
-
-    // const filteredData = mainData.filter((company) => {
-    //   // Extract the values you want to search from the company object
-    //   const valuesToSearch = Object.values(company).map(value => {
-    //     if (typeof value === "string") {
-    //       return value.toLowerCase();
-    //     } else if (typeof value === "number") {
-    //       return value.toString();
-    //     } else if (typeof value === "email") {
-    //       // Convert date to a string representation
-    //       return value.toString().toLowerCase();
-    //     }
-    //     // If the value is not string, number, or date, return an empty string
-    //     return "";
-    //   });
-
-    //   // Join all values into a single string for easier searching
-    //   const allValues = valuesToSearch.join(" ");
-
-    //   // Perform case-insensitive search
-    //   return allValues.toLowerCase().includes(searchText.toLowerCase());
-    // });
-
-    //console.log(filteredData)
-
-    // const [filteredData, setfilteredData] = useState([])
-
-
-    //console.log(mainData)
-    const currentData = filteredData.slice(startIndex, endIndex);
-
-    //  Sub-filter value
-
-    const handleSubFilterChange = (event) => {
-        setSubFilterValue(event.target.value);
-    };
-
-    // const parseCsvData = (csvString) => {
-
-    //   const rows = csvString.split('\n');
-    //   const header = rows[0].split(',');
-    //   const data = [];
-
-    //   for (let i = 1; i < rows.length; i++) {
-    //     const values = rows[i].split(',');
-    //     const rowData = {};
-
-    //     for (let j = 0; j < header.length; j++) {
-    //       rowData[header[j]] = values[j];
-    //     }
-
-    //     data.push(rowData);
-    //   }
-
-    //   return data;
-    // };
+    function closeBulkLeadsCSVPopup() {
+        setOpenBulkLeadsCSVPopup(false)
+        setCsvData([])
+    }
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -469,7 +334,7 @@ function ManageLeads() {
                 const sheet = workbook.Sheets[sheetName];
 
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
+                const adminName = localStorage.getItem("adminName")
                 const formattedJsonData = jsonData
                     .slice(1) // Exclude the first row (header)
                     .map((row) => ({
@@ -489,7 +354,8 @@ function ManageLeads() {
                         "Director Email(Second)": row[13],
                         "Director Name(Third)": row[14],
                         "Director Number(Third)": row[15],
-                        "Director Email(Third)": row[16]
+                        "Director Email(Third)": row[16],
+                        "UploadedBy": adminName ? adminName : "Admin"
                     }));
 
                 setCsvData(formattedJsonData);
@@ -510,6 +376,9 @@ function ManageLeads() {
 
             console.error("Please upload a valid XLSX file.");
         }
+    };
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
     };
 
     const parseCsv = (data) => {
@@ -545,14 +414,20 @@ function ManageLeads() {
         // Get current date and time
 
         // newArray now contains objects with updated properties
+        const adminName = localStorage.getItem("adminName")
 
         if (selectedOption === "someoneElse") {
+            const properDate = new Date();
             const updatedCsvdata = csvdata.map((data) => ({
                 ...data,
                 ename: newemployeeSelection,
+                AssignDate: properDate,
+                UploadedBy: adminName ? adminName : "Admin"
             }));
+
             const currentDate = new Date().toLocaleDateString();
             const currentTime = new Date().toLocaleTimeString();
+
             //console.log(updatedCsvdata)
             // Create a new array of objects with desired properties
             const newArray = updatedCsvdata.map((data) => ({
@@ -566,10 +441,10 @@ function ManageLeads() {
 
                 try {
                     const response = await axios.post(
-                        `${secretKey}/leads`,
+                        `${secretKey}/company-data/leads`,
                         updatedCsvdata
                     );
-                    await axios.post(`${secretKey}/employee-history`, newArray);
+                    await axios.post(`${secretKey}/employee/employee-history`, newArray);
                     // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
                     const counter = response.data.counter;
@@ -586,8 +461,6 @@ function ManageLeads() {
                         });
                     } else {
                         const lines = response.data.split('\n');
-
-                        // Count the number of lines (entries)
                         const numberOfDuplicateEntries = lines.length - 1;
                         const noofSuccessEntries = newArray.length - numberOfDuplicateEntries
                         Swal.fire({
@@ -613,8 +486,8 @@ function ManageLeads() {
                             }
                         });
                     }
-                    fetchData();
-                    closepopup();
+                    fetchData(1);
+                    closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
                     if (error.response.status !== 500) {
@@ -632,25 +505,72 @@ function ManageLeads() {
                 Swal.fire("Please upload data");
             }
         } else {
-
             if (csvdata.length !== 0) {
                 setLoading(true); // Move setLoading outside of the loop
-                try {
-                    await axios.post(`${secretKey}/leads`, csvdata);
-                    Swal.fire({
-                        title: "Data Send!",
-                        text: "Data successfully sent to the Employee",
-                        icon: "success",
-                    });
 
-                    fetchData();
-                    closepopup();
+                try {
+                    const response = await axios.post(
+                        `${secretKey}/company-data/leads`,
+                        csvdata
+                    );
+
+                    // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+
+                    const counter = response.data.counter;
+                    // console.log("counter", counter)
+                    const successCounter = response.data.sucessCounter;
+                    //console.log(successCounter)
+
+                    if (counter === 0) {
+                        //console.log(response.data)
+                        Swal.fire({
+                            title: "Data Added!",
+                            text: "Data Successfully added to the Leads",
+                            icon: "success",
+                        });
+                    } else {
+                        const lines = response.data.split('\n');
+
+                        // Count the number of lines (entries)
+                        const numberOfDuplicateEntries = lines.length - 1;
+                        const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
+                        Swal.fire({
+                            title: 'Do you want download duplicate entries report?',
+                            html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                //console.log(response.data)
+                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.setAttribute("download", "DuplicateEntriesLeads.csv");
+                                document.body.appendChild(link);
+                                link.click();
+                                // User clicked "Yes", perform action
+                                // Call your function or execute your code here
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                return true;
+                            }
+                        });
+                    }
+                    fetchData(1);
+                    closeBulkLeadsCSVPopup();
+                    setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
+                    if (error.response.status !== 500) {
+                        setErrorMessage(error.response.data.error);
+                        Swal.fire("Some of the data are not unique");
+                    } else {
+                        setErrorMessage("An error occurred. Please try again.");
+                        Swal.fire("Please upload unique data");
+                    }
                     console.log("Error:", error);
                 }
-
                 setLoading(false); // Move setLoading outside of the loop
-
                 setCsvData([]);
             } else {
                 Swal.fire("Please upload data");
@@ -658,290 +578,23 @@ function ManageLeads() {
         }
     };
 
-
-
-
-    const [itemIdToDelete, setItemIdToDelete] = useState(null);
-
-    const handleDelete = async (id) => {
-        try {
-            await axios.delete(`${secretKey}/leads/${id}`);
-            // Refresh the data after successful deletion
-            fetchData();
-        } catch (error) {
-            console.error("Error deleting data:", error);
-        }
-    };
-
-    const handleDeleteClick = (itemId) => {
-        // Open the confirm delete modal
-        setItemIdToDelete(itemId);
-        setIsModalOpen(true);
-    };
-
-    const handleConfirmDelete = () => {
-        // Perform the delete operation here (call your delete API, etc.)
-        // After deletion, close the modal
-        handleDelete(itemIdToDelete);
-        setIsModalOpen(false);
-    };
-    const handleCancelDelete = () => {
-        // Cancel the delete operation and close the modal
-        setIsModalOpen(false);
-    };
-
-    // Submit the Dialogue box data manually
-
-    // const handleSubmitData = (e) => {
-    //     e.preventDefault();
-    //     axios
-    //         .post(`${secretKey}/manual`, {
-    //             "Company Name": cname,
-    //             "Company Number": cnumber,
-    //             "Company Email": cemail,
-    //             "Company Incorporation Date  ": cidate,
-    //             City: city,
-    //             State: state,
-    //             AssignDate: new Date(),
-    //             "UploadedBy": dataManagerName,
-    //             "Company Address": companyAddress,
-    //             "Director Name(First)": directorNameFirst,
-    //             "Director Number(First)": directorNumberFirst,
-    //             "Director Email(First)": directorEmailFirst,
-    //             "Director Name(Second)": directorNameSecond,
-    //             "Director Number(Second)": directorNumberSecond,
-    //             "Director Email(Second)": directorEmailSecond,
-    //             "Director Name(Third)": directorNameThird,
-    //             "Director Number(Third)": directorNumberThird,
-    //             "Director Email(Third)": directorEmailThird
-    //         })
-    //         .then((response) => {
-    //             //console.log("response" , response)
-    //             Swal.fire({
-    //                 title: "Data Added!",
-    //                 text: "Successfully added new Data!",
-    //                 icon: "success",
-    //             });
-    //             fetchData();
-    //             closepopupNew();
-    //         })
-    //         .catch((error) => {
-    //             Swal.fire("Please Enter Unique data!");
-    //         });
-    // };
-
-    const handleSubmitData = (e) => {
-        e.preventDefault();
-    
-        if (cname === "") {
-          Swal.fire("Please Enter Company Name");
-        } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
-          Swal.fire("Company Number is required");
-        } else if (cemail === "") {
-          Swal.fire("Company Email is required");
-        } else if (city === "") {
-          Swal.fire("City is required");
-        } else if (state === "") {
-          Swal.fire("State is required");
-        } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
-          Swal.fire("First Director Number should be 10 digits");
-        } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
-          Swal.fire("Second Director Number should be 10 digits");
-        } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
-          Swal.fire("Third Director Number should be 10 digits");
-        } else {
-          axios
-            .post(`${secretKey}/manual`, {
-              "Company Name": cname.toUpperCase().trim(),
-              "Company Number": cnumber,
-              "Company Email": cemail,
-              "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
-              City: city,
-              State: state,
-              ename: data.ename,
-              AssignDate: new Date(),
-              "Company Address": companyAddress,
-              "Director Name(First)": directorNameFirst,
-              "Director Number(First)": directorNumberFirst,
-              "Director Email(First)": directorEmailFirst,
-              "Director Name(Second)": directorNameSecond,
-              "Director Number(Second)": directorNumberSecond,
-              "Director Email(Second)": directorEmailSecond,
-              "Director Name(Third)": directorNameThird,
-              "Director Number(Third)": directorNumberThird,
-              "Director Email(Third)": directorEmailThird,
-            })
-            .then((response) => {
-              console.log("response", response);
-              console.log("Data sent Successfully");
-              Swal.fire({
-                title: "Data Added!",
-                text: "Successfully added new Data!",
-                icon: "success",
-              });
-              fetchData();
-              closepopupNew();
-            })
-            .catch((error) => {
-              console.error("Error sending data:", error);
-              Swal.fire("An error occurred. Please try again later.");
-            });
-        }
-      };
- // -------------------------------------------------add leads form validation and debounce correction----------------------------------
-
- const debouncedSetCname = debounce((value) => {
-    setCname(value);
-  }, 10);
-
-  const debouncedSetEmail = debounce((value) => {
-    setCemail(value);
-  }, 10);
-
-  const debouncedSetAddress = debounce((value) => {
-    setCompanyAddress(value);
-  }, 10);
-
-  const debouncedSetIncoDate = debounce((value) => {
-    setCidate(value);
-  }, 10);
-
-  const [error, setError] = useState('');
-
-  const debouncedSetCompanyNumber = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setCnumber(value);
-      setError('');
-    } else {
-      setError('Please enter a 10-digit number');
-      setCnumber()
-    }
-
-  }, 10);
-
-  const debouncedSetCity = debounce((value) => {
-    setCity(value);
-  }, 10);
-
-  const debouncedSetState = debounce((value) => {
-    setState(value);
-  }, 10);
-
-  const debounceSetFirstDirectorName = debounce((value) => {
-    setDirectorNameFirst(value);
-  }, 10);
-
-  const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
-  const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
-  const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
-
-  const debounceSetFirstDirectorNumber = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberFirst(value)
-      setErrorDirectorNumberFirst("")
-    } else {
-      setErrorDirectorNumberFirst('Please Enter 10 digit Number')
-      setDirectorNumberFirst()
-    }
-  }, 10);
-
-  const debounceSetFirstDirectorEmail = debounce((value) => {
-    setDirectorEmailFirst(value);
-  }, 10);
-
-  const debounceSetSecondDirectorName = debounce((value) => {
-    setDirectorNameSecond(value);
-  }, 10);
-
-  const debounceSetSecondDirectorNumber = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberSecond(value)
-      setErrorDirectorNumberSecond("")
-    } else {
-      setErrorDirectorNumberSecond('Please Enter 10 digit Number')
-      setDirectorNumberSecond()
-    }
-  }, 10);
-
-  const debounceSetSecondDirectorEmail = debounce((value) => {
-    setDirectorEmailSecond(value);
-  }, 10);
-
-  const debounceSetThirdDirectorName = debounce((value) => {
-    setDirectorNameThird(value);
-  }, 10);
-
-  const debounceSetThirdDirectorNumber = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberThird(value)
-      setErrorDirectorNumberThird("")
-    } else {
-      setErrorDirectorNumberThird('Please Enter 10 digit Number')
-      setDirectorNumberThird()
-    }
-  }, 10);
-
-  const debounceSetThirdDirectorEmail = debounce((value) => {
-    setDirectorEmailThird(value);
-  }, 10);
-
-
-
-
-
-
-
-
-
-    const [openSecondDirector, setOpenSecondDirector] = useState(false)
-    const [openFirstDirector, setOpenFirstDirector] = useState(true)
-    const [openThirdDirector, setOpenThirdDirector] = useState(false)
-    const [firstPlus, setFirstPlus] = useState(true)
-    const [secondPlus, setSecondPlus] = useState(false)
-    const [openThirdMinus, setOpenThirdMinus] = useState(false)
-
-    const functionOpenSecondDirector = () => {
-        setOpenSecondDirector(true);
-        setFirstPlus(false);
-        setSecondPlus(true);
-    };
-    const functionOpenThirdDirector = () => {
-        setOpenSecondDirector(true);
-        setOpenThirdDirector(true);
-        setFirstPlus(false);
-        setSecondPlus(false);
-        setOpenThirdMinus(true);
-    };
-
-    const functionCloseSecondDirector = () => {
-        setOpenFirstDirector(false);
-        //setOpenThirdMinus(true);
-        setOpenThirdMinus(false);
-        setOpenSecondDirector(false);
-        setSecondPlus(false);
-        setFirstPlus(true)
-    }
-    const functionCloseThirdDirector = () => {
-        setOpenSecondDirector(true);
-        setOpenThirdDirector(false);
-        setFirstPlus(false);
-        setOpenThirdMinus(false)
-        setSecondPlus(true)
-    }
-
-    // ------------------------------------------- CHECK BOX CONTENT----------------------------------------------------
-
+    //----------------------function for export leads data-------------------------------------
     const [selectedRows, setSelectedRows] = useState([]);
     const [startRowIndex, setStartRowIndex] = useState(null);
-    const handleCheckboxChange = (id) => {
+    const [allIds, setAllIds] = useState([])
+
+    const handleCheckboxChange = async (id) => {
         // If the id is 'all', toggle all checkboxes
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
-
+            //console.log(id)
+            const response = await axios.get(`${secretKey}/admin-leads/getIds?dataStatus=${dataStatus}`)
+            //console.log(response.data)
+            setAllIds(response.data)
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === filteredData.length
+                prevSelectedRows.length === response.data.length
                     ? []
-                    : filteredData.map((row) => row._id)
+                    : response.data
             );
         } else {
             // Toggle the selection status of the row with the given id
@@ -954,12 +607,37 @@ function ManageLeads() {
             });
         }
     };
-    //console.log(selectedRows);
+
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(data.findIndex((row) => row._id === id));
+    };
+
+    const handleMouseEnter = (id) => {
+        // Update selected rows during drag selection
+        if (startRowIndex !== null) {
+            const endRowIndex = data.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
+
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(data[i]._id);
+            }
+
+            setSelectedRows(selectedRange);
+        }
+    };
+
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
 
     const exportData = async () => {
         try {
             const response = await axios.post(
-                `${secretKey}/exportLeads/`,
+                `${secretKey}/admin-leads/exportLeads/`,
                 selectedRows
             );
             //console.log("response",response.data)
@@ -976,77 +654,25 @@ function ManageLeads() {
             console.error("Error downloading CSV:", error);
         }
     };
+    //--------------------function to assign leads to employees---------------------
+    const [openAssignLeadsDialog, setOpenAssignLeadsDialog] = useState(false)
+    const [employeeSelection, setEmployeeSelection] = useState("")
 
-    const handleMouseDown = (id) => {
-        // Initiate drag selection
-        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
-    };
-
-    const handleMouseEnter = (id) => {
-        // Update selected rows during drag selection
-        if (startRowIndex !== null) {
-            const endRowIndex = filteredData.findIndex((row) => row._id === id);
-            const selectedRange = [];
-            const startIndex = Math.min(startRowIndex, endRowIndex);
-            const endIndex = Math.max(startRowIndex, endRowIndex);
-
-            for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(filteredData[i]._id);
-            }
-
-            setSelectedRows(selectedRange);
-        }
-    };
-
-    const handleMouseUp = () => {
-        // End drag selection
-        setStartRowIndex(null);
-    };
-
-    // const handleCheckboxChange = (id) => {
-    //   // Toggle the selection status of the row with the given id
-    //   setSelectedRows((prevSelectedRows) => {
-    //     if (prevSelectedRows.includes(id)) {
-    //       return prevSelectedRows.filter((rowId) => rowId !== id);
-    //     } else {
-    //       return [...prevSelectedRows, id];
-    //     }
-    //   });
-    // };
-
-    const handlePrintSelectedData = () => {
-        // Print the data of the selected rows
-
-        const selectedData = data.filter((row) => selectedRows.includes(row._id));
-
-    };
-
-    // Fetch Employees Data
-    // const [dataManager,setDataManager] = useState([])
-
-    const fetchnewData = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/einfo`);
-            const employeeData = response.data;
-            // Set the retrieved data in the state
-
-            setnewEmpData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
-
-    console.log("newEmpData", newempData)
-
+    function closeAssignLeadsDialog() {
+        setOpenAssignLeadsDialog(false)
+        fetchData(1)
+        setEmployeeSelection("")
+    }
     const handleconfirmAssign = async () => {
         const selectedObjects = data.filter((row) =>
             selectedRows.includes(row._id)
         );
 
+        //console.log("selectedObjecyt", selectedObjects)
         // Check if no data is selected
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
-            closepopupEmp();
+            closeAssignLeadsDialog();
             return; // Exit the function early if no data is selected
         }
 
@@ -1067,8 +693,6 @@ function ManageLeads() {
 
         if (userConfirmed) {
             handleAssignData();
-        } else {
-
         }
     };
 
@@ -1077,9 +701,9 @@ function ManageLeads() {
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
-
+        const currentDataStatus = dataStatus;
         try {
-            const response = await axios.post(`${secretKey}/postData`, {
+            const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
                 title,
@@ -1087,67 +711,18 @@ function ManageLeads() {
                 time,
             });
             Swal.fire("Data Assigned");
-            openchangeEmp(false);
-
-            fetchData();
-
+            setOpenAssignLeadsDialog(false);
+            fetchData(1);
+            setSelectedRows([]);
+            setDataStatus(currentDataStatus);
+            setEmployeeSelection("")
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
         }
     };
 
-    // const handleAssignData = async () => {
-    //   // Find the selected employee object
-
-    //   const selectedEmployee = newempData.find(
-    //     (employee) => employee.ename === employeeSelection
-    //   );
-    //   const selectedData = data.filter((row) => selectedRows.includes(row._id));
-
-    //   // Check if an employee is selected
-    //   if (!selectedEmployee) {
-    //     console.warn("No employee selected");
-    //     return;
-    //   }
-
-    //   try {
-    //     // Map the selected data to the format expected by the backend
-    //     const formattedSelectedData = selectedData.map((row) => ({
-    //       "Company Name": row["Company Name"],
-    //       "Company Number": row["Company Number"],
-    //       "Company Email": row["Company Email"],
-    //       "Company Incorporation Date  ": row["Company Incorporation Date  "],
-    //       City: row.City,
-    //       State: row.State,
-    //     }));
-
-    //     // Make a PUT request using Axios to update the value on the backend
-    //     const response = await axios.put(
-    //       `${secretKey}/neweinfo/${selectedEmployee._id}`,
-    //       {
-    //         cInfo: formattedSelectedData,
-    //       }
-    //     );
-
-    //     if (response.status === 200) {
-    //       const updatedData = response.data.updatedData;
-    //       console.log(`Value assigned to ${updatedData._id}`);
-    //       window.location.reload();
-
-    //       // Optionally, you can update the state or trigger a re-fetch of the data
-    //       // based on your application's requirements.
-    //     } else {
-    //       console.error("Error updating data:", response.statusText);
-    //       Swal.fire("Data Already exist");
-    //     }
-    //   } catch (error) {
-    //     functionopenpopupConf();
-    //     console.error("Error updating data:", error.message);
-    //   }
-    // };
-
-    // delete selection
+    //-------------------------function to delete leads-------------------------
 
     const handleDeleteSelection = async () => {
         if (selectedRows.length !== 0) {
@@ -1162,13 +737,28 @@ function ManageLeads() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
+
+                        Swal.fire({
+                            title: 'Deleting...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                              Swal.showLoading();
+                            }
+                          });
                         // If user confirms, proceed with deletion
-                        await axios.delete(`${secretKey}/delete-rows`, {
+                        const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
                             data: { selectedRows }, // Pass selected rows to the server
                         });
+
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Selected rows have been deleted.',
+                            icon: 'success',
+                          });
+                        //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        fetchData();
+                        await fetchData(1);
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -1181,211 +771,147 @@ function ManageLeads() {
         }
     };
 
-    const handleUndo = async () => {
+    // ---------------------function to delete particular lead----------------------------------
+    const handleDeleteClick = async (id) => {
         try {
-            // Make a POST request to the /api/undo endpoint
-            await axios.post(`${secretKey}/undo`);
+            const result = await Swal.fire({
+                title: 'Confirm Deletion',
+                text: 'Are you sure you want to delete this item?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel'
+            });
 
-            // Show success message
-            Swal.fire('Data for the "newcdatas" collection restored successfully!');
+            if (result.isConfirmed) {
+                await axios.delete(`${secretKey}/company-data/leads/${id}`);
+
+                Swal.fire(
+                    'Deleted!',
+                    'The item has been deleted.',
+                    'success'
+                );
+
+                // Refresh the data after successful deletion
+                fetchData(1);
+            }
         } catch (error) {
-            console.error("Error restoring data:", error.message);
-            // Show error message
-            Swal.fire("Error restoring data:", error.message, "error");
+            console.error("Error deleting data:", error);
+
+            Swal.fire(
+                'Error!',
+                'An error occurred while deleting the item.',
+                'error'
+            );
         }
     };
 
-    function formatDate(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
+    //----------------------function to modify leads----------------------------------------
+    const [openLeadsModifyPopUp, setOpenLeadsModifyPopUp] = useState(false)
+    const [selectedDataId, setSelectedDataId] = useState()
+    const [companyEmail, setCompanyEmail] = useState("");
+    const [companyName, setCompanyName] = useState("");
+    const [companyIncoDate, setCompanyIncoDate] = useState(null);
+    const [companyCity, setCompnayCity] = useState("");
+    const [companyState, setCompnayState] = useState("");
+    const [companynumber, setCompnayNumber] = useState("");
+    const [isEditProjection, setIsEditProjection] = useState(false);
+    const [cAddress, setCAddress] = useState("");
+    const [directorNameFirstModify, setDirectorNameFirstModify] = useState("")
+    const [directorNumberFirstModify, setDirectorNumberFirstModify] = useState("")
+    const [directorEmailFirstModify, setDirectorEmailFirstModify] = useState("")
+    const [directorNameSecondModify, setDirectorNameSecondModify] = useState("")
+    const [directorNumberSecondModify, setDirectorNumberSecondModify] = useState("")
+    const [directorEmailSecondModify, setDirectorEmailSecondModify] = useState("")
+    const [directorNameThirdModify, setDirectorNameThirdModify] = useState("")
+    const [directorNumberThirdModify, setDirectorNumberThirdModify] = useState("")
+    const [directorEmailThirdModify, setDirectorEmailThirdModify] = useState("")
+    const [isUpdateMode, setIsUpdateMode] = useState(false);
+    const [errorCompnayNumber, setErrorCompnayNumber] = useState('');
+    const [errorDirectorNumberFirstModify, setErrorDirectorNumberFirstModify] = useState("")
+    const [errorDirectorNumberSecondModify, setErrorDirectorNumberSecondModify] = useState("")
+    const [errorDirectorNumberThirdModify, setErrorDirectorNumberThirdModify] = useState("")
+
+    const functioncloseModifyPopup = () => {
+        setOpenLeadsModifyPopUp(false);
+        setIsEditProjection(false);
+        setOpenFirstDirector(true);
+        setOpenSecondDirector(false);
+        setOpenThirdDirector(false);
+        setFirstPlus(true);
+        setSecondPlus(false);
+        setOpenThirdMinus(false)
+        //fetchData();
+        setError('')
+        setErrorDirectorNumberFirst("");
+        setErrorDirectorNumberSecond("");
+        setErrorDirectorNumberThird("");
     }
 
-    // Assign to someone else
+    const handleUpdateClick = (id) => {
+        //console.log(id)
+        //Set the selected data ID and set update mode to true
+        setSelectedDataId(id);
+        setIsUpdateMode(true);
+        // setCompanyData(cdata.filter((item) => item.ename === echangename));
 
-    const [selectedOption, setSelectedOption] = useState("direct");
+        // // Find the selected data object
 
-    const handleOptionChange = (event) => {
-        setSelectedOption(event.target.value);
-    };
+        const selectedData = data.find((item) => item._id === id);
 
-    // ----------------------------------------- INCOMING REQUEST FROM AN EMPLOYEE---------------------------------------------
+        //console.log(selectedData["Company Incorporation Date  "])
+        //console.log(selectedData)
+        // console.log(echangename);
 
-    const fetchRequestDetails = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/requestData`);
-            setRequestData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
+        // // Update the form data with the selected data values
+        setCompanyEmail(selectedData["Company Email"]);
+        setCompanyName(selectedData["Company Name"]);
+        //setCompanyIncoDate(new Date(selectedData["Company Incorporation Date  "]));
+        setCompnayCity(selectedData["City"]);
+        setCompnayState(selectedData["State"]);
+        setCompnayNumber(selectedData["Company Number"]);
+        setCAddress(selectedData["Company Address"])
+        setDirectorNameFirstModify(selectedData["Director Name(First)"])
+        setDirectorNumberFirstModify(selectedData["Director Number(First)"])
+        setDirectorEmailFirstModify(selectedData["Director Email(First)"])
+        setDirectorNameSecondModify(selectedData["Director Name(Second)"])
+        setDirectorNumberSecondModify(selectedData["Director Number(Second)"])
+        setDirectorEmailSecondModify(selectedData["Director Email(Second)"])
+        setDirectorNameThirdModify(selectedData["Director Name(Third)"])
+        setDirectorNumberThirdModify(selectedData["Director Number(Third)"])
+        setDirectorEmailThirdModify(selectedData["Director Email(Third)"])
+        const dateString = selectedData["Company Incorporation Date  "];
+
+        // Parse the date string into a Date object
+        const dateObject = new Date(dateString);
+
+        // Check if the parsed Date object is valid
+        if (!isNaN(dateObject.getTime())) {
+            // Date object is valid, proceed with further processing
+            //console.log("Company Incorporation Date:", dateObject);
+
+            // Format the date as dd-mm-yyyy
+            const day = dateObject.getDate().toString().padStart(2, "0");
+            const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+            const year = dateObject.getFullYear();
+            const formattedDate = `${year}-${month}-${day}`;
+            setCompanyIncoDate(formattedDate)
+
+            //console.log("Formatted Company Incorporation Date:", formattedDate);
+
+            // Rest of your code...
+        } else {
+            // Date string couldn't be parsed into a valid Date object
+            console.error("Invalid Company Incorporation Date string:", dateString);
         }
     };
-    const fetchRequestGDetails = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/requestgData`);
-            setRequestGData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
-    const [cid, setcid] = useState("");
-    const [cstat, setCstat] = useState("");
-    const [remarksHistory, setRemarksHistory] = useState([]);
-    const [filteredRemarks, setFilteredRemarks] = useState([]);
-    const fetchRemarksHistory = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-            setRemarksHistory(response.data);
-            setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
-
-
-        } catch (error) {
-            console.error("Error fetching remarks history:", error);
-        }
-    };
-    const functionopenpopupremarks = (companyID, companyStatus) => {
-        openchangeRemarks(true);
-        setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
-        );
-        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-
-        setcid(companyID);
-        setCstat(companyStatus);
-    };
-    const closepopupRemarks = () => {
-        openchangeRemarks(false);
-        setFilteredRemarks([]);
-    };
-    // console.log(requestData);
-    // console.log(requestGData);
-
-    const thTdStyle = {
-        padding: "8px",
-        border: "1px solid #ddd",
-    };
-
-    const thStyle = {
-        backgroundColor: "#f2f2f2",
-        position: "sticky",
-        top: "0",
-        zIndex: "1",
-    };
-
-    const stickyColumnsStyle = {
-        left: "0",
-        zIndex: "2",
-        backgroundColor: "#fff",
-    };
-
-    const handleFilterIncoDate = () => {
-        setOpenIncoDate(!openIncoDate);
-    };
-    const handleFilterAssignDate = () => {
-        setOpenAssign(!openAssign);
-    };
-
-    const debouncedFilterData = debounce((status) => {
-        // Filtering logic to set the mainData based on the status
-        if (status === "Assigned") {
-            setmainData(data.filter((item) => item.ename !== "Not Alloted"));
-            // setmainData(
-            //     data.sort((a, b) => {
-            //         const dateA = a["AssignDate"] || "";
-            //         const dateB = b["AssignDate"] || "";
-            //         return dateB.localeCompare(dateA);
-            //     })
-            // );
-        }
-        else {
-            setmainData(data.filter((item) => item.ename === "Not Alloted"));
-        }
-        setDataStatus(status)
-    }, 300);
-
-
-    // --------------------------------------------------------------function to modify leads----------------------------------------------------------------
-
-
-    const [isUpdateMode, setIsUpdateMode] = useState(false);
-
-    // const handleSubmit = async (e) => {
-    //     try {
-    //         let dataToSend = {
-    //             "Company Name": companyName,
-    //             "Company Email": companyEmail,
-    //             "Company Number": companynumber,
-    //             "Company Incorporation Date ": companyIncoDate,
-    //             "City": companyCity,
-    //             "State": companyState,
-    //             "UploadedBy": dataManagerName
-    //         };
-    //         const dateObject = new Date(companyIncoDate);
-
-    //         // Check if the parsed Date object is valid
-    //         if (!isNaN(dateObject.getTime())) {
-    //             // Date object is valid, proceed with further processing
-    //             //console.log("Company Incorporation Date:", dateObject);
-
-    //             // Format the date as yyyy-mm-ddThh:mm:ss.000
-    //             const isoDateString = dateObject.toISOString();
-
-    //             // Update dataToSendUpdated with the formatted date
-    //             let dataToSendUpdated = {
-    //                 "Company Name": companyName,
-    //                 "Company Email": companyEmail,
-    //                 "Company Number": companynumber,
-    //                 "Company Incorporation Date ": isoDateString, // Updated format
-    //                 "City": companyCity,
-    //                 "State": companyState,
-    //                 'Director Name(First)': directorNameFirstModify,
-    //                 'Director Number(First)': directorNumberFirstModify,
-    //                 'Director Email(First)': directorEmailFirstModify,
-    //                 'Director Name(Second)': directorNameSecondModify,
-    //                 'Director Number(Second)': directorNumberSecondModify,
-    //                 'Director Email(Second)': directorEmailSecondModify,
-    //                 'Director Name(Third)': directorNameThirdModify,
-    //                 'Director Number(Third)': directorNumberThirdModify,
-    //                 'Director Email(Third)': directorEmailThirdModify,
-                    
-    //             };
-
-    //             //console.log("Data to send with updated date format:", dataToSendUpdated);
-    //             if (isUpdateMode) {
-    //                 await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
-    //                 Swal.fire({
-    //                     title: "Data Updated!",
-    //                     text: "You have successfully updated the name!",
-    //                     icon: "success",
-    //                 });
-    //             }
-
-    //             // Rest of your code...
-    //         } else {
-    //             // Date string couldn't be parsed into a valid Date object
-    //             console.error("Invalid Company Incorporation Date string:", companyIncoDate);
-    //         }
-    //         setIsUpdateMode(false);
-    //         fetchDatadebounce();
-    //         functioncloseModifyPopup();
-    //     } catch {
-    //         Swal.fire({
-    //             icon: "error",
-    //             title: "Oops...",
-    //             text: "Something went wrong!",
-    //         });
-    //         console.error("Internal server error");
-    //     }
-    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const adminName = localStorage.getItem("adminName");
         try {
             let validationError = false;
-    
+
             if (companyName === "") {
                 validationError = true;
                 Swal.fire("Please Enter Company Name");
@@ -1411,16 +937,16 @@ function ManageLeads() {
                 validationError = true;
                 Swal.fire("Third Director Number should be 10 digits");
             }
-    
+
             if (!validationError) {
                 const dateObject = new Date(companyIncoDate);
-    
+
                 // Check if the parsed Date object is valid
                 if (!isNaN(dateObject.getTime())) {
                     // Date object is valid, proceed with further processing
                     // Format the date as yyyy-mm-ddThh:mm:ss.000
                     const isoDateString = dateObject.toISOString();
-    
+
                     // Update dataToSendUpdated with the formatted date
                     let dataToSendUpdated = {
                         "Company Name": companyName,
@@ -1441,19 +967,19 @@ function ManageLeads() {
                         'Director Email(Third)': directorEmailThirdModify,
                         "UploadedBy": adminName ? adminName : "Admin"
                     };
-    
+
                     if (isUpdateMode) {
-                        await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+                        await axios.put(`${secretKey}/company-data/leads/${selectedDataId}`, dataToSendUpdated);
                         Swal.fire({
                             title: "Data Updated!",
                             text: "You have successfully updated the name!",
                             icon: "success",
                         });
                     }
-    
+
                     // Reset the form and any error messages
                     setIsUpdateMode(false);
-                    fetchDatadebounce();
+                    fetchData(1)
                     functioncloseModifyPopup();
                 } else {
                     // Date string couldn't be parsed into a valid Date object
@@ -1470,273 +996,862 @@ function ManageLeads() {
         }
     };
 
-    const [selectedDataId, setSelectedDataId] = useState()
-    const [companyEmail, setCompanyEmail] = useState("");
-    const [companyName, setCompanyName] = useState("");
-    const [companyIncoDate, setCompanyIncoDate] = useState(null);
-    const [companyCity, setCompnayCity] = useState("");
-    const [companyState, setCompnayState] = useState("");
-    const [companynumber, setCompnayNumber] = useState("");
-    const [isEditProjection, setIsEditProjection] = useState(false);
-    const [cAddress, setCAddress] = useState("");
-    const [directorNameFirstModify, setDirectorNameFirstModify] = useState("")
-    const [directorNumberFirstModify, setDirectorNumberFirstModify] = useState("")
-    const [directorEmailFirstModify, setDirectorEmailFirstModify] = useState("")
-    const [directorNameSecondModify, setDirectorNameSecondModify] = useState("")
-    const [directorNumberSecondModify, setDirectorNumberSecondModify] = useState("")
-    const [directorEmailSecondModify, setDirectorEmailSecondModify] = useState("")
-    const [directorNameThirdModify, setDirectorNameThirdModify] = useState("")
-    const [directorNumberThirdModify, setDirectorNumberThirdModify] = useState("")
-    const [directorEmailThirdModify, setDirectorEmailThirdModify] = useState("")
-
-
-    //console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
-
-    const handleUpdateClick = (id) => {
-        console.log(id)
-        //Set the selected data ID and set update mode to true
-        setSelectedDataId(id);
-        setIsUpdateMode(true);
-        // setCompanyData(cdata.filter((item) => item.ename === echangename));
-
-        // // Find the selected data object
-        const selectedData = mainData.find((item) => item._id === id);
-        //console.log(selectedData["Company Incorporation Date  "])
-        //console.log(selectedData)
-        // console.log(echangename);
-
-        // // Update the form data with the selected data values
-        setCompanyEmail(selectedData["Company Email"]);
-        setCompanyName(selectedData["Company Name"]);
-        //setCompanyIncoDate(new Date(selectedData["Company Incorporation Date  "]));
-        setCompnayCity(selectedData["City"]);
-        setCompnayState(selectedData["State"]);
-        setCompnayNumber(selectedData["Company Number"]);
-        setCAddress(selectedData["Company Address"])
-        setDirectorNameFirstModify(selectedData["Director Name(First)"])
-        setDirectorNumberFirstModify(selectedData["Director Number(First)"])
-        setDirectorEmailFirstModify(selectedData["Director Email(First)"])
-        setDirectorNameSecondModify(selectedData["Director Name(Second)"])
-        setDirectorNumberSecondModify(selectedData["Director Number(Second)"])
-        setDirectorEmailSecondModify(selectedData["Director Email(Second)"])
-        setDirectorNameThirdModify(selectedData["Director Name(Third)"])
-        setDirectorNumberThirdModify(selectedData["Director Number(Third)"])
-        setDirectorEmailThirdModify(selectedData["Director Email(Third)"])
-
-        const dateString = selectedData["Company Incorporation Date  "];
-
-        // Parse the date string into a Date object
-        const dateObject = new Date(dateString);
-
-        // Check if the parsed Date object is valid
-        if (!isNaN(dateObject.getTime())) {
-            // Date object is valid, proceed with further processing
-            //console.log("Company Incorporation Date:", dateObject);
-
-            // Format the date as dd-mm-yyyy
-            const day = dateObject.getDate().toString().padStart(2, "0");
-            const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
-            const year = dateObject.getFullYear();
-            const formattedDate = `${year}-${month}-${day}`;
-            setCompanyIncoDate(formattedDate)
-
-            //console.log("Formatted Company Incorporation Date:", formattedDate);
-
-            // Rest of your code...
-        } else {
-            // Date string couldn't be parsed into a valid Date object
-            console.error("Invalid Company Incorporation Date string:", dateString);
-        }
-
-
-
-    };
-    const dataManagerName = localStorage.getItem("dataManagerName")
-    //console.log(dataManagerName)
-// ----------------------------------------modify popup window-------------------------------
-
-const debouncedSetCompanyName = debounce((value) => {
-    setCompanyName(value);
-  }, 10);
-
-  const debouncedSetCompanyEmail = debounce((value) => {
-    setCompanyEmail(value);
-  }, 10);
-
-  const debouncedSetCAddress = debounce((value) => {
-    setCAddress(value);
-  }, 10);
-
-  const debouncedSetCompanyIncoDate = debounce((value) => {
-   setCompanyIncoDate(value);
-  }, 10);
-
-  const [errorCompnayNumber, setErrorCompnayNumber] = useState('');
-
-  const debouncedSetCompnayNumber = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setCompnayNumber(value);
-      setErrorCompnayNumber('');
-    } else {
-      setError('Please enter a 10-digit number');
-      setCompnayNumber()
-    }
-
-  }, 10);
-
-  const debouncedSetCompnayCity = debounce((value) => {
-    setCompnayCity(value);
-  }, 10);
-
-  const debouncedSetCompanyState = debounce((value) => {
-    setCompnayState(value);
-  }, 10);
-
-  const debounceSetFirstDirectorNameModify = debounce((value) => {
-    setDirectorNameFirstModify(value);
-  }, 10);
-
-  const [errorDirectorNumberFirstModify, setErrorDirectorNumberFirstModify] = useState("")
-  const [errorDirectorNumberSecondModify, setErrorDirectorNumberSecondModify] = useState("")
-  const [errorDirectorNumberThirdModify, setErrorDirectorNumberThirdModify] = useState("")
-
-  const debounceSetFirstDirectorNumberModify = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberFirstModify(value)
-      setErrorDirectorNumberFirstModify("")
-    } else {
-      setErrorDirectorNumberFirstModify('Please Enter 10 digit Number')
-      setDirectorNumberFirstModify()
-    }
-  }, 10);
-
-  const debounceSetFirstDirectorEmailModify = debounce((value) => {
-    setDirectorEmailFirstModify(value);
-  }, 10);
-
-  const debounceSetSecondDirectorNameModify = debounce((value) => {
-    setDirectorNameSecondModify(value);
-  }, 10);
-
-  const debounceSetSecondDirectorNumberModify = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberSecondModify(value)
-      setErrorDirectorNumberSecondModify("")
-    } else {
-      setErrorDirectorNumberSecondModify('Please Enter 10 digit Number')
-      setDirectorNumberSecondModify()
-    }
-  }, 10);
-
-  const debounceSetSecondDirectorEmailModify = debounce((value) => {
-    setDirectorEmailSecondModify(value);
-  }, 10);
-
-  const debounceSetThirdDirectorNameModify = debounce((value) => {
-    setDirectorNameThirdModify(value);
-  }, 10);
-
-  const debounceSetThirdDirectorNumberModify = debounce((value) => {
-    if (/^\d{10}$/.test(value)) {
-      setDirectorNumberThirdModify(value)
-      setErrorDirectorNumberThirdModify("")
-    } else {
-      setErrorDirectorNumberThirdModify('Please Enter 10 digit Number')
-      setDirectorNumberThirdModify()
-    }
-  }, 10);
-
-  const debounceSetThirdDirectorEmailModify = debounce((value) => {
-    setDirectorEmailThirdModify(value);
-  }, 10);
-
+    //-----------------------function to open popup remarks--------------------------------
     
+    const functionopenpopupremarks = (companyID, companyStatus) => {
+        openchangeRemarks(true);
+        setFilteredRemarks(
+            remarksHistory.filter((obj) => obj.companyID === companyID)
+        );
+        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
 
+        setcid(companyID);
+        setCstat(companyStatus);
+    };
+    const closepopupRemarks = () => {
+        openchangeRemarks(false);
+        setFilteredRemarks([]);
+    };
 
-
-
+    const dataManagerName = localStorage.getItem("dataManagerName");
     return (
         <div>
-            <Header name={dataManagerName} />
-            <Navbar />
-            <Modal
-                isOpen={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
-                style={{
-                    overlay: {
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        zIndex: 9,
-                    },
-                    content: {
-                        width: "fit-content",
-                        height: "fit-content",
-                        margin: "auto",
-                        textAlign: "center",
-                    },
-                }}
-            >
-                <div className="modal-header">
-                    <h3 style={{ fontSize: "20px" }} className="modal-title">
-                        Confirm Delete?
-                    </h3>
-                </div>
-
-                <button
-                    className="btn btn-primary ms-auto"
-                    onClick={handleConfirmDelete}
-                >
-                    Yes, Delete
-                </button>
-                <button
-                    className="btn btn-link link-secondary"
-                    onClick={handleCancelDelete}
-                >
-                    Cancel
-                </button>
-            </Modal>
-            {/* Dialog for Confirmation of Assignment */}
-
-            <Dialog open={openConf} onClose={closepopupConf}>
-                <DialogTitle>
-                    Confirm Assignation!
-                    <IconButton onClick={closepopupConf} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
-                </DialogTitle>
-
-                <DialogContent>
-                    <div className="Swal.firediv">
-                        <h3>
-                            This Data is already assigned to name, are you sure you want to
-                            continue?
-                        </h3>
+          <Header name={dataManagerName} />
+      <Navbar name={dataManagerName} />
+            <div className='page-wrapper'>
+                <div page-header d-print-none>
+                    <div className="container-xl d-flex" style={{ gap: "20px" }}>
+                        <div class="d-grid gap-4 d-md-block mt-3">
+                            <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
+                            <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
+                                <button type="button" class="btn"><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
+                               
+                                <button type="button" class="btn" onClick={() => setOpenAssignLeadsDialog(true)}><span><MdOutlinePostAdd style={{ marginRight: "7px", height: "20px", width: "16px", opacity: "0.6" }} /></span>Assign Leads</button>
+                               
+                            </div>
+                        </div>
+                        <div className='w-25'>
+                            <input
+                                type="text"
+                                value={searchText}
+                                onChange={(e) => {
+                                    setSearchText(e.target.value);
+                                    handleFilterSearch(e.target.value)
+                                    //setCurrentPage(0);
+                                }}
+                                className="form-control"
+                                placeholder="Search…"
+                                aria-label="Search in website"
+                            />
+                        </div>
                     </div>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                        }}
-                        className="maincontent"
-                    >
-                        <button className="btn btn-primary ms-auto">Yes</button>
+                </div>
+                <div className="page-body">
+                    <div className="container-xl">
+                        <div class="card-header  my-tab">
+                            <ul
+                                class="nav nav-tabs card-header-tabs nav-fill p-0"
+                                data-bs-toggle="tabs"
+                            >
+                                <li class="nav-item data-heading">
+                                    <a
+                                        href="#tabs-home-5"
+                                        className={
+                                            dataStatus === "Unassigned"
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                        onClick={() => {
+                                            setDataStatus("Unassigned")
+                                            setCurrentPage(1)
+                                        }}
+                                    >
+                                        UnAssigned
+                                        <span className="no_badge">
+                                            {totalCompaniesUnassigned}
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a
+                                        href="#tabs-home-5"
+                                        className={
+                                            dataStatus === "Assigned"
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                        onClick={() => {
+                                            setDataStatus("Assigned")
+                                            setCurrentPage(1)
+                                        }}>
+                                        Assigned
+                                        <span className="no_badge">
+                                            {totalCompaniesAssigned}
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="card">
+                            <div className="card-body p-0">
+                                <div
+                                    id="table-default"
+                                    style={{
+                                        overflowX: "auto",
+                                        overflowY: "auto",
+                                        maxHeight: "60vh",
+                                    }}
+                                >
+                                    <table
+                                        style={{
+                                            width: "100%",
+                                            borderCollapse: "collapse",
+                                            border: "1px solid #ddd",
+                                        }}
+                                        className="table-vcenter table-nowrap "
+                                    >
+                                        <thead>
+                                            <tr className="tr-sticky">
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRows.length === allIds.length && selectedRows.length !== 0}
+                                                        onChange={() => handleCheckboxChange("all")}
+                                                        defaultChecked={false}
+                                                    />
+                                                </th>
+                                                <th>Sr.No</th>
+                                                <th>Company Name</th>
+                                                <th>Company Number</th>
 
-                        <Button>No</Button>
+                                                <th>
+                                                    Incorporation Date
+                                                    {/* <FilterListIcon
+                                                    style={{
+                                                        height: "14px",
+                                                        width: "14px",
+                                                        cursor: "pointer",
+                                                        marginLeft: "4px",
+                                                    }}
+                                                    onClick={handleFilterIncoDate}
+                                                /> */}
+                                                    {/* {openIncoDate && <div className="inco-filter">
+                                                    <div
+
+                                                        className="inco-subFilter"
+                                                        onClick={(e) => handleSort("oldest")}
+                                                    >
+                                                        <SwapVertIcon style={{ height: "14px" }} />
+                                                        Oldest
+                                                    </div>
+
+                                                    <div
+                                                        className="inco-subFilter"
+                                                        onClick={(e) => handleSort("newest")}
+                                                    >
+                                                        <SwapVertIcon style={{ height: "14px" }} />
+                                                        Newest
+                                                    </div>
+
+                                                    <div
+                                                        className="inco-subFilter"
+                                                        onClick={(e) => handleSort("none")}
+                                                    >
+                                                        <SwapVertIcon style={{ height: "14px" }} />
+                                                        None
+                                                    </div>
+                                                </div>} */}
+                                                </th>
+                                                <th>City</th>
+                                                <th>State</th>
+                                                <th>Company Email</th>
+                                                <th>Status</th>
+                                                {dataStatus !== "Unassigned" && <th>Remarks</th>}
+
+                                                <th>Uploaded By</th>
+                                                {dataStatus !== "Unassigned" && <th>Assigned to</th>}
+
+                                                <th>
+                                                    {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+
+                                                </th>
+                                                {/* <th>Assigned On</th> */}
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        {currentDataLoading ? (
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan="13" className="LoaderTDSatyle">
+                                                        <ClipLoader
+                                                            color="lightgrey"
+                                                            loading
+                                                            size={30}
+                                                            aria-label="Loading Spinner"
+                                                            data-testid="loader"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        ) : (
+                                            <tbody>
+                                                {data.map((company, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd" }}
+                                                    >
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows.includes(company._id)}
+                                                                onChange={() => handleCheckboxChange(company._id)}
+                                                                onMouseDown={() => handleMouseDown(company._id)}
+                                                                onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                        </td>
+                                                        <td>{startIndex - 500 + index + 1}</td>
+                                                        <td>{company["Company Name"]}</td>
+                                                        <td>{company["Company Number"]}</td>
+                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                        <td>{company["City"]}</td>
+                                                        <td>{company["State"]}</td>
+                                                        <td>{company["Company Email"]}</td>
+                                                        <td>{company["Status"]}</td>
+                                                        {dataStatus !== "Unassigned" && <td >
+                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <p className="rematkText text-wrap m-0">
+                                                                    {company["Remarks"]}{" "}
+                                                                </p>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        functionopenpopupremarks(company._id, company.Status);
+                                                                    }} 
+                                                                    style={{ cursor: "pointer" }}>
+                                                                    <IconEye
+
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                            marginLeft: "4px",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </td>}
+                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                        {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
+                                                        <td>{formatDateFinal(company["AssignDate"])}</td>
+                                                        <td>
+                                                        
+                                                            <button
+                                                                style={{
+                                                                    border: " 0px transparent",
+                                                                    background: " none"
+                                                                }}
+                                                                onClick={
+                                                                    data.length === "0"
+                                                                        ? Swal.fire("Please Import Some data first")
+                                                                        : () => {
+                                                                            setOpenLeadsModifyPopUp(true);
+                                                                            handleUpdateClick(company._id);
+                                                                        }
+                                                                }>
+                                                                < MdOutlineEdit
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "grey",
+                                                                    }}
+                                                                />
+
+                                                            </button>
+                                                            <Link to={`/datamanager/leads/${company._id}`}>
+                                                                <button
+                                                                    style={{
+                                                                        border: " 0px transparent",
+                                                                        background: " none"
+                                                                    }}>
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        )}
+                                    </table>
+                                </div>
+                            </div>
+                            {data.length === 0 && !currentDataLoading &&
+                                (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                )}
+                            {data.length !== 0 && (
+                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
+                                    <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                        <IconChevronLeft />
+                                    </IconButton>
+                                    <span>Page {currentPage} /{totalCount}</span>
+                                    <IconButton onClick={handleNextPage} disabled={data.length < itemsPerPage}>
+                                        <IconChevronRight />
+                                    </IconButton>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* -------------------- dialog to add leads---------------------------- */}
+            <Dialog open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
+                <DialogTitle>
+                    Company Info{" "}
+                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAddLeadsDialog} >
+                    <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                    </button>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                onChange={(e) => {
+                                                    setCname(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="number"
+                                                placeholder="Enter Company's Phone No."
+                                                onChange={(e) => {
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setCnumber(e.target.value);
+                                                        setError('');
+                                                    } else {
+                                                        setError('Please enter a 10-digit number');
+                                                        setCnumber()
+                                                    }
+                                                }}
+                                                className="form-control"
+                                            />
+                                            {error && <p style={{ color: 'red' }}>{error}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    setCemail(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Company Incorporation Date
+                                            </label>
+                                            <input
+                                                onChange={(e) => {
+                                                    setCidate(e.target.value);
+                                                }}
+                                                type="date"
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                onChange={(e) => {
+                                                    setCity(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Enter Your City"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                onChange={(e) => {
+                                                    setState(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Enter Your State"
+                                            //disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-12">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Address</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Enter Your Address"
+                                                onChange={(e) => {
+                                                    setCompanyAddress(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Name(First)</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                onChange={(e) => {
+                                                    setDirectorNameFirst(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Number(First)</label>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Enter Phone No."
+                                                onChange={(e) => {
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setDirectorNumberFirst(e.target.value)
+                                                        setErrorDirectorNumberFirst("")
+                                                    } else {
+                                                        setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+                                                        setDirectorNumberFirst()
+                                                    }
+                                                }}
+                                            />
+                                            {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Email(First)</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    setDirectorEmailFirst(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                                    <button
+                                        onClick={() => { functionOpenSecondDirector() }}
+                                        className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icon"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M12 5l0 14" />
+                                            <path d="M5 12l14 0" />
+                                        </svg>
+                                    </button>
+                                    <button className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                            width="24"
+                                            height="24"
+                                            fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                    </button></div>)}
+
+                                {openSecondDirector && (
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Name(Second)</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="Your Company Name"
+                                                    onChange={(e) => {
+                                                        setDirectorNameSecond(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Number(Second)</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="Enter Phone No."
+                                                    onChange={(e) => {
+                                                        if (/^\d{10}$/.test(e.target.value)) {
+                                                            setDirectorNumberSecond(e.target.value)
+                                                            setErrorDirectorNumberSecond("")
+                                                        } else {
+                                                            setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+                                                            setDirectorNumberSecond()
+                                                        }
+                                                    }}
+                                                />
+                                                {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Email(Second)</label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="example@gmail.com"
+                                                    onChange={(e) => {
+                                                        setDirectorEmailSecond(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>)}
+                                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                                    <button
+                                        onClick={() => { functionOpenThirdDirector() }}
+                                        className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icon"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M12 5l0 14" />
+                                            <path d="M5 12l14 0" />
+                                        </svg>
+                                    </button>
+                                    <button className="btn btn-primary d-none d-sm-inline-block"
+                                        onClick={() => { functionCloseSecondDirector() }}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                            width="24"
+                                            height="24"
+                                            fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                    </button></div>)}
+
+                                {openThirdDirector && (<div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Name(Third)</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                onChange={(e) => {
+                                                    setDirectorNameThird(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Number(Third)</label>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Enter Phone No"
+                                                onChange={(e) => {
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setDirectorNumberThird(e.target.value)
+                                                        setErrorDirectorNumberThird("")
+                                                    } else {
+                                                        setErrorDirectorNumberThird('Please Enter 10 digit Number')
+                                                        setDirectorNumberThird()
+                                                    }
+                                                }}
+                                            />
+                                            {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Email(Third)</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    setDirectorEmailThird(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>)}
+                                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }}
+                                    onClick={() => { functionCloseThirdDirector() }}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                        width="24"
+                                        height="24"
+                                        fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                </button>)}
+                            </div>
+                        </div>
                     </div>
                 </DialogContent>
+                <button className="btn btn-primary"
+                    onClick={handleSubmitData}
+                >
+                    Submit
+                </button>
             </Dialog>
 
-            {/* Dialogue for Assign Leads */}
-            <Dialog open={openEmp} onClose={closepopupEmp} fullWidth maxWidth="sm">
+            {/* ------------------------ dialog to add bulk leads as csv---------------- */}
+            <Dialog open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Import CSV DATA{" "}
+                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeBulkLeadsCSVPopup}>
+                    <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                    </button>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="maincon">
+                        <div
+                            style={{ justifyContent: "space-between" }}
+                            className="con1 d-flex"
+                        >
+                            <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                                <label
+                                    style={{ margin: "0px 0px 6px 0px" }}
+                                    htmlFor="upload"
+                                >
+                                    Upload CSV File
+                                </label>
+                            </div>
+                            <a href={frontendKey + "/AddLeads_AdminSample.xlsx"} download>
+                                Download Sample
+                            </a>
+                        </div>
+                        <div
+                            style={{ margin: "5px 0px 0px 0px" }}
+                            className="form-control"
+                        >
+                            <input
+                                type="file"
+                                name="csvfile
+                      "
+                                id="csvfile"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+                        <div className="con2 d-flex">
+                            <div
+                                style={
+                                    selectedOption === "direct"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setSelectedOption("direct");
+                                }}
+                                className="direct form-control"
+                            >
+                                <input
+                                    type="radio"
+                                    id="direct"
+                                    value="direct"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "direct"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="direct">Upload To General</label>
+                            </div>
+                            <div
+                                style={
+                                    selectedOption === "someoneElse"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                className="indirect form-control"
+                                onClick={() => {
+                                    setSelectedOption("someoneElse");
+                                }}
+                            >
+                                <input
+                                    type="radio"
+                                    id="someoneElse"
+                                    value="someoneElse"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "someoneElse"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="someoneElse">Assign to Employee</label>
+                            </div>
+                        </div>
+                    </div>
+                    {selectedOption === "someoneElse" && (
+                        <div>
+                            {empData.length !== 0 ? (
+                                <>
+                                    <div className="dialogAssign">
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "space-between",
+                                                margin: " 10px 0px 0px 0px",
+                                            }}
+                                            className="selector"
+                                        >
+                                            <label>Select an Employee</label>
+                                            <div className="form-control">
+                                                <select
+                                                    style={{
+                                                        width: "inherit",
+                                                        border: "none",
+                                                        outline: "none",
+                                                    }}
+                                                    value={newemployeeSelection}
+                                                    onChange={(e) => {
+                                                        setnewEmployeeSelection(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="Not Alloted" disabled>
+                                                        Select employee
+                                                    </option>
+                                                    {empData.map((item) => (
+                                                        <option value={item.ename}>{item.ename}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div>
+                                    <h1>No Employees Found</h1>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+                <button className="btn btn-primary" onClick={handleUploadData}>
+                    Submit
+                </button>
+            </Dialog>
+
+            {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
+            <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
-                    <IconButton onClick={closepopupEmp} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
+                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAssignLeadsDialog}>
+                    <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                    </button>
                 </DialogTitle>
                 <DialogContent>
                     <div>
-                        {newempData.length !== 0 ? (
+                        {empData.length !== 0 ? (
                             <>
                                 <div className="dialogAssign">
                                     <div className="selector form-control">
@@ -1754,7 +1869,7 @@ const debouncedSetCompanyName = debounce((value) => {
                                             <option value="Not Alloted" disabled>
                                                 Select employee
                                             </option>
-                                            {newempData.map((item) => (
+                                            {empData.map((item) => (
                                                 <option value={item.ename}>{item.ename}</option>
                                             ))}
                                         </select>
@@ -1778,359 +1893,33 @@ const debouncedSetCompanyName = debounce((value) => {
                     </button>
                 </div>
             </Dialog>
-
-
-{/* -------------------------------dialog for add leads------------------------------------ */}
-
-
-
-
-<Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
-        <DialogTitle>
-          Company Info{" "}
-          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
-        </DialogTitle>
-        <DialogContent>
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Your Company Name"
-                        onChange={(e) => {
-                          debouncedSetCname(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
-                      <input
-                        type="number"
-                        placeholder="Enter Company's Phone No."
-                        onChange={(e) => {
-                          debouncedSetCompanyNumber(e.target.value);
-                        }}
-                        className="form-control"
-                      />
-                      {error && <p style={{ color: 'red' }}>{error}</p>}
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          debouncedSetEmail(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-4">
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Company Incorporation Date
-                      </label>
-                      <input
-                        onChange={(e) => {
-                          debouncedSetIncoDate(e.target.value);
-                        }}
-                        type="date"
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-4">
-                    <div className="mb-3">
-                      <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
-                      <input
-                        onChange={(e) => {
-                          debouncedSetCity(e.target.value);
-                        }}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Your City"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-4">
-                    <div className="mb-3">
-                      <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
-                      <input
-                        onChange={(e) => {
-                          debouncedSetState(e.target.value);
-                        }}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Your State"
-                      //disabled={!isEditProjection}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="mb-3">
-                      <label className="form-label">Company Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Enter Your Address"
-                        onChange={(e) => {
-                          debouncedSetAddress(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Name(First)</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Your Company Name"
-                        onChange={(e) => {
-                          debounceSetFirstDirectorName(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Number(First)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Enter Phone No."
-                        onChange={(e) => {
-                          debounceSetFirstDirectorNumber(e.target.value);
-                        }}
-                      />
-                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Email(First)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          debounceSetFirstDirectorEmail(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
-                  <button
-                    onClick={() => { functionOpenSecondDirector() }}
-                    className="btn btn-primary d-none d-sm-inline-block">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M12 5l0 14" />
-                      <path d="M5 12l14 0" />
-                    </svg>
-                  </button>
-                  <button className="btn btn-primary d-none d-sm-inline-block">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                      width="24"
-                      height="24"
-                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                  </button></div>)}
-
-                {openSecondDirector && (
-                  <div className="row">
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Director's Name(Second)</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="Your Company Name"
-                          onChange={(e) => {
-                            debounceSetSecondDirectorName(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Director's Number(Second)</label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="Enter Phone No."
-                          onChange={(e) => {
-                            debounceSetSecondDirectorNumber(e.target.value);
-                          }}
-                        />
-                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Director's Email(Second)</label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="example@gmail.com"
-                          onChange={(e) => {
-                            debounceSetSecondDirectorEmail(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>)}
-                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
-                  <button
-                    onClick={() => { functionOpenThirdDirector() }}
-                    className="btn btn-primary d-none d-sm-inline-block">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M12 5l0 14" />
-                      <path d="M5 12l14 0" />
-                    </svg>
-                  </button>
-                  <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                      width="24"
-                      height="24"
-                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                  </button></div>)}
-
-                {openThirdDirector && (<div className="row">
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Name(Third)</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Your Company Name"
-                        onChange={(e) => {
-                          debounceSetThirdDirectorName(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Number(Third)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Enter Phone No"
-                        onChange={(e) => {
-                          debounceSetThirdDirectorNumber(e.target.value);
-                        }}
-                      />
-                      {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Email(Third)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          debounceSetThirdDirectorEmail(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>)}
-                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                    width="24"
-                    height="24"
-                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                </button>)}
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-        <button className="btn btn-primary" onClick={handleSubmitData}>
-          Submit
-        </button>
-      </Dialog>
-
-
-            {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
-
-
             {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
-            <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
+            <Dialog open={openLeadsModifyPopUp} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
                 <DialogTitle className="d-flex align-items-center justify-content-between">
                     <div>
                         Company Info{" "}
                     </div>
                     <div>
-                        <IconButton onClick={() => { setIsEditProjection(true) }}>
-                            < ModeEditIcon color="grey"
+                        <button style={{ background: "none", border: "0px transparent" }}
+                            onClick={() => { setIsEditProjection(true) }}>
+                            <MdOutlineEdit
                                 style={{
                                     width: "20px",
                                     height: "20px",
+                                    color: "grey"
                                 }}
-                            >
-                            </ ModeEditIcon>
-                        </IconButton>
-                        <IconButton onClick={functioncloseModifyPopup}>
-                            <CloseIcon color="grey"></CloseIcon>
-                        </IconButton>{" "}
+                            />
+                        </button>
+                        <button style={{ background: "none", border: "0px transparent" }}
+                            onClick={functioncloseModifyPopup}>
+                            <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                        </button>{" "}
                     </div>
 
                 </DialogTitle>
@@ -2165,11 +1954,17 @@ const debouncedSetCompanyName = debounce((value) => {
                                                 placeholder="Your Company Number"
                                                 value={companynumber}
                                                 onChange={(e) => {
-                                                    setCompnayNumber(e.target.value);
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setCompnayNumber(e.target.value);
+                                                        setErrorCompnayNumber('');
+                                                    } else {
+                                                        setError('Please enter a 10-digit number');
+                                                        setCompnayNumber()
+                                                    }
                                                 }}
                                                 disabled={!isEditProjection}
                                             />
-                                            
+                                            {errorCompnayNumber && <p style={{ color: 'red' }}>{errorCompnayNumber}</p>}
                                         </div>
                                     </div>
                                     <div className="col-4">
@@ -2272,13 +2067,19 @@ const debouncedSetCompanyName = debounce((value) => {
                                             <input
                                                 value={directorNumberFirstModify}
                                                 onChange={(e) => {
-                                                    setDirectorNumberFirstModify(e.target.value);
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setDirectorNumberFirstModify(e.target.value)
+                                                        setErrorDirectorNumberFirstModify("")
+                                                    } else {
+                                                        setErrorDirectorNumberFirstModify('Please Enter 10 digit Number')
+                                                        setDirectorNumberFirstModify()
+                                                    }
                                                 }}
                                                 type="number"
                                                 className="form-control"
                                                 disabled={!isEditProjection}
                                             />
-                                           
+                                            {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
                                         </div>
                                     </div>
                                     <div className="col-4">
@@ -2346,13 +2147,19 @@ const debouncedSetCompanyName = debounce((value) => {
                                                 <input
                                                     value={directorNumberSecondModify}
                                                     onChange={(e) => {
-                                                        setDirectorNumberSecondModify(e.target.value);
+                                                        if (/^\d{10}$/.test(e.target.value)) {
+                                                            setDirectorNumberSecondModify(e.target.value)
+                                                            setErrorDirectorNumberSecondModify("")
+                                                        } else {
+                                                            setErrorDirectorNumberSecondModify('Please Enter 10 digit Number')
+                                                            setDirectorNumberSecondModify()
+                                                        }
                                                     }}
                                                     type="number"
                                                     className="form-control"
                                                     disabled={!isEditProjection}
                                                 />
-                                                
+                                                {errorDirectorNumberSecondModify && <p style={{ color: 'red' }}>{errorDirectorNumberSecondModify}</p>}
                                             </div>
                                         </div>
                                         <div className="col-4">
@@ -2372,7 +2179,7 @@ const debouncedSetCompanyName = debounce((value) => {
                                     </div>)}
                                 {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
                                     <button
-                                        onClick={() => { functionOpenThirdDirector() }}
+                                        //onClick={() => { functionOpenThirdDirector() }}
                                         className="btn btn-primary d-none d-sm-inline-block">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -2419,13 +2226,19 @@ const debouncedSetCompanyName = debounce((value) => {
                                             <input
                                                 value={directorNumberThirdModify}
                                                 onChange={(e) => {
-                                                    setDirectorNumberThirdModify(e.target.value);
+                                                    if (/^\d{10}$/.test(e.target.value)) {
+                                                        setDirectorNumberThirdModify(e.target.value)
+                                                        setErrorDirectorNumberThirdModify("")
+                                                    } else {
+                                                        setErrorDirectorNumberThirdModify('Please Enter 10 digit Number')
+                                                        setDirectorNumberThirdModify()
+                                                    }
                                                 }}
                                                 type="number"
                                                 className="form-control"
                                                 disabled={!isEditProjection}
                                             />
-                                           
+                                            {errorDirectorNumberThirdModify && <p style={{ color: 'red' }}>{errorDirectorNumberThirdModify}</p>}
                                         </div>
                                     </div>
                                     <div className="col-4">
@@ -2453,291 +2266,13 @@ const debouncedSetCompanyName = debounce((value) => {
                         </div>
                     </div>
                 </DialogContent>
-                <button className="btn btn-primary" onClick={handleSubmit}>
+                <button className="btn btn-primary"
+                    onClick={handleSubmit}
+                >
                     Submit
                 </button>
             </Dialog>
-
-            {/* <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
-                <DialogTitle className="d-flex align-items-center justify-content-between">
-                    <div>
-                        Company Info{" "}
-                    </div>
-                    <div>
-                        <IconButton onClick={() => { setIsEditProjection(true) }}>
-                            < ModeEditIcon color="grey"
-                                style={{
-                                    width: "20px",
-                                    height: "20px",
-                                }}
-                            >
-                            </ ModeEditIcon>
-                        </IconButton>
-                        <IconButton onClick={functioncloseModifyPopup}>
-                            <CloseIcon color="grey"></CloseIcon>
-                        </IconButton>{" "}
-                    </div>
-
-                </DialogTitle>
-                <DialogContent>
-                    <div className="modal-dialog modal-lg" role="document">
-                        <div className="modal-content">
-                            <div className="modal-body">
-                                <div className="mb-3">
-                                    <label className="form-label">Company Name</label>
-                                    <input
-                                        type="text"
-                                        value={companyName}
-                                        className="form-control"
-                                        name="example-text-input"
-                                        placeholder="Your Company Name"
-                                        onChange={(e) => {
-                                            setCompanyName(e.target.value);
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Company Email</label>
-                                    <input
-                                        type="email"
-                                        value={companyEmail}
-                                        className="form-control"
-                                        name="example-text-input"
-                                        placeholder="example@gmail.com"
-                                        onChange={(e) => {
-                                            setCompanyEmail(e.target.value);
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                                <div className="row">
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">Company Number</label>
-                                            <input
-                                                type="number"
-                                                value={companynumber}
-                                                onChange={(e) => {
-                                                    setCompnayNumber(e.target.value);
-                                                }}
-                                                className="form-control"
-                                                disabled={!isEditProjection}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">
-                                                Company Incorporation Date
-                                            </label>
-                                            <input
-                                                value={companyIncoDate}
-                                                onChange={(e) => {
-                                                    setCompanyIncoDate(e.target.value)
-                                                }}
-                                                type="date"
-                                                className="form-control"
-                                                disabled={!isEditProjection}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">City</label>
-                                            <input
-                                                value={companyCity}
-                                                onChange={(e) => {
-                                                    setCompnayCity(e.target.value);
-                                                }}
-                                                type="text"
-                                                className="form-control"
-                                                disabled={!isEditProjection}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">State</label>
-                                            <input
-                                                value={companyState}
-                                                onChange={(e) => {
-                                                    setCompnayState(e.target.value);
-                                                }}
-                                                type="text"
-                                                className="form-control"
-                                                disabled={!isEditProjection}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </DialogContent>
-                <button className="btn btn-primary" onClick={handleSubmit}>
-                    Submit
-                </button>
-            </Dialog> */}
-
-            {open && (
-                <div>
-                    <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
-                        <DialogTitle>
-                            Import CSV DATA{" "}
-                            <IconButton onClick={closepopup} style={{ float: "right" }}>
-                                <CloseIcon color="primary"></CloseIcon>
-                            </IconButton>{" "}
-                        </DialogTitle>
-                        <DialogContent>
-                            <div className="maincon">
-                                <div
-                                    style={{ justifyContent: "space-between" }}
-                                    className="con1 d-flex"
-                                >
-                                    <div style={{ paddingTop: "9px" }} className="uploadcsv">
-                                        <label
-                                            style={{ margin: "0px 0px 6px 0px" }}
-                                            htmlFor="upload"
-                                        >
-                                            Upload CSV File
-                                        </label>
-                                    </div>
-                                    <a href={frontendKey + "/AddLeads_AdminSample.xlsx"} download>
-                                        Download Sample
-                                    </a>
-                                </div>
-                                <div
-                                    style={{ margin: "5px 0px 0px 0px" }}
-                                    className="form-control"
-                                >
-                                    <input
-                                        type="file"
-                                        name="csvfile
-                      "
-                                        id="csvfile"
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                                <div className="con2 d-flex">
-                                    <div
-                                        style={
-                                            selectedOption === "direct"
-                                                ? {
-                                                    backgroundColor: "#e9eae9",
-                                                    margin: "10px 10px 0px 0px",
-                                                    cursor: "pointer",
-                                                }
-                                                : {
-                                                    backgroundColor: "white",
-                                                    margin: "10px 10px 0px 0px",
-                                                    cursor: "pointer",
-                                                }
-                                        }
-                                        onClick={() => {
-                                            setSelectedOption("direct");
-                                        }}
-                                        className="direct form-control"
-                                    >
-                                        <input
-                                            type="radio"
-                                            id="direct"
-                                            value="direct"
-                                            style={{
-                                                display: "none",
-                                            }}
-                                            checked={selectedOption === "direct"}
-                                            onChange={handleOptionChange}
-                                        />
-                                        <label htmlFor="direct">Assign Directly?</label>
-                                    </div>
-                                    <div
-                                        style={
-                                            selectedOption === "someoneElse"
-                                                ? {
-                                                    backgroundColor: "#e9eae9",
-                                                    margin: "10px 0px 0px 0px",
-                                                    cursor: "pointer",
-                                                }
-                                                : {
-                                                    backgroundColor: "white",
-                                                    margin: "10px 0px 0px 0px",
-                                                    cursor: "pointer",
-                                                }
-                                        }
-                                        className="indirect form-control"
-                                        onClick={() => {
-                                            setSelectedOption("someoneElse");
-                                        }}
-                                    >
-                                        <input
-                                            type="radio"
-                                            id="someoneElse"
-                                            value="someoneElse"
-                                            style={{
-                                                display: "none",
-                                            }}
-                                            checked={selectedOption === "someoneElse"}
-                                            onChange={handleOptionChange}
-                                        />
-                                        <label htmlFor="someoneElse">Assign to Employee</label>
-                                    </div>
-                                </div>
-                            </div>
-                            {selectedOption === "someoneElse" && (
-                                <div>
-                                    {newempData.length !== 0 ? (
-                                        <>
-                                            <div className="dialogAssign">
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        flexDirection: "column",
-                                                        justifyContent: "space-between",
-                                                        margin: " 10px 0px 0px 0px",
-                                                    }}
-                                                    className="selector"
-                                                >
-                                                    <label>Select an Employee</label>
-                                                    <div className="form-control">
-                                                        <select
-                                                            style={{
-                                                                width: "inherit",
-                                                                border: "none",
-                                                                outline: "none",
-                                                            }}
-                                                            value={newemployeeSelection}
-                                                            onChange={(e) => {
-                                                                setnewEmployeeSelection(e.target.value);
-                                                            }}
-                                                        >
-                                                            <option value="Not Alloted" disabled>
-                                                                Select employee
-                                                            </option>
-                                                            {newempData.map((item) => (
-                                                                <option value={item.ename}>{item.ename}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div>
-                                            <h1>No Employees Found</h1>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </DialogContent>
-                        <button className="btn btn-primary" onClick={handleUploadData}>
-                            Submit
-                        </button>
-                    </Dialog>
-                </div>
-            )}
+            {/* //----------------------------dialog to view remarks popup------------------------- */}
 
             <Dialog
                 open={openRemarks}
@@ -2747,9 +2282,14 @@ const debouncedSetCompanyName = debounce((value) => {
             >
                 <DialogTitle>
                     Remarks
-                    <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
+                    <button style={{ background: "none", border: "0px transparent",float:"right" }} 
+                    onClick={closepopupRemarks}>
+                    <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                    </button>
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
@@ -2782,632 +2322,9 @@ const debouncedSetCompanyName = debounce((value) => {
                 </DialogContent>
             </Dialog>
 
-            {/* Main Page Starts from here */}
-            {loading && (
-                // Your loading screen component or message
-                <Box style={{ zIndex: "999999999" }} sx={{ display: "flex" }}>
-                    <CircularProgress />
-                </Box>
-            )}
-            <div className="page-wrapper">
-                <div className="page-header mb-3">
-                    <div className="container-xl">
-                        <div className="row g-2 align-items-center">
-                            <div
-                                style={{ display: "flex", justifyContent: "space-between" }}
-                                className="tit"
-                            >
-
-                                <div className="headtit">
-                                    <h2 className="page-title">Leads</h2>
-                                </div>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                    className="feature2"
-                                >
-                                    <div
-                                        style={{ margin: "0px 10px", display: "none" }}
-                                        className="undoDelete"
-                                    >
-                                        <div className="btn-list">
-                                            <button
-                                                onClick={handleUndo}
-                                                className="btn btn-primary d-none d-sm-inline-block">
-                                                <UndoIcon />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div style={{ margin: "0px 10px" }} className="addLeads">
-                                        <div className="btn-list">
-                                            <button
-                                                onClick={functionopenpopupEmp}
-                                                className="btn btn-primary d-none d-sm-inline-block"
-                                            >
-                                                AssignLeads
-                                            </button>
-                                            <a
-                                                href="#"
-                                                className="btn btn-primary d-sm-none btn-icon"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-report"
-                                                aria-label="Create new report"
-                                            >
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div style={{ margin: "0px 10px" }} className="addLeads">
-                                        <div className="btn-list">
-                                            <button
-                                                onClick={
-                                                    data.length === "0"
-                                                        ? Swal.fire("Please Import Some data first")
-                                                        : () => {
-                                                            functionopenpopupNew();
-                                                        }
-                                                }
-                                                className="btn btn-primary d-none d-sm-inline-block"
-                                            >
-
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="icon"
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    stroke-width="2"
-                                                    stroke="currentColor"
-                                                    fill="none"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                >
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M12 5l0 14" />
-                                                    <path d="M5 12l14 0" />
-                                                </svg>
-                                                Add Leads
-                                            </button>
-                                            <a
-                                                href="#"
-                                                className="btn btn-primary d-sm-none btn-icon"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-report"
-                                                aria-label="Create new report"
-                                            >
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                                className="features">
-                                <div
-                                    style={{ display: "flex", justifyContent: "space-between" }}
-                                    className="features">
-                                    <div style={{ display: "flex" }} className="feature1">
-                                        <div
-                                            className="form-control"
-                                            style={{ height: "fit-content", width: "15vw" }}>
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "fit-content",
-                                                }}
-                                                value={selectedField}
-                                                onChange={handleFieldChange}>
-                                                <option value="Company Name">Company Name</option>
-                                                <option value="Company Number">Company Number</option>
-                                                <option value="Company Email">Company Email</option>
-                                                <option value="Company Incorporation Date  ">
-                                                    Company Incorporation Date
-                                                </option>
-                                                <option value="City">City</option>
-                                                <option value="State">State</option>
-                                                <option value="Status">Status</option>
-                                                <option value="ename">Assigned To</option>
-                                            </select>
-                                        </div>
-                                        {visibility === "block" ? (
-                                            <div>
-                                                <input
-                                                    onChange={handleDateChange}
-                                                    style={{ display: visibility }}
-                                                    type="date"
-                                                    className="form-control"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div></div>
-                                        )}
-
-                                        {visibilityOther === "block" ? (
-                                            <div
-                                                style={{
-                                                    width: "20vw",
-                                                    margin: "0px 10px",
-                                                    display: visibilityOther,
-                                                }}
-                                                className="input-icon">
-                                                <span className="input-icon-addon">
-
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="icon"
-                                                        width="20"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="2"
-                                                        stroke="currentColor"
-                                                        fill="none"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                    >
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                                        <path d="M21 21l-6 -6" />
-                                                    </svg>
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    value={searchText}
-                                                    onChange={(e) => {
-                                                        setSearchText(e.target.value);
-                                                        setCurrentPage(0);
-                                                    }}
-                                                    className="form-control"
-                                                    placeholder="Search…"
-                                                    aria-label="Search in website"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div></div>
-                                        )}
-                                        {visibilityOthernew === "block" ? (
-                                            <div
-                                                style={{
-                                                    width: "20vw",
-                                                    margin: "0px 10px",
-                                                    display: visibilityOthernew,
-                                                }}
-                                                className="input-icon form-control"
-                                            >
-                                                <select
-                                                    value={searchText}
-                                                    onChange={(e) => {
-                                                        setSearchText(e.target.value);
-                                                    }}
-                                                >
-                                                    <option value="All">All </option>
-                                                    <option value="Busy ">Busy </option>
-                                                    <option value="Not Picked Up ">Not Picked Up </option>
-                                                    <option value="Junk">Junk</option>
-                                                    <option value="Interested">Interested</option>
-                                                    <option value="Not Interested">Not Interested</option>
-                                                </select>
-                                            </div>
-                                        ) : (
-                                            <div></div>
-                                        )}
-                                    </div>
-                                    {searchText !== "" ? (
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                fontSize: "14px",
-                                                fontFamily: "sans-serif",
-                                            }}
-                                            className="results"
-                                        >
-                                            {filteredData.length} results found
-                                        </div>
-                                    ) : (
-                                        <div></div>
-                                    )}
-
-                                    <div
-                                        style={{ display: "flex", alignItems: "center" }}
-                                        className="feature2"
-                                    >
-                                        {selectedField === "State" && (
-                                            <div style={{ width: "15vw" }} className="input-icon">
-                                                <span className="input-icon-addon">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="icon"
-                                                        width="20"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="2"
-                                                        stroke="currentColor"
-                                                        fill="none"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                    >
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                                        <path d="M21 21l-6 -6" />
-                                                    </svg>
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    value={citySearch}
-                                                    onChange={(e) => {
-                                                        setcitySearch(e.target.value);
-                                                        setCurrentPage(0);
-                                                    }}
-                                                    placeholder="Search City"
-                                                    aria-label="Search in website"
-                                                />
-                                            </div>
-                                        )}
-                                        {selectedField === "Company Incorporation Date  " && (
-                                            <>
-                                                <div
-                                                    style={{ width: "fit-content" }}
-                                                    className="form-control"
-                                                >
-                                                    <select
-                                                        style={{ border: "none", outline: "none" }}
-                                                        onChange={(e) => {
-                                                            setMonth(e.target.value);
-                                                            setCurrentPage(0);
-                                                        }}
-                                                    >
-                                                        <option value="" disabled selected>
-                                                            Select Month
-                                                        </option>
-                                                        <option value="12">December</option>
-                                                        <option value="11">November</option>
-                                                        <option value="10">October</option>
-                                                        <option value="9">September</option>
-                                                        <option value="8">August</option>
-                                                        <option value="7">July</option>
-                                                        <option value="6">June</option>
-                                                        <option value="5">May</option>
-                                                        <option value="4">April</option>
-                                                        <option value="3">March</option>
-                                                        <option value="2">February</option>
-                                                        <option value="1">January</option>
-                                                    </select>
-                                                </div>
-                                                <div className="input-icon">
-                                                    <input
-                                                        type="number"
-                                                        value={year}
-                                                        defaultValue="Select Year"
-                                                        className="form-control"
-                                                        placeholder="Select Year.."
-                                                        onChange={(e) => {
-                                                            setYear(e.target.value);
-                                                        }}
-                                                        aria-label="Search in website"
-                                                    />
-                                                </div>
-                                            </>
-                                        )}
-                                        {selectedRows.length !== 0 && (
-                                            <div className="form-control">
-                                                Total Data Selected : {selectedRows.length}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* table body */}
-                <div className="page-body">
-                    <div className="container-xl">
-                        <div class="card-header  my-tab">
-                            <ul
-                                class="nav nav-tabs card-header-tabs nav-fill p-0"
-                                data-bs-toggle="tabs"
-                            >
-                                <li class="nav-item data-heading">
-                                    <a
-                                        href="#tabs-home-5"
-                                        className={
-                                            dataStatus === "Unassigned"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                        onClick={() => {
-                                            debouncedFilterData("Unassigned")
-                                        }}
-                                    >
-                                        UnAssigned
-                                        <span className="no_badge">
-                                            {data.filter((item) => item.ename === "Not Alloted").length}
-                                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="#tabs-home-5"
-                                        className={
-                                            dataStatus === "Assigned"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                        onClick={() => {
-                                            debouncedFilterData("Assigned")
-                                        }}
-                                    >
-                                        Assigned
-                                        <span className="no_badge">
-                                            {data.filter((item) => item.ename !== "Not Alloted").length}
-                                        </span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="card">
-                            <div className="card-body p-0">
-                                <div
-                                    id="table-default"
-                                    style={{
-                                        overflowX: "auto",
-                                        overflowY: "auto",
-                                        maxHeight: "60vh",
-                                    }}
-                                >
-                                    <table
-                                        style={{
-                                            width: "100%",
-                                            borderCollapse: "collapse",
-                                            border: "1px solid #ddd",
-                                        }}
-                                        className="table-vcenter table-nowrap "
-                                    >
-                                        <thead>
-                                            <tr className="tr-sticky">
-                                                <th>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.length === data.length}
-                                                        onChange={() => handleCheckboxChange("all")}
-                                                    />
-                                                </th>
-                                                <th>Sr.No</th>
-                                                <th>Company Name</th>
-                                                <th>Company Number</th>
-
-                                                <th>
-                                                    Incorporation Date
-                                                    <FilterListIcon
-                                                        style={{
-                                                            height: "14px",
-                                                            width: "14px",
-                                                            cursor: "pointer",
-                                                            marginLeft: "4px",
-                                                        }}
-                                                        onClick={handleFilterIncoDate}
-                                                    />
-                                                    {openIncoDate && <div className="inco-filter">
-                                                        <div
-
-                                                            className="inco-subFilter"
-                                                            onClick={(e) => handleSort("oldest")}
-                                                        >
-                                                            <SwapVertIcon style={{ height: "14px" }} />
-                                                            Oldest
-                                                        </div>
-
-                                                        <div
-                                                            className="inco-subFilter"
-                                                            onClick={(e) => handleSort("newest")}
-                                                        >
-                                                            <SwapVertIcon style={{ height: "14px" }} />
-                                                            Newest
-                                                        </div>
-
-                                                        <div
-                                                            className="inco-subFilter"
-                                                            onClick={(e) => handleSort("none")}
-                                                        >
-                                                            <SwapVertIcon style={{ height: "14px" }} />
-                                                            None
-                                                        </div>
-                                                    </div>}
-                                                </th>
-                                                <th>City</th>
-                                                <th>State</th>
-                                                <th>Company Email</th>
-                                                <th>Status</th>
-                                                <th>Uploaded By</th>
-                                                <th>Assigned to</th>
-
-                                                <th>
-                                                    Assigned on
-                                                    <FilterListIcon
-                                                        style={{
-                                                            height: "14px",
-                                                            width: "14px",
-                                                            cursor: "pointer",
-                                                            marginLeft: "4px",
-                                                        }}
-                                                        onClick={handleFilterAssignDate}
-                                                    />
-                                                    {openAssign && <div className="inco-filter">
-                                                        <div
-
-                                                            className="inco-subFilter"
-                                                            onClick={(e) => handleSortAssign("oldest")}
-                                                        >
-                                                            <SwapVertIcon style={{ height: "14px" }} />
-                                                            Oldest
-                                                        </div>
-
-                                                        <div
-                                                            className="inco-subFilter"
-                                                            onClick={(e) => handleSortAssign("newest")}
-                                                        >
-                                                            <SwapVertIcon style={{ height: "14px" }} />
-                                                            Newest
-                                                        </div>
-
-
-                                                    </div>}
-                                                </th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        {currentDataLoading ? (
-                                            <tbody>
-                                                <tr>
-                                                    <td colSpan="13" className="LoaderTDSatyle">
-                                                        <ClipLoader
-                                                            color="lightgrey"
-                                                            loading
-                                                            size={30}
-                                                            aria-label="Loading Spinner"
-                                                            data-testid="loader"
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        ) : (
-                                            <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
-                                                {currentData.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}
-                                                    >
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDate(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{company["ename"]}</td>
-                                                        <td>{formatDate(company["AssignDate"])}</td>
-                                                        <td>
-                                                            <IconButton onClick={() => {
-                                                                functionopenModifyPopup();
-                                                                handleUpdateClick(company._id);
-                                                            }}>
-                                                                < ModeEditIcon
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                    }}
-                                                                >
-                                                                    Delete
-                                                                </ ModeEditIcon>
-                                                            </IconButton>
-                                                            <Link to={`/datamanager/leads/${company._id}`}>
-                                                                <IconButton>
-                                                                    <IconEye
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </IconButton>
-                                                            </Link>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        )}
-                                    </table>
-                                </div>
-                            </div>
-                            {currentData.length === 0 && !currentDataLoading &&
-                                (
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="13" className="p-2 particular">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                )}
-                            {currentData.length !== 0 && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        margin: "10px",
-                                    }}
-                                    className="pagination"
-                                >
-                                    <IconButton
-                                        onClick={() =>
-                                            setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
-                                        }
-                                        disabled={currentPage === 0}
-                                    >
-                                        <IconChevronLeft />
-                                    </IconButton>
-                                    <span>
-                                        Page {currentPage + 1} of{" "}
-                                        {Math.ceil(filteredData.length / itemsPerPage)}
-                                    </span>
-
-                                    <IconButton
-                                        onClick={() =>
-                                            setCurrentPage((prevPage) =>
-                                                Math.min(
-                                                    prevPage + 1,
-                                                    Math.ceil(filteredData.length / itemsPerPage) - 1
-                                                )
-                                            )
-                                        }
-                                        disabled={
-                                            currentPage ===
-                                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                                        }
-                                    >
-                                        <IconChevronRight />
-                                    </IconButton>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                 
-            </div>
 
         </div>
-    );
+    )
 }
 
-export default ManageLeads;
+export default ManageLeads

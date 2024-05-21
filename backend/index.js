@@ -1494,7 +1494,7 @@ app.get("/api/company-data/leads/:companyName", async (req, res) => {
   }
 });
 // 3. Update a Company 
-app.put("/api/leads/:id", async (req, res) => {
+app.put("/api/company-data/leads/:id", async (req, res) => {
   const id = req.params.id;
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
@@ -1518,7 +1518,7 @@ app.put("/api/leads/:id", async (req, res) => {
   }
 });
 // 4. Delete a Company
-app.delete("/api/leads/:id", async (req, res) => {
+app.delete("/api/company-data/leads/:id", async (req, res) => {
   const id = req.params.id;
 
   try {

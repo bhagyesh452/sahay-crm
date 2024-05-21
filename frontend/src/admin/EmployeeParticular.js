@@ -774,7 +774,7 @@ function EmployeeParticular() {
         }
       });
     
-      const response = await axios.post(`${secretKey}/assign-new`, {
+      const response = await axios.post(`${secretKey}/company-data/assign-new`, {
         ename: newemployeeSelection,
         data: csvdata,
       });
