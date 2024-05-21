@@ -970,7 +970,7 @@ app.delete(`/api/bdm-data/post-deletecompany-interested/:companyId`, async (req,
 console.log("chal" , companyId)
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    console.log(existingData);
+    //console.log(existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
@@ -999,7 +999,29 @@ app.post("/api/bdm-data/post-bdmAcceptStatusupate/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.post("/api/projection/post-bdmacceptted-revertbackprojection", async(req,res)=>{
+  const { cname } = req.params
+  try{
+    const findData = await FollowUpModel.findOne(cname) 
+    if(findData){
+      const newData = await FollowUpModel.findByIdAndUpdate(cname , {
+        $set:{
+          caseType : "Forwarded",
+        },
+        $unset:{
+          bdmName: ""
+        }
+      })
+      res.status(200).save(newData)
+    }else{
+      res.status(400).json({error:"Projection does not exist"})
+    }
 
+  }catch(error){
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+
+})
 app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   const companyId = req.params.companyId;
 

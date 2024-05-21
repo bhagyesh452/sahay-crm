@@ -111,7 +111,7 @@ function BdmLeads() {
     });
 
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     navigate(data.url);
   }
   // const handleGoogleLogin = async () => {
@@ -130,7 +130,7 @@ function BdmLeads() {
   const handleSubmitMail = (e) => {
     e.preventDefault();
     // Perform email sending logic here (e.g., using an API or backend)
-    console.log("Email Data:", emailData);
+    //console.log("Email Data:", emailData);
     // Close the compose popup after sending
     setIsOpen(false);
   };
@@ -178,7 +178,7 @@ function BdmLeads() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
-  console.log(userId);
+  //console.log(userId);
 
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
@@ -187,7 +187,7 @@ function BdmLeads() {
   useEffect(() => {
     const socket = io("/api/socket.io"); // Connects to the same host and port as the client
     socket.on("connect", () => {
-      console.log("Socket connected with ID:", socket.id);
+      //console.log("Socket connected with ID:", socket.id);
     });
 
     socket.on("request-seen", () => {
@@ -221,7 +221,7 @@ function BdmLeads() {
     }
   };
 
-  console.log(totalBookings, "This is elon musk");
+  //console.log(totalBookings, "This is elon musk");
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -319,7 +319,7 @@ function BdmLeads() {
     setCstat(companyStatus);
     setCurrentCompanyName(companyName)
   };
-  console.log("currentcompanyname", currentCompanyName)
+  //console.log("currentcompanyname", currentCompanyName)
 
 
 
@@ -365,7 +365,7 @@ function BdmLeads() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData);
+      //console.log(tempData);
       setData(userData);
       setmoreFilteredData(userData);
     } catch (error) {
@@ -393,7 +393,7 @@ function BdmLeads() {
         setLoading(true);
       }
 
-      console.log("status", status)
+      //console.log("status", status)
 
       const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
@@ -466,15 +466,11 @@ function BdmLeads() {
         setdataStatus("Interested");
       }
       if (status === "Forwarded") {
-        console.log("yahan chala")
+        //console.log("yahan chala")
         setEmployeeData(
           moreEmpData
             .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
         );
-        console.log(moreEmpData
-          .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
-          .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-        )
         setdataStatus("Forwarded");
       }
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
@@ -519,7 +515,7 @@ function BdmLeads() {
     //console.log(selectedField);
   };
 
-  console.log(tempData);
+  //console.log(tempData);
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
@@ -542,7 +538,7 @@ function BdmLeads() {
         const response = await axios.put(
           `${secretKey}/employee/online-status/${id}/${socketID}`
         );
-        console.log(response.data); // Log response for debugging
+        //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
         console.error("Error:", error);
@@ -599,12 +595,12 @@ function BdmLeads() {
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
   };
-  console.log(requestData);
+  //console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchProjections();
@@ -713,11 +709,11 @@ function BdmLeads() {
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  console.log(companyName, companyInco);
+  //console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
 
-  console.log("currentData", currentData)
+  //console.log("currentData", currentData)
 
   // const handleStatusChange = async (
   //   employeeId,
@@ -816,6 +812,11 @@ function BdmLeads() {
             const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
               bdmAcceptStatus : "NotForwarded"
             })
+
+            const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`,{
+              caseType:"NotForwarded"
+            }
+            )
           
           
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
@@ -921,13 +922,13 @@ function BdmLeads() {
     }));
   };
 
-  console.log(employeeData);
+  //console.log(employeeData);
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
-    console.log(mainRemarks);
+    //console.log(mainRemarks);
     const companyId = cid;
-    console.log("Deleting Remarks with", remarks_id);
+    //console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
@@ -948,7 +949,7 @@ function BdmLeads() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks);
+    //console.log(cid, cstat, changeRemarks);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -1073,7 +1074,7 @@ function BdmLeads() {
           }
         );
 
-        console.log("Data sent successfully:", response.data);
+        //console.log("Data sent successfully:", response.data);
         Swal.fire("Request sent!");
         closepopup();
       } catch (error) {
@@ -1090,7 +1091,7 @@ function BdmLeads() {
           cDate,
         });
 
-        console.log("Data sent successfully:", response.data);
+        //console.log("Data sent successfully:", response.data);
         Swal.fire("Request sent!");
         closepopup();
       } catch (error) {
@@ -1130,8 +1131,8 @@ function BdmLeads() {
         "Director Email(Third)": directorEmailThird,
       })
       .then((response) => {
-        console.log("response", response);
-        console.log("Data sent Successfully");
+        //console.log("response", response);
+        //console.log("Data sent Successfully");
         Swal.fire({
           title: "Data Added!",
           text: "Successfully added new Data!",
@@ -1217,7 +1218,7 @@ function BdmLeads() {
         }
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
         const responseData = await response.json();
-        console.log(responseData.message); // Log the response message
+        //console.log(responseData.message); // Log the response message
       } catch (error) {
         Swal.fire({ title: "Failed to send Request", icon: "error" });
         console.error("Error creating delete request:", error);
@@ -1323,14 +1324,14 @@ function BdmLeads() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
-  console.log("csv", csvdata);
+  //console.log("csv", csvdata);
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
       ...data,
       ename: name,
     }));
-    console.log("updatedcsv", updatedCsvdata);
+    //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
@@ -1379,25 +1380,25 @@ function BdmLeads() {
   };
   const fetchRedesignedFormData = async () => {
     try {
-      console.log(maturedID);
+      //console.log(maturedID);
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
-      console.log(data);
+      //console.log(data);
       setCurrentForm(data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
   useEffect(() => {
-    console.log("Matured ID Changed", maturedID);
+    //console.log("Matured ID Changed", maturedID);
     if (maturedID) {
       fetchRedesignedFormData();
     }
   }, [maturedID]);
 
-  console.log("Current Form:", currentForm);
+  //console.log("Current Form:", currentForm);
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1407,45 +1408,45 @@ function BdmLeads() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-  useEffect(() => {
-    const employeeName = data.ename;
-    if (employeeName) {
-      const fetchCompanies = async () => {
-        try {
-          const response = await fetch(`${secretKey}/companies`);
-          const data = await response.json();
+  // useEffect(() => {
+  //   const employeeName = data.ename;
+  //   if (employeeName) {
+  //     const fetchCompanies = async () => {
+  //       try {
+  //         const response = await fetch(`${secretKey}/companies`);
+  //         const data = await response.json();
 
-          // Filter and format the data based on employeeName
-          const formattedData = data.companies
-            .filter(
-              (entry) =>
-                entry.bdeName === employeeName || entry.bdmName === employeeName
-            )
-            .map((entry) => ({
-              "Company Name": entry.companyName,
-              "Company Number": entry.contactNumber,
-              "Company Email": entry.companyEmail,
-              "Company Incorporation Date": entry.incoDate,
-              City: "NA",
-              State: "NA",
-              ename: employeeName,
-              AssignDate: entry.bookingDate,
-              Status: "Matured",
-              Remarks: "No Remarks Added",
-            }));
+  //         // Filter and format the data based on employeeName
+  //         const formattedData = data.companies
+  //           .filter(
+  //             (entry) =>
+  //               entry.bdeName === employeeName || entry.bdmName === employeeName
+  //           )
+  //           .map((entry) => ({
+  //             "Company Name": entry.companyName,
+  //             "Company Number": entry.contactNumber,
+  //             "Company Email": entry.companyEmail,
+  //             "Company Incorporation Date": entry.incoDate,
+  //             City: "NA",
+  //             State: "NA",
+  //             ename: employeeName,
+  //             AssignDate: entry.bookingDate,
+  //             Status: "Matured",
+  //             Remarks: "No Remarks Added",
+  //           }));
 
-          setCompanies(formattedData);
-        } catch (error) {
-          console.error("Error fetching companies:", error);
-          setCompanies([]);
-        }
-      };
+  //         setCompanies(formattedData);
+  //       } catch (error) {
+  //         console.error("Error fetching companies:", error);
+  //         setCompanies([]);
+  //       }
+  //     };
 
-      fetchCompanies();
-    }
-  }, [data]);
+  //     fetchCompanies();
+  //   }
+  // }, [data]);
 
-  console.log(companies);
+  //console.log(companies);
 
   // const handleProjectionSubmit = async () => {
   //   try {
@@ -1808,8 +1809,8 @@ function BdmLeads() {
         const month = new Date(
           data["Company Incorporation Date  "]
         ).toLocaleString("default", { month: "short" });
-        console.log("Year :", year, selectedYear.toString());
-        console.log("Month :", month, selectedMonth.toString());
+        //console.log("Year :", year, selectedYear.toString());
+        //console.log("Month :", month, selectedMonth.toString());
         return (
           year === selectedYear.toString() && month === selectedMonth.toString()
         );
@@ -1839,16 +1840,16 @@ function BdmLeads() {
 
   const handleDelete = async (company) => {
     const companyName = company;
-    console.log(companyName);
+    //console.log(companyName);
 
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
         `${secretKey}/projection/delete-followup/${companyName}`
       );
-      console.log(response.data.message); // Log the response message
+      //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
-      console.log("Deleted!", "Your data has been deleted.", "success");
+      //console.log("Deleted!", "Your data has been deleted.", "success");
       setCurrentProjection({
         companyName: "",
         ename: "",

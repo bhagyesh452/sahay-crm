@@ -90,7 +90,7 @@ function BdmTeamLeads() {
 
   const fetchBDMbookingRequests = async () => {
     const bdmName = data.ename;
-    console.log("This is bdm", bdmName);
+    //console.log("This is bdm", bdmName);
     try {
       const response = await axios.get(
         `${secretKey}/bdm-data/matured-get-requests-byBDM/${bdmName}`
@@ -111,10 +111,6 @@ function BdmTeamLeads() {
     const bdmName = data.ename
     try {
       const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-
-
-
-
       setTeamData(response.data)
       if (bdmNewStatus === "Untouched") {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -136,9 +132,7 @@ function BdmTeamLeads() {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("NotInterested")
       }
-
-
-      console.log("response", response.data)
+      //console.log("response", response.data)
     } catch (error) {
       console.log(error)
     }
@@ -149,12 +143,12 @@ function BdmTeamLeads() {
       const companyName = BDMrequests["Company Name"];
       const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
       setMaturedBooking(currentObject);
-      console.log("Current Booking:", currentObject);
+      //console.log("Current Booking:", currentObject);
     }
   }, [teamData, BDMrequests]);
 
 
-  console.log("teamdata", teamleadsData)
+  //console.log("teamdata", teamleadsData)
 
   useEffect(() => {
     fetchData()
@@ -228,7 +222,7 @@ function BdmTeamLeads() {
     setRemarksBdmName(bdmName)
   };
 
-  console.log("filteredRemarks", filteredRemarks)
+  //console.log("filteredRemarks", filteredRemarks)
 
   //console.log("currentcompanyname", currentCompanyName);
 
@@ -238,7 +232,7 @@ function BdmTeamLeads() {
       setRemarksHistory(response.data.reverse());
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -272,7 +266,7 @@ function BdmTeamLeads() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks, remarksBdmName);
+    //console.log(cid, cstat, changeRemarks, remarksBdmName);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -323,7 +317,7 @@ function BdmTeamLeads() {
           console.error("Failed to update status:", response.data.message);
         }
 
-        console.log("response", response.data);
+        //console.log("response", response.data);
         fetchTeamLeadsData();
         Swal.fire("Data Rejected");
         setIsDeleted(false)
@@ -340,7 +334,7 @@ function BdmTeamLeads() {
 
           }
         );
-        console.log("remarks", Remarks)
+        //console.log("remarks", Remarks)
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
           setChangeRemarks("");
@@ -396,7 +390,7 @@ function BdmTeamLeads() {
         bdmStatusChangeTime: DT.toLocaleTimeString()
       })
       const filteredProjectionData = projectionDataNew.filter((company) => company.companyName === cName)
-      console.log(filteredProjectionData)
+      //console.log(filteredProjectionData)
 
       if (filteredProjectionData.length !== 0) {
         const response2 = await axios.post(`${secretKey}/projection/post-followupupdate-bdmaccepted/${cName}`, {
