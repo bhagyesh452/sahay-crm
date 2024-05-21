@@ -268,7 +268,7 @@ function EmployeeDashboard() {
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
@@ -295,7 +295,7 @@ function EmployeeDashboard() {
 
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
       setmoreEmpData(tempData)
@@ -340,7 +340,7 @@ function EmployeeDashboard() {
 
   const fetchEmployeeData = async () => {
     setLoading(true);
-    fetch(`${secretKey}/edata-particular/${data.ename}`)
+    fetch(`${secretKey}/company-data/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
         setEmpData(data);
@@ -371,7 +371,7 @@ function EmployeeDashboard() {
   const fetchTeamLeadsData = async () => {
 
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
       setTeamLeadsData(response.data)
       setTeamData(response.data)
 
@@ -380,7 +380,7 @@ function EmployeeDashboard() {
     }
   }
 
-  console.log(teamLeadsData)
+  //console.log(teamLeadsData)
 
   useEffect(() => {
     fetchTeamLeadsData()
@@ -422,26 +422,26 @@ function EmployeeDashboard() {
 
   // ---------------------------Bookings Part --------------------------------------
 
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      try {
-        setLoading(true);
-        //setuniqueArrayLoading(true)// Set loading to true before fetching
-        const response = await axios.get(
-          `${secretKey}/company-ename/${data.ename}`
-        );
-        setTotalBooking(response.data);
-        setFilteredBooking(response.data);
-      } catch (error) {
-        console.error("Error fetching company details:", error.message);
-      } finally {
-        setLoading(false);
-        //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
-      }
-    };
+  // useEffect(() => {
+  //   const fetchBookingDetails = async () => {
+  //     try {
+  //       setLoading(true);
+  //       //setuniqueArrayLoading(true)// Set loading to true before fetching
+  //       // const response = await axios.get(
+  //       //   `${secretKey}/company-ename/${data.ename}`
+  //       // );
+  //       setTotalBooking(response.data);
+  //       setFilteredBooking(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching company details:", error.message);
+  //     } finally {
+  //       setLoading(false);
+  //       //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
+  //     }
+  //   };
 
-    fetchBookingDetails();
-  }, [data.ename]);
+  //   fetchBookingDetails();
+  // }, [data.ename]);
 
   //console.log("filteredBookings", filteredBooking)
 
@@ -537,7 +537,7 @@ function EmployeeDashboard() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
         //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -586,7 +586,7 @@ function EmployeeDashboard() {
     try {
       setprojectionLoading(true);
       const response = await fetch(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setFollowData(followdata);
@@ -742,7 +742,7 @@ function EmployeeDashboard() {
         });
       } else {
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -806,7 +806,7 @@ function EmployeeDashboard() {
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
 
-  console.log("selectedDates", selectedDateRange);
+  //console.log("selectedDates", selectedDateRange);
 
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
@@ -854,7 +854,7 @@ function EmployeeDashboard() {
     setFollowDataFilter(filteredDataDateRange);
   }, [startDate, endDate]);
 
-  console.log(totalBooking);
+  //console.log(totalBooking);
 
   const handleSelectAnother = (values) => {
     console.log(values);
@@ -1608,7 +1608,7 @@ function EmployeeDashboard() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -1707,7 +1707,7 @@ function EmployeeDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
 
@@ -1781,19 +1781,15 @@ function EmployeeDashboard() {
                 if(moreObject.bdeName === moreObject.bdmName){
                   maturedCount = maturedCount + 1;
                 }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  maturedCount = maturedCount + 0.5
+                  maturedCount = maturedCount + 0.5;
                 }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
                   if(moreObject.bdeName === data.ename){
                     maturedCount = maturedCount + 1;
                   }
-                }
-           
+                }         
             }
           })
-      }
-     
-   
-      
+        }    
       
     })
 
@@ -2939,9 +2935,9 @@ function EmployeeDashboard() {
                               {moreEmpData.filter(
                                 (obj) =>
                                   formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
-                                  obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                  obj.Status !== "Matured"
+                                  obj.bdmAcceptStatus !== "NotForwarded" 
+                                  //obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up"&&
+                                  //obj.Status !== "Matured"
                               ).length}
                             </div>
                           </div>

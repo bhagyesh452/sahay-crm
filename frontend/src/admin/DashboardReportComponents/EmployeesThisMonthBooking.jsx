@@ -70,7 +70,7 @@ function EmployeesThisMonthBooking() {
 
     //----------------------fetching employee info----------------------------------------
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/einfo`)
+        fetch(`${secretKey}/employee/einfo`)
             .then((response) => response.json())
             .then((data) => {
                 setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
@@ -107,11 +107,11 @@ function EmployeesThisMonthBooking() {
     const fetchRedesignedBookings = async () => {
         try {
             const response = await axios.get(
-                `${secretKey}/redesigned-final-leadData`
+                `${secretKey}/bookings/redesigned-final-leadData`
             );
             const bookingsData = response.data;
             setBdeRedesignedData(response.data);
-
+          
             const getBDEnames = new Set();
             bookingsData.forEach((obj) => {
                 // Check if the bdeName is already in the Set

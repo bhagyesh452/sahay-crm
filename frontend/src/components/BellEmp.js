@@ -38,7 +38,7 @@ export default function BellEmp({ name }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestData`);
+      const response = await axios.get(`${secretKey}/requests/requestData`);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -46,7 +46,7 @@ export default function BellEmp({ name }) {
   };
   const fetchRequestGDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestgData`);
+      const response = await axios.get(`${secretKey}/requests/requestgData`);
 
       setRequestGData(response.data);
     } catch (error) {

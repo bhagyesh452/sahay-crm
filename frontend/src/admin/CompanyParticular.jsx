@@ -22,7 +22,7 @@ function CompanyParticular({}) {
     try {
       // Make a GET request to fetch data of the specific company by its name
       const response = await axios.get(
-        `${secretKey}/specific-company/${companyId}`
+        `${secretKey}/company-data/specific-company/${companyId}`
       );
       // Extract the data from the response
       const data = response.data;
@@ -46,7 +46,7 @@ function CompanyParticular({}) {
       try {
         // Make a GET request to fetch data based on the companyName
         const response = await axios.get(
-          `${secretKey}/employee-history/${companyName}`
+          `${secretKey}/employee/employee-history/${companyName}`
         );
         // Extract the data from the response
         const data = response.data;

@@ -108,7 +108,7 @@ function EmployeeLeads() {
     // Function to fetch employee details by id
     const fetchEmployeeDetails = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Filter the response data to find _id values where designation is "Sales Executive"
             const salesExecutivesIds = response.data
@@ -157,7 +157,7 @@ function EmployeeLeads() {
     const fetchRedesignedFormData = async () => {
         try {
             console.log(maturedID);
-            const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data.find(obj => obj.company === maturedID);
             setCurrentForm(data);
 
@@ -217,7 +217,7 @@ function EmployeeLeads() {
 
             setLoading(true)
             const response = await axios.get(
-                `${secretKey}/employees/${employeeName}`
+                `${secretKey}/company-data/employees/${employeeName}`
             );
 
             // Sort the data by AssignDate property
@@ -408,7 +408,7 @@ function EmployeeLeads() {
 
     const fetchnewData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/einfo`);
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
             // Set the retrieved data in the state
 
@@ -456,7 +456,7 @@ function EmployeeLeads() {
     };
     const fetchProjections = async () => {
         try {
-            const response = await axios.get(`${secretKey}/projection-data`);
+            const response = await axios.get(`${secretKey}/projection/projection-data`);
             setProjectionData(response.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
@@ -546,7 +546,7 @@ function EmployeeLeads() {
 
             // Add the promise for updating CompanyModel to the array
             updatePromises.push(
-                axios.post(`${secretKey}/assign-new`, {
+                axios.post(`${secretKey}/company-data/assign-new`, {
                     newemployeeSelection,
                     data: updatedObj,
                 })
@@ -627,7 +627,7 @@ function EmployeeLeads() {
     const [filteredRemarks, setFilteredRemarks] = useState([]);
     const fetchRemarksHistory = async () => {
         try {
-            const response = await axios.get(`${secretKey}/remarks-history`);
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
             setRemarksHistory(response.data);
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -685,7 +685,7 @@ function EmployeeLeads() {
 
         if (confirmDelete.isConfirmed) {
             try {
-                const response = await fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
+                const response = await fetch(`${secretKey}/bookings/redesigned-delete-booking/${companyId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1708,7 +1708,7 @@ function EmployeeLeads() {
                                                     )}
                                                 </>
                                             )}
-                                            {currentData.length === 0 && !loading && dataStatus !== "Matured" && (
+                                            {currentData.length === 0 && !loading && (
                                                 <tbody>
                                                     <tr>
                                                         <td colSpan="11" className="p-2">
@@ -1717,15 +1717,7 @@ function EmployeeLeads() {
                                                     </tr>
                                                 </tbody>
                                             )}
-                                            {companies.length === 0 && !companiesLoading && dataStatus === "Matured" && (
-                                                <tbody>
-                                                    <tr>
-                                                        <td colSpan="11" className="p-2">
-                                                            <Nodata />
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            )}
+            
                                         </table>
                                     </div>
                                     {currentData.length !== 0 && (

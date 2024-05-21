@@ -274,7 +274,6 @@ function Leads() {
   };
   const closepopup = () => {
     openchange(false);
-
     setCsvData([]);
   };
 
@@ -911,6 +910,7 @@ function Leads() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [startRowIndex, setStartRowIndex] = useState(null);
+
   const handleCheckboxChange = (id) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
@@ -1018,7 +1018,7 @@ function Leads() {
       selectedRows.includes(row._id)
     );
 
-    console.log("selectedObjecyt", selectedObjects)
+    //console.log("selectedObjecyt", selectedObjects)
     // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
@@ -1043,8 +1043,6 @@ function Leads() {
 
     if (userConfirmed) {
       handleAssignData();
-    } else {
-
     }
   };
 
@@ -1210,9 +1208,10 @@ function Leads() {
   const [cstat, setCstat] = useState("");
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+  
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -3099,7 +3098,7 @@ function Leads() {
                         }
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                       
+
                         Add Leads
                       </button>
                       <a
@@ -3119,8 +3118,8 @@ function Leads() {
                         onClick={handleImportClick}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                      
-                       
+
+
                         Import CSV
                       </button>
                       <a
@@ -3130,7 +3129,7 @@ function Leads() {
                         data-bs-target="#modal-report"
                         aria-label="Create new report"
                       >
-                       
+
                       </a>
                     </div>
                   </div>
@@ -3140,7 +3139,7 @@ function Leads() {
                         onClick={exportData}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                      
+
                         Export CSV
                       </button>
                       <a
@@ -3637,7 +3636,7 @@ function Leads() {
                                       color: "grey",
                                     }}
                                   />
-                                 
+
                                 </IconButton> </>}
                               <Link to={`/admin/leads/${company._id}`}>
                                 <IconButton>

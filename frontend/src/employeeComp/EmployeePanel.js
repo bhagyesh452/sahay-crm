@@ -232,7 +232,7 @@ function EmployeePanel() {
   useEffect(() => {
     const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
     socket.on("connect", () => {
-      console.log("Socket connected with ID:", socket.id);
+      //console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
     });
 
@@ -251,42 +251,27 @@ function EmployeePanel() {
       socket.disconnect();
     };
   }, []);
+
+
   const functionopenpopup = () => {
     openchange(true);
   };
 
-
-  //console.log("projectingcompnay", projectingCompany)
-
-  //console.log("kuchlikho", currentProjection)
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
       setTotalBookings(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  // const fetchBDMbookingRequests = async () => {
-  //   const bdeName = data.ename;
-  //   try {
-  //     const response = await axios.get(
-  //       `${secretKey}/matured-get-requests/${bdeName}`
-  //     );
-  //     setBDMrequests(response.data[0]);
-  //     if (response.data.length !== 0) {
-  //       setOpenbdmRequest(true);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
+  
   const fetchBDMbookingRequests = async () => {
     const bdeName = data.ename;
     try {
       const response = await axios.get(
-        `${secretKey}/inform-bde-requests/${bdeName}`
+        `${secretKey}/bdm-data/inform-bde-requests/${bdeName}`
       );
       setBDMrequests(response.data[0]);
       if (response.data.length !== 0) {
@@ -357,7 +342,7 @@ function EmployeePanel() {
   //     setEditIconColor(color); // assuming you have a state variable to manage icon color
   //   }
   // };
-  console.log(socketID, "If this shows then boom");
+  //console.log(socketID, "If this shows then boom");
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -506,16 +491,16 @@ function EmployeePanel() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(userData);
+      //console.log(userData);
       setData(userData);
       setmoreFilteredData(userData);
 
-      console.log(userData.bdmName)
+      //console.log(userData.bdmName)
 
       if (userData.bdmWork) {
         const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
@@ -542,7 +527,7 @@ function EmployeePanel() {
     const ename = data.ename;
     //console.log("ename", ename)
     try {
-      const response = await axios.get(`${secretKey}/teaminfo/${ename}`);
+      const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
 
       //console.log("teamdata", response.data)
       setTeamInfo(response.data);
@@ -566,7 +551,7 @@ function EmployeePanel() {
   const fetchProjections = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       setProjectionData(response.data);
     } catch (error) {
@@ -583,9 +568,9 @@ function EmployeePanel() {
         setLoading(true);
       }
 
-      console.log("status", status)
+      //console.log("status", status)
 
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       //console.log("tempData", tempData)
 
@@ -655,15 +640,11 @@ function EmployeePanel() {
         setdataStatus("Interested");
       }
       if (status === "Forwarded") {
-        console.log("yahan chala")
+        //console.log("yahan chala")
         setEmployeeData(
           moreEmpData
             .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
         );
-        console.log(moreEmpData
-          .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
-          .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-        )
         setdataStatus("Forwarded");
       }
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
@@ -733,9 +714,9 @@ function EmployeePanel() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
-        console.log(response.data); // Log response for debugging
+        //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
         console.error("Error:", error);
@@ -765,7 +746,7 @@ function EmployeePanel() {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestgData`);
+      const response = await axios.get(`${secretKey}/requests/requestgData`);
       const sortedData = response.data.sort((a, b) => {
         // Assuming 'timestamp' is the field indicating the time of creation or update
         return new Date(b.date) - new Date(a.date);
@@ -789,13 +770,13 @@ function EmployeePanel() {
 
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data.reverse());
       setFilteredRemarks(
         response.data.filter((obj) => obj.companyID === cid).reverse()
       );
 
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -950,10 +931,12 @@ function EmployeePanel() {
       let response;
   
       if (bdmAcceptStatus === "Accept") {
+        console.log(bdmAcceptStatus , newStatus)
         if (newStatus === "Interested" || newStatus === "FollowUp") {
-          response = await axios.delete(`${secretKey}/post-deletecompany-interested/${employeeId}`);
+          
+          response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
           const response2 = await axios.post(
-            `${secretKey}/update-status/${employeeId}`,
+            `${secretKey}/company-data/update-status/${employeeId}`,
             {
               newStatus,
               title,
@@ -961,20 +944,24 @@ function EmployeePanel() {
               time,
               
             })
-            const response3 = await axios.post(`${secretKey}/post-bdmAcceptStatusupate/${employeeId}` , {
+            const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
               bdmAcceptStatus : "NotForwarded"
             })
-          
+
+            const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`,{
+              caseType:"NotForwarded"
+            }
+            )
           
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-          response = await axios.post(`${secretKey}/post-update-bdmstatusfrombde/${employeeId}` , {
+          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
             newStatus
           });
 
           //console.log(response.data)
          
           const response2 = await axios.post(
-            `${secretKey}/update-status/${employeeId}`,
+            `${secretKey}/company-data/update-status/${employeeId}`,
             {
               newStatus,
               title,
@@ -989,7 +976,7 @@ function EmployeePanel() {
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
-          `${secretKey}/update-status/${employeeId}`,
+          `${secretKey}/company-data/update-status/${employeeId}`,
           {
             newStatus,
             title,
@@ -1016,7 +1003,7 @@ function EmployeePanel() {
   
   const fetchBookingDeleteRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
       setRequestDeletes(response.data); // Assuming your data is returned as an array
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1076,9 +1063,9 @@ function EmployeePanel() {
     //console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
-      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
       if (mainRemarks) {
-        await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+        await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
       }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
@@ -1102,11 +1089,11 @@ function EmployeePanel() {
     }
     try {
       // Make an API call to update the employee status in the database
-      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+      const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
         Remarks,
       });
       const response2 = await axios.post(
-        `${secretKey}/remarks-history/${cid}`,
+        `${secretKey}/remarks/remarks-history/${cid}`,
         {
           Remarks,
           bdeName,
@@ -1226,7 +1213,7 @@ function EmployeePanel() {
       try {
         // Make API call using Axios
         const response = await axios.post(
-          `${secretKey}/requestData`,
+          `${secretKey}/requests/requestData`,
 
           {
             selectedYear,
@@ -1248,7 +1235,7 @@ function EmployeePanel() {
     } else {
       try {
         // Make API call using Axios
-        const response = await axios.post(`${secretKey}/requestgData`, {
+        const response = await axios.post(`${secretKey}/requests/requestgData`, {
           numberOfData,
           name,
           cTime,
@@ -1312,7 +1299,7 @@ function EmployeePanel() {
         "Director Email(Third)": directorEmailThird,
         "UploadedBy": data.ename
       }
-      await axios.post(`${secretKey}/requestCompanyData`, dataToSend).then((response) => {
+      await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
         //console.log("response", response);
         console.log("Data sent Successfully");
         Swal.fire({
@@ -1418,7 +1405,7 @@ function EmployeePanel() {
           ename: data.ename, // Replace 'Your Ename Value' with the actual value
         };
 
-        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+        const response = await fetch(`${secretKey}/requests/deleterequestbybde`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1431,7 +1418,7 @@ function EmployeePanel() {
         }
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
         const responseData = await response.json();
-        console.log(responseData.message); // Log the response message
+        //console.log(responseData.message); // Log the response message
       } catch (error) {
         Swal.fire({ title: "Failed to send Request", icon: "error" });
         console.error("Error creating delete request:", error);
@@ -1550,7 +1537,7 @@ function EmployeePanel() {
       // Move setLoading outside of the loop
 
       try {
-        await axios.post(`${secretKey}/requestCompanyData`, updatedCsvdata);
+        await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
         console.log("Data sent successfully");
         Swal.fire({
           title: "Request Sent!",
@@ -1575,7 +1562,7 @@ function EmployeePanel() {
   };
   const fetchApproveRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
       setRequestApprovals(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === data.ename)) {
@@ -1595,7 +1582,7 @@ function EmployeePanel() {
     try {
       //console.log(maturedID);
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
       //console.log(data);
@@ -1630,44 +1617,6 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-  useEffect(() => {
-    const employeeName = data.ename;
-    if (employeeName) {
-      const fetchCompanies = async () => {
-        try {
-          const response = await fetch(`${secretKey}/companies`);
-          const data = await response.json();
-
-          // Filter and format the data based on employeeName
-          const formattedData = data.companies
-            .filter(
-              (entry) =>
-                entry.bdeName === employeeName || entry.bdmName === employeeName
-            )
-            .map((entry) => ({
-              "Company Name": entry.companyName,
-              "Company Number": entry.contactNumber,
-              "Company Email": entry.companyEmail,
-              "Company Incorporation Date": entry.incoDate,
-              City: "NA",
-              State: "NA",
-              ename: employeeName,
-              AssignDate: entry.bookingDate,
-              Status: "Matured",
-              Remarks: "No Remarks Added",
-            }));
-
-          setCompanies(formattedData);
-        } catch (error) {
-          console.error("Error fetching companies:", error);
-          setCompanies([]);
-        }
-      };
-
-      fetchCompanies();
-    }
-  }, [data]);
-
   //console.log(companies);
 
   // const handleProjectionSubmit = async () => {
@@ -1794,7 +1743,7 @@ function EmployeePanel() {
       } else {
         // Send data to backend API
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1835,7 +1784,7 @@ function EmployeePanel() {
       const id = requestData._id;
 
       // Send a POST request to set the AssignRead property to true for the object with the given ID
-      await axios.post(`${secretKey}/setMarktrue/${id}`);
+      await axios.post(`${secretKey}/requests/setMarktrue/${id}`);
 
       // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
     } catch (error) {
@@ -2069,7 +2018,7 @@ function EmployeePanel() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -2096,23 +2045,23 @@ function EmployeePanel() {
   };
   //console.log("projections", currentProjection);
 
-  const handleSendEmail = async () => {
-    try {
-      const response = await fetch(`${secretKey}/generate-pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/pdf",
-        },
-      });
+  // const handleSendEmail = async () => {
+  //   try {
+  //     const response = await fetch(`${secretKey}/generate-pdf`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/pdf",
+  //       },
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to send email");
-      }
-      console.log("Mail Sent");
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  };
+  //     if (!response.ok) {
+  //       throw new Error("Failed to send email");
+  //     }
+  //     console.log("Mail Sent");
+  //   } catch (error) {
+  //     console.error("Error sending email:", error);
+  //   }
+  // };
 
   const formatDatePro = (dateString) => {
     const [day, month, year] = dateString.split("/");
@@ -2208,20 +2157,6 @@ function EmployeePanel() {
   // console.log(paymentLink)
 
   // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
-  const handleEditClick = async (company) => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
-      );
-      const data = response.data.find((obj) => obj.company === company);
-      setCurrentForm(data);
-
-      setOpenBooking(true);
-
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
 
   const handleOpenEditForm = () => {
     setOpenBooking(false);
@@ -2454,7 +2389,7 @@ function EmployeePanel() {
     //console.log("selecteddatawithbdm", selectedDataWithBdm);
   
     try {
-      const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
+      const response = await axios.post(`${secretKey}/bdm-data/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
         bdmName: selectedBDM,
         companyId: forwardCompanyId,
@@ -2464,7 +2399,7 @@ function EmployeePanel() {
         companyName:forwardedCompany,
         // Assuming bdmName is defined elsewhere in your component
       });
-      const response2 = await axios.post(`${secretKey}/post-followup-forwardeddata/${forwardedCompany}`,{
+      const response2 = await axios.post(`${secretKey}/projection/post-followup-forwardeddata/${forwardedCompany}`,{
         caseType:"Forwarded",
         bdmName:selectedBDM
       })
@@ -2506,14 +2441,14 @@ function EmployeePanel() {
     if (bdmAcceptStatus === "Pending") {
       try {
         const response = await axios.post(
-          `${secretKey}/teamleads-reversedata/${companyId}`,
+          `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
           {
             companyName,
             bdmAcceptStatus: "NotForwarded",
             bdmName: "NoOne" // Corrected parameter name
           }
         );
-        const response2 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${companyName}` , {
+        const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}` , {
           caseType: "NotForwarded"
         })
         // console.log("response", response.data);
@@ -2645,7 +2580,7 @@ function EmployeePanel() {
       const id = BDMrequests._id;
       // Send a POST request to your backend API to update the object
       const response = await axios.post(
-        `${secretKey}/update-bdm-Request/${id}`,
+        `${secretKey}/requests/update-bdm-Request/${id}`,
         {
           requestStatus: "Accepted",
         }
@@ -2663,30 +2598,30 @@ function EmployeePanel() {
   };
 
   // Function to handle reject request
-  const handleRejectRequest = async () => {
-    try {
-      const id = BDMrequests._id;
-      // Send a DELETE request to your backend API to delete the object
-      const response = await axios.delete(
-        `${secretKey}/delete-bdm-Request/${id}`
-      );
-      Swal.fire("Rejected!", "Successfully Denied the Request", "success");
-      setOpenbdmRequest(false);
-      //console.log(response.data); // Log the response data if needed
-      // Optionally, you can update the UI or perform any other actions after the request is successful
-    } catch (error) {
-      Swal.fire("Error!", "Error Rejecting the Request", "error");
-      setOpenbdmRequest(false);
-      console.error("Error rejecting request:", error);
-      // Handle the error or display a message to the user
-    }
-  };
+  // const handleRejectRequest = async () => {
+  //   try {
+  //     const id = BDMrequests._id;
+  //     // Send a DELETE request to your backend API to delete the object
+  //     const response = await axios.delete(
+  //       `${secretKey}/delete-bdm-Request/${id}`
+  //     );
+  //     Swal.fire("Rejected!", "Successfully Denied the Request", "success");
+  //     setOpenbdmRequest(false);
+  //     //console.log(response.data); // Log the response data if needed
+  //     // Optionally, you can update the UI or perform any other actions after the request is successful
+  //   } catch (error) {
+  //     Swal.fire("Error!", "Error Rejecting the Request", "error");
+  //     setOpenbdmRequest(false);
+  //     console.error("Error rejecting request:", error);
+  //     // Handle the error or display a message to the user
+  //   }
+  // };
   const handleDoneInform = async () => {
     try {
       const id = BDMrequests._id;
       // Send a DELETE request to your backend API to delete the object
       const response = await axios.delete(
-        `${secretKey}/delete-inform-Request/${id}`
+        `${secretKey}/requests/delete-inform-Request/${id}`
       );
 
       setOpenbdmRequest(false);
@@ -2710,7 +2645,7 @@ function EmployeePanel() {
       bdeNextFollowUpDate: nextFollowUpdate
     }
     try {
-      const resposne = await axios.post(`${secretKey}/post-bdenextfollowupdate/${companyId}`, data)
+      const resposne = await axios.post(`${secretKey}/company-data/post-bdenextfollowupdate/${companyId}`, data)
 
       //console.log(resposne.data)
       fetchNewData(companyStatus)
@@ -4461,89 +4396,6 @@ function EmployeePanel() {
                             ))}
                           </tbody>
                         )}
-                        {dataStatus === "null" && companies.length !== 0 && (
-                          <tbody>
-                            {companies.map((company, index) => (
-                              <tr
-                                key={index}
-                                style={{ border: "1px solid #ddd" }}
-                              >
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
-                                <td>{company["Company Number"]}</td>
-                                <td>
-                                  <span>{company["Status"]}</span>
-                                </td>
-                                <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {company.Remarks}
-                                    </p>
-                                  </div>
-                                </td>
-
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date"]
-                                  )}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
-
-                                <td>
-                                  {/* <button
-                                  style={{
-                                    padding: "5px",
-                                    fontSize: "12px",
-                                    backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                  className="btn btn-primary d-none d-sm-inline-block"
-                                  onClick={() => {
-                                    functionopenAnchor();
-                                    setMaturedCompanyName(
-                                      company["Company Name"]
-                                    );
-                                  }}
-                                >
-                                  View
-                                </button> */}
-                                  <HiOutlineEye
-                                    style={{
-                                      fontSize: "15px",
-                                      color: "#fbb900",
-                                      //backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    //className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        )}
                         {currentData.length === 0 && !loading && (
                           <tbody>
                             <tr>
@@ -6148,7 +6000,7 @@ function EmployeePanel() {
 
                 <div className="compose-more-options d-flex align-items-center ">
                   <button
-                    onClick={handleSendEmail}
+                    //onClick={handleSendEmail}
                     type="submit"
                     className="send-btn"
                   >

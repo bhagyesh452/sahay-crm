@@ -56,7 +56,7 @@ function BdmDashboard() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -77,7 +77,7 @@ function BdmDashboard() {
   const [employeeDataNew, setEmployeeDataNew] = useState([]);
 
   const fetchEmployeeInfo = async () => {
-    fetch(`${secretKey}/einfo`)
+    fetch(`${secretKey}/employee/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
@@ -102,7 +102,7 @@ function BdmDashboard() {
 
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
       setmoreEmpData(tempData)
@@ -132,8 +132,8 @@ function BdmDashboard() {
   const fetchTeamLeadsData = async () => {
 
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
-      const response2 = await axios.get(`${secretKey}/teamleadsdata`)
+      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
+      const response2 = await axios.get(`${secretKey}/bdm-data/teamleadsdata`)
 
       setTeamLeadsData(response.data)
       setTeamData(response.data)
@@ -150,7 +150,7 @@ function BdmDashboard() {
   const [companyDataTotal, setCompanyDataTotal] = useState([]);
 
   const fetchCompanyData = async () => {
-    fetch(`${secretKey}/leads`)
+    fetch(`${secretKey}/company-data/leads`)
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -213,7 +213,7 @@ function BdmDashboard() {
 
   const fetchCompleteProjectionData = async () => {
     try {
-      const response = await fetch(`${secretKey}/projection-data`);
+      const response = await fetch(`${secretKey}/projection/projection-data`);
       const followdata = await response.json();
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
@@ -237,7 +237,7 @@ function BdmDashboard() {
   const fetchFollowUpData = async () => {
     try {
       const response = await fetch(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setfollowData(followdata);
@@ -276,7 +276,7 @@ function BdmDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
       const getBDEnames = new Set();

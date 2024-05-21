@@ -41,7 +41,7 @@ function LoginDetails() {
 
   const fetchEmployeeDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(

@@ -37,7 +37,7 @@ function DeleteBookingsCard({
     // Assuming you have an API endpoint for deleting a company
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
+        `${secretKey}/bookings/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
         {
           method: "DELETE",
           headers: {
@@ -63,7 +63,7 @@ function DeleteBookingsCard({
   const handleDeleteRequest = async () => {
     try {
       const response = await axios.delete(
-        `${secretKey}/deleterequestbybde/${companyName}`
+        `${secretKey}/requests/deleterequestbybde/${companyName}`
       );
       console.log("Deleted company:", response.data);
       Swal.fire({ title: "Success", icon: "success" });

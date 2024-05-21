@@ -124,7 +124,7 @@ function EmployeeParticular() {
   // Function to fetch employee details by id
   const fetchEmployeeDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Filter the response data to find _id values where designation is "Sales Executive"
       const salesExecutivesIds = response.data
@@ -182,7 +182,7 @@ function EmployeeParticular() {
     try {
       //console.log(maturedID);
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
       setCurrentForm(data);
@@ -242,7 +242,7 @@ function EmployeeParticular() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${secretKey}/employees/${employeeName}`
+        `${secretKey}/company-data/employees/${employeeName}`
       );
 
       // Sort the data by AssignDate property
@@ -438,7 +438,7 @@ function EmployeeParticular() {
 
   const fetchnewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
 
@@ -493,7 +493,7 @@ function EmployeeParticular() {
   };
   const fetchProjections = async () => {
     try {
-      const response = await axios.get(`${secretKey}/projection-data`);
+      const response = await axios.get(`${secretKey}/projection/projection-data`);
       setProjectionData(response.data);
     } catch (error) {
       console.error("Error fetching Projection Data:", error.message);
@@ -638,6 +638,104 @@ function EmployeeParticular() {
   //   }
   // };
 
+  // const handleUploadData = async (e) => {
+  //   //console.log("Uploading data");
+
+  //   const currentDate = new Date().toLocaleDateString();
+  //   const currentTime = new Date().toLocaleTimeString();
+
+  //   const csvdata = employeeData
+  //     .filter((employee) => selectedRows.includes(employee._id))
+  //     .map((employee) => {
+  //       if (
+  //         employee.Status === "Interested" ||
+  //         employee.Status === "FollowUp"
+  //       ) {
+  //         // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+  //         return { ...employee };
+  //       } else {
+  //         // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+  //         return {
+  //           ...employee,
+  //           Status: "Untouched",
+  //           Remarks: "No Remarks Added",
+  //           bdmAcceptStatus: "NotForwarded",
+  //         };
+  //       }
+  //     });
+
+  //   console.log("csvdata", csvdata);
+
+  //   // Create an array to store promises for updating CompanyModel
+  //   const updatePromises = [];
+  //   const deleteCompanyIds = []; // Store company IDs to be deleted
+
+  //   for (const data of csvdata) {
+  //     console.log("data", data);
+  //     const updatedObj = {
+  //       ...data,
+  //       date: currentDate,
+  //       time: currentTime,
+  //       ename: newemployeeSelection,
+  //       companyName: data["Company Name"],
+  //     };
+
+  //     //console.log("updatedObj", updatedObj);
+
+  //     // Add the promise for updating CompanyModel to the array
+  //     updatePromises.push(
+  //       axios.post(`${secretKey}/assign-new`, {
+  //         newemployeeSelection,
+  //         data: updatedObj,
+  //       })
+  //     );
+
+  //     // Push company ID to the array for deletion if it's not null, empty, or length 0
+  //     if (data.bdmAcceptStatus === "Accept") {
+  //       deleteCompanyIds.push(data._id);
+  //     }
+
+
+  //   }
+
+  //   try {
+  //     // Wait for all update promises to resolve
+  //     await Promise.all(updatePromises);
+
+  //     // Make an API call to delete companies from Team Leads Model if deleteCompanyIds is not empty
+  //     if (deleteCompanyIds.length > 0) {
+  //       await axios.post(`${secretKey}/delete-companies-teamleads-assignednew`, {
+  //         companyIds: deleteCompanyIds,
+  //       });
+  //     }
+
+  //     // Clear the selection
+  //     setnewEmployeeSelection("Not Alloted");
+
+  //     Swal.fire({
+  //       title: "Data Sent!",
+  //       text: "Data sent successfully!",
+  //       icon: "success",
+  //     });
+
+  //     // Fetch updated employee details and new data
+  //     fetchEmployeeDetails();
+  //     fetchNewData();
+  //     closepopupAssign();
+  //   } catch (error) {
+  //     console.error("Error updating employee data:", error);
+
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: "Failed to update employee data. Please try again later.",
+  //       icon: "error",
+  //     });
+  //   }
+  // };
+
+
+  //console.log(loginDetails);
+
   const handleUploadData = async (e) => {
     //console.log("Uploading data");
 
@@ -664,85 +762,53 @@ function EmployeeParticular() {
         }
       });
 
-    console.log("csvdata", csvdata);
-
     // Create an array to store promises for updating CompanyModel
-    const updatePromises = [];
-    const deleteCompanyIds = []; // Store company IDs to be deleted
-
-    for (const data of csvdata) {
-      console.log("data", data);
-      const updatedObj = {
-        ...data,
-        date: currentDate,
-        time: currentTime,
-        ename: newemployeeSelection,
-        companyName: data["Company Name"],
-      };
-
-      //console.log("updatedObj", updatedObj);
-
-      // Add the promise for updating CompanyModel to the array
-      updatePromises.push(
-        axios.post(`${secretKey}/assign-new`, {
-          newemployeeSelection,
-          data: updatedObj,
-        })
-      );
-
-      // Push company ID to the array for deletion if it's not null, empty, or length 0
-      if (data.bdmAcceptStatus === "Accept") {
-        deleteCompanyIds.push(data._id);
-      }
-
-
-    }
+    // Store company IDs to be deleted
 
     try {
-      // Wait for all update promises to resolve
-      await Promise.all(updatePromises);
-
-      // Make an API call to delete companies from Team Leads Model if deleteCompanyIds is not empty
-      if (deleteCompanyIds.length > 0) {
-        await axios.post(`${secretKey}/delete-companies-teamleads-assignednew`, {
-          companyIds: deleteCompanyIds,
-        });
-      }
-
-      // Clear the selection
-      setnewEmployeeSelection("Not Alloted");
-
+      Swal.fire({
+        title: 'Assigning...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    
+      const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+        ename: newemployeeSelection,
+        data: csvdata,
+      });
+    
+      // Close the loading Swal
+      Swal.close();
+    
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-
+    
+      // Reset the new employee selection
+      setnewEmployeeSelection("Not Alloted");
+    
       // Fetch updated employee details and new data
       fetchEmployeeDetails();
       fetchNewData();
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
-
+    
+      // Close the loading Swal
+      Swal.close();
+    
       Swal.fire({
         title: "Error!",
         text: "Failed to update employee data. Please try again later.",
         icon: "error",
       });
     }
+    
   };
-
-
-
-
-
-
-
-
-
-
-  //console.log(loginDetails);
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
@@ -787,7 +853,7 @@ function EmployeeParticular() {
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data.reverse());
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
@@ -846,7 +912,7 @@ function EmployeeParticular() {
     if (confirmDelete.isConfirmed) {
       try {
         const response = await fetch(
-          `${secretKey}/redesigned-delete-booking/${companyId}`,
+          `${secretKey}/bookings/redesigned-delete-booking/${companyId}`,
           {
             method: "DELETE",
             headers: {
@@ -924,7 +990,7 @@ function EmployeeParticular() {
     if (confirmation.isConfirmed) {
       //console.log("yahna confirm hua")
       try {
-        const response = await axios.post(`${secretKey}/post-bdmwork-request/${currentId}`, {
+        const response = await axios.post(`${secretKey}/employee/post-bdmwork-request/${currentId}`, {
           bdmWork: true
         });
 
@@ -954,7 +1020,7 @@ function EmployeeParticular() {
       if (confirmation.isConfirmed) {
         //console.log("Confirmed"); // Log confirmation
         try {
-          const response = await axios.post(`${secretKey}/post-bdmwork-revoke/${currentId}`, {
+          const response = await axios.post(`${secretKey}/employee/post-bdmwork-revoke/${currentId}`, {
             bdmWork: false
           });
           fetchEmployeeDetails(); // Assuming this function fetches updated employee details
