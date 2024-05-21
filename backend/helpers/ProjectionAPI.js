@@ -3,7 +3,7 @@ var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
 
-const FollowUpModel = require("./models/FollowUp");
+const FollowUpModel = require("../models/FollowUp");
 
 
 

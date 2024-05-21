@@ -3,16 +3,16 @@ var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
 
-const CompanyRequestModel = require("./models/LeadsRequest");
-const RequestModel = require("./models/Request");
-const RequestGModel = require("./models/RequestG");
-const RequestDeleteByBDE = require("./models/Deleterequestbybde");
-const BookingsRequestModel = require("./models/BookingsEdit");
-const RecentUpdatesModel = require("./models/RecentUpdates");
-const EditableDraftModel = require("./models/EditableDraftModel");
-const TeamLeadsModel = require("./models/TeamLeads.js");
-const RequestMaturedModel = require("./models/RequestMatured.js");
-const InformBDEModel = require("./models/InformBDE.js");
+const CompanyRequestModel = require("../models/LeadsRequest");
+const RequestModel = require("../models/Request");
+const RequestGModel = require("../models/RequestG");
+const RequestDeleteByBDE = require("../models/Deleterequestbybde");
+const BookingsRequestModel = require("../models/BookingsEdit");
+const RecentUpdatesModel = require("../models/RecentUpdates");
+const EditableDraftModel = require("../models/EditableDraftModel");
+const TeamLeadsModel = require("../models/TeamLeads.js");
+const RequestMaturedModel = require("../models/RequestMatured.js");
+const InformBDEModel = require("../models/InformBDE.js");
 
 
 router.post("/requestCompanyData", async (req, res) => {

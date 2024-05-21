@@ -3,7 +3,7 @@ var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
 
-const TeamModel = require("./models/TeamModel.js");
+const TeamModel = require("../models/TeamModel.js");
 
 router.get("/teaminfo", async (req, res) => {
     try {
