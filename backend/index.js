@@ -529,7 +529,7 @@ app.post("/api/requests/requestCompanyData", async (req, res) => {
   }
 });
 
-app.post("/api/change-edit-request/:companyName", async (req, res) => {
+app.post("/api/requests/change-edit-request/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   const companyObject = req.body;
 
@@ -593,7 +593,7 @@ app.use("/api/remarks" , RemarksAPI);
 
 
 
-app.post("/api/post-bdmwork-request/:eid", async (req, res) => {
+app.post("/api/employee/post-bdmwork-request/:eid", async (req, res) => {
   const eid = req.params.eid;
   const { bdmWork } = req.body;
 
@@ -608,7 +608,7 @@ app.post("/api/post-bdmwork-request/:eid", async (req, res) => {
   }
 });
 
-app.post("/api/post-bdmwork-revoke/:eid", async (req, res) => {
+app.post("/api/employee/post-bdmwork-revoke/:eid", async (req, res) => {
   const eid = req.params.eid;
   const { bdmWork } = req.body;
 
@@ -1473,7 +1473,7 @@ app.delete("/api/employee/einfo/:id", async (req, res) => {
 });
 // ***************************************************************  Company Data's Hadi  *************************************************************
 // 2. Read a Company
-app.get("/api/leads/:companyName", async (req, res) => {
+app.get("/api/company-data/leads/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
@@ -1566,7 +1566,7 @@ app.post("/api/company", async (req, res) => {
   }
 });
 // 6. ADD Multiple Companies(Pata nai kyu he)
-app.post("/api/leads", async (req, res) => {
+app.post("/api/company-data/leads", async (req, res) => {
   const csvData = req.body;
   //console.log("csvdata" , csvData)
   let counter = 0;
@@ -1637,7 +1637,7 @@ app.get("/api/company-data/leads", async (req, res) => {
 });
 
 //8. Read Multiple companies New
-app.get('/api/new-leads', async (req, res) => {
+app.get('/api/company-data/new-leads', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Items per page
@@ -1684,7 +1684,7 @@ app.get('/api/new-leads', async (req, res) => {
   }
 });
 //9. Filtere search for Reading Multiple Companies
-app.get('/api/search-leads', async (req, res) => {
+app.get('/api/company-data/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
     const { field } = req.query;
@@ -1734,7 +1734,7 @@ app.get('/api/search-leads', async (req, res) => {
   }
 });
 //10. Search for Specific Company
-app.get("/api/specific-company/:companyId", async (req, res) => {
+app.get("/api/company-data/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Assuming CompanyModel.findById() is used to find a company by its ID
@@ -1898,7 +1898,7 @@ app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
   }
 });
 
-app.post("/api/assign-leads-newbdm", async (req, res) => {
+app.post("/api/bdm-data/assign-leads-newbdm", async (req, res) => {
   const { newemployeeSelection, data, bdmAcceptStatus } = req.body;
 
   console.log(newemployeeSelection, data, bdmAcceptStatus);
@@ -2234,7 +2234,7 @@ app.get("/api/drafts-search/:companyName", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-data/:ename", async (req, res) => {
+app.delete("/api/requests/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 
   try {
@@ -2850,7 +2850,7 @@ app.use("/api/bookings" , bookingsAPI)
 
 // ---------------------------- BDM Booking Request Section -----------------------------------------------
 // ********************************************  Bookings Requests Section *********************************************
-app.post("/api/matured-case-request", async (req, res) => {
+app.post("/api/bdm-data/matured-case-request", async (req, res) => {
   try {
     // Extract data from the request body sent by the frontend
     const { companyName, requestStatus, bdeName, bdmName, date } = req.body;
