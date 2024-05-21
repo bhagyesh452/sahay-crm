@@ -2796,9 +2796,9 @@ function EmployeeDashboard() {
                               {moreEmpData.filter(
                                 (obj) =>
                                   formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
-                                  obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                  obj.Status !== "Matured"
+                                  obj.bdmAcceptStatus !== "NotForwarded" 
+                                  //obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up"&&
+                                  //obj.Status !== "Matured"
                               ).length}
                             </div>
                           </div>

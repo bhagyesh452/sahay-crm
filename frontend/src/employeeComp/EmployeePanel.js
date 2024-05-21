@@ -948,12 +948,10 @@ function EmployeePanel() {
               bdmAcceptStatus : "NotForwarded"
             })
 
-            // const response4 = await axios.post(`${secretKey}/projection/post-bdmacceptted-revertback`,{
-            //   params : { employeeId , caseType : "Forwarded"}
-            // }
-              
-            // )
-          
+            const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`,{
+              caseType:"NotForwarded"
+            }
+            )
           
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
           response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
