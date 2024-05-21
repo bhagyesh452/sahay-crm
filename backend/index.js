@@ -53,6 +53,11 @@ const { dataform_v1beta1 } = require("googleapis");
 const bookingsAPI = require("./helpers/bookingAPI.js")
 const AdminLeadsAPI = require('./helpers/AdminLeadsAPI.js')
 const RemarksAPI = require('./helpers/Remarks.js')
+const bdmAPI = require('./helpers/bdmAPI.js');
+const EmployeeAPI = require('./helpers/EmployeeAPI.js');
+const ProjectionAPI = require('./helpers/ProjectionAPI.js');
+const RequestAPI = require('./helpers/RequestAPI.js');
+const companyAPI = require('./helpers/Company_dataAPI.js')
 const { Parser } = require('json2csv');
 // const { Cashfree } = require('cashfree-pg');
 
