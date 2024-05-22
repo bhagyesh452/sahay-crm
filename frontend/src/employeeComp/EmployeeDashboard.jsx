@@ -1,4 +1,4 @@
- import React, { useEffect, useState, CSSProperties, useRef } from "react";
+import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import Header from "../components/Header";
 import EmpNav from "./EmpNav";
 import axios from "axios";
@@ -89,41 +89,44 @@ import {
 } from '@mui/x-charts/Gauge';
 import { GoArrowUp } from "react-icons/go";
 import { LineChart } from '@mui/x-charts/LineChart';
+import EmployeeCallingReport from "./EmployeeDashboardComponents/EmployeeCallingReport.jsx";
+import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwardedReport.jsx";
+import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
 
 
 
 // PIA Chart Code Start
 
-const data_my = [
-  { value: 100, color:'#1ac9bd', label:'General'},
-  { value: 20, color:'#ffb900', label:'Interested'},
-  { value: 25, color:'#4299e1', label:'Follow Up'},
-  { value: 5, color: '#1cba19', label:'Matured'},
-  { value: 30, color:'#e65b5b', label:'Not Interested'},
-  { value: 20, color:'#00d19d', label:'BDM Forwarded'},
-];
+// const data_my = [
+//   { value: 100, color: '#1ac9bd', label: 'General' },
+//   { value: 20, color: '#ffb900', label: 'Interested' },
+//   { value: 25, color: '#4299e1', label: 'Follow Up' },
+//   { value: 5, color: '#1cba19', label: 'Matured' },
+//   { value: 30, color: '#e65b5b', label: 'Not Interested' },
+//   { value: 20, color: '#00d19d', label: 'BDM Forwarded' },
+// ];
 
-const size = {
-  width: 350,
-  height: 220,
-  viewBox: "0 0 250 200",
-};
+// const size = {
+//   width: 350,
+//   height: 220,
+//   viewBox: "0 0 250 200",
+// };
 
-const StyledText = styled('text')(({ theme }) => ({
-  fill: theme.palette.text.primary,
-  textAnchor: 'middle',
-  dominantBaseline: 'central',
-  fontSize: 20,
-}));
+// const StyledText = styled('text')(({ theme }) => ({
+//   fill: theme.palette.text.primary,
+//   textAnchor: 'middle',
+//   dominantBaseline: 'central',
+//   fontSize: 20,
+// }));
 
-function PieCenterLabel({ children }) {
-  const { width, height, left, top } = useDrawingArea();
-  return (
-    <StyledText x={left + width / 2} y={top + height / 2}>
-      {children}
-    </StyledText>
-  );
-}
+// function PieCenterLabel({ children }) {
+//   const { width, height, left, top } = useDrawingArea();
+//   return (
+//     <StyledText x={left + width / 2} y={top + height / 2}>
+//       {children}
+//     </StyledText>
+//   );
+// }
 
 
 
@@ -131,7 +134,7 @@ function PieCenterLabel({ children }) {
 
 // LINE CHART CODE START
 const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
-const ProjectionData =  [10000, 10033, 50000, 52330, 85200, 32100, 42500];
+const ProjectionData = [10000, 10033, 50000, 52330, 85200, 32100, 42500];
 const xLabels = [
   '1',
   '2',
@@ -287,7 +290,7 @@ function EmployeeDashboard() {
   const [speed, setSpeed] = useState(0);
   //----------SPEEDO METER-------------------------------------------------------------------------------------------
 
- 
+
 
   //----------SPEEDO METER-------------------------------------------------------------------------------------------
 
@@ -520,7 +523,7 @@ function EmployeeDashboard() {
       setDateRangeDisplay(false);
     }
   };
-// -------------------------------------------- socket.io section ------------------------------------------------
+  // -------------------------------------------- socket.io section ------------------------------------------------
   useEffect(() => {
     const socket = io("http://localhost:3001");
     socket.on("connect", () => {
@@ -556,7 +559,7 @@ function EmployeeDashboard() {
       clearTimeout(timerId);
     };
   }, [socketID]);
-// ----------------------------------------  Socket.io Section End  -------------------------------------------------------
+  // ----------------------------------------  Socket.io Section End  -------------------------------------------------------
   const selectionRangeAnother = {
     startDate: startDateAnother,
     endDate: endDateAnother,
@@ -582,7 +585,7 @@ function EmployeeDashboard() {
   const [followDataTodayFilter, setfollowDataTodayFilter] = useState([]);
 
   const fetchFollowUpData = async () => {
-    
+
     try {
       setprojectionLoading(true);
       const response = await fetch(
@@ -1712,8 +1715,8 @@ function EmployeeDashboard() {
       const bookingsData = response.data;
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
-      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
+      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -1731,66 +1734,66 @@ function EmployeeDashboard() {
 
     let maturedCount = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      if(istrue){
-        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+
+    redesignedData.map((mainBooking) => {
+      if (istrue) {
+        if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             maturedCount = maturedCount + 1
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
             maturedCount = maturedCount + 0.5;
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               maturedCount = maturedCount + 1;
             }
           }
-      }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-              if(moreObject.bdeName === moreObject.bdmName){
+        }
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              maturedCount = maturedCount + 1;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              maturedCount = maturedCount + 0.5
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 maturedCount = maturedCount + 1;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                maturedCount = maturedCount + 0.5
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  maturedCount = maturedCount + 1;
-                }
               }
-         
+            }
+
           }
         })
 
-      }else{
-        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
-         
-            if(mainBooking.bdeName === mainBooking.bdmName){
-              maturedCount = maturedCount + 1
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+      } else {
+        if (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
+            maturedCount = maturedCount + 1
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            maturedCount = maturedCount + 0.5;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
+              maturedCount = maturedCount + 1;
+            }
+          }
+        }
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).getMonth() === today.getMonth()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              maturedCount = maturedCount + 1;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
               maturedCount = maturedCount + 0.5;
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-              if(mainBooking.bdeName === data.ename){
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 maturedCount = maturedCount + 1;
               }
             }
-        }
-          mainBooking.moreBookings.map((moreObject)=>{
-            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
-           
-                if(moreObject.bdeName === moreObject.bdmName){
-                  maturedCount = maturedCount + 1;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  maturedCount = maturedCount + 0.5;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === data.ename){
-                    maturedCount = maturedCount + 1;
-                  }
-                }         
-            }
-          })
-        }    
-      
+          }
+        })
+      }
+
     })
 
     // Set hours, minutes, and seconds to zero
@@ -1872,141 +1875,141 @@ function EmployeeDashboard() {
     let remainingAmount = 0;
     let expanse = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      if(istrue){
-        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+
+    redesignedData.map((mainBooking) => {
+      if (istrue) {
+        if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-            mainBooking.services.map(serv=>{
+            mainBooking.services.map(serv => {
               // console.log(serv.expanse , bdeName ,"this is services");
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              expanse = serv.expanse ? expanse + serv.expanse : expanse;
             });
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-              mainBooking.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              mainBooking.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
               })
             }
           }
         }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-              if(moreObject.bdeName === moreObject.bdmName){
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                moreObject.services.map(serv => {
+                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
                 })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-                })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                  moreObject.services.map(serv=>{
-                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-                  })
-                }
               }
-         
+            }
+
           }
         })
 
-      }else{
-        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+      } else {
+        if (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-              mainBooking.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              mainBooking.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
               })
             }
           }
-        }else if(mainBooking.remainingPayments.length !== 0){
-          mainBooking.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+        } else if (mainBooking.remainingPayments.length !== 0) {
+          mainBooking.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) {
               const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(mainBooking.bdeName === mainBooking.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-                if(mainBooking.bdeName === data.ename){
+              if (mainBooking.bdeName === mainBooking.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (mainBooking.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
-          mainBooking.moreBookings.map((moreObject)=>{
-            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
-           
-              if(moreObject.bdeName === moreObject.bdmName){
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).getMonth() === today.getMonth()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                moreObject.services.map(serv => {
+                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
                 })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-                })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                  moreObject.services.map(serv=>{
-                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-                  })
+              }
+            }
+
+          } else if (moreObject.remainingPayments.length !== 0) {
+
+            moreObject.remainingPayments.map((remainingObj) => {
+              if (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) {
+
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if (moreObject.bdeName === moreObject.bdmName) {
+                  remainingAmount += Math.round(tempAmount);
+                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                  remainingAmount += Math.round(tempAmount) / 2;
+                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                  if (moreObject.bdeName === data.ename) {
+                    remainingAmount += Math.round(tempAmount);
+                  }
                 }
               }
-           
-            }else if(moreObject.remainingPayments.length!==0){
-           
-              moreObject.remainingPayments.map((remainingObj)=>{
-                if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
-                  
-                  const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                  const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                  if(moreObject.bdeName === moreObject.bdmName){
-                      remainingAmount += Math.round(tempAmount);
-                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                    remainingAmount += Math.round(tempAmount)/2;
-                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                    if(moreObject.bdeName === data.ename){
-                      remainingAmount += Math.round(tempAmount);
-                    }
-                  }         
-                }
-              })
-            }
-          })
+            })
+          }
+        })
       }
-     
-   
-      
-      
+
+
+
+
     })
     // const today = new Date();
     // // Set hours, minutes, and seconds to zero
@@ -2040,7 +2043,7 @@ function EmployeeDashboard() {
     //   }
     // });
     return achievedAmount + Math.round(remainingAmount) - expanse;
-};
+  };
 
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
@@ -2051,70 +2054,70 @@ function EmployeeDashboard() {
 
 
     // Set hours, minutes, and seconds to zero
-    redesignedData.map((mainBooking)=>{
-      if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-        if(mainBooking.bdeName === mainBooking.bdmName){
+    redesignedData.map((mainBooking) => {
+      if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+        if (mainBooking.bdeName === mainBooking.bdmName) {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-          if(mainBooking.bdeName === data.ename){
+        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+          if (mainBooking.bdeName === data.ename) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           }
         }
-      }else if(mainBooking.remainingPayments.length !== 0){
-        mainBooking.remainingPayments.map((remainingObj)=>{
-          if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+      } else if (mainBooking.remainingPayments.length !== 0) {
+        mainBooking.remainingPayments.map((remainingObj) => {
+          if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-            if(mainBooking.bdeName === mainBooking.bdmName){
-                remainingAmount += Math.round(tempAmount);
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-              remainingAmount += Math.round(tempAmount)/2;
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-              if(mainBooking.bdeName === data.ename){
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === data.ename) {
                 remainingAmount += Math.round(tempAmount);
               }
-            }         
+            }
           }
         })
       }
-      mainBooking.moreBookings.map((moreObject)=>{
-        if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-            if(moreObject.bdeName === moreObject.bdmName){
+      mainBooking.moreBookings.map((moreObject) => {
+        if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (moreObject.bdeName === moreObject.bdmName) {
+            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+            if (moreObject.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-              if(moreObject.bdeName === data.ename){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-              }
             }
-       
-        }else if(moreObject.remainingPayments.length!==0){
-         
-          moreObject.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-              
+          }
+
+        } else if (moreObject.remainingPayments.length !== 0) {
+
+          moreObject.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(moreObject.bdeName === moreObject.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
+              if (moreObject.bdeName === moreObject.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
       })
     })
-    
+
     // const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString());
 
     // todayData.forEach((obj) => {
@@ -2145,56 +2148,56 @@ function EmployeeDashboard() {
     return achievedAmount + Math.round(remainingAmount)
   };
   const functionCalculatePendingRevenue = () => {
-    
+
     let remainingAmount = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      
-        if(mainBooking.remainingPayments.length !== 0){
-          mainBooking.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+
+    redesignedData.map((mainBooking) => {
+
+      if (mainBooking.remainingPayments.length !== 0) {
+        mainBooking.remainingPayments.map((remainingObj) => {
+          if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === data.ename) {
+                remainingAmount += Math.round(tempAmount);
+              }
+            }
+          }
+        })
+      }
+      mainBooking.moreBookings.map((moreObject) => {
+        if (moreObject.remainingPayments.length !== 0) {
+
+          moreObject.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+              const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(mainBooking.bdeName === mainBooking.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-                if(mainBooking.bdeName === data.ename){
+              if (moreObject.bdeName === moreObject.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
-        mainBooking.moreBookings.map((moreObject)=>{
-           if(moreObject.remainingPayments.length!==0){
-           
-            moreObject.remainingPayments.map((remainingObj)=>{
-              if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-                
-                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                if(moreObject.bdeName === moreObject.bdmName){
-                    remainingAmount += Math.round(tempAmount);
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  remainingAmount += Math.round(tempAmount)/2;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === data.ename){
-                    remainingAmount += Math.round(tempAmount);
-                  }
-                }         
-              }
-            })
-          }
-        })
+      })
 
-      
-     
-   
-      
-      
+
+
+
+
+
     })
     return remainingAmount
 
@@ -2271,24 +2274,24 @@ function EmployeeDashboard() {
     // Filter objects based on bdeName
     let tempBookingDate = null;
     // Filter objects based on bdeName
-    redesignedData.map((mainBooking)=>{
-     
-      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
-  
-          const bookingDate = new Date(mainBooking.bookingDate);
-         tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
-        
+    redesignedData.map((mainBooking) => {
+
+      if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+
+        const bookingDate = new Date(mainBooking.bookingDate);
+        tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+
       }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
-           
-              const bookingDate = new Date(moreObject.bookingDate);
-              tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
-            
-          }
-        })
-      
-      
+      mainBooking.moreBookings.map((moreObject) => {
+        if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+
+          const bookingDate = new Date(moreObject.bookingDate);
+          tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+
+        }
+      })
+
+
     })
     return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
 
@@ -2401,7 +2404,7 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -2414,7 +2417,7 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
@@ -2508,8 +2511,8 @@ function EmployeeDashboard() {
   }
 
   const handleFilterFollowDataToday = (isBdm) => {
-    const filterFollowDataForwarded = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followDataToday.filter((company) => company.caseType === "Forwarded")
-    const filterFollowDataRecieved = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followDataToday.filter((company) => company.caseType === "Recieved")
+    const filterFollowDataForwarded = isBdm ? followDataToday.filter((company) => company.bdmName !== data.ename && company.caseType === "Forwarded") : followDataToday.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followDataToday.filter((company) => company.bdmName !== data.ename && company.caseType === "Recieved") : followDataToday.filter((company) => company.caseType === "Recieved")
     const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentForwarded + totalPaymentRecieved
@@ -2521,8 +2524,8 @@ function EmployeeDashboard() {
     return finalPayment.toLocaleString();
   }
   const handleFilterFollowData = (isBdm) => {
-    const filterFollowDataForwarded = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followData.filter((company) => company.caseType === "Forwarded")
-    const filterFollowDataRecieved = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followData.filter((company) => company.caseType === "Recieved")
+    const filterFollowDataForwarded = isBdm ? followData.filter((company) => company.bdmName !== data.ename && company.caseType === "Forwarded") : followData.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followData.filter((company) => company.bdmName !== data.ename && company.caseType === "Recieved") : followData.filter((company) => company.caseType === "Recieved")
     const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentForwarded + totalPaymentRecieved
@@ -2935,9 +2938,9 @@ function EmployeeDashboard() {
                               {moreEmpData.filter(
                                 (obj) =>
                                   formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
-                                  obj.bdmAcceptStatus !== "NotForwarded" 
-                                  //obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up"&&
-                                  //obj.Status !== "Matured"
+                                  obj.bdmAcceptStatus !== "NotForwarded"
+                                //obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up"&&
+                                //obj.Status !== "Matured"
                               ).length}
                             </div>
                           </div>
@@ -3440,7 +3443,7 @@ function EmployeeDashboard() {
               <div className="card">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                   <div className="dashboard-title pl-1"  >
-                    <h2  className="m-0">
+                    <h2 className="m-0">
                       Total Projection Summary
                     </h2>
                   </div>
@@ -3561,7 +3564,7 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td style={{padding:'0px !important'}}>
+                                    <td style={{ padding: '0px !important' }}>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
                                         <IconButton
                                           onClick={() => {
@@ -3654,7 +3657,7 @@ function EmployeeDashboard() {
                         value={searchTerm}
                         onChange={(e) => filterSearch(e.target.value)}
                         placeholder="Search here....."
-                                  
+
                         type="text"
                         name="bdeName-search"
                         id="bdeName-search"
@@ -3663,7 +3666,7 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div  id="table-default" className="row tbl-scroll">
+                  <div id="table-default" className="row tbl-scroll">
                     <table className="table-vcenter table-nowrap admin-dash-tbl">
                       <thead className="admin-dash-tbl-thead">
                         <tr
@@ -3830,7 +3833,7 @@ function EmployeeDashboard() {
                       <path d="M21 21l-6 -6"></path>
                     </svg>
                   </span>
-                  
+
                   <input
                     className="form-control"
                     value={newSearchTerm}
@@ -3901,7 +3904,7 @@ function EmployeeDashboard() {
               />
             </div>} */}
             <div className="card-body">
-              <div  id="table-default" className="row tbl-scroll"  >
+              <div id="table-default" className="row tbl-scroll"  >
                 <table className="table-vcenter table-nowrap admin-dash-tbl">
                   <thead className="admin-dash-tbl-thead" >
                     <tr>
@@ -4098,7 +4101,7 @@ function EmployeeDashboard() {
               </div>
             </div>
             <div className="card-body">
-              <div  id="table-default" className="row tbl-scroll">
+              <div id="table-default" className="row tbl-scroll">
                 <table className="table-vcenter table-nowrap admin-dash-tbl">
                   <thead className="admin-dash-tbl-thead">
                     <tr
@@ -4337,7 +4340,7 @@ function EmployeeDashboard() {
                                 <div className="dash-select-filte-show-hide">
                                   <div class="form-check form-switch d-flex align-items-center justify-content-center mt-1 mb-0">
                                     <label class="form-check-label" for="flexSwitchCheckDefault">Show Numbers</label>
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"/>
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                                   </div>
                                 </div>
                               </div>
@@ -4346,68 +4349,68 @@ function EmployeeDashboard() {
                               <div className="row">
                                 <div className="col-sm-7 p-0">
                                   <div className="dsrd-body-data-num">
-                                      <label className="m-0 dash-Revenue-label">Revenue</label>
-                                      <h2 className="m-0 dash-Revenue-amnt">₹ XXXXXX /-</h2>
-                                      <div className="d-flex aling-items-center mt-1">
-                                        <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
-                                          <GoArrowUp /> 
-                                          <div>20%</div>
-                                        </div>
-                                        <div className="dsrd-Revenue-lastmonthfixamnt">
-                                          vs Last Month: ₹ 3,00,000
-                                        </div>
+                                    <label className="m-0 dash-Revenue-label">Revenue</label>
+                                    <h2 className="m-0 dash-Revenue-amnt">₹ XXXXXX /-</h2>
+                                    <div className="d-flex aling-items-center mt-1">
+                                      <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
+                                        <GoArrowUp />
+                                        <div>20%</div>
                                       </div>
-                                      <div className="dsrd-TARGET-INCENTIVE">
-                                        TARGET - <b>₹ 1,45,000</b> | INCENTIVE - <b>₹ 1,0000</b>
+                                      <div className="dsrd-Revenue-lastmonthfixamnt">
+                                        vs Last Month: ₹ 3,00,000
                                       </div>
+                                    </div>
+                                    <div className="dsrd-TARGET-INCENTIVE">
+                                      TARGET - <b>₹ 1,45,000</b> | INCENTIVE - <b>₹ 1,0000</b>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="col-sm-5 p-0">
                                   <div>
                                     <GaugeComponent
-                                    width="226.7375030517578"
-                                    height="178.5768051147461"
-                                        marginInPercent={{top: 0.03, bottom: 0.05, left: 0.07, right: 0.07 }}
-                                        value={25}
-                                        type="radial"
-                                        labels={{
-                                          tickLabels: {
-                                            type: "inner",
-                                            ticks: [
-                                              { value: 20 },
-                                              { value: 40 },
-                                              { value: 60 },
-                                              { value: 80 },
-                                              { value: 100 }
-                                            ]
-                                          }
-                                        }}
-                                        arc={{
-                                          colorArray: ['#EA4228','#5BE12C'],
-                                          subArcs: [{limit: 10}, {limit: 30}, {}, {}, {}],
-                                          padding: 0.02,
-                                          width: 0.1
-                                        }}
-                                        pointer={{
-                                          elastic: true,
-                                          animationDelay: 0,
-                                          length:0.60,
-                                        }}
-                                        className="my-speed"
-                                      />
+                                      width="226.7375030517578"
+                                      height="178.5768051147461"
+                                      marginInPercent={{ top: 0.03, bottom: 0.05, left: 0.07, right: 0.07 }}
+                                      value={25}
+                                      type="radial"
+                                      labels={{
+                                        tickLabels: {
+                                          type: "inner",
+                                          ticks: [
+                                            { value: 20 },
+                                            { value: 40 },
+                                            { value: 60 },
+                                            { value: 80 },
+                                            { value: 100 }
+                                          ]
+                                        }
+                                      }}
+                                      arc={{
+                                        colorArray: ['#EA4228', '#5BE12C'],
+                                        subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+                                        padding: 0.02,
+                                        width: 0.1
+                                      }}
+                                      pointer={{
+                                        elastic: true,
+                                        animationDelay: 0,
+                                        length: 0.60,
+                                      }}
+                                      className="my-speed"
+                                    />
                                   </div>
                                 </div>
                               </div>
                             </div>
                             <div className="dash-srd-body-footer">
-                              <div className="row"> 
+                              <div className="row">
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-1cba19">
                                     <div className="dsrd-mini-card-num">
-                                        07
+                                      07
                                     </div>
                                     <div className="dsrd-mini-card-name">
-                                        Mature Leads
+                                      Mature Leads
                                     </div>
                                   </div>
                                 </div>
@@ -4454,7 +4457,7 @@ function EmployeeDashboard() {
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-4299e1">
                                     <div className="dsrd-mini-card-num">
-                                        07/05/2012
+                                      07/05/2012
                                     </div>
                                     <div className="dsrd-mini-card-name">
                                       Last Booking Date
@@ -4480,23 +4483,25 @@ function EmployeeDashboard() {
                             <Box>
                               <LineChart
                                 height={320}
-                                margin={{ left: 60}}
+                                margin={{ left: 60 }}
                                 series={[
-                                  { data: AchivedData, label: 'Achived', color:'#1cba19', stroke: 2 },
-                                  { data: ProjectionData, label: 'Projection', color:'#ffb900', stroke: 3 },
+                                  { data: AchivedData, label: 'Achived', color: '#1cba19', stroke: 2 },
+                                  { data: ProjectionData, label: 'Projection', color: '#ffb900', stroke: 3 },
                                 ]}
-                                xAxis={[{ scaleType: 'point', data: xLabels , label:'Days', 
-                                    axisLine: {
-                                      stroke: '#eee', // Color for the x-axis line
-                                      fill: '#ccc'
-                                    },
-                                    tick: {
-                                      stroke: '#eee', // Color for the x-axis ticks
-                                      fontSize: '10px',
-                                      fill: '#eee', // Color for the x-axis labels
-                                    },
+                                xAxis={[{
+                                  scaleType: 'point', data: xLabels, label: 'Days',
+                                  axisLine: {
+                                    stroke: '#eee', // Color for the x-axis line
+                                    fill: '#ccc'
+                                  },
+                                  tick: {
+                                    stroke: '#eee', // Color for the x-axis ticks
+                                    fontSize: '10px',
+                                    fill: '#eee', // Color for the x-axis labels
+                                  },
                                 }]}
-                                yAxis={[{ data: yLabels, 
+                                yAxis={[{
+                                  data: yLabels,
                                   axisLine: {
                                     stroke: '#eee !important', // Color for the y-axis line
                                   },
@@ -4505,8 +4510,8 @@ function EmployeeDashboard() {
                                     fontSize: '10px',
                                     fill: '#eee', // Color for the y-axis labels
                                   },
-                                  }]}
-                                grid={{ vertical: false, horizontal: true, color:'#eee'  }}
+                                }]}
+                                grid={{ vertical: false, horizontal: true, color: '#eee' }}
                               />
                             </Box>
                           </div>
@@ -4519,7 +4524,8 @@ function EmployeeDashboard() {
                 <div className="row mt-3 mb-4">
                   {/* calling data report */}
                   <div className="col-sm-4">
-                    <div className="dash-card">
+                    <EmployeeCallingReport />
+                    {/* <div className="dash-card">
                       <div className="dash-card-head">
                         <h2 className="m-0">
                           Calling Data Report
@@ -4530,82 +4536,82 @@ function EmployeeDashboard() {
                           <div className="col-sm-5 align-self-stretch">
                             <div className="call-dr-names mb-2">
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-1ac9bd">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     General
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    100
+                                  100
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-ffb900">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Interested
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    20
+                                  20
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-4299e1">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Follow Up
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    25
+                                  25
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-1cba19">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Matured
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    5
+                                  5
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-e65b5b">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Not Interested
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    30
+                                  30
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-dots clr-bg-00d19d">
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     BDM Forwarded
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num">
-                                    20
+                                  20
                                 </div>
                               </div>
                             </div>
                           </div>
                           <div className="col-sm-7 align-self-stretch">
                             <div className="call-dr-chart mt-1">
-                              <PieChart series={[{ data:data_my, innerRadius: 80,labelComponent: null }]} {...size} slotProps={{
+                              <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
                                 legend: { hidden: true },
                               }}>
                                 <PieCenterLabel>Total: 200</PieCenterLabel>
@@ -4614,10 +4620,11 @@ function EmployeeDashboard() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="col-sm-4">
-                    <div className="dash-card">
+                    <EmployeeForwardedReport/>
+                    {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">
                           <select class="head-select form-select" id="head-select">
@@ -4641,104 +4648,105 @@ function EmployeeDashboard() {
                                 <div className="roundImggreen">
                                   <div className="roundImggreen-inner-text">₹ 30,000/-</div>
                                 </div>
-                                <div className="roundImggreen-text">Projected <br/>Revenue</div>
+                                <div className="roundImggreen-text">Projected <br />Revenue</div>
                               </div>
                               <div className="bdm-f-r-revenue-generated">
                                 <div className="roundImgOrg">
                                   <div className="roundImgOrg-inner-text">₹ 50,200/-</div>
                                 </div>
-                                <div className="roundImgOrg-text">Generated <br/>Revenue</div>
+                                <div className="roundImgOrg-text">Generated <br />Revenue</div>
                               </div>
                             </div>
                           </div>
                           <div className="col-sm-5 p-0 align-self-stretch">
                             <div className="call-dr-names">
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-1ac9bd clr-1ac9bd">
                                     <CiViewList />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     General
                                   </div>
-                                </div> 
-                                <div className="call-dr-num clr-1ac9bd" >
-                                    100
+                                </div>
+                                LiaClipboardCheckSolid         <div className="call-dr-num clr-1ac9bd" >
+                                  100
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-ffb900 clr-ffb900">
                                     <MdImportantDevices />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Interested
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num clr-ffb900" >
-                                    20
+                                  20
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-4299e1 clr-4299e1">
                                     <LiaAlgolia />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Follow Up
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num clr-4299e1">
-                                    25
+                                  25
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-1cba19 clr-1cba19">
                                     <LiaClipboardCheckSolid />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Matured
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num clr-1cba19">
-                                    5
+                                  5
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-e65b5b clr-e65b5b">
                                     <RiFileCloseLine />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Not Interested
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num clr-e65b5b">
-                                    30
+                                  30
                                 </div>
                               </div>
                               <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
-                                <div className="d-flex align-items-center justify-content-between"> 
+                                <div className="d-flex align-items-center justify-content-between">
                                   <div className="color-squre-dots clr-bg-light-00d19d clr-00d19d">
                                     <IoFileTrayFullOutline />
-                                  </div>  
+                                  </div>
                                   <div className="call-dr-name">
                                     Total
                                   </div>
-                                </div> 
+                                </div>
                                 <div className="call-dr-num clr-00d19d">
-                                    200
+                                  200
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="col-sm-4">
-                    <div className="dash-card">
+                    <EmployeeTopSellingServices/>
+                    {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">
                           Top Selling Services
@@ -4747,80 +4755,80 @@ function EmployeeDashboard() {
                       <div className="dash-card-body">
                         <div className="top-selling-s">
                           <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-1cba19">
-                            <div className="d-flex align-items-center justify-content-between"> 
+                            <div className="d-flex align-items-center justify-content-between">
                               <div className="top-selling-s-no bdr-l-clr-1cba19">
                                 1
-                              </div>  
+                              </div>
                               <div className="top-selling-s-name">
                                 Start-Up India Certificate
                               </div>
-                            </div> 
+                            </div>
                             <div className="top-selling-s-num clr-bg-1cba19">
-                                10
+                              10
                             </div>
                           </div>
                           <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-00d19d">
-                            <div className="d-flex align-items-center justify-content-between"> 
+                            <div className="d-flex align-items-center justify-content-between">
                               <div className="top-selling-s-no bdr-l-clr-00d19d">
                                 2
-                              </div>  
+                              </div>
                               <div className="top-selling-s-name">
                                 Seed Fund Support
                               </div>
-                            </div> 
+                            </div>
                             <div className="top-selling-s-num clr-bg-00d19d">
-                                8
+                              8
                             </div>
                           </div>
                           <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-fff536">
-                            <div className="d-flex align-items-center justify-content-between"> 
+                            <div className="d-flex align-items-center justify-content-between">
                               <div className="top-selling-s-no bdr-l-clr-fff536">
                                 3
-                              </div>  
+                              </div>
                               <div className="top-selling-s-name">
                                 Website Development
                               </div>
-                            </div> 
+                            </div>
                             <div className="top-selling-s-num clr-bg-fff536">
-                                5
+                              5
                             </div>
                           </div>
                           <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-ffb900">
-                            <div className="d-flex align-items-center justify-content-between"> 
+                            <div className="d-flex align-items-center justify-content-between">
                               <div className="top-selling-s-no bdr-l-clr-ffb900">
                                 4
-                              </div>  
+                              </div>
                               <div className="top-selling-s-name">
                                 Income TAX Exemption
                               </div>
-                            </div> 
+                            </div>
                             <div className="top-selling-s-num clr-bg-ffb900">
-                                4
+                              4
                             </div>
                           </div>
                           <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-e65b5b">
-                            <div className="d-flex align-items-center justify-content-between"> 
+                            <div className="d-flex align-items-center justify-content-between">
                               <div className="top-selling-s-no bdr-l-clr-e65b5b">
-                               5
-                              </div>  
+                                5
+                              </div>
                               <div className="top-selling-s-name">
                                 ISO Certificate
                               </div>
-                            </div> 
+                            </div>
                             <div className="top-selling-s-num clr-bg-e65b5b">
-                                3
+                              3
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>   
+      </div>
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer

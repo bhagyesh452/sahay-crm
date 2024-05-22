@@ -82,6 +82,7 @@ app.use('/api/company-data' , companyAPI)
 app.use('/api/requests' , RequestAPI)
 app.use('/api/teams' , TeamsAPI)
 app.use('/api/bdm-data' , bdmAPI)
+app.use('/api/projection' , ProjectionAPI)
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
