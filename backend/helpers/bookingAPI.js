@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const multer = require("multer");
 dotenv.config(); // Load environment variables from .env file
 const CompanyModel = require("../models/Leads");
-
+const pdf = require("html-pdf");
 const fs = require("fs");
 const { sendMail } = require("./sendMail");
 const RequestDeleteByBDE = require("../models/Deleterequestbybde");
