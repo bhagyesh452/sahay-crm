@@ -3062,17 +3062,7 @@ function EmployeeDashboard() {
                           ))}
                         </select>
                       </div>
-
-                      {/* 
-                        <Select
-                          options={monthOptions}
-                          placeholder="Select..."
-                          onChange={handleChange}
-                          value={monthOptions.find(option => option.value === selectedMonthOption)}
-                        />
-                      </div> */}
                     </div>
-
                     {/*ForwardedToBDM loop */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">

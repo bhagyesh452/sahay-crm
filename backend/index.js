@@ -799,9 +799,9 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 // 1. Create an Employee
 app.post("/api/employee/einfo", async (req, res) => {
   try {
-    adminModel.create(req.body).then((respond) => {
-      res.json(respond);
-      console.log("newemployee", req.body);
+    adminModel.create(req.body).then((res) => {
+      res.json(res);
+      //console.log("newemployee", req.body);
       //console.log("respond" , respond)
     });
   } catch (error) {

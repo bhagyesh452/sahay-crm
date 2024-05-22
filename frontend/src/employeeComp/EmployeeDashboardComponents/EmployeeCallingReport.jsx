@@ -24,78 +24,78 @@ import { RiFileCloseLine } from "react-icons/ri";
 function EmployeeCallingReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
-   
 
-//-----------------fetching employee info--------------------------------
-const [data, setData] = useState([])
-const fetchData = async()=>{
-    try{
-        const response = await axios.get(`${secretKey}/employee/einfo`)
-    const userData = response.data.find((item)=>item._id === userId)
-    setData(userData)
 
-    }catch(error){
-        console.error("Error fetching user data:" , error.message)
+    //-----------------fetching employee info--------------------------------
+    const [data, setData] = useState([])
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/employee/einfo`)
+            const userData = response.data.find((item) => item._id === userId)
+            setData(userData)
+
+        } catch (error) {
+            console.error("Error fetching user data:", error.message)
+        }
     }
-}
 
-useEffect(()=>{
-    fetchData()
-},[])
+    useEffect(() => {
+        fetchData()
+    }, [])
 
-//-------------------fetching employee data------------------------------
-const [empData, setEmpData] = useState([])
-const [empDataFilter, setEmpDataFilter] = useState([])
-const [loading, setLoading] = useState(true)
+    //-------------------fetching employee data------------------------------
+    const [empData, setEmpData] = useState([])
+    const [empDataFilter, setEmpDataFilter] = useState([])
+    const [loading, setLoading] = useState(true)
 
-const fetchEmployeeData = async () => {
-    setLoading(true);
-    try {
-        const response = await axios.get(`${secretKey}/company-data/edata-particular/${data.ename}`)
-        setEmpData(response.data)
-    } catch (error) {
-        console.error("Error fetching data:", error);
+    const fetchEmployeeData = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${secretKey}/company-data/edata-particular/${data.ename}`)
+            setEmpData(response.data)
+        } catch (error) {
+            console.error("Error fetching data:", error);
 
-    }finally{
-        setLoading(false)
+        } finally {
+            setLoading(false)
+        }
     }
-}
 
-useEffect(()=>{
-    fetchEmployeeData()
-},[data])
+    useEffect(() => {
+        fetchEmployeeData()
+    }, [data])
 
-//---------------- function for piew charts----------------------------
-const data_my = [
-    { value: (empData.filter((partObj) => partObj.Status === "Untouched" || partObj.Status === "Busy" || partObj.Status === "Not Picked Up").length), color: '#1ac9bd', label: 'General' },
-    { value: (empData.filter((obj)=>obj.Status === 'Interested').length), color: '#ffb900', label: 'Interested' },
-    { value: (empData.filter((obj)=>obj.Status === 'FollowUp').length), color: '#4299e1', label: 'Follow Up' },
-    { value: (empData.filter((obj)=>obj.Status === 'Matured').length), color: '#1cba19', label: 'Matured' },
-    { value: (empData.filter((obj)=>obj.Status === 'Not Interested').length), color: '#e65b5b', label: 'Not Interested' },
-    { value: (empData.filter((obj)=>obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length), color: '#00d19d', label: 'BDM Forwarded' },
-];
+    //---------------- function for piew charts----------------------------
+    const data_my = [
+        { value: (empData.filter((partObj) => partObj.Status === "Untouched" || partObj.Status === "Busy" || partObj.Status === "Not Picked Up").length), color: '#1ac9bd', label: 'General' },
+        { value: (empData.filter((obj) => obj.Status === 'Interested').length), color: '#ffb900', label: 'Interested' },
+        { value: (empData.filter((obj) => obj.Status === 'FollowUp').length), color: '#4299e1', label: 'Follow Up' },
+        { value: (empData.filter((obj) => obj.Status === 'Matured').length), color: '#1cba19', label: 'Matured' },
+        { value: (empData.filter((obj) => obj.Status === 'Not Interested').length), color: '#e65b5b', label: 'Not Interested' },
+        { value: (empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length), color: '#00d19d', label: 'BDM Forwarded' },
+    ];
 
-const size = {
-    width: 350,
-    height: 220,
-    viewBox: "0 0 250 200",
-};
+    const size = {
+        width: 350,
+        height: 220,
+        viewBox: "0 0 250 200",
+    };
 
-const StyledText = styled('text')(({ theme }) => ({
-    fill: theme.palette.text.primary,
-    textAnchor: 'middle',
-    dominantBaseline: 'central',
-    fontSize: 20,
-}));
+    const StyledText = styled('text')(({ theme }) => ({
+        fill: theme.palette.text.primary,
+        textAnchor: 'middle',
+        dominantBaseline: 'central',
+        fontSize: 20,
+    }));
 
-function PieCenterLabel({ children }) {
-    const { width, height, left, top } = useDrawingArea();
-    return (
-        <StyledText x={left + width / 2} y={top + height / 2}>
-            {children}
-        </StyledText>
-    );
-}
+    function PieCenterLabel({ children }) {
+        const { width, height, left, top } = useDrawingArea();
+        return (
+            <StyledText x={left + width / 2} y={top + height / 2}>
+                {children}
+            </StyledText>
+        );
+    }
 
 
 
@@ -129,7 +129,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.Status === 'Untouched'|| obj.Status === 'Busy' || obj.Status === 'Not Picked Up').length}
+                                        {empData.filter((obj) => obj.Status === 'Untouched' || obj.Status === 'Busy' || obj.Status === 'Not Picked Up').length}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -141,7 +141,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.Status === "Interested").length}
+                                    {empData.filter((obj) => obj.Status === "Interested" && obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -153,7 +153,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.Status === "FollowUp").length}
+                                        {empData.filter((obj) => obj.Status === "FollowUp"&& obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -165,7 +165,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.Status === 'Matured').length}
+                                        {empData.filter((obj) => obj.Status === 'Matured').length}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -177,7 +177,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.Status === 'Not Interested').length}
+                                        {empData.filter((obj) => obj.Status === 'Not Interested').length}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -189,7 +189,7 @@ function PieCenterLabel({ children }) {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {empData.filter((obj)=>obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length}
+                                        {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length}
                                     </div>
                                 </div>
                             </div>
