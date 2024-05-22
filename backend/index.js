@@ -926,7 +926,7 @@ app.post("/api/company", async (req, res) => {
 
 // Assigning data
 
-// app.post("/api/postData", async (req, res) => {
+// app.post("/api/postData", async (req, res) => {cd 
 //   const { employeeSelection, selectedObjects, title, date, time } = req.body;
 //   // If not assigned, post data to MongoDB or perform any desired action
 //   const updatePromises = selectedObjects.map((obj) => {
@@ -1171,17 +1171,6 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
   res.sendFile(filePath);
 });
 
-// ************************************************ Export APIs ***********************************************
-
-
-// *********************************************  Bookings Section  *****************************************************
-
-// ********************************************  Bookings Requests Section *********************************************
-
-
-
-
-//  ********************************************  Unused APIs (Pata nai kyu hee)          *********************************************************
 app.post("/api/undo", (req, res) => {
   // Run mongorestore command to restore the data
   exec(
