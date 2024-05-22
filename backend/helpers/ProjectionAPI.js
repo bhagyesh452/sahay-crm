@@ -4,7 +4,23 @@ const dotenv = require('dotenv')
 dotenv.config();
 
 const FollowUpModel = require("../models/FollowUp");
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
+function formatDateNew(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const formattedDay = day < 10 ? "0" + day : day;
+  const formattedMonth = month < 10 ? "0" + month : month;
+  return `${formattedDay}/${formattedMonth}/${year}`;
+}
 
 
 // ****************************************  Projection Section's Hadi *********************************************************
