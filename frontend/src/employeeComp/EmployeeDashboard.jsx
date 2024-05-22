@@ -1,4 +1,4 @@
- import React, { useEffect, useState, CSSProperties, useRef } from "react";
+import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import Header from "../components/Header";
 import EmpNav from "./EmpNav";
 import axios from "axios";
@@ -4621,7 +4621,7 @@ function EmployeeDashboard() {
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">
                           <select class="head-select form-select" id="head-select">
-                            <option value="1" selected>Forwarded to BDM</option>
+                            <option value="1" selected>Forworded to BDM</option>
                             <option value="2">Received as BDM</option>
                           </select>
                         </h2>
