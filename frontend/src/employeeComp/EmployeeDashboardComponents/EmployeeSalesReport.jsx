@@ -1,5 +1,6 @@
-import React from 'react';
+import React , {useState} from 'react';
 import { GoArrowUp } from "react-icons/go";
+import { GoArrowDown } from "react-icons/go";
 import { LineChart } from '@mui/x-charts/LineChart';
 import GaugeComponent from 'react-gauge-component';
 
@@ -8,6 +9,8 @@ import Box from '@mui/material/Box';
 
 
 function EmployeeSalesReport({data , redesignedData , moreEmpData , followData}) {
+console.log(data , redesignedData , moreEmpData , followData)
+  //  **************************************   Foprmat dates ********************************************
 
   function formatDateNow(timestamp) {
     const date = new Date(timestamp);
@@ -24,6 +27,12 @@ function EmployeeSalesReport({data , redesignedData , moreEmpData , followData})
     return `${day}/${month}/${year}`;
   }
 
+
+  // ********************************************************************  Declarations ***************************************************************** 
+
+const [Filterby, setFilterby] = useState("Today");
+const [showData , setShowData] = useState(false);
+console.log(showData)
 const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
 const ProjectionData =  [10000, 10033, 50000, 52330, 85200, 32100, 42500];
 const xLabels = [
@@ -73,43 +82,30 @@ let totalMaturedCount = 0;
 let totalTargetAmount = 0;
 let totalAchievedAmount = 0;
 
-const functionCalculateMatured = (istrue) => {
 
+// ***************************************************************  Functions ***********************************************************
+
+const functionCalculateMatured = (istrue) => {
   let maturedCount = 0;
   const today = new Date();
 
   redesignedData.map((mainBooking)=>{
-    if(istrue){
-      if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-        if(mainBooking.bdeName === mainBooking.bdmName){
-          maturedCount = maturedCount + 1
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-          maturedCount = maturedCount + 0.5;
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-          if(mainBooking.bdeName === data.ename){
-            maturedCount = maturedCount + 1;
-          }
-        }
+  
+      let condition = false;
+    switch (Filterby) {
+      case 'Today':
+        condition =  (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+        break;
+      case 'Last Month':
+        condition =  (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+        break;
+      case 'This Month':
+        condition =  (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
+        break;
+      default:
+        break;
     }
-      mainBooking.moreBookings.map((moreObject)=>{
-        if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-            if(moreObject.bdeName === moreObject.bdmName){
-              maturedCount = maturedCount + 1;
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-              maturedCount = maturedCount + 0.5
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-              if(moreObject.bdeName === data.ename){
-                maturedCount = maturedCount + 1;
-              }
-            }
-       
-        }
-      })
-
-    }else{
-      if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
+      if(condition){
        
           if(mainBooking.bdeName === mainBooking.bdmName){
             maturedCount = maturedCount + 1
@@ -121,8 +117,25 @@ const functionCalculateMatured = (istrue) => {
             }
           }
       }
+
+      
+      
         mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
+          let condition = false;
+          switch (Filterby) {
+            case 'Today':
+              condition =  (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+              break;
+            case 'Last Month':
+              condition =  (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+              break;
+            case 'This Month':
+              condition =  (new Date(moreObject.bookingDate).getMonth() === today.getMonth())
+              break;
+            default:
+              break;
+          }
+          if(condition){
          
               if(moreObject.bdeName === moreObject.bdmName){
                 maturedCount = maturedCount + 1;
@@ -137,7 +150,7 @@ const functionCalculateMatured = (istrue) => {
         })
       }    
     
-  })
+  )
 
   // Set hours, minutes, and seconds to zero
   // const todayData = istrue
@@ -213,63 +226,29 @@ const functionCalculateTotalRevenue = (istrue) => {
   return achievedAmount
 
 };
-const functionCalculateAchievedRevenue = (istrue) => {
+const functionCalculateAchievedRevenue = () => {
   let achievedAmount = 0;
   let remainingAmount = 0;
   let expanse = 0;
   const today = new Date();
 
-  redesignedData.map((mainBooking)=>{
-    if(istrue){
-      if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-        if(mainBooking.bdeName === mainBooking.bdmName){
-          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-          mainBooking.services.map(serv=>{
-            // console.log(serv.expanse , bdeName ,"this is services");
-            expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-          });
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-          mainBooking.services.map(serv=>{
-            expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-          })
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-          if(mainBooking.bdeName === data.ename){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-            })
-          }
-        }
-      }
-      mainBooking.moreBookings.map((moreObject)=>{
-        if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-            if(moreObject.bdeName === moreObject.bdmName){
-              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-              moreObject.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-              })
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-              moreObject.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-              })
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-              if(moreObject.bdeName === data.ename){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-                })
-              }
-            }
-       
-        }
-      })
 
-    }else{
-      if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
+  redesignedData.map((mainBooking)=>{
+    let condition = false;
+    switch (Filterby) {
+      case 'Today':
+        condition =  (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+        break;
+      case 'Last Month':
+        condition =  (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+        break;
+      case 'This Month':
+        condition =  (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
+        break;
+      default:
+        break;
+    }
+      if(condition){
        
         if(mainBooking.bdeName === mainBooking.bdmName){
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
@@ -291,7 +270,21 @@ const functionCalculateAchievedRevenue = (istrue) => {
         }
       }else if(mainBooking.remainingPayments.length !== 0){
         mainBooking.remainingPayments.map((remainingObj)=>{
-          if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+          let condition = false;
+          switch (Filterby) {
+            case 'Today':
+              condition =  (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+              break;
+            case 'Last Month':
+              condition =  (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+              break;
+            case 'This Month':
+              condition =  (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+              break;
+            default:
+              break;
+          }
+          if(condition){
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
             if(mainBooking.bdeName === mainBooking.bdmName){
@@ -307,7 +300,21 @@ const functionCalculateAchievedRevenue = (istrue) => {
         })
       }
         mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
+          let condition = false;
+          switch (Filterby) {
+            case 'Today':
+              condition =  (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+              break;
+            case 'Last Month':
+              condition =  (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+              break;
+            case 'This Month':
+              condition =  (new Date(moreObject.bookingDate).getMonth() === today.getMonth())
+              break;
+            default:
+              break;
+          }
+          if(condition){
          
             if(moreObject.bdeName === moreObject.bdmName){
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
@@ -329,9 +336,23 @@ const functionCalculateAchievedRevenue = (istrue) => {
             }
          
           }else if(moreObject.remainingPayments.length!==0){
-         
+           
             moreObject.remainingPayments.map((remainingObj)=>{
-              if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+              let condition = false;
+          switch (Filterby) {
+            case 'Today':
+              condition =  (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+              break;
+            case 'Last Month':
+              condition =  (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+              break;
+            case 'This Month':
+              condition =  (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+              break;
+            default:
+              break;
+          }
+              if(condition){
                 
                 const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
                 const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
@@ -348,7 +369,137 @@ const functionCalculateAchievedRevenue = (istrue) => {
             })
           }
         })
-    }
+    
+   
+ 
+    
+    
+  })
+  // const today = new Date();
+  // // Set hours, minutes, and seconds to zero
+  // const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData.filter(
+  //   (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+  // );
+
+  // todayData.forEach((obj) => {
+  //   if (obj.moreBookings.length === 0) {
+  //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+  //       achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+  //     } else {
+  //       achievedAmount += Math.round(obj.generatedReceivedAmount);
+  //     }
+  //   } else {
+  //     if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+  //       achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+  //     } else {
+  //       achievedAmount += Math.round(obj.generatedReceivedAmount);
+  //     }
+  //     obj.moreBookings.forEach((booking) => {
+  //       if (
+  //         booking.bdeName !== booking.bdmName &&
+  //         booking.bdmType === "Close-by"
+  //       ) {
+  //         achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
+  //       } else {
+  //         achievedAmount += Math.round(obj.generatedReceivedAmount);
+  //       }
+  //     });
+  //   }
+  // });
+  return achievedAmount + Math.round(remainingAmount) - expanse;
+};
+const functionCalculateLastMonthRevenue = () => {
+  let achievedAmount = 0;
+  let remainingAmount = 0;
+  let expanse = 0;
+  const today = new Date();
+
+
+  redesignedData.map((mainBooking)=>{
+    
+      if(new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1)){
+       
+        if(mainBooking.bdeName === mainBooking.bdmName){
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+          mainBooking.services.map(serv=>{
+            expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+          })
+        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
+          mainBooking.services.map(serv=>{
+            expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+          })
+        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+          if(mainBooking.bdeName === data.ename){
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+            mainBooking.services.map(serv=>{
+              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            })
+          }
+        }
+      }else if(mainBooking.remainingPayments.length !== 0){
+        mainBooking.remainingPayments.map((remainingObj)=>{
+         
+          if(new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1)){
+            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+            if(mainBooking.bdeName === mainBooking.bdmName){
+                remainingAmount += Math.round(tempAmount);
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+              remainingAmount += Math.round(tempAmount)/2;
+            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
+              if(mainBooking.bdeName === data.ename){
+                remainingAmount += Math.round(tempAmount);
+              }
+            }         
+          }
+        })
+      }
+        mainBooking.moreBookings.map((moreObject)=>{
+        
+          if(new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1)){
+         
+            if(moreObject.bdeName === moreObject.bdmName){
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              moreObject.services.map(serv=>{
+                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              })
+            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
+              moreObject.services.map(serv=>{
+                expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+              })
+            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+              if(moreObject.bdeName === data.ename){
+                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                moreObject.services.map(serv=>{
+                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                })
+              }
+            }
+         
+          }else if(moreObject.remainingPayments.length!==0){
+           
+            moreObject.remainingPayments.map((remainingObj)=>{
+            
+              if(new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1)){
+                
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if(moreObject.bdeName === moreObject.bdmName){
+                    remainingAmount += Math.round(tempAmount);
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
+                  remainingAmount += Math.round(tempAmount)/2;
+                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
+                  if(moreObject.bdeName === data.ename){
+                    remainingAmount += Math.round(tempAmount);
+                  }
+                }         
+              }
+            })
+          }
+        })
+    
    
  
     
@@ -494,12 +645,28 @@ const functionCalculatePendingRevenue = () => {
   
   let remainingAmount = 0;
   const today = new Date();
+ 
 
   redesignedData.map((mainBooking)=>{
-    
+   
       if(mainBooking.remainingPayments.length !== 0){
         mainBooking.remainingPayments.map((remainingObj)=>{
-          if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+         
+            let condition = false;
+        switch (Filterby) {
+          case 'Today':
+            condition =  (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+            break;
+          case 'Last Month':
+            condition =  (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+            break;
+          case 'This Month':
+            condition =  (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+            break;
+          default:
+            break;
+        }
+          if(condition){
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
             if(mainBooking.bdeName === mainBooking.bdmName){
@@ -516,9 +683,25 @@ const functionCalculatePendingRevenue = () => {
       }
       mainBooking.moreBookings.map((moreObject)=>{
          if(moreObject.remainingPayments.length!==0){
+      
          
           moreObject.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+            let condition = false;
+            switch (Filterby) {
+              case 'Today':
+                condition =  (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+                break;
+              case 'Last Month':
+                condition =  (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() -1))
+                break;
+              case 'This Month':
+                condition =  (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+                break;
+              default:
+                break;
+            }
+           
+            if(condition){
               
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
@@ -673,22 +856,49 @@ function functionGetLastBookingDate() {
   // return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
 }
 const functionCalculateProjections = ()=>{
- const tempData = followData.filter((company) => {
-    // Assuming you want to filter companies with an estimated payment date for today
-    const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-    return company.estPaymentDate === today;
-  });
-  const initialValue = {
-    totalSum : 0
+  let tempData = [];
+  if(Filterby === "Today"){
+    tempData = followData.filter((company) => {
+      // Assuming you want to filter companies with an estimated payment date for today
+      const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+      return company.estPaymentDate === today;
+    });
+  }else if(Filterby === "Last Month"){
+    tempData = followData.filter((company) => {
+      // Assuming you want to filter companies with an estimated payment date for today
+      const today = new Date().getMonth(); // Get today's date in the format 'YYYY-MM-DD'
+      let month  = today;
+      if(today === 0){
+        month = 11;
+      }else {
+        month = today - 1
+      }
+      return new Date(company.estPaymentDate).getMonth() === month;
+    });
+  }else if(Filterby === "This Month"){
+    tempData = followData.filter((company) => {
+      // Assuming you want to filter companies with an estimated payment date for today
+      const today = new Date().getMonth(); // Get today's date in the format 'YYYY-MM-DD'
+      return new Date(company.estPaymentDate).getMonth() === today;
+    });
   }
+
   const value = tempData.reduce((total, obj) => total + obj.totalPayment, 0);
 
 return value;
 }
 
 const functionGetAmount = () => {
+
+let currentMonth = monthNames[new Date().getMonth()];
+
+if(Filterby === "Last Month"){
+  currentMonth = monthNames[new Date().getMonth() - 1];
+}
+
+
   if (data.length === 0) {
-    return 0; // Return 0 if data is falsy
+    return 0; // Return 0 if data is false
   }
 
   const object = data;
@@ -712,6 +922,7 @@ const functionGetAmount = () => {
 
   return amount;
 };
+const improvement = Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) -  (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
 
   return (
     <div>
@@ -725,17 +936,17 @@ const functionGetAmount = () => {
                                 <div>
                                   <h2 className="m-0">Sales Report</h2>
                                   <div className="dash-select-filter">
-                                    <select class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
-                                      <option value="1" selected>Today</option>
-                                      <option value="2">This Month</option>
-                                      <option value="3">Last Month</option>
+                                    <select onChange={(e)=>setFilterby(e.target.value)} class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                                      <option value="Today" selected>Today</option>
+                                      <option value="This Month">This Month</option>
+                                      <option value="Last Month">Last Month</option>
                                     </select>
                                   </div>
                                 </div>
                                 <div className="dash-select-filte-show-hide">
                                   <div class="form-check form-switch d-flex align-items-center justify-content-center mt-1 mb-0">
                                     <label class="form-check-label" for="flexSwitchCheckDefault">Show Numbers</label>
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"/>
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onChange={()=>setShowData(!showData)} checked={showData}/>
                                   </div>
                                 </div>
                               </div>
@@ -745,18 +956,21 @@ const functionGetAmount = () => {
                                 <div className="col-sm-7 p-0">
                                   <div className="dsrd-body-data-num">
                                       <label className="m-0 dash-Revenue-label">Revenue</label>
-                                      <h2 className="m-0 dash-Revenue-amnt">₹ {parseInt(functionCalculateAchievedRevenue()).toLocaleString()} /-</h2>
+                                      <h2 className="m-0 dash-Revenue-amnt">₹  {showData ? parseInt(functionCalculateAchievedRevenue()).toLocaleString() : "XXXXXX"} /-</h2>
                                       <div className="d-flex aling-items-center mt-1">
-                                        <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
+                                        {improvement > 0 ? <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
                                           <GoArrowUp /> 
-                                          <div>20%</div>
-                                        </div>
+                                          <div>{improvement} %</div>
+                                        </div> : <div style={{backgroundColor:"#ffecec" , color:'#c61f1f'}} className="dsrd-Revenue-up-ration d-flex aling-items-center">
+                                          <GoArrowDown /> 
+                                          <div>{Math.abs(improvement)} %</div>
+                                        </div> }
                                         <div className="dsrd-Revenue-lastmonthfixamnt">
-                                          vs Last Month: ₹ 3,00,000
+                                          vs Last Month: ₹ {showData ? functionCalculateLastMonthRevenue() : "XXXXXX"}
                                         </div>
                                       </div>
                                       <div className="dsrd-TARGET-INCENTIVE">
-                                        TARGET - <b>₹ {functionGetAmount().toLocaleString()}</b> | INCENTIVE - <b>₹ {functionGetAmount() < functionCalculateAchievedRevenue() ? parseInt((functionCalculateAchievedRevenue() - functionGetAmount())/10).toLocaleString() : 0}</b>
+                                        TARGET - <b>₹ {showData ? functionGetAmount().toLocaleString() : "XXXXX"}</b> | INCENTIVE - <b>₹ {showData ? (functionGetAmount() < functionCalculateAchievedRevenue() ? parseInt((functionCalculateAchievedRevenue() - functionGetAmount())/10).toLocaleString() : 0) : "XXXXX"}</b>
                                       </div>
                                   </div>
                                 </div>
@@ -766,7 +980,7 @@ const functionGetAmount = () => {
                                     width="226.7375030517578"
                                     height="178.5768051147461"
                                         marginInPercent={{top: 0.03, bottom: 0.05, left: 0.07, right: 0.07 }}
-                                        value={(functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2) > 100 ? 100 : (functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2) }
+                                        value={Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2) > 100 ? 100 : (functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2))} 
                                         type="radial"
                                         labels={{
                                           tickLabels: {
@@ -812,7 +1026,7 @@ const functionGetAmount = () => {
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-00d19d">
                                     <div className="dsrd-mini-card-num">
-                                    ₹ {functionCalculateAchievedRevenue().toLocaleString()}
+                                    ₹ {showData ? functionCalculateAchievedRevenue().toLocaleString() : "XXXXX"}
                                     </div>
                                     <div className="dsrd-mini-card-name">
                                       Advance collected
@@ -822,7 +1036,7 @@ const functionGetAmount = () => {
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-e65b5b">
                                     <div className="dsrd-mini-card-num">
-                                    ₹ {functionCalculatePendingRevenue().toLocaleString()}
+                                    ₹ {showData ?  functionCalculatePendingRevenue().toLocaleString() : "XXXXX"}
                                     </div>
                                     <div className="dsrd-mini-card-name">
                                       Remaining Collected
@@ -832,7 +1046,7 @@ const functionGetAmount = () => {
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-a0b1ad">
                                     <div className="dsrd-mini-card-num">
-                                    ₹ {functionCalculateYesterdayRevenue().toLocaleString()}
+                                    ₹ {showData ? functionCalculateYesterdayRevenue().toLocaleString() : "XXXXX"}
                                     </div>
                                     <div className="dsrd-mini-card-name">
                                       Yesterday Collected
@@ -852,7 +1066,7 @@ const functionGetAmount = () => {
                                 <div className="col-sm-4">
                                   <div className="dsrd-mini-card bdr-l-clr-4299e1">
                                     <div className="dsrd-mini-card-num">
-                                        07/05/2012
+                                    {functionGetLastBookingDate()}
                                     </div>
                                     <div className="dsrd-mini-card-name">
                                       Last Booking Date
