@@ -621,6 +621,7 @@ function Leads() {
         ...data,
         ename: newemployeeSelection,
         AssignDate: properDate,
+        Status: (data.Status !== "Interested" || data.Status !== "FollowUp") ? "Untouched" : data.Status,
         UploadedBy: adminName ? adminName : "Admin"
       }));
 
@@ -708,11 +709,14 @@ function Leads() {
     } else {
       if (csvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
-
+        const updatedCsvdata = csvdata.map((data) => ({
+          ...data,
+          Status: (data.Status !== "Interested" || data.Status !== "FollowUp") ? "Untouched" : data.Status,
+        }));
         try {
           const response = await axios.post(
-            `${secretKey}/leads`,
-            csvdata
+            `${secretKey}/leads`, 
+            updatedCsvdata
           );
 
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
