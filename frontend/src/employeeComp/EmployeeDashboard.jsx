@@ -2117,14 +2117,16 @@ function EmployeeDashboard() {
 
   function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;
-    const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
-    requiredObj.forEach((object) => {
-      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
-      if (newObject) {
-        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
-      }
+    // const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    // requiredObj.forEach((object) => {
+    //   const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+    //   if (newObject) {
+    //     generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+    //   }
 
-    });
+    // });
+
+    
 
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);

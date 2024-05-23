@@ -94,6 +94,21 @@ function EmployeesForwardedDataReport() {
                 console.error(`Error Fetching Employee Data `, error);
             });
     };
+
+    const [redesignedData, setRedesignedData] = useState([]);
+    const fetchRedesignedBookings = async () => {
+        try {
+            const response = await axios.get(
+                `${secretKey}/redesigned-final-leadData`
+            );
+            const bookingsData = response.data;
+    
+            
+            setRedesignedData(bookingsData);
+        } catch (error) {
+            console.log("Error Fetching Bookings Data", error);
+        }
+    };
     const debounceDelay = 300;
 
     // Wrap the fetch functions with debounce
@@ -116,7 +131,8 @@ function EmployeesForwardedDataReport() {
     //console.log("forwardemployeedata" , forwardEmployeeData)
 
     useEffect(() => {
-        fetchTeamLeadsData()
+        fetchTeamLeadsData();
+        fetchRedesignedBookings();
     }, [])
 
     //-------------------------------------fetching company data ----------------
@@ -814,7 +830,90 @@ function EmployeesForwardedDataReport() {
 
     //------------------------------------generated revenue caluclate function--------------------------------------
     let generatedTotalRevenue = 0;
+    let getGeneratedMaturedCase = 0;
+    function functionCalculateGeneratedRevenue(bdeName) {
+        let generatedRevenue = 0;
+        const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
+        // console.log("boom",  requiredObj , redesignedData)
+        requiredObj.forEach((object) => {
+          redesignedData.map((mainBooking) => {
+            if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+              if (mainBooking.bdeName === mainBooking.bdmName) {
+                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount) / 2
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (mainBooking.bdeName === bdeName) {
+                  generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+                }
+              }
 
+              mainBooking.moreBookings.length!==0 && mainBooking.moreBookings.map((moreObject)=>{
+               if( moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
+                if (moreObject.bdeName === moreObject.bdmName) {
+                    generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
+                    generatedRevenue += parseInt(moreObject.generatedReceivedAmount) / 2
+                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
+                    if (moreObject.bdeName === bdeName) {
+                      generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+                    }
+                  }
+               }
+              })
+              
+            }
+              })
+        });
+        generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
+        return generatedRevenue;
+        //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+        //  console.log("This is generated Revenue",requiredObj);
+    
+      }
+    function functionCalculateGeneratedMaturedCase(bdeName) {
+        let maturedCase = 0;
+        const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
+        // console.log("boom",  requiredObj , redesignedData)
+        requiredObj.forEach((object) => {
+          redesignedData.map((mainBooking) => {
+            if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+              if (mainBooking.bdeName === mainBooking.bdmName) {
+               maturedCase += 1;
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                maturedCase += 0.5;
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (mainBooking.bdeName === bdeName) {
+                    maturedCase += 1;
+                }
+              }
+
+              mainBooking.moreBookings.length!==0 && mainBooking.moreBookings.map((moreObject)=>{
+               if( moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
+                if (moreObject.bdeName === moreObject.bdmName) {
+                   maturedCase += 1;
+                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
+                   maturedCase += 0.5;
+                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
+                    if (moreObject.bdeName === bdeName) {
+                     maturedCase += 1;
+                    }
+                  }
+               }
+              })
+              
+            }
+          })
+    
+    
+    
+        });
+        getGeneratedMaturedCase += maturedCase;
+        return maturedCase;
+        //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+        //  console.log("This is generated Revenue",requiredObj);
+    
+      }
 
     function functionCalculateGeneratedTotalRevenue(ename) {
         const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
@@ -1258,9 +1357,9 @@ function EmployeesForwardedDataReport() {
                                                 </td>
 
                                                 <td>
-                                                    {companyDataTotal.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                                    {functionCalculateGeneratedMaturedCase(obj.ename)}
                                                 </td>
-                                                <td>₹ {Math.round(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
+                                                <td>₹ {Math.round(functionCalculateGeneratedRevenue(obj.ename)).toLocaleString()}</td>
                                             </tr>
                                         ))}
                                 </tbody>

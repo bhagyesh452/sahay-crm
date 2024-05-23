@@ -61,6 +61,8 @@ import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+
+
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -1332,7 +1334,6 @@ function EmployeePanel() {
             text: "For further assistance, please contact the Data Analyst.",
             html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
           });
-
         });
       // axios
       //   .post(`${secretKey}/manual`, {
@@ -1356,7 +1357,6 @@ function EmployeePanel() {
       //     "Director Email(Third)": directorEmailThird,
       //     "UploadedBy": data.ename
       //   })
-
     }
   };
 
