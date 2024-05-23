@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 
 
 function EmployeeSalesReport({data , redesignedData , moreEmpData , followData}) {
-console.log(data , redesignedData , moreEmpData , followData)
+
   //  **************************************   Foprmat dates ********************************************
 
   function formatDateNow(timestamp) {
@@ -32,7 +32,7 @@ console.log(data , redesignedData , moreEmpData , followData)
 
 const [Filterby, setFilterby] = useState("Today");
 const [showData , setShowData] = useState(false);
-console.log(showData)
+
 const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
 const ProjectionData =  [10000, 10033, 50000, 52330, 85200, 32100, 42500];
 const xLabels = [

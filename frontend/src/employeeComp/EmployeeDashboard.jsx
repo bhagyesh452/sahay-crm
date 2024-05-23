@@ -4537,7 +4537,7 @@ function EmployeeDashboard() {
                     </div> */}
                   </div>
                   <div className="col-sm-4">
-                    <EmployeeTopSellingServices/>
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
                     {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">
