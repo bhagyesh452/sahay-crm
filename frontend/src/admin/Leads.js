@@ -1896,7 +1896,7 @@ function Leads() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-          <div>
+          {dataStatus === "Unassigned" && <div>
             {newempData.length !== 0 ? (
               <>
                 <div className="dialogAssign">
@@ -1927,7 +1927,105 @@ function Leads() {
                 <h1>No Employees Found</h1>
               </div>
             )}
+          </div>}
+          {dataStatus === "Assigned" && <div>
+         
+          <div className="con2 d-flex">
+              <div
+                style={
+                  selectedOption === "direct"
+                    ? {
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
+                    : {
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
+                }
+                onClick={() => {
+                  setSelectedOption("direct");
+                }}
+                className="direct form-control"
+              >
+                <input
+                  type="radio"
+                  id="direct"
+                  value="direct"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "direct"}
+                  onChange={(e)=>{
+                    handleOptionChange(e)
+                    setEmployeeSelection("Not Alloted")
+                  } }
+                />
+                <label htmlFor="direct">Move In General Data</label>
+              </div>
+              <div
+                style={
+                  selectedOption === "someoneElse"
+                    ? {
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
+                    : {
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
+                }
+                className="indirect form-control"
+                onClick={() => {
+                  setSelectedOption("someoneElse");
+                }}
+              >
+                <input
+                  type="radio"
+                  id="someoneElse"
+                  value="someoneElse"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "someoneElse"}
+                  onChange={handleOptionChange}
+                />
+                <label htmlFor="someoneElse">Assign to Employee</label>
+              </div>
+            </div>
+            <div>
+            {newempData.length !== 0 && selectedOption === "someoneElse" && (
+              <>
+                <div className="dialogAssign mt-2">
+                  <div className="selector form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={employeeSelection}
+                      onChange={(e) => {
+                        setEmployeeSelection(e.target.value);
+                      }}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select employee
+                      </option>
+                      {newempData.map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) }
           </div>
+            </div>}
         </DialogContent>
         <div className="btn-list">
           <button
