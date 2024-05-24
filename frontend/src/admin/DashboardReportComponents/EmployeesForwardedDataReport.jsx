@@ -828,7 +828,8 @@ function EmployeesForwardedDataReport() {
         setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
     }, [forwardEmployeeData]);
 
-    //------------------------------------generated revenue caluclate function--------------------------------------
+    //              ------------------------------------generated revenue caluclate function--------------------------------------
+    
     let generatedTotalRevenue = 0;
     let getGeneratedMaturedCase = 0;
     function functionCalculateGeneratedRevenue(bdeName) {
