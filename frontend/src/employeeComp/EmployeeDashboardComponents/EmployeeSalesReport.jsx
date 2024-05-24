@@ -30,7 +30,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   // ********************************************************************  Declarations ***************************************************************** 
 
-  const [Filterby, setFilterby] = useState("Today");
+  const [Filterby, setFilterby] = useState("This Month");
   const [showData, setShowData] = useState(false);
 
   let totalMaturedCount = 0;
@@ -689,7 +689,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const improvement = Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
 
   //-------------function for projection chart----------------------------------
-  const [selectedMonthOption, setSelectedMonthOption] = useState("This Week")
+  const [selectedMonthOption, setSelectedMonthOption] = useState("This Month")
 
 
 
@@ -1080,8 +1080,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                   <div>
                     <h2 className="m-0">Sales Report</h2>
                     <div className="dash-select-filter">
-                      <select onChange={(e) => setFilterby(e.target.value)} class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
-                        <option value="Today" selected>Today</option>
+                      <select value={Filterby} onChange={(e) => setFilterby(e.target.value)} class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                        <option value="Today" >Today</option>
                         <option value="This Month">This Month</option>
                         <option value="Last Month">Last Month</option>
                       </select>
