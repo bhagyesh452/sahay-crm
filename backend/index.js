@@ -6241,6 +6241,7 @@ app.post(
             },
           };
           const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
+          const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -6252,7 +6253,7 @@ app.post(
                   setTimeout(() => {
                     const mainBuffer = fs.readFileSync(pdfFilePath);
                     sendMail2(
-                      [clientMail, "admin@startupsahay.com"],
+                      mainClientMail,
                       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                       ``,
                       `
@@ -8909,6 +8910,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     };
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -8920,7 +8922,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                [clientMail, "admin@startupsahay.com"],
+                mainClientMail,
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
