@@ -60,6 +60,7 @@ function ManageLeads() {
     const [filteredRemarks, setFilteredRemarks] = useState([]);
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
+    const [isSearching, setIsSearching] = useState(false)
 
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
@@ -119,11 +120,14 @@ function ManageLeads() {
     };
 
     useEffect(() => {
-        fetchData(1)
-        fetchTotalLeads()
-        fetchEmployeesData()
-        fetchRemarksHistory()
-    }, [dataStatus])
+        if (!isSearching) {
+            fetchData(1)
+            fetchTotalLeads()
+            fetchEmployeesData()
+            fetchRemarksHistory()
+        }
+
+    }, [dataStatus, isSearching])
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
@@ -148,22 +152,33 @@ function ManageLeads() {
     const handleFilterSearch = async (searchQuery) => {
         try {
             setCurrentDataLoading(true);
-
+            setIsSearching(true);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery , field:"Company Name" }
+                params: { searchQuery, field: "Company Name" }
             });
 
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
+                setIsSearching(false)
                 fetchData(1)
             } else {
                 // Set data to the search results
+
                 setData(response.data);
+                if (response.data.length > 0) {
+                    if (response.data[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned')
+                    } else {
+                        setDataStatus('Assigned')
+                    }
+                }
+
             }
         } catch (error) {
             console.error('Error searching leads:', error.message);
         } finally {
             setCurrentDataLoading(false);
+            
         }
     };
 
@@ -1030,7 +1045,12 @@ function ManageLeads() {
                                
                             </div>
                         </div>
-                        <div className='w-25'>
+                        {selectedRows.length !== 0 && (
+                            <div className="form-control mt-3" style={{ width: "192px", height: "38px" }} >
+                                Total Data Selected : {selectedRows.length}
+                            </div>
+                        )}
+                        <div className='w-25 mt-3'>
                             <input
                                 type="text"
                                 value={searchText}

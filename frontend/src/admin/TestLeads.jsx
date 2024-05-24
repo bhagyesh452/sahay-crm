@@ -188,7 +188,7 @@ function TestLeads() {
             
         }
     };
-    console.log(isSearching)
+    
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
