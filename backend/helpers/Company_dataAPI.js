@@ -243,7 +243,7 @@ router.get('/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
     const { field } = req.query;
-    console.log(searchQuery , "search")
+    //console.log(searchQuery , "search")
 
     let searchResults;
     if (field === "Company Name" || field === "Company Email") {
