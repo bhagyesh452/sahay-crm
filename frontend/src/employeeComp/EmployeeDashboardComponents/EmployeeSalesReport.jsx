@@ -757,69 +757,69 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   // ];
 
 
-  const generateDatesTillToday = (period) => {
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const datesArray = [];
+//   const generateDatesTillToday = (period) => {
+//     const today = new Date();
+//     const currentDay = today.getDate();
+//     const currentMonth = today.getMonth();
+//     const currentYear = today.getFullYear();
+//     const datesArray = [];
 
-    if (period === 'This Week') {
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        datesArray.push(date.getDate().toString());
-      }
-    } else if (period === 'This Month') {
-      for (let i = 1; i <= currentDay; i++) {
-        datesArray.push(i.toString());
-      }
-    } else if (period === 'Last Month') {
-      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-      const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
+//     if (period === 'This Week') {
+//       const startOfWeek = new Date(today);
+//       startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
+//       for (let i = 0; i < 7; i++) {
+//         const date = new Date(startOfWeek);
+//         date.setDate(startOfWeek.getDate() + i);
+//         datesArray.push(date.getDate().toString());
+//       }
+//     } else if (period === 'This Month') {
+//       for (let i = 1; i <= currentDay; i++) {
+//         datesArray.push(i.toString());
+//       }
+//     } else if (period === 'Last Month') {
+//       const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+//       const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+//       const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
 
-      // Dates of the last month
-      for (let i = 1; i <= daysInLastMonth; i++) {
-        datesArray.push(i.toString());
-      }
+//       // Dates of the last month
+//       for (let i = 1; i <= daysInLastMonth; i++) {
+//         datesArray.push(`${lastMonth + 1}/${i}`);
+//       }
+//     }
 
-      // Dates of the current month up to today
-      for (let i = 1; i <= currentDay; i++) {
-        datesArray.push(i.toString());
-      }
-    }
+//     return datesArray;
+//   };
 
-    return datesArray;
-  };
-  const getProjectionData = (followData, xLabels) => {
-    const projectionData = new Array(xLabels.length).fill(0);
-    //console.log(projectionData)
-    followData.forEach(item => {
-      const paymentDate = new Date(item.estPaymentDate).getDate().toString();
-      console.log(paymentDate)
-      const index = xLabels.indexOf(paymentDate);
-      if (index !== -1) {
-        projectionData[index] += item.totalPayment;
-      }
-    });
-    console.log(projectionData)
-    return projectionData;
-  };
+// const [newFollowData, setNewFollowData] = useState([])
 
-  console.log(followData)
+// console.log(newFollowData)
 
-  const [xLabels, setXLabels] = useState([]);
-  const [projectionData, setProjectionData] = useState([]);
 
-  useEffect(() => {
-    const labels = generateDatesTillToday(selectedMonthOption);
-    setXLabels(labels);
-    const data = getProjectionData(followData, labels);
-    setProjectionData(data);
-  }, [selectedMonthOption, followData]);
+//   const getProjectionData = (xLabels) => {
+//     console.log(xLabels)
+//     setNewFollowData(followData.filter((obj)=>obj.caseType !== 'Recieved'))
+//     const projectionData = new Array(xLabels.length).fill(0);
+//     //console.log(projectionData)
+//     newFollowData.forEach(item => {
+//       const paymentDate = new Date(item.estPaymentDate).getDate().toString();
+//       const index = xLabels.indexOf(paymentDate);
+//       if (index !== -1) {
+//         projectionData[index] += item.totalPayment;
+//       }
+//     });
+//     console.log(projectionData)
+//     return projectionData;
+//   };
+
+//   const [xLabels, setXLabels] = useState([]);
+//   const [projectionData, setProjectionData] = useState([]);
+
+//   useEffect(() => {
+//     const labels = generateDatesTillToday(selectedMonthOption);
+//     setXLabels(labels);
+//     const data = getProjectionData(labels);
+//     setProjectionData(data);
+//   }, [selectedMonthOption, followData]);
 
   const yLabels = [
     '100000',
@@ -831,11 +831,103 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     '0',
   ];
 
+const generateDatesTillToday = (period) => {
+  const today = new Date();
+  const currentDay = today.getDate();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  const datesArray = [];
+  
 
+  if (period === 'This Week') {
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      datesArray.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    }
+  } else if (period === 'This Month') {
+    for (let i = 1; i <= currentDay; i++) {
+      datesArray.push(`${currentMonth + 1}/${i}`);
+    }
+  } else if (period === 'Last Month') {
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+    const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
 
+    // Dates of the last month
+    for (let i = 1; i <= daysInLastMonth; i++) {
+      datesArray.push(`${lastMonth + 1}/${i}`);
+    }
 
+    // Dates of the current month up to today
+   
+  }
 
+  return datesArray;
+};
+const getProjectionData = (newFollowData, xLabels) => {
+  const projectionData = new Array(xLabels.length).fill(0);
+  
+  newFollowData.forEach(item => {
+    const paymentDate = new Date(item.estPaymentDate);
+    const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+    const index = xLabels.indexOf(dateStr);
+    if (index !== -1) {
+      projectionData[index] += item.totalPayment;
+    }
+  });
+  
+  return projectionData;
+};
 
+  const [xLabels, setXLabels] = useState([]);
+  const [projectionData, setProjectionData] = useState([]);
+  const [newFollowData, setNewFollowData] = useState([]);
+  const [displayXLabesl, setDisplayXLabesl] = useState([])
+console.log(xLabels)
+  useEffect(() => {
+    const labels = generateDatesTillToday(selectedMonthOption);
+    setXLabels(labels);
+    setDisplayXLabesl(labels.map(item=>item.split('/')[1]))
+    // Filter followData based on selectedMonthOption
+    let filteredData = [];
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    if (selectedMonthOption === 'This Week') {
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+      filteredData = followData.filter((obj) => {
+        const paymentDate = new Date(obj.estPaymentDate);
+        return paymentDate >= startOfWeek && paymentDate <= today && obj.caseType !== 'Recieved';
+      });
+    } else if (selectedMonthOption === 'This Month') {
+      filteredData = followData.filter((obj) => {
+        const paymentDate = new Date(obj.estPaymentDate);
+        return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear && obj.caseType !== 'Recieved';
+      });
+    } else if (selectedMonthOption === 'Last Month') {
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+      filteredData = followData.filter((obj) => {
+        const paymentDate = new Date(obj.estPaymentDate);
+        return (
+          (paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === lastMonthYear) ||
+          (paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear)&&
+          (obj.caseType !== 'Recieved')
+        );
+      });
+    }
+
+    setNewFollowData(filteredData);
+
+    const data = getProjectionData(filteredData, labels);
+    setProjectionData(data);
+
+  }, [selectedMonthOption, followData]);
 
 
 
@@ -1016,7 +1108,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                     { data: projectionData, label: 'Projection', color: '#ffb900', stroke: 3 },
                   ]}
                   xAxis={[{
-                    scaleType: 'point', data: xLabels, label: 'Days',
+                    scaleType: 'point', data: displayXLabesl, label: 'Days',
                     axisLine: {
                       stroke: '#eee', // Color for the x-axis line
                       fill: '#ccc'
