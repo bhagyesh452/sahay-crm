@@ -890,7 +890,7 @@ const normalizeDate = (date) => {
   const [projectionData, setProjectionData] = useState([]);
   const [newFollowData, setNewFollowData] = useState([]);
   const [displayXLabesl, setDisplayXLabesl] = useState([])
-  //console.log(xLabels)
+console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
     setXLabels(labels);

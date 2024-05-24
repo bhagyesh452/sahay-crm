@@ -38,6 +38,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
+import { Drawer,colors } from "@mui/material";
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -1012,6 +1013,14 @@ function TestLeads() {
         openchangeRemarks(false);
         setFilteredRemarks([]);
     };
+//-----------------------------function for filter -------------------------------
+const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+
+const functionCloseFilterDrawer=()=>{
+    setOpenFilterDrawer(false)
+}
+
+
 
 
     return (
@@ -1020,11 +1029,12 @@ function TestLeads() {
             <Navbar />
             <div className='page-wrapper'>
                 <div page-header d-print-none>
+
                     <div className="container-xl d-flex" style={{ gap: "20px" }}>
                         <div class="d-grid gap-4 d-md-block mt-3">
                             <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
                             <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
-                                <button type="button" class="btn"><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
+                                <button type="button" class="btn" onClick={()=>setOpenFilterDrawer(true)}><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
                                 <button type="button" class="btn" onClick={() => {
                                     setOpenBulkLeadsCSVPopup(true)
                                     setCsvData([])
@@ -1035,7 +1045,7 @@ function TestLeads() {
                             </div>
                         </div>
                         {selectedRows.length !== 0 && (
-                            <div className="form-control mt-3" style={{width:"192px" , height:"38px"}} >
+                            <div className="form-control mt-3" style={{ width: "192px", height: "38px" }} >
                                 Total Data Selected : {selectedRows.length}
                             </div>
                         )}
@@ -1333,13 +1343,13 @@ function TestLeads() {
                                 )}
                             {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                    <button onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
-                                    </IconButton>
+                                    </button>
                                     <span>Page {currentPage} /{totalCount}</span>
-                                    <IconButton onClick={handleNextPage} disabled={data.length < itemsPerPage}>
+                                    <button onClick={handleNextPage} disabled={data.length < itemsPerPage}>
                                         <IconChevronRight />
-                                    </IconButton>
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -2345,8 +2355,41 @@ function TestLeads() {
                     </div>
                 </DialogContent>
             </Dialog>
+            {/* //------------------------------drawer for filter-------------------------------------- */}
 
-
+            <Drawer
+                style={{ top: "50px" }}
+                anchor="left"
+                open={openFilterDrawer}
+                onClose={functionCloseFilterDrawer}>
+                <div style={{ width: "31em" }} className="container-xl">
+                    <div
+                        className="d-flex justify-content-between align-items-center"
+                        style={{ margin: "10px 0px" }}
+                    >
+                        <h1
+                            style={{ marginBottom: "0px", fontSize: "20px" }}
+                            className="title"
+                        >
+                            Filters
+                        </h1>
+                        <div>
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={()=>functionCloseFilterDrawer()}>
+                            <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                            </button>
+                           
+                        </div>
+                    </div>
+                    <hr style={{ margin: "0px" }} />
+                    <div className="body-projection">
+                        
+                    </div>
+                </div>
+            </Drawer>
         </div>
     )
 }
