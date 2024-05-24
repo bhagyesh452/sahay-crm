@@ -30,7 +30,7 @@ function EmployeeCallingReport() {
     const [data, setData] = useState([])
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`)
+            const response = await axios.get(`https://startupsahay.in/api/einfo`)
             const userData = response.data.find((item) => item._id === userId)
             setData(userData)
 
@@ -51,7 +51,7 @@ function EmployeeCallingReport() {
     const fetchEmployeeData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${secretKey}/company-data/edata-particular/${data.ename}`)
+            const response = await axios.get(`https://startupsahay.in/api/edata-particular/${data.ename}`)
             setEmpData(response.data)
         } catch (error) {
             console.error("Error fetching data:", error);

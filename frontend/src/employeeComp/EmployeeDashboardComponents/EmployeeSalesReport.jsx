@@ -757,69 +757,69 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   // ];
 
 
-//   const generateDatesTillToday = (period) => {
-//     const today = new Date();
-//     const currentDay = today.getDate();
-//     const currentMonth = today.getMonth();
-//     const currentYear = today.getFullYear();
-//     const datesArray = [];
+  //   const generateDatesTillToday = (period) => {
+  //     const today = new Date();
+  //     const currentDay = today.getDate();
+  //     const currentMonth = today.getMonth();
+  //     const currentYear = today.getFullYear();
+  //     const datesArray = [];
 
-//     if (period === 'This Week') {
-//       const startOfWeek = new Date(today);
-//       startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
-//       for (let i = 0; i < 7; i++) {
-//         const date = new Date(startOfWeek);
-//         date.setDate(startOfWeek.getDate() + i);
-//         datesArray.push(date.getDate().toString());
-//       }
-//     } else if (period === 'This Month') {
-//       for (let i = 1; i <= currentDay; i++) {
-//         datesArray.push(i.toString());
-//       }
-//     } else if (period === 'Last Month') {
-//       const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-//       const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-//       const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
+  //     if (period === 'This Week') {
+  //       const startOfWeek = new Date(today);
+  //       startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
+  //       for (let i = 0; i < 7; i++) {
+  //         const date = new Date(startOfWeek);
+  //         date.setDate(startOfWeek.getDate() + i);
+  //         datesArray.push(date.getDate().toString());
+  //       }
+  //     } else if (period === 'This Month') {
+  //       for (let i = 1; i <= currentDay; i++) {
+  //         datesArray.push(i.toString());
+  //       }
+  //     } else if (period === 'Last Month') {
+  //       const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  //       const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+  //       const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
 
-//       // Dates of the last month
-//       for (let i = 1; i <= daysInLastMonth; i++) {
-//         datesArray.push(`${lastMonth + 1}/${i}`);
-//       }
-//     }
+  //       // Dates of the last month
+  //       for (let i = 1; i <= daysInLastMonth; i++) {
+  //         datesArray.push(`${lastMonth + 1}/${i}`);
+  //       }
+  //     }
 
-//     return datesArray;
-//   };
+  //     return datesArray;
+  //   };
 
-// const [newFollowData, setNewFollowData] = useState([])
+  // const [newFollowData, setNewFollowData] = useState([])
 
-// console.log(newFollowData)
+  // console.log(newFollowData)
 
 
-//   const getProjectionData = (xLabels) => {
-//     console.log(xLabels)
-//     setNewFollowData(followData.filter((obj)=>obj.caseType !== 'Recieved'))
-//     const projectionData = new Array(xLabels.length).fill(0);
-//     //console.log(projectionData)
-//     newFollowData.forEach(item => {
-//       const paymentDate = new Date(item.estPaymentDate).getDate().toString();
-//       const index = xLabels.indexOf(paymentDate);
-//       if (index !== -1) {
-//         projectionData[index] += item.totalPayment;
-//       }
-//     });
-//     console.log(projectionData)
-//     return projectionData;
-//   };
+  //   const getProjectionData = (xLabels) => {
+  //     console.log(xLabels)
+  //     setNewFollowData(followData.filter((obj)=>obj.caseType !== 'Recieved'))
+  //     const projectionData = new Array(xLabels.length).fill(0);
+  //     //console.log(projectionData)
+  //     newFollowData.forEach(item => {
+  //       const paymentDate = new Date(item.estPaymentDate).getDate().toString();
+  //       const index = xLabels.indexOf(paymentDate);
+  //       if (index !== -1) {
+  //         projectionData[index] += item.totalPayment;
+  //       }
+  //     });
+  //     console.log(projectionData)
+  //     return projectionData;
+  //   };
 
-//   const [xLabels, setXLabels] = useState([]);
-//   const [projectionData, setProjectionData] = useState([]);
+  //   const [xLabels, setXLabels] = useState([]);
+  //   const [projectionData, setProjectionData] = useState([]);
 
-//   useEffect(() => {
-//     const labels = generateDatesTillToday(selectedMonthOption);
-//     setXLabels(labels);
-//     const data = getProjectionData(labels);
-//     setProjectionData(data);
-//   }, [selectedMonthOption, followData]);
+  //   useEffect(() => {
+  //     const labels = generateDatesTillToday(selectedMonthOption);
+  //     setXLabels(labels);
+  //     const data = getProjectionData(labels);
+  //     setProjectionData(data);
+  //   }, [selectedMonthOption, followData]);
 
   const yLabels = [
     '100000',
@@ -831,109 +831,201 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     '0',
   ];
 
-const generateDatesTillToday = (period) => {
-  const today = new Date();
-  const currentDay = today.getDate();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-  const datesArray = [];
-  
+  const generateDatesTillToday = (period) => {
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const datesArray = [];
 
-  if (period === 'This Week') {
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      datesArray.push(`${date.getMonth() + 1}/${date.getDate()}`);
+
+    if (period === 'This Week') {
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Get the start of the week (Monday)
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        datesArray.push(`${date.getMonth() + 1}/${date.getDate()}`);
+      }
+    } else if (period === 'This Month') {
+      for (let i = 1; i <= currentDay; i++) {
+        datesArray.push(`${currentMonth + 1}/${i}`);
+      }
+    } else if (period === 'Last Month') {
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+      const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
+
+      // Dates of the last month
+      for (let i = 1; i <= daysInLastMonth; i++) {
+        datesArray.push(`${lastMonth + 1}/${i}`);
+      }
+
+      // Dates of the current month up to today
+
     }
-  } else if (period === 'This Month') {
-    for (let i = 1; i <= currentDay; i++) {
-      datesArray.push(`${currentMonth + 1}/${i}`);
-    }
-  } else if (period === 'Last Month') {
-    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-    const daysInLastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate();
 
-    // Dates of the last month
-    for (let i = 1; i <= daysInLastMonth; i++) {
-      datesArray.push(`${lastMonth + 1}/${i}`);
-    }
+    return datesArray;
+  };
+  const getProjectionData = (newFollowData, xLabels) => {
+    const projectionData = new Array(xLabels.length).fill(0);
+    const tempAchievedData = new Array(xLabels.length).fill(0);
 
-    // Dates of the current month up to today
-   
-  }
 
-  return datesArray;
-};
-const getProjectionData = (newFollowData, xLabels) => {
-  const projectionData = new Array(xLabels.length).fill(0);
-  const tempAchievedData = new Array(xLabels.length).fill(0);
-  
-  
-  newFollowData.forEach(item => {
-    const paymentDate = new Date(item.estPaymentDate);
-    const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-    const index = xLabels.indexOf(dateStr);
-    if (index !== -1) {
-      projectionData[index] += item.totalPayment;
-    }
-  });
+    newFollowData.forEach(item => {
+      const paymentDate = new Date(item.estPaymentDate);
+      const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+      const index = xLabels.indexOf(dateStr);
+      if (index !== -1) {
+        projectionData[index] += item.totalPayment;
+      }
+    });
 
-  redesignedData.forEach(mainBooking =>{
-    const paymentDate = new Date(mainBooking.bookingDate);
-    const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-    const index = xLabels.indexOf(dateStr);
+    redesignedData.forEach(mainBooking => {
+      const paymentDate = new Date(mainBooking.bookingDate);
+      const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+      const index = xLabels.indexOf(dateStr);
 
-    // ******************************************************   FOR MAIN BOOKING DATA  *******************************************************************
-    if (index !== -1 &&( mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename) ) {
-      mainBooking.services.forEach(service=>{
-        if(service.paymentTerms === "Full Advanced"){
-          if(mainBooking.bdeName === mainBooking.bdmName){
-            achievedData[index] += parseInt(service.totalPaymentWOGST)
-          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Close-by"){
-            achievedData[index] += parseInt(service.totalPaymentWOGST)/2
-          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Supported-by"){
-            if(mainBooking.bdeName === data.ename){
-              achievedData[index] += parseInt(service.totalPaymentWOGST)
+      // ******************************************************   FOR MAIN BOOKING DATA  *******************************************************************
+      if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+        mainBooking.services.forEach(service => {
+          if (service.paymentTerms === "Full Advanced") {
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+              tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
+            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.btempAchievedDatadeName === data.ename) {
+                tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+              }
+            }
+          } else {
+            const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+
+              tempAchievedData[index] += parseInt(payment);
+            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+
+              tempAchievedData[index] += parseInt(payment) / 2;
+            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === data.ename) {
+                tempAchievedData[index] += parseInt(payment)
+              }
             }
           }
-        }else{
-          if(mainBooking.bdeName === mainBooking.bdmName){
-            achievedData[index] += parseInt(service.totalPaymentWOGST)
-          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Close-by"){
-            achievedData[index] += parseInt(service.totalPaymentWOGST)/2
-          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Supported-by"){
-            if(mainBooking.bdeName === data.ename){
-              achievedData[index] += parseInt(service.totalPaymentWOGST)
+        });
+      }
+      //  ****************************************************  For main Booking Remaining Payment  ********************************************
+      mainBooking.remainingPayments.length !== 0 && mainBooking.remainingPayments.forEach((rmObject) => {
+        const paymentDate = new Date(rmObject.paymentDate);
+        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const index = xLabels.indexOf(dateStr);
+
+        if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdeName === data.ename)) {
+          const serviceObject = mainBooking.services.filter(service=> service.serviceName !== rmObject.serviceName)[0];
+          if (mainBooking.bdeName === mainBooking.bdmName) {
+            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+            tempAchievedData[index] += parseInt(payment);
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+            tempAchievedData[index] += parseInt(payment) / 2;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
+              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+              tempAchievedData[index] += parseInt(payment);
             }
+
           }
         }
       })
-    }
-  })
+      //  ******************************************************   For More Booking Objects  *******************************************************
+      mainBooking.moreBookings.forEach((moreObject) => {
+        const paymentDate = new Date(moreObject.bookingDate);
+        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const index = xLabels.indexOf(dateStr);
 
-  return projectionData;
-};
-const normalizeDate = (date) => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
+        if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+          moreObject.services.forEach(service => {
+            if (service.paymentTerms === "Full Advanced") {
+              if (moreObject.bdeName === moreObject.bdmName) {
+                tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+                tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
+              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
+                  tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+                }
+              }
+            } else {
+              const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
+              if (moreObject.bdeName === moreObject.bdmName) {
+                tempAchievedData[index] += parseInt(payment);
+              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+
+                tempAchievedData[index] += parseInt(payment) / 2;
+              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
+                  tempAchievedData[index] += parseInt(payment)
+                }
+              }
+            }
+
+
+
+          });
+
+
+
+
+        }
+        //  ****************************************************  For main Booking Remaining Payment  ********************************************
+        moreObject.remainingPayments.length !== 0 && moreObject.remainingPayments.forEach((rmObject) => {
+          const paymentDate = new Date(rmObject.paymentDate);
+          const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+          const index = xLabels.indexOf(dateStr);
+  
+          if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdeName === data.ename)) {
+            const serviceObject = moreObject.services.filter(service =>  service.serviceName !== rmObject.serviceName)[0];
+            if (moreObject.bdeName === moreObject.bdmName) {
+              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+              tempAchievedData[index] += parseInt(payment);
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+              tempAchievedData[index] += parseInt(payment) / 2;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
+                const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                tempAchievedData[index] += parseInt(payment);
+              }
+  
+            }
+          }
+  
+        })
+      })
+
+    })
+    setAchievedData(tempAchievedData)
+    return projectionData;
+  };
+  const normalizeDate = (date) => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
+  };
   const [xLabels, setXLabels] = useState([]);
   const [projectionData, setProjectionData] = useState([]);
-  const [achievedData ,  setAchievedData] = useState([]);
+  const [achievedData, setAchievedData] = useState([]);
   const [newFollowData, setNewFollowData] = useState([]);
   const [displayXLabesl, setDisplayXLabesl] = useState([
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 
-    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', 
-    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30','31']);
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']);
   //console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
     setXLabels(labels);
-    setDisplayXLabesl(labels.map(item=>item.split('/')[1]))
+    setDisplayXLabesl(labels.map(item => item.split('/')[1]))
     // Filter followData based on selectedMonthOption
     let filteredData = [];
     const today = normalizeDate(new Date());
@@ -962,7 +1054,7 @@ const normalizeDate = (date) => {
         const paymentDate = new Date(obj.estPaymentDate);
         return (
           (paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === lastMonthYear) ||
-          (paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear)&&
+          (paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear) &&
           (obj.caseType !== 'Recieved')
         );
       });
@@ -1150,7 +1242,7 @@ const normalizeDate = (date) => {
                   height={320}
                   margin={{ left: 60 }}
                   series={[
-                    { data: AchivedData, label: 'Achived', color: '#1cba19', stroke: 2 },
+                    { data: achievedData, label: 'Achived', color: '#1cba19', stroke: 2 },
                     { data: projectionData, label: 'Projection', color: '#ffb900', stroke: 3 },
                   ]}
                   xAxis={[{

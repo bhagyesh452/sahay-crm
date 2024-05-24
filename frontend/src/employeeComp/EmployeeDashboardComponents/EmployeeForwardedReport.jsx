@@ -38,7 +38,7 @@ function EmployeeForwardedReport() {
   const [data, setData] = useState([])
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/einfo`)
+      const response = await axios.get(`https://startupsahay.in/api/einfo`)
       const userData = response.data.find((item) => item._id === userId);
       setData(userData)
     } catch (error) {
@@ -56,7 +56,7 @@ function EmployeeForwardedReport() {
   const [moreEmpData, setmoreEmpData] = useState([])
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`)
+      const response = await axios.get(`https://startupsahay.in/api/employees/${data.ename}`)
       setTempData(response.data)
       setmoreEmpData(response.data)
     } catch (error) {
@@ -81,7 +81,7 @@ function EmployeeForwardedReport() {
     try {
       setprojectionLoading(true);
       const response = await fetch(
-        `${secretKey}/projection/projection-data/${data.ename}`
+        `https://startupsahay.in/api/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       //console.log(followdata)

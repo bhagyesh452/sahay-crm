@@ -270,7 +270,7 @@ function EmployeeDashboard() {
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const response = await axios.get(`https://startupsahay.in/api/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
@@ -292,7 +292,7 @@ function EmployeeDashboard() {
 
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
+      const response = await axios.get(`https://startupsahay.in/api/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
       setmoreEmpData(tempData)
@@ -337,7 +337,7 @@ function EmployeeDashboard() {
 
   const fetchEmployeeData = async () => {
     setLoading(true);
-    fetch(`${secretKey}/company-data/edata-particular/${data.ename}`)
+    fetch(`https://startupsahay.in/api/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
         setEmpData(data);
@@ -368,7 +368,7 @@ function EmployeeDashboard() {
   const fetchTeamLeadsData = async () => {
 
     try {
-      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
+      const response = await axios.get(`https://startupsahay.in/api/forwardedbybdedata/${data.ename}`)
       setTeamLeadsData(response.data)
       setTeamData(response.data)
 
@@ -493,7 +493,7 @@ function EmployeeDashboard() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/employee/online-status/${id}/${socketID}`
+          `https://startupsahay.in/api/online-status/${id}/${socketID}`
         );
         //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -542,7 +542,7 @@ function EmployeeDashboard() {
     try {
       setprojectionLoading(true);
       const response = await fetch(
-        `${secretKey}/projection/projection-data/${data.ename}`
+        `https://startupsahay.in/api/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setFollowData(followdata);
@@ -698,7 +698,7 @@ function EmployeeDashboard() {
         });
       } else {
         const response = await axios.post(
-          `${secretKey}/projection/update-followup`,
+          `https://startupsahay.in/api/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1564,7 +1564,7 @@ function EmployeeDashboard() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/projection/delete-followup/${companyName}`
+        `https://startupsahay.in/api/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -1663,7 +1663,7 @@ function EmployeeDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/bookings/redesigned-final-leadData`
+        `https://startupsahay.in/api/redesigned-final-leadData`
       );
       const bookingsData = response.data;
 
