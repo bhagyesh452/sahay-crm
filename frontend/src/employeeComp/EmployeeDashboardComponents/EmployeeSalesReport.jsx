@@ -1257,7 +1257,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                     },
                   }]}
                   yAxis={[{
-                    data: yLabels,
+                   data: yLabels,
                     axisLine: {
                       stroke: '#eee !important', // Color for the y-axis line
                     },
