@@ -4581,8 +4581,7 @@ function EmployeeDashboard() {
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}
-        >
+          onClose={closeProjection}>
           <div style={{ width: "31em" }} className="container-xl">
             <div
               className="d-flex justify-content-between align-items-center"
@@ -4648,13 +4647,6 @@ function EmployeeDashboard() {
                 <strong>Offered Services :</strong>
                 <div className="services mb-3">
                   <Select
-                    // styles={{
-                    //   customStyles,
-                    //   container: (provided) => ({
-                    //     border: "1px solid #ffb900",
-                    //     borderRadius: "5px",
-                    //   }),
-                    // }}
                     isMulti
                     options={options}
                     placeholder="Select Services..."
