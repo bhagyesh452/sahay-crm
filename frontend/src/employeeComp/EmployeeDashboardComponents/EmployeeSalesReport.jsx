@@ -878,30 +878,37 @@ const getProjectionData = (newFollowData, xLabels) => {
       projectionData[index] += item.totalPayment;
     }
   });
-  
+  console.log("projectionData" , projectionData)
   return projectionData;
 };
-
+const normalizeDate = (date) => {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+};
   const [xLabels, setXLabels] = useState([]);
   const [projectionData, setProjectionData] = useState([]);
   const [newFollowData, setNewFollowData] = useState([]);
   const [displayXLabesl, setDisplayXLabesl] = useState([])
-console.log(xLabels)
+  //console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
     setXLabels(labels);
     setDisplayXLabesl(labels.map(item=>item.split('/')[1]))
     // Filter followData based on selectedMonthOption
     let filteredData = [];
-    const today = new Date();
+    const today = normalizeDate(new Date());
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
 
     if (selectedMonthOption === 'This Week') {
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+      startOfWeek.setHours(0, 0, 0, 0); // Set time to midnight
+
       filteredData = followData.filter((obj) => {
-        const paymentDate = new Date(obj.estPaymentDate);
+        const paymentDate = normalizeDate(new Date(obj.estPaymentDate));
+        console.log('Payment date:', paymentDate, 'Today:', today, 'Start of week:', startOfWeek);
         return paymentDate >= startOfWeek && paymentDate <= today && obj.caseType !== 'Recieved';
       });
     } else if (selectedMonthOption === 'This Month') {
@@ -921,7 +928,7 @@ console.log(xLabels)
         );
       });
     }
-
+   console.log("fileterddata" , filteredData)
     setNewFollowData(filteredData);
 
     const data = getProjectionData(filteredData, labels);

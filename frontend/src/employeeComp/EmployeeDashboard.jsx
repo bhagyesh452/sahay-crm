@@ -287,11 +287,6 @@ function EmployeeDashboard() {
 
 
   const [speed, setSpeed] = useState(0);
-  //----------SPEEDO METER-------------------------------------------------------------------------------------------
-
-
-
-  //----------SPEEDO METER-------------------------------------------------------------------------------------------
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -388,24 +383,6 @@ function EmployeeDashboard() {
     fetchTeamLeadsData()
   }, [data.ename])
 
-
-
-  //console.log("empData", empData)
-
-  //console.log("ajki", todayFollowUpDateData)
-
-  // const fetchEmployeeData = async () => {
-  //   try {
-  //     const response = await fetch(`${secretKey}/edata-particular/${data.ename}`);
-  //     const data = await response.json();
-  //     setEmpData(data);
-  //     setLoading(false); // Set loading to false when data is fetched
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setLoading(false); // Also set loading to false in case of error
-  //   }
-  // };
-
   // const tableEmployee = data.ename;
   useEffect(() => {
     fetchData();
@@ -423,29 +400,6 @@ function EmployeeDashboard() {
   const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   // ---------------------------Bookings Part --------------------------------------
-
-  // useEffect(() => {
-  //   const fetchBookingDetails = async () => {
-  //     try {
-  //       setLoading(true);
-  //       //setuniqueArrayLoading(true)// Set loading to true before fetching
-  //       // const response = await axios.get(
-  //       //   `${secretKey}/company-ename/${data.ename}`
-  //       // );
-  //       setTotalBooking(response.data);
-  //       setFilteredBooking(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching company details:", error.message);
-  //     } finally {
-  //       setLoading(false);
-  //       //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
-  //     }
-  //   };
-
-  //   fetchBookingDetails();
-  // }, [data.ename]);
-
-  //console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
