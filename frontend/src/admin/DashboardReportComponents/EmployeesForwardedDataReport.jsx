@@ -99,7 +99,7 @@ function EmployeesForwardedDataReport() {
     const fetchRedesignedBookings = async () => {
         try {
             const response = await axios.get(
-                `${secretKey}/redesigned-final-leadData`
+                `${secretKey}/bookings/redesigned-final-leadData`
             );
             const bookingsData = response.data;
     
@@ -835,7 +835,7 @@ function EmployeesForwardedDataReport() {
     function functionCalculateGeneratedRevenue(bdeName) {
         let generatedRevenue = 0;
         const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
-        // console.log("boom",  requiredObj , redesignedData)
+        console.log("boom",  requiredObj , redesignedData)
         requiredObj.forEach((object) => {
           redesignedData.map((mainBooking) => {
             if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {

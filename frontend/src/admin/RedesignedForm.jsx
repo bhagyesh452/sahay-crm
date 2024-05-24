@@ -3199,12 +3199,12 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.caCase
+                                            {leadData.caCase
                                               }
                                           </div>
                                         </div>
                                       </div>
-                                      {obj.caCase === "Yes" &&  <>
+                                      {leadData.caCase === "Yes" &&  <>
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3213,7 +3213,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.caNumber
+                                            {leadData.caNumber
                                               }
                                           </div>
                                         </div>
@@ -3226,7 +3226,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.caEmail
+                                            {leadData.caEmail
                                               }
                                           </div>
                                         </div>
@@ -3239,7 +3239,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.caCommission
+                                            {leadData.caCommission
                                               }
                                           </div>
                                         </div>

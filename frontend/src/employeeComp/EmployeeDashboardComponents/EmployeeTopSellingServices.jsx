@@ -49,7 +49,7 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
 
     return (
         <div>
-            <div className="dash-card">
+            <div style={{minHeight:'299px'}} className="dash-card">
                 <div className="dash-card-head d-flex align-items-center justify-content-between">
                     <h2 className="m-0">
                         Top Selling Services

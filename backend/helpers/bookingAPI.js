@@ -1831,7 +1831,7 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                 } /-</th>
                           <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
@@ -2079,7 +2079,7 @@ router.post(
               <div class="PDF_main">
                 <section>
                   <div class="date_div">
-                    <p>${todaysDate}</p>
+                    <p>Date : ${todaysDate}</p>
                   </div>
                   <div class="pdf_heading">
                     <h3>Self Declaration</h3>
@@ -2124,7 +2124,7 @@ router.post(
           const bdNames =
             newData.bdeName == newData.bdmName
               ? newData.bdeName
-              : `${newData.bdeName} && ${newData.bdmName}`;
+              : `${newData.bdeName} & ${newData.bdmName}`;
           const waitpagination =
             newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
           const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
@@ -2163,7 +2163,7 @@ router.post(
           </section>
         </div>` : "";
       
-          // const htmlTemplate = fs.readFileSync("./template.html", "utf-8");
+          // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
           const servicesShubhi = [
             "Pitch Deck Development ",
             "Financial Modeling",
@@ -2267,9 +2267,9 @@ router.post(
       "footer": {
         "height": "100px",
         "contents": {
-          first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
           default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
           last: '<span style="color: #444;">2</span>/<span>2</span>'
         }
@@ -2280,8 +2280,8 @@ router.post(
               },
             },
           };
-          // ["nimesh@incscale.in", "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
-          const caEmail = newData.caCase == "Yes" ? newData.caEmail : "nimesh@inscale.in";
+          const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
+          const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -2293,7 +2293,7 @@ router.post(
                   setTimeout(() => {
                     const mainBuffer = fs.readFileSync(pdfFilePath);
                     sendMail2(
-                      [caEmail , "bhagyesh@startupsahay.com"],
+                      mainClientMail,
                       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                       ``,
                       `
@@ -3574,7 +3574,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
           } /-</th>
                     <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
@@ -3822,7 +3822,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         <div class="PDF_main">
           <section>
             <div class="date_div">
-              <p>${todaysDate}</p>
+              <p>Date : ${todaysDate}</p>
             </div>
             <div class="pdf_heading">
               <h3>Self Declaration</h3>
@@ -3867,7 +3867,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const bdNames =
       newData.bdeName == newData.bdmName
         ? newData.bdeName
-        : `${newData.bdeName} && ${newData.bdmName}`;
+        : `${newData.bdeName} & ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
     const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
@@ -3906,7 +3906,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     </section>
   </div>` : "";
 
-    // const htmlTemplate = fs.readFileSync("./template.html", "utf-8");
+    // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const servicesShubhi = [
       "Pitch Deck Development ",
       "Financial Modeling",
@@ -3997,7 +3997,14 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-    const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+    const pagelength = 
+    (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
+      ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
+      : (newData.services.length === 1 && mailName === "Shubhi Banthiya") 
+        ? 2 
+        : 3;
+  
+
     const options = {
       format: "A4", // Set the page format to A4 size
       orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -4010,9 +4017,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 "footer": {
   "height": "100px",
   "contents": {
-    first: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-    2: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-    3: `<div><p>Client's Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+    first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+    2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+    3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
     default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
     last: '<span style="color: #444;">2</span>/<span>2</span>'
   }
@@ -4023,8 +4030,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
       },
     };
-  const caEmail = newData.caCase == "Yes" ? newData.caEmail : "nimesh@incscale.in"
-  // [caEmail, "bhagyesh@startupsahay.com", "kumarronak597@gmail.com"],
+
+    const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -4036,7 +4044,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                [caEmail, "bhagyesh@startupsahay.com"],
+                mainClientMail,
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
