@@ -1241,7 +1241,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                   height={320}
                   margin={{ left: 60 }}
                   series={[
-                    { data: achievedData, label: 'Achived', color: '#1cba19', stroke: 2 },
+                    { data: achievedData, label: 'Achieved', color: '#1cba19', stroke: 2 },
                     { data: projectionData, label: 'Projection', color: '#ffb900', stroke: 3 },
                   ]}
                   xAxis={[{
