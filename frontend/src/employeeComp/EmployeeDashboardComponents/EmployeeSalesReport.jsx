@@ -922,7 +922,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         const index = xLabels.indexOf(dateStr);
 
         if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdeName === data.ename)) {
-          const serviceObject = mainBooking.services.filter(service=> service.serviceName !== rmObject.serviceName)[0];
+          const serviceObject = mainBooking.services.filter(service=> service.serviceName === rmObject.serviceName)[0];
           if (mainBooking.bdeName === mainBooking.bdmName) {
             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
             tempAchievedData[index] += parseInt(payment);
@@ -934,7 +934,6 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
               tempAchievedData[index] += parseInt(payment);
             }
-
           }
         }
       })
@@ -985,7 +984,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           const index = xLabels.indexOf(dateStr);
   
           if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdeName === data.ename)) {
-            const serviceObject = moreObject.services.filter(service =>  service.serviceName !== rmObject.serviceName)[0];
+            const serviceObject = moreObject.services.filter(service =>  service.serviceName === rmObject.serviceName)[0];
             if (moreObject.bdeName === moreObject.bdmName) {
               const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
               tempAchievedData[index] += parseInt(payment);

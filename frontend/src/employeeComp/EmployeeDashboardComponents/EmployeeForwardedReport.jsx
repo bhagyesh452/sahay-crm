@@ -142,7 +142,7 @@ function EmployeeForwardedReport() {
 
   const fetchTeamLeadsData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
+      const response = await axios.get(`https://startupsahay.in/api/forwardedbybdedata/${data.ename}`)
       setTeamLeadsData(response.data)
       setTeamData(response.data)
     } catch (error) {
