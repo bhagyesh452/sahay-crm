@@ -869,6 +869,8 @@ const generateDatesTillToday = (period) => {
 };
 const getProjectionData = (newFollowData, xLabels) => {
   const projectionData = new Array(xLabels.length).fill(0);
+  const tempAchievedData = new Array(xLabels.length).fill(0);
+  
   
   newFollowData.forEach(item => {
     const paymentDate = new Date(item.estPaymentDate);
@@ -878,33 +880,74 @@ const getProjectionData = (newFollowData, xLabels) => {
       projectionData[index] += item.totalPayment;
     }
   });
-  
+
+  redesignedData.forEach(mainBooking =>{
+    const paymentDate = new Date(mainBooking.bookingDate);
+    const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+    const index = xLabels.indexOf(dateStr);
+
+    // ******************************************************   FOR MAIN BOOKING DATA  *******************************************************************
+    if (index !== -1 &&( mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename) ) {
+      mainBooking.services.forEach(service=>{
+        if(service.paymentTerms === "Full Advanced"){
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            achievedData[index] += parseInt(service.totalPaymentWOGST)
+          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Close-by"){
+            achievedData[index] += parseInt(service.totalPaymentWOGST)/2
+          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Supported-by"){
+            if(mainBooking.bdeName === data.ename){
+              achievedData[index] += parseInt(service.totalPaymentWOGST)
+            }
+          }
+        }else{
+          if(mainBooking.bdeName === mainBooking.bdmName){
+            achievedData[index] += parseInt(service.totalPaymentWOGST)
+          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Close-by"){
+            achievedData[index] += parseInt(service.totalPaymentWOGST)/2
+          }else if((mainBooking.bdeName !== mainBooking.bdmName ) && mainBooking.bdmType ==="Supported-by"){
+            if(mainBooking.bdeName === data.ename){
+              achievedData[index] += parseInt(service.totalPaymentWOGST)
+            }
+          }
+        }
+      })
+    }
+  })
+
   return projectionData;
 };
-
-  const [xLabels, setXLabels] = useState([
-    ]);
+const normalizeDate = (date) => {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+};
+  const [xLabels, setXLabels] = useState([]);
   const [projectionData, setProjectionData] = useState([]);
+  const [achievedData ,  setAchievedData] = useState([]);
   const [newFollowData, setNewFollowData] = useState([]);
-  const [displayXLabesl, setDisplayXLabesl] = useState(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 
-  '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', 
-  '21', '22', '23', '24', '25', '26', '27', '28', '29', '30','31'])
-console.log(xLabels)
+  const [displayXLabesl, setDisplayXLabesl] = useState([
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 
+    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', 
+    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30','31']);
+  //console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
     setXLabels(labels);
     setDisplayXLabesl(labels.map(item=>item.split('/')[1]))
     // Filter followData based on selectedMonthOption
     let filteredData = [];
-    const today = new Date();
+    const today = normalizeDate(new Date());
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
 
     if (selectedMonthOption === 'This Week') {
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+      startOfWeek.setHours(0, 0, 0, 0); // Set time to midnight
+
       filteredData = followData.filter((obj) => {
-        const paymentDate = new Date(obj.estPaymentDate);
+        const paymentDate = normalizeDate(new Date(obj.estPaymentDate));
+        console.log('Payment date:', paymentDate, 'Today:', today, 'Start of week:', startOfWeek);
         return paymentDate >= startOfWeek && paymentDate <= today && obj.caseType !== 'Recieved';
       });
     } else if (selectedMonthOption === 'This Month') {
