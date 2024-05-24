@@ -62,12 +62,14 @@ function TestLeads() {
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
 
+
+  //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
     }
 
-
+  //--------------------function to fetch Data ------------------------------
     const fetchData = async (page) => {
         try {
             setCurrentDataLoading(true)
@@ -95,6 +97,7 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     };
+      //--------------------function to fetch employee data ------------------------------
 
     const fetchEmployeesData = async () => {
         try {
@@ -106,7 +109,7 @@ function TestLeads() {
             console.log("Error fetching data", error.message)
         }
     }
-
+  //--------------------function to fetch remarks history ------------------------------
     const fetchRemarksHistory = async () => {
         try {
             const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -125,6 +128,8 @@ function TestLeads() {
         fetchEmployeesData()
         fetchRemarksHistory()
     }, [dataStatus])
+
+//--------------------function to change pages ------------------------------
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
@@ -145,7 +150,7 @@ function TestLeads() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-
+    //--------------------function to filter company name ------------------------------
     const handleFilterSearch = async (searchQuery) => {
         try {
             setCurrentDataLoading(true);
@@ -160,6 +165,7 @@ function TestLeads() {
             } else {
                 // Set data to the search results
                 setData(response.data);
+                
             }
         } catch (error) {
             console.error('Error searching leads:', error.message);
@@ -1343,11 +1349,11 @@ const functionCloseFilterDrawer=()=>{
                                 )}
                             {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                    <button style={{background: "none", border: "0px transparent"}} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
                                     <span>Page {currentPage} /{totalCount}</span>
-                                    <button onClick={handleNextPage} disabled={data.length < itemsPerPage}>
+                                    <button style={{background: "none", border: "0px transparent"}} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
                                         <IconChevronRight />
                                     </button>
                                 </div>

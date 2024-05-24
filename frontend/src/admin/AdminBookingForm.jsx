@@ -104,7 +104,7 @@ export default function AdminBookingForm({
 
   const fetchDataEmp = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const response = await axios.get(`${secretKey}/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -123,7 +123,7 @@ export default function AdminBookingForm({
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/bookings/redesigned-leadData/${companyNewName.trim()}`
+        `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
       );
       console.log(response.data , "This it it now")
       let data = response.data;
@@ -211,7 +211,7 @@ export default function AdminBookingForm({
           paymentReceipt: data.paymentReceipt,
           paymentMethod: data.paymentMethod,
           extraNotes: data.extraNotes,
-          isAdmin : IamAdmin
+          isAdmin : true,
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
@@ -295,13 +295,13 @@ export default function AdminBookingForm({
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -358,7 +358,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step1`,
+              `${secretKey}/redesigned-leadData/${companyNewName}/step1`,
               dataToSend
             );
             // Handle response data as needed
@@ -401,7 +401,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step2`,
+              `${secretKey}/redesigned-leadData/${companyNewName}/step2`,
               dataToSend
             );
             // Handle response data as needed
@@ -415,6 +415,10 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 2) {
+        if(!leadData.caCase){
+          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+          return true;
+        }
 
         let isValid = true;
               for (let service of leadData.services) {
@@ -495,7 +499,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step3`,
+              `${secretKey}/redesigned-leadData/${companyNewName}/step3`,
               dataToSend
             );
             // Handle response data as needed
@@ -550,7 +554,7 @@ export default function AdminBookingForm({
         }
         try {
           const response = await axios.post(
-            `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step4`,
+            `${secretKey}/redesigned-leadData/${companyNewName}/step4`,
             formData
           );
           // Handle successful upload
@@ -566,11 +570,11 @@ export default function AdminBookingForm({
       if (activeStep === 4) {
         try {
           const response = await axios.post(
-            `${secretKey}/bookings/redesigned-final-leadData/${companyNewName}`,
+            `${secretKey}/redesigned-final-leadData/${companyNewName}`,
             leadData
           );
           const response2 = await axios.post(
-            `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step5`
+            `${secretKey}/redesigned-leadData/${companyNewName}/step5`
           );
 
           console.log(response.data);
@@ -688,7 +692,7 @@ export default function AdminBookingForm({
         };
         try {
           const response = await axios.post(
-            `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
+            `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
           );
           console.log(response.data);
@@ -710,7 +714,7 @@ export default function AdminBookingForm({
       } else {
         try {
           const response = await axios.post(
-            `${secretKey}/bookings/redesigned-leadData/${companysName}`,
+            `${secretKey}/redesigned-leadData/${companysName}`,
             formData,
             {
               headers: {
@@ -745,7 +749,7 @@ export default function AdminBookingForm({
     try {
       console.log(companyNewName.trim())
       const response = await fetch(
-        `${secretKey}/bookings/redesigned-delete-model/${companyNewName.trim()}`,
+        `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
         {
           method: "DELETE",
           headers: {
@@ -1145,10 +1149,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                              <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1160,13 +1164,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1256,10 +1260,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                               <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1271,13 +1275,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1360,10 +1364,10 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                               <option value="" selected disabled>
+                                <option value="" selected disabled>
                                 Select Payment Date
                               </option>
-                              <option value="After Application">
+                              <option value="AFTER APPLICATION">
                                 AFTER APPLICATION
                               </option>
                               <option value="AFTER CERTIFICATE">
@@ -1375,13 +1379,13 @@ export default function AdminBookingForm({
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
-                              <option value="At the time of Application">
+                              <option value=" AT THE TIME OF APPLICATION">
                                AT THE TIME OF APPLICATION
                               </option>
-                              <option value="After Document">
+                              <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
                               </option>
-                              <option value="Before Application">
+                              <option value="BEFORE APPLICATION">
                                 BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
@@ -1557,7 +1561,7 @@ export default function AdminBookingForm({
       const companyName = companyNewName;
       // console.log("gadbadyahin hain")
       try {
-        const response = await axios.get(`${secretKey}/company-data/leads/${companyName}`);
+        const response = await axios.get(`${secretKey}/leads/${companyName}`);
         console.log(response.data);
         setFoundCompany(response.data);
         setLeadData((prevLeadData) => ({
@@ -2349,6 +2353,7 @@ export default function AdminBookingForm({
                                             type="radio"
                                             name="ca-case"
                                             onChange={(e) => {
+                                              Swal.fire({text:"Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues."})
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
                                                 caCase: e.target.value, // Set the value based on the selected radio button
