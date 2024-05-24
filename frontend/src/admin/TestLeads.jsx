@@ -38,7 +38,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
-import { Drawer,colors } from "@mui/material";
+import { Drawer, colors } from "@mui/material";
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -61,15 +61,16 @@ function TestLeads() {
     const [filteredRemarks, setFilteredRemarks] = useState([]);
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
+    const [isSearching, setIsSearching] = useState(false)
 
 
-  //--------------------function to fetch Total Leads ------------------------------
+    //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
     }
 
-  //--------------------function to fetch Data ------------------------------
+    //--------------------function to fetch Data ------------------------------
     const fetchData = async (page) => {
         try {
             setCurrentDataLoading(true)
@@ -97,7 +98,7 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     };
-      //--------------------function to fetch employee data ------------------------------
+    //--------------------function to fetch employee data ------------------------------
 
     const fetchEmployeesData = async () => {
         try {
@@ -109,7 +110,7 @@ function TestLeads() {
             console.log("Error fetching data", error.message)
         }
     }
-  //--------------------function to fetch remarks history ------------------------------
+    //--------------------function to fetch remarks history ------------------------------
     const fetchRemarksHistory = async () => {
         try {
             const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -123,13 +124,16 @@ function TestLeads() {
     };
 
     useEffect(() => {
-        fetchData(1)
-        fetchTotalLeads()
-        fetchEmployeesData()
-        fetchRemarksHistory()
-    }, [dataStatus])
+        if (!isSearching) {
+            fetchData(1)
+            fetchTotalLeads()
+            fetchEmployeesData()
+            fetchRemarksHistory()
+        }
 
-//--------------------function to change pages ------------------------------
+    }, [dataStatus, isSearching])
+
+    //--------------------function to change pages ------------------------------
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
@@ -151,29 +155,40 @@ function TestLeads() {
         return `${day}/${month}/${year}`;
     }
     //--------------------function to filter company name ------------------------------
+
     const handleFilterSearch = async (searchQuery) => {
         try {
             setCurrentDataLoading(true);
-
+            setIsSearching(true);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
                 params: { searchQuery, field: "Company Name" }
             });
 
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
+                setIsSearching(false)
                 fetchData(1)
             } else {
                 // Set data to the search results
+
                 setData(response.data);
-                
+                if (response.data.length > 0) {
+                    if (response.data[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned')
+                    } else {
+                        setDataStatus('Assigned')
+                    }
+                }
+
             }
         } catch (error) {
             console.error('Error searching leads:', error.message);
         } finally {
             setCurrentDataLoading(false);
+            
         }
     };
-
+    console.log(isSearching)
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
@@ -1019,12 +1034,12 @@ function TestLeads() {
         openchangeRemarks(false);
         setFilteredRemarks([]);
     };
-//-----------------------------function for filter -------------------------------
-const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+    //-----------------------------function for filter -------------------------------
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
 
-const functionCloseFilterDrawer=()=>{
-    setOpenFilterDrawer(false)
-}
+    const functionCloseFilterDrawer = () => {
+        setOpenFilterDrawer(false)
+    }
 
 
 
@@ -1040,7 +1055,7 @@ const functionCloseFilterDrawer=()=>{
                         <div class="d-grid gap-4 d-md-block mt-3">
                             <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
                             <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
-                                <button type="button" class="btn" onClick={()=>setOpenFilterDrawer(true)}><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
+                                <button type="button" class="btn" onClick={() => setOpenFilterDrawer(true)}><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
                                 <button type="button" class="btn" onClick={() => {
                                     setOpenBulkLeadsCSVPopup(true)
                                     setCsvData([])
@@ -1349,11 +1364,11 @@ const functionCloseFilterDrawer=()=>{
                                 )}
                             {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button style={{background: "none", border: "0px transparent"}} onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
                                     <span>Page {currentPage} /{totalCount}</span>
-                                    <button style={{background: "none", border: "0px transparent"}} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
+                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
                                         <IconChevronRight />
                                     </button>
                                 </div>
@@ -2380,19 +2395,19 @@ const functionCloseFilterDrawer=()=>{
                             Filters
                         </h1>
                         <div>
-                            <button style={{ background: "none", border: "0px transparent" }} onClick={()=>functionCloseFilterDrawer()}>
-                            <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                                <IoIosClose style={{
+                                    height: "36px",
+                                    width: "32px",
+                                    color: "grey"
+                                }} />
                             </button>
-                           
+
                         </div>
                     </div>
                     <hr style={{ margin: "0px" }} />
                     <div className="body-projection">
-                        
+
                     </div>
                 </div>
             </Drawer>
