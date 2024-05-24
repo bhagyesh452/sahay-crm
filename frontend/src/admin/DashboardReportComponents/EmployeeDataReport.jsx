@@ -80,8 +80,8 @@ function EmployeeDataReport() {
     //-------fetching employees info--------------------------------------------
 
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/einfo`)
-            .then((response) => response.json())
+        fetch(`${secretKey}/employee/einfo`)
+            .then((response) => response.json())    
             .then((data) => {
                 setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
                 setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
@@ -97,7 +97,7 @@ function EmployeeDataReport() {
     //----------------------------fetching company data ---------------------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/leads`)
+        fetch(`${secretKey}/company-data/leads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));

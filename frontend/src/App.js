@@ -16,14 +16,14 @@ import LoginDetails from "./components/LoginDetails";
 import ProcessingLogin from "./components/ProcessingLogin";
 import Bookings from "./Processing/Bookings.jsx";
 import Form from "./Processing/Form.jsx";
-import BookingsAdmin from "./admin/BookingsAdmin.jsx";
-import BookingsForm from "./admin/BookingsForm.jsx";
+//import BookingsAdmin from "./admin/BookingsAdmin.jsx";
+//import BookingsForm from "./admin/BookingsForm.jsx";
 import Nodata from "./Processing/Nodata.jsx";
 import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
-import NewLeads from "./admin/NewLeads.jsx";
+//import NewLeads from "./admin/NewLeads.jsx";
 import RedesignedForm from "./admin/RedesignedForm.jsx";
 import DrawerComponent from "./components/Drawer.js";
 import NotFound from "./NotFound.js";
@@ -54,6 +54,7 @@ import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 import TestLeads from "./admin/TestLeads.jsx";
+import "../src/assets/v2_style.css"
 
 
 
@@ -150,7 +151,7 @@ function App() {
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
               <Route path="/admin/admin-user" element={<NewEmployee/>} />
-              <Route path="/admin/new-leads" element={<NewLeads />} />
+              {/* <Route path="/admin/new-leads" element={<NewLeads />} /> */}
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
@@ -164,7 +165,7 @@ function App() {
                 element={<LoginDetails />}
               />
               {/* <Route path="/admin/leads" element={<Leads />} /> */}
-              <Route path="/admin/leads" element={<Leads />} />
+              <Route path="/admin/leads" element={<TestLeads />} />
               <Route path="/admin/team" element={<Team />} />
               <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
               <Route path="/admin/bookings" element={<BookingList />} />

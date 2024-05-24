@@ -40,7 +40,7 @@ function StausInfo(props) {
             setCurrenDataLoading(true)
             // Make a GET request to fetch data of the specific company by its name
             const response = await axios.get(
-                `${secretKey}/specific-ename-status/${ename}/${status}`
+                `${secretKey}/company-data/specific-ename-status/${ename}/${status}`
             );
             // Extract the data from the response
             const data = response.data;

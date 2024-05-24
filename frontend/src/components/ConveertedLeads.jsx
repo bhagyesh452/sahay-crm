@@ -55,7 +55,7 @@ function ConveertedLeads() {
   const { userId } = useParams();
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       const tempData = response.data;
       setUnames(tempData);
@@ -69,7 +69,7 @@ function ConveertedLeads() {
   };
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       console.log(tempData);
       // console.log(response.data)

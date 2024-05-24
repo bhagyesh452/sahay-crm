@@ -74,7 +74,7 @@ function BdmTeamLeads() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -90,10 +90,10 @@ function BdmTeamLeads() {
 
   const fetchBDMbookingRequests = async () => {
     const bdmName = data.ename;
-    console.log("This is bdm", bdmName);
+    //console.log("This is bdm", bdmName);
     try {
       const response = await axios.get(
-        `${secretKey}/matured-get-requests-byBDM/${bdmName}`
+        `${secretKey}/bdm-data/matured-get-requests-byBDM/${bdmName}`
       );
       const mainData = response.data[0]
       setBDMrequests(mainData);
@@ -110,11 +110,7 @@ function BdmTeamLeads() {
   const fetchTeamLeadsData = async (status) => {
     const bdmName = data.ename
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
-
-
-
-
+      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
       setTeamData(response.data)
       if (bdmNewStatus === "Untouched") {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -136,9 +132,7 @@ function BdmTeamLeads() {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("NotInterested")
       }
-
-
-      console.log("response", response.data)
+      //console.log("response", response.data)
     } catch (error) {
       console.log(error)
     }
@@ -149,12 +143,12 @@ function BdmTeamLeads() {
       const companyName = BDMrequests["Company Name"];
       const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
       setMaturedBooking(currentObject);
-      console.log("Current Booking:", currentObject);
+      //console.log("Current Booking:", currentObject);
     }
   }, [teamData, BDMrequests]);
 
 
-  console.log("teamdata", teamleadsData)
+  //console.log("teamdata", teamleadsData)
 
   useEffect(() => {
     fetchData()
@@ -228,17 +222,17 @@ function BdmTeamLeads() {
     setRemarksBdmName(bdmName)
   };
 
-  console.log("filteredRemarks", filteredRemarks)
+  //console.log("filteredRemarks", filteredRemarks)
 
   //console.log("currentcompanyname", currentCompanyName);
 
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks-history`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
       setRemarksHistory(response.data.reverse());
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -272,7 +266,7 @@ function BdmTeamLeads() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks, remarksBdmName);
+    //console.log(cid, cstat, changeRemarks, remarksBdmName);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -280,14 +274,14 @@ function BdmTeamLeads() {
     }
     try {
       if (isDeleted) {
-        const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
+        const response = await axios.post(`${secretKey}/bdm-data/teamleads-rejectdata/${cid}`, {
           bdmAcceptStatus: "NotForwarded",
         })
-        const response2 = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
+        const response2 = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
           Remarks,
         });
         const response3 = await axios.post(
-          `${secretKey}/remarks-history/${cid}`,
+          `${secretKey}/remarks/remarks-history/${cid}`,
           {
             Remarks,
             remarksBdmName,
@@ -295,13 +289,13 @@ function BdmTeamLeads() {
           }
         );
         const response4 = await axios.post(
-          `${secretKey}/remarks-history/${cid}`, {
+          `${secretKey}/remarks/remarks-history/${cid}`, {
           Remarks,
           bdeName: bdeNameReject,
           currentCompanyName
         })
 
-        const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}`,{
+        const response5 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${currentCompanyName}`,{
           caseType:"NotForwarded"
         })
 
@@ -323,24 +317,24 @@ function BdmTeamLeads() {
           console.error("Failed to update status:", response.data.message);
         }
 
-        console.log("response", response.data);
+        //console.log("response", response.data);
         fetchTeamLeadsData();
         Swal.fire("Data Rejected");
         setIsDeleted(false)
 
       } else {
-        const response = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
+        const response = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
           Remarks,
         });
         const response2 = await axios.post(
-          `${secretKey}/remarks-history-bdm/${cid}`,
+          `${secretKey}/remarks/remarks-history-bdm/${cid}`,
           {
             Remarks,
             remarksBdmName,
 
           }
         );
-        console.log("remarks", Remarks)
+        //console.log("remarks", Remarks)
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
           setChangeRemarks("");
@@ -387,7 +381,7 @@ function BdmTeamLeads() {
   ) => {
     const DT = new Date();
     try {
-      const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
+      const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
         newBdmStatus,
         companyId,
         oldStatus,
@@ -396,10 +390,10 @@ function BdmTeamLeads() {
         bdmStatusChangeTime: DT.toLocaleTimeString()
       })
       const filteredProjectionData = projectionDataNew.filter((company) => company.companyName === cName)
-      console.log(filteredProjectionData)
+      //console.log(filteredProjectionData)
 
       if (filteredProjectionData.length !== 0) {
-        const response2 = await axios.post(`${secretKey}/post-followupupdate-bdmaccepted/${cName}`, {
+        const response2 = await axios.post(`${secretKey}/projection/post-followupupdate-bdmaccepted/${cName}`, {
           caseType: "Recieved"
         })
       }
@@ -473,7 +467,7 @@ function BdmTeamLeads() {
 
       if (bdmnewstatus !== "Matured") {
         const response = await axios.post(
-          `${secretKey}/bdm-status-change/${companyId}`,
+          `${secretKey}/bdm-data/bdm-status-change/${companyId}`,
           {
             bdeStatus,
             bdmnewstatus,
@@ -520,9 +514,9 @@ function BdmTeamLeads() {
     //console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
-      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
       if (mainRemarks) {
-        await axios.delete(`${secretKey}/remarks-delete-bdm/${companyId}`);
+        await axios.delete(`${secretKey}/remarks/remarks-delete-bdm/${companyId}`);
       }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
@@ -622,7 +616,7 @@ function BdmTeamLeads() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -696,7 +690,7 @@ function BdmTeamLeads() {
       } else {
         // Send data to backend API
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -727,7 +721,7 @@ function BdmTeamLeads() {
   const fetchProjections = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       setProjectionData(response.data);
       setProjectionDataNew(response.data)
@@ -820,7 +814,7 @@ function BdmTeamLeads() {
     };
 
     try {
-      const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+      const response = await axios.post(`${secretKey}/remarks/post-feedback-remarks/${companyFeedbackId}`, data
       );
 
       if (response.status === 200) {
@@ -845,7 +839,7 @@ function BdmTeamLeads() {
       bdmNextFollowUpDate: nextFollowUpdate
     }
     try {
-      const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
+      const resposne = await axios.post(`${secretKey}/bdm-data/post-bdmnextfollowupdate/${companyId}`, data)
 
       //console.log(resposne.data)
       fetchTeamLeadsData(companyStatus)

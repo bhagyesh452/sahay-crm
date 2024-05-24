@@ -8,7 +8,7 @@ import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from "react-date-range";
 import { FaRegCalendar } from "react-icons/fa";
-import { Drawer, IconButton } from "@mui/material";
+import { Drawer, IconButton, colors } from "@mui/material";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
@@ -59,18 +59,151 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
+import roundImgOrg from "../static/my-images/circle-orange.svg";
+import roundImggreen from "../static/my-images/Circle-Green.svg"
+//icons
+import { IoFileTrayFullOutline } from "react-icons/io5";
+import { CiViewList } from "react-icons/ci";
+import { MdImportantDevices } from "react-icons/md";
+import { LiaAlgolia } from "react-icons/lia";
+import { LiaClipboardCheckSolid } from "react-icons/lia";
+import { RiFileCloseLine } from "react-icons/ri";
+import EmployeeSalesReport from "./EmployeeDashboardComponents/EmployeeSalesReport.jsx";
+//PIA CHART IMPORT
+import { PieChart } from '@mui/x-charts/PieChart';
+import { useDrawingArea } from '@mui/x-charts/hooks';
+import { styled } from '@mui/material/styles';
 
 
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+//SPEDOMETER IMPORT
+import GaugeComponent from 'react-gauge-component'
+
+
+// LINE CHART
+import {
+  GaugeContainer,
+  GaugeValueArc,
+  GaugeReferenceArc,
+  useGaugeState,
+} from '@mui/x-charts/Gauge';
+import { GoArrowUp } from "react-icons/go";
+import { LineChart } from '@mui/x-charts/LineChart';
+import EmployeeCallingReport from "./EmployeeDashboardComponents/EmployeeCallingReport.jsx";
+import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwardedReport.jsx";
+import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
+
+
+
+// PIA Chart Code Start
+
+// const data_my = [
+//   { value: 100, color: '#1ac9bd', label: 'General' },
+//   { value: 20, color: '#ffb900', label: 'Interested' },
+//   { value: 25, color: '#4299e1', label: 'Follow Up' },
+//   { value: 5, color: '#1cba19', label: 'Matured' },
+//   { value: 30, color: '#e65b5b', label: 'Not Interested' },
+//   { value: 20, color: '#00d19d', label: 'BDM Forwarded' },
+// ];
+
+// const size = {
+//   width: 350,
+//   height: 220,
+//   viewBox: "0 0 250 200",
+// };
+
+// const StyledText = styled('text')(({ theme }) => ({
+//   fill: theme.palette.text.primary,
+//   textAnchor: 'middle',
+//   dominantBaseline: 'central',
+//   fontSize: 20,
+// }));
+
+// function PieCenterLabel({ children }) {
+//   const { width, height, left, top } = useDrawingArea();
+//   return (
+//     <StyledText x={left + width / 2} y={top + height / 2}>
+//       {children}
+//     </StyledText>
+//   );
+// }
+
+
+
+
+
+// LINE CHART CODE START
+const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
+const ProjectionData = [10000, 10033, 50000, 52330, 85200, 32100, 42500];
 const xLabels = [
-  'Page A',
-  'Page B',
-  'Page C',
-  'Page D',
-  'Page E',
-  'Page F',
-  'Page G',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  // '8',
+  // '9',
+  // '10',
+  // '11',
+  // '12',
+  // '13',
+  // '14',
+  // '15',
+  // '16',
+  // '17',
+  // '18',
+  // '19',
+  // '20',
+  // '21',
+  // '22',
+  // '23',
+  // '24',
+  // '25',
+  // '26',
+  // '27',
+  // '28',
+  // '29',
+  // '30',
+  // '31',
 ];
+const yLabels = [
+  '100000',
+  '75000',
+  '50000',
+  '25000',
+  '10000',
+  '5000',
+  '0',
+];
+// LINE CHART CODE END
+
+// SPEEDO METER CODE STRAT
+function GaugePointer() {
+  const { valueAngle, outerRadius, cx, cy } = useGaugeState();
+
+  if (valueAngle === null) {
+    // No value to display
+    return null;
+  }
+
+  const target = {
+    x: cx + outerRadius * Math.sin(valueAngle),
+    y: cy - outerRadius * Math.cos(valueAngle),
+  };
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={5} fill="red" />
+      <path
+        d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
+        stroke="red"
+        strokeWidth={3}
+      />
+    </g>
+  );
+}
+// SPEEDO METER CODE END
+
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -137,7 +270,7 @@ function EmployeeDashboard() {
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
@@ -152,11 +285,14 @@ function EmployeeDashboard() {
   const [loadingNew, setLoadingNew] = useState([]);
   const [moreEmpData, setmoreEmpData] = useState([])
 
+
+  const [speed, setSpeed] = useState(0);
+
   // -------------------------api for contact number-------------------------------------------------------
 
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
       setmoreEmpData(tempData)
@@ -201,7 +337,7 @@ function EmployeeDashboard() {
 
   const fetchEmployeeData = async () => {
     setLoading(true);
-    fetch(`${secretKey}/edata-particular/${data.ename}`)
+    fetch(`${secretKey}/company-data/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
         setEmpData(data);
@@ -232,7 +368,7 @@ function EmployeeDashboard() {
   const fetchTeamLeadsData = async () => {
 
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+      const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`)
       setTeamLeadsData(response.data)
       setTeamData(response.data)
 
@@ -241,29 +377,11 @@ function EmployeeDashboard() {
     }
   }
 
-  console.log(teamLeadsData)
+  //console.log(teamLeadsData)
 
   useEffect(() => {
     fetchTeamLeadsData()
   }, [data.ename])
-
-
-
-  //console.log("empData", empData)
-
-  //console.log("ajki", todayFollowUpDateData)
-
-  // const fetchEmployeeData = async () => {
-  //   try {
-  //     const response = await fetch(`${secretKey}/edata-particular/${data.ename}`);
-  //     const data = await response.json();
-  //     setEmpData(data);
-  //     setLoading(false); // Set loading to false when data is fetched
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setLoading(false); // Also set loading to false in case of error
-  //   }
-  // };
 
   // const tableEmployee = data.ename;
   useEffect(() => {
@@ -282,29 +400,6 @@ function EmployeeDashboard() {
   const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   // ---------------------------Bookings Part --------------------------------------
-
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      try {
-        setLoading(true);
-        //setuniqueArrayLoading(true)// Set loading to true before fetching
-        const response = await axios.get(
-          `${secretKey}/company-ename/${data.ename}`
-        );
-        setTotalBooking(response.data);
-        setFilteredBooking(response.data);
-      } catch (error) {
-        console.error("Error fetching company details:", error.message);
-      } finally {
-        setLoading(false);
-        //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
-      }
-    };
-
-    fetchBookingDetails();
-  }, [data.ename]);
-
-  //console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
@@ -381,7 +476,7 @@ function EmployeeDashboard() {
       setDateRangeDisplay(false);
     }
   };
-// -------------------------------------------- socket.io section ------------------------------------------------
+  // -------------------------------------------- socket.io section ------------------------------------------------
   useEffect(() => {
     const socket = io("http://localhost:3001");
     socket.on("connect", () => {
@@ -398,7 +493,7 @@ function EmployeeDashboard() {
       try {
         const id = data._id;
         const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
+          `${secretKey}/employee/online-status/${id}/${socketID}`
         );
         //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
@@ -417,7 +512,7 @@ function EmployeeDashboard() {
       clearTimeout(timerId);
     };
   }, [socketID]);
-// ----------------------------------------  Socket.io Section End  -------------------------------------------------------
+  // ----------------------------------------  Socket.io Section End  -------------------------------------------------------
   const selectionRangeAnother = {
     startDate: startDateAnother,
     endDate: endDateAnother,
@@ -443,11 +538,11 @@ function EmployeeDashboard() {
   const [followDataTodayFilter, setfollowDataTodayFilter] = useState([]);
 
   const fetchFollowUpData = async () => {
-    
+
     try {
       setprojectionLoading(true);
       const response = await fetch(
-        `${secretKey}/projection-data/${data.ename}`
+        `${secretKey}/projection/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setFollowData(followdata);
@@ -603,7 +698,7 @@ function EmployeeDashboard() {
         });
       } else {
         const response = await axios.post(
-          `${secretKey}/update-followup`,
+          `${secretKey}/projection/update-followup`,
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -667,7 +762,7 @@ function EmployeeDashboard() {
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
 
-  console.log("selectedDates", selectedDateRange);
+  //console.log("selectedDates", selectedDateRange);
 
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
@@ -715,7 +810,7 @@ function EmployeeDashboard() {
     setFollowDataFilter(filteredDataDateRange);
   }, [startDate, endDate]);
 
-  console.log(totalBooking);
+  //console.log(totalBooking);
 
   const handleSelectAnother = (values) => {
     console.log(values);
@@ -1469,7 +1564,7 @@ function EmployeeDashboard() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
-        `${secretKey}/delete-followup/${companyName}`
+        `${secretKey}/projection/delete-followup/${companyName}`
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
@@ -1568,13 +1663,13 @@ function EmployeeDashboard() {
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
-      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some((more)=>more.bdeName === data.ename || more.bdmName === data.ename))));
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
+      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -1592,70 +1687,66 @@ function EmployeeDashboard() {
 
     let maturedCount = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      if(istrue){
-        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+
+    redesignedData.map((mainBooking) => {
+      if (istrue) {
+        if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             maturedCount = maturedCount + 1
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
             maturedCount = maturedCount + 0.5;
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               maturedCount = maturedCount + 1;
             }
           }
-      }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-              if(moreObject.bdeName === moreObject.bdmName){
+        }
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              maturedCount = maturedCount + 1;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              maturedCount = maturedCount + 0.5
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 maturedCount = maturedCount + 1;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                maturedCount = maturedCount + 0.5
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  maturedCount = maturedCount + 1;
-                }
               }
-         
+            }
+
           }
         })
 
-      }else{
-        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
-         
-            if(mainBooking.bdeName === mainBooking.bdmName){
-              maturedCount = maturedCount + 1
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
+      } else {
+        if (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
+            maturedCount = maturedCount + 1
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            maturedCount = maturedCount + 0.5;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
+              maturedCount = maturedCount + 1;
+            }
+          }
+        }
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).getMonth() === today.getMonth()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              maturedCount = maturedCount + 1;
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
               maturedCount = maturedCount + 0.5;
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-              if(mainBooking.bdeName === data.ename){
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 maturedCount = maturedCount + 1;
               }
             }
-        }
-          mainBooking.moreBookings.map((moreObject)=>{
-            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
-           
-                if(moreObject.bdeName === moreObject.bdmName){
-                  maturedCount = maturedCount + 1;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  maturedCount = maturedCount + 0.5
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === data.ename){
-                    maturedCount = maturedCount + 1;
-                  }
-                }
-           
-            }
-          })
+          }
+        })
       }
-     
-   
-      
-      
+
     })
 
     // Set hours, minutes, and seconds to zero
@@ -1737,141 +1828,141 @@ function EmployeeDashboard() {
     let remainingAmount = 0;
     let expanse = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      if(istrue){
-        if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+
+    redesignedData.map((mainBooking) => {
+      if (istrue) {
+        if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-            mainBooking.services.map(serv=>{
+            mainBooking.services.map(serv => {
               // console.log(serv.expanse , bdeName ,"this is services");
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              expanse = serv.expanse ? expanse + serv.expanse : expanse;
             });
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-              mainBooking.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              mainBooking.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
               })
             }
           }
         }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-              if(moreObject.bdeName === moreObject.bdmName){
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                moreObject.services.map(serv => {
+                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
                 })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-                })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                  moreObject.services.map(serv=>{
-                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-                  })
-                }
               }
-         
+            }
+
           }
         })
 
-      }else{
-        if(new Date(mainBooking.bookingDate).getMonth() === today.getMonth()){
-         
-          if(mainBooking.bdeName === mainBooking.bdmName){
+      } else {
+        if (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) {
+
+          if (mainBooking.bdeName === mainBooking.bdmName) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-            mainBooking.services.map(serv=>{
-              expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+            mainBooking.services.map(serv => {
+              expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
             })
-          }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-            if(mainBooking.bdeName === data.ename){
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-              mainBooking.services.map(serv=>{
-                expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+              mainBooking.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
               })
             }
           }
-        }else if(mainBooking.remainingPayments.length !== 0){
-          mainBooking.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
+        } else if (mainBooking.remainingPayments.length !== 0) {
+          mainBooking.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) {
               const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(mainBooking.bdeName === mainBooking.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-                if(mainBooking.bdeName === data.ename){
+              if (mainBooking.bdeName === mainBooking.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (mainBooking.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
-          mainBooking.moreBookings.map((moreObject)=>{
-            if(new Date(moreObject.bookingDate).getMonth() === today.getMonth()){
-           
-              if(moreObject.bdeName === moreObject.bdmName){
+        mainBooking.moreBookings.map((moreObject) => {
+          if (new Date(moreObject.bookingDate).getMonth() === today.getMonth()) {
+
+            if (moreObject.bdeName === moreObject.bdmName) {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+              moreObject.services.map(serv => {
+                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+              })
+            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+              if (moreObject.bdeName === data.ename) {
                 achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse : expanse;
+                moreObject.services.map(serv => {
+                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
                 })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-                moreObject.services.map(serv=>{
-                  expanse = serv.expanse ?  expanse + serv.expanse/2 : expanse;
-                })
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
-                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                  moreObject.services.map(serv=>{
-                    expanse = serv.expanse ?  expanse + serv.expanse : expanse;
-                  })
+              }
+            }
+
+          } else if (moreObject.remainingPayments.length !== 0) {
+
+            moreObject.remainingPayments.map((remainingObj) => {
+              if (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) {
+
+                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
+                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+                if (moreObject.bdeName === moreObject.bdmName) {
+                  remainingAmount += Math.round(tempAmount);
+                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                  remainingAmount += Math.round(tempAmount) / 2;
+                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                  if (moreObject.bdeName === data.ename) {
+                    remainingAmount += Math.round(tempAmount);
+                  }
                 }
               }
-           
-            }else if(moreObject.remainingPayments.length!==0){
-           
-              moreObject.remainingPayments.map((remainingObj)=>{
-                if(new Date(remainingObj.paymentDate).getMonth() === today.getMonth()){
-                  
-                  const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                  const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                  if(moreObject.bdeName === moreObject.bdmName){
-                      remainingAmount += Math.round(tempAmount);
-                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                    remainingAmount += Math.round(tempAmount)/2;
-                  }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                    if(moreObject.bdeName === data.ename){
-                      remainingAmount += Math.round(tempAmount);
-                    }
-                  }         
-                }
-              })
-            }
-          })
+            })
+          }
+        })
       }
-     
-   
-      
-      
+
+
+
+
     })
     // const today = new Date();
     // // Set hours, minutes, and seconds to zero
@@ -1905,7 +1996,7 @@ function EmployeeDashboard() {
     //   }
     // });
     return achievedAmount + Math.round(remainingAmount) - expanse;
-};
+  };
 
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
@@ -1916,70 +2007,70 @@ function EmployeeDashboard() {
 
 
     // Set hours, minutes, and seconds to zero
-    redesignedData.map((mainBooking)=>{
-      if(new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-         
-        if(mainBooking.bdeName === mainBooking.bdmName){
+    redesignedData.map((mainBooking) => {
+      if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+        if (mainBooking.bdeName === mainBooking.bdmName) {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount)/2;
-        }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-          if(mainBooking.bdeName === data.ename){
+        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+          achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+          if (mainBooking.bdeName === data.ename) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           }
         }
-      }else if(mainBooking.remainingPayments.length !== 0){
-        mainBooking.remainingPayments.map((remainingObj)=>{
-          if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
+      } else if (mainBooking.remainingPayments.length !== 0) {
+        mainBooking.remainingPayments.map((remainingObj) => {
+          if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-            if(mainBooking.bdeName === mainBooking.bdmName){
-                remainingAmount += Math.round(tempAmount);
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-              remainingAmount += Math.round(tempAmount)/2;
-            }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-              if(mainBooking.bdeName === data.ename){
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === data.ename) {
                 remainingAmount += Math.round(tempAmount);
               }
-            }         
+            }
           }
         })
       }
-      mainBooking.moreBookings.map((moreObject)=>{
-        if(new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()){
-       
-            if(moreObject.bdeName === moreObject.bdmName){
+      mainBooking.moreBookings.map((moreObject) => {
+        if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+          if (moreObject.bdeName === moreObject.bdmName) {
+            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+            if (moreObject.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-              achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount)/2;
-            }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-              if(moreObject.bdeName === data.ename){
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-              }
             }
-       
-        }else if(moreObject.remainingPayments.length!==0){
-         
-          moreObject.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-              
+          }
+
+        } else if (moreObject.remainingPayments.length !== 0) {
+
+          moreObject.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(moreObject.bdeName === moreObject.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                if(moreObject.bdeName === data.ename){
+              if (moreObject.bdeName === moreObject.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
       })
     })
-    
+
     // const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString());
 
     // todayData.forEach((obj) => {
@@ -2010,56 +2101,56 @@ function EmployeeDashboard() {
     return achievedAmount + Math.round(remainingAmount)
   };
   const functionCalculatePendingRevenue = () => {
-    
+
     let remainingAmount = 0;
     const today = new Date();
-  
-    redesignedData.map((mainBooking)=>{
-      
-        if(mainBooking.remainingPayments.length !== 0){
-          mainBooking.remainingPayments.map((remainingObj)=>{
-            if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-              const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+
+    redesignedData.map((mainBooking) => {
+
+      if (mainBooking.remainingPayments.length !== 0) {
+        mainBooking.remainingPayments.map((remainingObj) => {
+          if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+            const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+            if (mainBooking.bdeName === mainBooking.bdmName) {
+              remainingAmount += Math.round(tempAmount);
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              remainingAmount += Math.round(tempAmount) / 2;
+            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+              if (mainBooking.bdeName === data.ename) {
+                remainingAmount += Math.round(tempAmount);
+              }
+            }
+          }
+        })
+      }
+      mainBooking.moreBookings.map((moreObject) => {
+        if (moreObject.remainingPayments.length !== 0) {
+
+          moreObject.remainingPayments.map((remainingObj) => {
+            if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
+
+              const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if(mainBooking.bdeName === mainBooking.bdmName){
-                  remainingAmount += Math.round(tempAmount);
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by"){
-                remainingAmount += Math.round(tempAmount)/2;
-              }else if(mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by"){
-                if(mainBooking.bdeName === data.ename){
+              if (moreObject.bdeName === moreObject.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                if (moreObject.bdeName === data.ename) {
                   remainingAmount += Math.round(tempAmount);
                 }
-              }         
+              }
             }
           })
         }
-        mainBooking.moreBookings.map((moreObject)=>{
-           if(moreObject.remainingPayments.length!==0){
-           
-            moreObject.remainingPayments.map((remainingObj)=>{
-              if(new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()){
-                
-                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                if(moreObject.bdeName === moreObject.bdmName){
-                    remainingAmount += Math.round(tempAmount);
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by"){
-                  remainingAmount += Math.round(tempAmount)/2;
-                }else if(moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by"){
-                  if(moreObject.bdeName === data.ename){
-                    remainingAmount += Math.round(tempAmount);
-                  }
-                }         
-              }
-            })
-          }
-        })
+      })
 
-      
-     
-   
-      
-      
+
+
+
+
+
     })
     return remainingAmount
 
@@ -2138,24 +2229,24 @@ function EmployeeDashboard() {
     // Filter objects based on bdeName
     let tempBookingDate = null;
     // Filter objects based on bdeName
-    redesignedData.map((mainBooking)=>{
-     
-      if(monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth){
-  
-          const bookingDate = new Date(mainBooking.bookingDate);
-         tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
-        
+    redesignedData.map((mainBooking) => {
+
+      if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+
+        const bookingDate = new Date(mainBooking.bookingDate);
+        tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+
       }
-        mainBooking.moreBookings.map((moreObject)=>{
-          if(monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth){
-           
-              const bookingDate = new Date(moreObject.bookingDate);
-              tempBookingDate =  bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
-            
-          }
-        })
-      
-      
+      mainBooking.moreBookings.map((moreObject) => {
+        if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+
+          const bookingDate = new Date(moreObject.bookingDate);
+          tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+
+        }
+      })
+
+
     })
     return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
 
@@ -2268,7 +2359,7 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -2281,7 +2372,7 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
-        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
+        setRedesignedData(permanentFormData.filter(obj => new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
@@ -2375,8 +2466,8 @@ function EmployeeDashboard() {
   }
 
   const handleFilterFollowDataToday = (isBdm) => {
-    const filterFollowDataForwarded = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followDataToday.filter((company) => company.caseType === "Forwarded")
-    const filterFollowDataRecieved = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followDataToday.filter((company) => company.caseType === "Recieved")
+    const filterFollowDataForwarded = isBdm ? followDataToday.filter((company) => company.bdmName !== data.ename && company.caseType === "Forwarded") : followDataToday.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followDataToday.filter((company) => company.bdmName !== data.ename && company.caseType === "Recieved") : followDataToday.filter((company) => company.caseType === "Recieved")
     const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentForwarded + totalPaymentRecieved
@@ -2388,8 +2479,8 @@ function EmployeeDashboard() {
     return finalPayment.toLocaleString();
   }
   const handleFilterFollowData = (isBdm) => {
-    const filterFollowDataForwarded = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followData.filter((company) => company.caseType === "Forwarded")
-    const filterFollowDataRecieved = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followData.filter((company) => company.caseType === "Recieved")
+    const filterFollowDataForwarded = isBdm ? followData.filter((company) => company.bdmName !== data.ename && company.caseType === "Forwarded") : followData.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followData.filter((company) => company.bdmName !== data.ename && company.caseType === "Recieved") : followData.filter((company) => company.caseType === "Recieved")
     const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentForwarded + totalPaymentRecieved
@@ -2439,7 +2530,7 @@ function EmployeeDashboard() {
     <div className="admin-dashboard">
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      <div className="page-wrapper">
+      <div className="page-wrapper display-none">
         {/* Lead Report Dashboard Numbers */}
         <div className="dashboard-headings container-xl">
           <h3 className="m-0">Leads Report</h3>
@@ -2802,9 +2893,9 @@ function EmployeeDashboard() {
                               {moreEmpData.filter(
                                 (obj) =>
                                   formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
-                                  obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                  obj.Status !== "Matured"
+                                  obj.bdmAcceptStatus !== "NotForwarded"
+                                //obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up"&&
+                                //obj.Status !== "Matured"
                               ).length}
                             </div>
                           </div>
@@ -2927,17 +3018,7 @@ function EmployeeDashboard() {
                           ))}
                         </select>
                       </div>
-
-                      {/* 
-                        <Select
-                          options={monthOptions}
-                          placeholder="Select..."
-                          onChange={handleChange}
-                          value={monthOptions.find(option => option.value === selectedMonthOption)}
-                        />
-                      </div> */}
                     </div>
-
                     {/*ForwardedToBDM loop */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
@@ -3307,7 +3388,7 @@ function EmployeeDashboard() {
               <div className="card">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                   <div className="dashboard-title pl-1"  >
-                    <h2  className="m-0">
+                    <h2 className="m-0">
                       Total Projection Summary
                     </h2>
                   </div>
@@ -3428,7 +3509,7 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td style={{padding:'0px !important'}}>
+                                    <td style={{ padding: '0px !important' }}>
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
                                         <IconButton
                                           onClick={() => {
@@ -3521,7 +3602,7 @@ function EmployeeDashboard() {
                         value={searchTerm}
                         onChange={(e) => filterSearch(e.target.value)}
                         placeholder="Search here....."
-                                  
+
                         type="text"
                         name="bdeName-search"
                         id="bdeName-search"
@@ -3530,7 +3611,7 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div  id="table-default" className="row tbl-scroll">
+                  <div id="table-default" className="row tbl-scroll">
                     <table className="table-vcenter table-nowrap admin-dash-tbl">
                       <thead className="admin-dash-tbl-thead">
                         <tr
@@ -3697,7 +3778,7 @@ function EmployeeDashboard() {
                       <path d="M21 21l-6 -6"></path>
                     </svg>
                   </span>
-                  
+
                   <input
                     className="form-control"
                     value={newSearchTerm}
@@ -3768,7 +3849,7 @@ function EmployeeDashboard() {
               />
             </div>} */}
             <div className="card-body">
-              <div  id="table-default" className="row tbl-scroll"  >
+              <div id="table-default" className="row tbl-scroll"  >
                 <table className="table-vcenter table-nowrap admin-dash-tbl">
                   <thead className="admin-dash-tbl-thead" >
                     <tr>
@@ -3965,7 +4046,7 @@ function EmployeeDashboard() {
               </div>
             </div>
             <div className="card-body">
-              <div  id="table-default" className="row tbl-scroll">
+              <div id="table-default" className="row tbl-scroll">
                 <table className="table-vcenter table-nowrap admin-dash-tbl">
                   <thead className="admin-dash-tbl-thead">
                     <tr
@@ -4176,7 +4257,326 @@ function EmployeeDashboard() {
           </div>
         </div>
       </div>
-
+      <div className="page-wrapper">
+        <div className="Dash-Main mt-3">
+          <div className="container-xl">
+            <div className="row">
+              <div className="col-sm-12">
+                {/* sales report */}
+                <div className="row">
+                  <div className="col-sm-12">
+                    <EmployeeSalesReport data={data} followData={followData} redesignedData={redesignedData} moreEmpData={moreEmpData} />
+                  </div>
+                </div>
+                {/* Lead reports */}
+                <div className="row mt-3 mb-4">
+                  {/* calling data report */}
+                  <div className="col-sm-4">
+                    <EmployeeCallingReport />
+                    {/* <div className="dash-card">
+                      <div className="dash-card-head">
+                        <h2 className="m-0">
+                          Calling Data Report
+                        </h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="row align-items-center">
+                          <div className="col-sm-5 align-self-stretch">
+                            <div className="call-dr-names mb-2">
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-1ac9bd">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    General
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  100
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-ffb900">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Interested
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  20
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-4299e1">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Follow Up
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  25
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-1cba19">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Matured
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  5
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-e65b5b">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Not Interested
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  30
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-dots clr-bg-00d19d">
+                                  </div>
+                                  <div className="call-dr-name">
+                                    BDM Forwarded
+                                  </div>
+                                </div>
+                                <div className="call-dr-num">
+                                  20
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-sm-7 align-self-stretch">
+                            <div className="call-dr-chart mt-1">
+                              <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
+                                legend: { hidden: true },
+                              }}>
+                                <PieCenterLabel>Total: 200</PieCenterLabel>
+                              </PieChart>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> */}
+                  </div>
+                  <div className="col-sm-4">
+                    <EmployeeForwardedReport/>
+                    {/* <div className="dash-card">
+                      <div className="dash-card-head d-flex align-items-center justify-content-between">
+                        <h2 className="m-0">
+                          <select class="head-select form-select" id="head-select">
+                            <option value="1" selected>Forworded to BDM</option>
+                            <option value="2">Received as BDM</option>
+                          </select>
+                        </h2>
+                        <div className="dash-select-filter">
+                          <select class="form-select form-select-sm my-filter-select" aria-label=".form-select-sm example">
+                            <option value="1" selected>Today</option>
+                            <option value="2">This Month</option>
+                            <option value="3">Last Month</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="row m-0 align-items-center">
+                          <div className="col-sm-7 p-0 align-self-stretch h-100">
+                            <div className="bdm-f-r-revenue h-100">
+                              <div className="bdm-f-r-revenue-projected">
+                                <div className="roundImggreen">
+                                  <div className="roundImggreen-inner-text">₹ 30,000/-</div>
+                                </div>
+                                <div className="roundImggreen-text">Projected <br />Revenue</div>
+                              </div>
+                              <div className="bdm-f-r-revenue-generated">
+                                <div className="roundImgOrg">
+                                  <div className="roundImgOrg-inner-text">₹ 50,200/-</div>
+                                </div>
+                                <div className="roundImgOrg-text">Generated <br />Revenue</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-sm-5 p-0 align-self-stretch">
+                            <div className="call-dr-names">
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-1ac9bd clr-1ac9bd">
+                                    <CiViewList />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    General
+                                  </div>
+                                </div>
+                                LiaClipboardCheckSolid         <div className="call-dr-num clr-1ac9bd" >
+                                  100
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-ffb900 clr-ffb900">
+                                    <MdImportantDevices />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Interested
+                                  </div>
+                                </div>
+                                <div className="call-dr-num clr-ffb900" >
+                                  20
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-4299e1 clr-4299e1">
+                                    <LiaAlgolia />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Follow Up
+                                  </div>
+                                </div>
+                                <div className="call-dr-num clr-4299e1">
+                                  25
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-1cba19 clr-1cba19">
+                                    <LiaClipboardCheckSolid />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Matured
+                                  </div>
+                                </div>
+                                <div className="call-dr-num clr-1cba19">
+                                  5
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-e65b5b clr-e65b5b">
+                                    <RiFileCloseLine />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Not Interested
+                                  </div>
+                                </div>
+                                <div className="call-dr-num clr-e65b5b">
+                                  30
+                                </div>
+                              </div>
+                              <div className="call-dr-card d-flex align-items-center justify-content-between pl-0 pt-1 pr-0 pb-1">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="color-squre-dots clr-bg-light-00d19d clr-00d19d">
+                                    <IoFileTrayFullOutline />
+                                  </div>
+                                  <div className="call-dr-name">
+                                    Total
+                                  </div>
+                                </div>
+                                <div className="call-dr-num clr-00d19d">
+                                  200
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> */}
+                  </div>
+                  <div className="col-sm-4">
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                    {/* <div className="dash-card">
+                      <div className="dash-card-head d-flex align-items-center justify-content-between">
+                        <h2 className="m-0">
+                          Top Selling Services
+                        </h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="top-selling-s">
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-1cba19">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="top-selling-s-no bdr-l-clr-1cba19">
+                                1
+                              </div>
+                              <div className="top-selling-s-name">
+                                Start-Up India Certificate
+                              </div>
+                            </div>
+                            <div className="top-selling-s-num clr-bg-1cba19">
+                              10
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-00d19d">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="top-selling-s-no bdr-l-clr-00d19d">
+                                2
+                              </div>
+                              <div className="top-selling-s-name">
+                                Seed Fund Support
+                              </div>
+                            </div>
+                            <div className="top-selling-s-num clr-bg-00d19d">
+                              8
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-fff536">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="top-selling-s-no bdr-l-clr-fff536">
+                                3
+                              </div>
+                              <div className="top-selling-s-name">
+                                Website Development
+                              </div>
+                            </div>
+                            <div className="top-selling-s-num clr-bg-fff536">
+                              5
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-ffb900">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="top-selling-s-no bdr-l-clr-ffb900">
+                                4
+                              </div>
+                              <div className="top-selling-s-name">
+                                Income TAX Exemption
+                              </div>
+                            </div>
+                            <div className="top-selling-s-num clr-bg-ffb900">
+                              4
+                            </div>
+                          </div>
+                          <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-e65b5b">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="top-selling-s-no bdr-l-clr-e65b5b">
+                                5
+                              </div>
+                              <div className="top-selling-s-name">
+                                ISO Certificate
+                              </div>
+                            </div>
+                            <div className="top-selling-s-num clr-bg-e65b5b">
+                              3
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer

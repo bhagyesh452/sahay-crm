@@ -102,6 +102,19 @@ th {
 
     font-weight: 500;
 }
+.admin-dashboard  .head-select
+{
+  border: none !important;
+  background-position: right 7px center;
+  background-size: 16px 24px;
+  padding: 0 30px 0px 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.admin-dashboard  .head-select:focus
+{
+  box-shadow: none !important;
+}
 .form-control{
     border: 1px solid #ffb900 !important;
 }
@@ -130,7 +143,6 @@ background-color: #f6df9f !important;
     padding: 0px 20px;
     border-radius: 0px 5px 5px 0px;
 }
-
 .hr-1
 {
     width: 100%;
@@ -1952,3 +1964,5 @@ td input
 {
   background-color: #f9d206 !important;
 }
+
+

@@ -211,7 +211,7 @@ export default function AdminBookingForm({
           paymentReceipt: data.paymentReceipt,
           paymentMethod: data.paymentMethod,
           extraNotes: data.extraNotes,
-          isAdmin : IamAdmin
+          isAdmin : true,
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });

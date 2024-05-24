@@ -13,7 +13,7 @@ import {useParams} from 'react-router-dom'
 function Header({bdmName}){
     // const name = localStorage.getItem("bdmName")
      const secretKey = process.env.React_APP_SECRET_KEY;
-     console.log(bdmName)
+     //console.log(bdmName)
 
 
     return(
