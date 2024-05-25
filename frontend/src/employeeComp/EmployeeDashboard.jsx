@@ -180,31 +180,40 @@ function EmployeeDashboard() {
   const [tempData, setTempData] = useState([]);
   const [loadingNew, setLoadingNew] = useState([]);
   const [moreEmpData, setmoreEmpData] = useState([])
-
-
   const [speed, setSpeed] = useState(0);
 
-  function getWithExpiry(key) {
-    const itemStr = localStorage.getItem(key);
-    // Return null if the item doesn't exist
-    if (!itemStr) {
-        return null;
-    }
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-    // Check if the item has expired
-    if (now.getTime() > item.expiry) {
-        localStorage.removeItem(key); // Remove the expired item
-        return null;
-    }
-    return item.value;
-}
+//   function getWithExpiry() {
+//     const itemStr = localStorage.getItem("newtoken");
+//     console.log(itemStr);
+//     // Return null if the item doesn't exist
+//     if (!itemStr) {
+//         return null;
+//     }
+//     try {
+//         // Split the JWT into its parts: header, payload, and signature
+//         const parts = itemStr.split('.');
+//         // Decode the payload (middle part)
+//         const decodedPayload = JSON.parse(atob(parts[1]));
+//         console.log(new Date(decodedPayload.exp).getDate());
+        
+//         const now = new Date();
+//         console.log(now.getTime())
+//         // Check if the item has expired
+//         if (now.getTime() > decodedPayload.exp) { // Assuming 'exp' field represents expiry time
+//             localStorage.removeItem("newtoken"); // Remove the expired item
+//             return null;
+//         }
+//         return decodedPayload;
+//     } catch (error) {
+//         console.error('Error parsing JWT:', error);
+//         return null;
+//     }
+// }
 
-//setWithExpiry('myKey', 'myValue', 5 * 60 * 1000); // 5 minutes in milliseconds
+// useEffect(()=>{
+//   getWithExpiry()
+// },[])
 
-// Check the value whenever you need it
-const value = getWithExpiry(newtoken);
-console.log(value); // This will log null if the value has expired and been removed
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -223,24 +232,6 @@ console.log(value); // This will log null if the value has expired and been remo
     fetchNewData();
     fetchRedesignedBookings();
   }, [data]);
-
-  //console.log("tempData", tempData)
-
-  //console.log(data)
-
-  // const fetchEmployeeData = async () => {
-  //   try {
-  //     //setuniqueArrayLoading(true);
-  //     const response = await fetch(`${secretKey}/edata-particular/${data.ename}`);
-  //     const data = await response.json();
-  //     setEmpData(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   } finally {
-  //     //setuniqueArrayLoading(false);
-  //   }
-  //   console.log("empData", empData);
-  // };
 
   const [todayFollowUpDateData, setTodayFollowUpDateData] = useState([])
   const [todayFollowUpDateDataFilter, setTodayFollowUpDateDataFilter] = useState([])

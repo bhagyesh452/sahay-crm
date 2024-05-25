@@ -437,12 +437,7 @@ function Dashboard() {
       const endDate = values[1].format("MM/DD/YYYY");
 
       const filteredDataDateRange = bookingObject.filter((product) => {
-        const productDate = new Date(product["bookingDate"]).setHours(
-          0,
-          0,
-          0,
-          0
-        );
+        const productDate = new Date(product["bookingDate"]).setHours(0,0,0,0);
 
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
@@ -519,9 +514,6 @@ function Dashboard() {
       return { error: "Error fetching data" };
     }
   };
-
-
-
 
 
   const handleFilterBranchOffice = (branchName) => {
