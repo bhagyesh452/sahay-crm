@@ -4101,11 +4101,17 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
     });
+    
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
       { new: true }
     );
+    if(updateMainBooking.bdmAcceptStatus === "Accept"){
+      const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(
+      companyId
+      )
+    }
     if (deletedBooking) {
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
         "Company Name": deletedBooking["Company Name"],
