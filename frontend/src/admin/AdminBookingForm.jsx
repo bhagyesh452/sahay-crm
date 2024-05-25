@@ -104,7 +104,7 @@ export default function AdminBookingForm({
 
   const fetchDataEmp = async () => {
     try {
-      const response = await axios.get(`${secretKey}/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -123,7 +123,7 @@ export default function AdminBookingForm({
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
+        `${secretKey}/bookings/redesigned-leadData/${companyNewName.trim()}`
       );
       console.log(response.data , "This it it now")
       let data = response.data;
@@ -295,13 +295,13 @@ export default function AdminBookingForm({
   const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -358,7 +358,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step1`,
+              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step1`,
               dataToSend
             );
             // Handle response data as needed
@@ -401,7 +401,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step2`,
+              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step2`,
               dataToSend
             );
             // Handle response data as needed
@@ -499,7 +499,7 @@ export default function AdminBookingForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step3`,
+              `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step3`,
               dataToSend
             );
             // Handle response data as needed
@@ -554,7 +554,7 @@ export default function AdminBookingForm({
         }
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companyNewName}/step4`,
+            `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step4`,
             formData
           );
           // Handle successful upload
@@ -570,11 +570,11 @@ export default function AdminBookingForm({
       if (activeStep === 4) {
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companyNewName}`,
+            `${secretKey}/bookings/redesigned-final-leadData/${companyNewName}`,
             leadData
           );
           const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companyNewName}/step5`
+            `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step5`
           );
 
           console.log(response.data);
@@ -692,7 +692,7 @@ export default function AdminBookingForm({
         };
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             leadData
           );
           console.log(response.data);
@@ -714,7 +714,7 @@ export default function AdminBookingForm({
       } else {
         try {
           const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}`,
+            `${secretKey}/bookings/redesigned-leadData/${companysName}`,
             formData,
             {
               headers: {
@@ -749,7 +749,7 @@ export default function AdminBookingForm({
     try {
       console.log(companyNewName.trim())
       const response = await fetch(
-        `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
+        `${secretKey}/bookings/redesigned-delete-model/${companyNewName.trim()}`,
         {
           method: "DELETE",
           headers: {

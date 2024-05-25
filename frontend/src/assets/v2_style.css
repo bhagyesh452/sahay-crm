@@ -2,6 +2,52 @@
 {
     display: none;
 }
+.mybtn
+{
+    font-size: 13px;
+}
+.search-cantrol
+{
+    border: 1px solid #dadfe5 !important;
+}
+.selection-data
+{
+    font-size: 13px;
+    background: #f2f2f2;
+    padding: 8px 12px;
+    border-radius: 3px;
+}
+.body-Drawer
+{
+    height: calc(100vh - 97px);
+    overflow: scroll;
+}
+.footer-Drawer
+{
+    
+}
+.filter-footer-btn
+{
+    width: 100%;
+    border: 1px solid #fff;
+    padding: 10px 7px 10px 7px;
+}
+.btn-clear
+{
+    background: #fb7a7a;
+}
+.btn-yellow
+{
+    background: #ffb900;
+}
+.btn-clear:hover
+{
+    background: #ff4e4e;
+}
+.btn-yellow:hover
+{
+    background: #cb9500;
+}
 /**********Dashboard**********/
 .dash-card
 {
