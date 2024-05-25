@@ -68,8 +68,8 @@ function EmployeeCallingReport() {
     //---------------- function for piew charts----------------------------
     const data_my = [
         { value: (empData.filter((partObj) => partObj.Status === "Untouched" || partObj.Status === "Busy" || partObj.Status === "Not Picked Up").length), color: '#1ac9bd', label: 'General' },
-        { value: (empData.filter((obj) => obj.Status === 'Interested').length), color: '#ffb900', label: 'Interested' },
-        { value: (empData.filter((obj) => obj.Status === 'FollowUp').length), color: '#4299e1', label: 'Follow Up' },
+        { value: (empData.filter((obj) => obj.Status === "Interested" && obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length), color: '#ffb900', label: 'Interested' },
+        { value: (empData.filter((obj) => obj.Status === 'FollowUp'&& obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length), color: '#4299e1', label: 'Follow Up' },
         { value: (empData.filter((obj) => obj.Status === 'Matured').length), color: '#1cba19', label: 'Matured' },
         { value: (empData.filter((obj) => obj.Status === 'Not Interested').length), color: '#e65b5b', label: 'Not Interested' },
         { value: (empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length), color: '#00d19d', label: 'BDM Forwarded' },

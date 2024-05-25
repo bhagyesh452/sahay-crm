@@ -130,45 +130,6 @@ function EmployeeLogin({ setnewToken }) {
     return `${year}-${month}-${day}`;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const date = getCurrentDate();
-  //   const time = getCurrentTime();
-  //   const address = address1 !== "" ? address1 : "No Location Found";
-  //   const ename = email;
-
-  //   try {
-  //     const response = await axios.post(`${secretKey}/employeelogin`, {
-  //       email,
-  //       password,
-  //       designation,
-
-  //     });
-  //     const response2 = await axios.post(`${secretKey}/loginDetails`, {
-  //                    ename,
-  //                     date,
-  //                     time,
-  //                    address,
-  //                   });
-
-      
-
-  //     const { newtoken } = response.data;
-  //     console.log("token", newtoken)
-  //     setnewToken(newtoken);
-  //     localStorage.setItem("newtoken", newtoken);
-  //     localStorage.setItem("userId", userId);
-
-  //     window.location.replace(`/employee-dashboard/${userId}`);
-
-  //   } catch (error) {
-  //     console.error("Login failed:", error.message);
-  //     setErrorMessage(error.message);
-
-  //   }
-
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const date = getCurrentDate();
@@ -190,7 +151,7 @@ function EmployeeLogin({ setnewToken }) {
              });
   
       const { newtoken } = response.data;
-      console.log("token", newtoken);
+      
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
@@ -210,6 +171,8 @@ function EmployeeLogin({ setnewToken }) {
       }
     }
   };
+
+  
   
   //console.log(email)
   //console.log(password)

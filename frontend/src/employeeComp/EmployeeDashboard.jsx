@@ -94,119 +94,15 @@ import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTo
 
 
 
-// PIA Chart Code Start
-
-// const data_my = [
-//   { value: 100, color: '#1ac9bd', label: 'General' },
-//   { value: 20, color: '#ffb900', label: 'Interested' },
-//   { value: 25, color: '#4299e1', label: 'Follow Up' },
-//   { value: 5, color: '#1cba19', label: 'Matured' },
-//   { value: 30, color: '#e65b5b', label: 'Not Interested' },
-//   { value: 20, color: '#00d19d', label: 'BDM Forwarded' },
-// ];
-
-// const size = {
-//   width: 350,
-//   height: 220,
-//   viewBox: "0 0 250 200",
-// };
-
-// const StyledText = styled('text')(({ theme }) => ({
-//   fill: theme.palette.text.primary,
-//   textAnchor: 'middle',
-//   dominantBaseline: 'central',
-//   fontSize: 20,
-// }));
-
-// function PieCenterLabel({ children }) {
-//   const { width, height, left, top } = useDrawingArea();
-//   return (
-//     <StyledText x={left + width / 2} y={top + height / 2}>
-//       {children}
-//     </StyledText>
-//   );
-// }
-
-
-
 
 
 // LINE CHART CODE START
-const AchivedData = [5000, 10000, 80000, 5200, 8200, 3200, 4200];
-const ProjectionData = [10000, 10033, 50000, 52330, 85200, 32100, 42500];
-const xLabels = [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  // '8',
-  // '9',
-  // '10',
-  // '11',
-  // '12',
-  // '13',
-  // '14',
-  // '15',
-  // '16',
-  // '17',
-  // '18',
-  // '19',
-  // '20',
-  // '21',
-  // '22',
-  // '23',
-  // '24',
-  // '25',
-  // '26',
-  // '27',
-  // '28',
-  // '29',
-  // '30',
-  // '31',
-];
-const yLabels = [
-  '100000',
-  '75000',
-  '50000',
-  '25000',
-  '10000',
-  '5000',
-  '0',
-];
-// LINE CHART CODE END
 
-// SPEEDO METER CODE STRAT
-function GaugePointer() {
-  const { valueAngle, outerRadius, cx, cy } = useGaugeState();
-
-  if (valueAngle === null) {
-    // No value to display
-    return null;
-  }
-
-  const target = {
-    x: cx + outerRadius * Math.sin(valueAngle),
-    y: cy - outerRadius * Math.cos(valueAngle),
-  };
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={5} fill="red" />
-      <path
-        d={`M ${cx} ${cy} L ${target.x} ${target.y}`}
-        stroke="red"
-        strokeWidth={3}
-      />
-    </g>
-  );
-}
-// SPEEDO METER CODE END
 
 
 function EmployeeDashboard() {
   const { userId } = useParams();
+  const { newtoken } = useParams();
   const [data, setData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
@@ -287,6 +183,28 @@ function EmployeeDashboard() {
 
 
   const [speed, setSpeed] = useState(0);
+
+  function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key);
+    // Return null if the item doesn't exist
+    if (!itemStr) {
+        return null;
+    }
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    // Check if the item has expired
+    if (now.getTime() > item.expiry) {
+        localStorage.removeItem(key); // Remove the expired item
+        return null;
+    }
+    return item.value;
+}
+
+//setWithExpiry('myKey', 'myValue', 5 * 60 * 1000); // 5 minutes in milliseconds
+
+// Check the value whenever you need it
+const value = getWithExpiry(newtoken);
+console.log(value); // This will log null if the value has expired and been removed
 
   // -------------------------api for contact number-------------------------------------------------------
 
