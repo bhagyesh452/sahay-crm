@@ -1048,41 +1048,64 @@ function TestLeads() {
         <div>
             <Header />
             <Navbar />
-            <div className='page-wrapper'>
-                <div page-header d-print-none>
-
-                    <div className="container-xl d-flex" style={{ gap: "20px" }}>
-                        <div class="d-grid gap-4 d-md-block mt-3">
-                            <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
-                            <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
-                                <button type="button" class="btn" onClick={() => setOpenFilterDrawer(true)}><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
-                                <button type="button" class="btn" onClick={() => {
-                                    setOpenBulkLeadsCSVPopup(true)
-                                    setCsvData([])
-                                }}><span><TbFileImport style={{ marginRight: "7px", opacity: "0.6" }} /></span>Import Leads</button>
-                                <button type="button" class="btn" onClick={() => exportData()}><span><TbFileExport style={{ marginRight: "7px", opacity: "0.6" }} /></span>Export Leads</button>
-                                <button type="button" class="btn" onClick={() => setOpenAssignLeadsDialog(true)}><span><MdOutlinePostAdd style={{ marginRight: "7px", height: "20px", width: "16px", opacity: "0.6" }} /></span>Assign Leads</button>
-                                <button type="button" class="btn" onClick={() => handleDeleteSelection()}><span><MdOutlineDeleteSweep style={{ marginRight: "7px", height: "18px", width: "17px", opacity: "0.6" }} /></span>Delete Leads</button>
+            <div className="page-wrapper">
+                <div className="page-header d-print-none">
+                    <div className="container-xl">
+                        <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center">
+                                <div className="btn-group mr-2">
+                                    <button type="button" className="btn mybtn"  onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                        <TiUserAddOutline className='mr-1'/> Add Leads
+                                    </button>
+                                </div>
+                                <div className="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button" className="btn mybtn" onClick={()=>setOpenFilterDrawer(true)}>
+                                        <IoFilterOutline className='mr-1'/> Filter
+                                    </button>
+                                    <button type="button" className="btn mybtn" onClick={() => {
+                                        setOpenBulkLeadsCSVPopup(true)
+                                        setCsvData([])  }}>
+                                            <TbFileImport className='mr-1'/> Import Leads
+                                    </button>
+                                    <button type="button" className="btn mybtn" onClick={() => exportData()}>
+                                        <TbFileExport className='mr-1'/> Export Leads
+                                    </button>
+                                    <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
+                                        <MdOutlinePostAdd className='mr-1'/>Assign Leads
+                                    </button>
+                                    <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
+                                        <MdOutlineDeleteSweep className='mr-1'/>Delete Leads
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        {selectedRows.length !== 0 && (
-                            <div className="form-control mt-3" style={{ width: "192px", height: "38px" }} >
-                                Total Data Selected : {selectedRows.length}
+                            <div className="d-flex align-items-center">
+                                {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )}
+                                <div class="input-icon ml-1">
+                                    <span class="input-icon-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                            <path d="M21 21l-6 -6"></path>
+                                        </svg>
+                                    </span>
+                                    <input
+                                        value={searchText}
+                                        onChange={(e) => {
+                                            setSearchText(e.target.value);
+                                            handleFilterSearch(e.target.value)
+                                            //setCurrentPage(0);
+                                        }}
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Search…"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
+                                </div>
                             </div>
-                        )}
-                        <div className='w-25 mt-3'>
-                            <input
-                                type="text"
-                                value={searchText}
-                                onChange={(e) => {
-                                    setSearchText(e.target.value);
-                                    handleFilterSearch(e.target.value)
-                                    //setCurrentPage(0);
-                                }}
-                                className="form-control"
-                                placeholder="Search…"
-                                aria-label="Search in website"
-                            />
                         </div>
                     </div>
                 </div>
@@ -2383,17 +2406,11 @@ function TestLeads() {
                 anchor="left"
                 open={openFilterDrawer}
                 onClose={functionCloseFilterDrawer}>
-                <div style={{ width: "31em" }} className="container-xl">
-                    <div
-                        className="d-flex justify-content-between align-items-center"
-                        style={{ margin: "10px 0px" }}
-                    >
-                        <h1
-                            style={{ marginBottom: "0px", fontSize: "20px" }}
-                            className="title"
-                        >
+                <div style={{ width: "31em" }}>
+                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                        <h2 className="title m-0">
                             Filters
-                        </h1>
+                        </h2>
                         <div>
                             <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
                                 <IoIosClose style={{
@@ -2402,12 +2419,138 @@ function TestLeads() {
                                     color: "grey"
                                 }} />
                             </button>
-
                         </div>
                     </div>
                     <hr style={{ margin: "0px" }} />
-                    <div className="body-projection">
-
+                    <div className="body-Drawer">
+                        <div className='container-xl mt-2 mb-2'>
+                            <div className='row'>
+                                <div className='col-sm-12 mt-3'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example">
+                                            <option selected>Not Picked Up</option>
+                                            <option value="1">Busy</option>
+                                            <option value="2">Junk</option>
+                                            <option value="3">Not Interested</option>
+                                            <option value="4">Untouched</option>
+                                            <option value="5">Interested</option>
+                                            <option value="6">Matured</option>
+                                            <option value="6">Followup</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='d-flex align-items-center justify-content-between'> 
+                                        <div className='form-group w-50 mr-1'>
+                                            <label for="exampleFormControlInput1" class="form-label">State</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example">
+                                                <option selected>Not Picked Up</option>
+                                                <option value="1">Busy</option>
+                                                <option value="2">Junk</option>
+                                                <option value="3">Not Interested</option>
+                                                <option value="4">Untouched</option>
+                                                <option value="5">Interested</option>
+                                                <option value="6">Matured</option>
+                                                <option value="6">Followup</option>
+                                            </select>
+                                        </div>
+                                        <div className='form-group w-50'>
+                                            <label for="exampleFormControlInput1" class="form-label">City</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example">
+                                                <option selected>Not Picked Up</option>
+                                                <option value="1">Busy</option>
+                                                <option value="2">Junk</option>
+                                                <option value="3">Not Interested</option>
+                                                <option value="4">Untouched</option>
+                                                <option value="5">Interested</option>
+                                                <option value="6">Matured</option>
+                                                <option value="6">Followup</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="assignto" class="form-label">Assign To</label>
+                                        <input type="text" class="form-control" id="assignto" placeholder="BDE Name" />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="assignon" class="form-label">Assign On</label>
+                                        <input type="date" class="form-control" id="assignon" placeholder="Assign On" />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <label class="form-label">State</label>
+                                    <div className='row align-items-center justify-content-between'> 
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example">
+                                                <option selected>Year</option>
+                                                <option value="1">2024</option>
+                                                <option value="2">2023</option>
+                                                <option value="3">2022</option>
+                                                <option value="4">2021</option>
+                                                <option value="5">2020</option>
+                                                <option value="6">2019</option>
+                                                <option value="6">2018</option>
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example">
+                                                <option selected>Month</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="6">7</option>
+                                                <option value="5">8</option>
+                                                <option value="6">9</option>
+                                                <option value="6">10</option>
+                                                <option value="6">11</option>
+                                                <option value="6">12</option>
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example">
+                                                <option selected>Days</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="6">7</option>
+                                                <option value="5">8</option>
+                                                <option value="6">9</option>
+                                                <option value="6">10</option>
+                                                <option value="6">11</option>
+                                                <option value="6">12</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadedby" class="form-label">Uploaded By</label>
+                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name" />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Uploaded On</label>
+                                        <input type="date" class="form-control" id="Uploadon" placeholder="Uploaded On" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                        <button className='filter-footer-btn btn-clear'>Clear Filter</button>
+                        <button className='filter-footer-btn btn-yellow'>Apply Filter</button>
                     </div>
                 </div>
             </Drawer>
