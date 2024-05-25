@@ -109,6 +109,15 @@ router.post("/update-bdm-status/:id", async (req, res) => {
   }
 });
 
+router.get(`/api/completeLeadsData` , async(req,res)=>{
+  try{
+    const response = await TeamLeadsModel.find()
+    res.status(200).json(response)
+  }catch(error){
+    res.status(500).json({error:"Internal Server Error"})
+  }
+})
+
 router.post("/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
   const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate } =
