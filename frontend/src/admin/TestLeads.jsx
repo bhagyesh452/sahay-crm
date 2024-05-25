@@ -284,6 +284,7 @@ function TestLeads() {
         } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
             Swal.fire("Third Director Number should be 10 digits");
         } else {
+            const adminName = localStorage.getItem("adminName")
             axios
                 .post(`${secretKey}/admin-leads/manual`, {
                     "Company Name": cname.toUpperCase().trim(),
@@ -304,6 +305,7 @@ function TestLeads() {
                     "Director Name(Third)": directorNameThird,
                     "Director Number(Third)": directorNumberThird,
                     "Director Email(Third)": directorEmailThird,
+                    UploadedBy:adminName ? adminName : "Admin"
                 })
                 .then((response) => {
                     //console.log("response", response);
