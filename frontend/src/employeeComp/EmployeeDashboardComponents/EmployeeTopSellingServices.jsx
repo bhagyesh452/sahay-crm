@@ -11,11 +11,30 @@ import Select from "react-select";
 import Nodata from "../../components/Nodata";
 
 function EmployeeTopSellingServices({redesignedData , ename}) {
+
+    const [selectedMonthOption, setSelectedMonthOption] = useState("This Month")
+
     const functionCalculateServiceCount = () => {
         const serviceCountMap = new Map();
-      
+        const today = new Date();
+        
         redesignedData.forEach((mainObj) => {
-          if (mainObj.bdeName === ename || mainObj.bdmName === ename) {
+            let condition1 = false;
+            let condition2 = false;
+            switch (selectedMonthOption) {
+              case 'Today':
+                condition1 = (new Date(mainObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+                break;
+              case 'Last Month':
+                condition1 = (new Date(mainObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                break;
+              case 'This Month':
+                condition1 = (new Date(mainObj.bookingDate).getMonth() === today.getMonth())
+                break;
+              default:
+                break;
+            }
+          if ((mainObj.bdeName === ename || mainObj.bdmName === ename) && condition1) {
             mainObj.services.forEach((service) => {
               if (serviceCountMap.has(service.serviceName)) {
                 serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
@@ -25,7 +44,20 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
             });
           }
           mainObj.moreBookings.length !==0 && mainObj.moreBookings.map((moreObj)=>{
-            if (moreObj.bdeName === ename || moreObj.bdmName === ename) {
+            switch (selectedMonthOption) {
+                case 'Today':
+                  condition2 = (new Date(moreObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  condition2 = (new Date(moreObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                  break;
+                case 'This Month':
+                  condition2 = (new Date(moreObj.bookingDate).getMonth() === today.getMonth())
+                  break;
+                default:
+                  break;
+              }
+            if ((moreObj.bdeName === ename || moreObj.bdmName === ename) && condition2) {
                 moreObj.services.forEach((service) => {
                   if (serviceCountMap.has(service.serviceName)) {
                     serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
@@ -54,6 +86,19 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
                     <h2 className="m-0">
                         Top Selling Services
                     </h2>
+                    <div className="dash-select-filter">
+            <select class="form-select form-select-sm my-filter-select"
+              aria-label=".form-select-sm example"
+              value={selectedMonthOption}
+              onChange={(e)=>{
+                setSelectedMonthOption(e.target.value)
+              }}
+            >
+              <option value="Today">Today</option>
+              <option value="This Month">This Month</option>
+              <option value="Last Month">Last Month</option>
+            </select>
+          </div>
                 </div>
                 <div className="dash-card-body">
                     <div className="top-selling-s">
