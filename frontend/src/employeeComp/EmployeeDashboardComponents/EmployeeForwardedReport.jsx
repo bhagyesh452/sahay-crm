@@ -407,7 +407,10 @@ function EmployeeForwardedReport() {
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
 
     if (period === 'Today') {
-      filtered = teamData.filter((obj) => formatDateNow(obj.bdeForwardDate) === today.toISOString().slice(0.10))
+      
+      filtered = teamData.filter((obj) => new Date(obj.bdeForwardDate).getDate() === today.getDate())
+      
+      
     } else if (period === 'This Month') {
       filtered = teamData.filter((obj) => new Date(obj.bdeForwardDate) >= firstDayOfMonth &&
         new Date(obj.bdeForwardDate) <= today)
@@ -419,6 +422,8 @@ function EmployeeForwardedReport() {
     setFilteredTeamLeadData(filtered)
   }
 
+ 
+
   const filteredCategoryDataTeamLeads = (category, period) => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -426,7 +431,7 @@ function EmployeeForwardedReport() {
 
     if (period === 'Today') {
       return teamData.filter(
-        (obj) => formatDateNow(obj.bdmStatusChangeDate) === today.toISOString().slice(0, 10) && obj.Status === category
+        (obj) => new Date(obj.bdeForwardDate).getDate() === today.getDate() && obj.Status === category
       );
     } else if (period === 'This Month') {
       return teamData.filter((obj) => {
