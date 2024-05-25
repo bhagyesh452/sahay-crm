@@ -102,6 +102,9 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
                 </div>
                 <div className="dash-card-body">
                     <div className="top-selling-s">
+                      {serviceArray.length === 0 && <div>
+                        <Nodata/>
+                        </div>}
                        {serviceArray.length!==0 && <div className="top-selling-s-cards d-flex align-items-center justify-content-between clr-bg-light-1cba19">
                             <div className="d-flex align-items-center justify-content-between">
                                 <div className="top-selling-s-no bdr-l-clr-1cba19">
