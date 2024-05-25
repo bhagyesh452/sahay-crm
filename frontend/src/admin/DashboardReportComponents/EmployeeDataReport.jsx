@@ -21,6 +21,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function EmployeeDataReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -78,45 +79,55 @@ function EmployeeDataReport() {
     };
 
     //-------fetching employees info--------------------------------------------
+   const[loading , setLoading] = useState(false)
+   const fetchEmployeeInfo = async () => {
+    try {
+        setLoading(true);
+        const response = await fetch(`${secretKey}/employee/einfo`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        
+        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+    } catch (error) {
+        console.error('Error Fetching Employee Data ', error);
+    } finally {
+        setLoading(false);
+    }
+};
 
-    const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/employee/einfo`)
-            .then((response) => response.json())    
-            .then((data) => {
-                setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            })
-            .catch((error) => {
-                console.error(`Error Fetching Employee Data `, error);
-            });
-    };
     const debounceDelay = 300;
-    const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
+    //const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
     //----------------------------fetching company data ---------------------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads`)
-            .then((response) => response.json())
-            .then((data) => {
-                setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
+        try {
+            const response = await fetch(`${secretKey}/company-data/leads`);
+            const data = await response.json();
+            setLoading(true);
+            setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+            setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
+            setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
+        } catch (error) {
+            console.error('Error Fetching Company Data ', error);
+        } finally {
+            setLoading(false);
+        }
     };
-
-    const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+    //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
+        fetchCompanyData()
+        fetchEmployeeInfo()
 
         //fetchCompanies();
         //fetchRedesignedBookings();
-        debouncedFetchCompanyData();
-        debouncedFetchEmployeeInfo();
+        // debouncedFetchCompanyData();
+        // debouncedFetchEmployeeInfo();
 
     }, []);
 
@@ -1375,7 +1386,22 @@ function EmployeeDataReport() {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                {loading ?
+                                (<tbody>
+                                <tr>
+                                  <td colSpan="12" className="LoaderTDSatyle">
+                                    <ClipLoader
+                                      color="lightgrey"
+                                      loading
+                                      size={20}
+                                      aria-label="Loading Spinner"
+                                      data-testid="loader"
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>):
+                               
+                              (<tbody>
                                     {employeeData.length !== 0 &&
                                         companyData.length !== 0 &&
                                         employeeData.map((obj, index) => (
@@ -1469,7 +1495,6 @@ function EmployeeDataReport() {
                                                                 .length.toLocaleString()}
                                                         </Link>
                                                     </td>
-
                                                     <td key={`row-${index}-7`}>
                                                         <Link
                                                             to={`/employeereport/${obj.ename}/FollowUp`}
@@ -1597,7 +1622,8 @@ function EmployeeDataReport() {
                                             </React.Fragment>
                                         ))}
                                 </tbody>
-                                {employeeData.length !== 0 &&
+                              )}
+                                {employeeData.length !== 0 && !loading &&
                                     companyData.length !== 0 && (
                                         <tfoot className="admin-dash-tbl-tfoot"    >
                                             <tr style={{ fontWeight: 500 }}>

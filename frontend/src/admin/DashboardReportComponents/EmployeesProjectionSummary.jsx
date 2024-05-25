@@ -25,6 +25,7 @@ import { IconButton } from "@mui/material";
 import { MdHistory } from "react-icons/md";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from 'axios';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 function EmployeesProjectionSummary() {
@@ -101,8 +102,10 @@ function formatDateMonth(timestamp) {
   },[])
   
   //-----------------------------------fetching function follow up data-----------------------------------
+  const [loading, setLoading] = useState(false)
   const fetchFollowUpData = async () => {
     try {
+      setLoading(true)
       const response = await fetch(`${secretKey}/projection/projection-data`);
       const followdata = await response.json();
       setfollowData(followdata);
@@ -128,6 +131,8 @@ function formatDateMonth(timestamp) {
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -463,7 +468,7 @@ const handleFilterBranchOffice = (branchName) => {
    return 0;
  });
 
- console.log("sortedData" , sortedData)
+ 
 //------------------------projection table open functions--------------------------------------------------
 const functionCompleteProjectionTable = () => {
   setCompleteProjectionTable(true);

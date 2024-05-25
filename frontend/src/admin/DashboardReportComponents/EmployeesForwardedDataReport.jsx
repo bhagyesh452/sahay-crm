@@ -18,7 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 function EmployeesForwardedDataReport() {
@@ -76,25 +76,31 @@ function EmployeesForwardedDataReport() {
 
 
     //----------------------fetching employees info--------------------------------------
-
+    const [loading, setLoading] = useState(false)
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/employee/einfo`)
-            .then((response) => response.json())
-            .then((data) => {
-                setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                // setEmployeeDataFilter(data.filter)
-            })
-            .catch((error) => {
-                console.error(`Error Fetching Employee Data `, error);
-            });
-    };
+        try {
+            setLoading(true);
+            const response = await fetch(`${secretKey}/employee/einfo`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            // setEmployeeDataFilter(data.filter)
 
+        } catch (error) {
+            console.error(`Error Fetching Employee Data `, error);
+        } finally {
+            setLoading(false)
+        }
+    };
+//-------------------fetching redesigned data----------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
     const fetchRedesignedBookings = async () => {
         try {
@@ -102,8 +108,8 @@ function EmployeesForwardedDataReport() {
                 `${secretKey}/bookings/redesigned-final-leadData`
             );
             const bookingsData = response.data;
-    
-            
+
+
             setRedesignedData(bookingsData);
         } catch (error) {
             console.log("Error Fetching Bookings Data", error);
@@ -112,7 +118,7 @@ function EmployeesForwardedDataReport() {
     const debounceDelay = 300;
 
     // Wrap the fetch functions with debounce
-    const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
+    //const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
     //--------------------------------------fetching teamleadsdata---------------
 
@@ -149,11 +155,11 @@ function EmployeesForwardedDataReport() {
                 console.error("Error fetching data:", error);
             });
     };
-    const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+    //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
     useEffect(() => {
         //fetchRedesignedBookings();
-        debouncedFetchCompanyData();
-        debouncedFetchEmployeeInfo();
+      fetchEmployeeInfo()
+      fetchCompanyData()
     }, []);
 
     //--------------------------------bde search forward data-------------------------
@@ -629,7 +635,7 @@ function EmployeesForwardedDataReport() {
                 break;
         }
     };
-    
+
     const handleSortRecievedProjectionCase = (sortByForwarded) => {
         // Sort the followData array based on totalPayment for each ename
         setNewSortType((prevData) => ({
@@ -829,92 +835,92 @@ function EmployeesForwardedDataReport() {
     }, [forwardEmployeeData]);
 
     //              ------------------------------------generated revenue caluclate function--------------------------------------
-    
+
     let generatedTotalRevenue = 0;
     let getGeneratedMaturedCase = 0;
     function functionCalculateGeneratedRevenue(bdeName) {
         let generatedRevenue = 0;
         const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
-        console.log("boom",  requiredObj , redesignedData)
+        console.log("boom", requiredObj, redesignedData)
         requiredObj.forEach((object) => {
-          redesignedData.map((mainBooking) => {
-            if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-              if (mainBooking.bdeName === mainBooking.bdmName) {
-                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                generatedRevenue += parseInt(mainBooking.generatedReceivedAmount) / 2
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                if (mainBooking.bdeName === bdeName) {
-                  generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
-                }
-              }
-
-              mainBooking.moreBookings.length!==0 && mainBooking.moreBookings.map((moreObject)=>{
-               if( moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
-                if (moreObject.bdeName === moreObject.bdmName) {
-                    generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
-                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
-                    generatedRevenue += parseInt(moreObject.generatedReceivedAmount) / 2
-                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
-                    if (moreObject.bdeName === bdeName) {
-                      generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+            redesignedData.map((mainBooking) => {
+                if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                    if (mainBooking.bdeName === mainBooking.bdmName) {
+                        generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        generatedRevenue += parseInt(mainBooking.generatedReceivedAmount) / 2
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.bdeName === bdeName) {
+                            generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+                        }
                     }
-                  }
-               }
-              })
-              
-            }
-              })
+
+                    mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+                            } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
+                                generatedRevenue += parseInt(moreObject.generatedReceivedAmount) / 2
+                            } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+                                }
+                            }
+                        }
+                    })
+
+                }
+            })
         });
         generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
         return generatedRevenue;
         //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
         //  console.log("This is generated Revenue",requiredObj);
-    
-      }
+
+    }
     function functionCalculateGeneratedMaturedCase(bdeName) {
         let maturedCase = 0;
         const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
         // console.log("boom",  requiredObj , redesignedData)
         requiredObj.forEach((object) => {
-          redesignedData.map((mainBooking) => {
-            if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-              if (mainBooking.bdeName === mainBooking.bdmName) {
-               maturedCase += 1;
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                maturedCase += 0.5;
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                if (mainBooking.bdeName === bdeName) {
-                    maturedCase += 1;
-                }
-              }
-
-              mainBooking.moreBookings.length!==0 && mainBooking.moreBookings.map((moreObject)=>{
-               if( moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
-                if (moreObject.bdeName === moreObject.bdmName) {
-                   maturedCase += 1;
-                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
-                   maturedCase += 0.5;
-                  } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
-                    if (moreObject.bdeName === bdeName) {
-                     maturedCase += 1;
+            redesignedData.map((mainBooking) => {
+                if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                    if (mainBooking.bdeName === mainBooking.bdmName) {
+                        maturedCase += 1;
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        maturedCase += 0.5;
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.bdeName === bdeName) {
+                            maturedCase += 1;
+                        }
                     }
-                  }
-               }
-              })
-              
-            }
-          })
-    
-    
-    
+
+                    mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                maturedCase += 1;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
+                                maturedCase += 0.5;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === bdeName) {
+                                    maturedCase += 1;
+                                }
+                            }
+                        }
+                    })
+
+                }
+            })
+
+
+
         });
         getGeneratedMaturedCase += maturedCase;
         return maturedCase;
         //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
         //  console.log("This is generated Revenue",requiredObj);
-    
-      }
+
+    }
 
     function functionCalculateGeneratedTotalRevenue(ename) {
         const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
@@ -1332,38 +1338,52 @@ function EmployeesForwardedDataReport() {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {forwardEmployeeData.length !== 0 &&
-                                        forwardEmployeeData.map((obj, index) => (
-                                            <tr key={`row-${index}`}>
-                                                <td style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                }} >{index + 1}</td>
-                                                <td >{obj.ename}</td>
-                                                <td>{obj.branchOffice}</td>
-                                                <td >
-                                                    {companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
-                                                </td>
-                                                <td >
-                                                    {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
-                                                </td>
-                                                <td>
-                                                    {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
+                                {loading ?
+                                    (<tbody>
+                                        <tr>
+                                            <td colSpan="12" className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading
+                                                    size={20}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>) :
+                                    (<tbody>
+                                        {forwardEmployeeData.length !== 0 &&
+                                            forwardEmployeeData.map((obj, index) => (
+                                                <tr key={`row-${index}`}>
+                                                    <td style={{
+                                                        color: "black",
+                                                        textDecoration: "none",
+                                                    }} >{index + 1}</td>
+                                                    <td >{obj.ename}</td>
+                                                    <td>{obj.branchOffice}</td>
+                                                    <td >
+                                                        {companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
+                                                    </td>
+                                                    <td >
+                                                        {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
+                                                    </td>
+                                                    <td>
+                                                        {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
 
-                                                </td>
+                                                    </td>
 
-                                                <td>
-                                                    ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
-                                                </td>
+                                                    <td>
+                                                        ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
+                                                    </td>
 
-                                                <td>
-                                                    {functionCalculateGeneratedMaturedCase(obj.ename)}
-                                                </td>
-                                                <td>₹ {Math.round(functionCalculateGeneratedRevenue(obj.ename)).toLocaleString()}</td>
-                                            </tr>
-                                        ))}
-                                </tbody>
+                                                    <td>
+                                                        {functionCalculateGeneratedMaturedCase(obj.ename)}
+                                                    </td>
+                                                    <td>₹ {Math.round(functionCalculateGeneratedRevenue(obj.ename)).toLocaleString()}</td>
+                                                </tr>
+                                            ))}
+                                    </tbody>)}
                                 <tfoot className="admin-dash-tbl-tfoot">
                                     <tr>
                                         <td
