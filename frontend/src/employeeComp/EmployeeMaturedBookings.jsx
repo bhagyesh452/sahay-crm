@@ -85,14 +85,14 @@ function EmployeeMaturedBookings() {
 
   const fetchRedesignedFormData1 = async () => {
     try {
-      console.log("abhi hua")
+     
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
-      console.log(redesignedData);
-      setFormData(redesignedData.reverse());
-      setInfiniteBooking(redesignedData.reverse())
+      const sortedData = redesignedData.sort((a,b)=>new Date(b.bookingDate) - new Date(a.bookingDate) )
+      setFormData(sortedData);
+      setInfiniteBooking(sortedData)
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -101,7 +101,7 @@ function EmployeeMaturedBookings() {
   useEffect(() => {
 
     fetchRedesignedFormData1();
-    console.log("bhoom")
+   
   }, [data.ename]);
   useEffect(() => {
     setFormData(
