@@ -209,7 +209,7 @@ export default function AddLeadForm({
           paymentMethod:booking.paymentMethod,
           extraNotes:booking.extraNotes,
           otherDocs:booking.otherDocs,
-          isAdmin:isAdmin
+          isAdmin:true,
           };
           setActiveStep(4);
           setCompleted({ 0: true, 1: true , 2 : true , 3:true});
