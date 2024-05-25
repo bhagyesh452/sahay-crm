@@ -1311,28 +1311,17 @@ function TestLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
-                                                            <button
-                                                                onClick={() =>
-                                                                    handleDeleteClick(company._id)}
-                                                                style={{
-                                                                    border: " 0px transparent",
-                                                                    background: " none"
-                                                                }}
-                                                            >
+                                                            <button className='tbl-action-btn'  onClick={() => handleDeleteClick(company._id)}  >
                                                                 <MdDeleteOutline
                                                                     style={{
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "#bf0b0b",
+                                                                        cursor: "pointer",
                                                                     }}
                                                                 />
                                                             </button>
-                                                            <button
-                                                                style={{
-                                                                    border: " 0px transparent",
-                                                                    background: " none"
-                                                                }}
-                                                                onClick={
+                                                            <button className='tbl-action-btn' onClick={
                                                                     data.length === "0"
                                                                         ? Swal.fire("Please Import Some data first")
                                                                         : () => {
@@ -1340,31 +1329,27 @@ function TestLeads() {
                                                                             handleUpdateClick(company._id);
                                                                         }
                                                                 }>
-                                                                < MdOutlineEdit
+                                                                < MdOutlineEdit 
                                                                     style={{
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "grey",
+                                                                        cursor: "pointer",
                                                                     }}
                                                                 />
 
                                                             </button>
-                                                            <Link to={`/admin/leads/${company._id}`}>
-                                                                <button
+                                                           
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                <IconEye
                                                                     style={{
-                                                                        border: " 0px transparent",
-                                                                        background: " none"
-                                                                    }}>
-                                                                    <IconEye
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </button>
-                                                            </Link>
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#d6a10c",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 ))}

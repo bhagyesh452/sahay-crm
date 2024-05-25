@@ -32,13 +32,34 @@
     border: 1px solid #fff;
     padding: 10px 7px 10px 7px;
 }
+.tbl-action-btn
+{
+    border: none;
+    padding: 2px 2px;
+    margin: 3px;
+    width: 28px;
+    height: 22px;
+    background: #e8e8e8;
+    line-height: 12px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 4px -3px #000;
+}
+.tbl-action-btn:hover
+{
+    background: #cfcfcf;
+}
+.tbl-action-btn:active
+{
+    background: #000;
+    color: #fff;
+}
 .btn-clear
 {
     background: #fb7a7a;
 }
 .btn-yellow
 {
-    background: #ffb900;
+    background: #ffc72d;
 }
 .btn-clear:hover
 {
@@ -46,7 +67,7 @@
 }
 .btn-yellow:hover
 {
-    background: #cb9500;
+    background: #ffbb00;
 }
 /**********Dashboard**********/
 .dash-card
