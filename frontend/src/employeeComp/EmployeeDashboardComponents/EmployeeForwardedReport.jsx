@@ -123,8 +123,6 @@ function EmployeeForwardedReport() {
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
-
-
       setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
       setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
     } catch (error) {
@@ -149,7 +147,6 @@ function EmployeeForwardedReport() {
       console.log("Error fetching team leads data", error.message)
     }
   }
-
   useEffect(() => {
     fetchTeamLeadsData()
   }, [data.ename])
@@ -300,12 +297,52 @@ function EmployeeForwardedReport() {
   ];
   const currentMonth = monthNames[new Date().getMonth()];
 
-  function functionCalculateGeneratedRevenue() {
+  function functionCalculateReceivedRevenue() {
     const bdeName = data.ename;
     let generatedRevenue = 0;
-    const requiredObj = followData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
+   const tempData = teamData.filter(obj=>obj.bdmStatus === "Matured")
+    tempData.forEach((object) => {
+      redesignedData.map((mainBooking) => {
+        if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+          if (mainBooking.bdeName === mainBooking.bdmName) {
+            generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            generatedRevenue += parseInt(mainBooking.generatedReceivedAmount) / 2
+          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+            if (mainBooking.bdeName === bdeName) {
+              generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
+            }
+          }
 
-    requiredObj.forEach((object) => {
+          mainBooking.moreBookings.length!==0 && mainBooking.moreBookings.map((moreObject)=>{
+           if( moreObject.bdeName === bdeName || moreObject.bdmName === bdeName){
+            if (moreObject.bdeName === moreObject.bdmName) {
+                generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+              } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Close-by") {
+                generatedRevenue += parseInt(moreObject.generatedReceivedAmount) / 2
+              } else if (moreObject.bdeName !== moreObject.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (moreObject.bdeName === bdeName) {
+                  generatedRevenue += parseInt(moreObject.generatedReceivedAmount)
+                }
+              }
+           }
+          })
+          
+        }
+          })
+    });
+ 
+    return generatedRevenue;
+    //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+    //  console.log("This is generated Revenue",requiredObj);
+
+  }
+  function functionCalculateForwardedRevenue() {
+    const bdeName = data.ename;
+    let generatedRevenue = 0;
+    const tempData = moreEmpData.filter(obj=> (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    console.log(tempData , "This is it")
+    tempData.forEach((object) => {
       redesignedData.map((mainBooking) => {
         if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
           if (mainBooking.bdeName === mainBooking.bdmName) {
@@ -515,7 +552,7 @@ function EmployeeForwardedReport() {
                 </div>
                 <div className="bdm-f-r-revenue-generated">
                   <div className="roundImgOrg">
-                    <div className="roundImgOrg-inner-text">₹ {functionCalculateGeneratedRevenue().toLocaleString()}/-</div>
+                    <div className="roundImgOrg-inner-text">₹ {functionCalculateForwardedRevenue().toLocaleString()}/-</div>
                   </div>
                   <div className="roundImgOrg-text">Generated <br />Revenue</div>
                 </div>
@@ -631,7 +668,7 @@ function EmployeeForwardedReport() {
                 </div>
                 <div className="bdm-f-r-revenue-generated">
                   <div className="roundImgOrg">
-                    <div className="roundImgOrg-inner-text">₹ {functionCalculateGeneratedRevenue().toLocaleString()}/-</div>
+                    <div className="roundImgOrg-inner-text">₹ {functionCalculateReceivedRevenue().toLocaleString()}/-</div>
                   </div>
                   <div className="roundImgOrg-text">Generated <br />Revenue</div>
                 </div>

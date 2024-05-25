@@ -4289,7 +4289,7 @@ console.log(value); // This will log null if the value has expired and been remo
                     </div> */}
                   </div>
                   <div className="col-sm-4">
-                    <EmployeeForwardedReport/>
+                    <EmployeeForwardedReport moreEmpData={moreEmpData}/>
                     {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">
