@@ -188,7 +188,7 @@ function AdminEmployeeTeamLeads() {
 
 
 
-    console.log(bdmNames)
+    //console.log(bdmNames)
 
     const [maturedBooking, setMaturedBooking] = useState(null);
 
@@ -210,14 +210,24 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error);
         }
     };
+//------------------------fetching tem leads data--------------------------------------
+    const fetchCompleteData =async()=>{
+          try{
+            const response = await axios.get(`${secretKey}/bdm-data/completeLeadsData`)
+          }catch(error){
+                 console.log("Error fetching data" , error)
+          }
+    }
+
+    useEffect(()=>{
+        fetchCompleteData()
+
+    },[])
 
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-
-            
-
             setTeamData(response.data)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -260,7 +270,7 @@ function AdminEmployeeTeamLeads() {
     }, [teamData, BDMrequests]);
 
 
-    console.log("teamdata", teamleadsData)
+    //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
         fetchData()

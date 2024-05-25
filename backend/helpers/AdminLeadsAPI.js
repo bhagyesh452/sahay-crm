@@ -5,6 +5,7 @@ dotenv.config();
 const CompanyModel = require("../models/Leads.js");
 const RecentUpdatesModel = require('../models/RecentUpdates.js')
 const { exec } = require("child_process");
+const TeamLeadsModel = require('../models/TeamLeads.js');
 
 
 
@@ -176,10 +177,12 @@ router.post("/manual", async (req, res) => {
     try {
       // Use Mongoose to delete rows by their IDs
       await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+      await TeamLeadsModel.deleteMany({_id:{$in:selectedRows}})
       res.status(200).json({
         message:
           "Rows deleted successfully and backup created successfully.",
       });
+
       // Trigger backup on the server
       // exec(
       //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
