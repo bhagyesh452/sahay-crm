@@ -876,9 +876,9 @@ function EmployeesThisMonthBooking() {
     };
 
     // ----------------------------sorting functions---------------------------------
-
+const [finalEmployeeData, setFinalEmployeeData] = useState([])
     const handleSortMaturedCases = (sortByForwarded) => {
-        console.log(sortByForwarded, "case");
+        
         setNewSortType((prevData) => ({
             ...prevData,
             recievedcase:
@@ -926,7 +926,10 @@ function EmployeesThisMonthBooking() {
                 //     // Restore to previous state
                 //     setForwardEmployeeData(finalEmployeeData);
                 // }
-                fetchEmployeeInfo()
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
@@ -980,7 +983,10 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
@@ -1034,7 +1040,10 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
@@ -1091,13 +1100,18 @@ function EmployeesThisMonthBooking() {
 
             case "none":
                 //console.log("yahan chala none");
-                fetchEmployeeInfo();
+                if (finalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    setEmployeeData(finalEmployeeData);
+                }
                 break; // Add break statement here
             default:
                 break;
         }
     };
-
+    useEffect(() => {
+        setFinalEmployeeData([...employeeData]); // Store original state of employeeData
+    }, [employeeData]);
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
