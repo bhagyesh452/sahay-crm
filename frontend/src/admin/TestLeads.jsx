@@ -1249,14 +1249,16 @@ function TestLeads() {
                                         {currentDataLoading ? (
                                             <tbody>
                                                 <tr>
-                                                    <td colSpan="13" className="LoaderTDSatyle">
+                                                    <td colSpan="13" >
+                                                        <div className="LoaderTDSatyle">
                                                         <ClipLoader
                                                             color="lightgrey"
                                                             loading
                                                             size={30}
                                                             aria-label="Loading Spinner"
                                                             data-testid="loader"
-                                                        />
+                                                            />
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
