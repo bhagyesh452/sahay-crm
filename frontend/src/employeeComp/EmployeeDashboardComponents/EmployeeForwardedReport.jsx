@@ -242,7 +242,7 @@ function EmployeeForwardedReport() {
     return finalPayment.toLocaleString();
   }
 
-  console.log(followData)
+ 
 
   //--------------function filter followdatatoday recieved case----------------
   const handleFilterFollowDataTodayRecievedCase = () => {

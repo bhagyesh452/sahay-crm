@@ -6,6 +6,7 @@ dotenv.config(); // Load environment variables from .env file
 const CompanyModel = require("../models/Leads");
 const pdf = require("html-pdf");
 const fs = require("fs");
+const path = require("path");
 const { sendMail } = require("./sendMail");
 const RequestDeleteByBDE = require("../models/Deleterequestbybde");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
@@ -22,9 +23,9 @@ const storage = multer.diskStorage({
     let destinationPath = "";
 
     if (file.fieldname === "otherDocs") {
-      destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+      destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'ExtraDocs');
     } else if (file.fieldname === "paymentReceipt") {
-      destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+      destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'PaymentReceipts');
     }
 
     // Create the directory if it doesn't exist
@@ -1966,7 +1967,7 @@ router.post(
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
       
-          console.log(newData.services);
+         
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
@@ -1978,7 +1979,7 @@ router.post(
             ? 'style="display:block'
             : 'style="display:none';
       
-          console.log(newPageDisplay);
+      
       
       
       
@@ -2866,7 +2867,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
-    ] : ["nimesh@incscale.in"];
+    ] : ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"];
 
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -3709,7 +3710,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
 
-    console.log(newData.services);
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
@@ -3721,7 +3721,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       ? 'style="display:block'
       : 'style="display:none';
 
-    console.log(newPageDisplay);
+ 
 
 
 
@@ -4032,7 +4032,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     };
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -4720,7 +4720,7 @@ router.post("/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
       await company.save();
 
       // Emit socket event
-      socketIO.emit("veiwotherdocs", company);
+      
 
       res.status(200).send("Documents uploaded and updated successfully!");
     } catch (error) {
@@ -4729,12 +4729,39 @@ router.post("/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
     }
   }
 );
+router.get("/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `../BookingsDocument/${companyName}/PaymentReceipts`,
+    filepath
+  );
+  console.log(pdfPath);
+  // Read the PDF file
+  fs.readFile(pdfPath, (err, data) => {
+    if (err) {
+      console.error("Error reading PDF file:", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      // Set the response headers
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "inline; filename=example.pdf");
+      res.setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private"
+      );
+      // Send the PDF file data
+      res.sendFile(pdfPath);
+    }
+  });
+});
 router.get("/recieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
   const companyName = req.params.CompanyName;
   const pdfPath = path.join(
     __dirname,
-    `BookingsDocument/${companyName}/PaymentReceipts`,
+    `../BookingsDocument/${companyName}/PaymentReceipts`,
     filepath
   );
 
@@ -4755,7 +4782,7 @@ router.get("/otherpdf/:CompanyName/:filename", (req, res) => {
   const companyName = req.params.CompanyName;
   const pdfPath = path.join(
     __dirname,
-    `BookingsDocument/${companyName}/ExtraDocs`,
+    `../BookingsDocument/${companyName}/ExtraDocs`,
     filepath
   );
 

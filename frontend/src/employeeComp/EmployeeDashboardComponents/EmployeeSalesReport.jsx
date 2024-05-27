@@ -775,7 +775,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const improvement = Filterby === "Today" ?  Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateYesterdayRevenue() / functionGetAmount() * 100))   : Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
 
   //-------------function for projection chart----------------------------------
-  const [selectedMonthOption, setSelectedMonthOption] = useState("This Week")
+  const [selectedMonthOption, setSelectedMonthOption] = useState("This Month");
 
 
 
