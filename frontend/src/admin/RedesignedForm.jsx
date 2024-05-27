@@ -1095,6 +1095,11 @@ export default function RedesignedForm({
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
+                      onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                       className="form-control"
                       placeholder="Enter Amount"
                       id={`Amount-${i}`}
@@ -1297,6 +1302,9 @@ export default function RedesignedForm({
                         <div class="input-group mb-2">
                           <input
                             type="number"
+                            onWheel={(e)=>{                      
+                        document.activeElement.blur();                        
+                      }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -2444,6 +2452,11 @@ export default function RedesignedForm({
                                         </label>
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2548,6 +2561,11 @@ export default function RedesignedForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2576,6 +2594,11 @@ export default function RedesignedForm({
                                       <div class="input-group">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
@@ -2610,6 +2633,11 @@ export default function RedesignedForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services

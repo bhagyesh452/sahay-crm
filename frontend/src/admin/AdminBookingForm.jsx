@@ -222,8 +222,10 @@ export default function AdminBookingForm({
       console.error("Error fetching data:", error);
     }
   };
-  console.log("Real time data: ", leadData);
+  
 
+
+ 
   useEffect(() => {
     fetchData();
     fetchDataEmp();
@@ -740,6 +742,15 @@ export default function AdminBookingForm({
       // Handle error if needed
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+    }
+  };
+  
+  const handleWheel = (e) => {
+    e.preventDefault();
+  };
 
   const handleReset = () => {
     setActiveStep(0);
@@ -856,10 +867,15 @@ export default function AdminBookingForm({
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
+                      onWheel={(e)=>{
+                        document.activeElement.blur();
+                         }}
                       className="form-control"
                       placeholder="Enter Amount"
                       id={`Amount-${i}`}
                       value={leadData.services[i].totalPaymentWOGST}
+                   
+                     
                       onInput={(e) => {
                         const newValue = e.target.value;
                         setLeadData((prevState) => ({
@@ -893,7 +909,14 @@ export default function AdminBookingForm({
                       id="GST"
                       value="0"
                       checked={leadData.services[i].withGST}
+                      
+                      onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                       onChange={(e) => {
+                        
                         setLeadData((prevState) => ({
                           ...prevState,
                           services: prevState.services.map((service, index) =>
@@ -1058,6 +1081,11 @@ export default function AdminBookingForm({
                         <div class="input-group mb-2">
                           <input
                             type="number"
+                            onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1751,6 +1779,11 @@ export default function AdminBookingForm({
                                       </label>
                                       {/* <input
                                                                                 type="text" // Use type="text" instead of type="number"
+                                                                                onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                                                                 className="form-control mt-1"
                                                                                 placeholder="Enter Number"
                                                                                 id="number"
@@ -1765,6 +1798,7 @@ export default function AdminBookingForm({
                                                                             /> */}
                                       <input
                                         type="text" // Use type="text" instead of type="number"
+                                        
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
@@ -2385,6 +2419,11 @@ export default function AdminBookingForm({
                                         </label>
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2489,6 +2528,11 @@ export default function AdminBookingForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2517,6 +2561,11 @@ export default function AdminBookingForm({
                                       <div class="input-group">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
@@ -2551,6 +2600,11 @@ export default function AdminBookingForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services
