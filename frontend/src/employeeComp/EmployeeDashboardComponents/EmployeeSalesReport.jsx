@@ -775,7 +775,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const improvement = Filterby === "Today" ?  Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateYesterdayRevenue() / functionGetAmount() * 100))   : Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
 
   //-------------function for projection chart----------------------------------
-  const [selectedMonthOption, setSelectedMonthOption] = useState("This Week")
+  const [selectedMonthOption, setSelectedMonthOption] = useState("This Month");
 
 
 
@@ -906,6 +906,14 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //     const data = getProjectionData(labels);
   //     setProjectionData(data);
   //   }, [selectedMonthOption, followData]);
+  const [xLabels, setXLabels] = useState([]);
+  const [projectionData, setProjectionData] = useState([]);
+  const [achievedData, setAchievedData] = useState([]);
+  const [newFollowData, setNewFollowData] = useState([]);
+  const [displayXLabesl, setDisplayXLabesl] = useState([
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']);
 
   const yLabels = [
     '100000',
@@ -1098,14 +1106,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     normalized.setHours(0, 0, 0, 0);
     return normalized;
   };
-  const [xLabels, setXLabels] = useState([]);
-  const [projectionData, setProjectionData] = useState([]);
-  const [achievedData, setAchievedData] = useState([]);
-  const [newFollowData, setNewFollowData] = useState([]);
-  const [displayXLabesl, setDisplayXLabesl] = useState([
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-    '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
-    '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']);
+ 
   //console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
@@ -1151,8 +1152,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   
     setProjectionData(data);
 
-  }, [selectedMonthOption, followData]);
-
+  }, [selectedMonthOption, followData, redesignedData]);
+console.log(achievedData, 'at this time')
 
 
   return (
@@ -1319,8 +1320,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                     aria-label=".form-select-sm example"
                     value={selectedMonthOption}
                     onChange={(e) => setSelectedMonthOption(e.target.value)}>
-                    <option value="This Week" selected>This week</option>
-                    <option value="This Month">This Month</option>
+                    <option value="This Week">This week</option>
+                    <option value="This Month" selected>This Month</option>
                     <option value="Last Month">Last Month</option>
                   </select>
                 </div>

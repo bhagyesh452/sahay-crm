@@ -196,11 +196,13 @@ function EmployeeCallingReport() {
                         </div>
                         <div className="col-sm-7 align-self-stretch">
                             <div className="call-dr-chart mt-1">
-                                <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
-                                    legend: { hidden: true },
-                                }}>
-                                    <PieCenterLabel>Total: {empData.length}</PieCenterLabel>
-                                </PieChart>
+                                <div className="chart-container" style={{ width: '100%', height: '220px' }}>
+                                    <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
+                                        legend: { hidden: true },
+                                    }}>
+                                        <PieCenterLabel>Total: {empData.length}</PieCenterLabel>
+                                    </PieChart>
+                                </div>
                             </div>
                         </div>
                     </div>

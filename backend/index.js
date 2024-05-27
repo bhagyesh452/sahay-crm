@@ -1104,62 +1104,9 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
 
 // ********************************************************pdf files reader *************************************************************************************
 
-app.get("/api/pdf/:CompanyName/:filename", (req, res) => {
-  const filepath = req.params.filename;
-  const companyName = req.params.CompanyName;
-  const pdfPath = path.join(
-    __dirname,
-    `BookingsDocument/${companyName}/ExtraDocs`,
-    filepath
-  );
 
-  // Read the PDF file
-  fs.readFile(pdfPath, (err, data) => {
-    if (err) {
-      console.error("Error reading PDF file:", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      // Set the response headers
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "inline; filename=example.pdf");
-      res.setHeader(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
 
-      // Send the PDF file data
-      res.sendFile(pdfPath);
-    }
-  });
-});
 
-app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
-  const filepath = req.params.filename;
-  const companyName = req.params.CompanyName;
-  const pdfPath = path.join(
-    __dirname,
-    `BookingsDocument/${companyName}/PaymentReceipts`,
-    filepath
-  );
-  console.log(pdfPath);
-  // Read the PDF file
-  fs.readFile(pdfPath, (err, data) => {
-    if (err) {
-      console.error("Error reading PDF file:", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      // Set the response headers
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "inline; filename=example.pdf");
-      res.setHeader(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
-      // Send the PDF file data
-      res.sendFile(pdfPath);
-    }
-  });
-});
 
 
 

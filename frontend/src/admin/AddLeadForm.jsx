@@ -189,6 +189,10 @@ export default function AddLeadForm({
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
           setfetchedService(true);
         }else if (booking.Step4Status === true && booking.Step5Status === false) {
+          const adminName = localStorage.getItem('adminName');
+          const managerName = localStorage.getItem('dataManagerName');
+          const mainAccess = (adminName || managerName) ? true : false;
+
           updatedLeadData = {
             ...updatedLeadData,
           services:booking.services,
@@ -209,7 +213,7 @@ export default function AddLeadForm({
           paymentMethod:booking.paymentMethod,
           extraNotes:booking.extraNotes,
           otherDocs:booking.otherDocs,
-          isAdmin:isAdmin
+          isAdmin:mainAccess,
           };
           setActiveStep(4);
           setCompleted({ 0: true, 1: true , 2 : true , 3:true});
