@@ -38,6 +38,8 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function ManageLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -61,6 +63,17 @@ function ManageLeads() {
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
     const [isSearching, setIsSearching] = useState(false)
+    const [newSortType, setNewSortType] = useState({
+        incoDate: "none",
+        assignDate: "none"
+    })
+    const [sortPattern, setSortPattern] = useState("IncoDate")
+
+
+
+
+
+
 
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
@@ -68,11 +81,12 @@ function ManageLeads() {
     }
 
 
-    const fetchData = async (page) => {
+    const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
+
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
+            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
@@ -118,25 +132,25 @@ function ManageLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
-
+    const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
         if (!isSearching) {
-            fetchData(1)
+            fetchData(1, latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching])
+    }, [dataStatus, isSearching , sortPattern])
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
-        fetchData(currentPage + 1);
+        fetchData(currentPage + 1, latestSortCount);
     };
 
     const handlePreviousPage = () => {
         setCurrentPage(currentPage - 1);
-        fetchData(currentPage - 1);
+        fetchData(currentPage - 1, latestSortCount);
     };
 
     //const currentData = mainData.slice(startIndex, endIndex);
@@ -160,7 +174,7 @@ function ManageLeads() {
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
                 setIsSearching(false)
-                fetchData(1)
+                fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
 
@@ -178,7 +192,7 @@ function ManageLeads() {
             console.error('Error searching leads:', error.message);
         } finally {
             setCurrentDataLoading(false);
-            
+
         }
     };
 
@@ -306,7 +320,7 @@ function ManageLeads() {
                         text: "Successfully added new Data!",
                         icon: "success",
                     });
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeAddLeadsDialog();
                 })
                 .catch((error) => {
@@ -349,7 +363,7 @@ function ManageLeads() {
                 const sheet = workbook.Sheets[sheetName];
 
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                const adminName = localStorage.getItem("adminName")
+                const adminName = localStorage.getItem("dataManagerName")
                 const formattedJsonData = jsonData
                     .slice(1) // Exclude the first row (header)
                     .map((row) => ({
@@ -429,7 +443,7 @@ function ManageLeads() {
         // Get current date and time
 
         // newArray now contains objects with updated properties
-        const adminName = localStorage.getItem("adminName")
+        const adminName = localStorage.getItem("dataManagerName")
 
         if (selectedOption === "someoneElse") {
             const properDate = new Date();
@@ -501,7 +515,7 @@ function ManageLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -572,7 +586,7 @@ function ManageLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -671,11 +685,11 @@ function ManageLeads() {
     };
     //--------------------function to assign leads to employees---------------------
     const [openAssignLeadsDialog, setOpenAssignLeadsDialog] = useState(false)
-    const [employeeSelection, setEmployeeSelection] = useState("")
+    const [employeeSelection, setEmployeeSelection] = useState("Not Alloted")
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
-        fetchData(1)
+        fetchData(1, latestSortCount)
         setEmployeeSelection("")
     }
     const handleconfirmAssign = async () => {
@@ -688,7 +702,7 @@ function ManageLeads() {
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
             closeAssignLeadsDialog();
-            return; // Exit the function early if no data is selected
+            return;
         }
 
         const alreadyAssignedData = selectedObjects.filter(
@@ -696,24 +710,17 @@ function ManageLeads() {
         );
 
         // If all selected data is not already assigned, proceed with assignment
-        if (alreadyAssignedData.length === 0) {
-            handleAssignData();
-            return; // Exit the function after handling assignment
-        }
 
         // If some selected data is already assigned, show confirmation dialog
-        const userConfirmed = window.confirm(
-            `Some data is already assigned. Do you want to continue?`
-        );
 
-        if (userConfirmed) {
-            handleAssignData();
-        }
+        handleAssignData();
+
     };
-
+    console.log(employeeSelection)
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
         const DT = new Date();
+
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
@@ -727,10 +734,10 @@ function ManageLeads() {
             });
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1);
+            fetchData(1, latestSortCount)
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-            setEmployeeSelection("")
+
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
@@ -757,9 +764,9 @@ function ManageLeads() {
                             title: 'Deleting...',
                             allowOutsideClick: false,
                             didOpen: () => {
-                              Swal.showLoading();
+                                Swal.showLoading();
                             }
-                          });
+                        });
                         // If user confirms, proceed with deletion
                         const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
                             data: { selectedRows }, // Pass selected rows to the server
@@ -769,11 +776,11 @@ function ManageLeads() {
                             title: 'Deleted!',
                             text: 'Selected rows have been deleted.',
                             icon: 'success',
-                          });
+                        });
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        await fetchData(1);
+                        await fetchData(1, latestSortCount)
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -808,7 +815,7 @@ function ManageLeads() {
                 );
 
                 // Refresh the data after successful deletion
-                fetchData(1);
+                fetchData(1, latestSortCount)
             }
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -923,7 +930,7 @@ function ManageLeads() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const adminName = localStorage.getItem("adminName");
+        const adminName = localStorage.getItem("dataManagerName");
         try {
             let validationError = false;
 
@@ -994,7 +1001,7 @@ function ManageLeads() {
 
                     // Reset the form and any error messages
                     setIsUpdateMode(false);
-                    fetchData(1)
+                    fetchData(1, latestSortCount)
                     functioncloseModifyPopup();
                 } else {
                     // Date string couldn't be parsed into a valid Date object
@@ -1012,7 +1019,7 @@ function ManageLeads() {
     };
 
     //-----------------------function to open popup remarks--------------------------------
-    
+
     const functionopenpopupremarks = (companyID, companyStatus) => {
         openchangeRemarks(true);
         setFilteredRemarks(
@@ -1039,18 +1046,18 @@ function ManageLeads() {
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                                 <div className="btn-group mr-2">
-                                    <button type="button" className="btn mybtn"  onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
-                                        <TiUserAddOutline className='mr-1'/> Add Leads
+                                    <button type="button" className="btn mybtn" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                        <TiUserAddOutline className='mr-1' /> Add Leads
                                     </button>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" class="btn mybtn">
-                                        <span><IoFilterOutline className='mr-1'/></span>
+                                        <span><IoFilterOutline className='mr-1' /></span>
                                         Filter
                                     </button>
                                     <button type="button" class="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                         <span>
-                                            <MdOutlinePostAdd  className='mr-1'/>
+                                            <MdOutlinePostAdd className='mr-1' />
                                         </span>
                                         Assign Leads
                                     </button>
@@ -1167,55 +1174,121 @@ function ManageLeads() {
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
 
-                                                <th>
-                                                    Incorporation Date
-                                                    {/* <FilterListIcon
-                                                    style={{
-                                                        height: "14px",
-                                                        width: "14px",
-                                                        cursor: "pointer",
-                                                        marginLeft: "4px",
-                                                    }}
-                                                    onClick={handleFilterIncoDate}
-                                                /> */}
-                                                    {/* {openIncoDate && <div className="inco-filter">
-                                                    <div
-
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("oldest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Oldest
+                                                <th style={{ cursor: "pointer" }}    >
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>Incorporation Date</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.incoDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("newest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Newest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("none")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        None
-                                                    </div>
-                                                </div>} */}
                                                 </th>
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-                                                <th>Status</th>
+                                                
+                                                {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
                                                 {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 
-                                                <th>
-                                                    {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+                                                <th style={{ cursor: "pointer" }}>
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.assignDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.assignDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
 
                                                 </th>
                                                 {/* <th>Assigned On</th> */}
@@ -1263,7 +1336,7 @@ function ManageLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
+                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1272,7 +1345,7 @@ function ManageLeads() {
                                                                 <div
                                                                     onClick={() => {
                                                                         functionopenpopupremarks(company._id, company.Status);
-                                                                    }} 
+                                                                    }}
                                                                     style={{ cursor: "pointer" }}>
                                                                     <IconEye
 
@@ -1291,14 +1364,14 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
-                                                            <button  className='tbl-action-btn' onClick={
-                                                                    data.length === "0"
-                                                                        ? Swal.fire("Please Import Some data first")
-                                                                        : () => {
-                                                                            setOpenLeadsModifyPopUp(true);
-                                                                            handleUpdateClick(company._id);
-                                                                        }
-                                                                }>
+                                                            <button className='tbl-action-btn' onClick={
+                                                                data.length === "0"
+                                                                    ? Swal.fire("Please Import Some data first")
+                                                                    : () => {
+                                                                        setOpenLeadsModifyPopUp(true);
+                                                                        handleUpdateClick(company._id);
+                                                                    }
+                                                            }>
                                                                 < MdOutlineEdit
                                                                     style={{
                                                                         width: "14px",
@@ -1307,7 +1380,7 @@ function ManageLeads() {
                                                                     }}
                                                                 />
                                                             </button>
-                                                            
+
                                                             <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
                                                                 <IconEye
                                                                     style={{
@@ -1358,12 +1431,12 @@ function ManageLeads() {
             <Dialog open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAddLeadsDialog} >
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAddLeadsDialog} >
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1714,12 +1787,12 @@ function ManageLeads() {
             <Dialog open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Import CSV DATA{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeBulkLeadsCSVPopup}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeBulkLeadsCSVPopup}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1872,17 +1945,17 @@ function ManageLeads() {
             <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAssignLeadsDialog}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
                     <div>
-                        {empData.length !== 0 ? (
+                        {empData.length !== 0 && dataStatus === "Unassigned" && (
                             <>
                                 <div className="dialogAssign">
                                     <div className="selector form-control">
@@ -1907,11 +1980,106 @@ function ManageLeads() {
                                     </div>
                                 </div>
                             </>
-                        ) : (
-                            <div>
-                                <h1>No Employees Found</h1>
-                            </div>
                         )}
+                        {dataStatus === "Assigned" && <div>
+                            <div className="con2 d-flex">
+                                <div
+                                    style={
+                                        selectedOption === "direct"
+                                            ? {
+                                                backgroundColor: "#e9eae9",
+                                                margin: "10px 10px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                            : {
+                                                backgroundColor: "white",
+                                                margin: "10px 10px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                    }
+                                    onClick={() => {
+                                        setSelectedOption("direct");
+                                        setEmployeeSelection("Not Alloted")
+                                    }}
+                                    className="direct form-control"
+                                >
+                                    <input
+                                        type="radio"
+                                        id="direct"
+                                        value="direct"
+                                        style={{
+                                            display: "none",
+                                        }}
+                                        checked={selectedOption === "direct"}
+                                        onChange={(e) => {
+                                            handleOptionChange(e)
+                                            setEmployeeSelection("Not Alloted")
+                                        }}
+                                    />
+                                    <label htmlFor="direct">Move In General Data</label>
+                                </div>
+                                <div
+                                    style={
+                                        selectedOption === "someoneElse"
+                                            ? {
+                                                backgroundColor: "#e9eae9",
+                                                margin: "10px 0px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                            : {
+                                                backgroundColor: "white",
+                                                margin: "10px 0px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                    }
+                                    className="indirect form-control"
+                                    onClick={() => {
+                                        setSelectedOption("someoneElse");
+
+                                    }}
+                                >
+                                    <input
+                                        type="radio"
+                                        id="someoneElse"
+                                        value="someoneElse"
+                                        style={{
+                                            display: "none",
+                                        }}
+                                        checked={selectedOption === "someoneElse"}
+                                        onChange={handleOptionChange}
+                                    />
+                                    <label htmlFor="someoneElse">Assign to Employee</label>
+                                </div>
+                            </div>
+                            <div>
+                                {empData.length !== 0 && selectedOption === "someoneElse" && (
+                                    <>
+                                        <div className="dialogAssign mt-2">
+                                            <div className="selector form-control">
+                                                <select
+                                                    style={{
+                                                        width: "inherit",
+                                                        border: "none",
+                                                        outline: "none",
+                                                    }}
+                                                    value={employeeSelection}
+                                                    onChange={(e) => {
+                                                        setEmployeeSelection(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="Not Alloted" disabled>
+                                                        Select employee
+                                                    </option>
+                                                    {empData.map((item) => (
+                                                        <option value={item.ename}>{item.ename}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>}
                     </div>
                 </DialogContent>
                 <div className="btn-list">
@@ -2313,13 +2481,13 @@ function ManageLeads() {
             >
                 <DialogTitle>
                     Remarks
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} 
-                    onClick={closepopupRemarks}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
+                        onClick={closepopupRemarks}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>

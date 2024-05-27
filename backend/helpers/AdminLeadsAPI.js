@@ -6,6 +6,7 @@ const CompanyModel = require("../models/Leads.js");
 const RecentUpdatesModel = require('../models/RecentUpdates.js')
 const { exec } = require("child_process");
 const TeamLeadsModel = require('../models/TeamLeads.js');
+const FollowUpModel = require("../models/FollowUp");
 
 
 
@@ -176,8 +177,17 @@ router.post("/manual", async (req, res) => {
   
     try {
       // Use Mongoose to delete rows by their IDs
-      await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-      await TeamLeadsModel.deleteMany({_id:{$in:selectedRows}})
+      const response = await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+      const response2 = await TeamLeadsModel.deleteMany({_id:{$in:selectedRows}})
+      const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
+        const company = await CompanyModel.findById(companyId);
+        if (company) {
+            // Find and delete documents from followmodel collection based on company name
+            return FollowUpModel.deleteOne({ companyName: company['Company Name'] });
+        }
+        return null;
+    }));
+      console.log(response)
       res.status(200).json({
         message:
           "Rows deleted successfully and backup created successfully.",

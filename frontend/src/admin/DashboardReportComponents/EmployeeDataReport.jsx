@@ -1399,8 +1399,7 @@ function EmployeeDataReport() {
                                     />
                                   </td>
                                 </tr>
-                              </tbody>):
-                               
+                              </tbody>): 
                               (<tbody>
                                     {employeeData.length !== 0 &&
                                         companyData.length !== 0 &&

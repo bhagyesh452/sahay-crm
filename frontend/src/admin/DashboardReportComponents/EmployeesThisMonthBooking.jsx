@@ -21,6 +21,7 @@ import Nodata from '../../components/Nodata';
 //import { options } from "../components/Options.js";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function EmployeesThisMonthBooking() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -38,6 +39,7 @@ function EmployeesThisMonthBooking() {
     const [initialDate, setInitialDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
+    const [loading, setLoading] = useState(false)
     const [newSortType, setNewSortType] = useState({
         maturedcase: "none",
         targetamount: "none",
@@ -70,28 +72,33 @@ function EmployeesThisMonthBooking() {
 
     //----------------------fetching employee info----------------------------------------
     const fetchEmployeeInfo = async () => {
-        fetch(`${secretKey}/employee/einfo`)
-            .then((response) => response.json())
-            .then((data) => {
-                setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-                setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-                // setEmployeeDataFilter(data.filter)
-            })
-            .catch((error) => {
-                console.error(`Error Fetching Employee Data `, error);
-            });
+        try {
+            setLoading(true);
+            const response = await fetch(`${secretKey}/employee/einfo`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            
+            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        } catch (error) {
+            console.error('Error Fetching Employee Data ', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    useEffect(()=>{
-        if(redesignedData.length!==0){
-            setEmployeeData(employeeDataFilter.sort((a,b) => functionCalculateOnlyAchieved(b.ename)-functionCalculateOnlyAchieved(a.ename)));  
+    useEffect(() => {
+        if (redesignedData.length !== 0) {
+            setEmployeeData(employeeDataFilter.sort((a, b) => functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename)));
         }
-        
-    },[redesignedData])
+
+    }, [redesignedData])
 
     const debounceDelay = 300;
-    const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
+    //const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
     const uniqueBDEobjects =
         employeeData.length !== 0 &&
@@ -106,12 +113,13 @@ function EmployeesThisMonthBooking() {
     //------------------------------fetching redesigned data-------------------------------------------------------------
     const fetchRedesignedBookings = async () => {
         try {
+            setLoading(true)
             const response = await axios.get(
                 `${secretKey}/bookings/redesigned-final-leadData`
             );
             const bookingsData = response.data;
             setBdeRedesignedData(response.data);
-          
+
             const getBDEnames = new Set();
             bookingsData.forEach((obj) => {
                 // Check if the bdeName is already in the Set
@@ -125,6 +133,8 @@ function EmployeesThisMonthBooking() {
             setRedesignedData(bookingsData);
         } catch (error) {
             console.log("Error Fetching Bookings Data", error);
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -152,7 +162,7 @@ function EmployeesThisMonthBooking() {
     const functionCalculateMatured = (bdeName) => {
         let maturedCount = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-        if(filterOne){
+        if (filterOne) {
             redesignedData.map((mainBooking) => {
 
                 if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
@@ -183,13 +193,13 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 })
-    
-    
+
+
             })
-        }else{
+        } else {
             redesignedData.map((mainBooking) => {
 
-                if ((new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) || (new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate()) ) {
+                if ((new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) || (new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
                     if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
                         if (mainBooking.bdeName === mainBooking.bdmName) {
                             maturedCount = maturedCount + 1
@@ -217,8 +227,8 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 })
-    
-    
+
+
             })
         }
         totalMaturedCount = totalMaturedCount + maturedCount;
@@ -227,7 +237,7 @@ function EmployeesThisMonthBooking() {
     const functionOnlyCalculateMatured = (bdeName) => {
         let maturedCount = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-        if(filterOne){
+        if (filterOne) {
             redesignedData.map((mainBooking) => {
 
                 if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
@@ -258,10 +268,10 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 })
-    
-    
+
+
             })
-        }else{
+        } else {
             redesignedData.map((mainBooking) => {
 
                 if (new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) {
@@ -292,11 +302,11 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 })
-    
-    
+
+
             })
         }
-     
+
         return maturedCount;
     };
 
@@ -305,7 +315,7 @@ function EmployeesThisMonthBooking() {
         let remainingAmount = 0;
         let expanse = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-        
+
         if (filterOne) {
             redesignedData.map((mainBooking) => {
 
@@ -876,9 +886,9 @@ function EmployeesThisMonthBooking() {
     };
 
     // ----------------------------sorting functions---------------------------------
-const [finalEmployeeData, setFinalEmployeeData] = useState([])
+    const [finalEmployeeData, setFinalEmployeeData] = useState([])
     const handleSortMaturedCases = (sortByForwarded) => {
-        
+
         setNewSortType((prevData) => ({
             ...prevData,
             recievedcase:
@@ -1434,106 +1444,72 @@ const [finalEmployeeData, setFinalEmployeeData] = useState([])
                                             </div></th>
                                     </tr>
                                 </thead>
-                                {uniqueBDEobjects ? (
-                                    <>
-                                        <tbody>
-                                            {employeeData &&
-                                                employeeData
-                                                    .filter(
-                                                        (item) =>
-                                                            item.designation ===
-                                                            "Sales Executive" &&
-                                                            item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString())) 
-                                                    )
-                                                    .map((obj, index) => (
-                                                        <>
-                                                            <tr>
-                                                                <td>{index + 1}</td>
-                                                                <td>
-                                                                    {obj.ename}
-                                                                </td>
-                                                                <td>{obj.branchOffice}</td>
-                                                                <td>
-                                                                    {functionCalculateMatured(
-                                                                        obj.ename
-                                                                    )}
-                                                                </td>
-                                                                <td>
-                                                                    ₹{" "}
-                                                                    {Math.round(
-                                                                        functionGetAmount(obj)
-                                                                    ).toLocaleString()}
-                                                                </td>
-                                                                <td>
-                                                                    ₹{" "}
-                                                                    {functionCalculateAchievedAmount(
-                                                                        obj.ename
-                                                                    ).toLocaleString()}
-                                                                </td>
-                                                                <td>
-                                                                    {" "}
-                                                                    {(
-                                                                        (functionCalculateOnlyAchieved(
-                                                                            obj.ename
-                                                                        ) /
-                                                                            functionGetOnlyAmount(obj)) *
-                                                                        100
-                                                                    ).toFixed(2)}{" "}
-                                                                    %
-                                                                </td>
-                                                                <td>
-                                                                    {functionGetLastBookingDate(
-                                                                        obj.ename
-                                                                    )}
-                                                                </td>
-                                                            </tr>
-                                                        </>
-                                                    ))}
-                                        </tbody>
-                                        <tfoot className="admin-dash-tbl-tfoot">
-                                            <tr>
-                                                <td
-                                                    colSpan={2}
-
-                                                >
-                                                    Total:
-                                                </td>
-                                                <td>-</td>
-                                                <td>
-                                                    {" "}
-                                                    {totalMaturedCount.toLocaleString()}
-                                                </td>
-                                                <td>
-                                                    ₹{" "}
-                                                    {(totalTargetAmount).toLocaleString()}
-                                                </td>
-                                                <td>
-                                                    ₹{" "}
-                                                    {(
-                                                        totalAchievedAmount
-                                                    ).toLocaleString()}
-                                                </td>
-                                                <td>
-                                                    {(
-                                                        (totalAchievedAmount /
-                                                            totalTargetAmount) *
-                                                        100
-                                                    ).toFixed(2)}{" "}
-                                                    %
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                        </tfoot>
-                                    </>
-                                ) : (
+                                {loading ? (
                                     <tbody>
                                         <tr>
-                                            <td className="particular" colSpan={9}>
-                                                <Nodata />
+                                            <td colSpan="12" className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading
+                                                    size={20}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
                                             </td>
                                         </tr>
                                     </tbody>
+                                ) : (
+                                    uniqueBDEobjects ? (
+                                        <>
+                                            <tbody>
+                                                {employeeData &&
+                                                    employeeData
+                                                        .filter(
+                                                            (item) =>
+                                                                item.designation === "Sales Executive" &&
+                                                                item.targetDetails.length !== 0 &&
+                                                                item.targetDetails.find(
+                                                                    (target) =>
+                                                                        target.year === currentYear.toString() &&
+                                                                        target.month === currentMonth.toString()
+                                                                )
+                                                        )
+                                                        .map((obj, index) => (
+                                                            <tr key={index}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{obj.ename}</td>
+                                                                <td>{obj.branchOffice}</td>
+                                                                <td>{functionCalculateMatured(obj.ename)}</td>
+                                                                <td>₹ {Math.round(functionGetAmount(obj)).toLocaleString()}</td>
+                                                                <td>₹ {functionCalculateAchievedAmount(obj.ename).toLocaleString()}</td>
+                                                                <td>{((functionCalculateOnlyAchieved(obj.ename) / functionGetOnlyAmount(obj)) * 100).toFixed(2)} %</td>
+                                                                <td>{functionGetLastBookingDate(obj.ename)}</td>
+                                                            </tr>
+                                                        ))}
+                                            </tbody>
+                                            <tfoot className="admin-dash-tbl-tfoot">
+                                                <tr>
+                                                    <td colSpan={2}>Total:</td>
+                                                    <td>-</td>
+                                                    <td>{totalMaturedCount.toLocaleString()}</td>
+                                                    <td>₹ {totalTargetAmount.toLocaleString()}</td>
+                                                    <td>₹ {totalAchievedAmount.toLocaleString()}</td>
+                                                    <td>{((totalAchievedAmount / totalTargetAmount) * 100).toFixed(2)} %</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            </tfoot>
+                                        </>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td className="particular" colSpan={9}>
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    )
                                 )}
+
                             </table>
                         </div>
                     </div>
