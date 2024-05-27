@@ -70,7 +70,7 @@ function TestLeads() {
         assignDate: "none"
     })
 
-    const [sortPattern , setSortPattern] = useState("none")
+    const [sortPattern , setSortPattern] = useState("IncoDate")
 
 
     //--------------------function to fetch Total Leads ------------------------------
@@ -83,8 +83,7 @@ function TestLeads() {
     const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
-            console.log(newSortType.incoDate)
-            console.log(sortPattern , "sortPattern")
+            
             //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
@@ -133,27 +132,28 @@ function TestLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
-
+    const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
         if (!isSearching) {
-            fetchData(1,newSortType.incoDate)
+            
+            fetchData(1,latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching , newSortType.incoDate])
+    }, [dataStatus, isSearching , sortPattern])
 
     //--------------------function to change pages ------------------------------
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
-        fetchData(currentPage + 1 , newSortType.incoDate);
+        fetchData(currentPage + 1 , latestSortCount);
     };
 
     const handlePreviousPage = () => {
         setCurrentPage(currentPage - 1);
-        fetchData(currentPage - 1 , newSortType.incoDate);
+        fetchData(currentPage - 1 , latestSortCount);
     };
 
     //const currentData = mainData.slice(startIndex, endIndex);
@@ -178,7 +178,7 @@ function TestLeads() {
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
                 setIsSearching(false)
-                fetchData(1 , newSortType.incoDate)
+                fetchData(1 , latestSortCount)
             } else {
                 // Set data to the search results
 
@@ -326,7 +326,7 @@ function TestLeads() {
                         text: "Successfully added new Data!",
                         icon: "success",
                     });
-                    fetchData(1 , newSortType.incoDate);
+                    fetchData(1 ,latestSortCount);
                     closeAddLeadsDialog();
                 })
                 .catch((error) => {
@@ -521,7 +521,7 @@ function TestLeads() {
                             }
                         });
                     }
-                    fetchData(1 , newSortType.incoDate);
+                    fetchData(1 , latestSortCount);
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -592,7 +592,7 @@ function TestLeads() {
                             }
                         });
                     }
-                    fetchData(1 , newSortType.incoDate);
+                    fetchData(1 , latestSortCount);
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -695,7 +695,7 @@ function TestLeads() {
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
-        fetchData(1 , newSortType.incoDate)
+        fetchData(1 , latestSortCount)
         setEmployeeSelection("")
     }
     const handleconfirmAssign = async () => {
@@ -747,7 +747,7 @@ function TestLeads() {
             });
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1 , newSortType.incoDate);
+            fetchData(1 , latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
             setEmployeeSelection("")
@@ -793,7 +793,7 @@ function TestLeads() {
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        await fetchData(1 , newSortType.incoDate);
+                        await fetchData(1 , latestSortCount);
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -828,7 +828,7 @@ function TestLeads() {
                 );
 
                 // Refresh the data after successful deletion
-                fetchData(1 , newSortType.incoDate);
+                fetchData(1 , latestSortCount);
             }
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -1014,7 +1014,7 @@ function TestLeads() {
 
                     // Reset the form and any error messages
                     setIsUpdateMode(false);
-                    fetchData(1 , newSortType.incoDate)
+                    fetchData(1 ,latestSortCount)
                     functioncloseModifyPopup();
                 } else {
                     // Date string couldn't be parsed into a valid Date object
@@ -1317,12 +1317,11 @@ function TestLeads() {
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
-                                                
+                                                {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 
-                                                <th>
-                                                    {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+                                                <th style={{ cursor: "pointer" }}>   
                                                     <div className="d-flex align-items-center justify-content-between">
-                                                        <div>{dataStatus !== "Unassigned" && <th>Assigned to</th>}</div>
+                                                        <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div>
                                                         <div className="short-arrow-div">
                                                             <ArrowDropUpIcon
                                                                 className="up-short-arrow"
