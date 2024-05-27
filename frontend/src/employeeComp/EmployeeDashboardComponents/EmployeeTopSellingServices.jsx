@@ -36,7 +36,9 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
             }
           if ((mainObj.bdeName === ename || mainObj.bdmName === ename) && condition1) {
             mainObj.services.forEach((service) => {
+              
               if (serviceCountMap.has(service.serviceName)) {
+               
                 serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
               } else {
                 serviceCountMap.set(service.serviceName, 1);
@@ -77,7 +79,7 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
       
 
       const serviceArray = functionCalculateServiceCount();
-      
+    
 
     return (
         <div>
