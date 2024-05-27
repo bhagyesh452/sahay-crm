@@ -1964,5 +1964,10 @@ td input
 {
   background-color: #f9d206 !important;
 }
-
-
+.LoaderTDSatyle
+{
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
