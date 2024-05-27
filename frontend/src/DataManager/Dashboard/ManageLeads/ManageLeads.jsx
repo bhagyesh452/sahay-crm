@@ -178,7 +178,7 @@ function ManageLeads() {
             console.error('Error searching leads:', error.message);
         } finally {
             setCurrentDataLoading(false);
-            
+
         }
     };
 
@@ -671,7 +671,7 @@ function ManageLeads() {
     };
     //--------------------function to assign leads to employees---------------------
     const [openAssignLeadsDialog, setOpenAssignLeadsDialog] = useState(false)
-    const [employeeSelection, setEmployeeSelection] = useState("")
+    const [employeeSelection, setEmployeeSelection] = useState("Not Alloted")
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
@@ -688,7 +688,7 @@ function ManageLeads() {
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
             closeAssignLeadsDialog();
-            return; // Exit the function early if no data is selected
+            return;
         }
 
         const alreadyAssignedData = selectedObjects.filter(
@@ -696,24 +696,17 @@ function ManageLeads() {
         );
 
         // If all selected data is not already assigned, proceed with assignment
-        if (alreadyAssignedData.length === 0) {
-            handleAssignData();
-            return; // Exit the function after handling assignment
-        }
 
         // If some selected data is already assigned, show confirmation dialog
-        const userConfirmed = window.confirm(
-            `Some data is already assigned. Do you want to continue?`
-        );
 
-        if (userConfirmed) {
-            handleAssignData();
-        }
+        handleAssignData();
+
     };
-
+    console.log(employeeSelection)
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
         const DT = new Date();
+
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
@@ -730,7 +723,7 @@ function ManageLeads() {
             fetchData(1);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-            setEmployeeSelection("")
+
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
@@ -757,9 +750,9 @@ function ManageLeads() {
                             title: 'Deleting...',
                             allowOutsideClick: false,
                             didOpen: () => {
-                              Swal.showLoading();
+                                Swal.showLoading();
                             }
-                          });
+                        });
                         // If user confirms, proceed with deletion
                         const response = await axios.delete(`${secretKey}/admin-leads/deleteAdminSelectedLeads`, {
                             data: { selectedRows }, // Pass selected rows to the server
@@ -769,7 +762,7 @@ function ManageLeads() {
                             title: 'Deleted!',
                             text: 'Selected rows have been deleted.',
                             icon: 'success',
-                          });
+                        });
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
@@ -1012,7 +1005,7 @@ function ManageLeads() {
     };
 
     //-----------------------function to open popup remarks--------------------------------
-    
+
     const functionopenpopupremarks = (companyID, companyStatus) => {
         openchangeRemarks(true);
         setFilteredRemarks(
@@ -1039,18 +1032,18 @@ function ManageLeads() {
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                                 <div className="btn-group mr-2">
-                                    <button type="button" className="btn mybtn"  onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
-                                        <TiUserAddOutline className='mr-1'/> Add Leads
+                                    <button type="button" className="btn mybtn" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                        <TiUserAddOutline className='mr-1' /> Add Leads
                                     </button>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" class="btn mybtn">
-                                        <span><IoFilterOutline className='mr-1'/></span>
+                                        <span><IoFilterOutline className='mr-1' /></span>
                                         Filter
                                     </button>
                                     <button type="button" class="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                         <span>
-                                            <MdOutlinePostAdd  className='mr-1'/>
+                                            <MdOutlinePostAdd className='mr-1' />
                                         </span>
                                         Assign Leads
                                     </button>
@@ -1208,7 +1201,8 @@ function ManageLeads() {
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-                                                <th>Status</th>
+                                                
+                                                {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
@@ -1261,7 +1255,7 @@ function ManageLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
+                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1270,7 +1264,7 @@ function ManageLeads() {
                                                                 <div
                                                                     onClick={() => {
                                                                         functionopenpopupremarks(company._id, company.Status);
-                                                                    }} 
+                                                                    }}
                                                                     style={{ cursor: "pointer" }}>
                                                                     <IconEye
 
@@ -1289,14 +1283,14 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
-                                                            <button  className='tbl-action-btn' onClick={
-                                                                    data.length === "0"
-                                                                        ? Swal.fire("Please Import Some data first")
-                                                                        : () => {
-                                                                            setOpenLeadsModifyPopUp(true);
-                                                                            handleUpdateClick(company._id);
-                                                                        }
-                                                                }>
+                                                            <button className='tbl-action-btn' onClick={
+                                                                data.length === "0"
+                                                                    ? Swal.fire("Please Import Some data first")
+                                                                    : () => {
+                                                                        setOpenLeadsModifyPopUp(true);
+                                                                        handleUpdateClick(company._id);
+                                                                    }
+                                                            }>
                                                                 < MdOutlineEdit
                                                                     style={{
                                                                         width: "14px",
@@ -1305,7 +1299,7 @@ function ManageLeads() {
                                                                     }}
                                                                 />
                                                             </button>
-                                                            
+
                                                             <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
                                                                 <IconEye
                                                                     style={{
@@ -1356,12 +1350,12 @@ function ManageLeads() {
             <Dialog open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAddLeadsDialog} >
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAddLeadsDialog} >
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1712,12 +1706,12 @@ function ManageLeads() {
             <Dialog open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Import CSV DATA{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeBulkLeadsCSVPopup}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeBulkLeadsCSVPopup}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
@@ -1870,17 +1864,17 @@ function ManageLeads() {
             <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} onClick={closeAssignLeadsDialog}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
                     <div>
-                        {empData.length !== 0 ? (
+                        {empData.length !== 0 && dataStatus === "Unassigned" && (
                             <>
                                 <div className="dialogAssign">
                                     <div className="selector form-control">
@@ -1905,11 +1899,106 @@ function ManageLeads() {
                                     </div>
                                 </div>
                             </>
-                        ) : (
-                            <div>
-                                <h1>No Employees Found</h1>
-                            </div>
                         )}
+                        {dataStatus === "Assigned" && <div>
+                            <div className="con2 d-flex">
+                                <div
+                                    style={
+                                        selectedOption === "direct"
+                                            ? {
+                                                backgroundColor: "#e9eae9",
+                                                margin: "10px 10px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                            : {
+                                                backgroundColor: "white",
+                                                margin: "10px 10px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                    }
+                                    onClick={() => {
+                                        setSelectedOption("direct");
+                                        setEmployeeSelection("Not Alloted")
+                                    }}
+                                    className="direct form-control"
+                                >
+                                    <input
+                                        type="radio"
+                                        id="direct"
+                                        value="direct"
+                                        style={{
+                                            display: "none",
+                                        }}
+                                        checked={selectedOption === "direct"}
+                                        onChange={(e) => {
+                                            handleOptionChange(e)
+                                            setEmployeeSelection("Not Alloted")
+                                        }}
+                                    />
+                                    <label htmlFor="direct">Move In General Data</label>
+                                </div>
+                                <div
+                                    style={
+                                        selectedOption === "someoneElse"
+                                            ? {
+                                                backgroundColor: "#e9eae9",
+                                                margin: "10px 0px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                            : {
+                                                backgroundColor: "white",
+                                                margin: "10px 0px 0px 0px",
+                                                cursor: "pointer",
+                                            }
+                                    }
+                                    className="indirect form-control"
+                                    onClick={() => {
+                                        setSelectedOption("someoneElse");
+
+                                    }}
+                                >
+                                    <input
+                                        type="radio"
+                                        id="someoneElse"
+                                        value="someoneElse"
+                                        style={{
+                                            display: "none",
+                                        }}
+                                        checked={selectedOption === "someoneElse"}
+                                        onChange={handleOptionChange}
+                                    />
+                                    <label htmlFor="someoneElse">Assign to Employee</label>
+                                </div>
+                            </div>
+                            <div>
+                                {empData.length !== 0 && selectedOption === "someoneElse" && (
+                                    <>
+                                        <div className="dialogAssign mt-2">
+                                            <div className="selector form-control">
+                                                <select
+                                                    style={{
+                                                        width: "inherit",
+                                                        border: "none",
+                                                        outline: "none",
+                                                    }}
+                                                    value={employeeSelection}
+                                                    onChange={(e) => {
+                                                        setEmployeeSelection(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="Not Alloted" disabled>
+                                                        Select employee
+                                                    </option>
+                                                    {empData.map((item) => (
+                                                        <option value={item.ename}>{item.ename}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>}
                     </div>
                 </DialogContent>
                 <div className="btn-list">
@@ -2311,13 +2400,13 @@ function ManageLeads() {
             >
                 <DialogTitle>
                     Remarks
-                    <button style={{ background: "none", border: "0px transparent",float:"right" }} 
-                    onClick={closepopupRemarks}>
-                    <IoIosClose style={{
-                                height: "36px",
-                                width: "32px",
-                                color: "grey"
-                            }} />
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
+                        onClick={closepopupRemarks}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
                     </button>
                 </DialogTitle>
                 <DialogContent>
