@@ -1069,6 +1069,11 @@ let isValid = true;
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
+                      onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                       className="form-control"
                       placeholder="Enter Amount"
                       id={`Amount-${i}`}
@@ -1271,6 +1276,11 @@ let isValid = true;
                         <div class="input-group mb-2">
                           <input
                             type="number"
+                            onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1846,6 +1856,7 @@ let isValid = true;
                                       </label>
                                       <input
                                         type="text" // Use type="text" instead of type="number"
+                                     
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
@@ -2398,6 +2409,11 @@ let isValid = true;
                                         </label>
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2502,6 +2518,11 @@ let isValid = true;
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2530,6 +2551,11 @@ let isValid = true;
                                       <div class="input-group">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
@@ -2564,6 +2590,11 @@ let isValid = true;
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
+                                          onWheel={(e)=>{
+                      
+                        document.activeElement.blur();
+                        
+                      }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services

@@ -1032,7 +1032,7 @@ function Leads() {
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
       closepopupEmp();
-      return; // Exit the function early if no data is selected
+      return; 
     }
 
     const alreadyAssignedData = selectedObjects.filter(
