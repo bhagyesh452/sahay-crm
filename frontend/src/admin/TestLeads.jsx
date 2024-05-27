@@ -70,7 +70,6 @@ function TestLeads() {
         assignDate: "none"
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
-    console.log(State.getStatesOfCountry("IN"))
 
     // useEffect(() => {
     //     // Fetch data about India from REST Countries API
@@ -150,6 +149,8 @@ function TestLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
+
+
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
         if (!isSearching) {
@@ -1074,8 +1075,45 @@ function TestLeads() {
     //------------------filter functions------------------------
 
     const stateList = State.getStatesOfCountry("IN")
+    const cityList = City.getCitiesOfCountry("IN")
+    const [selectedStateCode, setSelectedStateCode] = useState("")
+    const [selectedState, setSelectedState] = useState("")
+    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+    const [selectedNewCity, setSelectedNewCity] = useState("")
+    const [selectedYear, setSelectedYear] = useState("")
+    const [selectedMonth, setSelectedMonth] = useState("")
 
-    console.log(stateList)
+    const currentYear = new Date().getFullYear();
+    // const getMonthsArray = (selectedYear) => {
+    //     const months = [];
+    //     const days = [];
+    //     let daysInMonth = 0;
+    //     for (let month = 0; month < 12; month++) {
+    //       const date = new Date(selectedYear ? selectedYear : new Date().getFullYear(), month, 1);
+    //       daysInMonth = new Date(selectedYear, month + 1, 0).getDate(); // Using a common year (e.g., 2022) to ensure all months have the same number of days
+    //       const monthName = date.toLocaleString('default', { month: 'long' }); // Get the month name
+    //       months.push({ value: month + 1, name: monthName }); 
+    //       console.log(daysInMonth)// Add the month to the array
+    //     }
+    //     for (let day = 1; day <= daysInMonth; day++){
+    //       days.push(day);
+    //     }
+    //     return { months, days };
+    //   };
+      
+    //   // Usagecd
+    //   // Example selected year
+    //   const { months, days } = getMonthsArray(selectedYear);
+    //   console.log(months);
+    //   console.log(days);
+      
+
+    
+
+    // Create an array of years from 2018 to the current year
+    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+    
 
 
     return (
@@ -2528,24 +2566,31 @@ function TestLeads() {
                                     <div className='d-flex align-items-center justify-content-between'>
                                         <div className='form-group w-50 mr-1'>
                                             <label for="exampleFormControlInput1" class="form-label">State</label>
-                                            <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option disabled selected>Select State...</option>
-                                                {stateList.map((item) => (
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedState}
+                                                onChange={(e) => {
+                                                    setSelectedState(e.target.value)
+                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                                    //handleSelectState(e.target.value)
+                                                }}>
+                                                <option>Select State...</option>
+                                                {stateList.length !== 0 && stateList.map((item) => (
                                                     <option value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className='form-group w-50'>
                                             <label for="exampleFormControlInput1" class="form-label">City</label>
-                                            <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option selected>Not Picked Up</option>
-                                                <option value="1">Busy</option>
-                                                <option value="2">Junk</option>
-                                                <option value="3">Not Interested</option>
-                                                <option value="4">Untouched</option>
-                                                <option value="5">Interested</option>
-                                                <option value="6">Matured</option>
-                                                <option value="6">Followup</option>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedNewCity}
+                                                onChange={(e) => {
+                                                    setSelectedNewCity(e.target.value)
+                                                }}>
+                                                <option>Select City...</option>
+                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -2563,52 +2608,33 @@ function TestLeads() {
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
-                                    <label class="form-label">State</label>
+                                    <label class="form-label">Date</label>
                                     <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option selected>Year</option>
-                                                <option value="1">2024</option>
-                                                <option value="2">2023</option>
-                                                <option value="3">2022</option>
-                                                <option value="4">2021</option>
-                                                <option value="5">2020</option>
-                                                <option value="6">2019</option>
-                                                <option value="6">2018</option>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedYear}
+                                            onChange={(e)=>{
+                                                setSelectedYear(e.target.value)
+                                            }}>
+                                                <option>Select Year...</option>
+                                                {years.length !== 0 && years.map((item)=>(
+                                                    <option>{item}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedMonth}
+                                            onChange={(e)=>{
+                                                setSelectedMonth(e.target.value)
+                                            }}>
+                                                <option>Select Month...</option>
+                                                
                                             </select>
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option selected>Month</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="6">7</option>
-                                                <option value="5">8</option>
-                                                <option value="6">9</option>
-                                                <option value="6">10</option>
-                                                <option value="6">11</option>
-                                                <option value="6">12</option>
-                                            </select>
-                                        </div>
-                                        <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option selected>Days</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="6">7</option>
-                                                <option value="5">8</option>
-                                                <option value="6">9</option>
-                                                <option value="6">10</option>
-                                                <option value="6">11</option>
-                                                <option value="6">12</option>
+                                              
                                             </select>
                                         </div>
                                     </div>
