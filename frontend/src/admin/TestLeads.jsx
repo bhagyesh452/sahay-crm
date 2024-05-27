@@ -1223,24 +1223,7 @@ function TestLeads() {
                                                 <th>Sr.No</th>
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
-                                                <th style={{ cursor: "pointer" }}
-                                                // onClick={(e) => {
-                                                //     let updatedSortType;
-                                                //     if (newSortType.incoDate === "ascending") {
-                                                //         updatedSortType = "descending";
-                                                //     } else if (newSortType.incoDate === "descending") {
-                                                //         updatedSortType
-                                                //             = "none";
-                                                //     } else {
-                                                //         updatedSortType = "ascending";
-                                                //     }
-                                                //     setNewSortType((prevData) => ({
-                                                //         ...prevData,
-                                                //         incoDate: updatedSortType,
-                                                //     }));
-                                                //     handleSort(updatedSortType);
-                                                // }}
-                                                >
+                                                <th style={{ cursor: "pointer" }}    >
                                                     <div className="d-flex align-items-center justify-content-between">
                                                         <div>Incorporation Date</div>
                                                         <div className="short-arrow-div">
@@ -1293,44 +1276,6 @@ function TestLeads() {
                                                         </div>
                                                     </div>
                                                 </th>
-
-                                                {/* <th>
-                                                    Incorporation Date
-                                                    <FilterListIcon
-                                                    style={{
-                                                        height: "14px",
-                                                        width: "14px",
-                                                        cursor: "pointer",
-                                                        marginLeft: "4px",
-                                                    }}
-                                                    onClick={handleFilterIncoDate}/> 
-                                                    {openIncoDate && <div className="inco-filter">
-                                                    <div
-
-                                                        className="inco-subFilter"
-                                                        //onClick={(e) => handleSort("oldest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Oldest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("newest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Newest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("none")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        None
-                                                    </div>
-                                                </div>}
-                                                </th> */}
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
