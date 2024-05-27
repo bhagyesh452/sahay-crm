@@ -376,12 +376,13 @@
 .bdm-f-r-revenue
 {
     position: relative;
+    min-height: 230px;
 }
 .roundImggreen
 {
     background: url(../static/my-images/circle-orange.svg);
-    height: 106px;
-    width: 106px;
+    height: 100%;
+    width: 100%;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -389,10 +390,13 @@
 .roundImggreen-inner-text
 {
     text-align: center;
-    line-height: 106px;
+    line-height: 90px;
     font-weight: 600;
     color: #fff;
     font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .roundImgOrg-inner-text
 {
@@ -401,6 +405,9 @@
     font-weight: 600;
     color: #fff;
     font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .roundImggreen-text, .roundImgOrg-text
 {
@@ -413,20 +420,23 @@
 .bdm-f-r-revenue-projected
 {
     position: absolute;
-    top: 82px;
-    left: 0;
+    bottom: 0;
+    left: 4%;
+    width: 35%;
 }
 .bdm-f-r-revenue-generated
 { 
     position: absolute;
-    right: 18px;
+    right: 8%;
     top: 0px;
+    width: 50%;
+
 }
 .roundImgOrg
 {
     background: url(../static/my-images/Circle-Green.svg);
-    height: 130px;
-    width: 130px;
+    height: 100%;
+    width: 100%;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -467,4 +477,29 @@
     text-align: center;
     line-height: 25px;
     color: #fff;
+}
+.if-n0-dash-data
+{
+    min-height: 225px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media only screen and (max-width: 1350px) and (min-width: 1200px){
+    .dsrd-mini-card-name {
+        font-size: 10px;
+    }
+    .my-speed
+    {
+        width: 220px;
+        margin-left: -22px;
+    }
+    .bdm-f-r-revenue
+    {
+        min-height: 230px !important;
+    }
+    .chart-container>div
+    {
+        width: 145% !important;
+    }
 }

@@ -1319,8 +1319,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                     aria-label=".form-select-sm example"
                     value={selectedMonthOption}
                     onChange={(e) => setSelectedMonthOption(e.target.value)}>
-                    <option value="This Week" selected>This week</option>
-                    <option value="This Month">This Month</option>
+                    <option value="This Week">This week</option>
+                    <option value="This Month" selected>This Month</option>
                     <option value="Last Month">Last Month</option>
                   </select>
                 </div>
