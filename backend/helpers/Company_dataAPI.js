@@ -197,7 +197,7 @@ router.get('/new-leads', async (req, res) => {
         const limit = parseInt(req.query.limit) || 500; // Items per page
         const skip = (page - 1) * limit; // Number of documents to skip
         const { dataStatus, sort , sortPattern } = req.query;
-        console.log(sortPattern)
+        console.log(sort)
         // Query the database to get paginated data
         let query = {};
 
