@@ -38,6 +38,8 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function ManageLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -61,6 +63,17 @@ function ManageLeads() {
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
     const [isSearching, setIsSearching] = useState(false)
+    const [newSortType, setNewSortType] = useState({
+        incoDate: "none",
+        assignDate: "none"
+    })
+    const [sortPattern, setSortPattern] = useState("IncoDate")
+
+
+
+
+
+
 
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
@@ -68,11 +81,12 @@ function ManageLeads() {
     }
 
 
-    const fetchData = async (page) => {
+    const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
+
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
+            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
@@ -118,25 +132,25 @@ function ManageLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
-
+    const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
         if (!isSearching) {
-            fetchData(1)
+            fetchData(1, latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching])
+    }, [dataStatus, isSearching , sortPattern])
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
-        fetchData(currentPage + 1);
+        fetchData(currentPage + 1, latestSortCount);
     };
 
     const handlePreviousPage = () => {
         setCurrentPage(currentPage - 1);
-        fetchData(currentPage - 1);
+        fetchData(currentPage - 1, latestSortCount);
     };
 
     //const currentData = mainData.slice(startIndex, endIndex);
@@ -160,7 +174,7 @@ function ManageLeads() {
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
                 setIsSearching(false)
-                fetchData(1)
+                fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
 
@@ -306,7 +320,7 @@ function ManageLeads() {
                         text: "Successfully added new Data!",
                         icon: "success",
                     });
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeAddLeadsDialog();
                 })
                 .catch((error) => {
@@ -501,7 +515,7 @@ function ManageLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -572,7 +586,7 @@ function ManageLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1, latestSortCount)
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -675,7 +689,7 @@ function ManageLeads() {
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
-        fetchData(1)
+        fetchData(1, latestSortCount)
         setEmployeeSelection("")
     }
     const handleconfirmAssign = async () => {
@@ -720,7 +734,7 @@ function ManageLeads() {
             });
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1);
+            fetchData(1, latestSortCount)
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
 
@@ -766,7 +780,7 @@ function ManageLeads() {
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        await fetchData(1);
+                        await fetchData(1, latestSortCount)
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -801,7 +815,7 @@ function ManageLeads() {
                 );
 
                 // Refresh the data after successful deletion
-                fetchData(1);
+                fetchData(1, latestSortCount)
             }
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -987,7 +1001,7 @@ function ManageLeads() {
 
                     // Reset the form and any error messages
                     setIsUpdateMode(false);
-                    fetchData(1)
+                    fetchData(1, latestSortCount)
                     functioncloseModifyPopup();
                 } else {
                     // Date string couldn't be parsed into a valid Date object
@@ -1160,43 +1174,58 @@ function ManageLeads() {
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
 
-                                                <th>
-                                                    Incorporation Date
-                                                    {/* <FilterListIcon
-                                                    style={{
-                                                        height: "14px",
-                                                        width: "14px",
-                                                        cursor: "pointer",
-                                                        marginLeft: "4px",
-                                                    }}
-                                                    onClick={handleFilterIncoDate}
-                                                /> */}
-                                                    {/* {openIncoDate && <div className="inco-filter">
-                                                    <div
-
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("oldest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Oldest
+                                                <th style={{ cursor: "pointer" }}    >
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>Incorporation Date</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.incoDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("newest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Newest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("none")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        None
-                                                    </div>
-                                                </div>} */}
                                                 </th>
                                                 <th>City</th>
                                                 <th>State</th>
@@ -1208,8 +1237,58 @@ function ManageLeads() {
                                                 <th>Uploaded By</th>
                                                 {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 
-                                                <th>
-                                                    {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+                                                <th style={{ cursor: "pointer" }}>
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.assignDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.assignDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
 
                                                 </th>
                                                 {/* <th>Assigned On</th> */}
