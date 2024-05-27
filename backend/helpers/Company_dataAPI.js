@@ -192,51 +192,114 @@ router.get("/leads", async (req, res) => {
 
 //8. Read Multiple companies New
 router.get('/new-leads', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1; // Page number
-    const limit = parseInt(req.query.limit) || 500; // Items per page
-    const skip = (page - 1) * limit; // Number of documents to skip
-    const { dataStatus } = req.query
+    try {
+        const page = parseInt(req.query.page) || 1; // Page number
+        const limit = parseInt(req.query.limit) || 500; // Items per page
+        const skip = (page - 1) * limit; // Number of documents to skip
+        const { dataStatus, sort , sortPattern } = req.query;
+        console.log(sortPattern)
+        // Query the database to get paginated data
+        let query = {};
 
-    //console.log("dataStatus" , dataStatus)
-    // Query the database to get paginated data
-    let query = {};
+        if (dataStatus === "Unassigned") {
+            query = { ename: "Not Alloted" };
+        } else if (dataStatus === "Assigned") {
+            query = { ename: { $ne: "Not Alloted" } };
+        }
 
-    if (dataStatus === "Unassigned") {
-      query = { ename: "Not Alloted" };
+        let sortQuery = {};
+        if (sort && sortPattern === 'IncoDate' && (sort === 'ascending' || sort === 'descending')) {
+            if (sort === 'ascending') {
+                sortQuery = { "Company Incorporation Date  ": 1 }; // Sort in ascending order by Company Incorporation Date
+            } else {
+                sortQuery = { "Company Incorporation Date  ": -1 }; // Sort in descending order by Company Incorporation Date
+            }
+        }else if(sort && sortPattern === 'AssignDate' && (sort === 'ascending' || sort === 'descending')){
+          if (sort === 'ascending') {
+            sortQuery = { AssignDate: 1 }; // Sort in ascending order by Company Incorporation Date
+        } else {
+            sortQuery = { AssignDate: -1 }; // Sort in descending order by Company Incorporation Date
+        }
+        }
 
-    } else if (dataStatus === "Assigned") {
-      query = { ename: { $ne: "Not Alloted" } };
+        let employees;
+        if (Object.keys(sortQuery).length !== 0) {
+            employees = await CompanyModel.find(query)
+                .sort(sortQuery)
+                .skip(skip)
+                .limit(limit).lean();
+        } else {
+            employees = await CompanyModel.find(query)
+                .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+                .skip(skip)
+                .limit(limit).lean();
+        }
 
+        // Get total count of documents for pagination
+        const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+        const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
+        const totalCount = await CompanyModel.countDocuments(query);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalCount / limit);
+
+        // Return paginated data along with pagination metadata
+        res.json({
+            data: employees,
+            currentPage: page,
+            totalPages: totalPages,
+            unAssignedCount: unAssignedCount,
+            assignedCount: assignedCount
+        });
+    } catch (error) {
+        console.error('Error fetching employee data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    const employees = await CompanyModel.find(query)
-    .sort({ AssignDate: -1 })  // Sort in descending order by the specified field
-    .skip(skip)
-    .limit(limit);
-  
-    // console.log("employees" , employees)
-    // Get total count of documents for pagination
-    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
-    const totalCount = await CompanyModel.countDocuments(query)
+});
 
-    //console.log(totalCount , unAssignedCount, assignedCount)
-    //console.log(unAssignedCount , assignedCount)
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-    // Return paginated data along with pagination metadata
-    res.json({
-      data: employees,
-      currentPage: page,
-      totalPages: totalPages,
-      unAssignedCount: unAssignedCount,
-      assignedCount: assignedCount
-    });
+
+//---------api for sorting according to inco date----------------------
+
+router.get("/sort-leads-inco-date", async (req, res) => {
+  const { sortBy } = req.query;
+  console.log(sortBy); // Check if sortBy is correctly received
+  
+  try {
+    let sortQuery = {};
+
+    switch (sortBy) {
+      case "ascending":
+        sortQuery = { ['Company Incorporation Date  ']: 1 }; // Sort by company incorporation date in ascending order
+        console.log("ascending chala");
+        break;
+
+      case "descending":
+        sortQuery = { ['Company Incorporation Date  ']: -1 }; // Sort by company incorporation date in descending order
+        console.log("descending chala");
+        break;
+
+      case "none":
+        // Do nothing for none, return data as is
+        console.log("none chala");
+        break;
+
+      default:
+        // Handle default case if sortBy is not recognized
+        console.log("Invalid sortBy value");
+        break;
+    }
+
+    // Query the database with sorting applied
+    const sortedData = await CompanyModel.find().sort(sortQuery).limit(500).lean();
+
+    // Return sorted data
+    res.json({ data: sortedData });
   } catch (error) {
-    console.error('Error fetching employee data:', error);
+    console.error('Error fetching sorted data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 //9. Filtere search for Reading Multiple Companies
 router.get('/search-leads', async (req, res) => {

@@ -185,6 +185,8 @@ function Leads() {
         break;
     }
   };
+  
+  
   const handleSortAssign = (sortType) => {
     switch (sortType) {
       case "oldest":

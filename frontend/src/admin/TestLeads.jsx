@@ -39,6 +39,9 @@ import { MdOutlineEdit } from "react-icons/md";
 import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
 import { Drawer, colors } from "@mui/material";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -62,6 +65,12 @@ function TestLeads() {
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
     const [isSearching, setIsSearching] = useState(false)
+    const [newSortType, setNewSortType] = useState({
+        incoDate: "none",
+        assignDate: "none"
+    })
+
+    const [sortPattern , setSortPattern] = useState("none")
 
 
     //--------------------function to fetch Total Leads ------------------------------
@@ -71,11 +80,13 @@ function TestLeads() {
     }
 
     //--------------------function to fetch Data ------------------------------
-    const fetchData = async (page) => {
+    const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
+            console.log(newSortType.incoDate)
+            console.log(sortPattern , "sortPattern")
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}`);
+            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
@@ -125,24 +136,24 @@ function TestLeads() {
 
     useEffect(() => {
         if (!isSearching) {
-            fetchData(1)
+            fetchData(1,newSortType.incoDate)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching])
+    }, [dataStatus, isSearching , newSortType.incoDate])
 
     //--------------------function to change pages ------------------------------
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
-        fetchData(currentPage + 1);
+        fetchData(currentPage + 1 , newSortType.incoDate);
     };
 
     const handlePreviousPage = () => {
         setCurrentPage(currentPage - 1);
-        fetchData(currentPage - 1);
+        fetchData(currentPage - 1 , newSortType.incoDate);
     };
 
     //const currentData = mainData.slice(startIndex, endIndex);
@@ -167,7 +178,7 @@ function TestLeads() {
             if (!searchQuery.trim()) {
                 // If search query is empty, reset data to mainData
                 setIsSearching(false)
-                fetchData(1)
+                fetchData(1 , newSortType.incoDate)
             } else {
                 // Set data to the search results
 
@@ -185,10 +196,10 @@ function TestLeads() {
             console.error('Error searching leads:', error.message);
         } finally {
             setCurrentDataLoading(false);
-            
+
         }
     };
-    
+
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
@@ -313,7 +324,7 @@ function TestLeads() {
                         text: "Successfully added new Data!",
                         icon: "success",
                     });
-                    fetchData(1);
+                    fetchData(1 , newSortType.incoDate);
                     closeAddLeadsDialog();
                 })
                 .catch((error) => {
@@ -508,7 +519,7 @@ function TestLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1 , newSortType.incoDate);
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -579,7 +590,7 @@ function TestLeads() {
                             }
                         });
                     }
-                    fetchData(1);
+                    fetchData(1 , newSortType.incoDate);
                     closeBulkLeadsCSVPopup();
                     setnewEmployeeSelection("Not Alloted");
                 } catch (error) {
@@ -682,7 +693,7 @@ function TestLeads() {
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
-        fetchData(1)
+        fetchData(1 , newSortType.incoDate)
         setEmployeeSelection("")
     }
     const handleconfirmAssign = async () => {
@@ -734,7 +745,7 @@ function TestLeads() {
             });
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1);
+            fetchData(1 , newSortType.incoDate);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
             setEmployeeSelection("")
@@ -780,7 +791,7 @@ function TestLeads() {
                         //console.log(response.data)
                         // Store backup process
                         // After deletion, fetch updated data
-                        await fetchData(1);
+                        await fetchData(1 , newSortType.incoDate);
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
                         console.error("Error deleting rows:", error.message);
@@ -815,7 +826,7 @@ function TestLeads() {
                 );
 
                 // Refresh the data after successful deletion
-                fetchData(1);
+                fetchData(1 , newSortType.incoDate);
             }
         } catch (error) {
             console.error("Error deleting data:", error);
@@ -1001,7 +1012,7 @@ function TestLeads() {
 
                     // Reset the form and any error messages
                     setIsUpdateMode(false);
-                    fetchData(1)
+                    fetchData(1 , newSortType.incoDate)
                     functioncloseModifyPopup();
                 } else {
                     // Date string couldn't be parsed into a valid Date object
@@ -1040,7 +1051,7 @@ function TestLeads() {
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
-
+    //------------------sorting of incoporation date------------------------
 
 
 
@@ -1054,27 +1065,28 @@ function TestLeads() {
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                                 <div className="btn-group mr-2">
-                                    <button type="button" className="btn mybtn"  onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
-                                        <TiUserAddOutline className='mr-1'/> Add Leads
+                                    <button type="button" className="btn mybtn" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                        <TiUserAddOutline className='mr-1' /> Add Leads
                                     </button>
                                 </div>
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn" onClick={()=>setOpenFilterDrawer(true)}>
-                                        <IoFilterOutline className='mr-1'/> Filter
+                                    <button type="button" className="btn mybtn" onClick={() => setOpenFilterDrawer(true)}>
+                                        <IoFilterOutline className='mr-1' /> Filter
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => {
                                         setOpenBulkLeadsCSVPopup(true)
-                                        setCsvData([])  }}>
-                                            <TbFileImport className='mr-1'/> Import Leads
+                                        setCsvData([])
+                                    }}>
+                                        <TbFileImport className='mr-1' /> Import Leads
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => exportData()}>
-                                        <TbFileExport className='mr-1'/> Export Leads
+                                        <TbFileExport className='mr-1' /> Export Leads
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
-                                        <MdOutlinePostAdd className='mr-1'/>Assign Leads
+                                        <MdOutlinePostAdd className='mr-1' />Assign Leads
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
-                                        <MdOutlineDeleteSweep className='mr-1'/>Delete Leads
+                                        <MdOutlineDeleteSweep className='mr-1' />Delete Leads
                                     </button>
                                 </div>
                             </div>
@@ -1188,23 +1200,92 @@ function TestLeads() {
                                                 <th>Sr.No</th>
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
+                                                <th style={{ cursor: "pointer" }}
+                                                // onClick={(e) => {
+                                                //     let updatedSortType;
+                                                //     if (newSortType.incoDate === "ascending") {
+                                                //         updatedSortType = "descending";
+                                                //     } else if (newSortType.incoDate === "descending") {
+                                                //         updatedSortType
+                                                //             = "none";
+                                                //     } else {
+                                                //         updatedSortType = "ascending";
+                                                //     }
+                                                //     setNewSortType((prevData) => ({
+                                                //         ...prevData,
+                                                //         incoDate: updatedSortType,
+                                                //     }));
+                                                //     handleSort(updatedSortType);
+                                                // }}
+                                                >
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>Incorporation Date</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.incoDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.incoDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.incoDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        incoDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("IncoDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </th>
 
-                                                <th>
+                                                {/* <th>
                                                     Incorporation Date
-                                                    {/* <FilterListIcon
+                                                    <FilterListIcon
                                                     style={{
                                                         height: "14px",
                                                         width: "14px",
                                                         cursor: "pointer",
                                                         marginLeft: "4px",
                                                     }}
-                                                    onClick={handleFilterIncoDate}
-                                                /> */}
-                                                    {/* {openIncoDate && <div className="inco-filter">
+                                                    onClick={handleFilterIncoDate}/> 
+                                                    {openIncoDate && <div className="inco-filter">
                                                     <div
 
                                                         className="inco-subFilter"
-                                                        onClick={(e) => handleSort("oldest")}
+                                                        //onClick={(e) => handleSort("oldest")}
                                                     >
                                                         <SwapVertIcon style={{ height: "14px" }} />
                                                         Oldest
@@ -1225,8 +1306,8 @@ function TestLeads() {
                                                         <SwapVertIcon style={{ height: "14px" }} />
                                                         None
                                                     </div>
-                                                </div>} */}
-                                                </th>
+                                                </div>}
+                                                </th> */}
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
@@ -1234,10 +1315,61 @@ function TestLeads() {
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
-                                                {dataStatus !== "Unassigned" && <th>Assigned to</th>}
+                                                
 
                                                 <th>
                                                     {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <div>{dataStatus !== "Unassigned" && <th>Assigned to</th>}</div>
+                                                        <div className="short-arrow-div">
+                                                            <ArrowDropUpIcon
+                                                                className="up-short-arrow"
+                                                                style={{
+                                                                    color: newSortType.assignDate === "descending" ? "black" : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                            <ArrowDropDownIcon className="down-short-arrow"
+                                                                style={{
+                                                                    color:
+                                                                        newSortType.assignDate === "ascending"
+                                                                            ? "black"
+                                                                            : "#9d8f8f",
+                                                                }}
+                                                                onClick={() => {
+                                                                    let updatedSortType;
+                                                                    if (newSortType.assignDate === "ascending") {
+                                                                        updatedSortType = "descending";
+                                                                    } else if (newSortType.assignDate === "descending") {
+                                                                        updatedSortType = "none";
+                                                                    } else {
+                                                                        updatedSortType = "ascending";
+                                                                    }
+                                                                    setNewSortType((prevData) => ({
+                                                                        ...prevData,
+                                                                        assignDate: updatedSortType,
+                                                                    }));
+                                                                    setSortPattern("AssignDate")
+                                                                    fetchData(1, updatedSortType);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
 
                                                 </th>
                                                 {/* <th>Assigned On</th> */}
@@ -2441,7 +2573,7 @@ function TestLeads() {
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
-                                    <div className='d-flex align-items-center justify-content-between'> 
+                                    <div className='d-flex align-items-center justify-content-between'>
                                         <div className='form-group w-50 mr-1'>
                                             <label for="exampleFormControlInput1" class="form-label">State</label>
                                             <select class="form-select form-select-md" aria-label="Default select example">
@@ -2484,7 +2616,7 @@ function TestLeads() {
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <label class="form-label">State</label>
-                                    <div className='row align-items-center justify-content-between'> 
+                                    <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example">
                                                 <option selected>Year</option>
