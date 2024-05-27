@@ -349,7 +349,7 @@ function ManageLeads() {
                 const sheet = workbook.Sheets[sheetName];
 
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                const adminName = localStorage.getItem("adminName")
+                const adminName = localStorage.getItem("dataManagerName")
                 const formattedJsonData = jsonData
                     .slice(1) // Exclude the first row (header)
                     .map((row) => ({
@@ -429,7 +429,7 @@ function ManageLeads() {
         // Get current date and time
 
         // newArray now contains objects with updated properties
-        const adminName = localStorage.getItem("adminName")
+        const adminName = localStorage.getItem("dataManagerName")
 
         if (selectedOption === "someoneElse") {
             const properDate = new Date();
@@ -923,7 +923,7 @@ function ManageLeads() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const adminName = localStorage.getItem("adminName");
+        const adminName = localStorage.getItem("dataManagerName");
         try {
             let validationError = false;
 
