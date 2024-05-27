@@ -1031,38 +1031,59 @@ function ManageLeads() {
     const dataManagerName = localStorage.getItem("dataManagerName");
     return (
         <div>
-          <Header name={dataManagerName} />
-      <Navbar name={dataManagerName} />
+            <Header name={dataManagerName} />
+            <Navbar name={dataManagerName} />
             <div className='page-wrapper'>
-                <div page-header d-print-none>
-                    <div className="container-xl d-flex" style={{ gap: "20px" }}>
-                        <div class="d-grid gap-4 d-md-block mt-3">
-                            <button class="btn btn-primary mr-1" type="button" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}><span><TiUserAddOutline style={{ marginRight: "7px", height: "16.5px", width: "16.5px", marginBottom: "2px" }} /></span>Add Leads</button>
-                            <div class="btn-group" role="group" aria-label="Basic example" style={{ height: "39px" }}>
-                                <button type="button" class="btn"><span><IoFilterOutline style={{ marginRight: "7px" }} /></span>Filter</button>
-                               
-                                <button type="button" class="btn" onClick={() => setOpenAssignLeadsDialog(true)}><span><MdOutlinePostAdd style={{ marginRight: "7px", height: "20px", width: "16px", opacity: "0.6" }} /></span>Assign Leads</button>
-                               
+                <div className="page-header d-print-none">
+                    <div className="container-xl">
+                        <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center">
+                                <div className="btn-group mr-2">
+                                    <button type="button" className="btn mybtn"  onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                        <TiUserAddOutline className='mr-1'/> Add Leads
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn mybtn">
+                                        <span><IoFilterOutline className='mr-1'/></span>
+                                        Filter
+                                    </button>
+                                    <button type="button" class="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
+                                        <span>
+                                            <MdOutlinePostAdd  className='mr-1'/>
+                                        </span>
+                                        Assign Leads
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        {selectedRows.length !== 0 && (
-                            <div className="form-control mt-3" style={{ width: "192px", height: "38px" }} >
-                                Total Data Selected : {selectedRows.length}
+                            <div className="d-flex align-items-center">
+                                {selectedRows.length !== 0 && (
+                                    <div className="selection-data">
+                                        Total Data Selected : {selectedRows.length}
+                                    </div>
+                                )}
+                                <div class="input-icon ml-1">
+                                    <span class="input-icon-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                            <path d="M21 21l-6 -6"></path>
+                                        </svg>
+                                    </span>
+                                    <input
+                                        value={searchText}
+                                        onChange={(e) => {
+                                            setSearchText(e.target.value);
+                                            handleFilterSearch(e.target.value)
+                                            //setCurrentPage(0);
+                                        }}
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Search…"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
+                                </div>
                             </div>
-                        )}
-                        <div className='w-25 mt-3'>
-                            <input
-                                type="text"
-                                value={searchText}
-                                onChange={(e) => {
-                                    setSearchText(e.target.value);
-                                    handleFilterSearch(e.target.value)
-                                    //setCurrentPage(0);
-                                }}
-                                className="form-control"
-                                placeholder="Search…"
-                                aria-label="Search in website"
-                            />
                         </div>
                     </div>
                 </div>
@@ -1268,13 +1289,7 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
-                                                        
-                                                            <button
-                                                                style={{
-                                                                    border: " 0px transparent",
-                                                                    background: " none"
-                                                                }}
-                                                                onClick={
+                                                            <button  className='tbl-action-btn' onClick={
                                                                     data.length === "0"
                                                                         ? Swal.fire("Please Import Some data first")
                                                                         : () => {
@@ -1289,24 +1304,18 @@ function ManageLeads() {
                                                                         color: "grey",
                                                                     }}
                                                                 />
-
                                                             </button>
-                                                            <Link to={`/datamanager/leads/${company._id}`}>
-                                                                <button
+                                                            
+                                                            <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
+                                                                <IconEye
                                                                     style={{
-                                                                        border: " 0px transparent",
-                                                                        background: " none"
-                                                                    }}>
-                                                                    <IconEye
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </button>
-                                                            </Link>
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#d6a10c",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 ))}
