@@ -1406,7 +1406,7 @@ console.log(selectedAssignDate)
                                         {currentDataLoading ? (
                                             <tbody>
                                                 <tr>
-                                                    <td colSpan="13" >
+                                                    <td colSpan="14" >
                                                         <div className="LoaderTDSatyle">
                                                         <ClipLoader
                                                             color="lightgrey"
