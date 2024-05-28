@@ -2193,7 +2193,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th>
                                                     BDE Forward Date
                                                 </th>
-                                                {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>}
+                                                {/* {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>} */}
                                                 {/* {bdmNewStatus === "Untouched" && <th>Action</th>} */}
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                     <th>Add Projection</th>
@@ -2307,69 +2307,6 @@ function AdminEmployeeTeamLeads() {
                                                             <>
                                                                 <td>
                                                                     <span>{company.bdmStatus}</span>
-                                                                    {/* {company.bdmStatus === "Matured"  ? (
-                                                                        <span>{company.bdmStatus} </span>
-                                                                    ) : (
-                                                                        <select
-                                                                            style={{
-                                                                                background: "none",
-                                                                                padding: ".4375rem .75rem",
-                                                                                border:
-                                                                                    "1px solid var(--tblr-border-color)",
-                                                                                borderRadius:
-                                                                                    "var(--tblr-border-radius)",
-                                                                            }}
-                                                                            value={company.bdmStatus}
-                                                                            onChange={(e) =>
-                                                                                handlebdmStatusChange(
-                                                                                    company._id,
-                                                                                    e.target.value,
-                                                                                    company["Company Name"],
-                                                                                    company["Company Email"],
-                                                                                    company[
-                                                                                    "Company Incorporation Date  "
-                                                                                    ],
-                                                                                    company["Company Number"],
-                                                                                    company["Status"],
-                                                                                    company.bdmStatus,
-                                                                                    company.ename
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <option value="Not Picked Up">
-                                                                                Not Picked Up
-                                                                            </option>
-                                                                            <option value="Busy">Busy </option>
-                                                                            <option value="Junk">Junk</option>
-                                                                            <option value="Not Interested">
-                                                                                Not Interested
-                                                                            </option>
-                                                                            {bdmNewStatus === "Interested" && (
-                                                                                <>
-                                                                                    <option value="Interested">
-                                                                                        Interested
-                                                                                    </option>
-                                                                                    <option value="FollowUp">
-                                                                                        Follow Up{" "}
-                                                                                    </option>
-                                                                                    <option value="Matured">
-                                                                                        Matured
-                                                                                    </option>
-                                                                                </>
-                                                                            )}
-
-                                                                            {bdmNewStatus === "FollowUp" && (
-                                                                                <>
-                                                                                    <option value="FollowUp">
-                                                                                        Follow Up{" "}
-                                                                                    </option>
-                                                                                    <option value="Matured">
-                                                                                        Matured
-                                                                                    </option>
-                                                                                </>
-                                                                            )}
-                                                                        </select>
-                                                                    )} */}
                                                                 </td>
                                                                 <td>
                                                                     <div
@@ -2427,36 +2364,8 @@ function AdminEmployeeTeamLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                                   
                                                     {/* {
-                                                        company.bdmStatus === "Untouched" && (
-                                                            <td>
-                                                                <IconButton style={{ color: "green", marginRight: "5px", height: "25px", width: "25px" }}
-                                                                    onClick={(e) => handleAcceptClick(
-                                                                        company._id,
-                                                                        //e.target.value,
-                                                                        company["Company Name"],
-                                                                        company["Company Email"],
-                                                                        company[
-                                                                        "Company Incorporation Date  "
-                                                                        ],
-                                                                        company["Company Number"],
-                                                                        company["Status"],
-                                                                        company.bdmStatus
-                                                                    )}>
-                                                                    <GrStatusGood />
-                                                                </IconButton>
-                                                                <IconButton onClick={() => {
-                                                                    functionopenpopupremarksEdit(company._id,
-                                                                        company.Status,
-                                                                        company["Company Name"],
-                                                                        company.bdmName)
-                                                                    handleRejectData(company._id)
-                                                                }}>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
-                                                            </td>
-                                                        )
-                                                    } */}
-                                                    {
                                                         bdmNewStatus === "Matured" && <>
                                                             <td>
                                                                 <IconButton
@@ -2479,7 +2388,7 @@ function AdminEmployeeTeamLeads() {
 
                                                             </td>
                                                         </>
-                                                    }
+                                                    } */}
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
                                                             {company &&

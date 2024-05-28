@@ -2170,8 +2170,8 @@ function EmployeeParticular() {
                               }}
                             />
                           </th>
-                          {(dataStatus === "Matured" && <th>Action</th>) ||
-                            (dataStatus === "FollowUp" && (
+                          {/* {(dataStatus === "Matured" && <th>Action</th>) || */}
+                            {(dataStatus === "FollowUp" && (
                               <th>View Projection</th>
                             )) ||
                             (dataStatus === "Interested" && (
@@ -2458,7 +2458,7 @@ function EmployeeParticular() {
                                     </>
                                   )}
 
-                                  {dataStatus === "Matured" && (
+                                  {/* {dataStatus === "Matured" && (
                                     <>
                                       <td>
                                         <div className="d-flex">
@@ -2508,7 +2508,7 @@ function EmployeeParticular() {
                                         </div>
                                       </td>
                                     </>
-                                  )}
+                                  )} */}
                                   {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
                                     <td>
                                       <IconButton onClick={() => {

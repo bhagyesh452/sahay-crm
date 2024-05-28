@@ -70,6 +70,7 @@ function TestLeads() {
         assignDate: "none"
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
+    const [isFilter, setIsFilter] = useState(false)
 
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
@@ -107,12 +108,13 @@ function TestLeads() {
         }
     };
     //--------------------function to fetch employee data ------------------------------
-
+const [newEmpData, setNewEmpData] = useState([])
     const fetchEmployeesData = async () => {
         try {
 
             const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
+            setNewEmpData(response.data.filter(obj => obj.designation === 'Sales Executive' || obj.designation === 'Sales Manager'))
 
         } catch (error) {
             console.log("Error fetching data", error.message)
@@ -134,15 +136,14 @@ function TestLeads() {
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
-        if (!isSearching) {
-
+        if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching, sortPattern])
+    }, [dataStatus, isSearching, sortPattern ,isFilter])
 
     //--------------------function to change pages ------------------------------
 
@@ -1048,12 +1049,10 @@ function TestLeads() {
         setFilteredRemarks([]);
     };
     //-----------------------------function for filter -------------------------------
-    const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
-
-    const functionCloseFilterDrawer = () => {
-        setOpenFilterDrawer(false)
-    }
+   
+   
     //------------------filter functions------------------------
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
 
     const stateList = State.getStatesOfCountry("IN")
     const cityList = City.getCitiesOfCountry("IN")
@@ -1063,6 +1062,9 @@ function TestLeads() {
     const [selectedNewCity, setSelectedNewCity] = useState("")
     const [selectedYear, setSelectedYear] = useState("")
     const [selectedMonth, setSelectedMonth] = useState("")
+    const [selectedStatus, setSelectedStatus] = useState("")
+    const [selectedBDEName, setSelectedBDEName] = useState("")
+    const [selectedAssignDate, setSelectedAssignDate] = useState()
 
     const currentYear = new Date().getFullYear();
     const getMonthsArray = (selectedYear) => {
@@ -1074,7 +1076,7 @@ function TestLeads() {
           daysInMonth = new Date(selectedYear, month + 1, 0).getDate(); // Using a common year (e.g., 2022) to ensure all months have the same number of days
           const monthName = date.toLocaleString('default', { month: 'long' }); // Get the month name
           months.push({ value: month + 1, name: monthName }); 
-          console.log(daysInMonth)// Add the month to the array
+         
         }
         for (let day = 1; day <= daysInMonth; day++){
           days.push(day);
@@ -1085,8 +1087,6 @@ function TestLeads() {
       // Usagecd
       // Example selected year
       const { months, days } = getMonthsArray(selectedYear);
-      console.log(months);
-      console.log(days);
       
 
     
@@ -1096,13 +1096,47 @@ function TestLeads() {
 
     const handleFilterData = async()=>{
         try{
-            const response = await axios.get(`${secretKey}/search-leads/`)
+            setIsFilter(true)
+            console.log(selectedStatus)
+            const response = await axios.get(`${secretKey}/company-data/filter-leads/`,{
+                params:{ selectedStatus , selectedState , selectedNewCity , selectedBDEName , selectedAssignDate }
+            })
+            if (!selectedStatus && !selectedState && !selectedNewCity && !selectedBDEName && !selectedAssignDate) {
+                // If search query is empty, reset data to mainData
+                setIsFilter(false)
+                fetchData(1, latestSortCount)
+            } else {
+                // Set data to the search results
+
+                setData(response.data);
+                if (response.data.length > 0) {
+                    if (response.data[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned')
+                    } else {
+                        setDataStatus('Assigned')
+                    }
+                }
+            }
+            setOpenFilterDrawer(false);
 
         }catch(error){
             console.log('Error applying filter' , error.message)
         }
     }
 
+    const handleClearFilter=()=>{
+        setIsFilter(false)
+        setSelectedStatus('')
+        setSelectedState('')
+        setSelectedNewCity('')
+        setSelectedBDEName('')
+        setSelectedAssignDate()
+    }
+    const functionCloseFilterDrawer = () => {
+        setOpenFilterDrawer(false)
+    }
+
+console.log(selectedAssignDate)
 
     return (
         <div>
@@ -1119,7 +1153,7 @@ function TestLeads() {
                                     </button>
                                 </div>
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn" onClick={() => setOpenFilterDrawer(true)}>
+                                    <button type="button"className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => {
@@ -2540,15 +2574,19 @@ function TestLeads() {
                                 <div className='col-sm-12 mt-3'>
                                     <div className='form-group'>
                                         <label for="exampleFormControlInput1" class="form-label">Status</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example">
-                                            <option selected>Not Picked Up</option>
-                                            <option value="1">Busy</option>
-                                            <option value="2">Junk</option>
-                                            <option value="3">Not Interested</option>
-                                            <option value="4">Untouched</option>
-                                            <option value="5">Interested</option>
-                                            <option value="6">Matured</option>
-                                            <option value="6">Followup</option>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedStatus}
+                                        onChange={(e)=>{
+                                            setSelectedStatus(e.target.value)
+                                        }}>
+                                            <option selected value='Not Picked Up'>Not Picked Up</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Matured">Matured</option>
+                                            <option value="FollowUp">Followup</option>
                                         </select>
                                     </div>
                                 </div>
@@ -2587,14 +2625,25 @@ function TestLeads() {
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
-                                        <label for="assignto" class="form-label">Assign To</label>
-                                        <input type="text" class="form-control" id="assignto" placeholder="BDE Name" />
+                                    <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedBDEName}
+                                        onChange={(e)=>{
+                                            setSelectedBDEName(e.target.value)
+                                        }}>
+                                            <option>Select BDE...</option>
+                                            {newEmpData && newEmpData.map((item)=>(
+                                            <option value={item.ename}>{item.ename}</option>))} 
+                                        </select>
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
                                         <label for="assignon" class="form-label">Assign On</label>
-                                        <input type="date" class="form-control" id="assignon" placeholder="Assign On" />
+                                        <input type="date" class="form-control" id="assignon"
+                                        value={selectedAssignDate}
+                                        placeholder="dd-mm-yyyy"
+                                        onChange={(e)=>setSelectedAssignDate(e.target.value)} />
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
@@ -2616,8 +2665,7 @@ function TestLeads() {
                                             <select class="form-select form-select-md" aria-label="Default select example"
                                             value={selectedMonth}
                                             onChange={(e)=>{
-                                                setSelectedMonth(e.target.value)
-                                            }}>
+                                                setSelectedMonth(e.target.value)}}>
                                                 <option>Select Month...</option>
                                                 
                                             </select>
@@ -2645,7 +2693,7 @@ function TestLeads() {
                         </div>
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                        <button className='filter-footer-btn btn-clear'>Clear Filter</button>
+                        <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
                         <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
                     </div>
                 </div>
