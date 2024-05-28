@@ -71,25 +71,6 @@ function TestLeads() {
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
 
-    // useEffect(() => {
-    //     // Fetch data about India from REST Countries API
-    //     const fetchIndianStates = async () => {
-    //       try {
-    //         const response = await axios.get('https://restcountries.com/v3.1/name/India');
-    //         // Extract the list of states from the response
-    //         const indiaData = response.data[0];
-    //         if (indiaData?.subdivisions) {
-    //           const states = Object.values(indiaData.subdivisions).map((state) => state.name);
-    //          console.log(states)
-    //         }
-    //       } catch (error) {
-    //         console.error('Error fetching Indian states:', error);
-    //       }
-    //     };
-
-    //     fetchIndianStates();
-    //   }, []);
-
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
@@ -1084,36 +1065,43 @@ function TestLeads() {
     const [selectedMonth, setSelectedMonth] = useState("")
 
     const currentYear = new Date().getFullYear();
-    // const getMonthsArray = (selectedYear) => {
-    //     const months = [];
-    //     const days = [];
-    //     let daysInMonth = 0;
-    //     for (let month = 0; month < 12; month++) {
-    //       const date = new Date(selectedYear ? selectedYear : new Date().getFullYear(), month, 1);
-    //       daysInMonth = new Date(selectedYear, month + 1, 0).getDate(); // Using a common year (e.g., 2022) to ensure all months have the same number of days
-    //       const monthName = date.toLocaleString('default', { month: 'long' }); // Get the month name
-    //       months.push({ value: month + 1, name: monthName }); 
-    //       console.log(daysInMonth)// Add the month to the array
-    //     }
-    //     for (let day = 1; day <= daysInMonth; day++){
-    //       days.push(day);
-    //     }
-    //     return { months, days };
-    //   };
+    const getMonthsArray = (selectedYear) => {
+        const months = [];
+        const days = [];
+        let daysInMonth = 0;
+        for (let month = 0; month < 12; month++) {
+          const date = new Date(selectedYear ? selectedYear : new Date().getFullYear(), month, 1);
+          daysInMonth = new Date(selectedYear, month + 1, 0).getDate(); // Using a common year (e.g., 2022) to ensure all months have the same number of days
+          const monthName = date.toLocaleString('default', { month: 'long' }); // Get the month name
+          months.push({ value: month + 1, name: monthName }); 
+          console.log(daysInMonth)// Add the month to the array
+        }
+        for (let day = 1; day <= daysInMonth; day++){
+          days.push(day);
+        }
+        return { months, days };
+      };
       
-    //   // Usagecd
-    //   // Example selected year
-    //   const { months, days } = getMonthsArray(selectedYear);
-    //   console.log(months);
-    //   console.log(days);
+      // Usagecd
+      // Example selected year
+      const { months, days } = getMonthsArray(selectedYear);
+      console.log(months);
+      console.log(days);
       
 
     
 
-    // Create an array of years from 2018 to the current year
+    //Create an array of years from 2018 to the current year
     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
-    
+    const handleFilterData = async()=>{
+        try{
+            const response = await axios.get(`${secretKey}/search-leads/`)
+
+        }catch(error){
+            console.log('Error applying filter' , error.message)
+        }
+    }
 
 
     return (
@@ -2658,7 +2646,7 @@ function TestLeads() {
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
                         <button className='filter-footer-btn btn-clear'>Clear Filter</button>
-                        <button className='filter-footer-btn btn-yellow'>Apply Filter</button>
+                        <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
                     </div>
                 </div>
             </Drawer>

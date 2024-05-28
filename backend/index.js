@@ -799,18 +799,29 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 //  ***************************************************  Employee's Hadi(CRUD Operation)  ******************************************************
 
 // 1. Create an Employee
+// app.post("/api/employee/einfo", async (req, res) => {
+//   try {
+//     adminModel.create(req.body).then((res) => {
+//       res.json(res);
+//       //console.log("newemployee", req.body);
+//       //console.log("respond" , respond)
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 app.post("/api/employee/einfo", async (req, res) => {
   try {
-    adminModel.create(req.body).then((res) => {
-      res.json(res);
-      //console.log("newemployee", req.body);
-      //console.log("respond" , respond)
+    adminModel.create(req.body).then((result) => { // Change res to result
+      res.json(result); // Change res.json(res) to res.json(result)
     });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 // 2. Read the Employee
 app.get("/api/employee/einfo", async (req, res) => {
   try {
