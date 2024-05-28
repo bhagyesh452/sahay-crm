@@ -2388,7 +2388,7 @@ function AdminEmployeeTeamLeads() {
 
                                                             </td>
                                                         </>
-                                                    } */}
+                                                    } */}     
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
                                                             {company &&
