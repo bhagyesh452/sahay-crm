@@ -7,6 +7,7 @@ const RemarksHistory = require("../models/RemarksHistory");
 const RecentUpdatesModel = require("../models/RecentUpdates");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const { Parser } = require('json2csv');
+const { State } = require('country-state-city');
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -153,23 +154,23 @@ router.post("/leads", async (req, res) => {
       const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV
       const csvString = json2csvParser.parse(duplicateEntries);
-     // console.log(csvString , "csv")
+      // console.log(csvString , "csv")
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
         "attachment; filename=DuplicateEntries.csv"
       );
       res.status(200).end(csvString);
-    
+
       //console.log("csvString" , csvString)
     } else {
-     // console.log("yahan chala counter pr")
+      // console.log("yahan chala counter pr")
       res.status(200).json({
         message: "Data sent successfully",
         counter: counter,
         successCounter: successCounter,
       });
-      
+
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -192,69 +193,69 @@ router.get("/leads", async (req, res) => {
 
 //8. Read Multiple companies New
 router.get('/new-leads', async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1; // Page number
-        const limit = parseInt(req.query.limit) || 500; // Items per page
-        const skip = (page - 1) * limit; // Number of documents to skip
-        const { dataStatus, sort , sortPattern } = req.query;
-        //console.log(sort)
-        // Query the database to get paginated data
-        let query = {};
+  try {
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus, sort, sortPattern } = req.query;
+    //console.log(sort)
+    // Query the database to get paginated data
+    let query = {};
 
-        if (dataStatus === "Unassigned") {
-            query = { ename: "Not Alloted" };
-        } else if (dataStatus === "Assigned") {
-            query = { ename: { $ne: "Not Alloted" } };
-        }
-
-        let sortQuery = {};
-        if (sort && sortPattern === 'IncoDate' && (sort === 'ascending' || sort === 'descending')) {
-            if (sort === 'ascending') {
-                sortQuery = { "Company Incorporation Date  ": 1 }; // Sort in ascending order by Company Incorporation Date
-            } else {
-                sortQuery = { "Company Incorporation Date  ": -1 }; // Sort in descending order by Company Incorporation Date
-            }
-        }else if(sort && sortPattern === 'AssignDate' && (sort === 'ascending' || sort === 'descending')){
-          if (sort === 'ascending') {
-            sortQuery = { AssignDate: 1 }; // Sort in ascending order by Company Incorporation Date
-        } else {
-            sortQuery = { AssignDate: -1 }; // Sort in descending order by Company Incorporation Date
-        }
-        }
-
-        let employees;
-        if (Object.keys(sortQuery).length !== 0) {
-            employees = await CompanyModel.find(query)
-                .sort(sortQuery)
-                .skip(skip)
-                .limit(limit).lean();
-        } else {
-            employees = await CompanyModel.find(query)
-                .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
-                .skip(skip)
-                .limit(limit).lean();
-        }
-
-        // Get total count of documents for pagination
-        const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-        const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
-        const totalCount = await CompanyModel.countDocuments(query);
-
-        // Calculate total pages
-        const totalPages = Math.ceil(totalCount / limit);
-
-        // Return paginated data along with pagination metadata
-        res.json({
-            data: employees,
-            currentPage: page,
-            totalPages: totalPages,
-            unAssignedCount: unAssignedCount,
-            assignedCount: assignedCount
-        });
-    } catch (error) {
-        console.error('Error fetching employee data:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+    } else if (dataStatus === "Assigned") {
+      query = { ename: { $ne: "Not Alloted" } };
     }
+
+    let sortQuery = {};
+    if (sort && sortPattern === 'IncoDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { "Company Incorporation Date  ": 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { "Company Incorporation Date  ": -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    } else if (sort && sortPattern === 'AssignDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { AssignDate: 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { AssignDate: -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    }
+
+    let employees;
+    if (Object.keys(sortQuery).length !== 0) {
+      employees = await CompanyModel.find(query)
+        .sort(sortQuery)
+        .skip(skip)
+        .limit(limit).lean();
+    } else {
+      employees = await CompanyModel.find(query)
+        .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+        .skip(skip)
+        .limit(limit).lean();
+    }
+
+    // Get total count of documents for pagination
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
+    const totalCount = await CompanyModel.countDocuments(query);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Return paginated data along with pagination metadata
+    res.json({
+      data: employees,
+      currentPage: page,
+      totalPages: totalPages,
+      unAssignedCount: unAssignedCount,
+      assignedCount: assignedCount
+    });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 
@@ -263,7 +264,7 @@ router.get('/new-leads', async (req, res) => {
 router.get("/sort-leads-inco-date", async (req, res) => {
   const { sortBy } = req.query;
   console.log(sortBy); // Check if sortBy is correctly received
-  
+
   try {
     let sortQuery = {};
 
@@ -300,6 +301,78 @@ router.get("/sort-leads-inco-date", async (req, res) => {
   }
 });
 
+//-------------------api to filter leads-----------------------------------
+router.get('/filter-leads', async (req, res) => {
+  const { selectedStatus, selectedState, selectedNewCity, selectedBDEName ,selectedAssignDate } = req.query;
+  try {
+    let query = {};
+
+    if (selectedStatus) {
+      if (selectedStatus === 'Not Picked Up' ||
+          selectedStatus === 'Busy' ||
+          selectedStatus === 'Junk' ||
+          selectedStatus === 'Not Interested' ||
+          selectedStatus === 'Untouched' ||
+          selectedStatus === 'Interested' ||
+          selectedStatus === 'Matured' ||
+          selectedStatus === 'FollowUp') {
+        query.Status = selectedStatus;
+      } 
+    }
+
+    if (selectedState) {
+      if (!query.Status) {
+        query.State = selectedState;
+      } else {
+        query = { Status: selectedStatus, State: selectedState };
+      }
+    }
+
+    if (selectedNewCity) {
+      if (!query.Status || !query.State) {
+        query.City = selectedNewCity;
+      } else {
+        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity };
+      }
+    }
+
+    if(selectedBDEName && selectedBDEName.trim() !== ''){
+      
+      if(!query.Status || !query.State || !query.City){
+        query.ename = selectedBDEName
+      }else{
+        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity , ename:selectedBDEName };
+      }
+    }
+
+    if(selectedAssignDate){
+      const startDate = new Date(selectedAssignDate);
+      const endDate = new Date(selectedAssignDate);
+      endDate.setDate(endDate.getDate() + 1);
+      if(!query.Status || !query.State || !query.City || !query.ename){
+        query.AssignDate = {
+          $gte: startDate.toISOString(),
+          $lt: endDate.toISOString()
+        };
+      }else{
+        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity , ename:selectedBDEName , AssignDate:selectedAssignDate };
+      }
+    }
+
+    console.log(query);
+
+    const employees = await CompanyModel.find(query).limit(500).lean();
+    res.status(200).json(employees);
+
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
 
 //9. Filtere search for Reading Multiple Companies
 router.get('/search-leads', async (req, res) => {
@@ -314,7 +387,7 @@ router.get('/search-leads', async (req, res) => {
         // Perform database query to search for leads matching the searchQuery
         const query = {};
         query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
-    
+        
         searchResults = await CompanyModel.find(query).limit(500).lean();
       } else {
         // If search query is empty, fetch 500 data from CompanyModel
@@ -325,7 +398,7 @@ router.get('/search-leads', async (req, res) => {
       if (searchQuery && searchQuery.trim() !== '') {
         // Check if the searchQuery is a valid number
         const searchNumber = Number(searchQuery);
-    
+
         if (!isNaN(searchNumber)) {
           // Perform database query to search for leads matching the searchQuery as a number
           searchResults = await CompanyModel.find({
@@ -365,7 +438,7 @@ router.get("/specific-company/:companyId", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-  
+
 
 
 //11. Assign company to new employee
@@ -379,20 +452,20 @@ router.post("/assign-new", async (req, res) => {
     for (const employeeData of data) {
       //console.log("employee" , employeeData)
       try {
-       const companyName = employeeData["Company Name"];
-        const employee = await CompanyModel.findOneAndUpdate({"Company Name":companyName} , {$set:{ename:ename}});
+        const companyName = employeeData["Company Name"];
+        const employee = await CompanyModel.findOneAndUpdate({ "Company Name": companyName }, { $set: { ename: ename } });
         //console.log("yahan kuch locha h" , employee)
         const deleteTeams = TeamLeadsModel.findByIdAndDelete(employee._id);
         //console.log("newemployee" , employee)
         await RemarksHistory.deleteOne({ companyID: employee._id });
-        
+
         //console.log("saved" , savedEmployee)
-     
+
       } catch (error) {
-   
+
         //console.log("kuch h ye" , duplicateEntries);
         console.error("Error Assigning Data:", error.message);
-      
+
       }
     }
     res.status(200).json({ message: "Data updated successfully" });
@@ -490,8 +563,8 @@ router.get("/edata-particular/:ename", async (req, res) => {
     res.json(filteredEmployeeData);
   } catch (error) {
     console.error("Error fetching employee data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-  module.exports = router;
+module.exports = router;

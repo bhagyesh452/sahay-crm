@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 
-
 // Define the schema
 const yourSchema = new mongoose.Schema({
   email: {
