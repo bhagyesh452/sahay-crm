@@ -303,10 +303,9 @@ router.get("/sort-leads-inco-date", async (req, res) => {
 
 //-------------------api to filter leads-----------------------------------
 router.get('/filter-leads', async (req, res) => {
-  const { selectedStatus, selectedState, selectedNewCity, selectedBDEName ,selectedAssignDate } = req.query;
+  const { selectedStatus, selectedState, selectedNewCity, selectedBDEName, selectedAssignDate, selectedUploadedDate,selectedAdminName,selectedYear} = req.query;
   try {
     let query = {};
-
     if (selectedStatus) {
       if (selectedStatus === 'Not Picked Up' ||
           selectedStatus === 'Busy' ||
@@ -317,7 +316,7 @@ router.get('/filter-leads', async (req, res) => {
           selectedStatus === 'Matured' ||
           selectedStatus === 'FollowUp') {
         query.Status = selectedStatus;
-      } 
+      }
     }
 
     if (selectedState) {
@@ -336,26 +335,101 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
-    if(selectedBDEName && selectedBDEName.trim() !== ''){
-      
-      if(!query.Status || !query.State || !query.City){
-        query.ename = selectedBDEName
-      }else{
-        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity , ename:selectedBDEName };
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+
+      if (!query.Status || !query.State || !query.City) {
+        query.ename = selectedBDEName;
+      } else {
+        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity, ename: selectedBDEName };
       }
     }
 
-    if(selectedAssignDate){
+    if (selectedAssignDate) {
       const startDate = new Date(selectedAssignDate);
       const endDate = new Date(selectedAssignDate);
       endDate.setDate(endDate.getDate() + 1);
-      if(!query.Status || !query.State || !query.City || !query.ename){
+      if (!query.Status || !query.State || !query.City || !query.ename) {
         query.AssignDate = {
           $gte: startDate.toISOString(),
           $lt: endDate.toISOString()
         };
+      } else {
+        query = {
+          Status: selectedStatus,
+          State: selectedState,
+          City: selectedNewCity,
+          ename: selectedBDEName,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          }
+        }; // Closing brace was missing here
+      }
+    }
+    if (selectedAdminName && selectedAdminName.trim() !== '') {
+      const adminNameRegex = new RegExp(selectedAdminName, 'i');
+      if (!query.Status || !query.State || !query.City || !query.AssignDate || !query.ename) {
+        query.UploadedBy = adminNameRegex;
+      } else {
+        query = { Status: selectedStatus, 
+          State: selectedState, 
+          City: selectedNewCity, 
+          ename: selectedBDEName ,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          },
+          UploadedBy:adminNameRegex };
+      }
+    }
+    if (selectedUploadedDate) {
+      const startDate = new Date(selectedUploadedDate);
+      const endDate = new Date(selectedUploadedDate);
+      endDate.setDate(endDate.getDate() + 1);
+      if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate) {
+        query.AssignDate = {
+          $gte: startDate.toISOString(),
+          $lt: endDate.toISOString()
+        };
+      } else {
+        query = {
+          Status: selectedStatus,
+          State: selectedState,
+          City: selectedNewCity,
+          ename: selectedBDEName,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          },
+          UploadedBy:adminNameRegex,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          }
+        }; // Closing brace was missing here
+      }
+    }
+
+    if(selectedYear){
+      if(!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName){
+        query["Company Incorporation Date  "] = selectedYear
       }else{
-        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity , ename:selectedBDEName , AssignDate:selectedAssignDate };
+        query = {
+          Status: selectedStatus,
+          State: selectedState,
+          City: selectedNewCity,
+          ename: selectedBDEName,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          },
+          UploadedBy:adminNameRegex,
+          AssignDate: {
+            $gte: startDate.toISOString(),
+            $lt: endDate.toISOString()
+          },
+          ["Company Incorporation Date  "]:selectedYear
+        }; // Closing brace was missing here
       }
     }
 
@@ -369,6 +443,7 @@ router.get('/filter-leads', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 

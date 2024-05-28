@@ -1064,44 +1064,29 @@ const [newEmpData, setNewEmpData] = useState([])
     const [selectedMonth, setSelectedMonth] = useState("")
     const [selectedStatus, setSelectedStatus] = useState("")
     const [selectedBDEName, setSelectedBDEName] = useState("")
-    const [selectedAssignDate, setSelectedAssignDate] = useState()
+    const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+    const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
+    const [selectedAdminName, setSelectedAdminName] = useState("")
 
     const currentYear = new Date().getFullYear();
-    const getMonthsArray = (selectedYear) => {
-        const months = [];
-        const days = [];
-        let daysInMonth = 0;
-        for (let month = 0; month < 12; month++) {
-          const date = new Date(selectedYear ? selectedYear : new Date().getFullYear(), month, 1);
-          daysInMonth = new Date(selectedYear, month + 1, 0).getDate(); // Using a common year (e.g., 2022) to ensure all months have the same number of days
-          const monthName = date.toLocaleString('default', { month: 'long' }); // Get the month name
-          months.push({ value: month + 1, name: monthName }); 
-         
-        }
-        for (let day = 1; day <= daysInMonth; day++){
-          days.push(day);
-        }
-        return { months, days };
-      };
-      
-      // Usagecd
-      // Example selected year
-      const { months, days } = getMonthsArray(selectedYear);
-      
-
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      //Create an array of years from 2018 to the current year
+      const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
     
-
-    //Create an array of years from 2018 to the current year
-    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+    
+  
 
     const handleFilterData = async()=>{
         try{
             setIsFilter(true)
             console.log(selectedStatus)
             const response = await axios.get(`${secretKey}/company-data/filter-leads/`,{
-                params:{ selectedStatus , selectedState , selectedNewCity , selectedBDEName , selectedAssignDate }
+                params:{ selectedStatus , selectedState , selectedNewCity , selectedBDEName , selectedAssignDate , selectedUploadedDate, selectedAdminName ,selectedYear }
             })
-            if (!selectedStatus && !selectedState && !selectedNewCity && !selectedBDEName && !selectedAssignDate) {
+            if (!selectedStatus && !selectedState && !selectedNewCity && !selectedBDEName && !selectedAssignDate && !selectedUploadedDate && !selectedAdminName) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false)
                 fetchData(1, latestSortCount)
@@ -1130,13 +1115,15 @@ const [newEmpData, setNewEmpData] = useState([])
         setSelectedState('')
         setSelectedNewCity('')
         setSelectedBDEName('')
-        setSelectedAssignDate()
+        setSelectedAssignDate(null)
+        setSelectedUploadedDate(null)
+        setSelectedAdminName('')
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
 
-console.log(selectedAssignDate)
+
 
     return (
         <div>
@@ -2643,11 +2630,12 @@ console.log(selectedAssignDate)
                                         <input type="date" class="form-control" id="assignon"
                                         value={selectedAssignDate}
                                         placeholder="dd-mm-yyyy"
+                                        defaultValue={null}
                                         onChange={(e)=>setSelectedAssignDate(e.target.value)} />
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
-                                    <label class="form-label">Date</label>
+                                    <label class="form-label">Incorporation Date</label>
                                     <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
@@ -2667,12 +2655,14 @@ console.log(selectedAssignDate)
                                             onChange={(e)=>{
                                                 setSelectedMonth(e.target.value)}}>
                                                 <option>Select Month...</option>
-                                                
+                                                {months && months.map((item)=>(
+                                                    <option value={item}>{item}</option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example">
-                                              
+                                              <option>Select Date...</option>
                                             </select>
                                         </div>
                                     </div>
@@ -2680,13 +2670,21 @@ console.log(selectedAssignDate)
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
                                         <label for="Uploadedby" class="form-label">Uploaded By</label>
-                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name" />
+                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
+                                        value={selectedAdminName}
+                                        onChange={(e)=>{
+                                            setSelectedAdminName(e.target.value)
+                                        }} />
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
                                         <label for="Uploadon" class="form-label">Uploaded On</label>
-                                        <input type="date" class="form-control" id="Uploadon" placeholder="Uploaded On" />
+                                        <input type="date" class="form-control" id="Uploadon" 
+                                        value={selectedUploadedDate}
+                                        defaultValue={null}
+                                        placeholder="dd-mm-yyyy"
+                                        onChange={(e)=>setSelectedUploadedDate(e.target.value)} />
                                     </div>
                                 </div>
                             </div>
