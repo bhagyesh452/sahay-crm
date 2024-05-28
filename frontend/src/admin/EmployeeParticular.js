@@ -2400,8 +2400,6 @@ function EmployeeParticular() {
                                     </td>
 
                                   )}
-
-
                                   <td>
                                     {formatDateNew(
                                       company["Company Incorporation Date  "]
