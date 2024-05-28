@@ -490,3 +490,22 @@
                         valueLabelDisplay="on" 
                         valueLabelFormat={feedbakPoints}
                         /> */}
+
+ // useEffect(() => {
+    //     // Fetch data about India from REST Countries API
+    //     const fetchIndianStates = async () => {
+    //       try {
+    //         const response = await axios.get('https://restcountries.com/v3.1/name/India');
+    //         // Extract the list of states from the response
+    //         const indiaData = response.data[0];
+    //         if (indiaData?.subdivisions) {
+    //           const states = Object.values(indiaData.subdivisions).map((state) => state.name);
+    //          console.log(states)
+    //         }
+    //       } catch (error) {
+    //         console.error('Error fetching Indian states:', error);
+    //       }
+    //     };
+
+    //     fetchIndianStates();
+    //   }, []);
