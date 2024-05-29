@@ -271,12 +271,12 @@ router.get("/sort-leads-inco-date", async (req, res) => {
     switch (sortBy) {
       case "ascending":
         sortQuery = { ['Company Incorporation Date  ']: 1 }; // Sort by company incorporation date in ascending order
-        console.log("ascending chala");
+
         break;
 
       case "descending":
         sortQuery = { ['Company Incorporation Date  ']: -1 }; // Sort by company incorporation date in descending order
-        console.log("descending chala");
+
         break;
 
       case "none":
@@ -517,8 +517,11 @@ router.get('/filter-leads', async (req, res) => {
     selectedUploadedDate,
     selectedAdminName,
     selectedYear,
-    selectedCompanyIncoDate
+    selectedCompanyIncoDate,
   } = req.query;
+  const page = parseInt(req.query.page) || 1; // Page number
+  const limit = parseInt(req.query.limit) || 500; // Items per page
+  const skip = (page - 1) * limit; // Number of documents to skip
 
   try {
     let query = {};
@@ -584,8 +587,25 @@ router.get('/filter-leads', async (req, res) => {
 
     console.log(query);
 
-    const employees = await CompanyModel.find(query).limit(500).lean();
-    res.status(200).json(employees);
+    // Get the total count of documents that match the query
+    const totalDocuments = await CompanyModel.countDocuments(query);
+
+    // Fetch the documents with pagination
+    const employees = await CompanyModel.find(query)
+      .skip(skip)
+      .limit()
+      .lean();
+
+    const assigned = employees.filter(item => item.ename !== 'Not Alloted');
+    const unassigned = employees.filter(item => item.ename === 'Not Alloted');
+
+    
+    res.status(200).json({
+      assigned,
+      unassigned,
+      totalPages: Math.ceil(totalDocuments / limit),  // Calculate total pages
+      currentPage: page  // Current page number
+    });
 
   } catch (error) {
     console.error('Error searching leads:', error);
