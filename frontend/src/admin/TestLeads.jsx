@@ -1128,7 +1128,6 @@ function TestLeads() {
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         try {
             setIsFilter(true);
-
             const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                 params: {
                     selectedStatus,
@@ -1171,8 +1170,10 @@ function TestLeads() {
                 if (response.data.length > 0) {
                     if (response.data[0].ename === 'Not Alloted') {
                         setDataStatus('Unassigned')
+                        setTotalCount(parseInt(response.data.unassigned.length/500))
                     } else {
                         setDataStatus('Assigned')
+                        setTotalCount(parseInt(response.data.assigned.length/500))
                     }
                 }
                 setOpenFilterDrawer(false);
@@ -1800,7 +1801,9 @@ function TestLeads() {
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
-                                    <span>Page {currentPage} / {totalCount}</span>
+                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned/500)}</span> }
+                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned/500)}</span> }
+                                    {!isFilter && <span>Page {currentPage} / {totalCount}</span>}
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
                                         (isFilter && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
                                         (isFilter && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||

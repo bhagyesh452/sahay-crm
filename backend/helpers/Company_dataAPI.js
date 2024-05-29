@@ -599,7 +599,6 @@ router.get('/filter-leads', async (req, res) => {
     const assigned = employees.filter(item => item.ename !== 'Not Alloted');
     const unassigned = employees.filter(item => item.ename === 'Not Alloted');
 
-    
     res.status(200).json({
       assigned,
       unassigned,
