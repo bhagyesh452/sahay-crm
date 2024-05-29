@@ -108,7 +108,7 @@ function TestLeads() {
         }
     };
     //--------------------function to fetch employee data ------------------------------
-const [newEmpData, setNewEmpData] = useState([])
+    const [newEmpData, setNewEmpData] = useState([])
     const fetchEmployeesData = async () => {
         try {
 
@@ -143,7 +143,7 @@ const [newEmpData, setNewEmpData] = useState([])
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching, sortPattern ,isFilter])
+    }, [dataStatus, isSearching, sortPattern, isFilter])
 
     //--------------------function to change pages ------------------------------
 
@@ -1049,8 +1049,8 @@ const [newEmpData, setNewEmpData] = useState([])
         setFilteredRemarks([]);
     };
     //-----------------------------function for filter -------------------------------
-   
-   
+
+
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
 
@@ -1072,21 +1072,28 @@ const [newEmpData, setNewEmpData] = useState([])
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
-      ];
-      //Create an array of years from 2018 to the current year
-      const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
-    
-    
-  
+    ];
+    //Create an array of years from 2018 to the current year
+    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
-    const handleFilterData = async()=>{
-        try{
+
+
+
+    const handleFilterData = async () => {
+        try {
             setIsFilter(true)
             console.log(selectedStatus)
-            const response = await axios.get(`${secretKey}/company-data/filter-leads/`,{
-                params:{ selectedStatus , selectedState , selectedNewCity , selectedBDEName , selectedAssignDate , selectedUploadedDate, selectedAdminName ,selectedYear }
+            const response = await axios.get(`${secretKey}/company-data/filter-leads/`, {
+                params: { selectedStatus, selectedState, selectedNewCity, selectedBDEName, selectedAssignDate, selectedUploadedDate, selectedAdminName, selectedYear }
             })
-            if (!selectedStatus && !selectedState && !selectedNewCity && !selectedBDEName && !selectedAssignDate && !selectedUploadedDate && !selectedAdminName) {
+            if (!selectedStatus &&
+                !selectedState &&
+                !selectedNewCity &&
+                !selectedBDEName &&
+                !selectedAssignDate &&
+                !selectedUploadedDate &&
+                !selectedAdminName &&
+                !selectedYear) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false)
                 fetchData(1, latestSortCount)
@@ -1104,12 +1111,12 @@ const [newEmpData, setNewEmpData] = useState([])
             }
             setOpenFilterDrawer(false);
 
-        }catch(error){
-            console.log('Error applying filter' , error.message)
+        } catch (error) {
+            console.log('Error applying filter', error.message)
         }
     }
 
-    const handleClearFilter=()=>{
+    const handleClearFilter = () => {
         setIsFilter(false)
         setSelectedStatus('')
         setSelectedState('')
@@ -1118,12 +1125,13 @@ const [newEmpData, setNewEmpData] = useState([])
         setSelectedAssignDate(null)
         setSelectedUploadedDate(null)
         setSelectedAdminName('')
+        setSelectedYear('')
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
 
-
+    console.log(isFilter)
 
     return (
         <div>
@@ -1140,7 +1148,7 @@ const [newEmpData, setNewEmpData] = useState([])
                                     </button>
                                 </div>
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button"className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
+                                    <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => {
@@ -1395,12 +1403,12 @@ const [newEmpData, setNewEmpData] = useState([])
                                                 <tr>
                                                     <td colSpan="14" >
                                                         <div className="LoaderTDSatyle">
-                                                        <ClipLoader
-                                                            color="lightgrey"
-                                                            loading
-                                                            size={30}
-                                                            aria-label="Loading Spinner"
-                                                            data-testid="loader"
+                                                            <ClipLoader
+                                                                color="lightgrey"
+                                                                loading
+                                                                size={30}
+                                                                aria-label="Loading Spinner"
+                                                                data-testid="loader"
                                                             />
                                                         </div>
                                                     </td>
@@ -2562,10 +2570,10 @@ const [newEmpData, setNewEmpData] = useState([])
                                     <div className='form-group'>
                                         <label for="exampleFormControlInput1" class="form-label">Status</label>
                                         <select class="form-select form-select-md" aria-label="Default select example"
-                                        value={selectedStatus}
-                                        onChange={(e)=>{
-                                            setSelectedStatus(e.target.value)
-                                        }}>
+                                            value={selectedStatus}
+                                            onChange={(e) => {
+                                                setSelectedStatus(e.target.value)
+                                            }}>
                                             <option selected value='Not Picked Up'>Not Picked Up</option>
                                             <option value="Busy">Busy</option>
                                             <option value="Junk">Junk</option>
@@ -2612,15 +2620,15 @@ const [newEmpData, setNewEmpData] = useState([])
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
-                                    <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
-                                    <select class="form-select form-select-md" aria-label="Default select example"
-                                        value={selectedBDEName}
-                                        onChange={(e)=>{
-                                            setSelectedBDEName(e.target.value)
-                                        }}>
+                                        <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedBDEName}
+                                            onChange={(e) => {
+                                                setSelectedBDEName(e.target.value)
+                                            }}>
                                             <option>Select BDE...</option>
-                                            {newEmpData && newEmpData.map((item)=>(
-                                            <option value={item.ename}>{item.ename}</option>))} 
+                                            {newEmpData && newEmpData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>))}
                                         </select>
                                     </div>
                                 </div>
@@ -2628,10 +2636,10 @@ const [newEmpData, setNewEmpData] = useState([])
                                     <div className='form-group'>
                                         <label for="assignon" class="form-label">Assign On</label>
                                         <input type="date" class="form-control" id="assignon"
-                                        value={selectedAssignDate}
-                                        placeholder="dd-mm-yyyy"
-                                        defaultValue={null}
-                                        onChange={(e)=>setSelectedAssignDate(e.target.value)} />
+                                            value={selectedAssignDate}
+                                            placeholder="dd-mm-yyyy"
+                                            defaultValue={null}
+                                            onChange={(e) => setSelectedAssignDate(e.target.value)} />
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
@@ -2639,30 +2647,31 @@ const [newEmpData, setNewEmpData] = useState([])
                                     <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedYear}
-                                            onChange={(e)=>{
-                                                setSelectedYear(e.target.value)
-                                            }}>
+                                                value={selectedYear}
+                                                onChange={(e) => {
+                                                    setSelectedYear(e.target.value)
+                                                }}>
                                                 <option>Select Year...</option>
-                                                {years.length !== 0 && years.map((item)=>(
+                                                {years.length !== 0 && years.map((item) => (
                                                     <option>{item}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedMonth}
-                                            onChange={(e)=>{
-                                                setSelectedMonth(e.target.value)}}>
+                                                value={selectedMonth}
+                                                onChange={(e) => {
+                                                    setSelectedMonth(e.target.value)
+                                                }}>
                                                 <option>Select Month...</option>
-                                                {months && months.map((item)=>(
+                                                {months && months.map((item) => (
                                                     <option value={item}>{item}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example">
-                                              <option>Select Date...</option>
+                                                <option>Select Date...</option>
                                             </select>
                                         </div>
                                     </div>
@@ -2671,20 +2680,20 @@ const [newEmpData, setNewEmpData] = useState([])
                                     <div className='form-group'>
                                         <label for="Uploadedby" class="form-label">Uploaded By</label>
                                         <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
-                                        value={selectedAdminName}
-                                        onChange={(e)=>{
-                                            setSelectedAdminName(e.target.value)
-                                        }} />
+                                            value={selectedAdminName}
+                                            onChange={(e) => {
+                                                setSelectedAdminName(e.target.value)
+                                            }} />
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
                                         <label for="Uploadon" class="form-label">Uploaded On</label>
-                                        <input type="date" class="form-control" id="Uploadon" 
-                                        value={selectedUploadedDate}
-                                        defaultValue={null}
-                                        placeholder="dd-mm-yyyy"
-                                        onChange={(e)=>setSelectedUploadedDate(e.target.value)} />
+                                        <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedUploadedDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedUploadedDate(e.target.value)} />
                                     </div>
                                 </div>
                             </div>
