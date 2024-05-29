@@ -302,135 +302,284 @@ router.get("/sort-leads-inco-date", async (req, res) => {
 });
 
 //-------------------api to filter leads-----------------------------------
+// router.get('/filter-leads', async (req, res) => {
+//   const { selectedStatus,
+//     selectedState,
+//     selectedNewCity,
+//     selectedBDEName,
+//     selectedAssignDate,
+//     selectedUploadedDate,
+//     selectedAdminName,
+//     selectedYear,
+//     selectedCompanyIncoDate } = req.query;
+//   try {
+//     let query = {};
+//     if (selectedStatus) {
+//       if (selectedStatus === 'Not Picked Up' ||
+//         selectedStatus === 'Busy' ||
+//         selectedStatus === 'Junk' ||
+//         selectedStatus === 'Not Interested' ||
+//         selectedStatus === 'Untouched' ||
+//         selectedStatus === 'Interested' ||
+//         selectedStatus === 'Matured' ||
+//         selectedStatus === 'FollowUp') {
+//         query.Status = selectedStatus;
+//       }
+//     }
+
+//     if (selectedState) {
+//       if (!query.Status) {
+//         query.State = selectedState;
+//       } else {
+//         query = { Status: selectedStatus, State: selectedState };
+//       }
+//     }
+
+//     if (selectedNewCity) {
+//       if (!query.Status || !query.State) {
+//         query.City = selectedNewCity;
+//       } else {
+//         query = { Status: selectedStatus, State: selectedState, City: selectedNewCity };
+//       }
+//     }
+
+//     if (selectedBDEName && selectedBDEName.trim() !== '') {
+
+//       if (!query.Status || !query.State || !query.City) {
+//         query.ename = selectedBDEName;
+//       } else {
+//         query = { Status: selectedStatus, State: selectedState, City: selectedNewCity, ename: selectedBDEName };
+//       }
+//     }
+//     if (selectedAssignDate) {
+//       // const startDate = new Date(selectedAssignDate);
+//       // const endDate = new Date(selectedAssignDate);
+//       // endDate.setDate(endDate.getDate() + 1);
+//       // console.log(endDate)
+//       if (!query.Status ||
+//         !query.State ||
+//         !query.City || !
+//         query.ename) {
+//         query.AssignDate = {
+//           $gte: new Date(selectedAssignDate).toISOString(),
+//           $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//         };
+//       } else {
+//         query = {
+//           Status: selectedStatus,
+//           State: selectedState,
+//           City: selectedNewCity,
+//           ename: selectedBDEName,
+//           AssignDate: {
+//             $gte: new Date(selectedAssignDate).toISOString(),
+//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           }
+//         }; // Closing brace was missing here
+//       }
+//     }
+//     if (selectedAdminName && selectedAdminName.trim() !== '') {
+//       const adminNameRegex = new RegExp(selectedAdminName, 'i');
+//       if (!query.Status ||
+//         !query.State ||
+//         !query.City ||
+//         !query.AssignDate ||
+//         !query.ename) {
+//         query.UploadedBy = adminNameRegex;
+//       } else {
+//         query = {
+//           Status: selectedStatus,
+//           State: selectedState,
+//           City: selectedNewCity,
+//           ename: selectedBDEName,
+//           AssignDate: {
+//             $gte: new Date(selectedAssignDate).toISOString(),
+//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           },
+//           UploadedBy: adminNameRegex
+//         };
+//       }
+//     }
+//     if (selectedUploadedDate) {
+//       // const startDate = new Date(selectedUploadedDate);
+//       // const endDate = new Date(selectedUploadedDate);
+//       // endDate.setDate(endDate.getDate() + 1);
+//       if (!query.Status ||
+//         !query.State ||
+//         !query.City ||
+//         !query.ename ||
+//         !query.AssignDate) {
+//         query.AssignDate = {
+//           $gte: new Date(selectedUploadedDate).toISOString(),
+//           $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//         };
+//       } else {
+//         query = {
+//           Status: selectedStatus,
+//           State: selectedState,
+//           City: selectedNewCity,
+//           ename: selectedBDEName,
+//           AssignDate: {
+//             $gte: new Date(selectedAssignDate).toISOString(),
+//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           },
+//           UploadedBy: adminNameRegex,
+//           AssignDate: {
+//             $gte: new Date(selectedUploadedDate).toISOString(),
+//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//           }
+//         }; // Closing brace was missing here
+//       }
+//     }
+//     if (selectedYear) {
+//       const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//       const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//       if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName) {
+//         query["Company Incorporation Date  "] = {
+//           $gte: yearStartDate,
+//           $lt: yearEndDate
+//         };
+//       } else {
+//         query = {
+//           Status: selectedStatus,
+//           State: selectedState,
+//           City: selectedNewCity,
+//           ename: selectedBDEName,
+//           AssignDate: {
+//             $gte: new Date(selectedAssignDate).toISOString(),
+//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           },
+//           UploadedBy: adminNameRegex,
+//           AssignDate: {
+//             $gte: new Date(selectedUploadedDate).toISOString(),
+//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//           },
+//           ["Company Incorporation Date  "]: {
+//             $gte: yearStartDate,
+//             $lt: yearEndDate
+//           }
+//         }; // Closing brace was missing here
+//       }
+//     }
+
+//     if (selectedCompanyIncoDate) {
+//       const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//       const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//       if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName) {
+//         query["Company Incorporation Date  "] = {
+//           $gte: new Date(selectedCompanyIncoDate).toISOString(),
+//           $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+//         };
+//       } else {
+//         query = {
+//           Status: selectedStatus,
+//           State: selectedState,
+//           City: selectedNewCity,
+//           ename: selectedBDEName,
+//           AssignDate: {
+//             $gte: new Date(selectedAssignDate).toISOString(),
+//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           },
+//           UploadedBy: adminNameRegex,
+//           AssignDate: {
+//             $gte: new Date(selectedUploadedDate).toISOString(),
+//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//           },
+//           ["Company Incorporation Date  "]: {
+//             $gte: yearStartDate,
+//             $lt: yearEndDate
+//           },
+//           ["Company Incorporation Date  "]: {
+//             $gte: new Date(selectedCompanyIncoDate).toISOString(),
+//             $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+//           }
+//         }; // Closing brace was missing here
+//       }
+//     }
+
+//     console.log(query);
+
+//     const employees = await CompanyModel.find(query).limit(500).lean();
+//     res.status(200).json(employees);
+
+//   } catch (error) {
+//     console.error('Error searching leads:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
 router.get('/filter-leads', async (req, res) => {
-  const { selectedStatus, selectedState, selectedNewCity, selectedBDEName, selectedAssignDate, selectedUploadedDate,selectedAdminName,selectedYear} = req.query;
+  const {
+    selectedStatus,
+    selectedState,
+    selectedNewCity,
+    selectedBDEName,
+    selectedAssignDate,
+    selectedUploadedDate,
+    selectedAdminName,
+    selectedYear,
+    selectedCompanyIncoDate
+  } = req.query;
+
   try {
     let query = {};
+
+    // Filter by Status
     if (selectedStatus) {
-      if (selectedStatus === 'Not Picked Up' ||
-          selectedStatus === 'Busy' ||
-          selectedStatus === 'Junk' ||
-          selectedStatus === 'Not Interested' ||
-          selectedStatus === 'Untouched' ||
-          selectedStatus === 'Interested' ||
-          selectedStatus === 'Matured' ||
-          selectedStatus === 'FollowUp') {
-        query.Status = selectedStatus;
-      }
+      query.Status = selectedStatus;
     }
 
+    // Filter by State
     if (selectedState) {
-      if (!query.Status) {
-        query.State = selectedState;
-      } else {
-        query = { Status: selectedStatus, State: selectedState };
-      }
+      query.State = selectedState;
     }
 
+    // Filter by City
     if (selectedNewCity) {
-      if (!query.Status || !query.State) {
-        query.City = selectedNewCity;
-      } else {
-        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity };
-      }
+      query.City = selectedNewCity;
     }
 
+    // Filter by BDE Name (case-insensitive)
     if (selectedBDEName && selectedBDEName.trim() !== '') {
-
-      if (!query.Status || !query.State || !query.City) {
-        query.ename = selectedBDEName;
-      } else {
-        query = { Status: selectedStatus, State: selectedState, City: selectedNewCity, ename: selectedBDEName };
-      }
+      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
     }
 
+    // Filter by Assign Date
     if (selectedAssignDate) {
-      const startDate = new Date(selectedAssignDate);
-      const endDate = new Date(selectedAssignDate);
-      endDate.setDate(endDate.getDate() + 1);
-      if (!query.Status || !query.State || !query.City || !query.ename) {
-        query.AssignDate = {
-          $gte: startDate.toISOString(),
-          $lt: endDate.toISOString()
-        };
-      } else {
-        query = {
-          Status: selectedStatus,
-          State: selectedState,
-          City: selectedNewCity,
-          ename: selectedBDEName,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          }
-        }; // Closing brace was missing here
-      }
-    }
-    if (selectedAdminName && selectedAdminName.trim() !== '') {
-      const adminNameRegex = new RegExp(selectedAdminName, 'i');
-      if (!query.Status || !query.State || !query.City || !query.AssignDate || !query.ename) {
-        query.UploadedBy = adminNameRegex;
-      } else {
-        query = { Status: selectedStatus, 
-          State: selectedState, 
-          City: selectedNewCity, 
-          ename: selectedBDEName ,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          },
-          UploadedBy:adminNameRegex };
-      }
-    }
-    if (selectedUploadedDate) {
-      const startDate = new Date(selectedUploadedDate);
-      const endDate = new Date(selectedUploadedDate);
-      endDate.setDate(endDate.getDate() + 1);
-      if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate) {
-        query.AssignDate = {
-          $gte: startDate.toISOString(),
-          $lt: endDate.toISOString()
-        };
-      } else {
-        query = {
-          Status: selectedStatus,
-          State: selectedState,
-          City: selectedNewCity,
-          ename: selectedBDEName,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          },
-          UploadedBy:adminNameRegex,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          }
-        }; // Closing brace was missing here
-      }
+      query.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      };
     }
 
-    if(selectedYear){
-      if(!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName){
-        query["Company Incorporation Date  "] = selectedYear
-      }else{
-        query = {
-          Status: selectedStatus,
-          State: selectedState,
-          City: selectedNewCity,
-          ename: selectedBDEName,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          },
-          UploadedBy:adminNameRegex,
-          AssignDate: {
-            $gte: startDate.toISOString(),
-            $lt: endDate.toISOString()
-          },
-          ["Company Incorporation Date  "]:selectedYear
-        }; // Closing brace was missing here
-      }
+    // Filter by Admin Name (case-insensitive)
+    if (selectedAdminName && selectedAdminName.trim() !== '') {
+      query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+    }
+
+    // Filter by Uploaded Date
+    if (selectedUploadedDate) {
+      query.AssignDate = {
+        $gte: new Date(selectedUploadedDate).toISOString(),
+        $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+      };
+    }
+
+    // Filter by Company Incorporation Year
+    if (selectedYear) {
+      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+      query["Company Incorporation Date  "] = {
+        $gte: yearStartDate,
+        $lt: yearEndDate
+      };
+    }
+
+    // Filter by Specific Company Incorporation Date
+    if (selectedCompanyIncoDate) {
+      query["Company Incorporation Date  "] = {
+        $gte: new Date(selectedCompanyIncoDate).toISOString(),
+        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+      };
     }
 
     console.log(query);
@@ -443,6 +592,7 @@ router.get('/filter-leads', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
@@ -462,7 +612,7 @@ router.get('/search-leads', async (req, res) => {
         // Perform database query to search for leads matching the searchQuery
         const query = {};
         query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
-        
+
         searchResults = await CompanyModel.find(query).limit(500).lean();
       } else {
         // If search query is empty, fetch 500 data from CompanyModel

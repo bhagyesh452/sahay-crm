@@ -40,8 +40,13 @@ import { BsFillArrowLeftSquareFill } from 'react-icons/bs';
 import { IoIosClose } from "react-icons/io";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { Drawer, colors } from "@mui/material";
+import { Country, State, City } from 'country-state-city';
 
 function ManageLeads() {
+
+
+
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [data, setData] = useState([])
     const [mainData, setmainData] = useState([])
@@ -68,6 +73,7 @@ function ManageLeads() {
         assignDate: "none"
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
+    const [isFilter, setIsFilter] = useState(false)
 
 
 
@@ -110,11 +116,14 @@ function ManageLeads() {
         }
     };
 
+    //--------------------function to fetch employee data ------------------------------
+    const [newEmpData, setNewEmpData] = useState([])
     const fetchEmployeesData = async () => {
         try {
 
             const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
+            setNewEmpData(response.data.filter(obj => obj.designation === 'Sales Executive' || obj.designation === 'Sales Manager'))
 
         } catch (error) {
             console.log("Error fetching data", error.message)
@@ -134,14 +143,14 @@ function ManageLeads() {
     };
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
     useEffect(() => {
-        if (!isSearching) {
+        if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
             fetchRemarksHistory()
         }
 
-    }, [dataStatus, isSearching , sortPattern])
+    }, [dataStatus, isSearching, sortPattern, isFilter])
 
     const handleNextPage = () => {
         setCurrentPage(currentPage + 1);
@@ -1035,6 +1044,132 @@ function ManageLeads() {
         setFilteredRemarks([]);
     };
 
+     //------------------filter functions------------------------
+     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+
+     const stateList = State.getStatesOfCountry("IN")
+     const cityList = City.getCitiesOfCountry("IN")
+     const [selectedStateCode, setSelectedStateCode] = useState("")
+     const [selectedState, setSelectedState] = useState("")
+     const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+     const [selectedNewCity, setSelectedNewCity] = useState("")
+     const [selectedYear, setSelectedYear] = useState("")
+     const [selectedMonth, setSelectedMonth] = useState("")
+     const [selectedStatus, setSelectedStatus] = useState("")
+     const [selectedBDEName, setSelectedBDEName] = useState("")
+     const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+     const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
+     const [selectedAdminName, setSelectedAdminName] = useState("")
+     const [daysInMonth, setDaysInMonth] = useState([]);
+     const [selectedDate, setSelectedDate] = useState(0)
+     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
+ 
+     const currentYear = new Date().getFullYear();
+     const months = [
+         "January", "February", "March", "April", "May", "June",
+         "July", "August", "September", "October", "November", "December"
+     ];
+     //Create an array of years from 2018 to the current year
+     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+     useEffect(() => {
+         let monthIndex;
+         if (selectedYear && selectedMonth) {
+             monthIndex = months.indexOf(selectedMonth);
+             console.log(monthIndex)
+             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+         } else {
+             setDaysInMonth([]);
+         }
+     }, [selectedYear, selectedMonth]);
+ 
+     useEffect(() => {
+         if (selectedYear && selectedMonth && selectedDate) {
+           const monthIndex = months.indexOf(selectedMonth) + 1;
+           const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+           const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+           const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+           setSelectedCompanyIncoDate(companyIncoDate);
+         }
+       }, [selectedYear, selectedMonth, selectedDate]);
+ 
+    
+ 
+     const handleFilterData = async () => {
+         try {
+             setIsFilter(true);
+             
+             const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+                 params: { 
+                     selectedStatus,
+                     selectedState, 
+                     selectedNewCity, 
+                     selectedBDEName, 
+                     selectedAssignDate, 
+                     selectedUploadedDate, 
+                     selectedAdminName, 
+                     selectedYear,
+                     selectedCompanyIncoDate 
+                 }
+             });
+     
+             if (!selectedStatus &&
+                 !selectedState &&
+                 !selectedNewCity &&
+                 !selectedBDEName &&
+                 !selectedAssignDate &&
+                 !selectedUploadedDate &&
+                 !selectedAdminName &&
+                 !selectedYear &&
+                 !selectedCompanyIncoDate) {
+                 // If search query is empty, reset data to mainData
+                 setIsFilter(false);
+                 fetchData(1, latestSortCount);
+             } else {
+                 // Filter the response data
+                 const unassignedData = response.data.filter(item => item.ename === 'Not Alloted');
+                 const assignedData = response.data.filter(item => item.ename !== 'Not Alloted');
+     
+                 // Update the state with the bifurcated data
+                 setData(response.data);  // Set entire filtered data
+     
+                 // Optionally, set the counts and status based on the filtered data
+                 if (unassignedData.length > 0) {
+                     setDataStatus('Unassigned');
+                     setTotalCompaniesUnaasigned(unassignedData.length);
+                     setTotalCompaniesAssigned(assignedData.length);
+                 } else {
+                     setDataStatus('Assigned');
+                     setTotalCompaniesAssigned(assignedData.length);
+                     setTotalCompaniesUnaasigned(unassignedData.length);
+                 }
+     
+                 setOpenFilterDrawer(false);
+             }
+         } catch (error) {
+             console.log('Error applying filter', error.message);
+         }
+     };
+
+     const handleClearFilter = () => {
+        setIsFilter(false)
+        setSelectedStatus('')
+        setSelectedState('')
+        setSelectedNewCity('')
+        setSelectedBDEName('')
+        setSelectedAssignDate(null)
+        setSelectedUploadedDate(null)
+        setSelectedAdminName('')
+        setSelectedYear('')
+        setSelectedMonth('')
+        setSelectedDate(0)
+        setCompanyIncoDate(null)
+    }
+    const functionCloseFilterDrawer = () => {
+        setOpenFilterDrawer(false)
+    }
+
+
     const dataManagerName = localStorage.getItem("dataManagerName");
     return (
         <div>
@@ -1051,7 +1186,7 @@ function ManageLeads() {
                                     </button>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" class="btn mybtn">
+                                <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
                                         <span><IoFilterOutline className='mr-1' /></span>
                                         Filter
                                     </button>
@@ -2520,7 +2655,178 @@ function ManageLeads() {
                     </div>
                 </DialogContent>
             </Dialog>
+ {/* //------------------------------drawer for filter-------------------------------------- */}
 
+ <Drawer
+                style={{ top: "50px" }}
+                anchor="left"
+                open={openFilterDrawer}
+                onClose={functionCloseFilterDrawer}>
+                <div style={{ width: "31em" }}>
+                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                        <h2 className="title m-0">
+                            Filters
+                        </h2>
+                        <div>
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                                <IoIosClose style={{
+                                    height: "36px",
+                                    width: "32px",
+                                    color: "grey"
+                                }} />
+                            </button>
+                        </div>
+                    </div>
+                    <hr style={{ margin: "0px" }} />
+                    <div className="body-Drawer">
+                        <div className='container-xl mt-2 mb-2'>
+                            <div className='row'>
+                                <div className='col-sm-12 mt-3'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedStatus}
+                                            onChange={(e) => {
+                                                setSelectedStatus(e.target.value)
+                                            }}>
+                                            <option selected value='Not Picked Up'>Not Picked Up</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Matured">Matured</option>
+                                            <option value="FollowUp">Followup</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='d-flex align-items-center justify-content-between'>
+                                        <div className='form-group w-50 mr-1'>
+                                            <label for="exampleFormControlInput1" class="form-label">State</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedState}
+                                                onChange={(e) => {
+                                                    setSelectedState(e.target.value)
+                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                                    //handleSelectState(e.target.value)
+                                                }}>
+                                                <option value=''>State</option>
+                                                {stateList.length !== 0 && stateList.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='form-group w-50'>
+                                            <label for="exampleFormControlInput1" class="form-label">City</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedNewCity}
+                                                onChange={(e) => {
+                                                    setSelectedNewCity(e.target.value)
+                                                }}>
+                                                <option value="">City</option>
+                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedBDEName}
+                                            onChange={(e) => {
+                                                setSelectedBDEName(e.target.value)
+                                            }}>
+                                            <option value=''>Select BDE</option>
+                                            {newEmpData && newEmpData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="assignon" class="form-label">Assign On</label>
+                                        <input type="date" class="form-control" id="assignon"
+                                            value={selectedAssignDate}
+                                            placeholder="dd-mm-yyyy"
+                                            defaultValue={null}
+                                            onChange={(e) => setSelectedAssignDate(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <label class="form-label">Incorporation Date</label>
+                                    <div className='row align-items-center justify-content-between'>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedYear}
+                                                onChange={(e) => {
+                                                    setSelectedYear(e.target.value)
+                                                }}>
+                                                <option value=''>Year</option>
+                                                {years.length !== 0 && years.map((item) => (
+                                                    <option>{item}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedMonth}
+                                                disabled={selectedYear === ""}
+                                                onChange={(e) => {
+                                                    setSelectedMonth(e.target.value)
+                                                }}>
+                                                <option value=''>Month</option>
+                                                {months && months.map((item) => (
+                                                    <option value={item}>{item}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                disabled={selectedMonth === ''}
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.target.value)}>
+                                                <option value=''>Date</option>
+                                                {daysInMonth.map((day) => (
+                                                    <option key={day} value={day}>{day}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadedby" class="form-label">Uploaded By</label>
+                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
+                                            value={selectedAdminName}
+                                            onChange={(e) => {
+                                                setSelectedAdminName(e.target.value)
+                                            }} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Uploaded On</label>
+                                        <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedUploadedDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedUploadedDate(e.target.value)} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                        <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+                        <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
+                    </div>
+                </div>
+            </Drawer>
 
         </div>
     )

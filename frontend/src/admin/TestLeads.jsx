@@ -1048,8 +1048,7 @@ function TestLeads() {
         openchangeRemarks(false);
         setFilteredRemarks([]);
     };
-    //-----------------------------function for filter -------------------------------
-
+   
 
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
@@ -1067,6 +1066,9 @@ function TestLeads() {
     const [selectedAssignDate, setSelectedAssignDate] = useState(null)
     const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
     const [selectedAdminName, setSelectedAdminName] = useState("")
+    const [daysInMonth, setDaysInMonth] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(0)
+    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
 
     const currentYear = new Date().getFullYear();
     const months = [
@@ -1075,17 +1077,48 @@ function TestLeads() {
     ];
     //Create an array of years from 2018 to the current year
     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+    useEffect(() => {
+        let monthIndex;
+        if (selectedYear && selectedMonth) {
+            monthIndex = months.indexOf(selectedMonth);
+            console.log(monthIndex)
+            const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+            setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+        } else {
+            setDaysInMonth([]);
+        }
+    }, [selectedYear, selectedMonth]);
 
+    useEffect(() => {
+        if (selectedYear && selectedMonth && selectedDate) {
+          const monthIndex = months.indexOf(selectedMonth) + 1;
+          const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+          const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+          const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+          setSelectedCompanyIncoDate(companyIncoDate);
+        }
+      }, [selectedYear, selectedMonth, selectedDate]);
 
-
+    console.log(selectedCompanyIncoDate)
 
     const handleFilterData = async () => {
         try {
-            setIsFilter(true)
-            console.log(selectedStatus)
-            const response = await axios.get(`${secretKey}/company-data/filter-leads/`, {
-                params: { selectedStatus, selectedState, selectedNewCity, selectedBDEName, selectedAssignDate, selectedUploadedDate, selectedAdminName, selectedYear }
-            })
+            setIsFilter(true);
+            
+            const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+                params: { 
+                    selectedStatus,
+                    selectedState, 
+                    selectedNewCity, 
+                    selectedBDEName, 
+                    selectedAssignDate, 
+                    selectedUploadedDate, 
+                    selectedAdminName, 
+                    selectedYear,
+                    selectedCompanyIncoDate 
+                }
+            });
+    
             if (!selectedStatus &&
                 !selectedState &&
                 !selectedNewCity &&
@@ -1093,28 +1126,38 @@ function TestLeads() {
                 !selectedAssignDate &&
                 !selectedUploadedDate &&
                 !selectedAdminName &&
-                !selectedYear) {
+                !selectedYear &&
+                !selectedCompanyIncoDate) {
                 // If search query is empty, reset data to mainData
-                setIsFilter(false)
-                fetchData(1, latestSortCount)
+                setIsFilter(false);
+                fetchData(1, latestSortCount);
             } else {
-                // Set data to the search results
-
-                setData(response.data);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
-                    } else {
-                        setDataStatus('Assigned')
-                    }
+                // Filter the response data
+                const unassignedData = response.data.filter(item => item.ename === 'Not Alloted');
+                const assignedData = response.data.filter(item => item.ename !== 'Not Alloted');
+    
+                // Update the state with the bifurcated data
+                setData(response.data);  // Set entire filtered data
+    
+                // Optionally, set the counts and status based on the filtered data
+                if (unassignedData.length > 0) {
+                    setDataStatus('Unassigned');
+                    setTotalCompaniesUnaasigned(unassignedData.length);
+                    setTotalCompaniesAssigned(assignedData.length);
+                } else {
+                    setDataStatus('Assigned');
+                    setTotalCompaniesAssigned(assignedData.length);
+                    setTotalCompaniesUnaasigned(unassignedData.length);
                 }
+    
+                setOpenFilterDrawer(false);
             }
-            setOpenFilterDrawer(false);
-
         } catch (error) {
-            console.log('Error applying filter', error.message)
+            console.log('Error applying filter', error.message);
         }
-    }
+    };
+    
+    
 
     const handleClearFilter = () => {
         setIsFilter(false)
@@ -1126,12 +1169,15 @@ function TestLeads() {
         setSelectedUploadedDate(null)
         setSelectedAdminName('')
         setSelectedYear('')
+        setSelectedMonth('')
+        setSelectedDate(0)
+        setCompanyIncoDate(null)
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
 
-    console.log(isFilter)
+
 
     return (
         <div>
@@ -2597,7 +2643,7 @@ function TestLeads() {
                                                     setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
                                                     //handleSelectState(e.target.value)
                                                 }}>
-                                                <option>Select State...</option>
+                                                <option value=''>State</option>
                                                 {stateList.length !== 0 && stateList.map((item) => (
                                                     <option value={item.name}>{item.name}</option>
                                                 ))}
@@ -2610,7 +2656,7 @@ function TestLeads() {
                                                 onChange={(e) => {
                                                     setSelectedNewCity(e.target.value)
                                                 }}>
-                                                <option>Select City...</option>
+                                                <option value="">City</option>
                                                 {selectedCity.lenth !== 0 && selectedCity.map((item) => (
                                                     <option value={item.name}>{item.name}</option>
                                                 ))}
@@ -2626,7 +2672,7 @@ function TestLeads() {
                                             onChange={(e) => {
                                                 setSelectedBDEName(e.target.value)
                                             }}>
-                                            <option>Select BDE...</option>
+                                            <option value=''>Select BDE</option>
                                             {newEmpData && newEmpData.map((item) => (
                                                 <option value={item.ename}>{item.ename}</option>))}
                                         </select>
@@ -2651,7 +2697,7 @@ function TestLeads() {
                                                 onChange={(e) => {
                                                     setSelectedYear(e.target.value)
                                                 }}>
-                                                <option>Select Year...</option>
+                                                <option value=''>Year</option>
                                                 {years.length !== 0 && years.map((item) => (
                                                     <option>{item}</option>
                                                 ))}
@@ -2660,18 +2706,25 @@ function TestLeads() {
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
                                                 value={selectedMonth}
+                                                disabled={selectedYear === ""}
                                                 onChange={(e) => {
                                                     setSelectedMonth(e.target.value)
                                                 }}>
-                                                <option>Select Month...</option>
+                                                <option value=''>Month</option>
                                                 {months && months.map((item) => (
                                                     <option value={item}>{item}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example">
-                                                <option>Select Date...</option>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                disabled={selectedMonth === ''}
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.target.value)}>
+                                                <option value=''>Date</option>
+                                                {daysInMonth.map((day) => (
+                                                    <option key={day} value={day}>{day}</option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
