@@ -1170,10 +1170,10 @@ function TestLeads() {
                 if (response.data.length > 0) {
                     if (response.data[0].ename === 'Not Alloted') {
                         setDataStatus('Unassigned')
-                        setTotalCount(parseInt(response.data.unassigned.length/500))
+                        
                     } else {
                         setDataStatus('Assigned')
-                        setTotalCount(parseInt(response.data.assigned.length/500))
+                       
                     }
                 }
                 setOpenFilterDrawer(false);
@@ -1182,8 +1182,6 @@ function TestLeads() {
             console.log('Error applying filter', error.message);
         }
     };
-
-
 
     const handleClearFilter = () => {
         setIsFilter(false)

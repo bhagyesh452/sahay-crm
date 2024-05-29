@@ -587,24 +587,49 @@ router.get('/filter-leads', async (req, res) => {
 
     console.log(query);
 
-    // Get the total count of documents that match the query
     const totalDocuments = await CompanyModel.countDocuments(query);
 
-    // Fetch the documents with pagination
-    const employees = await CompanyModel.find(query)
-      .skip(skip)
-      .limit()
-      .lean();
+        // Fetch the documents with pagination
+        const batchSize = 500; // Batch size for processing
+        let totalDocumentsProcessed = 0;
+        let allAssigned = [];
+        let allUnassigned = [];
 
-    const assigned = employees.filter(item => item.ename !== 'Not Alloted');
-    const unassigned = employees.filter(item => item.ename === 'Not Alloted');
+        // Process documents in batches
+        while (true) {
+            const employeesBatch = await CompanyModel.find(query)
+                .skip(skip + totalDocumentsProcessed)
+                .limit(batchSize)
+                .lean();
 
-    res.status(200).json({
-      assigned,
-      unassigned,
-      totalPages: Math.ceil(totalDocuments / limit),  // Calculate total pages
-      currentPage: page  // Current page number
-    });
+            // Break if no more documents in the batch
+            if (employeesBatch.length === 0) {
+                break;
+            }
+
+            const assignedBatch = employeesBatch.filter(item => item.ename !== 'Not Alloted');
+            const unassignedBatch = employeesBatch.filter(item => item.ename === 'Not Alloted');
+
+            allAssigned = allAssigned.concat(assignedBatch);
+            allUnassigned = allUnassigned.concat(unassignedBatch);
+
+            totalDocumentsProcessed += employeesBatch.length;
+
+            // Break if all relevant documents processed
+            if (employeesBatch.length < batchSize) {
+                break;
+            }
+        }
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalDocuments / limit);
+
+        res.status(200).json({
+            assigned: allAssigned,
+            unassigned: allUnassigned,
+            totalPages: totalPages,
+            currentPage: page
+        });
 
   } catch (error) {
     console.error('Error searching leads:', error);
