@@ -739,7 +739,7 @@ function EmployeeForwardedReport() {
               )}
             >
               <option value="Today">Today</option>
-              <option value="This Month">This Month</option>
+              <option value="This Month" selected>This Month</option>
               <option value="Last Month">Last Month</option>
             </select>
           </div>
