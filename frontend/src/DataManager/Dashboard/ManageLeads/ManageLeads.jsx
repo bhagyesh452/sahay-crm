@@ -2689,7 +2689,8 @@ function ManageLeads() {
                                             onChange={(e) => {
                                                 setSelectedStatus(e.target.value)
                                             }}>
-                                            <option selected value='Not Picked Up'>Not Picked Up</option>
+                                            <option selected value='Select Status'>Select Status</option>
+                                            <option value='Not Picked Up'>Not Picked Up</option>
                                             <option value="Busy">Busy</option>
                                             <option value="Junk">Junk</option>
                                             <option value="Not Interested">Not Interested</option>
