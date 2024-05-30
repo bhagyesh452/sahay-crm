@@ -667,11 +667,25 @@ function TestLeads() {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(data.findIndex((row) => row._id === id));
+        let index;
+        
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                index = unAssignedData.findIndex((row) => row._id === id);
+            } else if (dataStatus === 'Assigned') {
+                index = assignedData.findIndex((row) => row._id === id);
+            }
+        } else {
+            index = data.findIndex((row) => row._id === id);
+        }
+        
+        setStartRowIndex(index);
     };
-
+    
+console.log(data)
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
+        
         if (startRowIndex !== null) {
             const endRowIndex = data.findIndex((row) => row._id === id);
             const selectedRange = [];
@@ -1157,23 +1171,21 @@ function TestLeads() {
                 setIsFilter(false);
                 fetchData(1, latestSortCount);
             } else {
-                console.log(response.data.assigned)
-                setTotalCompaniesAssigned(response.data.assigned.length)
-                setTotalCompaniesUnaasigned(response.data.unassigned.length)
+                console.log(response.data.unassigned)
+                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCount(response.data.totalPages);  // Ensure your backend provides the total page count
 
-                setData(response.data);  // Optionally set all data
+                //setData(response.data);  // Optionally set all data
                 setCurrentPage(response.data.currentPage);  // Reset to the first page
                 //setData(response.data.assigned);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
-                        
+                if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned');
                     } else {
-                        setDataStatus('Assigned')
-                       
+                        setDataStatus('Assigned');
                     }
                 }
                 setOpenFilterDrawer(false);
@@ -1182,6 +1194,10 @@ function TestLeads() {
             console.log('Error applying filter', error.message);
         }
     };
+
+    console.log(currentPage , "currentpage")
+    console.log("assigneddata" , assignedData)
+    console.log("unassigneddata" , unAssignedData)
 
     const handleClearFilter = () => {
         setIsFilter(false)

@@ -76,13 +76,13 @@ app.use(
   })
 );
 app.use('/api/admin-leads', AdminLeadsAPI);
-app.use("/api/remarks" , RemarksAPI);
-app.use("/api/bookings" , bookingsAPI)
-app.use('/api/company-data' , companyAPI)
-app.use('/api/requests' , RequestAPI)
-app.use('/api/teams' , TeamsAPI)
-app.use('/api/bdm-data' , bdmAPI)
-app.use('/api/projection' , ProjectionAPI)
+app.use("/api/remarks", RemarksAPI);
+app.use("/api/bookings", bookingsAPI)
+app.use('/api/company-data', companyAPI)
+app.use('/api/requests', RequestAPI)
+app.use('/api/teams', TeamsAPI)
+app.use('/api/bdm-data', bdmAPI)
+app.use('/api/projection', ProjectionAPI)
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -101,9 +101,7 @@ var socketIO = require("socket.io")(http, {
 // const server = http.createServer(app);
 // const io = socketIo(server);
 
-mongoose
-
-  .connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log("MongoDB is connected");
   })

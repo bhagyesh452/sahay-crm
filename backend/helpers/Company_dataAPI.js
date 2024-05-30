@@ -258,49 +258,6 @@ router.get('/new-leads', async (req, res) => {
   }
 });
 
-
-//---------api for sorting according to inco date----------------------
-
-router.get("/sort-leads-inco-date", async (req, res) => {
-  const { sortBy } = req.query;
-  console.log(sortBy); // Check if sortBy is correctly received
-
-  try {
-    let sortQuery = {};
-
-    switch (sortBy) {
-      case "ascending":
-        sortQuery = { ['Company Incorporation Date  ']: 1 }; // Sort by company incorporation date in ascending order
-
-        break;
-
-      case "descending":
-        sortQuery = { ['Company Incorporation Date  ']: -1 }; // Sort by company incorporation date in descending order
-
-        break;
-
-      case "none":
-        // Do nothing for none, return data as is
-        console.log("none chala");
-        break;
-
-      default:
-        // Handle default case if sortBy is not recognized
-        console.log("Invalid sortBy value");
-        break;
-    }
-
-    // Query the database with sorting applied
-    const sortedData = await CompanyModel.find().sort(sortQuery).limit(500).lean();
-
-    // Return sorted data
-    res.json({ data: sortedData });
-  } catch (error) {
-    console.error('Error fetching sorted data:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
 //   const { selectedStatus,
@@ -509,138 +466,82 @@ router.get("/sort-leads-inco-date", async (req, res) => {
 
 router.get('/filter-leads', async (req, res) => {
   const {
-    selectedStatus,
-    selectedState,
-    selectedNewCity,
-    selectedBDEName,
-    selectedAssignDate,
-    selectedUploadedDate,
-    selectedAdminName,
-    selectedYear,
-    selectedCompanyIncoDate,
+      selectedStatus,
+      selectedState,
+      selectedNewCity,
+      selectedBDEName,
+      selectedAssignDate,
+      selectedUploadedDate,
+      selectedAdminName,
+      selectedYear,
+      selectedCompanyIncoDate,
   } = req.query;
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
 
   try {
-    let query = {};
+      let query = {};
 
-    // Filter by Status
-    if (selectedStatus) {
-      query.Status = selectedStatus;
-    }
+      // Construct query object based on filters
+      if (selectedStatus) query.Status = selectedStatus;
+      if (selectedState) query.State = selectedState;
+      if (selectedNewCity) query.City = selectedNewCity;
+      if (selectedBDEName && selectedBDEName.trim() !== '') query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+      if (selectedAssignDate) {
+          query.AssignDate = {
+              $gte: new Date(selectedAssignDate).toISOString(),
+              $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+          };
+      }
+      if (selectedAdminName && selectedAdminName.trim() !== '') query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+      if (selectedUploadedDate) {
+          query.AssignDate = {
+              $gte: new Date(selectedUploadedDate).toISOString(),
+              $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+          };
+      }
+      if (selectedYear) {
+          const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+          const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+          query["Company Incorporation Date  "] = {
+              $gte: yearStartDate,
+              $lt: yearEndDate
+          };
+      }
+      if (selectedCompanyIncoDate) {
+          query["Company Incorporation Date  "] = {
+              $gte: new Date(selectedCompanyIncoDate).toISOString(),
+              $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+          };
+      }
 
-    // Filter by State
-    if (selectedState) {
-      query.State = selectedState;
-    }
+      console.log(query);
 
-    // Filter by City
-    if (selectedNewCity) {
-      query.City = selectedNewCity;
-    }
+      // Fetch assigned data
+      const assignedQuery = { ...query, ename: { $ne: 'Not Alloted' } };
+      const assignedCount = await CompanyModel.countDocuments(assignedQuery);
+      const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
 
-    // Filter by BDE Name (case-insensitive)
-    if (selectedBDEName && selectedBDEName.trim() !== '') {
-      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
-    }
+      // Fetch unassigned data
+      const unassignedQuery = { ...query, ename: 'Not Alloted' };
+      const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+      const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
 
-    // Filter by Assign Date
-    if (selectedAssignDate) {
-      query.AssignDate = {
-        $gte: new Date(selectedAssignDate).toISOString(),
-        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-      };
-    }
-
-    // Filter by Admin Name (case-insensitive)
-    if (selectedAdminName && selectedAdminName.trim() !== '') {
-      query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
-    }
-
-    // Filter by Uploaded Date
-    if (selectedUploadedDate) {
-      query.AssignDate = {
-        $gte: new Date(selectedUploadedDate).toISOString(),
-        $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-      };
-    }
-
-    // Filter by Company Incorporation Year
-    if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      query["Company Incorporation Date  "] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
-    }
-
-    // Filter by Specific Company Incorporation Date
-    if (selectedCompanyIncoDate) {
-      query["Company Incorporation Date  "] = {
-        $gte: new Date(selectedCompanyIncoDate).toISOString(),
-        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-      };
-    }
-
-    console.log(query);
-
-    const totalDocuments = await CompanyModel.countDocuments(query);
-
-        // Fetch the documents with pagination
-        const batchSize = 500; // Batch size for processing
-        let totalDocumentsProcessed = 0;
-        let allAssigned = [];
-        let allUnassigned = [];
-
-        // Process documents in batches
-        while (true) {
-            const employeesBatch = await CompanyModel.find(query)
-                .skip(skip + totalDocumentsProcessed)
-                .limit(batchSize)
-                .lean();
-
-            // Break if no more documents in the batch
-            if (employeesBatch.length === 0) {
-                break;
-            }
-
-            const assignedBatch = employeesBatch.filter(item => item.ename !== 'Not Alloted');
-            const unassignedBatch = employeesBatch.filter(item => item.ename === 'Not Alloted');
-
-            allAssigned = allAssigned.concat(assignedBatch);
-            allUnassigned = allUnassigned.concat(unassignedBatch);
-
-            totalDocumentsProcessed += employeesBatch.length;
-
-            // Break if all relevant documents processed
-            if (employeesBatch.length < batchSize) {
-                break;
-            }
-        }
-
-        // Calculate total pages
-        const totalPages = Math.ceil(totalDocuments / limit);
-
-        res.status(200).json({
-            assigned: allAssigned,
-            unassigned: allUnassigned,
-            totalPages: totalPages,
-            currentPage: page
-        });
+      res.status(200).json({
+          assigned: assignedData,
+          unassigned: unassignedData,
+          totalAssigned: assignedCount,
+          totalUnassigned: unassignedCount,
+          totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
+          currentPage: page  // Current page number
+      });
 
   } catch (error) {
-    console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      console.error('Error searching leads:', error);
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
-
-
-
 
 
 //9. Filtere search for Reading Multiple Companies
