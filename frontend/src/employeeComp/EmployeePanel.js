@@ -4528,7 +4528,7 @@ function EmployeePanel() {
       )}
 
       {/* Pop up for confirming bookings  */}
-      <Dialog
+      <Dialog className='My_Mat_Dialog'
         open={openBooking}
         onClose={() => {
           setOpenBooking(false);
@@ -4590,7 +4590,7 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
       {/* Request Data popup */}
-      <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Request Data{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>
@@ -4739,7 +4739,7 @@ function EmployeePanel() {
           <button
             style={{ width: "100%" }}
             onClick={handleSubmit}
-            className="btn btn-primary"
+            className="btn btn-primary bdr-radius-none"
           >
             Submit
           </button>
@@ -4816,7 +4816,7 @@ function EmployeePanel() {
       </Dialog> */}
 
       {/* Remarks edit icon pop up*/}
-      <Dialog
+      <Dialog className='My_Mat_Dialog'
         open={openRemarks}
         onClose={closepopupRemarks}
         fullWidth
@@ -4886,21 +4886,22 @@ function EmployeePanel() {
                 }}
               ></textarea>
             </div>
-            <button
+            
+          </div>
+        </DialogContent>
+        <button
               onClick={handleUpdate}
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-primary bdr-radius-none"
               style={{ width: "100%" }}
             >
               Submit
             </button>
-          </div>
-        </DialogContent>
       </Dialog>
 
       {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
 
-      <Dialog
+      <Dialog className='My_Mat_Dialog'
         open={opeRemarksEdit}
         onClose={closePopUpRemarksEdit}
         fullWidth
@@ -4949,7 +4950,7 @@ function EmployeePanel() {
       </Dialog>
 
       {/* ----------------------------------------dialog to view bdm remarks--------------------------------------------- */}
-      <Dialog
+      <Dialog className='My_Mat_Dialog'
         open={openRemarksBdm}
         onClose={closePopUpRemarksBdm}
         fullWidth
@@ -5096,7 +5097,7 @@ function EmployeePanel() {
           Submit
         </button>
       </Dialog> */}
-      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+      <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
         <DialogTitle>
           Company Info{" "}
           <IconButton onClick={closepopupNew} style={{ float: "right" }}>
@@ -5477,13 +5478,13 @@ function EmployeePanel() {
             </div>
           </div>
         </DialogContent>
-        <button className="btn btn-primary" onClick={handleSubmitData}>
+        <button className="btn btn-primary bdr-radius-none" onClick={handleSubmitData}>
           Submit
         </button>
       </Dialog>
 
       {/* -------------------------- Import CSV File ---------------------------- */}
-      <Dialog open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
         <DialogTitle>
           Import CSV DATA{" "}
           <IconButton onClick={closepopupCSV} style={{ float: "right" }}>
@@ -5521,13 +5522,13 @@ function EmployeePanel() {
               />
               <button onClick={handleButtonClick}>Choose File</button> */}
         </DialogContent>
-        <button onClick={handleUploadData} className="btn btn-primary">
+        <button onClick={handleUploadData} className="btn btn-primary bdr-radius-none">
           Submit
         </button>
       </Dialog>
       {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
 
-      <Dialog
+      <Dialog className='My_Mat_Dialog'  
         open={feedbackPopupOpen}
         onClose={closeFeedbackPopup}
         fullWidth
@@ -5617,7 +5618,7 @@ function EmployeePanel() {
 
       {/* -------------------------------------------------------- DIALOG FOR BDM NAMES--------------------------------------------------- */}
 
-      <Dialog open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog'   open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Choose BDM To Forward Data
           <IconButton onClick={closeBdmNamePopup} style={{ float: "right" }}>
@@ -5626,8 +5627,8 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="container">
-            <div className="mb-3 row">
-              <label className="col-sm-3 form-label" htmlFor="selectYear">
+            <div className="mb-3">
+              <label className="form-label" htmlFor="selectYear">
                 Select BDM :
               </label>
               <select
@@ -5637,7 +5638,7 @@ function EmployeePanel() {
                 onChange={(e) => {
                   setSelectedBDM(e.target.value)
                 }}
-                className="col form-select"
+                className="form-select"
               >
                 <option value="" disabled>Select BDM Name</option>
                 {bdmNames.map((name) => (
@@ -5653,7 +5654,7 @@ function EmployeePanel() {
           <button
             style={{ width: "100%" }}
             onClick={handleForwardBdm}
-            className="btn btn-primary"
+            className="btn btn-primary bdr-radius-none"
           >
             Submit
           </button>

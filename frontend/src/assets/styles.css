@@ -1973,3 +1973,18 @@ td input
   align-items: center;
   justify-content: center;
 }
+.My_Mat_Dialog .MuiDialog-paper
+{
+  border-radius: 22px !important;
+}
+.My_Mat_Dialog .btn
+{
+  box-shadow: none !important;
+}
+.swal2-popup.swal2-modal.swal2-show {
+  border-radius: 22px;
+}
+.bdr-radius-none
+{
+  border-radius: 0px !important;
+}
