@@ -12,6 +12,7 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
+    DialogActions, 
     IconButton,
     Select,
     MenuItem,
@@ -1946,7 +1947,7 @@ function TestLeads() {
             </div>
 
             {/* -------------------- dialog to add leads---------------------------- */}
-            <Dialog open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
+            <Dialog className='My_Mat_Dialog'  open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAddLeadsDialog} >
@@ -2294,7 +2295,7 @@ function TestLeads() {
                         </div>
                     </div>
                 </DialogContent>
-                <button className="btn btn-primary"
+                <button className="btn btn-primary bdr-radius-none" 
                     onClick={handleSubmitData}
                 >
                     Submit
@@ -2302,7 +2303,7 @@ function TestLeads() {
             </Dialog>
 
             {/* ------------------------ dialog to add bulk leads as csv---------------- */}
-            <Dialog open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
+            <Dialog className='My_Mat_Dialog'  open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Import CSV DATA{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeBulkLeadsCSVPopup}>
@@ -2454,7 +2455,7 @@ function TestLeads() {
                         </div>
                     )}
                 </DialogContent>
-                <button className="btn btn-primary" onClick={handleUploadData}>
+                <button className="btn btn-primary bdr-radius-none" onClick={handleUploadData}>
                     Submit
                 </button>
             </Dialog>
@@ -2515,7 +2516,7 @@ function TestLeads() {
                     </button>
                 </div>
             </Dialog> */}
-            <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+            <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
@@ -2657,6 +2658,7 @@ function TestLeads() {
                         </div>
                     </div>}
                 </DialogContent>
+            
                 <div className="btn-list">
                     <button
                         style={{ width: "100vw", borderRadius: "0px" }}
@@ -2671,7 +2673,7 @@ function TestLeads() {
             {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
-            <Dialog open={openLeadsModifyPopUp} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
+            <Dialog className='My_Mat_Dialog' open={openLeadsModifyPopUp} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
                 <DialogTitle className="d-flex align-items-center justify-content-between">
                     <div>
                         Company Info{" "}
@@ -3049,7 +3051,7 @@ function TestLeads() {
             </Dialog>
             {/* //----------------------------dialog to view remarks popup------------------------- */}
 
-            <Dialog
+            <Dialog className='My_Mat_Dialog'
                 open={openRemarks}
                 onClose={closepopupRemarks}
                 fullWidth

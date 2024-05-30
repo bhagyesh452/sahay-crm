@@ -3482,7 +3482,7 @@ function BdmLeads() {
 
 
       {/* Request Data popup */}
-      <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog'   open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Request Data{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>
@@ -3631,7 +3631,7 @@ function BdmLeads() {
           <button
             style={{ width: "100%" }}
             onClick={handleSubmit}
-            className="btn btn-primary"
+            className="btn btn-primary bdr-radius-none" 
           >
             Submit
           </button>
@@ -3708,7 +3708,7 @@ function BdmLeads() {
       </Dialog> */}
 
       {/* Remarks edit icon pop up*/}
-      <Dialog
+      <Dialog className='My_Mat_Dialog'
         open={openRemarks}
         onClose={closepopupRemarks}
         fullWidth
@@ -3777,16 +3777,17 @@ function BdmLeads() {
                 }}
               ></textarea>
             </div>
-            <button
-              onClick={handleUpdate}
-              type="submit"
-              className="btn btn-primary"
-              style={{ width: "100%" }}
-            >
-              Submit
-            </button>
+     
           </div>
         </DialogContent>
+        <button
+          onClick={handleUpdate}
+          type="submit"
+          className="btn btn-primary bdr-radius-none"
+          style={{ width: "100%" }}
+        >
+          Submit
+        </button>
       </Dialog>
 
       {/* ADD Leads starts here */}
@@ -3888,7 +3889,7 @@ function BdmLeads() {
           Submit
         </button>
       </Dialog> */}
-      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+      <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
         <DialogTitle>
           Company Info{" "}
           <IconButton onClick={closepopupNew} style={{ float: "right" }}>
@@ -4261,13 +4262,13 @@ function BdmLeads() {
             </div>
           </div>
         </DialogContent>
-        <button className="btn btn-primary" onClick={handleSubmitData}>
+        <button className="btn btn-primary bdr-radius-none" onClick={handleSubmitData}>
           Submit
         </button>
       </Dialog>
 
       {/* -------------------------- Import CSV File ---------------------------- */}
-      <Dialog open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
         <DialogTitle>
           Import CSV DATA{" "}
           <IconButton onClick={closepopupCSV} style={{ float: "right" }}>
@@ -4305,7 +4306,7 @@ function BdmLeads() {
               />
               <button onClick={handleButtonClick}>Choose File</button> */}
         </DialogContent>
-        <button onClick={handleUploadData} className="btn btn-primary">
+        <button onClick={handleUploadData} className="btn btn-primary bdr-radius-none">
           Submit
         </button>
       </Dialog>

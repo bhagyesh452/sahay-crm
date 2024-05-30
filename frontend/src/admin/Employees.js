@@ -683,7 +683,7 @@ function Employees({ onEyeButtonClick }) {
           Cancel
         </button>
       </Modal>
-      <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog'  open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Employee Info{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>
@@ -963,7 +963,7 @@ function Employees({ onEyeButtonClick }) {
             </div>
           </div>
         </DialogContent>
-        <Button onClick={handleSubmit} variant="contained">
+        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
           Submit
         </Button>
       </Dialog>

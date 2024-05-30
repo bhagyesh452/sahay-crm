@@ -2286,7 +2286,7 @@ function EmployeeTeamLeads() {
             )}
             {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
 
-            <Dialog
+            <Dialog className='My_Mat_Dialog'
                 open={openRemarks}
                 onClose={closePopUpRemarks}
                 fullWidth
@@ -2328,7 +2328,7 @@ function EmployeeTeamLeads() {
             </Dialog>
             {/* ----------------------------------------------------dialog for editing popup by bdm--------------------------------------------- */}
 
-            <Dialog
+            <Dialog className='My_Mat_Dialog'
                 open={openRemarksEdit}
                 onClose={closePopUpRemarksEdit}
                 fullWidth
@@ -2395,16 +2395,12 @@ function EmployeeTeamLeads() {
                                 }}
                             ></textarea>
                         </div>
-                        <button
-                            onClick={handleUpdate}
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </button>
+                       
                     </div>
                 </DialogContent>
+                <button  className="btn btn-primary bdr-radius-none" onClick={handleUpdate} type="submit">
+                    Submit
+                </button>
             </Dialog>
             {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
 
@@ -2474,7 +2470,7 @@ function EmployeeTeamLeads() {
                 </DialogContent>
             </Dialog> */}
 
-            <Dialog
+            <Dialog className='My_Mat_Dialog'
                 open={openFeedback}
                 onClose={handleCloseFeedback}
                 fullWidth
@@ -2588,293 +2584,281 @@ function EmployeeTeamLeads() {
                                 disabled={!isEditFeedback}
                             ></textarea>
                         </div>
-                        <button
-                            onClick={handleFeedbackSubmit}
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </button>
+                        
                     </div>
 
                 </DialogContent>
+                <button onClick={handleFeedbackSubmit} type="submit" className="btn btn-primary bdr-radius-none"    >
+                    Submit
+                </button>
             </Dialog>
 
-
-
-
-
             {/* ---------------------------------projection drawer--------------------------------------------------------- */}
-
-            <div>
-                <Drawer
-                    style={{ top: "50px" }}
-                    anchor="right"
-                    open={openProjection}
-                    onClose={closeProjection}>
-                    <div style={{ width: "31em" }} className="container-xl">
-                        <div
-                            className="header d-flex justify-content-between align-items-center"
-                            style={{ margin: "10px 0px" }}
+            <Drawer
+                style={{ top: "50px" }}
+                anchor="right"
+                open={openProjection}
+                onClose={closeProjection}>
+                <div style={{ width: "31em" }} className="container-xl">
+                    <div
+                        className="header d-flex justify-content-between align-items-center"
+                        style={{ margin: "10px 0px" }}
+                    >
+                        <h1
+                            style={{ marginBottom: "0px", fontSize: "23px" }}
+                            className="title"
                         >
-                            <h1
-                                style={{ marginBottom: "0px", fontSize: "23px" }}
-                                className="title"
-                            >
-                                Projection Form
-                            </h1>
-                            <div>
-                                {(bdeProjection && bdeProjection.some((item) => item.companyName === projectingCompany)) || (projectingCompany &&
-                                    projectionData &&
-                                    projectionData.some(
-                                        (item) => item.companyName === projectingCompany
-                                    )) ? (
-                                    <>
-                                        <IconButton
-                                            onClick={() => {
-                                                setIsEditProjection(true);
-                                            }}
-                                        >
-                                            <EditIcon color="grey"></EditIcon>
-                                        </IconButton>
-                                    </>
-                                ) : null}
-                                {/* <IconButton
-                  onClick={() => {
-                    setIsEditProjection(true);
-                  }}>
-                  <EditIcon color="grey"></EditIcon>
-                </IconButton> */}
-                                {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
-                  <DeleteIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      color: "#bf0b0b",
-                    }}
-                  >
-                    Delete
-                  </DeleteIcon>
-                </IconButton> */}
-                                <IconButton>
-                                    <IoClose onClick={closeProjection} />
-                                </IconButton>
-                            </div>
+                            Projection Form
+                        </h1>
+                        <div>
+                            {(bdeProjection && bdeProjection.some((item) => item.companyName === projectingCompany)) || (projectingCompany &&
+                                projectionData &&
+                                projectionData.some(
+                                    (item) => item.companyName === projectingCompany
+                                )) ? (
+                                <>
+                                    <IconButton
+                                        onClick={() => {
+                                            setIsEditProjection(true);
+                                        }}
+                                    >
+                                        <EditIcon color="grey"></EditIcon>
+                                    </IconButton>
+                                </>
+                            ) : null}
+                            {/* <IconButton
+                onClick={() => {
+                setIsEditProjection(true);
+                }}>
+                <EditIcon color="grey"></EditIcon>
+            </IconButton> */}
+                            {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
+                <DeleteIcon
+                style={{
+                    width: "16px",
+                    height: "16px",
+                    color: "#bf0b0b",
+                }}
+                >
+                Delete
+                </DeleteIcon>
+            </IconButton> */}
+                            <IconButton>
+                                <IoClose onClick={closeProjection} />
+                            </IconButton>
                         </div>
-                        <hr style={{ margin: "0px" }} />
-                        <div className="body-projection">
-                            <div className="header d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h1
-                                        title={projectingCompany}
-                                        style={{
-                                            fontSize: "14px",
-                                            textShadow: "none",
-                                            fontFamily: "sans-serif",
-                                            fontWeight: "400",
-                                            fontFamily: "Poppins, sans-serif",
-                                            margin: "10px 0px",
-                                            width: "200px",
-                                            whiteSpace: "nowrap",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                        }}
-                                    >
-                                        {projectingCompany}
-                                    </h1>
-                                </div>
-                                <div>
-                                    <button
-                                        onClick={() => handleDelete(projectingCompany)}
-                                        className="btn btn-link"
-                                        style={{ color: "grey" }}
-                                    >
-                                        Clear Form
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="label">
-                                <strong>
-                                    Offered Services{" "}
-                                    {selectedValues.length === 0 && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}{" "}
-                                    :
-                                </strong>
-                                <div className="services mb-3">
-                                    <Select
-                                        isMulti
-                                        options={options}
-                                        onChange={(selectedOptions) => {
-                                            setSelectedValues(
-                                                selectedOptions.map((option) => option.value)
-                                            );
-                                        }}
-                                        value={selectedValues.map((value) => ({
-                                            value,
-                                            label: value,
-                                        }))}
-                                        placeholder="Select Services..."
-                                        isDisabled={!isEditProjection}
-                                    />
-                                </div>
-                            </div>
-                            <div className="label">
-                                <strong>
-                                    Offered Prices(With GST){" "}
-                                    {!currentProjection.offeredPrize && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}{" "}
-                                    :
-                                </strong>
-                                <div className="services mb-3">
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Please enter offered Prize"
-                                        value={currentProjection.offeredPrize}
-                                        onChange={(e) => {
-                                            setCurrentProjection((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                offeredPrize: e.target.value,
-                                            }));
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                            </div>
-                            <div className="label">
-                                <strong>
-                                    Expected Price (With GST)
-                                    {currentProjection.totalPayment === 0 && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}{" "}
-                                    :
-                                </strong>
-                                <div className="services mb-3">
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Please enter total Payment"
-                                        value={currentProjection.totalPayment}
-                                        onChange={(e) => {
-                                            const newTotalPayment = e.target.value;
-                                            if (
-                                                Number(newTotalPayment) <=
-                                                Number(currentProjection.offeredPrize)
-                                            ) {
-                                                setCurrentProjection((prevLeadData) => ({
-                                                    ...prevLeadData,
-                                                    totalPayment: newTotalPayment,
-                                                    totalPaymentError: "",
-                                                }));
-                                            } else {
-                                                setCurrentProjection((prevLeadData) => ({
-                                                    ...prevLeadData,
-                                                    totalPayment: newTotalPayment,
-                                                    totalPaymentError:
-                                                        "Expected Price should be less than or equal to Offered Price.",
-                                                }));
-                                            }
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-
-                                    <div style={{ color: "lightred" }}>
-                                        {currentProjection.totalPaymentError}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="label">
-                                <strong>
-                                    Last Follow Up Date{" "}
-                                    {!currentProjection.lastFollowUpdate && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}
-                                    :{" "}
-                                </strong>
-                                <div className="services mb-3">
-                                    <input
-                                        type="date"
-                                        className="form-control"
-                                        placeholder="Please enter offered Prize"
-                                        value={currentProjection.lastFollowUpdate}
-                                        onChange={(e) => {
-                                            setCurrentProjection((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                lastFollowUpdate: e.target.value,
-                                            }));
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                            </div>
-                            <div className="label">
-                                <strong>
-                                    Payment Expected on{" "}
-                                    {!currentProjection.estPaymentDate && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}
-                                    :
-                                </strong>
-                                <div className="services mb-3">
-                                    <input
-                                        type="date"
-                                        className="form-control"
-                                        placeholder="Please enter Estimated Payment Date"
-                                        value={currentProjection.estPaymentDate}
-                                        onChange={(e) => {
-                                            setCurrentProjection((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                estPaymentDate: e.target.value,
-                                            }));
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                            </div>
-                            <div className="label">
-                                <strong>
-                                    Remarks{" "}
-                                    {currentProjection.remarks === "" && (
-                                        <span style={{ color: "red" }}>*</span>
-                                    )}
-                                    :
-                                </strong>
-                                <div className="remarks mb-3">
-                                    <textarea
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Enter any Remarks"
-                                        value={currentProjection.remarks}
-                                        onChange={(e) => {
-                                            setCurrentProjection((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                remarks: e.target.value,
-                                            }));
-                                        }}
-                                        disabled={!isEditProjection}
-                                    />
-                                </div>
-                            </div>
-                            <div className="submitBtn">
-                                <button
-                                    disabled={!isEditProjection}
-                                    onClick={handleProjectionSubmit}
-                                    style={{ width: "100%" }}
-                                    type="submit"
-                                    class="btn btn-primary mb-3"
+                    </div>
+                    <hr style={{ margin: "0px" }} />
+                    <div className="body-projection">
+                        <div className="header d-flex align-items-center justify-content-between">
+                            <div>
+                                <h1
+                                    title={projectingCompany}
+                                    style={{
+                                        fontSize: "14px",
+                                        textShadow: "none",
+                                        fontFamily: "sans-serif",
+                                        fontWeight: "400",
+                                        fontFamily: "Poppins, sans-serif",
+                                        margin: "10px 0px",
+                                        width: "200px",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                    }}
                                 >
-                                    Submit
+                                    {projectingCompany}
+                                </h1>
+                            </div>
+                            <div>
+                                <button
+                                    onClick={() => handleDelete(projectingCompany)}
+                                    className="btn btn-link"
+                                    style={{ color: "grey" }}
+                                >
+                                    Clear Form
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </Drawer>
-            </div>
+                        <div className="label">
+                            <strong>
+                                Offered Services{" "}
+                                {selectedValues.length === 0 && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}{" "}
+                                :
+                            </strong>
+                            <div className="services mb-3">
+                                <Select
+                                    isMulti
+                                    options={options}
+                                    onChange={(selectedOptions) => {
+                                        setSelectedValues(
+                                            selectedOptions.map((option) => option.value)
+                                        );
+                                    }}
+                                    value={selectedValues.map((value) => ({
+                                        value,
+                                        label: value,
+                                    }))}
+                                    placeholder="Select Services..."
+                                    isDisabled={!isEditProjection}
+                                />
+                            </div>
+                        </div>
+                        <div className="label">
+                            <strong>
+                                Offered Prices(With GST){" "}
+                                {!currentProjection.offeredPrize && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}{" "}
+                                :
+                            </strong>
+                            <div className="services mb-3">
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    placeholder="Please enter offered Prize"
+                                    value={currentProjection.offeredPrize}
+                                    onChange={(e) => {
+                                        setCurrentProjection((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            offeredPrize: e.target.value,
+                                        }));
+                                    }}
+                                    disabled={!isEditProjection}
+                                />
+                            </div>
+                        </div>
+                        <div className="label">
+                            <strong>
+                                Expected Price (With GST)
+                                {currentProjection.totalPayment === 0 && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}{" "}
+                                :
+                            </strong>
+                            <div className="services mb-3">
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    placeholder="Please enter total Payment"
+                                    value={currentProjection.totalPayment}
+                                    onChange={(e) => {
+                                        const newTotalPayment = e.target.value;
+                                        if (
+                                            Number(newTotalPayment) <=
+                                            Number(currentProjection.offeredPrize)
+                                        ) {
+                                            setCurrentProjection((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                totalPayment: newTotalPayment,
+                                                totalPaymentError: "",
+                                            }));
+                                        } else {
+                                            setCurrentProjection((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                totalPayment: newTotalPayment,
+                                                totalPaymentError:
+                                                    "Expected Price should be less than or equal to Offered Price.",
+                                            }));
+                                        }
+                                    }}
+                                    disabled={!isEditProjection}
+                                />
 
+                                <div style={{ color: "lightred" }}>
+                                    {currentProjection.totalPaymentError}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="label">
+                            <strong>
+                                Last Follow Up Date{" "}
+                                {!currentProjection.lastFollowUpdate && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}
+                                :{" "}
+                            </strong>
+                            <div className="services mb-3">
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    placeholder="Please enter offered Prize"
+                                    value={currentProjection.lastFollowUpdate}
+                                    onChange={(e) => {
+                                        setCurrentProjection((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            lastFollowUpdate: e.target.value,
+                                        }));
+                                    }}
+                                    disabled={!isEditProjection}
+                                />
+                            </div>
+                        </div>
+                        <div className="label">
+                            <strong>
+                                Payment Expected on{" "}
+                                {!currentProjection.estPaymentDate && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}
+                                :
+                            </strong>
+                            <div className="services mb-3">
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    placeholder="Please enter Estimated Payment Date"
+                                    value={currentProjection.estPaymentDate}
+                                    onChange={(e) => {
+                                        setCurrentProjection((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            estPaymentDate: e.target.value,
+                                        }));
+                                    }}
+                                    disabled={!isEditProjection}
+                                />
+                            </div>
+                        </div>
+                        <div className="label">
+                            <strong>
+                                Remarks{" "}
+                                {currentProjection.remarks === "" && (
+                                    <span style={{ color: "red" }}>*</span>
+                                )}
+                                :
+                            </strong>
+                            <div className="remarks mb-3">
+                                <textarea
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Enter any Remarks"
+                                    value={currentProjection.remarks}
+                                    onChange={(e) => {
+                                        setCurrentProjection((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            remarks: e.target.value,
+                                        }));
+                                    }}
+                                    disabled={!isEditProjection}
+                                />
+                            </div>
+                        </div>
+                        <div className="submitBtn">
+                            <button
+                                disabled={!isEditProjection}
+                                onClick={handleProjectionSubmit}
+                                style={{ width: "100%" }}
+                                type="submit"
+                                class="btn btn-primary mb-3"
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Drawer>
             {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
             <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
                 <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
