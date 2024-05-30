@@ -731,7 +731,7 @@ function ManageLeads() {
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
         fetchData(1, latestSortCount)
-        setEmployeeSelection("")
+        setEmployeeSelection("Not Alloted")
     }
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
@@ -812,7 +812,7 @@ function ManageLeads() {
             //fetchData(1, latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-            setEmployeeSelection("")
+            setEmployeeSelection("Not Alloted")
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
