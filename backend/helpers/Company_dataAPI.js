@@ -260,288 +260,173 @@ router.get('/new-leads', async (req, res) => {
 
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
-//   const { selectedStatus,
-//     selectedState,
-//     selectedNewCity,
-//     selectedBDEName,
-//     selectedAssignDate,
-//     selectedUploadedDate,
-//     selectedAdminName,
-//     selectedYear,
-//     selectedCompanyIncoDate } = req.query;
+//   const {
+//       selectedStatus,
+//       selectedState,
+//       selectedNewCity,
+//       selectedBDEName,
+//       selectedAssignDate,
+//       selectedUploadedDate,
+//       selectedAdminName,
+//       selectedYear,
+//       selectedCompanyIncoDate,
+//   } = req.query;
+//   const page = parseInt(req.query.page) || 1; // Page number
+//   const limit = parseInt(req.query.limit) || 500; // Items per page
+//   const skip = (page - 1) * limit; // Number of documents to skip
+// console.log(selectedBDEName)
 //   try {
-//     let query = {};
-//     if (selectedStatus) {
-//       if (selectedStatus === 'Not Picked Up' ||
-//         selectedStatus === 'Busy' ||
-//         selectedStatus === 'Junk' ||
-//         selectedStatus === 'Not Interested' ||
-//         selectedStatus === 'Untouched' ||
-//         selectedStatus === 'Interested' ||
-//         selectedStatus === 'Matured' ||
-//         selectedStatus === 'FollowUp') {
-//         query.Status = selectedStatus;
-//       }
-//     }
+//       let query = {};
 
-//     if (selectedState) {
-//       if (!query.Status) {
-//         query.State = selectedState;
-//       } else {
-//         query = { Status: selectedStatus, State: selectedState };
+//       // Construct query object based on filters
+//       if (selectedStatus) query.Status = selectedStatus;
+//       if (selectedState) query.State = selectedState;
+//       if (selectedNewCity) query.City = selectedNewCity;
+//       if (selectedBDEName && selectedBDEName.trim() !== '') {
+//         query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
 //       }
-//     }
+//       if (selectedAssignDate) {
+//           query.AssignDate = {
+//               $gte: new Date(selectedAssignDate).toISOString(),
+//               $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//           };
+//       }
+//       if (selectedAdminName && selectedAdminName.trim() !== '') query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+//       if (selectedUploadedDate) {
+//           query.AssignDate = {
+//               $gte: new Date(selectedUploadedDate).toISOString(),
+//               $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//           };
+//       }
+//       if (selectedYear) {
+//           const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//           const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//           query["Company Incorporation Date  "] = {
+//               $gte: yearStartDate,
+//               $lt: yearEndDate
+//           };
+//       }
+//       if (selectedCompanyIncoDate) {
+//           query["Company Incorporation Date  "] = {
+//               $gte: new Date(selectedCompanyIncoDate).toISOString(),
+//               $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+//           };
+//       }
 
-//     if (selectedNewCity) {
-//       if (!query.Status || !query.State) {
-//         query.City = selectedNewCity;
-//       } else {
-//         query = { Status: selectedStatus, State: selectedState, City: selectedNewCity };
-//       }
-//     }
+//       console.log(query);
 
-//     if (selectedBDEName && selectedBDEName.trim() !== '') {
-
-//       if (!query.Status || !query.State || !query.City) {
-//         query.ename = selectedBDEName;
-//       } else {
-//         query = { Status: selectedStatus, State: selectedState, City: selectedNewCity, ename: selectedBDEName };
-//       }
-//     }
-//     if (selectedAssignDate) {
-//       // const startDate = new Date(selectedAssignDate);
-//       // const endDate = new Date(selectedAssignDate);
-//       // endDate.setDate(endDate.getDate() + 1);
-//       // console.log(endDate)
-//       if (!query.Status ||
-//         !query.State ||
-//         !query.City || !
-//         query.ename) {
-//         query.AssignDate = {
-//           $gte: new Date(selectedAssignDate).toISOString(),
-//           $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//         };
-//       } else {
-//         query = {
-//           Status: selectedStatus,
-//           State: selectedState,
-//           City: selectedNewCity,
-//           ename: selectedBDEName,
-//           AssignDate: {
-//             $gte: new Date(selectedAssignDate).toISOString(),
-//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//           }
-//         }; // Closing brace was missing here
-//       }
-//     }
-//     if (selectedAdminName && selectedAdminName.trim() !== '') {
-//       const adminNameRegex = new RegExp(selectedAdminName, 'i');
-//       if (!query.Status ||
-//         !query.State ||
-//         !query.City ||
-//         !query.AssignDate ||
-//         !query.ename) {
-//         query.UploadedBy = adminNameRegex;
-//       } else {
-//         query = {
-//           Status: selectedStatus,
-//           State: selectedState,
-//           City: selectedNewCity,
-//           ename: selectedBDEName,
-//           AssignDate: {
-//             $gte: new Date(selectedAssignDate).toISOString(),
-//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//           },
-//           UploadedBy: adminNameRegex
-//         };
-//       }
-//     }
-//     if (selectedUploadedDate) {
-//       // const startDate = new Date(selectedUploadedDate);
-//       // const endDate = new Date(selectedUploadedDate);
-//       // endDate.setDate(endDate.getDate() + 1);
-//       if (!query.Status ||
-//         !query.State ||
-//         !query.City ||
-//         !query.ename ||
-//         !query.AssignDate) {
-//         query.AssignDate = {
-//           $gte: new Date(selectedUploadedDate).toISOString(),
-//           $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-//         };
-//       } else {
-//         query = {
-//           Status: selectedStatus,
-//           State: selectedState,
-//           City: selectedNewCity,
-//           ename: selectedBDEName,
-//           AssignDate: {
-//             $gte: new Date(selectedAssignDate).toISOString(),
-//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//           },
-//           UploadedBy: adminNameRegex,
-//           AssignDate: {
-//             $gte: new Date(selectedUploadedDate).toISOString(),
-//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-//           }
-//         }; // Closing brace was missing here
-//       }
-//     }
-//     if (selectedYear) {
-//       const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-//       const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-//       if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName) {
-//         query["Company Incorporation Date  "] = {
-//           $gte: yearStartDate,
-//           $lt: yearEndDate
-//         };
-//       } else {
-//         query = {
-//           Status: selectedStatus,
-//           State: selectedState,
-//           City: selectedNewCity,
-//           ename: selectedBDEName,
-//           AssignDate: {
-//             $gte: new Date(selectedAssignDate).toISOString(),
-//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//           },
-//           UploadedBy: adminNameRegex,
-//           AssignDate: {
-//             $gte: new Date(selectedUploadedDate).toISOString(),
-//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-//           },
-//           ["Company Incorporation Date  "]: {
-//             $gte: yearStartDate,
-//             $lt: yearEndDate
-//           }
-//         }; // Closing brace was missing here
-//       }
-//     }
-
-//     if (selectedCompanyIncoDate) {
-//       const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-//       const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-//       if (!query.Status || !query.State || !query.City || !query.ename || !query.AssignDate || !query.selectedAdminName) {
-//         query["Company Incorporation Date  "] = {
-//           $gte: new Date(selectedCompanyIncoDate).toISOString(),
-//           $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-//         };
-//       } else {
-//         query = {
-//           Status: selectedStatus,
-//           State: selectedState,
-//           City: selectedNewCity,
-//           ename: selectedBDEName,
-//           AssignDate: {
-//             $gte: new Date(selectedAssignDate).toISOString(),
-//             $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-//           },
-//           UploadedBy: adminNameRegex,
-//           AssignDate: {
-//             $gte: new Date(selectedUploadedDate).toISOString(),
-//             $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-//           },
-//           ["Company Incorporation Date  "]: {
-//             $gte: yearStartDate,
-//             $lt: yearEndDate
-//           },
-//           ["Company Incorporation Date  "]: {
-//             $gte: new Date(selectedCompanyIncoDate).toISOString(),
-//             $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-//           }
-//         }; // Closing brace was missing here
-//       }
-//     }
-
-//     console.log(query);
-
-//     const employees = await CompanyModel.find(query).limit(500).lean();
-//     res.status(200).json(employees);
+//       // Fetch assigned data
+//       const assignedQuery = { ...query, ename: { $ne: 'Not Alloted' } };
+//       console.log("assigned" , assignedQuery)
+//       const assignedCount = await CompanyModel.countDocuments(assignedQuery);
+//       const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
+     
+//       // Fetch unassigned data
+//       const unassignedQuery = { ...query, ename: 'Not Alloted' };
+//       const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+//       const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+      
+//       res.status(200).json({
+//           assigned: assignedData,
+//           unassigned: unassignedData,
+//           totalAssigned: assignedCount,
+//           totalUnassigned: unassignedCount,
+//           totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
+//           currentPage: page  // Current page number
+//       });
 
 //   } catch (error) {
-//     console.error('Error searching leads:', error);
-//     res.status(500).json({ error: 'Internal server error' });
+//       console.error('Error searching leads:', error);
+//       res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
 
 router.get('/filter-leads', async (req, res) => {
   const {
-      selectedStatus,
-      selectedState,
-      selectedNewCity,
-      selectedBDEName,
-      selectedAssignDate,
-      selectedUploadedDate,
-      selectedAdminName,
-      selectedYear,
-      selectedCompanyIncoDate,
+    selectedStatus,
+    selectedState,
+    selectedNewCity,
+    selectedBDEName,
+    selectedAssignDate,
+    selectedUploadedDate,
+    selectedAdminName,
+    selectedYear,
+    selectedCompanyIncoDate,
   } = req.query;
+
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
 
   try {
-      let query = {};
+    let baseQuery = {};
 
-      // Construct query object based on filters
-      if (selectedStatus) query.Status = selectedStatus;
-      if (selectedState) query.State = selectedState;
-      if (selectedNewCity) query.City = selectedNewCity;
-      if (selectedBDEName && selectedBDEName.trim() !== '') query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
-      if (selectedAssignDate) {
-          query.AssignDate = {
-              $gte: new Date(selectedAssignDate).toISOString(),
-              $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-          };
-      }
-      if (selectedAdminName && selectedAdminName.trim() !== '') query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
-      if (selectedUploadedDate) {
-          query.AssignDate = {
-              $gte: new Date(selectedUploadedDate).toISOString(),
-              $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-          };
-      }
-      if (selectedYear) {
-          const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-          const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-          query["Company Incorporation Date  "] = {
-              $gte: yearStartDate,
-              $lt: yearEndDate
-          };
-      }
-      if (selectedCompanyIncoDate) {
-          query["Company Incorporation Date  "] = {
-              $gte: new Date(selectedCompanyIncoDate).toISOString(),
-              $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-          };
-      }
+    // Construct query object based on filters
+    if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedState) baseQuery.State = selectedState;
+    if (selectedNewCity) baseQuery.City = selectedNewCity;
+    if (selectedAssignDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      };
+    }
+    if (selectedAdminName && selectedAdminName.trim() !== '') {
+      baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+    }
+    if (selectedUploadedDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedUploadedDate).toISOString(),
+        $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+      };
+    }
+    if (selectedYear) {
+      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: yearStartDate,
+        $lt: yearEndDate
+      };
+    }
+    if (selectedCompanyIncoDate) {
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: new Date(selectedCompanyIncoDate).toISOString(),
+        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+      };
+    }
 
-      console.log(query);
+    console.log(baseQuery);
 
-      // Fetch assigned data
-      const assignedQuery = { ...query, ename: { $ne: 'Not Alloted' } };
-      const assignedCount = await CompanyModel.countDocuments(assignedQuery);
-      const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
+    // Fetch assigned data
+    let assignedQuery = { ...baseQuery, ename: { $ne: 'Not Alloted' } };
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      assignedQuery.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
 
-      // Fetch unassigned data
-      const unassignedQuery = { ...query, ename: 'Not Alloted' };
-      const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-      const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+    const assignedCount = await CompanyModel.countDocuments(assignedQuery);
+    const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
 
-      res.status(200).json({
-          assigned: assignedData,
-          unassigned: unassignedData,
-          totalAssigned: assignedCount,
-          totalUnassigned: unassignedCount,
-          totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
-          currentPage: page  // Current page number
-      });
+    // Fetch unassigned data
+    let unassignedQuery = { ...baseQuery, ename: 'Not Alloted' };
+
+    const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+    const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+
+    res.status(200).json({
+      assigned: assignedData,
+      unassigned: unassignedData,
+      totalAssigned: assignedCount,
+      totalUnassigned: unassignedCount,
+      totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
+      currentPage: page  // Current page number
+    });
 
   } catch (error) {
-      console.error('Error searching leads:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 //9. Filtere search for Reading Multiple Companies

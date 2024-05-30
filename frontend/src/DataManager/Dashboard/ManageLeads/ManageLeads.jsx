@@ -44,9 +44,6 @@ import { Drawer, colors } from "@mui/material";
 import { Country, State, City } from 'country-state-city';
 
 function ManageLeads() {
-
-
-
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [data, setData] = useState([])
     const [mainData, setmainData] = useState([])
@@ -74,11 +71,6 @@ function ManageLeads() {
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
     const [isFilter, setIsFilter] = useState(false)
-
-
-
-
-
 
 
     const fetchTotalLeads = async () => {
@@ -658,22 +650,50 @@ function ManageLeads() {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(data.findIndex((row) => row._id === id));
+        let index;
+
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                index = unAssignedData.findIndex((row) => row._id === id);
+            } else if (dataStatus === 'Assigned') {
+                index = assignedData.findIndex((row) => row._id === id);
+            }
+        } else {
+            index = data.findIndex((row) => row._id === id);
+        }
+
+        setStartRowIndex(index);
     };
+
+    //console.log(data)
 
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-            const endRowIndex = data.findIndex((row) => row._id === id);
-            const selectedRange = [];
-            const startIndex = Math.min(startRowIndex, endRowIndex);
-            const endIndex = Math.max(startRowIndex, endRowIndex);
+            let endRowIndex, dataSet;
 
-            for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(data[i]._id);
+            if (isFilter) {
+                if (dataStatus === 'Unassigned') {
+                    dataSet = unAssignedData;
+                } else if (dataStatus === 'Assigned') {
+                    dataSet = assignedData;
+                }
+            } else {
+                dataSet = data;
             }
 
-            setSelectedRows(selectedRange);
+            if (dataSet) {
+                endRowIndex = dataSet.findIndex((row) => row._id === id);
+                const selectedRange = [];
+                const startIndex = Math.min(startRowIndex, endRowIndex);
+                const endIndex = Math.max(startRowIndex, endRowIndex);
+
+                for (let i = startIndex; i <= endIndex; i++) {
+                    selectedRange.push(dataSet[i]._id);
+                }
+
+                setSelectedRows(selectedRange);
+            }
         }
     };
 
@@ -712,57 +732,90 @@ function ManageLeads() {
         setEmployeeSelection("")
     }
     const handleconfirmAssign = async () => {
-        const selectedObjects = data.filter((row) =>
-            selectedRows.includes(row._id)
-        );
-
-        //console.log("selectedObjecyt", selectedObjects)
+        let selectedObjects = [];
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                selectedObjects = unAssignedData.filter((row) =>
+                    selectedRows.includes(row._id)
+                );
+            } else if (dataStatus === 'Assigned') {
+                selectedObjects = assignedData.filter((row) =>
+                    selectedRows.includes(row._id)
+                );
+            }
+        } else {
+            selectedObjects = data.filter((row) =>
+                selectedRows.includes(row._id)
+            );
+        }
+        console.log("selectedObjecyt", selectedObjects)
         // Check if no data is selected
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
             closeAssignLeadsDialog();
-            return;
+            return; // Exit the function early if no data is selected
         }
-
         const alreadyAssignedData = selectedObjects.filter(
             (obj) => obj.ename && obj.ename !== "Not Alloted"
         );
 
         // If all selected data is not already assigned, proceed with assignment
+        if (alreadyAssignedData.length === 0) {
+            handleAssignData();
+            return; // Exit the function after handling assignment
+        }
 
         // If some selected data is already assigned, show confirmation dialog
+        const userConfirmed = window.confirm(
+            `Some data is already assigned. Do you want to continue?`
+        );
 
-        handleAssignData();
-
+        if (userConfirmed) {
+            handleAssignData();
+        }
     };
-    console.log(employeeSelection)
+
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
         const DT = new Date();
-
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
+        let dataToSend = [];
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id))
+            } else if (dataStatus === 'Assigned') {
+                dataToSend = assignedData.filter((row) => selectedRows.includes(row._id))
+            }
+        } else {
+            dataToSend = data.filter((row) => selectedRows.includes(row._id))
+        }
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
-                selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
+                selectedObjects: dataToSend,
                 title,
                 date,
                 time,
             });
+            if(isFilter){
+                handleFilterData(1 , itemsPerPage) 
+            }else{
+                fetchData(1 , latestSortCount)
+            }
+
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1, latestSortCount)
+            //fetchData(1, latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-
+            setEmployeeSelection("")
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
         }
     };
-
     //-------------------------function to delete leads-------------------------
 
     const handleDeleteSelection = async () => {
@@ -1076,6 +1129,7 @@ function ManageLeads() {
     const [assignedData, setAssignedData] = useState([])
     const [unAssignedData, setunAssignedData] = useState([])
     const currentYear = new Date().getFullYear();
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -1110,6 +1164,7 @@ function ManageLeads() {
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         try {
             setIsFilter(true);
+            setOpenBacdrop(true)
             const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                 params: {
                     selectedStatus,
@@ -1125,7 +1180,6 @@ function ManageLeads() {
                     limit
                 }
             });
-
             if (!selectedStatus &&
                 !selectedState &&
                 !selectedNewCity &&
@@ -1137,25 +1191,26 @@ function ManageLeads() {
                 !selectedCompanyIncoDate) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false);
+                setOpenBacdrop(false);
                 fetchData(1, latestSortCount);
+                setOpenBacdrop(false)
             } else {
-                console.log(response.data.assigned)
-                setTotalCompaniesAssigned(response.data.assigned.length)
-                setTotalCompaniesUnaasigned(response.data.unassigned.length)
+
+                setOpenBacdrop(false)
+                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCount(response.data.totalPages);  // Ensure your backend provides the total page count
 
-                setData(response.data);  // Optionally set all data
+                //setData(response.data);  // Optionally set all data
                 setCurrentPage(response.data.currentPage);  // Reset to the first page
                 //setData(response.data.assigned);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
-                        setTotalCount(parseInt(response.data.unassigned.length / 500))
+                if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned');
                     } else {
-                        setDataStatus('Assigned')
-                        setTotalCount(parseInt(response.data.assigned.length / 500))
+                        setDataStatus('Assigned');
                     }
                 }
                 setOpenFilterDrawer(false);
@@ -1178,10 +1233,16 @@ function ManageLeads() {
         setSelectedMonth('')
         setSelectedDate(0)
         setCompanyIncoDate(null)
+        fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
+
 
 
     const dataManagerName = localStorage.getItem("dataManagerName");

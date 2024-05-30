@@ -147,6 +147,7 @@ router.post("/manual", async (req, res) => {
 
   router.post("/postAssignData", async (req, res) => {
     const { employeeSelection, selectedObjects, title, date, time } = req.body;
+    
     // If not assigned, post data to MongoDB or perform any desired action
     const updatePromises = selectedObjects.map((obj) => {
       // Add AssignData property with the current date

@@ -42,6 +42,8 @@ import { Drawer, colors } from "@mui/material";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Country, State, City } from 'country-state-city';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -166,7 +168,7 @@ function TestLeads() {
             fetchData(nextPage, latestSortCount);
         }
     };
-    
+
     const handlePreviousPage = () => {
         const prevPage = currentPage - 1;
         setCurrentPage(prevPage);
@@ -176,7 +178,7 @@ function TestLeads() {
             fetchData(prevPage, latestSortCount);
         }
     };
-    
+
 
     //const currentData = mainData.slice(startIndex, endIndex);
 
@@ -668,7 +670,7 @@ function TestLeads() {
     const handleMouseDown = (id) => {
         // Initiate drag selection
         let index;
-        
+
         if (isFilter) {
             if (dataStatus === 'Unassigned') {
                 index = unAssignedData.findIndex((row) => row._id === id);
@@ -678,27 +680,42 @@ function TestLeads() {
         } else {
             index = data.findIndex((row) => row._id === id);
         }
-        
+
         setStartRowIndex(index);
     };
-    
-console.log(data)
+
+    //console.log(data)
+
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
-        
         if (startRowIndex !== null) {
-            const endRowIndex = data.findIndex((row) => row._id === id);
-            const selectedRange = [];
-            const startIndex = Math.min(startRowIndex, endRowIndex);
-            const endIndex = Math.max(startRowIndex, endRowIndex);
+            let endRowIndex, dataSet;
 
-            for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(data[i]._id);
+            if (isFilter) {
+                if (dataStatus === 'Unassigned') {
+                    dataSet = unAssignedData;
+                } else if (dataStatus === 'Assigned') {
+                    dataSet = assignedData;
+                }
+            } else {
+                dataSet = data;
             }
 
-            setSelectedRows(selectedRange);
+            if (dataSet) {
+                endRowIndex = dataSet.findIndex((row) => row._id === id);
+                const selectedRange = [];
+                const startIndex = Math.min(startRowIndex, endRowIndex);
+                const endIndex = Math.max(startRowIndex, endRowIndex);
+
+                for (let i = startIndex; i <= endIndex; i++) {
+                    selectedRange.push(dataSet[i]._id);
+                }
+
+                setSelectedRows(selectedRange);
+            }
         }
     };
+
 
     const handleMouseUp = () => {
         // End drag selection
@@ -734,19 +751,31 @@ console.log(data)
         fetchData(1, latestSortCount)
         setEmployeeSelection("")
     }
-    const handleconfirmAssign = async () => {
-        const selectedObjects = data.filter((row) =>
-            selectedRows.includes(row._id)
-        );
 
-        //console.log("selectedObjecyt", selectedObjects)
+    const handleconfirmAssign = async () => {
+        let selectedObjects = [];
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                selectedObjects = unAssignedData.filter((row) =>
+                    selectedRows.includes(row._id)
+                );
+            } else if (dataStatus === 'Assigned') {
+                selectedObjects = assignedData.filter((row) =>
+                    selectedRows.includes(row._id)
+                );
+            }
+        } else {
+            selectedObjects = data.filter((row) =>
+                selectedRows.includes(row._id)
+            );
+        }
+        console.log("selectedObjecyt", selectedObjects)
         // Check if no data is selected
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
             closeAssignLeadsDialog();
             return; // Exit the function early if no data is selected
         }
-
         const alreadyAssignedData = selectedObjects.filter(
             (obj) => obj.ename && obj.ename !== "Not Alloted"
         );
@@ -773,17 +802,33 @@ console.log(data)
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
+        let dataToSend = [];
+        if (isFilter) {
+            if (dataStatus === 'Unassigned') {
+                dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id))
+            } else if (dataStatus === 'Assigned') {
+                dataToSend = assignedData.filter((row) => selectedRows.includes(row._id))
+            }
+        } else {
+            dataToSend = data.filter((row) => selectedRows.includes(row._id))
+        }
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
-                selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
+                selectedObjects: dataToSend,
                 title,
                 date,
                 time,
             });
+            if(isFilter){
+                handleFilterData(1 , itemsPerPage) 
+            }else{
+                fetchData(1 , latestSortCount)
+            }
+
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            fetchData(1, latestSortCount);
+            //fetchData(1, latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
             setEmployeeSelection("")
@@ -1107,6 +1152,7 @@ console.log(data)
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
     const [assignedData, setAssignedData] = useState([])
     const [unAssignedData, setunAssignedData] = useState([])
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
     const currentYear = new Date().getFullYear();
     const months = [
@@ -1137,11 +1183,12 @@ console.log(data)
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-    
+
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         try {
             setIsFilter(true);
+            setOpenBacdrop(true)
             const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                 params: {
                     selectedStatus,
@@ -1157,7 +1204,6 @@ console.log(data)
                     limit
                 }
             });
-
             if (!selectedStatus &&
                 !selectedState &&
                 !selectedNewCity &&
@@ -1169,9 +1215,12 @@ console.log(data)
                 !selectedCompanyIncoDate) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false);
+                setOpenBacdrop(false);
                 fetchData(1, latestSortCount);
+                setOpenBacdrop(false)
             } else {
-                console.log(response.data.unassigned)
+
+                setOpenBacdrop(false)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setAssignedData(response.data.assigned)
@@ -1195,10 +1244,6 @@ console.log(data)
         }
     };
 
-    console.log(currentPage , "currentpage")
-    console.log("assigneddata" , assignedData)
-    console.log("unassigneddata" , unAssignedData)
-
     const handleClearFilter = () => {
         setIsFilter(false)
         setSelectedStatus('')
@@ -1212,10 +1257,14 @@ console.log(data)
         setSelectedMonth('')
         setSelectedDate(0)
         setCompanyIncoDate(null)
-        fetchData(1 , latestSortCount)
+        fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
+    }
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
     }
 
 
@@ -1815,8 +1864,8 @@ console.log(data)
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
-                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned/500)}</span> }
-                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned/500)}</span> }
+                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
+                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
                                     {!isFilter && <span>Page {currentPage} / {totalCount}</span>}
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
                                         (isFilter && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
@@ -3003,6 +3052,14 @@ console.log(data)
                     </div>
                 </div>
             </Drawer>
+
+            {/* --------------------------------backedrop------------------------- */}
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </div>
     )
 }
