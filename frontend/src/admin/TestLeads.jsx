@@ -1834,18 +1834,39 @@ function TestLeads() {
                                     </table>
                                 </div>
                             </div>
-                            {data.length === 0 && !currentDataLoading &&
-                                (
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="13" className="p-2 particular">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                )}
+                            {!isFilter && data.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                            {isFilter && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                             {isFilter && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
                             {/* {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
