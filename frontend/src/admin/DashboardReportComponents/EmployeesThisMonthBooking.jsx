@@ -79,7 +79,7 @@ function EmployeesThisMonthBooking() {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            
+
             setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
             setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
             setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
@@ -133,7 +133,7 @@ function EmployeesThisMonthBooking() {
             setRedesignedData(bookingsData);
         } catch (error) {
             console.log("Error Fetching Bookings Data", error);
-        }finally{
+        } finally {
             setLoading(false)
         }
     };
@@ -160,7 +160,7 @@ function EmployeesThisMonthBooking() {
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
 
-    
+
 
     const functionCalculateMatured = (bdeName) => {
         let maturedCount = 0;
@@ -235,12 +235,12 @@ function EmployeesThisMonthBooking() {
             })
         }
         totalMaturedCount = totalMaturedCount + maturedCount;
-       
+
         return maturedCount;
     };
 
-  
-    
+
+
     const functionOnlyCalculateMatured = (bdeName) => {
         let maturedCount = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
@@ -728,8 +728,8 @@ function EmployeesThisMonthBooking() {
                 } else if (mainBooking.remainingPayments.length !== 0) {
                     mainBooking.remainingPayments.map((remainingObj) => {
                         if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                            
-                            const tempAmount =  Math.round(remainingObj.receivedPayment);
+
+                            const tempAmount = Math.round(remainingObj.receivedPayment);
                             if (mainBooking.bdeName === mainBooking.bdmName) {
                                 remainingAmount += Math.round(tempAmount);
                             } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
@@ -769,8 +769,8 @@ function EmployeesThisMonthBooking() {
                         moreObject.remainingPayments.map((remainingObj) => {
                             if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
 
-                       
-                                const tempAmount =  Math.round(remainingObj.receivedPayment);
+
+                                const tempAmount = Math.round(remainingObj.receivedPayment);
                                 if (moreObject.bdeName === moreObject.bdmName) {
                                     remainingAmount += Math.round(tempAmount);
                                 } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
@@ -817,8 +817,8 @@ function EmployeesThisMonthBooking() {
                 } else if (mainBooking.remainingPayments.length !== 0) {
                     mainBooking.remainingPayments.map((remainingObj) => {
                         if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                          
-                            const tempAmount =  Math.round(remainingObj.receivedPayment);
+
+                            const tempAmount = Math.round(remainingObj.receivedPayment);
                             if (mainBooking.bdeName === mainBooking.bdmName) {
                                 remainingAmount += Math.round(tempAmount);
                             } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
@@ -858,7 +858,7 @@ function EmployeesThisMonthBooking() {
                         moreObject.remainingPayments.map((remainingObj) => {
                             if (((new Date(remainingObj.paymentDate) >= new Date(bookingStartDate) && new Date(remainingObj.paymentDate) <= new Date(bookingEndDate)) || (new Date(remainingObj.paymentDate).getDate() == new Date(bookingStartDate).getDate() && new Date(remainingObj.paymentDate).getDate() == new Date(bookingEndDate).getDate())) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
 
-                                const tempAmount =  Math.round(remainingObj.receivedPayment);
+                                const tempAmount = Math.round(remainingObj.receivedPayment);
                                 if (moreObject.bdeName === moreObject.bdmName) {
                                     remainingAmount += Math.round(tempAmount);
                                 } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
@@ -875,10 +875,10 @@ function EmployeesThisMonthBooking() {
             })
         }
 
-        return achievedAmount + Math.round(remainingAmount) ;
+        return achievedAmount + Math.round(remainingAmount);
     }
 
-const Filterby = "This Month"
+    const Filterby = "This Month"
 
     //     return achievedAmount + Math.round(remainingAmount) - expanse;
     // };
@@ -887,168 +887,168 @@ const Filterby = "This Month"
         let remainingAmount = 0;
         let expanse = 0;
         const today = new Date();
-    
-    
+
+
         redesignedData.map((mainBooking) => {
-          let condition = false;
-          switch (Filterby) {
-            case 'Today':
-              condition = (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-              break;
-            case 'Last Month':
-              condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-              break;
-            case 'This Month':
-              condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
-              break;
-            default:
-              break;
-          }
-          if (condition &&( mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
-    
-            if (mainBooking.bdeName === mainBooking.bdmName) {
-              achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-              mainBooking.services.map(serv => {
-                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-              })
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-              achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-              mainBooking.services.map(serv => {
-                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-              })
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-              if (mainBooking.bdeName === data.ename) {
-                achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-                mainBooking.services.map(serv => {
-                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                })
-              }
-            }
-          } 
-          mainBooking.moreBookings.map((moreObject) => {
             let condition = false;
             switch (Filterby) {
-              case 'Today':
-                condition = (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-                break;
-              case 'Last Month':
-                condition = (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-                break;
-              case 'This Month':
-                condition = (new Date(moreObject.bookingDate).getMonth() === today.getMonth())
-                break;
-              default:
-                break;
+                case 'Today':
+                    condition = (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+                    break;
+                case 'Last Month':
+                    condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                    break;
+                case 'This Month':
+                    condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
+                    break;
+                default:
+                    break;
             }
-            if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
-    
-              if (moreObject.bdeName === moreObject.bdmName) {
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                moreObject.services.map(serv => {
-                  expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                })
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-                moreObject.services.map(serv => {
-                  expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                })
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                if (moreObject.bdeName === data.ename) {
-                  achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                  moreObject.services.map(serv => {
-                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                  })
+            if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+
+                if (mainBooking.bdeName === mainBooking.bdmName) {
+                    achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                    mainBooking.services.map(serv => {
+                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                    })
+                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                    achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                    mainBooking.services.map(serv => {
+                        expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                    })
+                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                    if (mainBooking.bdeName === data.ename) {
+                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                        mainBooking.services.map(serv => {
+                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                        })
+                    }
                 }
-              }
-    
-            } 
-          })
-    
-    
+            }
+            mainBooking.moreBookings.map((moreObject) => {
+                let condition = false;
+                switch (Filterby) {
+                    case 'Today':
+                        condition = (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+                        break;
+                    case 'Last Month':
+                        condition = (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                        break;
+                    case 'This Month':
+                        condition = (new Date(moreObject.bookingDate).getMonth() === today.getMonth())
+                        break;
+                    default:
+                        break;
+                }
+                if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+
+                    if (moreObject.bdeName === moreObject.bdmName) {
+                        achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                        moreObject.services.map(serv => {
+                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                        })
+                    } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                        achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                        moreObject.services.map(serv => {
+                            expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                        })
+                    } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                        if (moreObject.bdeName === data.ename) {
+                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                            moreObject.services.map(serv => {
+                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                            })
+                        }
+                    }
+
+                }
+            })
+
+
         })
-        return achievedAmount ;
-      };
-      const functionCalculatePendingRevenue = (data) => {
+        return achievedAmount;
+    };
+    const functionCalculatePendingRevenue = (data) => {
 
         let remainingAmount = 0;
         const today = new Date();
-    
-    
+
+
         redesignedData.map((mainBooking) => {
-    
-          if (mainBooking.remainingPayments.length !== 0) {
-            mainBooking.remainingPayments.map((remainingObj) => {
-    
-              let condition = false;
-              switch (Filterby) {
-                case 'Today':
-                  condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
-                  break;
-                case 'Last Month':
-                  condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-                  break;
-                case 'This Month':
-                  condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
-                  break;
-                default:
-                  break;
-              }
-              if (condition) {
-           
-                const tempAmount =  Math.round(remainingObj.receivedPayment);
-                if (mainBooking.bdeName === mainBooking.bdmName) {
-                  remainingAmount += Math.round(tempAmount);
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                  remainingAmount += Math.round(tempAmount) / 2;
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                  if (mainBooking.bdeName === data.ename) {
-                    remainingAmount += Math.round(tempAmount);
-                  }
-                }
-              }
-            })
-          }
-          mainBooking.moreBookings.map((moreObject) => {
-            if (moreObject.remainingPayments.length !== 0) {
-    
-    
-              moreObject.remainingPayments.map((remainingObj) => {
-                let condition = false;
-                switch (Filterby) {
-                  case 'Today':
-                    condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
-                    break;
-                  case 'Last Month':
-                    condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-                    break;
-                  case 'This Month':
-                    condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
-                    break;
-                  default:
-                    break;
-                }
-    
-                if (condition) {
-    
-                  
-                  const tempAmount =  Math.round(remainingObj.receivedPayment);
-                  if (moreObject.bdeName === moreObject.bdmName) {
-                    remainingAmount += Math.round(tempAmount);
-                  } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                    remainingAmount += Math.round(tempAmount) / 2;
-                  } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                    if (moreObject.bdeName === data.ename) {
-                      remainingAmount += Math.round(tempAmount);
+
+            if (mainBooking.remainingPayments.length !== 0) {
+                mainBooking.remainingPayments.map((remainingObj) => {
+
+                    let condition = false;
+                    switch (Filterby) {
+                        case 'Today':
+                            condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+                            break;
+                        case 'Last Month':
+                            condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                            break;
+                        case 'This Month':
+                            condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+                            break;
+                        default:
+                            break;
                     }
-                  }
-                }
-              })
+                    if (condition) {
+
+                        const tempAmount = Math.round(remainingObj.receivedPayment);
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            remainingAmount += Math.round(tempAmount);
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            remainingAmount += Math.round(tempAmount) / 2;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === data.ename) {
+                                remainingAmount += Math.round(tempAmount);
+                            }
+                        }
+                    }
+                })
             }
-          })
+            mainBooking.moreBookings.map((moreObject) => {
+                if (moreObject.remainingPayments.length !== 0) {
+
+
+                    moreObject.remainingPayments.map((remainingObj) => {
+                        let condition = false;
+                        switch (Filterby) {
+                            case 'Today':
+                                condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
+                                break;
+                            case 'Last Month':
+                                condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+                                break;
+                            case 'This Month':
+                                condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth())
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (condition) {
+
+
+                            const tempAmount = Math.round(remainingObj.receivedPayment);
+                            if (moreObject.bdeName === moreObject.bdmName) {
+                                remainingAmount += Math.round(tempAmount);
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                remainingAmount += Math.round(tempAmount) / 2;
+                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                                if (moreObject.bdeName === data.ename) {
+                                    remainingAmount += Math.round(tempAmount);
+                                }
+                            }
+                        }
+                    })
+                }
+            })
         })
         return remainingAmount
-    
-      };
+
+    };
     const functionGetAmount = (object) => {
         if (object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
@@ -1482,104 +1482,117 @@ const Filterby = "This Month"
         setFinalEmployeeData([...employeeData]); // Store original state of employeeData
     }, [employeeData]);
 
-   
+
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-           <div className="row">
-            
-              <div className="col">
-                <div className="dash-card-1">
-                  <div className="dash-card-1-head">No. of Bookings</div>
-                  <div className="dash-card-1-body">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="dash-card-1-num clr-1ac9bd">
-                      {employeeData.length !== 0 && employeeData.filter(
-                                                            (item) =>
-                                                                item.designation === "Sales Executive" &&
-                                                                item.targetDetails.length !== 0 &&
-                                                                item.targetDetails.find(
-                                                                    (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
-                                                                )
-                                                        ).reduce((total, obj) => total +(functionOnlyCalculateMatured(obj.ename)), 0)}
+            <div className="row">
 
-                      </div>
+                <div className="col">
+                    <div className="dash-card-1">
+                        <div className="dash-card-1-head">No. of Bookings</div>
+                        <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="dash-card-1-num clr-1ac9bd">
+                                    {employeeData.length !== 0 && employeeData.filter(
+                                        (item) =>
+                                            item.designation === "Sales Executive" &&
+                                            item.targetDetails.length !== 0 &&
+                                            item.targetDetails.find(
+                                                (target) =>
+                                                    target.year === currentYear.toString() &&
+                                                    target.month === currentMonth.toString()
+                                            )
+                                    ).reduce((total, obj) => total + (functionOnlyCalculateMatured(obj.ename)), 0)}
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="dash-card-1">
-                  <div className="dash-card-1-head">Total Revenue</div>
-                  <div className="dash-card-1-body">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="dash-card-1-num clr-1cba19">
-                      {employeeData.length !== 0 && employeeData.filter(
-                                                            (item) =>
-                                                                item.designation === "Sales Executive" &&
-                                                                item.targetDetails.length !== 0 &&
-                                                                item.targetDetails.find(
-                                                                    (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
-                                                                )
-                                                        ).reduce((total, obj) => total +(functionCalculateTotalRevenue(obj.ename)), 0)}
-                      </div>
+                <div className="col">
+                    <div className="dash-card-1">
+                        <div className="dash-card-1-head">Total Revenue</div>
+                        <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="dash-card-1-num clr-1cba19">
+                                    ₹{employeeData.length !== 0 &&
+                                        Math.round(
+                                            employeeData.filter(
+                                                (item) =>
+                                                    item.designation === "Sales Executive" &&
+                                                    item.targetDetails.length !== 0 &&
+                                                    item.targetDetails.find(
+                                                        (target) =>
+                                                            target.year === currentYear.toString() &&
+                                                            target.month === currentMonth.toString()
+                                                    )
+                                            ).reduce((total, obj) => total + functionCalculateTotalRevenue(obj.ename), 0)
+                                        )
+                                    }/-
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="dash-card-1">
-                  <div className="dash-card-1-head">Advanced Collected</div>
-                  <div className="dash-card-1-body">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="dash-card-1-num clr-ffb900">
-                      {employeeData.length !== 0 && employeeData.filter(
-                                                            (item) =>
-                                                                item.designation === "Sales Executive" &&
-                                                                item.targetDetails.length !== 0 &&
-                                                                item.targetDetails.find(
-                                                                    (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
-                                                                )
-                                                        ).reduce((total, obj) => total +(functionCalculateAdvanceCollected(obj)), 0)}
-                      </div>
+                <div className="col">
+                    <div className="dash-card-1">
+                        <div className="dash-card-1-head">Advanced Collected</div>
+                        <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="dash-card-1-num clr-ffb900">
+                                    ₹{employeeData.length !== 0 &&
+                                        Math.round(
+                                            employeeData.filter(
+                                                (item) =>
+                                                    item.designation === "Sales Executive" &&
+                                                    item.targetDetails.length !== 0 &&
+                                                    item.targetDetails.find(
+                                                        (target) =>
+                                                            target.year === currentYear.toString() &&
+                                                            target.month === currentMonth.toString()
+                                                    )
+                                            ).reduce((total, obj) => total + functionCalculateAdvanceCollected(obj), 0)
+                                        )
+                                    }/-
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="dash-card-1">
-                  <div className="dash-card-1-head">Remaining Collection</div>
-                  <div className="dash-card-1-body">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="dash-card-1-num clr-4299e1">
-                      {employeeData.length !== 0 && employeeData.filter(
-                                                            (item) =>
-                                                                item.designation === "Sales Executive" &&
-                                                                item.targetDetails.length !== 0 &&
-                                                                item.targetDetails.find(
-                                                                    (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
-                                                                )
-                                                        ).reduce((total, obj) => total +(functionCalculatePendingRevenue(obj)), 0)}
-                      </div>
+                <div className="col">
+                    <div className="dash-card-1">
+                        <div className="dash-card-1-head">Remaining Collection</div>
+                        <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="dash-card-1-num clr-4299e1">
+                                    ₹{employeeData.length !== 0 &&
+                                        Math.round(
+                                            employeeData.filter(
+                                                (item) =>
+                                                    item.designation === "Sales Executive" &&
+                                                    item.targetDetails.length !== 0 &&
+                                                    item.targetDetails.find(
+                                                        (target) =>
+                                                            target.year === currentYear.toString() &&
+                                                            target.month === currentMonth.toString()
+                                                    )
+                                            ).reduce((total, obj) => total + functionCalculatePendingRevenue(obj), 0)
+                                        )
+                                    }/-
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              
+
             </div>
             <div className="employee-dashboard mt-2">
                 <div className="card todays-booking totalbooking" id="totalbooking"   >
-             
+
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-                      
+
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
                                 This Month's Bookings

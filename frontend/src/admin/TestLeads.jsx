@@ -437,7 +437,7 @@ function TestLeads() {
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
-    console.log("selectedOption" , selectedOption)
+    //console.log("selectedOption" , selectedOption)
     const parseCsv = (data) => {
         // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
         // Example using Papaparse:
@@ -767,7 +767,7 @@ function TestLeads() {
                 selectedRows.includes(row._id)
             );
         }
-        console.log("selectedObjecyt", selectedObjects)
+        //console.log("selectedObjecyt", selectedObjects)
         // Check if no data is selected
         if (selectedObjects.length === 0) {
             Swal.fire("Empty Data!");
@@ -811,7 +811,7 @@ function TestLeads() {
             dataToSend = data.filter((row) => selectedRows.includes(row._id))
         }
         try {
-            console.log("employeeselecteion" , employeeSelection)
+            //console.log("employeeselecteion" , employeeSelection)
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: dataToSend,

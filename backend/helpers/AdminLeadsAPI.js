@@ -156,7 +156,7 @@ router.post("/manual", async (req, res) => {
         ename: employeeSelection,
         AssignDate: new Date(),
       };
-      console.log("updated" , updatedObj)
+      
       return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
     });
   
