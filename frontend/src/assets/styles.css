@@ -116,10 +116,12 @@ th {
   box-shadow: none !important;
 }
 .form-control{
-    border: 1px solid #ffb900 !important;
+    /* border: 1px solid #ffb900 !important; */
+    border: 1px solid #dadfe5 !important;
 }
 .form-select{
-    border: 1px solid #ffb900 !important;
+    /* border: 1px solid #ffb900 !important; */
+    border: 1px solid #dadfe5 !important;
 }
 .admin-dashboard .form-select,.admin-dashboard .form-control
 {

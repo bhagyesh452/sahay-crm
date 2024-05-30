@@ -2395,7 +2395,7 @@ function TestLeads() {
             </Dialog>
 
             {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
-            <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+            <Dialog className='My-MatDialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
@@ -2406,7 +2406,7 @@ function TestLeads() {
                         }} />
                     </button>
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent className='My-MatDialog-body'>
                     <div>
                         {empData.length !== 0 ? (
                             <>
