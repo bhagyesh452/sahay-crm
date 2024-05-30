@@ -113,11 +113,9 @@ function TestLeads() {
     const [newEmpData, setNewEmpData] = useState([])
     const fetchEmployeesData = async () => {
         try {
-
             const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
             setNewEmpData(response.data.filter(obj => obj.designation === 'Sales Executive' || obj.designation === 'Sales Manager'))
-
         } catch (error) {
             console.log("Error fetching data", error.message)
         }
@@ -439,7 +437,7 @@ function TestLeads() {
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
-
+    console.log("selectedOption" , selectedOption)
     const parseCsv = (data) => {
         // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
         // Example using Papaparse:
@@ -744,12 +742,12 @@ function TestLeads() {
     };
     //--------------------function to assign leads to employees---------------------
     const [openAssignLeadsDialog, setOpenAssignLeadsDialog] = useState(false)
-    const [employeeSelection, setEmployeeSelection] = useState("")
+    const [employeeSelection, setEmployeeSelection] = useState("Not Alloted")
 
     function closeAssignLeadsDialog() {
         setOpenAssignLeadsDialog(false)
         fetchData(1, latestSortCount)
-        setEmployeeSelection("")
+        setEmployeeSelection("Not Alloted")
     }
 
     const handleconfirmAssign = async () => {
@@ -813,6 +811,7 @@ function TestLeads() {
             dataToSend = data.filter((row) => selectedRows.includes(row._id))
         }
         try {
+            console.log("employeeselecteion" , employeeSelection)
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: dataToSend,
@@ -820,10 +819,10 @@ function TestLeads() {
                 date,
                 time,
             });
-            if(isFilter){
-                handleFilterData(1 , itemsPerPage) 
-            }else{
-                fetchData(1 , latestSortCount)
+            if (isFilter) {
+                handleFilterData(1, itemsPerPage)
+            } else {
+                fetchData(1, latestSortCount)
             }
 
             Swal.fire("Data Assigned");
@@ -831,7 +830,7 @@ function TestLeads() {
             //fetchData(1, latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-            setEmployeeSelection("")
+            setEmployeeSelection("Not Alloted")
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
@@ -2395,7 +2394,7 @@ function TestLeads() {
             </Dialog>
 
             {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
-            <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+            {/* <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
@@ -2449,7 +2448,160 @@ function TestLeads() {
                         Assign Data
                     </button>
                 </div>
+            </Dialog> */}
+            <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Assign Data{" "}
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
+                    </button>
+                </DialogTitle>
+                <DialogContent>
+                    {dataStatus === "Unassigned" && <div>
+                        {empData.length !== 0 ? (
+                            <>
+                                <div className="dialogAssign">
+                                    <div className="selector form-control">
+                                        <select
+                                            style={{
+                                                width: "inherit",
+                                                border: "none",
+                                                outline: "none",
+                                            }}
+                                            value={employeeSelection}
+                                            onChange={(e) => {
+                                                setEmployeeSelection(e.target.value);
+                                            }}
+                                        >
+                                            <option value="Not Alloted" disabled>
+                                                Select employee
+                                            </option>
+                                            {empData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div>
+                                <h1>No Employees Found</h1>
+                            </div>
+                        )}
+                    </div>}
+                    {dataStatus === "Assigned" && <div>
+                        <div className="con2 d-flex">
+                            <div
+                                style={
+                                    selectedOption === "direct"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setSelectedOption("direct");
+                                }}
+                                className="direct form-control"
+                            >
+                                <input
+                                    type="radio"
+                                    id="direct"
+                                    value="direct"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "direct"}
+                                    onChange={(e) => {
+                                        handleOptionChange(e)
+                                        setEmployeeSelection("Not Alloted")
+                                    }}
+                                />
+                                <label htmlFor="direct">Move In General Data</label>
+                            </div>
+                            <div
+                                style={
+                                    selectedOption === "someoneElse"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                className="indirect form-control"
+                                onClick={() => {
+                                    setSelectedOption("someoneElse");
+                                }}
+                            >
+                                <input
+                                    type="radio"
+                                    id="someoneElse"
+                                    value="someoneElse"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "someoneElse"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="someoneElse">Assign to Employee</label>
+                            </div>
+                        </div>
+                        <div>
+                            {empData.length !== 0 && selectedOption === "someoneElse" && (
+                                <>
+                                    <div className="dialogAssign mt-2">
+                                        <div className="selector form-control">
+                                            <select
+                                                style={{
+                                                    width: "inherit",
+                                                    border: "none",
+                                                    outline: "none",
+                                                }}
+                                                value={employeeSelection}
+                                                onChange={(e) => {
+                                                    setEmployeeSelection(e.target.value);
+                                                }}
+                                            >
+                                                <option value="Not Alloted" disabled>
+                                                    Select employee
+                                                </option>
+                                                {empData.map((item) => (
+                                                    <option value={item.ename}>{item.ename}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>}
+                </DialogContent>
+                <div className="btn-list">
+                    <button
+                        style={{ width: "100vw", borderRadius: "0px" }}
+                        onClick={handleconfirmAssign}
+                        className="btn btn-primary ms-auto"
+                    >
+                        Assign Data
+                    </button>
+                </div>
             </Dialog>
+
             {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
