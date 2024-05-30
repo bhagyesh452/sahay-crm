@@ -8,6 +8,7 @@ const RecentUpdatesModel = require("../models/RecentUpdates");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
+const FollowUpModel = require('../models/FollowUp.js');
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -501,38 +502,105 @@ router.get("/specific-company/:companyId", async (req, res) => {
 
 
 //11. Assign company to new employee
+// router.post("/assign-new", async (req, res) => {
+//   const { data } = req.body;
+//   const { ename } = req.body;
+//   //console.log("data" , data)
+//   //console.log("ename" , ename
+//   try {
+//     // Add AssignDate property with the current date
+//     for (const employeeData of data) {
+//       //console.log("employee" , employeeData)
+//       try {
+//         const companyName = employeeData["Company Name"];
+//         const employee = await CompanyModel.findOneAndUpdate(
+//           { "Company Name": companyName }, 
+//           { $set: 
+//             { 
+//               ename: ename,
+//               bdmAcceptStatus:"NotForwarded",
+//               feedbackPoints:[],
+//               multiBdmName:[],
+//               Status:"Untouched"
+//              },
+//              $unset:{
+//               bdmName:"",
+//               bdeOldStatus:"",
+//               bdeForwardDate:""
+//              }
+            
+//         });
+        
+//         const deleteTeams = await TeamLeadsModel.findByIdAndDelete(employee._id);
+//         const deleteFoolowUp = await FollowUpModel.findOneAndDelete(employee["Company Name"])
+//         //console.log("newemployee" , employee)
+//         await RemarksHistory.deleteOne({ companyID: employee._id });
+
+//         //console.log("saved" , savedEmployee)
+
+//       } catch (error) {
+
+//         //console.log("kuch h ye" , duplicateEntries);
+//         console.error("Error Assigning Data:", error.message);
+
+//       }
+//     }
+//     res.status(200).json({ message: "Data updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating data:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
 router.post("/assign-new", async (req, res) => {
-  const { data } = req.body;
-  const { ename } = req.body;
-  //console.log("data" , data)
-  //console.log("ename" , ename
+  const { data, ename } = req.body;
+
   try {
-    // Add AssignDate property with the current date
-    for (const employeeData of data) {
-      //console.log("employee" , employeeData)
-      try {
-        const companyName = employeeData["Company Name"];
-        const employee = await CompanyModel.findOneAndUpdate({ "Company Name": companyName }, { $set: { ename: ename } });
-        //console.log("yahan kuch locha h" , employee)
-        const deleteTeams = TeamLeadsModel.findByIdAndDelete(employee._id);
-        //console.log("newemployee" , employee)
+    const bulkOperations = data.map((employeeData) => ({
+      updateOne: {
+        filter: { "Company Name": employeeData["Company Name"] },
+        update: {
+          $set: {
+            ename: ename,
+            bdmAcceptStatus: "NotForwarded",
+            feedbackPoints: [],
+            multiBdmName: [],
+            Status: "Untouched",
+          },
+          $unset: {
+            bdmName: "",
+            bdeOldStatus: "",
+            bdeForwardDate: "",
+          },
+        },
+      },
+    }));
+
+    // Perform bulk write operation
+    await CompanyModel.bulkWrite(bulkOperations);
+
+    // Perform deletions in TeamLeadsModel and FollowUpModel
+    const deletionPromises = data.map(async (employeeData) => {
+      const companyName = employeeData["Company Name"];
+      const employee = await CompanyModel.findOne({ "Company Name": companyName });
+
+      if (employee) {
+        await TeamLeadsModel.findByIdAndDelete(employee._id);
+        await FollowUpModel.findOneAndDelete({ companyName : employee["Company Name"] });
         await RemarksHistory.deleteOne({ companyID: employee._id });
-
-        //console.log("saved" , savedEmployee)
-
-      } catch (error) {
-
-        //console.log("kuch h ye" , duplicateEntries);
-        console.error("Error Assigning Data:", error.message);
-
       }
-    }
+    });
+
+    // Execute all deletion promises
+    await Promise.all(deletionPromises);
+
     res.status(200).json({ message: "Data updated successfully" });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;

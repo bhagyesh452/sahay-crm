@@ -515,72 +515,52 @@ function EmployeeLeads() {
     };
 
     const handleUploadData = async (e) => {
-        console.log("Uploading data");
-
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
-
+      
         const csvdata = employeeData
-            .filter((employee) => selectedRows.includes(employee._id))
-            .map((employee) => {
-                if (employee.Status === "Interested" || employee.Status === "FollowUp") {
-                    // If Status is "Interested" or "FollowUp", don't change Status and Remarks
-                    return { ...employee };
-                } else {
-                    // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
-                    return { ...employee, Status: "Untouched", Remarks: "No Remarks Added" };
-                }
-            });
-
-        // Create an array to store promises for updating CompanyModel
-        const updatePromises = [];
-
-        for (const data of csvdata) {
-            const updatedObj = {
-                ...data,
-                date: currentDate,
-                time: currentTime,
-                ename: newemployeeSelection,
-                companyName: data["Company Name"],
-            };
-
-            // Add the promise for updating CompanyModel to the array
-            updatePromises.push(
-                axios.post(`${secretKey}/company-data/assign-new`, {
-                    newemployeeSelection,
-                    data: updatedObj,
-                })
-            );
-        }
-
+          .filter((employee) => selectedRows.includes(employee._id))
+          .map((employee) => ({
+            ...employee,
+            Status: "Untouched",
+            Remarks: "No Remarks Added",
+          }));
+      
         try {
-            // Wait for all update promises to resolve
-            await Promise.all(updatePromises);
-            console.log("Employee data updated!");
-
-            // Clear the selection
-            setnewEmployeeSelection("Not Alloted");
-
-            Swal.fire({
-                title: "Data Sent!",
-                text: "Data sent successfully!",
-                icon: "success",
-            });
-
-            // Fetch updated employee details and new data
-            fetchEmployeeDetails();
-            fetchNewData();
-            closepopupAssign();
+          Swal.fire({
+            title: 'Assigning...',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+      
+          const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+            ename: newemployeeSelection,
+            data: csvdata,
+          });
+      
+          Swal.close();
+          Swal.fire({
+            title: "Data Sent!",
+            text: "Data sent successfully!",
+            icon: "success",
+          });
+      
+          setnewEmployeeSelection("Not Alloted");
+          fetchEmployeeDetails();
+          fetchNewData();
+          closepopupAssign();
         } catch (error) {
-            console.error("Error updating employee data:", error);
-
-            Swal.fire({
-                title: "Error!",
-                text: "Failed to update employee data. Please try again later.",
-                icon: "error",
-            });
+          console.error("Error updating employee data:", error);
+          Swal.close();
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to update employee data. Please try again later.",
+            icon: "error",
+          });
         }
-    };
+      };
 
     //console.log(loginDetails);
 

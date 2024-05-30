@@ -145,34 +145,97 @@ router.post("/manual", async (req, res) => {
     }
   });
 
+  // router.post("/postAssignData", async (req, res) => {
+  //   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+    
+  //   // If not assigned, post data to MongoDB or perform any desired action
+  //   const updatePromises = selectedObjects.map((obj) => {
+  //     // Add AssignData property with the current date
+  //     const updatedObj = {
+  //       ...obj,
+  //       ename: employeeSelection,
+  //       AssignDate: new Date(),
+  //     };
+      
+  //     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+  //   });
+  
+  //   // Add the recent update to the RecentUpdatesModel
+  //   const newUpdate = new RecentUpdatesModel({
+  //     title: title,
+  //     date: date,
+  //     time: time,
+  //   });
+  //   await newUpdate.save();
+  
+  //   // Execute all update promises
+  //   await Promise.all(updatePromises);
+  
+  //   res.json({ message: "Data posted successfully" });
+  // });
+
   router.post("/postAssignData", async (req, res) => {
     const { employeeSelection, selectedObjects, title, date, time } = req.body;
     
-    // If not assigned, post data to MongoDB or perform any desired action
-    const updatePromises = selectedObjects.map((obj) => {
-      // Add AssignData property with the current date
-      const updatedObj = {
-        ...obj,
-        ename: employeeSelection,
-        AssignDate: new Date(),
-      };
-      
-      return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
-    });
-  
-    // Add the recent update to the RecentUpdatesModel
-    const newUpdate = new RecentUpdatesModel({
-      title: title,
-      date: date,
-      time: time,
-    });
-    await newUpdate.save();
-  
-    // Execute all update promises
-    await Promise.all(updatePromises);
-  
-    res.json({ message: "Data posted successfully" });
-  });
+    // Bulk operations for CompanyModel
+    const bulkOperationsCompany = selectedObjects.map((obj) => ({
+        updateOne: {
+            filter: { _id: obj._id },
+            update: {
+                $set: {
+                    ename: employeeSelection,
+                    AssignDate: new Date(),
+                    bdmAcceptStatus: "NotForwarded",
+                    feedbackPoints: [],
+                    multiBdmName: [],
+                    Status:"Untouched"
+                },
+                $unset: {
+                    bdmName: "",
+                    bdeOldStatus: "",
+                    bdeForwardDate: ""
+                }
+            }
+        }
+    }));
+
+    // Bulk operations for TeamLeadsModel
+    const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
+        deleteOne: {
+            filter: { _id: obj._id }
+        }
+    }));
+
+    const bulkOperationsProjection = selectedObjects.map((obj)=>({
+      deleteOne:{
+        filter:{companyName : obj["Company Name"]}
+      }
+    }))
+
+    try {
+        // Perform bulk update on CompanyModel
+        await CompanyModel.bulkWrite(bulkOperationsCompany);
+
+        // Perform bulk delete on TeamLeadsModel
+        await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
+
+        await FollowUpModel.bulkWrite(bulkOperationsProjection)
+
+        // Add the recent update to the RecentUpdatesModel
+        const newUpdate = new RecentUpdatesModel({
+            title,
+            date,
+            time
+        });
+        await newUpdate.save();
+
+        res.json({ message: "Data posted successfully" });
+    } catch (error) {
+        console.error("Error posting assign data:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
   router.delete("/deleteAdminSelectedLeads", async (req, res) => {
     const { selectedRows } = req.body;

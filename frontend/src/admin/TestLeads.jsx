@@ -794,6 +794,49 @@ function TestLeads() {
         }
     };
 
+    // const handleAssignData = async () => {
+    //     const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
+    //     const DT = new Date();
+    //     const date = DT.toLocaleDateString();
+    //     const time = DT.toLocaleTimeString();
+    //     const currentDataStatus = dataStatus;
+    //     let dataToSend = [];
+    //     if (isFilter) {
+    //         if (dataStatus === 'Unassigned') {
+    //             dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id))
+    //         } else if (dataStatus === 'Assigned') {
+    //             dataToSend = assignedData.filter((row) => selectedRows.includes(row._id))
+    //         }
+    //     } else {
+    //         dataToSend = data.filter((row) => selectedRows.includes(row._id))
+    //     }
+    //     try {
+    //         //console.log("employeeselecteion" , employeeSelection)
+    //         const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
+    //             employeeSelection,
+    //             selectedObjects: dataToSend,
+    //             title,
+    //             date,
+    //             time,
+    //         });
+    //         if (isFilter) {
+    //             handleFilterData(1, itemsPerPage)
+    //         } else {
+    //             fetchData(1, latestSortCount)
+    //         }
+
+    //         Swal.fire("Data Assigned");
+    //         setOpenAssignLeadsDialog(false);
+    //         //fetchData(1, latestSortCount);
+    //         setSelectedRows([]);
+    //         setDataStatus(currentDataStatus);
+    //         setEmployeeSelection("Not Alloted")
+    //     } catch (err) {
+    //         console.log("Internal server Error", err);
+    //         Swal.fire("Error Assigning Data");
+    //     }
+    // };
+
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
         const DT = new Date();
@@ -801,41 +844,43 @@ function TestLeads() {
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
         let dataToSend = [];
+    
         if (isFilter) {
             if (dataStatus === 'Unassigned') {
-                dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id))
+                dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id));
             } else if (dataStatus === 'Assigned') {
-                dataToSend = assignedData.filter((row) => selectedRows.includes(row._id))
+                dataToSend = assignedData.filter((row) => selectedRows.includes(row._id));
             }
         } else {
-            dataToSend = data.filter((row) => selectedRows.includes(row._id))
+            dataToSend = data.filter((row) => selectedRows.includes(row._id));
         }
+    
         try {
-            //console.log("employeeselecteion" , employeeSelection)
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: dataToSend,
                 title,
                 date,
-                time,
+                time
             });
+    
             if (isFilter) {
-                handleFilterData(1, itemsPerPage)
+                handleFilterData(1, itemsPerPage);
             } else {
-                fetchData(1, latestSortCount)
+                fetchData(1, latestSortCount);
             }
-
+    
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
-            //fetchData(1, latestSortCount);
             setSelectedRows([]);
             setDataStatus(currentDataStatus);
-            setEmployeeSelection("Not Alloted")
+            setEmployeeSelection("Not Alloted");
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
         }
     };
+    
 
     //-------------------------function to delete leads-------------------------
 

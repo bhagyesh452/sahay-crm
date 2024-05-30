@@ -736,35 +736,92 @@ function EmployeeParticular() {
 
   //console.log(loginDetails);
 
-  const handleUploadData = async (e) => {
-    //console.log("Uploading data");
+  // const handleUploadData = async (e) => {
+  //   //console.log("Uploading data");
 
+  //   const currentDate = new Date().toLocaleDateString();
+  //   const currentTime = new Date().toLocaleTimeString();
+
+  //   const csvdata = employeeData
+  //     .filter((employee) => selectedRows.includes(employee._id))
+  //     .map((employee) => {
+  //       if (
+  //         employee.Status === "Interested" ||
+  //         employee.Status === "FollowUp"
+  //       ) {
+  //         // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+  //         return { ...employee };
+  //       } else {
+  //         // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+  //         return {
+  //           ...employee,
+  //           Status: "Untouched",
+  //           Remarks: "No Remarks Added",
+  //           bdmAcceptStatus: "NotForwarded",
+  //         };
+  //       }
+  //     });
+
+  //   // Create an array to store promises for updating CompanyModel
+  //   // Store company IDs to be deleted
+
+  //   try {
+  //     Swal.fire({
+  //       title: 'Assigning...',
+  //       allowOutsideClick: false,
+  //       didOpen: () => {
+  //         Swal.showLoading();
+  //       }
+  //     });
+    
+  //     const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+  //       ename: newemployeeSelection,
+  //       data: csvdata,
+  //     });
+    
+  //     // Close the loading Swal
+  //     Swal.close();
+    
+  //     Swal.fire({
+  //       title: "Data Sent!",
+  //       text: "Data sent successfully!",
+  //       icon: "success",
+  //     });
+    
+  //     // Reset the new employee selection
+  //     setnewEmployeeSelection("Not Alloted");
+    
+  //     // Fetch updated employee details and new data
+  //     fetchEmployeeDetails();
+  //     fetchNewData();
+  //     closepopupAssign();
+  //   } catch (error) {
+  //     console.error("Error updating employee data:", error);
+    
+  //     // Close the loading Swal
+  //     Swal.close();
+    
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: "Failed to update employee data. Please try again later.",
+  //       icon: "error",
+  //     });
+  //   }
+    
+  // };
+
+  const handleUploadData = async (e) => {
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
-
+  
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
-      .map((employee) => {
-        if (
-          employee.Status === "Interested" ||
-          employee.Status === "FollowUp"
-        ) {
-          // If Status is "Interested" or "FollowUp", don't change Status and Remarks
-          return { ...employee };
-        } else {
-          // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
-          return {
-            ...employee,
-            Status: "Untouched",
-            Remarks: "No Remarks Added",
-            bdmAcceptStatus: "NotForwarded",
-          };
-        }
-      });
-
-    // Create an array to store promises for updating CompanyModel
-    // Store company IDs to be deleted
-
+      .map((employee) => ({
+        ...employee,
+        Status: "Untouched",
+        Remarks: "No Remarks Added",
+      }));
+  
     try {
       Swal.fire({
         title: 'Assigning...',
@@ -773,42 +830,34 @@ function EmployeeParticular() {
           Swal.showLoading();
         }
       });
-    
+  
       const response = await axios.post(`${secretKey}/company-data/assign-new`, {
         ename: newemployeeSelection,
         data: csvdata,
       });
-    
-      // Close the loading Swal
+  
       Swal.close();
-    
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-    
-      // Reset the new employee selection
+  
       setnewEmployeeSelection("Not Alloted");
-    
-      // Fetch updated employee details and new data
       fetchEmployeeDetails();
       fetchNewData();
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
-    
-      // Close the loading Swal
       Swal.close();
-    
       Swal.fire({
         title: "Error!",
         text: "Failed to update employee data. Please try again later.",
         icon: "error",
       });
     }
-    
   };
+  
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
@@ -2811,14 +2860,6 @@ function EmployeeParticular() {
               </div>
             </div>
           </div>
-          {/* <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              <button onClick={handleButtonClick}>Choose File</button> */}
-
           {selectedOption === "someoneElse" && (
             <div>
               {newempData.length !== 0 ? (
