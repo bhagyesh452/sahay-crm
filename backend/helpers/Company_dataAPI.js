@@ -406,11 +406,14 @@ router.get('/filter-leads', async (req, res) => {
     const assignedCount = await CompanyModel.countDocuments(assignedQuery);
     const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
 
-    // Fetch unassigned data
-    let unassignedQuery = { ...baseQuery, ename: 'Not Alloted' };
-
-    const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-    const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+    // Fetch unassigned data only if selectedBDEName is not specified
+    let unassignedData = [];
+    let unassignedCount = 0;
+    if (!selectedBDEName || selectedBDEName.trim() === '') {
+      let unassignedQuery = { ...baseQuery, ename: 'Not Alloted' };
+      unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+      unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+    }
 
     res.status(200).json({
       assigned: assignedData,
@@ -426,6 +429,7 @@ router.get('/filter-leads', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
