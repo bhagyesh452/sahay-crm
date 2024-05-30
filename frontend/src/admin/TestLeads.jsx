@@ -1133,7 +1133,6 @@ function TestLeads() {
 
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
-
     const stateList = State.getStatesOfCountry("IN")
     const cityList = City.getCitiesOfCountry("IN")
     const [selectedStateCode, setSelectedStateCode] = useState("")

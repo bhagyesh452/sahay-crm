@@ -799,10 +799,10 @@ function ManageLeads() {
                 date,
                 time,
             });
-            if(isFilter){
-                handleFilterData(1 , itemsPerPage) 
-            }else{
-                fetchData(1 , latestSortCount)
+            if (isFilter) {
+                handleFilterData(1, itemsPerPage)
+            } else {
+                fetchData(1, latestSortCount)
             }
 
             Swal.fire("Data Assigned");
@@ -1130,7 +1130,7 @@ function ManageLeads() {
     const [unAssignedData, setunAssignedData] = useState([])
     const currentYear = new Date().getFullYear();
     const [openBacdrop, setOpenBacdrop] = useState(false)
-    
+
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -1783,13 +1783,13 @@ function ManageLeads() {
                                         </tbody>
                                     </table>
                                 )}
-                             {(data.length !== 0 || (isFilter && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
+                            {(data.length !== 0 || (isFilter && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
-                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned/500)}</span> }
-                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned/500)}</span> }
+                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
+                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
                                     {!isFilter && <span>Page {currentPage} / {totalCount}</span>}
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
                                         (isFilter && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
@@ -3071,7 +3071,13 @@ function ManageLeads() {
                     </div>
                 </div>
             </Drawer>
-
+            {/* --------------------------------backedrop------------------------- */}
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </div>
     )
 }
