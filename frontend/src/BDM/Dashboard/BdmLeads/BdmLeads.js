@@ -1107,14 +1107,70 @@ function BdmLeads() {
     setSelectedOption(event.target.value);
   };
 
-  const handleSubmitData = (e) => {
+  // const handleSubmitData = (e) => {
+  //   e.preventDefault();
+  //   axios
+  //     .post(`${secretKey}/admin-leads/manual`, {
+  //       "Company Name": cname,
+  //       "Company Number": cnumber,
+  //       "Company Email": cemail,
+  //       "Company Incorporation Date  ": cidate,
+  //       City: city,
+  //       State: state,
+  //       ename: data.ename,
+  //       AssignDate: new Date(),
+  //       "Company Address": companyAddress,
+  //       "Director Name(First)": directorNameFirst,
+  //       "Director Number(First)": directorNumberFirst,
+  //       "Director Email(First)": directorEmailFirst,
+  //       "Director Name(Second)": directorNameSecond,
+  //       "Director Number(Second)": directorNumberSecond,
+  //       "Director Email(Second)": directorEmailSecond,
+  //       "Director Name(Third)": directorNameThird,
+  //       "Director Number(Third)": directorNumberThird,
+  //       "Director Email(Third)": directorEmailThird,
+  //     })
+  //     .then((response) => {
+  //       //console.log("response", response);
+  //       //console.log("Data sent Successfully");
+  //       Swal.fire({
+  //         title: "Data Added!",
+  //         text: "Successfully added new Data!",
+  //         icon: "success",
+  //       });
+  //       fetchNewData();
+  //       closepopupNew();
+  //     })
+  //     .catch((error) => {
+  //       Swal.fire("Please Enter Unique data!");
+  //     });
+  // };
+
+  const handleSubmitData = async (e) => {
     e.preventDefault();
-    axios
-      .post(`${secretKey}/admin-leads/manual`, {
-        "Company Name": cname,
+    if (cname === "") {
+      Swal.fire("Please Enter Company Name");
+    } 
+    else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
+      Swal.fire("Company Number is required");
+    } else if (cemail === "") {
+      Swal.fire("Company Email is required");
+    } else if (city === "") {
+      Swal.fire("City is required");
+    } else if (state === "") {
+      Swal.fire("State is required");
+    } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
+      Swal.fire("First Director Number should be 10 digits");
+    } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
+      Swal.fire("Second Director Number should be 10 digits");
+    } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
+      Swal.fire("Third Director Number should be 10 digits");
+    } else {
+      const dataToSend = {
+        "Company Name": cname.toUpperCase().trim(),
         "Company Number": cnumber,
         "Company Email": cemail,
-        "Company Incorporation Date  ": cidate,
+        "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
         City: city,
         State: state,
         ename: data.ename,
@@ -1129,21 +1185,51 @@ function BdmLeads() {
         "Director Name(Third)": directorNameThird,
         "Director Number(Third)": directorNumberThird,
         "Director Email(Third)": directorEmailThird,
-      })
-      .then((response) => {
+        "UploadedBy": data.ename
+      }
+      await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
         //console.log("response", response);
-        //console.log("Data sent Successfully");
+        console.log("Data sent Successfully");
         Swal.fire({
-          title: "Data Added!",
-          text: "Successfully added new Data!",
+          title: "Lead Request Sent!",
+          text: "Your Request has been sent to the Data Manager!",
+          html: 'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896',
           icon: "success",
         });
         fetchNewData();
         closepopupNew();
       })
-      .catch((error) => {
-        Swal.fire("Please Enter Unique data!");
-      });
+        .catch((error) => {
+          console.error("Error sending data:", error);
+          Swal.fire({
+            title: "This lead already exists in the Start-Up Sahay's database.",
+            text: "For further assistance, please contact the Data Analyst.",
+            html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+          });
+        });
+      // axios
+      //   .post(`${secretKey}/manual`, {
+      //     "Company Name": cname.toUpperCase().trim(),
+      //     "Company Number": cnumber,
+      //     "Company Email": cemail,
+      //     "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+      //     City: city,
+      //     State: state,
+      //     ename: data.ename,
+      //     AssignDate: new Date(),
+      //     "Company Address": companyAddress,
+      //     "Director Name(First)": directorNameFirst,
+      //     "Director Number(First)": directorNumberFirst,
+      //     "Director Email(First)": directorEmailFirst,
+      //     "Director Name(Second)": directorNameSecond,
+      //     "Director Number(Second)": directorNumberSecond,
+      //     "Director Email(Second)": directorEmailSecond,
+      //     "Director Name(Third)": directorNameThird,
+      //     "Director Number(Third)": directorNumberThird,
+      //     "Director Email(Third)": directorEmailThird,
+      //     "UploadedBy": data.ename
+      //   })
+    }
   };
 
   const [openSecondDirector, setOpenSecondDirector] = useState(false);
@@ -1335,7 +1421,6 @@ function BdmLeads() {
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
-
       try {
         await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
         console.log("Data sent successfully");

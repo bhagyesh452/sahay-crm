@@ -1262,7 +1262,6 @@ function EmployeePanel() {
 
   const handleSubmitData = async (e) => {
     e.preventDefault();
-
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
     } 
@@ -3891,7 +3890,13 @@ function EmployeePanel() {
                                         : company.Remarks}
                                     </p>
 
-                                    {(company.bdmAcceptStatus !== "Accept" || (company.Status === "Matured" || company.Status === "Not Interested" || company.Status === "Busy" || company.Status === "Busy" || company.Status === "Not Picked Up" || company.Status === "Junk")) && (
+                                    {(company.bdmAcceptStatus !== "Accept" || 
+                                    (company.Status === "Matured" || 
+                                    company.Status === "Not Interested" || 
+                                    company.Status === "Busy" || 
+                                    company.Status === "Busy" || 
+                                    company.Status === "Not Picked Up" || 
+                                    company.Status === "Junk")) && (
                                       <IconButton
                                         onClick={() => {
                                           functionopenpopupremarks(
@@ -4257,7 +4262,9 @@ function EmployeePanel() {
                                           color="#fbb900"
                                         />
                                       ) : company.bdmAcceptStatus === "Accept" ? (
-                                        <TiArrowBack style={{
+                                        <TiArrowBack 
+                                        
+                                        style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
