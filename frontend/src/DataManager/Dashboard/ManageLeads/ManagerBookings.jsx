@@ -1214,7 +1214,9 @@ const [expanseObject, setExpanseObject] = useState({
                                         </div>
                                       </div>
                                       <div class="col-sm-9 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                            ? obj.paymentRemarks
+                                            : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1657,7 +1659,9 @@ const [expanseObject, setExpanseObject] = useState({
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.paymentMethod
+                                                            }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1673,7 +1677,9 @@ const [expanseObject, setExpanseObject] = useState({
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-6 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.extraRemarks
+                                                            }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1915,7 +1921,8 @@ const [expanseObject, setExpanseObject] = useState({
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                        currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1930,7 +1937,8 @@ const [expanseObject, setExpanseObject] = useState({
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                        currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}
                                     </div>
@@ -2444,7 +2452,9 @@ const [expanseObject, setExpanseObject] = useState({
                                             </div>
                                           </div>
                                           <div class="col-sm-9 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                                ? obj.paymentRemarks
+                                                : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2867,7 +2877,9 @@ const [expanseObject, setExpanseObject] = useState({
                                                               </div>
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
-                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                  paymentObj.paymentMethod
+                                                                }>
                                                                 {
                                                                   paymentObj.paymentMethod
                                                                 }
@@ -2883,7 +2895,9 @@ const [expanseObject, setExpanseObject] = useState({
                                                               </div>
                                                             </div>
                                                             <div class="col-sm-6 align-self-stretc p-0">
-                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                  paymentObj.extraRemarks
+                                                                }>
                                                                 {
                                                                   paymentObj.extraRemarks
                                                                 }
@@ -3038,7 +3052,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.paymentMethod}>
                                             {objMain.paymentMethod}
                                           </div>
                                         </div>
@@ -3052,7 +3066,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title="{objMain.extraNotes}">
                                             {objMain.extraNotes}
                                           </div>
                                         </div>

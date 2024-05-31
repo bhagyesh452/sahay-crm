@@ -1988,3 +1988,11 @@ td input
 {
   border-radius: 0px !important;
 }
+.My_Text_Wrap {
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: left;
+}

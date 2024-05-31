@@ -341,7 +341,7 @@ function BdmBookings() {
       <Navbar userId={userId} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
-           <div className="booking_list_Filter">
+          <div className="booking_list_Filter">
             <div className="container-xl">
               <div className="row justify-content-between">
                 <div className="col-2">
@@ -955,7 +955,9 @@ function BdmBookings() {
                                         </div>
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                            ? obj.paymentRemarks
+                                            : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1189,7 +1191,9 @@ function BdmBookings() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.paymentMethod
+                                                            }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1205,7 +1209,9 @@ function BdmBookings() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-6 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.extraRemarks
+                                                            }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1446,7 +1452,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
+                                        currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1461,7 +1468,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
+                                        currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>
@@ -1906,7 +1914,9 @@ function BdmBookings() {
                                             </div>
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                                ? obj.paymentRemarks
+                                                : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2248,7 +2258,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee  My_Text_Wrap" title={currentLeadform &&
+                                        currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -2263,7 +2274,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                        currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>

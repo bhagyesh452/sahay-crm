@@ -1165,7 +1165,9 @@ function BookingList() {
                                         </div>
                                       </div>
                                       <div class="col-sm-9 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                            ? obj.paymentRemarks
+                                            : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1182,7 +1184,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                          - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
                                     </div>
@@ -1435,7 +1437,9 @@ function BookingList() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.paymentMethod
+                                                            }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1451,7 +1455,9 @@ function BookingList() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-6 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                              paymentObj.extraRemarks
+                                                            }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1688,12 +1694,13 @@ function BookingList() {
                               <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-4 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100">
+                                    <div class="booking_inner_dtl_h h-100 ">
                                       Payment Method
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
+                                        currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1708,7 +1715,8 @@ function BookingList() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                        currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>
@@ -2217,7 +2225,9 @@ function BookingList() {
                                             </div>
                                           </div>
                                           <div class="col-sm-9 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
+                                                ? obj.paymentRemarks
+                                                : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2496,7 +2506,9 @@ function BookingList() {
                                                               </div>
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
-                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                  paymentObj.paymentMethod
+                                                                }>
                                                                 {
                                                                   paymentObj.paymentMethod
                                                                 }
@@ -2512,7 +2524,9 @@ function BookingList() {
                                                               </div>
                                                             </div>
                                                             <div class="col-sm-6 align-self-stretc p-0">
-                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                  paymentObj.extraRemarks
+                                                                }>
                                                                 {
                                                                   paymentObj.extraRemarks
                                                                 }
@@ -2667,7 +2681,7 @@ function BookingList() {
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.paymentMethod}>
                                             {objMain.paymentMethod}
                                           </div>
                                         </div>
@@ -2681,7 +2695,7 @@ function BookingList() {
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee" title={objMain.extraNotes}>
                                             {objMain.extraNotes}
                                           </div>
                                         </div>
