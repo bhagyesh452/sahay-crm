@@ -61,11 +61,10 @@ function BdmDashboard() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      //console.log(tempData);
       setData(userData);
-      setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
-      setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
-      setForwardEmployeeDataNew(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
+      setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
+      setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
+      setForwardEmployeeDataNew(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
       //setmoreFilteredData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -77,17 +76,32 @@ function BdmDashboard() {
   const [employeeDataNew, setEmployeeDataNew] = useState([]);
 
   const fetchEmployeeInfo = async () => {
-    fetch(`${secretKey}/employee/einfo`)
-      .then((response) => response.json())
-      .then((data) => {
-        setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataFilter(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataNew(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-      })
-      .catch((error) => {
-        console.error(`Error Fetching Employee Data `, error);
-      });
+    try {
+      const response = await fetch(`${secretKey}/employee/einfo`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const userData = data.find((item) => item._id === userId);
+  
+      if (!userData) {
+        throw new Error('User data not found');
+      }
+  
+      const filteredData = data.filter(
+        (employee) =>
+          (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") &&
+          employee.branchOffice === userData.branchOffice
+      );
+  
+      setEmployeeData(filteredData);
+      setEmployeeDataFilter(filteredData);
+      setEmployeeDataNew(filteredData);
+    } catch (error) {
+      console.error('Error Fetching Employee Data:', error);
+    }
   };
+  
 
   useEffect(() => {
     fetchData()
@@ -2633,8 +2647,8 @@ useEffect(() => {
 
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
-      <div className='container-xl'>
-        <div className="employee-dashboard mt-2">
+      <div className='container-xl mt-3'>
+        <div className="employee-dashboard ">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
             <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
               <div className="dashboard-title">
@@ -2927,7 +2941,7 @@ useEffect(() => {
                             .filter(
                               (item) =>
                                 (item.designation ===
-                                  "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
+                                  "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === data.branchOffice &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (
@@ -3029,7 +3043,7 @@ useEffect(() => {
 
       {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
 
-      <div className='container-xl'>
+      <div className='container-xl mt-3'>
         <div className="employee-dashboard">
           <div className="card">
             <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
@@ -3414,13 +3428,13 @@ useEffect(() => {
                       <td>
                         {companyDataTotal.filter(company =>
                           (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") &&
-                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === "Sindhu Bhawan" && company.ename === empObj.ename)
+                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === data.brandOffice && company.ename === empObj.ename)
                         ).length}
 
                       </td>
                       <td>
                         {teamLeadsData2.filter(obj =>
-                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === "Sindhu Bhawan" && (obj.ename === empObj.ename || obj.bdmName === empObj.ename))
+                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === data.brandOffice && (obj.ename === empObj.ename || obj.bdmName === empObj.ename))
                         ).length}
 
                       </td>
@@ -3445,8 +3459,8 @@ useEffect(() => {
         </div>
       </div>
       {/* -------------------------------------------------projection summary------------------------------------------------------------ */}
-      <div className='container-xl'>
-        <div className="employee-dashboard mt-3"
+      <div className='container-xl mt-3'>
+        <div className="employee-dashboard "
           id="projectionsummaryadmin"   >
           <div className="card">
             <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">

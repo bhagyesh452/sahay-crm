@@ -8,6 +8,8 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
+import { LiaDigitalTachographSolid } from "react-icons/lia";
+import { VscGraph } from "react-icons/vsc";
 
 function EmpNav({ userId, bdmWork }) {
   const location = useLocation();
@@ -27,8 +29,12 @@ function EmpNav({ userId, bdmWork }) {
     window.location.replace(`/employee-data/${userId}`);
   };
 
-  const handleClickMyBookings = ()=>{
+  const handleClickMyBookings = () => {
     window.location.replace(`/employee-bookings/${userId}`)
+  }
+
+  const handleClickReports=()=>{
+    window.location.replace(`/employee-reports/${userId}`)
   }
 
   return (
@@ -92,28 +98,42 @@ function EmpNav({ userId, bdmWork }) {
                     <a className="nav-link" href="#">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
 
-                      <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                       </span>
                       <span className="nav-link-title">Team Leads</span>
                     </a>
 
                   </li>
                 )}
-                 <li 
-                 className={
+                <li
+                  className={
                     location.pathname === `/employee-bookings/${userId}` ? "nav-item active" : "nav-item"
                   }
-                    onClick={handleClickMyBookings}
-                    >
+                  onClick={handleClickMyBookings}
+                >
 
-                    <a className="nav-link" href="#">
+                  <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       <BiBookContent style={{ height: "24px", width: "19px" }} />
-                      </span>
-                      <span className="nav-link-title">My Bookings</span>
-                    </a>
+                    </span>
+                    <span className="nav-link-title">My Bookings</span>
+                  </a>
 
-                  </li>
+                </li>
+                <li
+                  className={
+                    location.pathname === `/employee-reports/${userId}` ? "nav-item active" : "nav-item"
+                  }
+                  onClick={handleClickReports}
+                >
+                  <a className="nav-link" href="#">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <VscGraph style={{ height: "24px", width: "19px" }} />
+                    </span>
+                    <span className="nav-link-title">Reports</span>
+                  </a>
+
+                </li>
               </ul>
 
             </div>

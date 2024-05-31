@@ -100,7 +100,7 @@ import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTo
 
 
 
-function EmployeeDashboard() {
+function EmployeeReports() {
   const { userId } = useParams();
   const { newtoken } = useParams();
   const [data, setData] = useState([]);
@@ -2399,12 +2399,12 @@ function EmployeeDashboard() {
     <div className="admin-dashboard">
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      <div className="page-wrapper display-none">
+      <div className="page-wrapper">
         {/* Lead Report Dashboard Numbers */}
-        <div className="dashboard-headings container-xl">
+        <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Leads Report</h3>
         </div>
-        <div className="dashboard-dtl-main">
+        <div className="dashboard-dtl-main display-none">
           <div className="container-xl">
             <div className="row">
               <div className="col">
@@ -2519,10 +2519,10 @@ function EmployeeDashboard() {
           </div>
         </div>
         {/* Today's Report in Numbers */}
-        <div className="dashboard-headings container-xl">
+        <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Today's Report</h3>
         </div>
-        <div className="dashboard-dtl-main">
+        <div className="dashboard-dtl-main display-none">
           <div className="container-xl">
             <div className="row">
               <div class="col">
@@ -2625,10 +2625,10 @@ function EmployeeDashboard() {
           </div>
         </div>
         {/* Current Month Reports Report in Numbers */}
-        <div className="dashboard-headings container-xl">
+        <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Current Month Report</h3>
         </div>
-        <div className="dashboard-dtl-main">
+        <div className="dashboard-dtl-main display-none">
           <div className="container-xl">
             <div className="row">
               <div class="col">
@@ -2731,7 +2731,7 @@ function EmployeeDashboard() {
           </div>
         </div>
         {/* AS BDE AND BDM DASHBOARD */}
-        <div className="as-bde-bdm-daSH mt-4 mb-2">
+        <div className="as-bde-bdm-daSH mt-4 mb-2 display-none">
           <div className="container-xl">
             <div className="as-bde-bdm-daSH-inner">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -4126,35 +4126,6 @@ function EmployeeDashboard() {
           </div>
         </div>
       </div>
-      <div className="page-wrapper employess-new-dashboard">
-        <div className="Dash-Main mt-3">
-          <div className="container-xl">
-            <div className="row">
-              <div className="col-sm-12 col-md-12 col-lg-12">
-                {/* sales report */}
-                <div className="row">
-                  <div className="col-sm-12 col-md-12 col-lg-12">
-                    <EmployeeSalesReport data={data} followData={followData} redesignedData={redesignedData} moreEmpData={moreEmpData} />
-                  </div>
-                </div>
-                {/* Lead reports */}
-                <div className="row mt-3 mb-4">
-                  {/* calling data report */}
-                  <div className="col-sm-4 col-md-4 col-lg-4">
-                    <EmployeeCallingReport />
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4">
-                    <EmployeeForwardedReport moreEmpData={moreEmpData}/>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer
@@ -4389,4 +4360,4 @@ function EmployeeDashboard() {
   );
 }
 
-export default EmployeeDashboard;
+export default EmployeeReports;

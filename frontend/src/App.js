@@ -55,6 +55,7 @@ import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/Empl
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
+import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 
 
 
@@ -93,6 +94,7 @@ function App() {
 
             <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings/> : <Navigate to="/" />}>
             </Route>
+            <Route path='/employee-reports/:userId' element={newtoken  ?  <EmployeeReports/>: <Navigate to='/'/>}></Route>
 
 
 
