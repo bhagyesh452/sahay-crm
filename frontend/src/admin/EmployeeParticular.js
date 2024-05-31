@@ -2247,23 +2247,18 @@ function EmployeeParticular() {
                       {loading ? (
                         <tbody>
                           <tr>
-                            <td
-                              colSpan="11"
-                              style={{
-                                height: "100px !important",
-                                padding: "80px !important",
-                              }}
-                              className="LoaderTDSatyle"
-                            >
-                              <ClipLoader
-                                color="lightgrey"
-                                loading
-                                size={35}
-                                height="25"
-                                width="25"
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                              />
+                            <td  colSpan="11"  >
+                              <div className="LoaderTDSatyle">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading
+                                  size={35}
+                                  height="25"
+                                  width="25"
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </div>
                             </td>
                           </tr>
                         </tbody>
@@ -2581,16 +2576,23 @@ function EmployeeParticular() {
                         </>
                       )}
                       {companiesLoading ? (
-                        <tbody className="d-flex align-items-center justify-content-center LoaderTDSatyle">
-                          <ClipLoader
-                            color="lightgrey"
-                            loading
-                            size={10}
-                            height="25"
-                            width="2"
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                          />
+                        <tbody>
+                          <tr>
+                            <td  colSpan="11">
+                              <div className="LoaderTDSatyle">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading
+                                  size={10}
+                                  height="25"
+                                  width="2"
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                            
                         </tbody>
                       ) : (
                         <>

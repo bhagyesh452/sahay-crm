@@ -3015,14 +3015,16 @@ function BdmLeads() {
                           {loading ? (
                             <tbody>
                               <tr>
-                                <td colSpan="11" className="LoaderTDSatyle">
-                                  <ClipLoader
-                                    color="lightgrey"
-                                    loading
-                                    size={30}
-                                    aria-label="Loading Spinner"
-                                    data-testid="loader"
-                                  />
+                                <td colSpan="11">
+                                  <div  className="LoaderTDSatyle">
+                                    <ClipLoader
+                                      color="lightgrey"
+                                      loading
+                                      size={30}
+                                      aria-label="Loading Spinner"
+                                      data-testid="loader"
+                                    />
+                                  </div>
                                 </td>
                               </tr>
                             </tbody>

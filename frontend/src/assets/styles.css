@@ -1970,6 +1970,7 @@ td input
 {
   min-height: 400px;
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: center;
 }
