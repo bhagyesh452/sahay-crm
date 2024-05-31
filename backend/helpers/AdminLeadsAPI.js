@@ -10,12 +10,12 @@ const FollowUpModel = require("../models/FollowUp");
 
 
 
-router.get('/', async function(req,res){
-    try{
-        res.status(200).json({message:"running"})
-    }catch(err){
-        console.log('Error logging in with OAuth2 user', err);
-    }
+router.get('/', async function (req, res) {
+  try {
+    res.status(200).json({ message: "running" })
+  } catch (err) {
+    console.log('Error logging in with OAuth2 user', err);
+  }
 
 })
 router.post("/exportLeads/", async (req, res) => {
@@ -102,204 +102,207 @@ router.post("/exportLeads/", async (req, res) => {
 
 
 router.post("/manual", async (req, res) => {
-    const receivedData = req.body;
-    //console.log("receiveddata" , receivedData)
-  
-    // console.log(receivedData);
-  
-    try {
-      const employee = new CompanyModel(receivedData);
-      const savedEmployee = await employee.save();
-      // console.log("Data sent");
-      res
-        .status(200)
-        .json(savedEmployee || { message: "Data sent successfully" });
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-      console.error("Error saving employee:", error.message);
+  const receivedData = req.body;
+  //console.log("receiveddata" , receivedData)
+
+  // console.log(receivedData);
+
+  try {
+    const employee = new CompanyModel(receivedData);
+    const savedEmployee = await employee.save();
+    // console.log("Data sent");
+    res
+      .status(200)
+      .json(savedEmployee || { message: "Data sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error saving employee:", error.message);
+  }
+})
+
+router.get('/getIds', async (req, res) => {
+  try {
+    const { dataStatus } = req.query;
+
+    let query = {};
+    if (dataStatus === 'Unassigned') {
+      query = { ename: 'Not Alloted' };
+    } else if (dataStatus === 'Assigned') {
+      query = { ename: { $ne: 'Not Alloted' } };
     }
-  })
 
-  router.get('/getIds', async (req, res) => {
-    try {
-      const { dataStatus } = req.query;
-  
-      let query = {};
-      if (dataStatus === 'Unassigned') {
-        query = { ename: 'Not Alloted' };
-      } else if (dataStatus === 'Assigned') {
-        query = { ename: { $ne: 'Not Alloted' } };
-      }
-  
-      // Query the collection to get only the _id fields
-      const getId = await CompanyModel.find(query, '_id');
-  
-      // Extract the _id values into an array
-      const allIds = getId.map(doc => doc._id);
-  
-      // Send the array of IDs as a response
-      res.status(200).json(allIds);
-    } catch (error) {
-      console.error('Error fetching IDs:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+    // Query the collection to get only the _id fields
+    const getId = await CompanyModel.find(query, '_id');
 
-  // router.post("/postAssignData", async (req, res) => {
-  //   const { employeeSelection, selectedObjects, title, date, time } = req.body;
-    
-  //   // If not assigned, post data to MongoDB or perform any desired action
-  //   const updatePromises = selectedObjects.map((obj) => {
-  //     // Add AssignData property with the current date
-  //     const updatedObj = {
-  //       ...obj,
-  //       ename: employeeSelection,
-  //       AssignDate: new Date(),
-  //     };
-      
-  //     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
-  //   });
-  
-  //   // Add the recent update to the RecentUpdatesModel
-  //   const newUpdate = new RecentUpdatesModel({
-  //     title: title,
-  //     date: date,
-  //     time: time,
-  //   });
-  //   await newUpdate.save();
-  
-  //   // Execute all update promises
-  //   await Promise.all(updatePromises);
-  
-  //   res.json({ message: "Data posted successfully" });
-  // });
+    // Extract the _id values into an array
+    const allIds = getId.map(doc => doc._id);
 
-  router.post("/postAssignData", async (req, res) => {
-    const { employeeSelection, selectedObjects, title, date, time } = req.body;
-    
-    // Bulk operations for CompanyModel
-    const bulkOperationsCompany = selectedObjects.map((obj) => ({
-        updateOne: {
-            filter: { _id: obj._id },
-            update: {
-                $set: {
-                    ename: employeeSelection,
-                    AssignDate: new Date(),
-                    bdmAcceptStatus: "NotForwarded",
-                    feedbackPoints: [],
-                    multiBdmName: [],
-                    Status:"Untouched"
-                },
-                $unset: {
-                    bdmName: "",
-                    bdeOldStatus: "",
-                    bdeForwardDate: ""
-                }
-            }
+    // Send the array of IDs as a response
+    res.status(200).json(allIds);
+  } catch (error) {
+    console.error('Error fetching IDs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// router.post("/postAssignData", async (req, res) => {
+//   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+
+//   // If not assigned, post data to MongoDB or perform any desired action
+//   const updatePromises = selectedObjects.map((obj) => {
+//     // Add AssignData property with the current date
+//     const updatedObj = {
+//       ...obj,
+//       ename: employeeSelection,
+//       AssignDate: new Date(),
+//     };
+
+//     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+//   });
+
+//   // Add the recent update to the RecentUpdatesModel
+//   const newUpdate = new RecentUpdatesModel({
+//     title: title,
+//     date: date,
+//     time: time,
+//   });
+//   await newUpdate.save();
+
+//   // Execute all update promises
+//   await Promise.all(updatePromises);
+
+//   res.json({ message: "Data posted successfully" });
+// });
+
+router.post("/postAssignData", async (req, res) => {
+  const { employeeSelection, selectedObjects, title, date, time } = req.body;
+
+  // Bulk operations for CompanyModel
+  const bulkOperationsCompany = selectedObjects.map((obj) => ({
+    updateOne: {
+      filter: { _id: obj._id },
+      update: {
+        $set: {
+          ename: employeeSelection,
+          AssignDate: new Date(),
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [],
+          Status: "Untouched"
+        },
+        $unset: {
+          bdmName: "",
+          bdeOldStatus: "",
+          bdeForwardDate: "",
+          bdmStatusChangeDate: "",
+          bdmStatusChangeTime: "",
+          bdmRemarks: ""
         }
-    }));
-
-    // Bulk operations for TeamLeadsModel
-    const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
-        deleteOne: {
-            filter: { _id: obj._id }
-        }
-    }));
-
-    const bulkOperationsProjection = selectedObjects.map((obj)=>({
-      deleteOne:{
-        filter:{companyName : obj["Company Name"]}
       }
-    }))
-
-    try {
-        // Perform bulk update on CompanyModel
-        await CompanyModel.bulkWrite(bulkOperationsCompany);
-
-        // Perform bulk delete on TeamLeadsModel
-        await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
-
-        await FollowUpModel.bulkWrite(bulkOperationsProjection)
-
-        // Add the recent update to the RecentUpdatesModel
-        const newUpdate = new RecentUpdatesModel({
-            title,
-            date,
-            time
-        });
-        await newUpdate.save();
-
-        res.json({ message: "Data posted successfully" });
-    } catch (error) {
-        console.error("Error posting assign data:", error);
-        res.status(500).json({ error: "Internal server error" });
     }
+  }));
+
+  // Bulk operations for TeamLeadsModel
+  const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: { _id: obj._id }
+    }
+  }));
+
+  const bulkOperationsProjection = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: { companyName: obj["Company Name"] }
+    }
+  }))
+
+  try {
+    // Perform bulk update on CompanyModel
+    await CompanyModel.bulkWrite(bulkOperationsCompany);
+
+    // Perform bulk delete on TeamLeadsModel
+    await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
+
+    await FollowUpModel.bulkWrite(bulkOperationsProjection)
+
+    // Add the recent update to the RecentUpdatesModel
+    const newUpdate = new RecentUpdatesModel({
+      title,
+      date,
+      time
+    });
+    await newUpdate.save();
+
+    res.json({ message: "Data posted successfully" });
+  } catch (error) {
+    console.error("Error posting assign data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 
-  router.delete("/deleteAdminSelectedLeads", async (req, res) => {
-    const { selectedRows } = req.body;
-  
-    try {
-      // Use Mongoose to delete rows by their IDs
-      const response = await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-      const response2 = await TeamLeadsModel.deleteMany({_id:{$in:selectedRows}})
-      const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
-        const company = await CompanyModel.findById(companyId);
-        if (company) {
-            // Find and delete documents from followmodel collection based on company name
-            return FollowUpModel.deleteOne({ companyName: company['Company Name'] });
-        }
-        return null;
+router.delete("/deleteAdminSelectedLeads", async (req, res) => {
+  const { selectedRows } = req.body;
+
+  try {
+    // Use Mongoose to delete rows by their IDs
+    const response = await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+    const response2 = await TeamLeadsModel.deleteMany({ _id: { $in: selectedRows } })
+    const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
+      const company = await CompanyModel.findById(companyId);
+      if (company) {
+        // Find and delete documents from followmodel collection based on company name
+        return FollowUpModel.deleteOne({ companyName: company['Company Name'] });
+      }
+      return null;
     }));
-      console.log(response)
-      res.status(200).json({
-        message:
-          "Rows deleted successfully and backup created successfully.",
-      });
+    console.log(response)
+    res.status(200).json({
+      message:
+        "Rows deleted successfully and backup created successfully.",
+    });
 
-      // Trigger backup on the server
-      // exec(
-      //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
-      //   (error, stdout, stderr) => {
-      //     if (error) {
-      //       console.error("Error creating backup:", error);
-      //       // Respond with an error if backup fails
-      //       res.status(500).json({ error: "Error creating backup." });
-      //     } else {
-      //       // console.log("Backup created successfully:", stdout);
-      //       // Respond with success message if backup is successful
-      //       res.status(200).json({
-      //         message:
-      //           "Rows deleted successfully and backup created successfully.",
-      //       });
-      //     }
-      //   }
-      // );
-    } catch (error) {
-      console.error("Error deleting rows:", error.message);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
+    // Trigger backup on the server
+    // exec(
+    //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
+    //   (error, stdout, stderr) => {
+    //     if (error) {
+    //       console.error("Error creating backup:", error);
+    //       // Respond with an error if backup fails
+    //       res.status(500).json({ error: "Error creating backup." });
+    //     } else {
+    //       // console.log("Backup created successfully:", stdout);
+    //       // Respond with success message if backup is successful
+    //       res.status(200).json({
+    //         message:
+    //           "Rows deleted successfully and backup created successfully.",
+    //       });
+    //     }
+    //   }
+    // );
+  } catch (error) {
+    console.error("Error deleting rows:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-  router.get('/searchCompany', async (req, res) => {
-    try {
-      const { id } = req.query;
-  
-      // Check if ID is provided and is a valid MongoDB ObjectId
-  
-      // Search for the company in the database
-      const company = await CompanyModel.findById(id);
-  
-      // Return the company data
-      res.status(200).json(company);
-    } catch (error) {
-      console.error('Error searching for company:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-  
-  
-  
+router.get('/searchCompany', async (req, res) => {
+  try {
+    const { id } = req.query;
 
-  module.exports = router;
+    // Check if ID is provided and is a valid MongoDB ObjectId
+
+    // Search for the company in the database
+    const company = await CompanyModel.findById(id);
+
+    // Return the company data
+    res.status(200).json(company);
+  } catch (error) {
+    console.error('Error searching for company:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
+module.exports = router;

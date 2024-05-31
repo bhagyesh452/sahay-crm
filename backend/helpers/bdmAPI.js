@@ -8,6 +8,7 @@ const RemarksHistory = require("../models/RemarksHistory");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
+const FollowUpModel = require('../models/FollowUp.js');
 
 router.get("/teamleadsdata", async (req, res) => {
   try {
@@ -64,7 +65,7 @@ router.post("/forwardtobdmdata", async (req, res) => {
 
 router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
- 
+
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
     const data = await TeamLeadsModel.find({
@@ -109,12 +110,12 @@ router.post("/update-bdm-status/:id", async (req, res) => {
   }
 });
 
-router.get(`/api/completeLeadsData` , async(req,res)=>{
-  try{
+router.get(`/api/completeLeadsData`, async (req, res) => {
+  try {
     const response = await TeamLeadsModel.find()
     res.status(200).json(response)
-  }catch(error){
-    res.status(500).json({error:"Internal Server Error"})
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" })
   }
 })
 
@@ -368,7 +369,40 @@ router.get("/matured-get-requests-byBDM/:bdmName", async (req, res) => {
   }
 });
 
-  
-  
+//--------------api for delete bdm from admin side------------------
 
-  module.exports = router;
+router.post('/deletebdm-updatebdedata', async (req, res) => {
+  const { companyId, companyName } = req.body; // Changed from req.params to req.body
+  try {
+    await CompanyModel.findOneAndUpdate(
+      { _id: companyId }, // Corrected filter object
+      {
+        $set: {
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [],
+        },
+        $unset: {
+          bdmName: "",
+          bdeForwardDate: "",
+          bdmStatusChangeDate: "",
+          bdmStatusChangeTime: "",
+          bdmRemarks:""
+        }
+      }
+    );
+
+    await TeamLeadsModel.findOneAndDelete({ _id: companyId }); // Corrected filter object
+    await FollowUpModel.findOneAndDelete({ companyName: companyName });
+    await RemarksHistory.deleteOne({ companyID: companyId });
+
+    res.status(200).json({ message: "Company updated and deleted successfully" });
+  } catch (error) {
+    console.error("Error updating and deleting company:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+module.exports = router;

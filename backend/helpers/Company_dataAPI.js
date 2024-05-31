@@ -321,12 +321,12 @@ router.get('/new-leads', async (req, res) => {
 //       console.log("assigned" , assignedQuery)
 //       const assignedCount = await CompanyModel.countDocuments(assignedQuery);
 //       const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
-     
+
 //       // Fetch unassigned data
 //       const unassignedQuery = { ...query, ename: 'Not Alloted' };
 //       const unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
 //       const unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
-      
+
 //       res.status(200).json({
 //           assigned: assignedData,
 //           unassigned: unassignedData,
@@ -528,9 +528,9 @@ router.get("/specific-company/:companyId", async (req, res) => {
 //               bdeOldStatus:"",
 //               bdeForwardDate:""
 //              }
-            
+
 //         });
-        
+
 //         const deleteTeams = await TeamLeadsModel.findByIdAndDelete(employee._id);
 //         const deleteFoolowUp = await FollowUpModel.findOneAndDelete(employee["Company Name"])
 //         //console.log("newemployee" , employee)
@@ -571,6 +571,9 @@ router.post("/assign-new", async (req, res) => {
             bdmName: "",
             bdeOldStatus: "",
             bdeForwardDate: "",
+            bdmStatusChangeDate: "",
+            bdmStatusChangeTime: "",
+            bdmRemarks: ""
           },
         },
       },
@@ -586,10 +589,12 @@ router.post("/assign-new", async (req, res) => {
 
       if (employee) {
         await TeamLeadsModel.findByIdAndDelete(employee._id);
-        await FollowUpModel.findOneAndDelete({ companyName : employee["Company Name"] });
+        await FollowUpModel.findOneAndDelete({ companyName: employee["Company Name"] });
         await RemarksHistory.deleteOne({ companyID: employee._id });
       }
     });
+
+
 
     // Execute all deletion promises
     await Promise.all(deletionPromises);

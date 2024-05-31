@@ -102,6 +102,7 @@ import { MdOutlinePersonPin } from "react-icons/md";
 import Employee from './Employees.js'
 import Team from './Team.js'
 import EmployeeParticular from "./EmployeeParticular.js";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 
@@ -174,27 +175,11 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error.message);
         }
     };
-    //console.log(eData)
-    //console.log(data)
-
-    // useEffect(()=>{
-    //     fetchData()
-    //     setBdmNames(empData
-    //         .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice)
-    //         .map((employee) => employee.ename)
-    //       );
-
-    // }, [empData])
-
-
-
-    //console.log(bdmNames)
-
     const [maturedBooking, setMaturedBooking] = useState(null);
 
     const fetchBDMbookingRequests = async () => {
         const bdmName = data.ename;
-      
+
         try {
             const response = await axios.get(
                 `${secretKey}/bdm-data/matured-get-requests-byBDM/${bdmName}`
@@ -210,19 +195,18 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error);
         }
     };
-//------------------------fetching tem leads data--------------------------------------
-    const fetchCompleteData =async()=>{
-          try{
+    //------------------------fetching tem leads data--------------------------------------
+    const fetchCompleteData = async () => {
+        try {
             const response = await axios.get(`${secretKey}/bdm-data/completeLeadsData`)
-          }catch(error){
-                 console.log("Error fetching data" , error)
-          }
+        } catch (error) {
+            console.log("Error fetching data", error)
+        }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchCompleteData()
-
-    },[])
+    }, [])
 
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
@@ -652,9 +636,6 @@ function AdminEmployeeTeamLeads() {
                     // Handle the case where the API call was not successful
                     console.error("Failed to update status:", response.data.message);
                 }
-
-
-
             } else {
                 // Use SweetAlert to confirm the "Matured" status
                 const requestData = {
@@ -1417,8 +1398,46 @@ function AdminEmployeeTeamLeads() {
         return `${year}-${month}-${day}`;
     }
 
+    //----------------- delete bdm from forwarded data----------------------
 
-
+    const handleDeleteBdm = async (companyId, companyName , bdmStatus) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you really want to delete the company ${companyName}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                const response = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, {
+                    companyId,
+                    companyName
+                });
+    
+                Swal.fire(
+                    'Deleted!',
+                    'The company has been deleted.',
+                    'success'
+                );
+    
+                fetchTeamLeadsData(bdmStatus);
+                //console.log("Company updated and deleted successfully", response.data);
+            } catch (error) {
+                console.log("Error Deleting Company", error);
+                Swal.fire(
+                    'Error!',
+                    'There was an error deleting the company.',
+                    'error'
+                );
+            }
+        }
+    };
+    
+    
 
 
     return (
@@ -2193,13 +2212,12 @@ function AdminEmployeeTeamLeads() {
                                                 <th>
                                                     BDE Forward Date
                                                 </th>
-                                                {/* {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>} */}
-                                                {/* {bdmNewStatus === "Untouched" && <th>Action</th>} */}
+
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
-                                                    <th>Add Projection</th>
-                                                    <th>Add Feedback</th>
-                                                </>)
-                                                }
+                                                    <th>View Projection</th>
+                                                    <th>View Feedback</th>
+                                                </>)}
+                                                <td>Action</td>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -2364,31 +2382,6 @@ function AdminEmployeeTeamLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                                   
-                                                    {/* {
-                                                        bdmNewStatus === "Matured" && <>
-                                                            <td>
-                                                                <IconButton
-                                                                    style={{ marginRight: "5px" }}
-                                                                    onClick={() => {
-                                                                        setMaturedID(company._id);
-
-                                                                        functionopenAnchor();
-                                                                    }}
-                                                                >
-                                                                    <IconEye
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </IconButton>
-
-                                                            </td>
-                                                        </>
-                                                    } */}     
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
                                                             {company &&
@@ -2418,7 +2411,7 @@ function AdminEmployeeTeamLeads() {
                                                                             functionopenprojection(
                                                                                 company["Company Name"]
                                                                             );
-                                                                            setIsEditProjection(true);
+                                                                            // setIsEditProjection(true);
                                                                         }}
 
                                                                         style={{
@@ -2431,106 +2424,65 @@ function AdminEmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {(company.feedbackRemarks || company.feedbackPoints.length !== 0) && (<IconButton>
-                                                                <IoAddCircle
-                                                                    onClick={() => {
-                                                                        handleOpenFeedback(
-                                                                            company["Company Name"],
-                                                                            company._id,
-                                                                            company.feedbackPoints,
-                                                                            company.feedbackRemarks,
-                                                                            company.bdmStatus
-                                                                        )
-                                                                    }}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "17px",
-                                                                        height: "17px",
-                                                                        color: "#fbb900"
-                                                                    }} />
-                                                            </IconButton>)}
+                                                            {(company.feedbackRemarks || company.feedbackPoints.length !== 0) ? (
+                                                                <IconButton>
+                                                                    <IoAddCircle
+                                                                        onClick={() => {
+                                                                            handleOpenFeedback(
+                                                                                company["Company Name"],
+                                                                                company._id,
+                                                                                company.feedbackPoints,
+                                                                                company.feedbackRemarks,
+                                                                                company.bdmStatus
+                                                                            )
+                                                                        }}
+                                                                        style={{
+                                                                            cursor: "pointer",
+                                                                            width: "17px",
+                                                                            height: "17px",
+                                                                            color: "#fbb900"
+                                                                        }} />
+                                                                </IconButton>) : (
+                                                                <IconButton>
+                                                                    <IoAddCircle
+                                                                        onClick={() => {
+                                                                            handleOpenFeedback(
+                                                                                company["Company Name"],
+                                                                                company._id,
+                                                                                company.feedbackPoints,
+                                                                                company.feedbackRemarks,
+                                                                                company.bdmStatus
+                                                                            )
+                                                                        }}
+                                                                        style={{
+                                                                            cursor: "pointer",
+                                                                            width: "17px",
+                                                                            height: "17px",
+
+                                                                        }} />
+                                                                </IconButton>
+                                                            )}
                                                         </td>
                                                     </>)}
-
-                                                    {/* {dataStatus === "Matured" && (
-                            <>
-                              <td>
-                                <div className="d-flex">
-                                  <IconButton
-                                    style={{ marginRight: "5px" }}
-                                    onClick={() => {
-                                      setMaturedID(company._id);
-
-                                      functionopenAnchor();
-                                    }}
-                                  >
-                                    <IconEye
-                                      style={{
-                                        width: "14px",
-                                        height: "14px",
-                                        color: "#d6a10c",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </IconButton>
-
-                                  <IconButton
-                                    onClick={() => {
-                                      handleRequestDelete(
-                                        company._id,
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                    disabled={requestDeletes.some(
-                                      (item) =>
-                                        item.companyId === company._id &&
-                                        item.request === undefined
-                                    )}
-                                  >
-                                    <DeleteIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#f70000",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() => {
-                                      handleEditClick(company._id)
-                                    }}
-                                  >
-                                    <Edit
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#109c0b",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() => {
-                                      setCompanyName(
-                                        company["Company Name"]
-                                      );
-                                      setAddFormOpen(true);
-                                    }}
-                                  >
-                                    <AddCircleIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#4f5b74",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                </div>
-                              </td>
-                            </>
-                          )} */}
+                                                    <td>
+                                                        <button className='tbl-action-btn'
+                                                            onClick={() => {
+                                                                handleDeleteBdm(
+                                                                    company._id,
+                                                                    company["Company Name"],
+                                                                    company.bdmStatus
+                                                                )
+                                                            }}>
+                                                            <MdDeleteOutline
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    color: "#f70000",
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                }}
+                                                            />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -2562,28 +2514,6 @@ function AdminEmployeeTeamLeads() {
                                                 >
                                                     <IconChevronLeft />
                                                 </IconButton>
-                                                {/* <span>
-                          Page {currentPage + 1} of{" "}
-                          {Math.ceil(filteredData.length / itemsPerPage)}
-                        </span> */}
-
-                                                {/* <IconButton
-                          onClick={() =>
-                            setCurrentPage((prevPage) =>
-                              Math.min(
-                                prevPage + 1,
-                                Math.ceil(filteredData.length / itemsPerPage) -
-                                1
-                              )
-                            )
-                          }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                          }
-                        >
-                          <IconChevronRight />
-                        </IconButton> */}
                                             </div>
                                         )}
                                     </table>
@@ -3006,7 +2936,7 @@ function AdminEmployeeTeamLeads() {
                                 Projection Form
                             </h1>
                             <div>
-                                {projectingCompany &&
+                                {/* {projectingCompany &&
                                     projectionData &&
                                     projectionData.some(
                                         (item) => item.companyName === projectingCompany
@@ -3014,30 +2944,14 @@ function AdminEmployeeTeamLeads() {
                                     <>
                                         <IconButton
                                             onClick={() => {
-                                                setIsEditProjection(true);
+                                                //setIsEditProjection(true);
                                             }}
                                         >
                                             <EditIcon color="grey"></EditIcon>
                                         </IconButton>
                                     </>
-                                ) : null}
-                                {/* <IconButton
-                  onClick={() => {
-                    setIsEditProjection(true);
-                  }}>
-                  <EditIcon color="grey"></EditIcon>
-                </IconButton> */}
-                                {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
-                  <DeleteIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      color: "#bf0b0b",
-                    }}
-                  >
-                    Delete
-                  </DeleteIcon>
-                </IconButton> */}
+                                ) : null} */}
+
                                 <IconButton>
                                     <IoClose onClick={closeProjection} />
                                 </IconButton>
@@ -3250,12 +3164,6 @@ function AdminEmployeeTeamLeads() {
                                 >
                                     Submit
                                 </button>
-                            </div>
-                            <div>
-                                <button>Pay now</button>
-                                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
-                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
-                {error && <p>{error}</p>} */}
                             </div>
                         </div>
                     </div>
