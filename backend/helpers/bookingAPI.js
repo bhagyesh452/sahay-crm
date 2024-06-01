@@ -2165,6 +2165,40 @@ router.post(
         </div>` : "";
       
           // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+          const includedServices = [
+            "Pitch Deck Development",
+            "Financial Modeling",
+            "DPR Development",
+            "CMA Report Development",
+            "Company Profile Write-Up",
+            "Business Profile",
+            "Seed Funding Support",
+            "Angel Funding Support",
+            "VC Funding Support",
+            "Crowd Funding Support",
+            "I-Create",
+            "Nidhi Seed Support Scheme",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
+            "CSR Funding",
+            "Stand-Up India",
+            "PMEGP",
+            "USAID",
+            "UP Grant",
+            "DBS Grant",
+            "MSME Innovation",
+            "MSME Hackathon",
+            "Gujarat Grant",
+            "CGTMSC",
+            "Income Tax Exemption",
+            "Mudra Loan",
+            "SIDBI Loan",
+            "Incubation Support"
+          ];
+           const draftCondition = newData.services.some((service)=>{
+                return includedServices.includes(service.serviceName);
+              }) ? "block" : "none";
           const servicesShubhi = [
             "Pitch Deck Development ",
             "Financial Modeling",
@@ -2305,14 +2339,8 @@ router.post(
                           <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                           <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                           <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                          <p style="display:${serviceNames == "Start-Up India Certificate"
-                        ? "none"
-                        : "block"
-                      }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                          <p style="display:${serviceNames == "Start-Up India Certificate"
-                        ? "none"
-                        : "block"
-                      }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                          <p style="display:${draftCondition}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                          <p style="display:${draftCondition}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
                           <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                           
                           <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
@@ -3908,6 +3936,38 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     </section>
   </div>` : "";
 
+  const includedServices = [
+    "Pitch Deck Development",
+    "Financial Modeling",
+    "DPR Development",
+    "CMA Report Development",
+    "Company Profile Write-Up",
+    "Business Profile",
+    "Seed Funding Support",
+    "Angel Funding Support",
+    "VC Funding Support",
+    "Crowd Funding Support",
+    "I-Create",
+    "Nidhi Seed Support Scheme",
+    "Nidhi Prayash Yojna",
+    "NAIF",
+    "Raftaar",
+    "CSR Funding",
+    "Stand-Up India",
+    "PMEGP",
+    "USAID",
+    "UP Grant",
+    "DBS Grant",
+    "MSME Innovation",
+    "MSME Hackathon",
+    "Gujarat Grant",
+    "CGTMSC",
+    "Income Tax Exemption",
+    "Mudra Loan",
+    "SIDBI Loan",
+    "Incubation Support"
+  ];
+  
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const servicesShubhi = [
       "Pitch Deck Development ",
@@ -3968,6 +4028,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
 
+
+      const draftCondition = newData.services.some((service)=>{
+        return includedServices.includes(service.serviceName);
+      }) ? "block" : "none";
     const AuthorizedEmail =
       mailName === "Dhruvi Gohel"
         ? "dhruvi@startupsahay.com"
@@ -4057,14 +4121,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                     <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                     <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p style="display:${serviceNames == "Start-Up India Certificate"
-                  ? "none"
-                  : "block"
-                }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                    <p style="display:${serviceNames == "Start-Up India Certificate"
-                  ? "none"
-                  : "block"
-                }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                    <p style="display:${draftCondition}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                    <p style="display:${draftCondition}"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
                     <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                     <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
                     <div class="signature">

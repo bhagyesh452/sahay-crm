@@ -10,7 +10,7 @@ import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
 import { LiaDigitalTachographSolid } from "react-icons/lia";
 import { VscGraph } from "react-icons/vsc";
-
+import { GrDocumentStore } from "react-icons/gr";
 function EmpNav({ userId, bdmWork }) {
   const location = useLocation();
 
@@ -49,20 +49,6 @@ function EmpNav({ userId, bdmWork }) {
                 } onClick={handleDashboardClick}>
 
                   <a className="nav-link" href="#">
-                    <BarChartIcon />
-                    <span className="nav-link-title">Dashboard</span>
-                  </a>
-                </li>
-                <li onClick={handleConvertedLeadsClicksame}
-                  className={
-                    location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                >
-                  {/* <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to={"/employee-data/"}
-                  > */}
-                  <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
                       <svg
@@ -82,6 +68,22 @@ function EmpNav({ userId, bdmWork }) {
                         <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
                       </svg>
+                    </span>
+                    <span className="nav-link-title">Dashboard</span>
+                  </a>
+                </li>
+                <li onClick={handleConvertedLeadsClicksame}
+                  className={
+                    location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
+                  }
+                >
+                  {/* <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to={"/employee-data/"}
+                  > */}
+                  <a className="nav-link" href="#">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
                     </span>
                     <span className="nav-link-title">My Leads</span>
                   </a>
