@@ -136,7 +136,8 @@ function TestLeads() {
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
-    useEffect(() => {
+   
+    useEffect(() => {   
         if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
             fetchTotalLeads()
@@ -161,7 +162,7 @@ function TestLeads() {
     const handleNextPage = () => {
         const nextPage = currentPage + 1;
         setCurrentPage(nextPage);
-        if (isFilter) {
+        if (isFilter ) {
             handleFilterData(nextPage, itemsPerPage);
         } else {
             fetchData(nextPage, latestSortCount);
@@ -178,6 +179,42 @@ function TestLeads() {
         }
     };
 
+    useEffect(() => {
+        if (isFilter) {
+            const fetchFilteredLeads = async () => {
+                try {
+                    const page = 1;
+                    const limit = 500;
+                    const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+                        params: {
+                            selectedStatus,
+                            selectedState,
+                            selectedNewCity,
+                            selectedBDEName,
+                            selectedAssignDate,
+                            selectedUploadedDate,
+                            selectedAdminName,
+                            selectedYear,
+                            selectedCompanyIncoDate,
+                            page,  
+                            limit
+                        }
+                    });
+    
+                    if (dataStatus === "Unassigned") {
+                        setunAssignedData(response.data.unassigned);
+                    } else {
+                        setAssignedData(response.data.assigned);
+                    }
+                } catch (error) {
+                    console.error("Error fetching filtered leads:", error);
+                }
+            };
+    
+            fetchFilteredLeads();
+        }
+    }, [dataStatus]);
+    
 
     //const currentData = mainData.slice(startIndex, endIndex);
 
@@ -194,6 +231,7 @@ function TestLeads() {
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
+            setIsFilter(false);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
                 params: { searchQuery, field: "Company Name" }
             });
@@ -204,7 +242,6 @@ function TestLeads() {
                 fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
-
                 setData(response.data);
                 if (response.data.length > 0) {
                     if (response.data[0].ename === 'Not Alloted') {
@@ -213,7 +250,6 @@ function TestLeads() {
                         setDataStatus('Assigned')
                     }
                 }
-
             }
         } catch (error) {
             console.error('Error searching leads:', error.message);
@@ -1263,7 +1299,8 @@ function TestLeads() {
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
-
+                console.log("Unassigned" , response.data.unassigned)
+                console.log("Assigned" , response.data.assigned)
                 setOpenBacdrop(false)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
@@ -1274,13 +1311,13 @@ function TestLeads() {
                 //setData(response.data);  // Optionally set all data
                 setCurrentPage(response.data.currentPage);  // Reset to the first page
                 //setData(response.data.assigned);
-                if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
-                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned');
-                    } else {
-                        setDataStatus('Assigned');
-                    }
-                }
+                // if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                //     if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                //         setDataStatus('Unassigned');
+                //     } else {
+                //         setDataStatus('Assigned');
+                //     }
+                // }
                 setOpenFilterDrawer(false);
             }
         } catch (error) {
