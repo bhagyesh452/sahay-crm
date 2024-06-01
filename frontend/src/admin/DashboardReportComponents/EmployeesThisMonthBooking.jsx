@@ -905,25 +905,50 @@ function EmployeesThisMonthBooking() {
                     break;
             }
             if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
-
-                if (mainBooking.bdeName === mainBooking.bdmName) {
-                    achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-                    mainBooking.services.map(serv => {
-                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                    })
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                    achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-                    mainBooking.services.map(serv => {
-                        expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                    })
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                    if (mainBooking.bdeName === data.ename) {
-                        achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-                        mainBooking.services.map(serv => {
-                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                        })
+                mainBooking.services.forEach(service => {
+                    if (service.paymentTerms === "Full Advanced") {
+                      if (mainBooking.bdeName === mainBooking.bdmName) {
+                        achievedAmount += parseInt(service.totalPaymentWOGST)
+                      } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+                        achievedAmount += parseInt(service.totalPaymentWOGST) / 2
+                      } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.btempAchievedDatadeName === data.ename) {
+                          achievedAmount += parseInt(service.totalPaymentWOGST)
+                        }
+                      }
+                    } else {
+                      const payment =  parseInt(service.firstPayment)
+                      if (mainBooking.bdeName === mainBooking.bdmName) {
+          
+                        achievedAmount += parseInt(payment);
+                      } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+          
+                        achievedAmount += parseInt(payment) / 2;
+                      } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.bdeName === data.ename) {
+                          achievedAmount += parseInt(payment)
+                        }
+                      }
                     }
-                }
+                  });
+                // if (mainBooking.bdeName === mainBooking.bdmName) {
+                //     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                //     mainBooking.services.map(serv => {
+                //         expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                //     })
+                // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                //     achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
+                //     mainBooking.services.map(serv => {
+                //         expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                //     })
+                // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                //     if (mainBooking.bdeName === data.ename) {
+                //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
+                //         mainBooking.services.map(serv => {
+                //             expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                //         })
+                //     }
+                // }
             }
             mainBooking.moreBookings.map((moreObject) => {
                 let condition = false;
@@ -941,25 +966,51 @@ function EmployeesThisMonthBooking() {
                         break;
                 }
                 if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
-
-                    if (moreObject.bdeName === moreObject.bdmName) {
-                        achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                        moreObject.services.map(serv => {
-                            expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                        })
-                    } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                        achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-                        moreObject.services.map(serv => {
-                            expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                        })
-                    } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                        if (moreObject.bdeName === data.ename) {
-                            achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-                            moreObject.services.map(serv => {
-                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            })
+                    moreObject.services.forEach(service => {
+                        if (service.paymentTerms === "Full Advanced") {
+                          if (moreObject.bdeName === moreObject.bdmName) {
+                            achievedAmount += parseInt(service.totalPaymentWOGST)
+                          } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+                            achievedAmount += parseInt(service.totalPaymentWOGST) / 2
+                          } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                            if (moreObject.btempAchievedDatadeName === data.ename) {
+                              achievedAmount += parseInt(service.totalPaymentWOGST)
+                            }
+                          }
+                        } else {
+                          const payment =  parseInt(service.firstPayment)
+                          if (mainBooking.bdeName === mainBooking.bdmName) {
+              
+                            achievedAmount += parseInt(payment);
+                          } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+              
+                            achievedAmount += parseInt(payment) / 2;
+                          } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === data.ename) {
+                              achievedAmount += parseInt(payment)
+                            }
+                          }
                         }
-                    }
+                      });
+
+                    // if (moreObject.bdeName === moreObject.bdmName) {
+                    //     achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                    //     moreObject.services.map(serv => {
+                    //         expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                    //     })
+                    // } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                    //     achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
+                    //     moreObject.services.map(serv => {
+                    //         expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
+                    //     })
+                    // } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                    //     if (moreObject.bdeName === data.ename) {
+                    //         achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
+                    //         moreObject.services.map(serv => {
+                    //             expanse = serv.expanse ? expanse + serv.expanse : expanse;
+                    //         })
+                    //     }
+                    // }
 
                 }
             })
@@ -994,17 +1045,17 @@ function EmployeesThisMonthBooking() {
                             break;
                     }
                     if (condition) {
-
-                        const tempAmount = Math.round(remainingObj.receivedPayment);
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingAmount += Math.round(tempAmount);
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingAmount += Math.round(tempAmount) / 2;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === data.ename) {
-                                remainingAmount += Math.round(tempAmount);
-                            }
-                        }
+                        
+                        // const tempAmount = Math.round(remainingObj.receivedPayment);
+                        // if (mainBooking.bdeName === mainBooking.bdmName) {
+                        //     remainingAmount += Math.round(tempAmount);
+                        // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        //     remainingAmount += Math.round(tempAmount) / 2;
+                        // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                        //     if (mainBooking.bdeName === data.ename) {
+                        //         remainingAmount += Math.round(tempAmount);
+                        //     }
+                        // }
                     }
                 })
             }
