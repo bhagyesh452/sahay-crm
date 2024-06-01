@@ -245,18 +245,13 @@ export default function Bellicon({data , gdata,adata , isAdmin}) {
                     <span>{option.cDate}</span>
                     <span style={{marginLeft: "10px", color: "#409d40"}}>{(option.cTime)}</span>
                     </div>
-                    
-                    
                      </Item>
-                
                 </MenuItem>
               ))}
               {adata.map((option)=>(
                 <MenuItem
                 style={{ marginTop: "0px" }}
-                key={option.ename}
-             
-              >
+                key={option.ename}>
                   <Item style={{alignItems:"center"}} className='d-flex' ><Avatar />
                   <div className="cont-info">
                   <h3 style={{margin:"0px"}}> {option.ename} </h3>
@@ -265,10 +260,7 @@ export default function Bellicon({data , gdata,adata , isAdmin}) {
                   <span>{option.date}</span>
                   <span style={{marginLeft: "10px", color: "#409d40"}}>{(option.time)}</span>
                   </div>
-                  
-                  
                    </Item>
-              
               </MenuItem>
               ))}
               </Stack>
@@ -278,9 +270,6 @@ export default function Bellicon({data , gdata,adata , isAdmin}) {
           </Link>
         </div>
       </Menu>
-   
-      
-     
     </React.Fragment>
   );
 }

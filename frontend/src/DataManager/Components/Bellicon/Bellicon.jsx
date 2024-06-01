@@ -20,38 +20,38 @@ export default function Bell({ data, gdata }) {
   };
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const handleNotificationClick = async (id, read) => {
-    try {
-      // Update the notification in the backend (set 'read' to true)
-      if (read === false) {
-        await axios.put(`${secretKey}/requestData/${id}`, {
-          read: true,
-        });
+    // try {
+    //   // Update the notification in the backend (set 'read' to true)
+    //   if (read === false) {
+    //     await axios.put(`${secretKey}/requestData/${id}`, {
+    //       read: true,
+    //     });
 
-        // Assuming that you have a 'read' property in your MongoDB model
-        // Adjust the URL and data structure based on your actual backend implementation
-      }
+    //     // Assuming that you have a 'read' property in your MongoDB model
+    //     // Adjust the URL and data structure based on your actual backend implementation
+    //   }
 
-      // Close the menu
-    } catch (error) {
-      console.error("Error updating notification:", error.message);
-    }
+    //   // Close the menu
+    // } catch (error) {
+    //   console.error("Error updating notification:", error.message);
+    // }
   };
   const handleNotificationGClick = async (id, read) => {
-    try {
-      // Update the notification in the backend (set 'read' to true)
-      if (read === false) {
-        await axios.put(`${secretKey}/requestgData/${id}`, {
-          read: true,
-        });
+    // try {
+    //   // Update the notification in the backend (set 'read' to true)
+    //   if (read === false) {
+    //     await axios.put(`${secretKey}/requestgData/${id}`, {
+    //       read: true,
+    //     });
 
-        // Assuming that you have a 'read' property in your MongoDB model
-        // Adjust the URL and data structure based on your actual backend implementation
-      }
+    //     // Assuming that you have a 'read' property in your MongoDB model
+    //     // Adjust the URL and data structure based on your actual backend implementation
+    //   }
 
-      // Close the menu
-    } catch (error) {
-      console.error("Error updating notification:", error.message);
-    }
+    //   // Close the menu
+    // } catch (error) {
+    //   console.error("Error updating notification:", error.message);
+    // }
   };
   const handlecolorChange = () => {
     setBackgroundColor("lightgrey");

@@ -1,28 +1,4 @@
-// import React, { useState, useEffect } from "react";
-// import EmpNav from "./EmpNav.js";
-// import Header from "../components/Header";
-// import { useParams } from 'react-router-dom';
-// import axios from 'axios';
-// import { FaWhatsapp } from "react-icons/fa";
-// import NoData from '../../Components/NoData/NoData.jsx';
-// import { Drawer, Icon, IconButton } from "@mui/material";
-// import { IconChevronLeft, IconEye } from "@tabler/icons-react";
-// import { IconChevronRight } from "@tabler/icons-react";
-// import { GrStatusGood } from "react-icons/gr";
-// import EditIcon from "@mui/icons-material/Edit";
-// import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-// import CloseIcon from "@mui/icons-material/Close";
-// import Swal from "sweetalert2";
-// import { useCallback } from "react";
-// import debounce from "lodash/debounce";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import { RiEditCircleFill } from "react-icons/ri";
-// import { IoClose } from "react-icons/io5";
-// import Select from "react-select";
-// import { options } from "../../../components/Options.js";
-// import { IoAddCircle } from "react-icons/io5";
-// import Slider from '@mui/material/Slider';
-// import RedesignedForm from "../../../admin/RedesignedForm.jsx";
+
 import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
 
@@ -200,9 +176,6 @@ function EmployeeTeamLeads() {
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             //console.log(response.data)
-
-
-
             setTeamData(response.data)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -601,7 +574,7 @@ function EmployeeTeamLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const bdmStatusChangeDate = new Date();
-        console.log("bdmnewstatus", bdmnewstatus, date, time, bdmStatusChangeDate)
+       
         try {
 
             if (bdmnewstatus !== "Matured") {
@@ -2279,7 +2252,6 @@ function EmployeeTeamLeads() {
                         // setNowToFetch={setNowToFetch}
                         companysInco={maturedBooking["Company Incorporation Date  "]}
                         employeeName={maturedBooking.ename}
-
                         bdmName={maturedBooking.bdmName}
                     />
                 </>
