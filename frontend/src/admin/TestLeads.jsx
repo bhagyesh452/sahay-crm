@@ -74,6 +74,8 @@ function TestLeads() {
     })
     const [sortPattern, setSortPattern] = useState("IncoDate")
     const [isFilter, setIsFilter] = useState(false)
+    const [assignedData, setAssignedData] = useState([])
+    const [unAssignedData, setunAssignedData] = useState([])
 
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
@@ -228,12 +230,13 @@ function TestLeads() {
     //--------------------function to filter company name ------------------------------
 
     const handleFilterSearch = async (searchQuery) => {
+        console.log(searchQuery)
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
             setIsFilter(false);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery, field: "Company Name" }
+                params: { searchQuery }
             });
 
             if (!searchQuery.trim()) {
@@ -242,12 +245,18 @@ function TestLeads() {
                 fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
-                setData(response.data);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
+                //setData(response.data);
+                setAssignedData(response.data.assigned)
+                setunAssignedData(response.data.unassigned)
+                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
+                setTotalCount(response.data.totalPages)
+                setCurrentPage(1)
+                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned');
                     } else {
-                        setDataStatus('Assigned')
+                        setDataStatus('Assigned');
                     }
                 }
             }
@@ -258,6 +267,9 @@ function TestLeads() {
 
         }
     };
+
+    console.log("assigned" , assignedData)
+    console.log("unassigneddata" , unAssignedData)
 
 
     //--------------------function to add leads-------------------------------------
@@ -1230,8 +1242,6 @@ function TestLeads() {
     const [daysInMonth, setDaysInMonth] = useState([]);
     const [selectedDate, setSelectedDate] = useState(0)
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
-    const [assignedData, setAssignedData] = useState([])
-    const [unAssignedData, setunAssignedData] = useState([])
     const [openBacdrop, setOpenBacdrop] = useState(false)
 
     const currentYear = new Date().getFullYear();
@@ -1633,7 +1643,7 @@ function TestLeads() {
                                             </tbody>
                                         ) : (
                                             <tbody>
-                                                {isFilter && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1726,7 +1736,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {isFilter && dataStatus === 'Assigned' && assignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1819,7 +1829,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {!isFilter && data.map((company, index) => (
+                                                {(!isFilter && !isSearching) && data.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
