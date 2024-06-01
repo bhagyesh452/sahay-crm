@@ -2459,7 +2459,8 @@ function EmployeePanel() {
   }
   
 
-  //console.log(feedbackRemarks, feedbakPoints)
+  //console.log(feedbackRemarks, feedbakPo
+
 
 
   return (
@@ -4060,7 +4061,8 @@ function EmployeePanel() {
                                 {
                                   dataStatus === "Forwarded" && (
                                     <td>
-                                      {company.bdmAcceptStatus === "NotForwarded" ? (
+                                      {company.bdmAcceptStatus === "NotForwarded" ? (<>
+                                      {console.log("yeh frist wala not forwardede h")}
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -4078,7 +4080,8 @@ function EmployeePanel() {
                                           }}
                                           color="grey"
                                         />
-                                      ) : company.bdmAcceptStatus === "Pending" ? (
+                                      </>) : company.bdmAcceptStatus === "Pending" ? (<>
+                                       {console.log("yahan pending  h")}
                                         <TiArrowBack
                                           onClick={() => {
                                             handleReverseAssign(
@@ -4087,7 +4090,7 @@ function EmployeePanel() {
                                               company.bdmAcceptStatus,
                                               company.Status,
                                               company.bdmName
-                                            )
+                                           )
                                           }}
                                           style={{
                                             cursor: "pointer",
@@ -4096,7 +4099,9 @@ function EmployeePanel() {
                                           }}
                                           color="#fbb900"
                                         />
-                                      ) : company.bdmAcceptStatus === "Accept" ? (
+                                      </>) : 
+                                      (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                        <> {console.log("accepted h")}
                                         <TiArrowBack 
                                         onClick={()=>handleRevertAcceptedCompany(
                                           company._id,
@@ -4108,8 +4113,19 @@ function EmployeePanel() {
                                           width: "17px",
                                           height: "17px",
                                         }}
+                                          color="black" />
+                                      </>) : 
+                                      (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
+                                        <> {console.log("yahan chala reverted")}
+                                     <TiArrowBack
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
                                           color="lightgrey" />
-                                      ) : <TiArrowForward
+                                      </>)  : (<>{console.log("yahan to forwarded hai last wala")}
+                                      <TiArrowForward
                                         onClick={() => {
                                           handleConfirmAssign(
                                             company._id,
@@ -4125,7 +4141,8 @@ function EmployeePanel() {
                                           height: "17px",
                                         }}
                                         color="grey"
-                                      />}
+                                      />
+                                     </>)}
                                     </td>
 
                                   )

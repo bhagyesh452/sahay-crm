@@ -1157,7 +1157,7 @@ function EmployeeTeamLeads() {
                             <div>
                                 <div className="request-title m-2 d-flex justify-content-between">
                                     <div className="request-content mr-2 text-center">
-                                        <h3 className="m-0">{item.ename} has requested to revert back 
+                                        <h3 className="m-0">{item.ename} has requested to revert back .
                                         <b>{item["Company Name"]}</b> From you. Do you want accept his request?</h3>
                                     </div>
                                 </div>
