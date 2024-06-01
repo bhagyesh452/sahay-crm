@@ -959,7 +959,7 @@ export default function EditableMoreBooking({
         ? acc + parseInt(curr.totalPaymentWOGST)
         : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
     }, 0);
-    console.log("Data sending to change:-", leadData);
+   
     const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues, generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  receivedAmount : parseInt( leadData.services
       .reduce(
         (total, service) =>

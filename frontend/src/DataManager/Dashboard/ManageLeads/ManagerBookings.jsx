@@ -100,7 +100,7 @@ function ManagerBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const sortedData = response.data.reverse(); // Reverse the order of data
+      const sortedData = response.data; // Reverse the order of data
 
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data
