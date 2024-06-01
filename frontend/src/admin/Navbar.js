@@ -20,7 +20,7 @@ function Navbar() {
       <header className="navbar-expand-md">
         <div className="collapse navbar-collapse" id="navbar-menu">
           <div className="navbar">
-            <div className="container-xl p-0">
+            <div className="container-xl">
               <ul className="navbar-nav">
                 <li
                   className={
@@ -106,9 +106,9 @@ function Navbar() {
                     to="/admin/leads"
                   >
                     <a className="nav-link" href="./">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                       <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
-                       </span>
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
+                      </span>
                       <span className="nav-link-title"> Leads</span>
                     </a>
                   </Link>
