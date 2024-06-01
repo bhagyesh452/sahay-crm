@@ -196,7 +196,8 @@ router.post("/postAssignData", async (req, res) => {
           bdeForwardDate: "",
           bdmStatusChangeDate: "",
           bdmStatusChangeTime: "",
-          bdmRemarks: ""
+          bdmRemarks: "",
+          RevertBackAcceptedCompanyRequest:""
         }
       }
     }

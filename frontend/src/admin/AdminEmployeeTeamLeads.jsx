@@ -1413,10 +1413,13 @@ function AdminEmployeeTeamLeads() {
     
         if (result.isConfirmed) {
             try {
-                const response = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, {
-                    companyId,
-                    companyName
-                });
+                const response = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
+                    params: {
+                      companyId,
+                      companyName
+                    }
+                  });
+            
     
                 Swal.fire(
                     'Deleted!',

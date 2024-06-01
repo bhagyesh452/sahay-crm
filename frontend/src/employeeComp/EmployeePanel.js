@@ -112,6 +112,7 @@ function EmployeePanel() {
   const [forwardStatus, setForrwardStatus] = useState("");
   const [teamInfo, setTeamInfo] = useState([]);
   const [bdmName, setBdmName] = useState("");
+  const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 
@@ -310,41 +311,7 @@ function EmployeePanel() {
     }
   };
 
-  // const functionopenprojection = (comName) => {
-  //   setProjectingCompany(comName);
-  //   setOpenProjection(true);
-  //   const findOneprojection =
-  //     projectionData.length !== 0 &&
-  //     projectionData.find((item) => item.companyName === comName);
-  //   if (findOneprojection) {
-  //     setCurrentProjection({
-  //       companyName: findOneprojection.companyName,
-  //       ename: findOneprojection.ename,
-  //       offeredPrize: findOneprojection.offeredPrize,
-  //       offeredServices: findOneprojection.offeredServices,
-  //       lastFollowUpdate: findOneprojection.lastFollowUpdate,
-  //       estPaymentDate: findOneprojection.estPaymentDate,
-  //       remarks: findOneprojection.remarks,
-  //       totalPayment: findOneprojection.totalPayment,
-  //       date: "",
-  //       time: "",
-  //       editCount: findOneprojection.editCount,
-  //     });
-  //     setSelectedValues(findOneprojection.offeredServices);
-
-  //     // Dynamically update the color of the edit icon based on editCount
-  //     let color;
-  //     if (findOneprojection.editCount === 0) {
-  //       color = "#fbb900"; // Yellow color
-  //     } else if (findOneprojection.editCount === 1) {
-  //       color = "green";
-  //     } else {
-  //       color = "red";
-  //     }
-  //     setEditIconColor(color); // assuming you have a state variable to manage icon color
-  //   }
-  // };
-  //console.log(socketID, "If this shows then boom");
+  
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -524,13 +491,12 @@ function EmployeePanel() {
   //console.log("bdmNames", bdmNames)
 
 
-
   const fecthTeamData = async () => {
     const ename = data.ename;
     //console.log("ename", ename)
     try {
       const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
-
+      
       //console.log("teamdata", response.data)
       setTeamInfo(response.data);
       setBdmName(response.data.bdmName);
@@ -563,18 +529,18 @@ function EmployeePanel() {
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
+  const [revertedData, setRevertedData] = useState([])
 
   const fetchNewData = async (status) => {
     try {
       if (!status) {
         setLoading(true);
       }
-
-      //console.log("status", status)
-
       const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
-      //console.log("tempData", tempData)
+      const revertedData = response.data.filter((item)=> item.RevertBackAcceptedCompanyRequest === 'Reject')
+      setRevertedData(revertedData)
+      console.log("tempData", tempData)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -619,12 +585,8 @@ function EmployeePanel() {
             })
         );
       }
-
       if (!status && sortStatus !== "") {
-
       }
-
-
       if (status === "Not Interested" || status === "Junk") {
         setEmployeeData(
           tempData.filter(
@@ -659,6 +621,8 @@ function EmployeePanel() {
       // Set loading to false regardless of success or error
     }
   };
+
+
 
   useEffect(() => {
     fetchNewData();
@@ -727,14 +691,17 @@ function EmployeePanel() {
     }
   };
 
+  console.log(revertedData)
+
   useEffect(() => {
-    if (data.ename) {
-      console.log("Employee found");
-      fetchNewData();
-    } else {
-      console.log("No employees found");
+    
+    if(revertedData.length !== 0){
+      setOpenRevertBackRequestDialog(true)
+    }else{
+      console.log("me yahan tu wahan")
+      fetchNewData()
     }
-  }, [data.ename]);
+  }, [data.ename, revertedData.length]);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -1597,16 +1564,6 @@ function EmployeePanel() {
       fetchRedesignedFormData();
     }
   }, [maturedID]);
-
-  
-
-
-
-
-
-
-
-
   //console.log("Current Form:", currentForm);
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
@@ -1617,60 +1574,6 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-  //console.log(companies);
-
-  // const handleProjectionSubmit = async () => {
-  //   try {
-
-  //     const finalData = {
-  //       ...currentProjection,
-  //       companyName: projectingCompany,
-  //       ename: data.ename,
-  //       offeredServices: selectedValues,
-  //     };
-  //     if (finalData.offeredServices.length === 0) {
-  //       Swal.fire({ title: 'Services is required!', icon: 'warning' });
-  //     } else if (finalData.remarks === "") {
-  //       Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
-  //     } else if (finalData.totalPayment === 0) {
-  //       Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-  //     }
-  //     else if (finalData.offeredPrize === 0) {
-  //       Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-  //     }
-  //     else if (finalData.lastFollowUpdate === null) {
-  //       Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
-  //     }
-  //     else if (finalData.estPaymentDate === 0) {
-  //       Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
-  //     }
-  //     // Send data to backend API
-  //     const response = await axios.post(
-  //       `${secretKey}/update-followup`,
-  //       finalData
-  //     );
-  //     Swal.fire({ title: "Projection Submitted!", icon: "success" });
-  //     setOpenProjection(false);
-  //     setCurrentProjection({
-  //       companyName: "",
-  //       ename: "",
-  //       offeredPrize: 0,
-  //       offeredServices: [],
-  //       lastFollowUpdate: "",
-  //       remarks: "",
-  //       date: "",
-  //       time: "",
-  //       editCount:
-  //     });
-  //     fetchProjections();
-  //     setSelectedValues([])
-
-  //     // Log success message
-  //   } catch (error) {
-  //     console.error("Error updating or adding data:", error.message);
-  //   }
-  // };
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleIconButtonClick = (comName) => {
@@ -1844,30 +1747,6 @@ function EmployeePanel() {
   // Call the function to create the new array
   const resultArray =
     moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
-
-  // const handleYearFilterChange = (e, selectedYear) => {
-  //   const isChecked = e.target.checked;
-
-  //   // Filter the employeeData based on the selected year
-  //   if (isChecked) {
-  //     const filteredData = employeeData.filter((data) => {
-  //       const year = new Date(
-  //         data["Company Incorporation Date  "]
-  //       ).getFullYear();
-  //       return year.toString() === selectedYear.toString();
-  //     });
-  //     setEmployeeData(filteredData);
-  //     console.log("Filtered Year data", filteredData);
-  //   } else {
-  //     // If the checkbox is unchecked, reset the filter
-  //     // You can implement this according to your requirements
-  //     // For example, if you want to reset to the original data, you can fetch it again from the server
-  //     // setEmployeeData(originalEmployeeData);
-  //   }
-  // };
-  // const handleMonthFilterChange = () => {
-  //   console.log("Month is filtering");
-  // };
 
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e) => {
@@ -2043,25 +1922,7 @@ function EmployeePanel() {
       console.log("Error!", "Follow Up Not Found.", "error");
     }
   };
-  //console.log("projections", currentProjection);
-
-  // const handleSendEmail = async () => {
-  //   try {
-  //     const response = await fetch(`${secretKey}/generate-pdf`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/pdf",
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to send email");
-  //     }
-  //     console.log("Mail Sent");
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //   }
-  // };
+ 
 
   const formatDatePro = (dateString) => {
     const [day, month, year] = dateString.split("/");
@@ -2248,101 +2109,6 @@ function EmployeePanel() {
       backgroundColor: '#d0d0d0',
     },
   }));
-
-  // const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
-  //   console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
-
-  //   if (companyStatus === "Interested" || companyStatus === "FollowUp") {
-  //     Swal.fire({
-  //       title: 'Are you sure?',
-  //       text: `Do You Want to Forward this to ${bdmName}`, // Assuming `bdmName` is defined somewhere
-  //       icon: 'warning',
-  //       showCancelButton: true,
-  //       confirmButtonColor: '#3085d6',
-  //       cancelButtonColor: '#d33',
-  //       confirmButtonText: 'Yes, proceed!'
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         console.log("Confirmed");
-  //         setForrwardEname(ename)
-  //         setForrwardStatus(companyStatus)
-  //         setBdmNewAcceptStatus("Pending")
-  //         setforwardCompanyId(companyId)
-  //         setForwardedCompany(companyName)
-  //         handleForwardBdm();
-  //         // Perform the action here
-  //       }
-  //     });
-  //   } else {
-  //     alert("there is a error")
-  //   }
-  // };
-
-  // // const handleForwardBdm = async() => {
-  // //   const selectedData = currentData.filter((company) => company["Company Name"] === forwardedCompany);
-  // //   console.log("selectedData", selectedData);
-  // //     try {
-  // //       const response = await axios.post(`${secretKey}/forwardtobdmdata`, selectedData);
-  // //         console.log("response" , response.data)
-  // //         Swal.fire("Data Assigned");
-  // //       //openchangeEmp(false);
-  // //       fetchNewData();
-
-  // //     } catch(error){
-  // //       console.log(error)
-  // //       Swal.fire("Error Assigning Data");
-  // //       fetchNewData()
-  // //     }
-  // // };
-
-  // console.log(forwardedCompany, 'hayhsjshshsh')
-
-  // const handleForwardBdm = async () => {
-  //   console.log("selectedData", currentData, forwardedCompany);
-  //   const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
-  //   try {
-  //     const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
-  //       selectedData: selectedDataWithBdm,
-  //       bdmName: bdmName,
-  //       companyId: forwardCompanyId,
-  //       bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
-  //     });
-  //     console.log("response", response.data);
-  //     Swal.fire("Data Forwarded");
-  //     fetchNewData();
-  //   } catch (error) {
-  //     console.log(error);
-  //     Swal.fire("Error Assigning Data");
-  //     fetchNewData();
-  //   }
-  // };
-  // const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
-  //   console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
-
-  //   if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
-  //     Swal.fire({
-  //       title: 'Are you sure?',
-  //       text: `Do You Want to Forward this to ${bdmName}`, // Assuming `bdmName` is defined somewhere
-  //       icon: 'warning',
-  //       showCancelButton: true,
-  //       confirmButtonColor: '#3085d6',
-  //       cancelButtonColor: '#d33',
-  //       confirmButtonText: 'Yes, proceed!'
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         console.log("Confirmed");
-  //         setForrwardEname(ename)
-  //         setForrwardStatus(companyStatus)
-  //         setBdmNewAcceptStatus("Pending")
-  //         setforwardCompanyId(companyId)
-  //         setForwardedCompany(companyName)
-  //         setConfirmationPending(true); // Set confirmation pending
-  //       }
-  //     });
-  //   } else {
-  //     Swal.fire("Your are not assigned to any bdm!")
-  //   }
-  // };
 
   const [confirmationPending, setConfirmationPending] = useState(false);
   const [bdeOldStatus, setBdeOldStatus] = useState("");
@@ -2597,25 +2363,7 @@ function EmployeePanel() {
     }
   };
 
-  // Function to handle reject request
-  // const handleRejectRequest = async () => {
-  //   try {
-  //     const id = BDMrequests._id;
-  //     // Send a DELETE request to your backend API to delete the object
-  //     const response = await axios.delete(
-  //       `${secretKey}/delete-bdm-Request/${id}`
-  //     );
-  //     Swal.fire("Rejected!", "Successfully Denied the Request", "success");
-  //     setOpenbdmRequest(false);
-  //     //console.log(response.data); // Log the response data if needed
-  //     // Optionally, you can update the UI or perform any other actions after the request is successful
-  //   } catch (error) {
-  //     Swal.fire("Error!", "Error Rejecting the Request", "error");
-  //     setOpenbdmRequest(false);
-  //     console.error("Error rejecting request:", error);
-  //     // Handle the error or display a message to the user
-  //   }
-  // };
+ 
   const handleDoneInform = async () => {
     try {
       const id = BDMrequests._id;
@@ -2656,6 +2404,61 @@ function EmployeePanel() {
 
   }
 
+  //----------- function to revert back company accepted by bdm ----------------------------
+  const handleRevertAcceptedCompany = async (companyId, companyName, bdeStatus) => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You wan't to revert back this company!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, revert it!'
+    });
+  
+    // If confirmed, proceed with the request
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post(`${secretKey}/company-data/post-bderevertbackacceptedcompanyrequest`, null, {
+          params: {
+            companyId,
+            companyName
+          }
+        });
+        Swal.fire(
+          'Reverted!',
+          'The company request has been reverted back.',
+          'success'
+        );
+        console.log("Request sent successfully", response.data);
+        fetchNewData(bdeStatus);
+      } catch (error) {
+        console.log("Error reverting back company", error);
+        Swal.fire(
+          'Error!',
+          'There was an error reverting back the company request.',
+          'error'
+        );
+      }
+    }
+  };
+  
+  const handleDoneRejectedRequest = async(companyId , status)=>{
+    try{
+      const reponse = await axios.post(`${secretKey}/bdm-data/rejectedrequestdonebybdm` , null , {
+        params:{
+          companyId
+        }
+      })
+      fetchNewData(status)
+    }catch(error){
+      console.log("Error done ok" , error)
+    }
+
+  }
+  
+
   //console.log(feedbackRemarks, feedbakPoints)
 
 
@@ -2695,12 +2498,41 @@ function EmployeePanel() {
                       >
                         Ok
                       </button>
-
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
             )}
+             {revertedData.length !== 0 && revertedData.map((item) => (
+                    <Dialog key={item._id} open={openRevertBackRequestDialog}>
+                        <DialogContent sx={{ width: "lg" }}>
+                            <div className="request-bdm-card">
+                                <div className="request-title m-2 d-flex justify-content-between">
+                                    <div className="request-content mr-2">
+                                        {item.ename} has rejected the request of reverted company.
+                                        <b>{item["Company Name"]}</b>.
+                                    </div>
+                                </div>
+                                <div className="request-reply d-flex">
+                                    <button
+                                        onClick={()=> {
+                                          setOpenRevertBackRequestDialog(false)
+                                          handleDoneRejectedRequest(
+                                            item._id,
+                                            item.Status
+                                          )}
+                                        }
+                                          
+                                        className="request-accept"
+                                    >
+                                        ok
+                                    </button>
+                                   
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                ))}
 
             <div className="page-header d-print-none">
               <div className="container-xl">
@@ -4266,7 +4098,11 @@ function EmployeePanel() {
                                         />
                                       ) : company.bdmAcceptStatus === "Accept" ? (
                                         <TiArrowBack 
-                                        
+                                        onClick={()=>handleRevertAcceptedCompany(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.Status
+                                        )}
                                         style={{
                                           cursor: "pointer",
                                           width: "17px",
@@ -4599,6 +4435,8 @@ function EmployeePanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+
       {/* Request Data popup */}
       <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
