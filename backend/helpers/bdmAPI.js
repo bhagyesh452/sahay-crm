@@ -384,14 +384,15 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
           bdmAcceptStatus: "NotForwarded",
           feedbackPoints: [],
           multiBdmName: [],
-          RevertBackAcceptedCompanyRequest:"Accept",
+          
         },
         $unset: {
           bdmName: "",
           bdeForwardDate: "",
           bdmStatusChangeDate: "",
           bdmStatusChangeTime: "",
-          bdmRemarks:""
+          bdmRemarks:"",
+          RevertBackAcceptedCompanyRequest:"",
         }
       }
     );
