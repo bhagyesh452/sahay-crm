@@ -2897,7 +2897,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
-    ] : ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"];
+    ] : ["nimesh@incscale.in"];
 
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -4098,7 +4098,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     };
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {

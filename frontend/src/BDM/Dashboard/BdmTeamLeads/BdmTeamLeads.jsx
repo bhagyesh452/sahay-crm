@@ -1051,31 +1051,30 @@ function BdmTeamLeads() {
           </Dialog>
         )}
         {revertBackRequestData.length !== 0 && revertBackRequestData.map((item) => (
-          <Dialog key={item._id} open={openRevertBackRequestDialog}>
-            <DialogContent sx={{ width: "lg" }}>
-              <div className="request-bdm-card">
+          <Dialog key={item._id} open={openRevertBackRequestDialog}  className='My_Mat_Dialog' maxWidth="sm">
+            <DialogContent>
+              <div className="">
                 <div className="request-title m-2 d-flex justify-content-between">
-                  <div className="request-content mr-2">
-                    {item.ename} has requested this company to revert back.
-                    <b>{item["Company Name"]}</b>.
+                  <div className="request-content mr-2 text-center">
+                    <h3 className="m-0">{item.ename} has requested to revert back  <b> {item["Company Name"]}</b> From you. Do you want accept his request?</h3>
                   </div>
-                </div>
-                <div className="request-reply d-flex">
-                  <button
-                    onClick={() => handleRevertBackCompany(item._id, item["Company Name"], item.bdmStatus)}
-                    className="request-accept"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={() => handleRejectRevertBackCompany(item._id, item.bdmStatus)}
-                    className="request-accept"
-                  >
-                    No
-                  </button>
                 </div>
               </div>
             </DialogContent>
+            <div className="request-reply d-flex justify-content-center align-items-center">
+              <button
+                onClick={() => handleRevertBackCompany(item._id, item["Company Name"], item.bdmStatus)}
+                className="btn btn-success bdr-radius-none w-100"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => handleRejectRevertBackCompany(item._id, item.bdmStatus)}
+                className="btn btn-danger bdr-radius-none w-100"
+              >
+                No
+              </button>
+            </div>
           </Dialog>
         ))}
 
