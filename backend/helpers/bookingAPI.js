@@ -875,6 +875,7 @@ router.post(
             { "Company Name": companyName },
             {
               $set: {
+                lastActionDate:boomDate,
                 moreBookings: [...existingData.moreBookings, tempNewData],
               },
             },
