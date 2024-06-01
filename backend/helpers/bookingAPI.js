@@ -141,7 +141,7 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
 // Get Request for fetching bookings Data
 router.get("/redesigned-final-leadData", async (req, res) => {
   try {
-    const allData = await RedesignedLeadformModel.find();
+    const allData = await RedesignedLeadformModel.find().sort({ lastActionDate: -1 });
     res.status(200).json(allData);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -154,7 +154,7 @@ router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
     const companyName = req.params.companyName;
     const allData = await RedesignedLeadformModel.findOne({
       "Company Name": companyName,
-    });
+    }).sort({lastActionDate : -1});
 
     res.status(200).json(allData);
   } catch (error) {
@@ -210,15 +210,17 @@ router.post("/update-redesigned-final-form/:CompanyName",
     }
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
+    const tempDateToday = new Date();
+
+    const newGoingToUpdate = {...goingToUpdate , lastActionDate : tempDateToday }
 
     try {
       // Find the document by _id and update it with the updatedBooking data
-
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
         {
           "Company Name": companyName,
         },
-        goingToUpdate,
+        newGoingToUpdate,
         // Set all properties except "moreBookings"
         { new: true } // Return the updated document
       );
@@ -266,13 +268,14 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       if (!existingDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-      console.log("This is sending :", dataToSend, step4changed)
+      const newTempDate = new Date();
       // Update the booking in moreBookings array at the specified index
       const updatedDocument = step4changed === "true" ? await RedesignedLeadformModel.findOneAndUpdate(
         {
           "Company Name": CompanyName,
         },
         {
+          lastActionDate : newTempDate,
           [`moreBookings.${bookingIndex - 1}`]: {
             bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
             paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
@@ -283,6 +286,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             "Company Name": CompanyName,
           },
           {
+            lastActionDate : newTempDate,
             [`moreBookings.${bookingIndex - 1}`]: {
               bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
               paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
@@ -723,6 +727,7 @@ router.post(
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
+      const newTempDate = new Date();
       const newData = req.body;
       const Step = req.params.step;
       if (Step === "step2") {
@@ -743,9 +748,9 @@ router.post(
                 "moreBookings.bdmType": newData.bdmType || "",
                 "moreBookings.bookingDate": newData.bookingDate || "",
                 "moreBookings.bookingSource": newData.bookingSource || "",
-                "moreBookings.otherBookingSource":
-                  newData.otherBookingSource || "",
+                "moreBookings.otherBookingSource":newData.otherBookingSource || "",
                 "moreBookings.Step2Status": true,
+                "moreBookings.lastActionDate" : newTempDate
               },
             },
             { new: true }
@@ -863,12 +868,14 @@ router.post(
             });
           }
         }
+        const boomDate = new Date();
+        const tempNewData = {...newData , bookingPublishDate : boomDate , lastActionDate : boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
             { "Company Name": companyName },
             {
               $set: {
-                moreBookings: [...existingData.moreBookings, newData],
+                moreBookings: [...existingData.moreBookings, tempNewData],
               },
             },
             { new: true }
@@ -2625,8 +2632,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
+    const boomDate = new Date();
+    const tempNewData = { ...newData , lastActionDate: boomDate , bookingPublishDate : boomDate }
     // Create a new entry in the database
-    const createdData = await RedesignedLeadformModel.create(newData);
+    const createdData = await RedesignedLeadformModel.create(tempNewData);
     const date = new Date();
     if (companyData) {
       await CompanyModel.findByIdAndUpdate(companyData._id, {
@@ -4323,6 +4332,7 @@ router.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
+      const publishDate = new Date();
 
       const sendingObject = {
         serviceName: objectData.serviceName,
@@ -4334,9 +4344,10 @@ router.post(
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
         withGST: objectData.withGST,
-        paymentDate: objectData.paymentDate
+        paymentDate: objectData.paymentDate,
+        publishDate: publishDate
       };
-      console.log("Sending Object:", sendingObject, bookingIndex);
+    
 
       if (bookingIndex == 0) {
         console.log("Hi guyz");
@@ -4349,7 +4360,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
 
 
-        console.log(newReceivedAmount, newPendingAmount)
+       const latestDate = new Date();
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
         await RedesignedLeadformModel.updateOne(
@@ -4358,7 +4369,8 @@ router.post(
             $set: {
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
-              generatedReceivedAmount: newGeneratedReceivedAmount
+              generatedReceivedAmount: newGeneratedReceivedAmount,
+              lastActionDate: latestDate
             },
           }
         );
@@ -4382,17 +4394,18 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
         findObject.remainingPayments.$push
 
-        console.log(newReceivedAmount, newPendingAmount)
+  
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
-
+        const latestDateUpdate = new Date();
 
         // Push sendingObject into remainingPayments array
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
             $set: {
+              lastActionDate: latestDateUpdate,
               [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
               [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
               [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
@@ -4434,6 +4447,8 @@ router.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
+      const publishDate = new Date();
+     
 
       const sendingObject = {
         serviceName: objectData.serviceName,
@@ -4445,7 +4460,8 @@ router.post(
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
         withGST: objectData.withGST,
-        paymentDate: objectData.paymentDate
+        paymentDate: objectData.paymentDate,
+        publishDate : objectData.publishDate ? objectData.publishDate : publishDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
@@ -4470,14 +4486,15 @@ router.post(
 
         findObject.remainingPayments[findObject.remainingPayments.length - 1] = sendingObject;
         const updateResult = await findObject.save();
+        const latestUpdatedDate = new Date();
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
             $set: {
+              lastActionDate : latestUpdatedDate,
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
               generatedReceivedAmount: newGeneratedReceivedAmount,
-
             },
           }
         );

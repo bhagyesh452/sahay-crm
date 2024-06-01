@@ -9,17 +9,19 @@ export const options = [
   { value: "FSSAI Certificate", label: "FSSAI Certificate" },
   { value: "APEDA Certificate", label: "APEDA Certificate" },
   { value: "GST Certificate", label: "GST Certificate" },
-  { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
-  { value: "Financial Modeling", label: "Financial Modeling" },
-  { value: "DPR Development", label: "DPR Developmen" },
-  { value: "CMA Report Development", label: "CMA Report Development" },
-  { value: "Company Profile Write-Up", label: "Company Profile" },
   { value: "Company Brochure", label: "Company Brochure" },
   { value: "Product Catalog", label: "Product Catalog" },
   { value: "Logo Design", label: "Logo Design" },
   { value: "Business Card Design", label: "Business Card Design" },
   { value: "Letter Head Design", label: "Letter Head Design" },
   { value: "Broucher Design", label: "Broucher Design" },
+
+
+  { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
+  { value: "Financial Modeling", label: "Financial Modeling" },
+  { value: "DPR Development", label: "DPR Developmen" },
+  { value: "CMA Report Development", label: "CMA Report Development" },
+  { value: "Company Profile Write-Up", label: "Company Profile" },
   { value: "Business Profile", label: "Business Profile" },
   { value: "Seed Funding Support", label: "Seed Funding Support" },
   { value: "Angel Funding Support", label: "Angel Funding Support" },
@@ -44,6 +46,10 @@ export const options = [
   {value : 'Mudra Loan' , label : 'Mudra Loan'},
   {value : 'SIDBI Loan' , label : 'SIDBI Loan'},
   {value : 'Incubation Support' , label : 'Incubation Support'},
+
+
+
+  
   {value : 'Digital Marketing' , label : 'Digital Marketing'},
   { value: "SEO Services", label: "SEO Services" },
   { value: "Branding Services", label: "Branding Services" },
@@ -54,7 +60,6 @@ export const options = [
   { value: "Email Marketing", label: "Email Marketing" },
   { value: "Digital Content", label: "Digital Content" },
   { value: "Lead Generation", label: "Lead Generation" },
-  { value: "Whatsapp Marketing", label: "Whatsapp Marketing" },
   { value: "Website Development", label: "Website Development" },
   { value: "App Design & Development", label: "App Design & Development" },
   {

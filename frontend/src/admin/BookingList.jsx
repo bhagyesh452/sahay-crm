@@ -100,7 +100,7 @@ function BookingList() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const sortedData = response.data.reverse(); // Reverse the order of data
+      const sortedData = response.data; // Reverse the order of data
 
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data
@@ -865,7 +865,7 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                           
+
                           </div>
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-4 col-sm-6 p-0">
@@ -1129,11 +1129,11 @@ function BookingList() {
                                                 : "Without GST"}
                                               {")"}
                                             </div>
-                                           
-                                              {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
-                                               
 
-                                             {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
+                                            {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
+
+
+                                            {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                           </div>
                                         </div>
                                       </div>
@@ -1166,8 +1166,8 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-9 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                            ? obj.paymentRemarks
-                                            : "N/A"}>
+                                          ? obj.paymentRemarks
+                                          : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1238,8 +1238,8 @@ function BookingList() {
                                                   ")"}
                                                 {")"}
                                               </div>
-                                             
-                                             
+
+
                                             </div>
                                           </div>
                                         </div>
@@ -1275,7 +1275,7 @@ function BookingList() {
                                                   obj.thirdPaymentRemarks +
                                                   ")"}
                                               </div>
-                                            
+
                                             </div>
                                           </div>
                                         </div>
@@ -1309,7 +1309,7 @@ function BookingList() {
                                                   obj.fourthPaymentRemarks +
                                                   ")"}
                                               </div>
-                                              
+
                                             </div>
                                           </div>
                                         </div>
@@ -1319,38 +1319,38 @@ function BookingList() {
                                 </div>
                               </div>
                               {/* Remaining Payment Viwe Sections */}
-                              {currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.some((boom)=>boom.serviceName === obj.serviceName) && 
-                              <div
-                                className="my-card-body accordion"
-                                id={`accordionExample${index}`}
-                              >
-                                <div class="accordion-item bdr-none">
-                                  <div
-                                    id={`headingOne${index}`}
-                                    className="pr-10 accordion-header"
-                                  >
+                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                                <div
+                                  className="my-card-body accordion"
+                                  id={`accordionExample${index}`}
+                                >
+                                  <div class="accordion-item bdr-none">
                                     <div
-                                      className="row m-0 bdr-btm-eee accordion-button p-0"
-                                      data-bs-toggle="collapse"
-                                      data-bs-target={`#collapseOne${index}`}
-                                      aria-expanded="true"
-                                      aria-controls={`collapseOne${index}`}
+                                      id={`headingOne${index}`}
+                                      className="pr-10 accordion-header"
                                     >
-                                      <div className="w-95 p-0">
-                                        <div className="booking_inner_dtl_h h-100">
-                                          <div>Remaining Payment </div>
+                                      <div
+                                        className="row m-0 bdr-btm-eee accordion-button p-0"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target={`#collapseOne${index}`}
+                                        aria-expanded="true"
+                                        aria-controls={`collapseOne${index}`}
+                                      >
+                                        <div className="w-95 p-0">
+                                          <div className="booking_inner_dtl_h h-100">
+                                            <div>Remaining Payment </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div
-                                    id={`collapseOne${index}`}
-                                    class="accordion-collapse collapse show"
-                                    aria-labelledby={`headingOne${index}`}
-                                    data-bs-parent="#accordionExample"
-                                  // Add a unique key prop for each rendered element
-                                  >
-                                    {currentLeadform.remainingPayments
+                                    <div
+                                      id={`collapseOne${index}`}
+                                      class="accordion-collapse collapse show"
+                                      aria-labelledby={`headingOne${index}`}
+                                      data-bs-parent="#accordionExample"
+                                    // Add a unique key prop for each rendered element
+                                    >
+                                      {currentLeadform.remainingPayments
                                         .length !== 0 && currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
                                           (paymentObj, index) =>
                                             paymentObj.serviceName ===
@@ -1363,14 +1363,14 @@ function BookingList() {
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                            
+
                                                               if (index === 0) return "Second ";
                                                               else if (index === 1) return "Third ";
                                                               else if (index === 2) return "Fourth ";
                                                               // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
-                                                          Remaining Payment
+                                                          Remaining Payment {"(" + formatDatePro(paymentObj.publishDate) + ")"}
                                                         </div>
                                                         <div>
                                                           {formatDatePro(
@@ -1381,7 +1381,7 @@ function BookingList() {
                                                     </div>
                                                   </div>
                                                   <div className="row m-0 bdr-btm-eee">
-                                                    <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100">
@@ -1396,7 +1396,7 @@ function BookingList() {
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -1411,14 +1411,14 @@ function BookingList() {
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
-                                                               
+
                                                                 const filteredLength = filteredPayments.length;
                                                                 if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
                                                                 else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
                                                                 else if (index === 2) return parseInt(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()} 
+                                                              })()}
                                                             {/* {index === 0
                                                               ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                               : index === 1
@@ -1429,17 +1429,35 @@ function BookingList() {
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                            Payment Date
+                                                          </div>
+                                                        </div>
+                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" >
+                                                            {
+                                                              formatDatePro(paymentObj.publishDate)
+                                                            }
+                                                          </div>  
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="row m-0 bdr-btm-eee">
+                                                    <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                      <div class="row m-0 h-100">
+                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                          <div class="booking_inner_dtl_h h-100">
                                                             Payment Method
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.paymentMethod
-                                                            }>
+                                                            paymentObj.paymentMethod
+                                                          }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1447,7 +1465,7 @@ function BookingList() {
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                                    <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -1456,8 +1474,8 @@ function BookingList() {
                                                         </div>
                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.extraRemarks
-                                                            }>
+                                                            paymentObj.extraRemarks
+                                                          }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1470,9 +1488,9 @@ function BookingList() {
                                               </div>
                                             ) : null // Render null for elements that don't match the condition
                                         )}
+                                    </div>
                                   </div>
-                                </div>
-                              </div>}
+                                </div>}
                             </div>
                           ))}
                         {/* -------- CA Case -------- */}
@@ -1699,8 +1717,8 @@ function BookingList() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
-                                        currentLeadform.paymentMethod}>
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                      currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1716,7 +1734,7 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.extraNotes}>
+                                      currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>
@@ -1835,7 +1853,7 @@ function BookingList() {
                                       </div>
                                     )
                                   ))}
-                                  
+
                                 {currentLeadform &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div className="col-sm-2 mb-1">
@@ -2192,10 +2210,10 @@ function BookingList() {
                                                     : "Without GST"}
                                                   {")"}
                                                 </div>
-                                                  {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
-                                              
+                                                {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
 
-                                             {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
+
+                                                {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                               </div>
                                             </div>
                                           </div>
@@ -2226,8 +2244,8 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-9 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                ? obj.paymentRemarks
-                                                : "N/A"}>
+                                              ? obj.paymentRemarks
+                                              : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2244,7 +2262,7 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                              - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                             </div>
                                           </div>
                                         </div>
@@ -2298,7 +2316,7 @@ function BookingList() {
                                                       obj.secondPaymentRemarks +
                                                       ")"}
                                                   </div>
-                                                  
+
                                                 </div>
                                               </div>
                                             </div>
@@ -2334,7 +2352,7 @@ function BookingList() {
                                                       obj.thirdPaymentRemarks +
                                                       ")"}
                                                   </div>
-                                                 
+
                                                 </div>
                                               </div>
                                             </div>
@@ -2368,7 +2386,7 @@ function BookingList() {
                                                       obj.fourthPaymentRemarks +
                                                       ")"}
                                                   </div>
-                                                  
+
                                                 </div>
                                               </div>
                                             </div>
@@ -2397,7 +2415,7 @@ function BookingList() {
                                             <div className="w-95 p-0">
                                               <div className="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
                                                 <div>Remaining Payment </div>
-                                               
+
 
                                               </div>
                                             </div>
@@ -2431,26 +2449,26 @@ function BookingList() {
                                                                   // Add more conditions as needed
                                                                   return ""; // Return default value if none of the conditions match
                                                                 })()}
-                                                              Remaining Payment
+                                                              Remaining Payment {"(" + formatDatePro(paymentObj.publishDate) + ")"}
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
-                                                              {formatDatePro(
-                                                                paymentObj.paymentDate
-                                                              )}
+                                                                {formatDatePro(
+                                                                  paymentObj.paymentDate
+                                                                )}
                                                               </div>
-                                                              
-                                                               {/* {
-                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
+
+                                                              {/* {
+                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={ ()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
                                                             <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
                                                           </IconButton>
-                                                        } */}
+                                                          } */}
                                                             </div>
                                                           </div>
                                                         </div>
                                                       </div>
                                                       <div className="row m-0 bdr-btm-eee">
-                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100">
@@ -2465,7 +2483,7 @@ function BookingList() {
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -2498,17 +2516,35 @@ function BookingList() {
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                Payment Date
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
+                                                                {
+                                                                  formatDatePro(paymentObj.publishDate)
+                                                                }
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div className="row m-0 bdr-btm-eee">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100">
                                                                 Payment Method
                                                               </div>
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                  paymentObj.paymentMethod
-                                                                }>
+                                                                paymentObj.paymentMethod
+                                                              }>
                                                                 {
                                                                   paymentObj.paymentMethod
                                                                 }
@@ -2516,7 +2552,7 @@ function BookingList() {
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-6 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -2525,8 +2561,8 @@ function BookingList() {
                                                             </div>
                                                             <div class="col-sm-6 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                  paymentObj.extraRemarks
-                                                                }>
+                                                                paymentObj.extraRemarks
+                                                              }>
                                                                 {
                                                                   paymentObj.extraRemarks
                                                                 }

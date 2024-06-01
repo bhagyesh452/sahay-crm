@@ -111,6 +111,12 @@ const TempSchema = new mongoose.Schema({
   bookingDate: {
     type: String,
   },
+  bookingPublishDate: {
+    type: String,
+  },
+  lastActionDate: {
+    type: String,
+  },
   bookingSource: {
     type: String,
   },
@@ -235,6 +241,12 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   },
   otherBdmName:{
     type:String,
+  },
+  lastActionDate: {
+    type: String,
+  },
+  bookingPublishDate: {
+    type: String,
   },
   bookingDate: {
     type: String,
