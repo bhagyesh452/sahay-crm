@@ -1,7 +1,6 @@
 
 import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
-
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
@@ -115,6 +114,8 @@ function EmployeeTeamLeads() {
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
     const [projectionDataNew, setProjectionDataNew] = useState([])
+    const [revertBackRequestData, setRevertBackRequestData] = useState([])
+    const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
 
 
 
@@ -175,7 +176,8 @@ function EmployeeTeamLeads() {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-            //console.log(response.data)
+            const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send")
+            setRevertBackRequestData(revertBackRequestData)
             setTeamData(response.data)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -205,6 +207,8 @@ function EmployeeTeamLeads() {
         }
     }
 
+  
+
     //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
@@ -212,9 +216,16 @@ function EmployeeTeamLeads() {
     }, [])
 
     useEffect(() => {
-        fetchTeamLeadsData()
-        fetchBDMbookingRequests()
-    }, [data.ename])
+        if (revertBackRequestData.length !== 0) {
+            setOpenRevertBackRequestDialog(true);
+        } else {
+            fetchTeamLeadsData();
+            fetchBDMbookingRequests();
+        }
+    }, [data.ename, revertBackRequestData.length]);
+
+
+
 
     //console.log("ename" , data.ename)
 
@@ -364,10 +375,10 @@ function EmployeeTeamLeads() {
                     currentCompanyName
 
                 })
-                const response5 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${currentCompanyName}` , {
-                    caseType : "NotForwwarded"
+                const response5 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${currentCompanyName}`, {
+                    caseType: "NotForwwarded"
                 })
-                
+
                 //console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
@@ -455,14 +466,14 @@ function EmployeeTeamLeads() {
                 bdmStatusChangeDate: new Date(),
                 bdmStatusChangeTime: DT.toLocaleTimeString()
             })
-            
-            const filteredProjectionData = projectionDataNew.filter((company)=> company.companyName === cName)
+
+            const filteredProjectionData = projectionDataNew.filter((company) => company.companyName === cName)
             console.log(filteredProjectionData)
 
-            if(filteredProjectionData.length !== 0){
-                const response2 = await axios.post(`${secretKey}/projection/post-followupupdate-bdmaccepted/${cName}` , {
-                    caseType :"Recieved"
-                })  
+            if (filteredProjectionData.length !== 0) {
+                const response2 = await axios.post(`${secretKey}/projection/post-followupupdate-bdmaccepted/${cName}`, {
+                    caseType: "Recieved"
+                })
             }
             if (response.status === 200) {
                 Swal.fire("Accepted");
@@ -475,89 +486,6 @@ function EmployeeTeamLeads() {
             console.log("Error updating status", error.message)
         }
     }
-
-    // const handlebdmStatusChange = async (
-    //     companyId,
-    //     bdmnewstatus,
-    //     cname,
-    //     cemail,
-    //     cindate,
-    //     cnum,
-    //     bdeStatus,
-    //     bdmOldStatus,
-    //     bdeName
-    // ) => {
-    //     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
-    //     const DT = new Date();
-    //     const date = DT.toLocaleDateString();
-    //     const time = DT.toLocaleTimeString();
-    //     const bdmStatusChangeDate = new Date();
-    //     //console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
-    //     try {
-
-    //         if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
-    //             const response = await axios.post(
-    //                 `${secretKey}/bdm-status-change/${companyId}`,
-    //                 {
-    //                     bdeStatus,
-    //                     bdmnewstatus,
-    //                     title,
-    //                     date,
-    //                     time,
-    //                     bdmStatusChangeDate,
-    //                 }
-    //             )
-    //             //console.log("yahan dikha ", bdmnewstatus)
-    //             // Check if the API call was successful
-    //             if (response.status === 200) {
-    //                 // Assuming fetchData is a function to fetch updated employee data
-
-    //                 fetchTeamLeadsData(bdmnewstatus);
-    //                 setBdmNewStatus(bdmnewstatus)
-    //                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-
-
-    //             } else {
-    //                 // Handle the case where the API call was not successful
-    //                 console.error("Failed to update status:", response.data.message);
-    //             }
-
-    //         } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
-
-    //             const response = await axios.delete(
-    //                 `${secretKey}/delete-bdm-busy/${companyId}`)
-    //             //console.log("yahan dikha", bdmnewstatus)
-    //             // Check if the API call was successful
-    //             if (response.status === 200) {
-    //                 // Assuming fetchData is a function to fetch updated employee data
-
-    //                 fetchTeamLeadsData(bdmnewstatus);
-    //                 setBdmNewStatus(bdmnewstatus)
-    //                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-
-
-    //             } else {
-    //                 // Handle the case where the API call was not successful
-    //                 console.error("Failed to update status:", response.data.message);
-    //             }
-
-
-
-    //         } else {
-    //             const currentObject = teamData.find(obj => obj["Company Name"] === cname);
-    //             setMaturedBooking(currentObject);
-    //             setFormOpen(true)
-
-    //         }
-
-    //     } catch (error) {
-    //         // Handle any errors that occur during the API call
-    //         console.error("Error updating status:", error.message);
-    //     }
-
-    // }
-
-
     const handlebdmStatusChange = async (
         companyId,
         bdmnewstatus,
@@ -574,7 +502,7 @@ function EmployeeTeamLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const bdmStatusChangeDate = new Date();
-       
+
         try {
 
             if (bdmnewstatus !== "Matured") {
@@ -754,8 +682,6 @@ function EmployeeTeamLeads() {
         }
     };
 
-
-
     const closeProjection = () => {
         setOpenProjection(false);
         setProjectingCompany("");
@@ -853,8 +779,8 @@ function EmployeeTeamLeads() {
                 bdeName: bdeNameProjection ? bdeNameProjection : data.ename,
                 offeredServices: selectedValues,
                 editCount: currentProjection.editCount + 1,
-                caseType : "Recieved",
-                bdmName : data.ename // Increment editCount
+                caseType: "Recieved",
+                bdmName: data.ename // Increment editCount
             };
 
             //console.log(finalData)
@@ -948,8 +874,6 @@ function EmployeeTeamLeads() {
         //setIsEditFeedback(true)
     }
     //console.log("yahan locha h", feedbackPoints.length)
-
-
 
     const handleCloseFeedback = () => {
         setOpenFeedback(false)
@@ -1140,7 +1064,49 @@ function EmployeeTeamLeads() {
         }
     });
 
+    //---------------------------------- function to revert back company-------------------------------------
 
+    const handleRevertBackCompany = async (companyId, companyName, bdmStatus) => {
+        console.log("yahan chala")
+        try {
+            const reponse = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
+                params: {
+                    companyId,
+                    companyName
+                }
+            })
+            Swal.fire(
+                'Reverted!',
+                'The company has been reverted.',
+                'success'
+            );
+            setOpenRevertBackRequestDialog(false)
+            fetchTeamLeadsData(bdmStatus)
+        } catch (error) {
+
+            console.log("Error deletetind company", error)
+        }
+
+    }
+
+    const handleRejectRevertBackCompany = async (companyId , bdmStatus) => {
+        try {
+            const response = await axios.post(`${secretKey}/bdm-data/rejectrequestrevertbackcompany`, null, {
+                params: {
+                    companyId,
+                }
+            })
+            Swal.fire(
+                'Success!',
+                'The companynis not reverted.',
+                'success'
+            );
+            setOpenRevertBackRequestDialog(false)
+            fetchTeamLeadsData(bdmStatus)
+        }catch(error){
+            console.log("Error rejecting revert request" , error)
+        }
+    }
 
 
 
@@ -1171,7 +1137,6 @@ function EmployeeTeamLeads() {
 
                                 </div>
                                 <div className="request-reply">
-
                                     <button
                                         onClick={() => {
                                             setFormOpen(true)
@@ -1186,6 +1151,34 @@ function EmployeeTeamLeads() {
                         </DialogContent>
                     </Dialog>
                 )}
+                {revertBackRequestData.length !== 0 && revertBackRequestData.map((item) => (
+                    <Dialog key={item._id} open={openRevertBackRequestDialog} className='My_Mat_Dialog'>
+                        <DialogContent sx={{ width: "lg" }}>
+                            <div>
+                                <div className="request-title m-2 d-flex justify-content-between">
+                                    <div className="request-content mr-2 text-center">
+                                        <h3 className="m-0">{item.ename} has requested to revert back 
+                                        <b>{item["Company Name"]}</b> From you. Do you want accept his request?</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </DialogContent>
+                        <div className="request-reply d-flex justify-content-center align-items-center">
+                            <button
+                                onClick={() => handleRevertBackCompany(item._id, item["Company Name"], item.bdmStatus)}
+                                className="btn btn-success bdr-radius-none w-100"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                onClick={() => handleRejectRevertBackCompany(item._id , item.bdmStatus)}
+                                className="btn btn-danger bdr-radius-none w-100"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </Dialog>
+                ))}
 
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
@@ -2367,10 +2360,10 @@ function EmployeeTeamLeads() {
                                 }}
                             ></textarea>
                         </div>
-                       
+
                     </div>
                 </DialogContent>
-                <button  className="btn btn-primary bdr-radius-none" onClick={handleUpdate} type="submit">
+                <button className="btn btn-primary bdr-radius-none" onClick={handleUpdate} type="submit">
                     Submit
                 </button>
             </Dialog>
@@ -2556,7 +2549,7 @@ function EmployeeTeamLeads() {
                                 disabled={!isEditFeedback}
                             ></textarea>
                         </div>
-                        
+
                     </div>
 
                 </DialogContent>

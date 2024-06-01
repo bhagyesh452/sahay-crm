@@ -105,6 +105,9 @@ const CompanySchema = new mongoose.Schema({
   },
   bdmStatusChangeTime:{
     type:String,
+  },
+  RevertBackAcceptedCompanyRequest:{
+    type:String,
   }
 });
 

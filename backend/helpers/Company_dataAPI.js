@@ -573,7 +573,8 @@ router.post("/assign-new", async (req, res) => {
             bdeForwardDate: "",
             bdmStatusChangeDate: "",
             bdmStatusChangeTime: "",
-            bdmRemarks: ""
+            bdmRemarks: "",
+            RevertBackAcceptedCompanyRequest:""
           },
         },
       },
@@ -698,5 +699,26 @@ router.get("/edata-particular/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.post('/post-bderevertbackacceptedcompanyrequest', async (req, res) => {
+  const { companyId, companyName } = req.query;
+  try {
+    await CompanyModel.findOneAndUpdate(
+      { _id: companyId },
+      { $set: { RevertBackAcceptedCompanyRequest: "Send" } }
+    );
+    
+    await TeamLeadsModel.findOneAndUpdate(
+      { _id: companyId },
+      { $set: { RevertBackAcceptedCompanyRequest: "Send" } }
+    );
+
+    res.status(200).json({ message: "Company request reverted back successfully" });
+  } catch (error) {
+    console.error("Error reverting back company request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;

@@ -116,8 +116,10 @@ const CompanySchema = new mongoose.Schema({
   },
   bdmStatusChangeTime:{
     type:String,
+  },
+   RevertBackAcceptedCompanyRequest:{
+    type:String,
   }
-
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

@@ -327,6 +327,7 @@ router.post("/matured-case-request", async (req, res) => {
     res.status(500).json({ success: false, message: "Error saving request" });
   }
 });
+
 router.get("/inform-bde-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
@@ -340,6 +341,7 @@ router.get("/inform-bde-requests/:bdeName", async (req, res) => {
       .json({ success: false, message: "Error fetching the data" });
   }
 });
+
 router.get("/api/matured-get-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
@@ -372,7 +374,8 @@ router.get("/matured-get-requests-byBDM/:bdmName", async (req, res) => {
 //--------------api for delete bdm from admin side------------------
 
 router.post('/deletebdm-updatebdedata', async (req, res) => {
-  const { companyId, companyName } = req.body; // Changed from req.params to req.body
+  const { companyId, companyName } = req.query; // Changed from req.params to req.body
+ 
   try {
     await CompanyModel.findOneAndUpdate(
       { _id: companyId }, // Corrected filter object
@@ -381,6 +384,7 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
           bdmAcceptStatus: "NotForwarded",
           feedbackPoints: [],
           multiBdmName: [],
+          RevertBackAcceptedCompanyRequest:"Accept",
         },
         $unset: {
           bdmName: "",
@@ -403,6 +407,56 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
   }
 });
 
+//---------- request to reject revert back request -------------------------------------
 
+router.post(`/rejectrequestrevertbackcompany` , async(req , res)=>{
+  const { companyId } = req.query;
+  try{
+    await CompanyModel.findOneAndUpdate(
+      {_id : companyId},
+      { $set :{
+        RevertBackAcceptedCompanyRequest: "Reject",
+      }}
+    ) 
+    await TeamLeadsModel.findOneAndUpdate(
+      {_id : companyId},
+      { $set :{
+        RevertBackAcceptedCompanyRequest: "Reject",
+      }}
+    ) 
+    res.status(200).json({ message : "Company Not Reverted Back"})
+  }catch(error){
+    res.status(500).json({error : "Internal Server Error"})
+  }
+
+})
+
+//------------done request of reverted company--------------------------------
+
+router.post(`/rejectedrequestdonebybdm` ,async(req , res)=>{
+  const { companyId } = req.query;
+  try{
+    await CompanyModel.findOneAndUpdate(
+      {_id : companyId},
+      {
+        $unset : {
+          RevertBackAcceptedCompanyRequest : ""
+        }
+      }
+    )
+    await TeamLeadsModel.findOneAndUpdate(
+      {_id : companyId},
+      {
+        $unset : {
+          RevertBackAcceptedCompanyRequest : ""
+        }
+      }
+    )
+
+  }catch(error){
+    res.status(500).json({error : "Internal Server Error"})
+  }
+
+})
 
 module.exports = router;
