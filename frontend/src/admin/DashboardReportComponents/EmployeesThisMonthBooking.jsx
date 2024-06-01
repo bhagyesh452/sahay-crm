@@ -908,25 +908,25 @@ function EmployeesThisMonthBooking() {
                 mainBooking.services.forEach(service => {
                     if (service.paymentTerms === "Full Advanced") {
                       if (mainBooking.bdeName === mainBooking.bdmName) {
-                        achievedAmount += parseInt(service.totalPaymentWOGST)
+                        achievedAmount += Math.round(service.totalPaymentWOGST)
                       } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
-                        achievedAmount += parseInt(service.totalPaymentWOGST) / 2
+                        achievedAmount += Math.round(service.totalPaymentWOGST) / 2
                       } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
                         if (mainBooking.btempAchievedDatadeName === data.ename) {
-                          achievedAmount += parseInt(service.totalPaymentWOGST)
+                          achievedAmount += Math.round(service.totalPaymentWOGST)
                         }
                       }
                     } else {
-                      const payment =  parseInt(service.firstPayment)
+                      const payment =  Math.round(service.firstPayment)
                       if (mainBooking.bdeName === mainBooking.bdmName) {
           
-                        achievedAmount += parseInt(payment);
+                        achievedAmount += Math.round(payment);
                       } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
           
-                        achievedAmount += parseInt(payment) / 2;
+                        achievedAmount += Math.round(payment) / 2;
                       } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
                         if (mainBooking.bdeName === data.ename) {
-                          achievedAmount += parseInt(payment)
+                          achievedAmount += Math.round(payment)
                         }
                       }
                     }
@@ -969,25 +969,25 @@ function EmployeesThisMonthBooking() {
                     moreObject.services.forEach(service => {
                         if (service.paymentTerms === "Full Advanced") {
                           if (moreObject.bdeName === moreObject.bdmName) {
-                            achievedAmount += parseInt(service.totalPaymentWOGST)
+                            achievedAmount += Math.round(service.totalPaymentWOGST)
                           } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
-                            achievedAmount += parseInt(service.totalPaymentWOGST) / 2
+                            achievedAmount += Math.round(service.totalPaymentWOGST) / 2
                           } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
                             if (moreObject.btempAchievedDatadeName === data.ename) {
-                              achievedAmount += parseInt(service.totalPaymentWOGST)
+                              achievedAmount += Math.round(service.totalPaymentWOGST)
                             }
                           }
                         } else {
-                          const payment =  parseInt(service.firstPayment)
+                          const payment =  Math.round(service.firstPayment)
                           if (mainBooking.bdeName === mainBooking.bdmName) {
               
-                            achievedAmount += parseInt(payment);
+                            achievedAmount += Math.round(payment);
                           } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
               
-                            achievedAmount += parseInt(payment) / 2;
+                            achievedAmount += Math.round(payment) / 2;
                           } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
                             if (mainBooking.bdeName === data.ename) {
-                              achievedAmount += parseInt(payment)
+                              achievedAmount += Math.round(payment)
                             }
                           }
                         }
@@ -1023,8 +1023,6 @@ function EmployeesThisMonthBooking() {
 
         let remainingAmount = 0;
         const today = new Date();
-
-
         redesignedData.map((mainBooking) => {
 
             if (mainBooking.remainingPayments.length !== 0) {
@@ -1046,16 +1044,16 @@ function EmployeesThisMonthBooking() {
                     }
                     if (condition) {
                         
-                        // const tempAmount = Math.round(remainingObj.receivedPayment);
-                        // if (mainBooking.bdeName === mainBooking.bdmName) {
-                        //     remainingAmount += Math.round(tempAmount);
-                        // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                        //     remainingAmount += Math.round(tempAmount) / 2;
-                        // } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                        //     if (mainBooking.bdeName === data.ename) {
-                        //         remainingAmount += Math.round(tempAmount);
-                        //     }
-                        // }
+                        const tempAmount = Math.round(remainingObj.receivedPayment);
+                        if (mainBooking.bdeName === mainBooking.bdmName) {
+                            remainingAmount += Math.round(tempAmount);
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            remainingAmount += Math.round(tempAmount) / 2;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                            if (mainBooking.bdeName === data.ename) {
+                                remainingAmount += Math.round(tempAmount);
+                            }
+                        }
                     }
                 })
             }
@@ -1319,8 +1317,8 @@ function EmployeesThisMonthBooking() {
                 //     }
                 // });
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
-                    const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
+                    const countA = Math.round(functionOnlyCalculateMatured(a.ename)) || 0;
+                    const countB = Math.round(functionOnlyCalculateMatured(b.ename)) || 0;
                     return countA - countB;
                 });
                 break; // Add break statement here
@@ -1378,9 +1376,9 @@ function EmployeesThisMonthBooking() {
                 // });
 
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+                    const countA = Math.round(functionCalculateOnlyAchieved(a.ename)) || 0;
                     console.log(countA, "a")
-                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                    const countB = Math.round(functionCalculateOnlyAchieved(b.ename)) || 0;
                     console.log(countB, "b")
                     return countA - countB;
                 });
@@ -1395,8 +1393,8 @@ function EmployeesThisMonthBooking() {
                 //     }
                 // });
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
-                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+                    const countA = Math.round(functionCalculateOnlyAchieved(a.ename)) || 0;
+                    const countB = Math.round(functionCalculateOnlyAchieved(b.ename)) || 0;
                     return countB - countA;
                 });
                 break; // Add break statement here
@@ -1435,9 +1433,9 @@ function EmployeesThisMonthBooking() {
                 // });
 
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionGetOnlyAmount(a)) || 0;
+                    const countA = Math.round(functionGetOnlyAmount(a)) || 0;
                     console.log(countA, "a")
-                    const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                    const countB = Math.round(functionGetOnlyAmount(b)) || 0;
                     console.log(countB, "b")
                     return countA - countB;
                 });
@@ -1452,8 +1450,8 @@ function EmployeesThisMonthBooking() {
                 //     }
                 // });
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionGetOnlyAmount(a)) || 0;
-                    const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+                    const countA = Math.round(functionGetOnlyAmount(a)) || 0;
+                    const countB = Math.round(functionGetOnlyAmount(b)) || 0;
                     return countB - countA;
                 });
                 break; // Add break statement here
@@ -1492,9 +1490,9 @@ function EmployeesThisMonthBooking() {
                 // });
 
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
+                    const countA = Math.round(functionCalculateOnlyAchieved(a.ename)) / Math.round(functionGetOnlyAmount(a)) || 0;
 
-                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+                    const countB = Math.round(functionCalculateOnlyAchieved(b.ename)) / Math.round(functionGetOnlyAmount(b)) || 0;
 
                     return countA - countB;
                 });
@@ -1510,9 +1508,9 @@ function EmployeesThisMonthBooking() {
                 // });
 
                 employeeData.sort((a, b) => {
-                    const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
+                    const countA = Math.round(functionCalculateOnlyAchieved(a.ename)) / Math.round(functionGetOnlyAmount(a)) || 0;
 
-                    const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+                    const countB = Math.round(functionCalculateOnlyAchieved(b.ename)) / Math.round(functionGetOnlyAmount(b)) || 0;
 
                     return countB - countA;
                 });
