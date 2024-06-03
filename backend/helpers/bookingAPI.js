@@ -141,8 +141,6 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
 // Get Request for fetching bookings Data
 router.get("/redesigned-final-leadData", async (req, res) => {
   try {
-   
-    console.log(date , "This is going")
     const allData = await RedesignedLeadformModel.find().sort({ lastActionDate: -1 });
     res.status(200).json(allData);
   } catch (error) {
@@ -729,7 +727,7 @@ router.post(
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
-      const newTempDate = new Date().toLocaleDateString();
+      const newTempDate = new Date();
       const newData = req.body;
       const Step = req.params.step;
       if (Step === "step2") {
@@ -870,7 +868,7 @@ router.post(
             });
           }
         }
-        const boomDate = new Date().toLocaleDateString();
+        const boomDate = new Date();
         const tempNewData = {...newData , bookingPublishDate : boomDate , lastActionDate : boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
@@ -2635,12 +2633,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
-    const boomDate = new Date().toLocaleDateString();
+    const boomDate = new Date();
     const tempNewData = { ...newData , lastActionDate: boomDate , bookingPublishDate : boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
-    const date = new Date().toLocaleDateString();
-
+    const date = new Date();
     if (companyData) {
       await CompanyModel.findByIdAndUpdate(companyData._id, {
         Status: "Matured",
@@ -4364,7 +4361,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
 
 
-       const latestDate = new Date().toLocaleDateString();
+       const latestDate = new Date();
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
         await RedesignedLeadformModel.updateOne(
@@ -4402,7 +4399,7 @@ router.post(
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
-        const latestDateUpdate = new Date().toLocaleDateString();
+        const latestDateUpdate = new Date();
 
         // Push sendingObject into remainingPayments array
         await RedesignedLeadformModel.updateOne(
@@ -4490,7 +4487,7 @@ router.post(
 
         findObject.remainingPayments[findObject.remainingPayments.length - 1] = sendingObject;
         const updateResult = await findObject.save();
-        const latestUpdatedDate = new Date().toLocaleDateString();
+        const latestUpdatedDate = new Date();
         await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
