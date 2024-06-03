@@ -230,7 +230,7 @@ function TestLeads() {
     //--------------------function to filter company name ------------------------------
 
     const handleFilterSearch = async (searchQuery) => {
-        console.log(searchQuery)
+      
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
@@ -891,18 +891,12 @@ function TestLeads() {
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
-        const currentDataStatus = dataStatus;
-        let dataToSend = [];
-    
-        if (isFilter) {
-            if (dataStatus === 'Unassigned') {
-                dataToSend = unAssignedData.filter((row) => selectedRows.includes(row._id));
-            } else if (dataStatus === 'Assigned') {
-                dataToSend = assignedData.filter((row) => selectedRows.includes(row._id));
-            }
-        } else {
-            dataToSend = data.filter((row) => selectedRows.includes(row._id));
-        }
+        const currentDataStatus = dataStatus
+        
+        const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData
+        const tempFilter =( !isFilter && !isSearching) ? data : tempStatusData;
+
+        const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
     
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
@@ -1065,13 +1059,14 @@ function TestLeads() {
         // setCompanyData(cdata.filter((item) => item.ename === echangename));
 
         // // Find the selected data object
-
-        const selectedData = data.find((item) => item._id === id);
-
+        const dataToFilter = dataStatus === "Unassigned" ? unAssignedData : assignedData
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter 
+        const selectedData = finalFiltering.find((item) => item._id === id);
+       
         //console.log(selectedData["Company Incorporation Date  "])
         //console.log(selectedData)
         // console.log(echangename);
-
+       
         // // Update the form data with the selected data values
         setCompanyEmail(selectedData["Company Email"]);
         setCompanyName(selectedData["Company Name"]);
@@ -1309,8 +1304,7 @@ function TestLeads() {
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
-                console.log("Unassigned" , response.data.unassigned)
-                console.log("Assigned" , response.data.assigned)
+              
                 setOpenBacdrop(false)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)

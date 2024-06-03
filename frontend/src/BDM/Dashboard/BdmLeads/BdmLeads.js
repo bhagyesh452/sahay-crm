@@ -3006,7 +3006,7 @@ function BdmLeads() {
                                 />
                               </th>
 
-                              {(dataStatus === "Matured" && <th>Action</th>) ||
+                              {
                                 (dataStatus === "FollowUp" && (
                                   <th>Add Projection</th>
                                 )) ||
@@ -3288,7 +3288,7 @@ function BdmLeads() {
                                         )}
                                       </td>
                                     )}
-                                  {dataStatus === "Matured" && (
+                                  {/* {dataStatus === "Matured" && (
                                     <>
                                       <td>
                                         <div className="d-flex">
@@ -3368,7 +3368,7 @@ function BdmLeads() {
                                         </div>
                                       </td>
                                     </>
-                                  )}
+                                  )} */}
                                   {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                                 </tr>
                               ))}

@@ -1540,6 +1540,35 @@ function EmployeesThisMonthBooking() {
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+        <div className="row">
+            <div className="col">
+            <div className="filter-booking mb-1 d-flex align-items-center">
+                                <div className="filter-title">
+                                    <h3 className="m-0 mr-2">
+                                        {" "}
+                                        Filter Branch : {"  "}
+                                    </h3>
+                                </div>
+                                <div className="filter-main ml-2">
+                                    <select
+                                        className="form-select"
+                                        id={`branch-filter`}
+                                       
+                                    >
+                                        <option value="" disabled selected>
+                                            Select Branch
+                                        </option>
+
+                                        <option value={"Gota"}>Gota</option>
+                                        <option value={"Sindhu Bhawan"}>
+                                            Sindhu Bhawan
+                                        </option>
+                                        <option value={"none"}>None</option>
+                                    </select>
+                                </div>
+                            </div>
+            </div>
+        </div>
             <div className="row">
 
                 <div className="col">
