@@ -115,7 +115,7 @@ const TempSchema = new mongoose.Schema({
     type: String,
   },
   lastActionDate: {
-    type: String,
+    type: Date,
   },
   bookingSource: {
     type: String,
