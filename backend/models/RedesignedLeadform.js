@@ -84,8 +84,6 @@ const RemainingPaymentSchema = new mongoose.Schema({
   publishDate:{
     type:Date
   }
-
-
 })
 
 const TempSchema = new mongoose.Schema({

@@ -46,6 +46,7 @@ const defaultService = {
 };
 
 export default function RedesignedForm({
+  isBdm,
   setDataStatus,
   setFormOpen,
   companysName,
@@ -2199,7 +2200,7 @@ export default function RedesignedForm({
                                           style={{ minWidth: "16vw" }}
                                           className="d-flex mt-2"
                                         >
-                                          <label className="form-check form-check-inline">
+                                          {!isBdm && <label className="form-check form-check-inline">
                                             <input
                                               className="form-check-input"
                                               type="radio"
@@ -2218,7 +2219,7 @@ export default function RedesignedForm({
                                             <span className="form-check-label">
                                               Close By
                                             </span>
-                                          </label>
+                                          </label>}
                                           <label className="form-check form-check-inline">
                                             <input
                                               className="form-check-input"

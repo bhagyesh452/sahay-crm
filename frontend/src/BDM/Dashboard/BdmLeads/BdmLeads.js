@@ -3533,6 +3533,7 @@ function BdmLeads() {
         <RedesignedForm
           // matured={true}
           // companysId={companyId}
+          isBdm = {true}
           setDataStatus={setdataStatus}
           setFormOpen={setFormOpen}
           companysName={companyName}
