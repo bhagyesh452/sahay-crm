@@ -232,28 +232,28 @@ function EmployeePanel() {
   }
 
 
-  useEffect(() => {
-    const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
-    socket.on("connect", () => {
-      //console.log("Socket connected with ID:", socket.id);
-      setSocketID(socket.id);
-    });
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
+  //   socket.on("connect", () => {
+  //     //console.log("Socket connected with ID:", socket.id);
+  //     setSocketID(socket.id);
+  //   });
 
-    socket.on("request-seen", () => {
-      // Call fetchRequestDetails function to update request details
-      fetchRequestDetails();
-    });
+  //   socket.on("request-seen", () => {
+  //     // Call fetchRequestDetails function to update request details
+  //     fetchRequestDetails();
+  //   });
 
-    socket.on("data-sent", () => {
-      fetchRequestDetails();
-      playNotificationSound();
-    });
+  //   socket.on("data-sent", () => {
+  //     fetchRequestDetails();
+  //     playNotificationSound();
+  //   });
 
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   // Clean up the socket connection when the component unmounts
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
 
   const functionopenpopup = () => {
@@ -461,6 +461,7 @@ function EmployeePanel() {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
+ 
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -540,7 +541,7 @@ function EmployeePanel() {
       const tempData = response.data;
       const revertedData = response.data.filter((item)=> item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-      console.log("tempData", tempData)
+      console.log("tempData", tempData , data.ename)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -625,13 +626,17 @@ function EmployeePanel() {
 
 
   useEffect(() => {
-    fetchNewData();
-    setdataStatus("Matured");
-    setEmployeeData(
-      moreEmpData
-        .filter((obj) => obj.Status === "Matured")
-        .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
-    );
+    if(data.ename){
+      fetchNewData();
+      setdataStatus("Matured");
+      setEmployeeData(
+        moreEmpData
+          .filter((obj) => obj.Status === "Matured")
+          .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
+      );
+    }
+   
+   
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
@@ -691,14 +696,14 @@ function EmployeePanel() {
     }
   };
 
-  console.log(revertedData)
+  
 
   useEffect(() => {
     
     if(revertedData.length !== 0){
       setOpenRevertBackRequestDialog(true)
-    }else{
-      console.log("me yahan tu wahan")
+    }else if(data.ename){
+      
       fetchNewData()
     }
   }, [data.ename, revertedData.length]);

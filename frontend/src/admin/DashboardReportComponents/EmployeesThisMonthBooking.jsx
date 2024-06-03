@@ -1097,6 +1097,7 @@ function EmployeesThisMonthBooking() {
                 }
             })
         })
+        console.log(remainingAmount , data.ename)
         return remainingAmount
 
     };
@@ -1629,7 +1630,8 @@ function EmployeesThisMonthBooking() {
                                                             target.year === currentYear.toString() &&
                                                             target.month === currentMonth.toString()
                                                     )
-                                            ).reduce((total, obj) => total + functionCalculatePendingRevenue(obj), 0)
+                                            ).reduce((total, obj) => 
+                                                total + functionCalculatePendingRevenue(obj), 0)
                                         )
                                     }/-
                                 </div>
