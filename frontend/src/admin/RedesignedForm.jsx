@@ -59,7 +59,7 @@ export default function RedesignedForm({
   bdmName
 }) {
   const [totalServices, setTotalServices] = useState(1);
-
+  const [notAccess , setNotAccess] = useState(isBdm ? true : false);
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -71,7 +71,7 @@ export default function RedesignedForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName:  bdmName ? bdmName : "",
-    bdmType: "Close-by",
+    bdmType: "",
     otherBdmName: "",
     bdmEmail: "",
     bookingDate: new Date(),
@@ -157,7 +157,7 @@ export default function RedesignedForm({
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
-          bdmType:"Close-by"
+          
         }));
         setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {
@@ -602,6 +602,7 @@ export default function RedesignedForm({
           !leadData.bdmName ||
           !leadData.bdmEmail ||
           !leadData.bdmEmail ||
+          !leadData.bdmType ||
           !leadData.bookingDate ||
           !selectedValues
         ) {
@@ -1002,6 +1003,7 @@ export default function RedesignedForm({
         setCompleted({});
         setActiveStep(0);
         setSelectedValues("");
+        setNotAccess(isBdm ? true : false)
         setLeadData(defaultLeadData);
         // Optionally, you can perform further actions upon successful deletion
        
@@ -1742,6 +1744,8 @@ export default function RedesignedForm({
   const handleInputChange = (value, id) => {
     if (id === "bdmName") {
       const foundUser = unames.find((item) => item.ename === value);
+    
+      setNotAccess(foundUser.designation === "Sales Manager" ? true : false);
       setLeadData({
         ...leadData,
         bdmName: value,
@@ -2200,7 +2204,7 @@ export default function RedesignedForm({
                                           style={{ minWidth: "16vw" }}
                                           className="d-flex mt-2"
                                         >
-                                          {!isBdm && <label className="form-check form-check-inline">
+                                          {(!notAccess && !isBdm) && <label className="form-check form-check-inline">
                                             <input
                                               className="form-check-input"
                                               type="radio"

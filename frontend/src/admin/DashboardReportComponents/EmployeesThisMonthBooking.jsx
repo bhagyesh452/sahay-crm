@@ -1611,7 +1611,7 @@ function EmployeesThisMonthBooking() {
                                                             target.month === currentMonth.toString()
                                                     )
                                             ).reduce((total, obj) => total + functionCalculateTotalRevenue(obj.ename), 0)
-                                        )
+                                        ).toLocaleString()
                                     }/-
                                 </div>
                             </div>
@@ -1636,7 +1636,7 @@ function EmployeesThisMonthBooking() {
                                                             target.month === currentMonth.toString()
                                                     )
                                             ).reduce((total, obj) => total + functionCalculateAdvanceCollected(obj), 0)
-                                        )
+                                        ).toLocaleString()
                                     }/-
 
                                 </div>
@@ -1663,7 +1663,7 @@ function EmployeesThisMonthBooking() {
                                                     )
                                             ).reduce((total, obj) => 
                                                 total + functionCalculatePendingRevenue(obj), 0)
-                                        )
+                                        ).toLocaleString()
                                     }/-
                                 </div>
                             </div>
