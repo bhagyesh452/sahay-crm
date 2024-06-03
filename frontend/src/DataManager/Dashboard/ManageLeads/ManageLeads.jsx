@@ -177,11 +177,13 @@ function ManageLeads() {
     }
 
     const handleFilterSearch = async (searchQuery) => {
+        console.log(searchQuery)
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
+            setIsFilter(false);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery, field: "Company Name" }
+                params: { searchQuery }
             });
 
             if (!searchQuery.trim()) {
@@ -190,16 +192,20 @@ function ManageLeads() {
                 fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
-
-                setData(response.data);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
+                //setData(response.data);
+                setAssignedData(response.data.assigned)
+                setunAssignedData(response.data.unassigned)
+                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
+                setTotalCount(response.data.totalPages)
+                setCurrentPage(1)
+                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned');
                     } else {
-                        setDataStatus('Assigned')
+                        setDataStatus('Assigned');
                     }
                 }
-
             }
         } catch (error) {
             console.error('Error searching leads:', error.message);
@@ -1385,7 +1391,6 @@ function ManageLeads() {
                                                 <th>Sr.No</th>
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
-
                                                 <th style={{ cursor: "pointer" }}    >
                                                     <div className="d-flex align-items-center justify-content-between">
                                                         <div>Incorporation Date</div>
@@ -1442,8 +1447,7 @@ function ManageLeads() {
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-
-                                                {dataStatus !== "Unassigned" && <th>Status</th>}
+                                                <th>Status</th>
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
@@ -1510,8 +1514,8 @@ function ManageLeads() {
                                         {currentDataLoading ? (
                                             <tbody>
                                                 <tr>
-                                                    <td colSpan="13" className="">
-                                                        <div className='LoaderTDSatyle'>
+                                                    <td colSpan="14" >
+                                                        <div className="LoaderTDSatyle">
                                                             <ClipLoader
                                                                 color="lightgrey"
                                                                 loading
@@ -1525,7 +1529,7 @@ function ManageLeads() {
                                             </tbody>
                                         ) : (
                                             <tbody>
-                                                {isFilter && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1548,7 +1552,7 @@ function ManageLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
+                                                        <td>{company["Status"]}</td>
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1576,6 +1580,16 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
                                                             <button className='tbl-action-btn' onClick={
                                                                 data.length === "0"
                                                                     ? Swal.fire("Please Import Some data first")
@@ -1589,11 +1603,13 @@ function ManageLeads() {
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "grey",
+                                                                        cursor: "pointer",
                                                                     }}
                                                                 />
+
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -1606,7 +1622,7 @@ function ManageLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {isFilter && dataStatus === 'Assigned' && assignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1629,7 +1645,7 @@ function ManageLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
+                                                        <td>{company["Status"]}</td>
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1657,6 +1673,16 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
                                                             <button className='tbl-action-btn' onClick={
                                                                 data.length === "0"
                                                                     ? Swal.fire("Please Import Some data first")
@@ -1670,11 +1696,13 @@ function ManageLeads() {
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "grey",
+                                                                        cursor: "pointer",
                                                                     }}
                                                                 />
+
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -1687,7 +1715,7 @@ function ManageLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {!isFilter && data.map((company, index) => (
+                                                {(!isFilter && !isSearching) && data.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1710,7 +1738,7 @@ function ManageLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
+                                                        <td>{company["Status"]}</td>
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1738,6 +1766,16 @@ function ManageLeads() {
                                                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                                                         <td>{formatDateFinal(company["AssignDate"])}</td>
                                                         <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
                                                             <button className='tbl-action-btn' onClick={
                                                                 data.length === "0"
                                                                     ? Swal.fire("Please Import Some data first")
@@ -1751,11 +1789,13 @@ function ManageLeads() {
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "grey",
+                                                                        cursor: "pointer",
                                                                     }}
                                                                 />
+
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/datamanager/leads/${company._id}`}>
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -1773,18 +1813,50 @@ function ManageLeads() {
                                     </table>
                                 </div>
                             </div>
-                            {data.length === 0 && !currentDataLoading &&
-                                (
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="13" className="p-2 particular">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                )}
+                            {!isFilter && data.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                            {isFilter && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                             {isFilter && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="13" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            )}
+                            {/* {data.length !== 0 && (
+                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
+                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                        <IconChevronLeft />
+                                    </button>
+                                    <span>Page {currentPage} /{totalCount}</span>
+                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
+                                        <IconChevronRight />
+                                    </button>
+                                </div>
+                            )} */}
                             {(data.length !== 0 || (isFilter && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>

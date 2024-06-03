@@ -485,7 +485,10 @@ function BdmLeads() {
   };
 
   useEffect(() => {
-    fetchNewData("Matured");
+    if(data.ename){
+
+      fetchNewData("Matured");
+    }
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
