@@ -157,6 +157,7 @@ function EmployeePanel() {
     setIsOpen(false);
   };
   const [employeeData, setEmployeeData] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([])
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
   const [visibility, setVisibility] = useState("none");
@@ -513,6 +514,7 @@ function EmployeePanel() {
   useEffect(() => {
     fecthTeamData();
     fetchBDMbookingRequests();
+    fetchRedesignedFormDataAll()
   }, [data.ename]);
 
   // console.log("This is elon musk" , BDMrequests);
@@ -1556,9 +1558,22 @@ function EmployeePanel() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
+      
       const data = response.data.find((obj) => obj.company === maturedID);
       //console.log(data);
       setCurrentForm(data);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const fetchRedesignedFormDataAll = async () => {
+    try {
+      //console.log(maturedID);
+      const response = await axios.get(
+        `${secretKey}/bookings/redesigned-final-leadData`
+      );
+      
+      setRedesignedData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -2465,7 +2480,14 @@ function EmployeePanel() {
   
 
   //console.log(feedbackRemarks, feedbakPo
-
+const functionCalculateBookingDate = (id) =>{
+  const bookingObj = redesignedData.find(company => company.company === id);
+  return bookingObj ? formatDate(bookingObj.bookingDate) : "N/A"
+}
+const functionCalculatePublishDate = (id) =>{
+  const bookingObj = redesignedData.find(company => company.company === id);
+  return bookingObj ? formatDate(bookingObj.bookingPublishDate) : "N/A"
+}
 
 
   return (
@@ -2605,6 +2627,7 @@ function EmployeePanel() {
                           <option value="State">State</option>
                           <option value="Status">Status</option>
                           <option value="AssignDate">Assigned Date</option>
+                          
                         </select>
                       </div>
                       {visibility === "block" && (
@@ -3517,6 +3540,12 @@ function EmployeePanel() {
                                 }}
                               />
                             </th>
+                            {dataStatus==="Matured" && <><th>
+                              Booking Date
+                            </th>
+                            <th>
+                              Publish Date
+                            </th></>}
 
                             {
                               (dataStatus === "FollowUp" && (
@@ -3953,6 +3982,11 @@ function EmployeePanel() {
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDateNew(company["AssignDate"])}</td>
+                                {dataStatus === "Matured" && <>
+                                <td>{functionCalculateBookingDate(company._id)}</td>
+                                <td>{functionCalculatePublishDate(company._id)}</td>
+                                
+                                </>}
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
                                     <>
