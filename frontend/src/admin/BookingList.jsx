@@ -10,6 +10,7 @@ import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { FcList } from "react-icons/fc";
 import wordimg from "../static/my-images/word.png";
+import RemainingAmnt from "../static/my-images/money.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
@@ -690,15 +691,19 @@ function BookingList() {
                                       </>
                                     ))}
                               </div>
-
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
+                              <div className="d-flex align-items-center justify-content-between">
+                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                  <img src={RemainingAmnt}></img>
                                 </div>
-                              )}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
@@ -706,7 +711,7 @@ function BookingList() {
                                   Total: ₹ {parseInt(calculateTotalAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount receive_amount_bg">
-                                  Receive: ₹ {parseInt(calculateReceivedAmount(obj)).toLocaleString()}
+                                  Received: ₹ {parseInt(calculateReceivedAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount pending_amount_bg">
                                   Pending: ₹ {parseInt(calculatePendingAmount(obj)).toLocaleString()}

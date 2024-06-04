@@ -1367,6 +1367,24 @@ color: #4e884e;
 {
   background: #c4e5ff;
 }
+.b_Service_remaining_receive
+{
+  width: 24px;
+  text-align: center;
+  height: 24px;
+  background: #fdf4e1;
+  border-radius: 100px;
+  color: #868686;
+  margin-right: 3px;
+}
+.bookings_Company_Name:hover .b_Service_remaining_receive
+{
+  background: #f3e2bd;
+}
+.b_Service_remaining_receive img
+{
+  width: 16px;
+}
 .booking-deatils-heading {
   padding: 6px 20px 8px 20px;
   background: #f5f5f5;
