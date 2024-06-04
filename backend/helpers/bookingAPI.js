@@ -2297,7 +2297,12 @@ router.post(
       
           //   console.log("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-          const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+          const pagelength = 
+          (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
+            ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
+            : (newData.services.length === 1 && mailName === "Shubhi Banthiya") 
+              ? 2 
+              : 3;
           const options = {
             format: "A4", // Set the page format to A4 size
             orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
