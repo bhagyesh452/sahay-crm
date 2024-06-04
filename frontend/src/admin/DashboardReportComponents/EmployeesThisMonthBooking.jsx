@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, {useRef, useState, useEffect } from 'react'
 import { debounce } from "lodash";
 import { useTheme } from '@mui/material/styles';
 import axios from "axios";
@@ -21,7 +21,9 @@ import Nodata from '../../components/Nodata';
 //import { options } from "../components/Options.js";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 import ClipLoader from "react-spinners/ClipLoader";
+import confetti from 'canvas-confetti';
 
 function EmployeesThisMonthBooking() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -34,6 +36,8 @@ function EmployeesThisMonthBooking() {
     const [companyData, setCompanyData] = useState([]);
     const [bookingStartDate, setBookingStartDate] = useState(new Date());
     const [bookingEndDate, setBookingEndDate] = useState(new Date());
+    const [generalStartDate, setGeneralStartDate] = useState(new Date());
+    const [generalEndDate, setGeneralEndDate] = useState(new Date());
     const [searchBookingBde, setSearchBookingBde] = useState("")
     const [bdeResegnedData, setBdeRedesignedData] = useState([])
     const [initialDate, setInitialDate] = useState(new Date());
@@ -47,8 +51,6 @@ function EmployeesThisMonthBooking() {
         targetratio: "none",
         lastbookingdate: "none"
     });
-
-
 
 
 
@@ -159,6 +161,136 @@ function EmployeesThisMonthBooking() {
         "December",
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
+
+
+
+    const functionCalculateGeneralMatured = () => {
+
+        let totalCount = 0;
+        const todayDate = new Date();
+       
+        redesignedData.map((mainBooking) => {
+          
+       
+           let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+
+            if (condition) {
+                totalCount += 1;
+            }
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                if (condition2) {
+                    totalCount += 1;
+                }
+            })
+
+        })
+
+        return totalCount;
+    }
+    const functionCalculateGeneralRevenue = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        redesignedData.map((mainBooking) => {
+            let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+            if (condition) {
+                totalCount += Math.floor(mainBooking.receivedAmount);
+            }
+            else if (mainBooking.remainingPayments.length !== 0) {
+                mainBooking.remainingPayments.map((remainingObj) => {
+                    let conditionMore = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                    if (conditionMore) {
+                        totalCount += Math.floor(remainingObj.receivedPayment);
+                    }
+
+                })
+
+            }
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                if (condition2) {
+                    totalCount += Math.floor(moreObject.receivedAmount);
+                } else if (moreObject.remainingPayments.length !== 0) {
+                    moreObject.remainingPayments.map((remainingObj) => {
+                        let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                        if (condition) {
+                            totalCount += Math.floor(remainingObj.receivedPayment);
+                        }
+
+                    })
+
+                }
+            })
+
+        })
+
+        return totalCount;
+    }
+    const functionCalculateGeneralRemaining = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        redesignedData.map((mainBooking) => {
+
+
+            if (mainBooking.remainingPayments.length !== 0) {
+                mainBooking.remainingPayments.map((remainingObj) => {
+                    let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                    if (condition) {
+                        totalCount += Math.floor(remainingObj.receivedPayment);
+                    }
+
+                })
+
+            }
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                if (moreObject.remainingPayments.length !== 0) {
+                    moreObject.remainingPayments.map((remainingObj) => {
+                        let conditionMore = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                        if (conditionMore) {
+                            totalCount += Math.floor(remainingObj.receivedPayment);
+                        }
+
+                    })
+
+                }
+            })
+
+        })
+
+        return totalCount;
+    }
+    const functionCalculateGeneralAdvanced = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        redesignedData.map((mainBooking) => {
+            let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+            if (condition) {
+                mainBooking.services.forEach((service) => {
+                    if (service.paymentTerms === "Full Advanced") {
+                        totalCount += Math.floor(service.totalPaymentWGST);
+                    } else {
+                        totalCount += Math.floor(service.firstPayment);
+                    }
+                })
+            }
+
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                if (condition2) {
+                    moreObject.services.forEach((service) => {
+                        if (service.paymentTerms === "Full Advanced") {
+                            totalCount += Math.floor(service.totalPaymentWGST);
+                        } else {
+                            totalCount += Math.floor(service.firstPayment);
+                        }
+                    })
+                }
+            })
+
+        })
+
+        return totalCount;
+    }
 
 
 
@@ -1020,19 +1152,19 @@ function EmployeesThisMonthBooking() {
 
         })
 
-        console.log(achievedAmount , "of" , data.ename)
+        console.log(achievedAmount, "of", data.ename)
         return achievedAmount;
     };
     const functionCalculatePendingRevenue = (data) => {
         let remainingAmount = 0;
         const today = new Date();
-     
+
         redesignedData.map((mainBooking) => {
 
             if (mainBooking.remainingPayments.length !== 0) {
                 mainBooking.remainingPayments.map((remainingObj) => {
-                   
-                
+
+
                     let condition = false;
                     switch (Filterby) {
                         case 'Today':
@@ -1099,7 +1231,7 @@ function EmployeesThisMonthBooking() {
                 }
             })
         })
-        console.log(remainingAmount , data.ename)
+        console.log(remainingAmount, data.ename)
         return remainingAmount
 
     };
@@ -1231,6 +1363,14 @@ function EmployeesThisMonthBooking() {
         { label: "Reset", getValue: () => [null, null] },
     ];
 
+    const handleGeneralCollectionDateRange = (values) => {
+        if (values[1]) {
+            const startDate = values[0].format('MM/DD/YYYY')
+            const endDate = values[1].format('MM/DD/YYYY')
+            setGeneralStartDate(startDate);
+            setGeneralEndDate(endDate);
+        }
+    }
     const handleThisMonthBookingDateRange = (values) => {
         if (values[1]) {
             const startDate = values[0].format('MM/DD/YYYY')
@@ -1537,142 +1677,168 @@ function EmployeesThisMonthBooking() {
     }, [employeeData]);
 
 
+//  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
+    const defaults = {
+    disableForReducedMotion: true,
+  };
+  
+  function confettiExplosion(origin) {
+    fire(0.25, { spread: 140, startVelocity: 55, origin });
+    fire(0.2, { spread: 140, origin });
+    fire(0.35, { spread: 120, decay: 0.91, origin });
+    fire(0.1, { spread: 140, startVelocity: 25, decay: 0.92, origin });
+    fire(0.1, { spread: 140, startVelocity: 45, origin });
+  }
+  
+  function fire(particleRatio, opts) {
+    confetti(
+      Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(200 * particleRatio),
+      })
+    );
+  }
+  
+
+    const soundRef = useRef(null); // useRef for optional sound element
+  
+    useEffect(() => {
+      const sound = soundRef.current;
+      if (sound) {
+        // Preload the sound only once on component mount
+        sound.load();
+      }
+    }, [soundRef]); // Dependency array for sound preloading
+  
+    const handleClick = () => {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+      const origin = {
+        x: center.x / window.innerWidth,
+        y: center.y / window.innerHeight,
+      };
+  
+      if (soundRef.current) {
+        soundRef.current.currentTime = 0;
+        soundRef.current.play();
+      }
+      confettiExplosion(origin);
+    };
+  
+    const buttonRef = useRef(null);
+
+
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-        <div className="row">
-            <div className="col">
-            <div className="filter-booking mb-1 d-flex align-items-center">
-                                <div className="filter-title">
-                                    <h3 className="m-0 mr-2">
-                                        {" "}
-                                        Filter Branch : {"  "}
-                                    </h3>
-                                </div>
-                                <div className="filter-main ml-2">
-                                    <select
-                                        className="form-select"
-                                        id={`branch-filter`}
-                                       
-                                    >
-                                        <option value="" disabled selected>
-                                            Select Branch
-                                        </option>
-
-                                        <option value={"Gota"}>Gota</option>
-                                        <option value={"Sindhu Bhawan"}>
-                                            Sindhu Bhawan
-                                        </option>
-                                        <option value={"none"}>None</option>
-                                    </select>
-                                </div>
-                            </div>
-            </div>
-        </div>
-            <div className="row">
-
-                <div className="col">
-                    <div className="dash-card-1">
-                        <div className="dash-card-1-head">No. of Bookings</div>
-                        <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="dash-card-1-num clr-1ac9bd">
-                                    {employeeData.length !== 0 && employeeData.filter(
-                                        (item) =>
-                                            item.designation === "Sales Executive" &&
-                                            item.targetDetails.length !== 0 &&
-                                            item.targetDetails.find(
-                                                (target) =>
-                                                    target.year === currentYear.toString() &&
-                                                    target.month === currentMonth.toString()
-                                            )
-                                    ).reduce((total, obj) => total + (functionOnlyCalculateMatured(obj.ename)), 0)}
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="dash-card-1">
-                        <div className="dash-card-1-head">Total Revenue</div>
-                        <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="dash-card-1-num clr-1cba19">
-                                    ₹{employeeData.length !== 0 &&
-                                        Math.floor(
-                                            employeeData.filter(
-                                                (item) =>
-                                                    item.designation === "Sales Executive" &&
-                                                    item.targetDetails.length !== 0 &&
-                                                    item.targetDetails.find(
-                                                        (target) =>
-                                                            target.year === currentYear.toString() &&
-                                                            target.month === currentMonth.toString()
-                                                    )
-                                            ).reduce((total, obj) => total + functionCalculateTotalRevenue(obj.ename), 0)
-                                        ).toLocaleString()
-                                    }/-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="dash-card-1">
-                        <div className="dash-card-1-head">Advanced Collected</div>
-                        <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="dash-card-1-num clr-ffb900">
-                                    ₹{employeeData.length !== 0 &&
-                                        Math.floor(
-                                            employeeData.filter(
-                                                (item) =>
-                                                    item.designation === "Sales Executive" &&
-                                                    item.targetDetails.length !== 0 &&
-                                                    item.targetDetails.find(
-                                                        (target) =>
-                                                            target.year === currentYear.toString() &&
-                                                            target.month === currentMonth.toString()
-                                                    )
-                                            ).reduce((total, obj) => total + functionCalculateAdvanceCollected(obj), 0)
-                                        ).toLocaleString()
-                                    }/-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="dash-card-1">
-                        <div className="dash-card-1-head">Remaining Collection</div>
-                        <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="dash-card-1-num clr-4299e1">
-                                    ₹{employeeData.length !== 0 &&
-                                        Math.floor(
-                                            employeeData.filter(
-                                                (item) =>
-                                                    item.designation === "Sales Executive" &&
-                                                    item.targetDetails.length !== 0 &&
-                                                    item.targetDetails.find(
-                                                        (target) =>
-                                                            target.year === currentYear.toString() &&
-                                                            target.month === currentMonth.toString()
-                                                    )
-                                            ).reduce((total, obj) => 
-                                                total + functionCalculatePendingRevenue(obj), 0)
-                                        ).toLocaleString()
-                                    }/-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            
             <div className="employee-dashboard mt-2">
+                <div className="card mb-2">
+                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+
+                        <div className="dashboard-title">
+                            <h2 className="m-0 pl-1">
+                               Collection Report
+                            </h2>
+                        </div>
+                        <div className="filter-booking d-flex align-items-center">
+                           
+
+                            <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(values) => {
+                                                const startDateEmp = moment(values[0]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                const endDateEmp = moment(values[1]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                handleGeneralCollectionDateRange(values); // Call handleSelect with the selected values
+                                            }}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="card-body">
+                        <div className="row mt-1">
+                            <div className="col">
+                                <div className="dash-card-1">
+                                    <div className="dash-card-1-head">No. of Bookings</div>
+                                    <div className="dash-card-1-body">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="dash-card-1-num clr-1ac9bd">
+                                                {functionCalculateGeneralMatured()}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="dash-card-1">
+                                    <div className="dash-card-1-head">Total Revenue</div>
+                                    <div className="dash-card-1-body">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="dash-card-1-num clr-1cba19">
+                                                ₹{
+                                                    functionCalculateGeneralRevenue().toLocaleString()
+                                                }/-
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="dash-card-1">
+                                    <div className="dash-card-1-head">Advanced Collected</div>
+                                    <div className="dash-card-1-body">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="dash-card-1-num clr-ffb900">
+                                                ₹{functionCalculateGeneralAdvanced().toLocaleString()
+                                                }/-
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="dash-card-1">
+                                    <div className="dash-card-1-head">Remaining Collection</div>
+                                    <div className="dash-card-1-body">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="dash-card-1-num clr-4299e1">
+                                                ₹{functionCalculateGeneralRemaining().toLocaleString()}/-
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="card todays-booking totalbooking" id="totalbooking"   >
 
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
@@ -2015,7 +2181,7 @@ function EmployeesThisMonthBooking() {
                                                     employeeData
                                                         .filter(
                                                             (item) =>
-                                                                item.designation === "Sales Executive" &&
+
                                                                 item.targetDetails.length !== 0 &&
                                                                 item.targetDetails.find(
                                                                     (target) =>

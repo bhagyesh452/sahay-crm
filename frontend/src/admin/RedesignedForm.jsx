@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useRef,useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -15,6 +15,8 @@ import excelimg from "../static/my-images/excel.png";
 import PdfImageViewer from "../Processing/PdfViewer";
 import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
+import confetti from 'canvas-confetti';
+import Dhanyavad from './DashboardReportComponents/dhanyavad.wav'
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -442,8 +444,59 @@ export default function RedesignedForm({
   //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
   //   setActiveStep(5);
   // }
-  console.log("Real time data: ", leadData);
-  console.log("Active Step:" , activeStep);
+//  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
+const defaults = {
+  disableForReducedMotion: true,
+};
+
+function confettiExplosion(origin) {
+  fire(0.25, { spread: 400, startVelocity: 55, origin });
+  fire(0.2, { spread: 400, origin });
+  fire(0.85, { spread: 400, decay: 0.91, origin });
+  fire(0.9, { spread: 400, startVelocity: 25, decay: 0.92, origin });
+  fire(0.9, { spread: 400, startVelocity: 45, origin });
+}
+
+function fire(particleRatio, opts) {
+  confetti(
+    Object.assign({}, defaults, opts, {
+      particleCount: Math.floor(200 * particleRatio),
+    })
+  );
+}
+
+
+  const soundRef = useRef(null); // useRef for optional sound element
+
+  useEffect(() => {
+    const sound = soundRef.current;
+    if (sound) {
+      // Preload the sound only once on component mount
+      sound.load();
+    }
+  }, [soundRef]); // Dependency array for sound preloading
+
+  const handleClick = () => {
+    const rect = buttonRef.current.getBoundingClientRect();
+    const center = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+    const origin = {
+      x: center.x / window.innerWidth,
+      y: center.y / window.innerHeight,
+    };
+
+    if (soundRef.current) {
+      soundRef.current.currentTime = 0;
+      soundRef.current.play();
+    }
+    confettiExplosion(origin);
+  };
+
+  const buttonRef = useRef(null);
+
+// -------------------------------------------------------------------------------
   useEffect(() => {
     fetchData();
 
@@ -839,8 +892,12 @@ export default function RedesignedForm({
 
         fetchData();
         handleNext();
+        handleClick()
+        const newaudio = new Audio(Dhanyavad);
+        newaudio.play()
         setFormOpen(false);
         setDataStatus("Matured");
+
         return true;
       } 
       // let dataToSend = {
@@ -1133,6 +1190,7 @@ export default function RedesignedForm({
                       ₹
                     </button>
                   </div>
+                  <audio ref={soundRef} src={Dhanyavad} preload="none" /> {/* Adjust path and preload as needed */}
                   <div class="form-check ml-2">
                     <input
                       className="form-check-input"
@@ -3659,6 +3717,7 @@ export default function RedesignedForm({
                               onClick={handleComplete}
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
+                              ref={buttonRef}
                             >
                               {completedSteps() === totalSteps() - 1
                                 ? "Submit"

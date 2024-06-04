@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useRef, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -15,6 +15,8 @@ import excelimg from "../static/my-images/excel.png";
 import PdfImageViewer from "../Processing/PdfViewer";
 import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
+import confetti from 'canvas-confetti';
+import Dhanyavad from './DashboardReportComponents/dhanyavad.wav'
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -814,6 +816,9 @@ let isValid = true;
         }
         handleNext();
         // setNowToFetch(true)
+        handleClick()
+        const newaudio = new Audio(Dhanyavad);
+        newaudio.play()
         setFormOpen(false);
         setDataStatus("Matured");
       
@@ -1742,6 +1747,58 @@ let isValid = true;
       };
     });
   };
+
+  //  ----------------------------------------------   Form Submit boom baam section    -----------------------------------------------------------
+  const defaults = {
+    disableForReducedMotion: true,
+  };
+  
+  function confettiExplosion(origin) {
+    fire(0.25, { spread: 400, startVelocity: 55, origin });
+    fire(0.2, { spread: 400, origin });
+    fire(0.85, { spread: 400, decay: 0.91, origin });
+    fire(0.9, { spread: 400, startVelocity: 25, decay: 0.92, origin });
+    fire(0.9, { spread: 400, startVelocity: 45, origin });
+  }
+  
+  function fire(particleRatio, opts) {
+    confetti(
+      Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(200 * particleRatio),
+      })
+    );
+  }
+  
+  
+    const soundRef = useRef(null); // useRef for optional sound element
+  
+    useEffect(() => {
+      const sound = soundRef.current;
+      if (sound) {
+        // Preload the sound only once on component mount
+        sound.load();
+      }
+    }, [soundRef]); // Dependency array for sound preloading
+  
+    const handleClick = () => {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+      const origin = {
+        x: center.x / window.innerWidth,
+        y: center.y / window.innerHeight,
+      };
+  
+      if (soundRef.current) {
+        soundRef.current.currentTime = 0;
+        soundRef.current.play();
+      }
+      confettiExplosion(origin);
+    };
+  
+    const buttonRef = useRef(null);
 
   return (
     <div>
