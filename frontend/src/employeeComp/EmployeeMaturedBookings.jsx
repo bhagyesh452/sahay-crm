@@ -32,7 +32,7 @@ import {
 import PdfImageViewerAdmin from "../admin/PdfViewerAdmin";
 import Tooltip from '@mui/material/Tooltip';
 
-
+import RemainingAmnt from "../static/my-images/money.png";
 
 
 
@@ -513,14 +513,20 @@ function EmployeeMaturedBookings() {
                                     ))}
                               </div>
 
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
-                                </div>
-                              )}
+                              <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
+                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                  <img src={RemainingAmnt}></img>
+                                </div>}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">

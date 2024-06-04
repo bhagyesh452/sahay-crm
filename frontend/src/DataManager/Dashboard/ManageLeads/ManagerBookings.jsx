@@ -17,6 +17,7 @@ import AddLeadForm from "../../../admin/AddLeadForm.jsx";
 import { FaPlus } from "react-icons/fa6";
 import { IoAdd } from "react-icons/io5";
 import CloseIcon from "@mui/icons-material/Close";
+import RemainingAmnt from "../../../static/my-images/money.png";
 import { IconX } from "@tabler/icons-react";
 import {
   Button,
@@ -679,14 +680,20 @@ const [expanseObject, setExpanseObject] = useState({
                                     ))}
                               </div>
 
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
-                                </div>
-                              )}
+                              <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
+                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                  <img src={RemainingAmnt}></img>
+                                </div>}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">

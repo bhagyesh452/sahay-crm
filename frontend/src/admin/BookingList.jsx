@@ -692,9 +692,10 @@ function BookingList() {
                                     ))}
                               </div>
                               <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
                                 <div className="b_Service_remaining_receive" title="remaining Payment Received">
                                   <img src={RemainingAmnt}></img>
-                                </div>
+                                </div>}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
