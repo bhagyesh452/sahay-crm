@@ -1983,6 +1983,107 @@ function BdmLeads() {
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
+    // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+
+    const debouncedSetCname = debounce((value) => {
+      setCname(value);
+    }, 10);
+  
+    const debouncedSetEmail = debounce((value) => {
+      setCemail(value);
+    }, 10);
+  
+    const debouncedSetAddress = debounce((value) => {
+      setCompanyAddress(value);
+    }, 10);
+  
+    const debouncedSetIncoDate = debounce((value) => {
+      setCidate(value);
+    }, 10);
+  
+    const [errorCNumber, setErrorCNumber] = useState('');
+  
+    const debouncedSetCompanyNumber = debounce((value) => {
+      if (/^\d{10}$/.test(value)) {
+        setCnumber(value);
+        setErrorCNumber('');
+      } else {
+        setErrorCNumber('Please enter a 10-digit number');
+        setCnumber()
+      }
+  
+    }, 10);
+  
+    const debouncedSetCity = debounce((value) => {
+      setCity(value);
+    }, 10);
+  
+    const debouncedSetState = debounce((value) => {
+      setState(value);
+    }, 10);
+  
+    const debounceSetFirstDirectorName = debounce((value) => {
+      setDirectorNameFirst(value);
+    }, 10);
+  
+    const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+    const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+    const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+  
+    const debounceSetFirstDirectorNumber = debounce((value) => {
+      if (/^\d{10}$/.test(value)) {
+        setDirectorNumberFirst(value)
+        setErrorDirectorNumberFirst("")
+      } else {
+        setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+        setDirectorNumberFirst()
+      }
+    }, 10);
+  
+    const debounceSetFirstDirectorEmail = debounce((value) => {
+      setDirectorEmailFirst(value);
+    }, 10);
+  
+    const debounceSetSecondDirectorName = debounce((value) => {
+      setDirectorNameSecond(value);
+    }, 10);
+  
+    const debounceSetSecondDirectorNumber = debounce((value) => {
+      if (/^\d{10}$/.test(value)) {
+        setDirectorNumberSecond(value)
+        setErrorDirectorNumberSecond("")
+      } else {
+        setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+        setDirectorNumberSecond()
+      }
+    }, 10);
+  
+    const debounceSetSecondDirectorEmail = debounce((value) => {
+      setDirectorEmailSecond(value);
+    }, 10);
+  
+    const debounceSetThirdDirectorName = debounce((value) => {
+      setDirectorNameThird(value);
+    }, 10);
+  
+    const debounceSetThirdDirectorNumber = debounce((value) => {
+      if (/^\d{10}$/.test(value)) {
+        setDirectorNumberThird(value)
+        setErrorDirectorNumberThird("")
+      } else {
+        setErrorDirectorNumberThird('Please Enter 10 digit Number')
+        setDirectorNumberThird()
+      }
+    }, 10);
+  
+    const debounceSetThirdDirectorEmail = debounce((value) => {
+      setDirectorEmailThird(value);
+    }, 10);
+  
+  
+  
+  
+
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
   const [paymentLink, setPaymentLink] = useState("");
@@ -3988,104 +4089,109 @@ function BdmLeads() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-          <div className="modal-dialog" role="document">
+        <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-body">
                 <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Name</label>
+                      <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
                       <input
                         type="text"
                         className="form-control"
                         name="example-text-input"
                         placeholder="Your Company Name"
                         onChange={(e) => {
-                          setCname(e.target.value);
+                          debouncedSetCname(e.target.value);
                         }}
                       />
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Email</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          setCemail(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          setCompanyAddress(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">Company Number</label>
+                      <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
                       <input
                         type="number"
+                        placeholder="Enter Company's Phone No."
                         onChange={(e) => {
-                          setCnumber(e.target.value);
+                          debouncedSetCompanyNumber(e.target.value);
                         }}
                         className="form-control"
                       />
+                      {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          debouncedSetEmail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                </div>
+                <div className="row">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
-                        Company Incorporation Date
+                        Company Incorporation Date 
                       </label>
                       <input
                         onChange={(e) => {
-                          setCidate(e.target.value);
+                          debouncedSetIncoDate(e.target.value);
                         }}
                         type="date"
                         className="form-control"
                       />
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
-                      <label className="form-label">City</label>
+                      <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
                       <input
                         onChange={(e) => {
-                          setCity(e.target.value);
+                          debouncedSetCity(e.target.value);
                         }}
                         type="text"
                         className="form-control"
+                        placeholder="Enter Your City"
                       />
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
-                      <label className="form-label">State</label>
+                      <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
                       <input
                         onChange={(e) => {
-                          setState(e.target.value);
+                          debouncedSetState(e.target.value);
                         }}
                         type="text"
                         className="form-control"
+                        placeholder="Enter Your State"
                       //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Your Address"
+                        onChange={(e) => {
+                          debouncedSetAddress(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -4102,7 +4208,7 @@ function BdmLeads() {
                         name="example-text-input"
                         placeholder="Your Company Name"
                         onChange={(e) => {
-                          setDirectorNameFirst(e.target.value);
+                          debounceSetFirstDirectorName(e.target.value);
                         }}
                       />
                     </div>
@@ -4118,9 +4224,10 @@ function BdmLeads() {
                         name="example-text-input"
                         placeholder="example@gmail.com"
                         onChange={(e) => {
-                          setDirectorNumberFirst(e.target.value);
+                          debounceSetFirstDirectorNumber(e.target.value);
                         }}
                       />
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -4134,7 +4241,7 @@ function BdmLeads() {
                         name="example-text-input"
                         placeholder="example@gmail.com"
                         onChange={(e) => {
-                          setDirectorEmailFirst(e.target.value);
+                          debounceSetFirstDirectorEmail(e.target.value);
                         }}
                       />
                     </div>
@@ -4193,7 +4300,7 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="Your Company Name"
                           onChange={(e) => {
-                            setDirectorNameSecond(e.target.value);
+                            debounceSetSecondDirectorName(e.target.value);
                           }}
                         />
                       </div>
@@ -4209,9 +4316,10 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="example@gmail.com"
                           onChange={(e) => {
-                            setDirectorNumberSecond(e.target.value);
+                            debounceSetSecondDirectorNumber(e.target.value);
                           }}
                         />
+                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -4225,7 +4333,7 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="example@gmail.com"
                           onChange={(e) => {
-                            setDirectorEmailSecond(e.target.value);
+                            debounceSetSecondDirectorEmail(e.target.value);
                           }}
                         />
                       </div>
@@ -4290,7 +4398,7 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="Your Company Name"
                           onChange={(e) => {
-                            setDirectorNameThird(e.target.value);
+                            debounceSetThirdDirectorName(e.target.value);
                           }}
                         />
                       </div>
@@ -4306,9 +4414,10 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="example@gmail.com"
                           onChange={(e) => {
-                            setDirectorNumberThird(e.target.value);
+                            debounceSetThirdDirectorNumber(e.target.value);
                           }}
                         />
+                        {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -4322,7 +4431,7 @@ function BdmLeads() {
                           name="example-text-input"
                           placeholder="example@gmail.com"
                           onChange={(e) => {
-                            setDirectorEmailThird(e.target.value);
+                            debounceSetThirdDirectorEmail(e.target.value);
                           }}
                         />
                       </div>

@@ -739,7 +739,7 @@ let isValid = true;
         }
       }
       if (activeStep === 3) {
-        if(leadData.paymentMethod===""){
+        if(!leadData.paymentMethod){
           Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
           return true;
         }            
