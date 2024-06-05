@@ -1471,12 +1471,12 @@ function BookingList() {
                                                     </div>
                                                     <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-4 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                             Extra Remarks
                                                           </div>
                                                         </div>
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-8 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
                                                             paymentObj.extraRemarks
                                                           }>
@@ -2557,12 +2557,12 @@ function BookingList() {
                                                         </div>
                                                         <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
-                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                            <div class="col-sm-4 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                                 Extra Remarks
                                                               </div>
                                                             </div>
-                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                            <div class="col-sm-8 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
                                                                 paymentObj.extraRemarks
                                                               }>
