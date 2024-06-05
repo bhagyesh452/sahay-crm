@@ -167,7 +167,7 @@ function EmployeesThisMonthBooking() {
     const functionCalculateGeneralMatured = () => {
 
         let totalCount = 0;
-        const todayDate = new Date();
+      
        
         redesignedData.map((mainBooking) => {
           
@@ -1744,9 +1744,43 @@ function EmployeesThisMonthBooking() {
                             </h2>
                         </div>
                         <div className="filter-booking d-flex align-items-center">
-                           
-
-                            <div className="data-filter">
+                        <label htmlFor="date-filter">Filter By :</label>
+                            <div className="date-filter mr-1">
+                                
+                                <select className='form-select' name="date-filter" id="date-filter-admin" onChange={(e)=>{
+                                    switch (e.target.value) {
+                                        case "Today":
+                                            const today = new Date();
+                                            setGeneralStartDate(today);
+                                            setGeneralEndDate(today);
+                                            break;
+                                        case "This Month":
+                                            const now = new Date();
+                                            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
+                                            const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); 
+                                            setGeneralStartDate(startOfThisMonth);
+                                            setGeneralEndDate(endOfThisMonth);
+                                            break;
+                                        case "Last Month":
+                                            const thisTime = new Date();
+                                            const startOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth() - 1, 1); 
+                                            const endOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth(), 0); 
+                                            setGeneralStartDate(startOfLastMonth);
+                                            setGeneralEndDate(endOfLastMonth);
+                                            break;
+                                        
+                                    
+                                        default:
+                                            break;
+                                    }
+                                }}>
+                                    <option value="Today">Today</option>
+                                    <option value="This Month">This Month</option>
+                                    <option value="Last Month">Last Month</option>
+                                </select>
+                            </div>
+                        
+                            <div className="date-range-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
                                     <DemoContainer

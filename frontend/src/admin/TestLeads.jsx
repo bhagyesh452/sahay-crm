@@ -1555,7 +1555,7 @@ function TestLeads() {
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-                                                <th>Status</th>
+                                               {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
@@ -1660,7 +1660,7 @@ function TestLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
+                                                        
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -1846,7 +1846,7 @@ function TestLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
+                                                       {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
