@@ -168,17 +168,17 @@ function EmployeesThisMonthBooking() {
 
         let totalCount = 0;
       
-       
+  
         redesignedData.map((mainBooking) => {
           
        
-           let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+           let condition = new Date(generalStartDate) <= new Date(mainBooking.bookingDate) && new Date(generalEndDate) >= new Date(mainBooking.bookingDate)
 
             if (condition) {
                 totalCount += 1;
             }
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
-                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                let condition2 = new Date(generalStartDate) <= new Date(moreObject.bookingDate) && new Date(generalEndDate) >= new Date(moreObject.bookingDate)
                 if (condition2) {
                     totalCount += 1;
                 }
@@ -192,13 +192,13 @@ function EmployeesThisMonthBooking() {
         let totalCount = 0;
         const todayDate = new Date();
         redesignedData.map((mainBooking) => {
-            let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+            let condition = new Date(generalStartDate) <= new Date(mainBooking.bookingDate) && new Date(generalEndDate) >= new Date(mainBooking.bookingDate)
             if (condition) {
                 totalCount += Math.floor(mainBooking.receivedAmount);
             }
             else if (mainBooking.remainingPayments.length !== 0) {
                 mainBooking.remainingPayments.map((remainingObj) => {
-                    let conditionMore = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                    let conditionMore = new Date(generalStartDate) <= new Date(remainingObj.paymentDate) && new Date(generalEndDate) >= new Date(remainingObj.paymentDate)
                     if (conditionMore) {
                         totalCount += Math.floor(remainingObj.receivedPayment);
                     }
@@ -207,12 +207,12 @@ function EmployeesThisMonthBooking() {
 
             }
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
-                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                let condition2 = new Date(generalStartDate) <= new Date(moreObject.bookingDate) && new Date(generalEndDate) >= new Date(moreObject.bookingDate)
                 if (condition2) {
                     totalCount += Math.floor(moreObject.receivedAmount);
                 } else if (moreObject.remainingPayments.length !== 0) {
                     moreObject.remainingPayments.map((remainingObj) => {
-                        let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                        let condition = new Date(generalStartDate) <= new Date(remainingObj.paymentDate) && new Date(generalEndDate) >= new Date(remainingObj.paymentDate)
                         if (condition) {
                             totalCount += Math.floor(remainingObj.receivedPayment);
                         }
@@ -234,7 +234,7 @@ function EmployeesThisMonthBooking() {
 
             if (mainBooking.remainingPayments.length !== 0) {
                 mainBooking.remainingPayments.map((remainingObj) => {
-                    let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                    let condition = new Date(generalStartDate) <= new Date(remainingObj.paymentDate) && new Date(generalEndDate) >= new Date(remainingObj.paymentDate)
                     if (condition) {
                         totalCount += Math.floor(remainingObj.receivedPayment);
                     }
@@ -245,7 +245,7 @@ function EmployeesThisMonthBooking() {
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
                 if (moreObject.remainingPayments.length !== 0) {
                     moreObject.remainingPayments.map((remainingObj) => {
-                        let conditionMore = new Date(generalStartDate).toLocaleDateString() <= new Date(remainingObj.paymentDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(remainingObj.paymentDate).toLocaleDateString()
+                        let conditionMore = new Date(generalStartDate) <= new Date(remainingObj.paymentDate) && new Date(generalEndDate) >= new Date(remainingObj.paymentDate)
                         if (conditionMore) {
                             totalCount += Math.floor(remainingObj.receivedPayment);
                         }
@@ -263,7 +263,7 @@ function EmployeesThisMonthBooking() {
         let totalCount = 0;
         const todayDate = new Date();
         redesignedData.map((mainBooking) => {
-            let condition = new Date(generalStartDate).toLocaleDateString() <= new Date(mainBooking.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(mainBooking.bookingDate).toLocaleDateString()
+            let condition = new Date(generalStartDate) <= new Date(mainBooking.bookingDate) && new Date(generalEndDate) >= new Date(mainBooking.bookingDate)
             if (condition) {
                 mainBooking.services.forEach((service) => {
                     if (service.paymentTerms === "Full Advanced") {
@@ -275,7 +275,7 @@ function EmployeesThisMonthBooking() {
             }
 
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
-                let condition2 = new Date(generalStartDate).toLocaleDateString() <= new Date(moreObject.bookingDate).toLocaleDateString() && new Date(generalEndDate).toLocaleDateString() >= new Date(moreObject.bookingDate).toLocaleDateString()
+                let condition2 = new Date(generalStartDate) <= new Date(moreObject.bookingDate) && new Date(generalEndDate) >= new Date(moreObject.bookingDate)
                 if (condition2) {
                     moreObject.services.forEach((service) => {
                         if (service.paymentTerms === "Full Advanced") {
@@ -1029,11 +1029,9 @@ function EmployeesThisMonthBooking() {
                     break;
                 case 'Last Month':
                     condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-
                     break;
                 case 'This Month':
                     condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
-
                     break;
                 default:
                     break;
