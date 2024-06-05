@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { debounce } from "lodash";
 import { useTheme } from '@mui/material/styles';
 import axios from "axios";
@@ -167,12 +167,12 @@ function EmployeesThisMonthBooking() {
     const functionCalculateGeneralMatured = () => {
 
         let totalCount = 0;
-      
-  
+
+
         redesignedData.map((mainBooking) => {
-          
-       
-           let condition = new Date(generalStartDate) <= new Date(mainBooking.bookingDate) && new Date(generalEndDate) >= new Date(mainBooking.bookingDate)
+
+
+            let condition = new Date(generalStartDate) <= new Date(mainBooking.bookingDate) && new Date(generalEndDate) >= new Date(mainBooking.bookingDate)
 
             if (condition) {
                 totalCount += 1;
@@ -1675,77 +1675,125 @@ function EmployeesThisMonthBooking() {
     }, [employeeData]);
 
 
-//  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
+    //  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
     const defaults = {
-    disableForReducedMotion: true,
-  };
-  
-  function confettiExplosion(origin) {
-    fire(0.25, { spread: 140, startVelocity: 55, origin });
-    fire(0.2, { spread: 140, origin });
-    fire(0.35, { spread: 120, decay: 0.91, origin });
-    fire(0.1, { spread: 140, startVelocity: 25, decay: 0.92, origin });
-    fire(0.1, { spread: 140, startVelocity: 45, origin });
-  }
-  
-  function fire(particleRatio, opts) {
-    confetti(
-      Object.assign({}, defaults, opts, {
-        particleCount: Math.floor(200 * particleRatio),
-      })
-    );
-  }
-  
+        disableForReducedMotion: true,
+    };
+
+    function confettiExplosion(origin) {
+        fire(0.25, { spread: 140, startVelocity: 55, origin });
+        fire(0.2, { spread: 140, origin });
+        fire(0.35, { spread: 120, decay: 0.91, origin });
+        fire(0.1, { spread: 140, startVelocity: 25, decay: 0.92, origin });
+        fire(0.1, { spread: 140, startVelocity: 45, origin });
+    }
+
+    function fire(particleRatio, opts) {
+        confetti(
+            Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(200 * particleRatio),
+            })
+        );
+    }
+
 
     const soundRef = useRef(null); // useRef for optional sound element
-  
+
     useEffect(() => {
-      const sound = soundRef.current;
-      if (sound) {
-        // Preload the sound only once on component mount
-        sound.load();
-      }
+        const sound = soundRef.current;
+        if (sound) {
+            // Preload the sound only once on component mount
+            sound.load();
+        }
     }, [soundRef]); // Dependency array for sound preloading
-  
+
     const handleClick = () => {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const center = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      };
-      const origin = {
-        x: center.x / window.innerWidth,
-        y: center.y / window.innerHeight,
-      };
-  
-      if (soundRef.current) {
-        soundRef.current.currentTime = 0;
-        soundRef.current.play();
-      }
-      confettiExplosion(origin);
+        const rect = buttonRef.current.getBoundingClientRect();
+        const center = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2,
+        };
+        const origin = {
+            x: center.x / window.innerWidth,
+            y: center.y / window.innerHeight,
+        };
+
+        if (soundRef.current) {
+            soundRef.current.currentTime = 0;
+            soundRef.current.play();
+        }
+        confettiExplosion(origin);
     };
-  
+
     const buttonRef = useRef(null);
+
+
+   
+
+//  ---------------------------------------------- For Creating Remaining Payments Array   ------------------------------------------------
+ const remainingMainObject = [];
+const today = new Date();
+const thisYear = today.getFullYear();
+const thisMonth = today.getMonth();
+
+
+redesignedData.forEach((mainObj) => {
+  if (mainObj.remainingPayments.length !== 0) {
+    mainObj.remainingPayments.forEach((payment) => {
+      const paymentDate = new Date(payment.paymentDate);
+      if (paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth) {
+        remainingMainObject.push({
+          "Company Name": mainObj["Company Name"],
+          bdeName: mainObj.bdeName,
+          bdmName: mainObj.bdmName,
+          totalPayment : payment.totalPayment,
+          receivedPayment : payment.receivedPayment,
+          pendingPayment : payment.pendingPayment,
+          paymentDate : payment.paymentDate
+        });
+      }
+    });    
+  }
+
+  mainObj.moreBookings.length !== 0 && mainObj.moreBookings.map((moreObject)=>{
+    if (moreObject.remainingPayments.length !== 0) {
+        moreObject.remainingPayments.forEach((payment) => {
+          const paymentDate = new Date(payment.paymentDate);
+          if (paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth) {
+            remainingMainObject.push({
+              "Company Name": mainObj["Company Name"],
+              bdeName: moreObject.bdeName,
+              bdmName: moreObject.bdmName,
+              totalPayment : payment.totalPayment,
+              receivedPayment : payment.receivedPayment,
+              pendingPayment : payment.pendingPayment,
+              paymentDate : payment.paymentDate
+            });
+          }
+        });    
+      }
+  })
+});
 
 
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-            
+
             <div className="employee-dashboard mt-2">
                 <div className="card mb-2">
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
 
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
-                               Collection Report
+                                Collection Report
                             </h2>
                         </div>
                         <div className="filter-booking d-flex align-items-center">
-                        <label htmlFor="date-filter">Filter By :</label>
+                            <label htmlFor="date-filter">Filter By :</label>
                             <div className="date-filter mr-1">
-                                
-                                <select className='form-select' name="date-filter" id="date-filter-admin" onChange={(e)=>{
+
+                                <select className='form-select' name="date-filter" id="date-filter-admin" onChange={(e) => {
                                     switch (e.target.value) {
                                         case "Today":
                                             const today = new Date();
@@ -1754,20 +1802,20 @@ function EmployeesThisMonthBooking() {
                                             break;
                                         case "This Month":
                                             const now = new Date();
-                                            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
-                                            const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); 
+                                            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                                            const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
                                             setGeneralStartDate(startOfThisMonth);
                                             setGeneralEndDate(endOfThisMonth);
                                             break;
                                         case "Last Month":
                                             const thisTime = new Date();
-                                            const startOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth() - 1, 1); 
-                                            const endOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth(), 0); 
+                                            const startOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth() - 1, 1);
+                                            const endOfLastMonth = new Date(thisTime.getFullYear(), thisTime.getMonth(), 0);
                                             setGeneralStartDate(startOfLastMonth);
                                             setGeneralEndDate(endOfLastMonth);
                                             break;
-                                        
-                                    
+
+
                                         default:
                                             break;
                                     }
@@ -1777,7 +1825,7 @@ function EmployeesThisMonthBooking() {
                                     <option value="Last Month">Last Month</option>
                                 </select>
                             </div>
-                        
+
                             <div className="date-range-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
@@ -2242,6 +2290,232 @@ function EmployeesThisMonthBooking() {
                                                     <td>₹ {totalTargetAmount.toLocaleString()}</td>
                                                     <td>₹ {totalAchievedAmount.toLocaleString()}</td>
                                                     <td>{((totalAchievedAmount / totalTargetAmount) * 100).toFixed(2)} %</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            </tfoot>
+                                        </>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td className="particular" colSpan={9}>
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    )
+                                )}
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking"   >
+
+                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+
+                        <div className="dashboard-title">
+                            <h2 className="m-0 pl-1">
+                                Remaining Payments
+                            </h2>
+                        </div>
+                        <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center" >
+                                <div className="filter-title">
+                                    <h2 className="m-0 mr-2">
+                                        {" "}
+                                        Filter Branch : {"  "}
+                                    </h2>
+                                </div>
+                                <div className="filter-main ml-2">
+                                    <select
+                                        className="form-select"
+                                        id={`branch-filter`}
+                                        onChange={(e) => {
+                                            if (e.target.value === "none") {
+                                                setEmployeeData(employeeDataFilter)
+                                            } else {
+                                                setEmployeeData(employeeDataFilter.filter(obj => obj.branchOffice === e.target.value))
+                                            }
+
+                                        }}
+                                    >
+                                        <option value="" disabled selected>
+                                            Select Branch
+                                        </option>
+
+                                        <option value={"Gota"}>Gota</option>
+                                        <option value={"Sindhu Bhawan"}>
+                                            Sindhu Bhawan
+                                        </option>
+                                        <option value={"none"}>None</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='input-icon mr-1'>
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchBookingBde}
+                                    onChange={(e) => {
+                                        setSearchBookingBde(e.target.value)
+                                        debouncedFilterSearchThisMonthBookingBde(e.target.value)
+                                    }}
+                                    className="form-control"
+                                    placeholder="Enter BDE Name..."
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div>
+                            <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(values) => {
+                                                const startDateEmp = moment(values[0]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                const endDateEmp = moment(values[1]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
+                                            }}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                            <div>
+                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                                    <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                                    <Select
+                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        multiple
+                                        value={monthBookingPerson}
+                                        onChange={(event) => {
+                                            setMonthBookingPerson(event.target.value)
+                                            handleSelectThisMonthBookingEmployees(event.target.value)
+                                        }}
+                                        input={<OutlinedInput label="Name" />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {options.map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                                style={getStyles(name, monthBookingPerson, theme)}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="card-body">
+                        <div className="row tbl-scroll">
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
+                                <thead className="admin-dash-tbl-thead">
+                                    <tr  >
+                                        <th>SR.NO</th>
+                                        <th>COMPANY NAME</th>
+                                        <th>BDE NAME</th>
+                                        <th>BDM NAME</th>
+                               
+
+                                        <th>
+                                            <div>REMAINING TOTAL</div>
+                                        </th>
+                                        <th>
+                                            <div>REMAINING RECEIVED</div>
+                                        </th>
+                                        {/* <th>
+                                            <div>REMAINING PENDING</div>
+                                        </th> */}
+                                        <th>
+                                        PAYMENT DATE
+                                        </th>
+                                    </tr>
+                                </thead>
+                                {loading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="12" className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading
+                                                    size={20}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    remainingMainObject.length!==0 ? (
+                                        <>
+                                            <tbody>
+                                               {remainingMainObject.map((obj, index)=>(
+                                                <>
+                                                <tr  >
+                                        <th>{index + 1}</th>
+                                        <th>{obj["Company Name"]}</th>
+                                        <th>{obj.bdeName}</th>
+                                        <th>{obj.bdmName}</th>
+                               
+
+                                        <th>
+                                            <div>{obj.totalPayment}</div>
+                                        </th>
+                                        <th>
+                                            <div>{obj.receivedPayment}</div>
+                                        </th>
+                                        {/* <th>
+                                            <div>{obj.pendingPayment}</div>
+                                        </th> */}
+                                        <th>
+                                        {formatDateFinal(obj.paymentDate)}
+                                        </th>
+
+
+
+                                    </tr>
+                                                </>
+                                               ))}
+
+                                            </tbody>
+                                            <tfoot className="admin-dash-tbl-tfoot">
+                                                <tr>
+                                                    <td colSpan={2}>Total:</td>
+                                                    <td>-</td>
+                                                    <td>{remainingMainObject.length}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0)).toLocaleString() : 0}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0)).toLocaleString() : 0}</td>
+                                                    {/* <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.pendingPayment, 0)).toLocaleString() : 0}</td> */}
+
+                                                
                                                     <td>-</td>
                                                 </tr>
                                             </tfoot>
