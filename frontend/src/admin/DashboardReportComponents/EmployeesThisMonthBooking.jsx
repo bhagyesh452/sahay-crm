@@ -1790,7 +1790,7 @@ redesignedData.forEach((mainObj) => {
                             </h2>
                         </div>
                         <div className="filter-booking d-flex align-items-center">
-                            <label htmlFor="date-filter">Filter By :</label>
+                            {/* <label htmlFor="date-filter">Filter By :</label>
                             <div className="date-filter mr-1">
 
                                 <select className='form-select' name="date-filter" id="date-filter-admin" onChange={(e) => {
@@ -1824,8 +1824,7 @@ redesignedData.forEach((mainObj) => {
                                     <option value="This Month">This Month</option>
                                     <option value="Last Month">Last Month</option>
                                 </select>
-                            </div>
-
+                            </div> */}
                             <div className="date-range-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
