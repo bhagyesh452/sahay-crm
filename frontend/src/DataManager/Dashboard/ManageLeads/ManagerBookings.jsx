@@ -1284,7 +1284,7 @@ const [expanseObject, setExpanseObject] = useState({
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        
+                                        {formatDatePro(obj.expanseDate)}
                                         </div>
                                       </div>
                                     </div>
@@ -2555,7 +2555,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            
+                                            {formatDatePro(obj.expanseDate)}
                                             </div>
                                           </div>
                                         </div>
