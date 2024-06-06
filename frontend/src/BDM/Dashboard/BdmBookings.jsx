@@ -89,10 +89,15 @@ function BdmBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
+      const sortedData = response.data.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      });
+      const redesignedData = sortedData.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
      
-      setFormData(redesignedData.reverse());
-      setInfiniteBooking(redesignedData.reverse())
+      setFormData(redesignedData);
+      setInfiniteBooking(redesignedData)
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }

@@ -90,7 +90,11 @@ function EmployeeMaturedBookings() {
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
-      const sortedData = redesignedData.sort((a,b)=>new Date(b.bookingDate) - new Date(a.bookingDate) )
+       const sortedData = redesignedData.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      });
       setFormData(sortedData);
       setInfiniteBooking(sortedData)
     } catch (error) {

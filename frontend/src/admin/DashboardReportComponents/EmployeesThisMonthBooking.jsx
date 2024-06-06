@@ -166,23 +166,31 @@ function EmployeesThisMonthBooking() {
 
 
     const functionCalculateGeneralMatured = () => {
+        const tempStartDate = new  Date( generalStartDate) ;
+        const tempEndDate = new  Date( generalEndDate) ;
+        tempStartDate.setHours(0,0,0,0);
+        tempEndDate.setHours(0,0,0,0);
 
         let totalCount = 0;
         redesignedData.map((mainBooking) => {
             let date = new Date(mainBooking.bookingDate);
+         
             date.setHours(0, 0, 0, 0);
+        
             
 
-            let condition = (new Date(generalStartDate) <= date && new Date(generalEndDate) >= date) 
+            let condition = (tempStartDate <= date && tempEndDate >= date) 
 
             if (condition) {
+               
                 totalCount += 1;
             }
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
                 let date = new Date(moreObject.bookingDate);
                 date.setHours(0, 0, 0, 0);
-                let condition2 = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+                let condition2 = tempStartDate <= date && tempEndDate >= date
                 if (condition2) {
+                    console.log(mainBooking["Company Name"] , tempStartDate ,date , tempEndDate )
                     totalCount += 1;
                 }
             })
@@ -194,16 +202,22 @@ function EmployeesThisMonthBooking() {
     const functionCalculateGeneralRevenue = () => {
         let totalCount = 0;
         const todayDate = new Date();
+        const tempStartDate = new  Date( generalStartDate) ;
+        const tempEndDate = new  Date( generalEndDate) ;
+        tempStartDate.setHours(0,0,0,0);
+        tempEndDate.setHours(0,0,0,0);
         redesignedData.map((mainBooking) => {
             let date = new Date(mainBooking.bookingDate);
             date.setHours(0, 0, 0, 0);
-            let condition = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+            let condition = tempStartDate <= date && tempEndDate >= date
             if (condition) {
                 totalCount += Math.floor(mainBooking.receivedAmount);
             }
             else if (mainBooking.remainingPayments.length !== 0) {
                 mainBooking.remainingPayments.map((remainingObj) => {
-                    let conditionMore = new Date(generalStartDate) <= new Date(remainingObj.paymentDate) && new Date(generalEndDate) >= new Date(remainingObj.paymentDate)
+                    let date2 = new Date(remainingObj.paymentDate);
+                    date2.setHours(0, 0, 0, 0);
+                    let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
                     if (conditionMore) {
                         totalCount += Math.floor(remainingObj.receivedPayment);
                     }
@@ -214,15 +228,15 @@ function EmployeesThisMonthBooking() {
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
                 let date = new Date(moreObject.bookingDate);
                 date.setHours(0, 0, 0, 0);
-                let condition2 = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+                let condition2 = tempStartDate <= date && tempEndDate >= date
                 if (condition2) {
                     totalCount += Math.floor(moreObject.receivedAmount);
                 } else if (moreObject.remainingPayments.length !== 0) {
                     moreObject.remainingPayments.map((remainingObj) => {
-                        let date = new Date(remainingObj.bookingDate);
-                        date.setHours(0, 0, 0, 0);
-                        let condition = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
-                        if (condition) {
+                        let date2 = new Date(remainingObj.paymentDate);
+                        date2.setHours(0, 0, 0, 0);
+                        let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
+                        if (conditionMore) {
                             totalCount += Math.floor(remainingObj.receivedPayment);
                         }
 
@@ -238,13 +252,17 @@ function EmployeesThisMonthBooking() {
     const functionCalculateGeneralRemaining = () => {
         let totalCount = 0;
         const todayDate = new Date();
+        const tempStartDate = new  Date( generalStartDate) ;
+        const tempEndDate = new  Date( generalEndDate) ;
+        tempStartDate.setHours(0,0,0,0);
+        tempEndDate.setHours(0,0,0,0);
         redesignedData.map((mainBooking) => {
 
             if (mainBooking.remainingPayments.length !== 0) {
                 mainBooking.remainingPayments.map((remainingObj) => {
                     let date = new Date(remainingObj.paymentDate);
                     date.setHours(0, 0, 0, 0);
-                    let condition = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+                    let condition = tempStartDate <= date && tempEndDate >= date
                     if (condition) {
                         totalCount += Math.floor(remainingObj.receivedPayment);
                     }
@@ -255,9 +273,9 @@ function EmployeesThisMonthBooking() {
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
                 if (moreObject.remainingPayments.length !== 0) {
                     moreObject.remainingPayments.map((remainingObj) => {
-                        let date = new Date(remainingObj.paymentDate);
-                        date.setHours(0, 0, 0, 0);
-                        let conditionMore = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+                        let date2 = new Date(remainingObj.paymentDate);
+                        date2.setHours(0, 0, 0, 0);
+                        let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
                         if (conditionMore) {
                             totalCount += Math.floor(remainingObj.receivedPayment);
                         }
@@ -274,11 +292,15 @@ function EmployeesThisMonthBooking() {
     const functionCalculateGeneralAdvanced = () => {
         let totalCount = 0;
         const todayDate = new Date();
+        const tempStartDate = new  Date( generalStartDate) ;
+        const tempEndDate = new  Date( generalEndDate) ;
+        tempStartDate.setHours(0,0,0,0);
+        tempEndDate.setHours(0,0,0,0);
         redesignedData.map((mainBooking) => {
             let date = new Date(mainBooking.bookingDate);
             date.setHours(0, 0, 0, 0);
             
-            let condition = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+            let condition = tempStartDate <= date && tempEndDate >= date
             if (condition) {
                 mainBooking.services.forEach((service) => {
                     if (service.paymentTerms === "Full Advanced") {
@@ -292,7 +314,7 @@ function EmployeesThisMonthBooking() {
             mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
                 let date = new Date(moreObject.bookingDate);
                 date.setHours(0, 0, 0, 0);
-                let condition2 = new Date(generalStartDate) <= date && new Date(generalEndDate) >= date
+                let condition2 = tempStartDate <= date && tempEndDate >= date
                 if (condition2) {
                     moreObject.services.forEach((service) => {
                         if (service.paymentTerms === "Full Advanced") {

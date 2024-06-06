@@ -141,7 +141,24 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
 // Get Request for fetching bookings Data
 router.get("/redesigned-final-leadData", async (req, res) => {
   try {
-    const allData = await RedesignedLeadformModel.find().sort({ lastActionDate: -1 });
+   const allData = await RedesignedLeadformModel.aggregate([
+      {
+        $addFields: {
+          lastActionDateAsDate: {
+            $dateFromString: {
+              dateString: "$lastActionDate",
+              onError: new Date(0),  // Default to epoch if conversion fails
+              onNull: new Date(0)    // Default to epoch if null
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          lastActionDateAsDate: -1
+        }
+      }
+    ]);
     res.status(200).json(allData);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -750,7 +767,8 @@ router.post(
                 "moreBookings.bookingSource": newData.bookingSource || "",
                 "moreBookings.otherBookingSource":newData.otherBookingSource || "",
                 "moreBookings.Step2Status": true,
-                "moreBookings.lastActionDate" : newTempDate
+                "moreBookings.lastActionDate" : newTempDate,
+               
               },
             },
             { new: true }
