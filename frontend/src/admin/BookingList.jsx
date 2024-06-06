@@ -1147,7 +1147,7 @@ function BookingList() {
                                   </div>
                                 </div>
                                 <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-5 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100">
@@ -1163,7 +1163,7 @@ function BookingList() {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-5 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-3 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -1181,16 +1181,32 @@ function BookingList() {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-2 col-sm-2 p-0">
+                                </div>
+                                <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-2 p-0">
                                     <div class="row m-0">
-                                      <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                           Expanses
                                         </div>
                                       </div>
-                                      <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                           - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expanses Date
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                        
                                         </div>
                                       </div>
                                     </div>
@@ -2225,7 +2241,7 @@ function BookingList() {
                                       </div>
                                     </div>
                                     <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-5 col-sm-5 p-0">
+                                      <div className="col-lg-6 col-sm-5 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100">
@@ -2239,7 +2255,7 @@ function BookingList() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-5 col-sm-5 p-0">
+                                      <div className="col-lg-6 col-sm-5 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-3 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -2257,16 +2273,32 @@ function BookingList() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-2 col-sm-2 p-0">
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
-                                          <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                               Expanses
                                             </div>
                                           </div>
-                                          <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                               - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-6 col-sm-2 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Expanses Date
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            
                                             </div>
                                           </div>
                                         </div>
