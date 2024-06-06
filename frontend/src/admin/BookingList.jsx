@@ -1376,12 +1376,10 @@ function BookingList() {
                                                               // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
-                                                          Remaining Payment {"(" + formatDatePro(paymentObj.publishDate) + ")"}
+                                                          Remaining Payment
                                                         </div>
                                                         <div>
-                                                          {formatDatePro(
-                                                            paymentObj.paymentDate
-                                                          )}
+                                                          {"(" + formatDatePro(paymentObj.publishDate) + ")"}
                                                         </div>
                                                       </div>
                                                     </div>
@@ -1444,9 +1442,9 @@ function BookingList() {
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" >
-                                                            {
-                                                              formatDatePro(paymentObj.publishDate)
-                                                            }
+                                                            {formatDatePro(
+                                                              paymentObj.paymentDate
+                                                            )}
                                                           </div>  
                                                         </div>
                                                       </div>
@@ -1473,12 +1471,12 @@ function BookingList() {
                                                     </div>
                                                     <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-4 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                             Extra Remarks
                                                           </div>
                                                         </div>
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-8 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
                                                             paymentObj.extraRemarks
                                                           }>
@@ -2455,13 +2453,12 @@ function BookingList() {
                                                                   // Add more conditions as needed
                                                                   return ""; // Return default value if none of the conditions match
                                                                 })()}
-                                                              Remaining Payment {"(" + formatDatePro(paymentObj.publishDate) + ")"}
+                                                              Remaining Payment 
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
-                                                                {formatDatePro(
-                                                                  paymentObj.paymentDate
-                                                                )}
+                                                                {"(" + formatDatePro(paymentObj.publishDate) + ")"}
+                                                                
                                                               </div>
 
                                                               {/* {
@@ -2531,9 +2528,9 @@ function BookingList() {
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
-                                                                {
-                                                                  formatDatePro(paymentObj.publishDate)
-                                                                }
+                                                                {formatDatePro(
+                                                                  paymentObj.paymentDate
+                                                                )}
                                                               </div>
                                                             </div>
                                                           </div>
@@ -2560,12 +2557,12 @@ function BookingList() {
                                                         </div>
                                                         <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
-                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                            <div class="col-sm-4 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                                 Extra Remarks
                                                               </div>
                                                             </div>
-                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                            <div class="col-sm-8 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
                                                                 paymentObj.extraRemarks
                                                               }>
