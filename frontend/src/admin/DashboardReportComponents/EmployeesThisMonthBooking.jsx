@@ -1788,7 +1788,8 @@ redesignedData.forEach((mainObj) => {
           totalPayment : payment.totalPayment,
           receivedPayment : payment.receivedPayment,
           pendingPayment : payment.pendingPayment,
-          paymentDate : payment.paymentDate
+          paymentDate : payment.paymentDate,
+          serviceName : payment.serviceName
         });
       }
     });    
@@ -1806,7 +1807,8 @@ redesignedData.forEach((mainObj) => {
               totalPayment : payment.totalPayment,
               receivedPayment : payment.receivedPayment,
               pendingPayment : payment.pendingPayment,
-              paymentDate : payment.paymentDate
+              paymentDate : payment.paymentDate,
+              serviceName : payment.serviceName
             });
           }
         });    
@@ -2365,6 +2367,8 @@ redesignedData.forEach((mainObj) => {
                                     <tr  >
                                         <th>SR.NO</th>
                                         <th>COMPANY NAME</th>
+                                        <th>SERVICE NAME</th>
+
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
                                
@@ -2406,6 +2410,7 @@ redesignedData.forEach((mainObj) => {
                                                 <tr  >
                                         <th>{index + 1}</th>
                                         <th>{obj["Company Name"]}</th>
+                                        <th>{obj.serviceName}</th>
                                         <th>{obj.bdeName}</th>
                                         <th>{obj.bdmName}</th>
                                
@@ -2433,6 +2438,7 @@ redesignedData.forEach((mainObj) => {
                                             <tfoot className="admin-dash-tbl-tfoot">
                                                 <tr>
                                                     <td colSpan={2}>Total:</td>
+                                                    <td>-</td>
                                                     <td>-</td>
                                                     <td>{remainingMainObject.length}</td>
                                                     <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0)).toLocaleString() : 0}</td>
