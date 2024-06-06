@@ -50,6 +50,9 @@ const ServiceSchema = new mongoose.Schema({
   },
   expanse:{
     type:Number
+  },
+  expanseDate:{
+    type:Date
   }
 });
 

@@ -468,23 +468,33 @@ function ManagerBookings() {
       }
     }
   };
+  function formatDateInput(inputDate) {
+    const date = new Date(inputDate);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Adding 1 to month because it's zero-based
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
 
   console.log("Remaining Object", remainingObject)
 const [expanseObject, setExpanseObject] = useState({
   serviceName : "",
   bookingIndex : 0,
   expanseAmount : 0,
-  serviceID: ""
+  serviceID: "",
+  expanseDate : null
 })
   
 
   const functionOpenAddExpanse = (bookingIndex,serviceName, serviceID) => {
-
+    const expanseToday = new Date();
   setExpanseObject({
     ...expanseObject,
     bookingIndex: bookingIndex,
     serviceName: serviceName,
-    serviceID: serviceID
+    serviceID: serviceID,
+    expanseDate:formatDateInput(expanseToday)
   })
    setOpenAddExpanse(true)
   }
@@ -530,6 +540,8 @@ const [expanseObject, setExpanseObject] = useState({
       );
     }
    }
+
+  
   return (
     <div>
       <Header name={dataManagerName} />
@@ -1175,6 +1187,7 @@ const [expanseObject, setExpanseObject] = useState({
                                               </DialogTitle>
                                               <DialogContent>
                                                 <div className="expanse-content">
+                                                  <div className="expanse-input">
                                                   <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
                                                   <input value={expanseObject.expanseAmount} onChange={(e)=>{
                                                     setExpanseObject({
@@ -1182,7 +1195,18 @@ const [expanseObject, setExpanseObject] = useState({
                                                       expanseAmount: e.target.value
                                                     })
                                                   }} type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
+                                                  </div>
+                                                  <div className="expanse-date">
+                                                  <label className="mb-2" htmlFor="expansee-input"> <b>Expanse Date</b></label>
+                                                  <input  value={expanseObject.expanseDate} onChange={(e)=>{
+                                                    setExpanseObject({
+                                                      ...expanseObject,
+                                                      expanseDate: e.target.value
+                                                    })
+                                                  }} type="date" className="form-control" id="expanse-input" placeholder="Add expanse here" />
+                                                  </div>
                                                 </div>
+
 
 
                                               </DialogContent>

@@ -4611,6 +4611,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
 
     // Update the serviceObject with new expanse amount
     const expanse = data.expanseAmount
+
     const updatedServiceObject = {
       serviceName: serviceObject.serviceName, // Spread operator to copy all properties from serviceObject
       totalPaymentWOGST: serviceObject.totalPaymentWOGST, // Spread operator to copy all properties from serviceObject
@@ -4627,7 +4628,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
       paymentRemarks: serviceObject.paymentRemarks,
       _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
-      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+      expanse: parseInt(expanse) ,
+      expanseDate: data.expanseDate // Update the expanse property with the value of the expanse variable
     };
 
     // Update the services array in mainObject with the updated serviceObject
@@ -4673,9 +4675,11 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
       paymentRemarks: serviceObject.paymentRemarks,
       _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
-      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+      expanse: parseInt(expanse),
+      expanseDate: data.expanseDate
+        // Update the expanse property with the value of the expanse variable
     };
-    console.log(updatedServiceObject);
+   
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = moreObject.services.map(service => {
       if (service._id == serviceID) {
