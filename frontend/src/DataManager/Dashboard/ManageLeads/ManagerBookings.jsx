@@ -101,7 +101,11 @@ function ManagerBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const sortedData = response.data; // Reverse the order of data
+      const sortedData = response.data.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      }); // Reverse the order of data
 
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data

@@ -1809,7 +1809,7 @@ function BdmDashboard() {
     });
 
     // Return the formatted date string or an empty string if lastBookingDate is null
-    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "No Bookings";
   }
 
   
