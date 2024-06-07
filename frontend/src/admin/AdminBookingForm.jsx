@@ -61,6 +61,15 @@ export default function AdminBookingForm({
 
   const [fetchedService, setfetchedService] = useState(false);
 
+  const defaultISOtypes = {
+    serviceID : '',
+    type:"IAF",
+    IAFtype1:"ISO 9001",
+    IAFtype2:"3 YR - IAF",
+    Nontype: "ISO 9001"
+  }
+  const [isoType, setIsoType] = useState([]);
+
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
     "Company Number": companyNumber ? companyNumber : 0,
@@ -176,18 +185,29 @@ export default function AdminBookingForm({
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
-        const servicestoSend = data.services.map((service) => ({
-          ...service,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-            ? service.secondPaymentRemarks
-            : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-            ? service.thirdPaymentRemarks
-            : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-            ? service.fourthPaymentRemarks
-            : "On Particular Date",
-        }));
+        const servicestoSend = data.services.map((service, index) => {
+          // Call setIsoType for each service's isoTypeObject
+          setIsoType(service.isoTypeObject);
+        
+          return {
+            ...service,
+            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+              ? service.secondPaymentRemarks
+              : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+              ? service.thirdPaymentRemarks
+              : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+              ? service.fourthPaymentRemarks
+              : "On Particular Date",
+          };
+        });
+        
+        
+
+
+
         setLeadData((prevState) => ({
           ...prevState,
           services:
@@ -210,7 +230,7 @@ export default function AdminBookingForm({
           otherDocs: data.otherDocs,
           paymentReceipt: data.paymentReceipt,
           paymentMethod: data.paymentMethod,
-          extraNotes: data.extraNotes,
+          extraNotes: data.extraNotes ,
           isAdmin : true,
         }));
       } else if (Step5Status === true) {
@@ -469,8 +489,9 @@ export default function AdminBookingForm({
               ? acc + parseInt(curr.totalPaymentWOGST)
               : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
-          const servicestoSend = leadData.services.map((service) => ({
+          const servicestoSend = leadData.services.map((service , index) => ({
             ...service,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -483,10 +504,12 @@ export default function AdminBookingForm({
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
+            isoTypeObject : isoType
           }));
 
           dataToSend = {
             services: servicestoSend,
+           
             numberOfServices: totalServices,
             caCase: leadData.caCase,
             caCommission: leadData.caCommission,
@@ -542,7 +565,7 @@ export default function AdminBookingForm({
         formData.append("receivedAmount", receivedAmount);
         formData.append("pendingAmount", pendingAmount);
         formData.append("paymentMethod", leadData.paymentMethod);
-        formData.append("extraNotes", leadData.extraNotes);
+        formData.append("extraNotes", leadData.extraNotes ? leadData.extraNotes : "N/A");
      
 
         // Append payment receipt files to formData
@@ -784,6 +807,8 @@ export default function AdminBookingForm({
     }
   };
 
+  console.log(isoType , "boom");
+
   const renderServices = () => {
     const services = [];
     console.log(leadData.services.length, Number(totalServices));
@@ -815,6 +840,17 @@ export default function AdminBookingForm({
                           : service
                       ),
                     }));
+                    if(e.target.value === "ISO Certificate"){
+                      if(!isoType.some(obj => obj.serviceID === i)){
+                        const defaultArray = isoType;
+                        defaultArray.push({
+                          ...defaultISOtypes,
+                          serviceID : i
+                        });
+                        setIsoType(defaultArray)
+                      }
+                    }
+                   
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -828,38 +864,84 @@ export default function AdminBookingForm({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                <select className="form-select mt-1 ml-1" style={{width:'120px'}}>
-                  <option value="">IAF</option>
-                  <option value="">Non IAF</option>
+               {leadData.services[i].serviceName.includes("ISO Certificate")  && <> <select className="form-select mt-1 ml-1" style={{width:'120px'}} value={isoType.find(obj =>obj.serviceID === i ).type}  onChange={(e) => {
+                       const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                       if(currentObject){
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject =  {
+                          ...currentObject,
+                          type:e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                       }
+                      }}>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
                 </select>
                 {/* IAF ISO LIST */}
-                <select className="form-select mt-1 ml-1">
-                  <option value="iso9001">ISO 9001</option>
-                  <option value="iso14001">ISO 14001</option>
-                  <option value="iso45001">ISO 45001</option>
-                  <option value="iso22000">ISO 22000</option>
-                  <option value="iso27001">ISO 27001</option>
-                  <option value="iso13485">ISO 13485</option>
-                  <option value="iso20000-1">ISO 20000-1</option>
-                  <option value="iso50001">ISO 50001</option>
+                {isoType.find(obj=>obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj=>obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e)=>{
+                   const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                   if(currentObject){
+                    const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                    const newCurrentObject =  {
+                      ...currentObject,
+                      IAFtype1:e.target.value
+                    }
+                    remainingObject.push(newCurrentObject);
+                    setIsoType(remainingObject);
+                   }
+                }}>
+                  <option value="ISO 9001">ISO 9001</option>
+                  <option value="ISO 14001">ISO 14001</option>
+                  <option value="ISO 45001">ISO 45001</option>
+                  <option value="ISO 22000">ISO 22000</option>
+                  <option value="ISO 27001">ISO 27001</option>
+                  <option value="ISO 13485">ISO 13485</option>
+                  <option value="ISO 20000-1">ISO 20000-1</option>
+                  <option value="ISO 50001">ISO 50001</option>
                 </select>
                 {/* IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1">
-                  <option value=""> 1 YR - IAF</option>
-                  <option value="">3 YR - IAF</option>
-                  <option value="">1 YR (3 YR FORMAT)- IAF</option>
-                </select>
-                {/* NON-IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1">
-                  <option value="iso9001">ISO 9001</option>
-                  <option value="iso14001">ISO 14001</option>
-                  <option value="iso45001">ISO 45001</option>
-                  <option value="iso22000">ISO 22000</option>
-                  <option value="iso27001">ISO 27001</option>
-                  <option value="iso13485">ISO 13485</option>
-                  <option value="iso20000-1">ISO 20000-1</option>
-                  <option value="iso50001">ISO 50001</option>
-                  <option value="iso21001">ISO 21001</option>
+                <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).IAFtype2} onChange={(e)=>{
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                  if(currentObject){
+                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                   const newCurrentObject =  {
+                     ...currentObject,
+                     IAFtype2:e.target.value
+                   }
+                   remainingObject.push(newCurrentObject);
+                   setIsoType(remainingObject);
+                  }
+                }}>
+                  <option value="1 YR - IAF"> 1 YR - IAF</option>
+                  <option value="3 YR - IAF">3 YR - IAF</option>
+                  <option value="1 YR (3 YR FORMAT)- IAF">1 YR (3 YR FORMAT)- IAF</option>
+                </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).Nontype} onChange={(e)=>{
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                  if(currentObject){
+                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                   const newCurrentObject =  {
+                     ...currentObject,
+                     Nontype:e.target.value
+                   }
+                   remainingObject.push(newCurrentObject);
+                   setIsoType(remainingObject);
+                  }
+                }}>
+                <option value="ISO 9001">ISO 9001</option>
+                  <option value="ISO 14001">ISO 14001</option>
+                  <option value="ISO 45001">ISO 45001</option>
+                  <option value="ISO 22000">ISO 22000</option>
+                  <option value="ISO 27001">ISO 27001</option>
+                  <option value="ISO 13485">ISO 13485</option>
+                  <option value="ISO 20000-1">ISO 20000-1</option>
+                  <option value="ISO 50001">ISO 50001</option>
+                  <option value="ISO 21001">ISO 21001</option>
                   <option value="gmp">GMP</option>
                   <option value="gap">GAP</option>
                   <option value="fda">FDA</option>
@@ -885,7 +967,9 @@ export default function AdminBookingForm({
                   <option value="pcmm5">PCMM 5</option>
                   <option value="rios">RIOS</option>
                   <option value="rohs">ROHS</option>
-                </select>
+                </select> </>}
+                {/* NON-IAF ISO TYPES */}
+                </> }
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (

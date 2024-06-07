@@ -1116,64 +1116,7 @@ function fire(particleRatio, opts) {
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                <select className="form-select mt-1 ml-1" style={{width:'120px'}}>
-                  <option value="">IAF</option>
-                  <option value="">Non IAF</option>
-                </select>
-                {/* IAF ISO LIST */}
-                <select className="form-select mt-1 ml-1">
-                  <option value="iso9001">ISO 9001</option>
-                  <option value="iso14001">ISO 14001</option>
-                  <option value="iso45001">ISO 45001</option>
-                  <option value="iso22000">ISO 22000</option>
-                  <option value="iso27001">ISO 27001</option>
-                  <option value="iso13485">ISO 13485</option>
-                  <option value="iso20000-1">ISO 20000-1</option>
-                  <option value="iso50001">ISO 50001</option>
-                </select>
-                {/* IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1">
-                  <option value=""> 1 YR - IAF</option>
-                  <option value="">3 YR - IAF</option>
-                  <option value="">1 YR (3 YR FORMAT)- IAF</option>
-                </select>
-                {/* NON-IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1">
-                  <option value="iso9001">ISO 9001</option>
-                  <option value="iso14001">ISO 14001</option>
-                  <option value="iso45001">ISO 45001</option>
-                  <option value="iso22000">ISO 22000</option>
-                  <option value="iso27001">ISO 27001</option>
-                  <option value="iso13485">ISO 13485</option>
-                  <option value="iso20000-1">ISO 20000-1</option>
-                  <option value="iso50001">ISO 50001</option>
-                  <option value="iso21001">ISO 21001</option>
-                  <option value="gmp">GMP</option>
-                  <option value="gap">GAP</option>
-                  <option value="fda">FDA</option>
-                  <option value="halal">HALAL</option>
-                  <option value="organic">ORGANIC</option>
-                  <option value="fssc">FSSC</option>
-                  <option value="fsc">FSC</option>
-                  <option value="bifma">BIFMA</option>
-                  <option value="ce">CE</option>
-                  <option value="haccp">HACCP</option>
-                  <option value="ghp">GHP</option>
-                  <option value="aiota">AIOTA</option>
-                  <option value="green_guard">GREEN GUARD</option>
-                  <option value="sedex">SEDEX</option>
-                  <option value="kosher">KOSHER</option>
-                  <option value="who_gmp">WHO-GMP</option>
-                  <option value="brc">BRC</option>
-                  <option value="vegan">VEGAN</option>
-                  <option value="sa8000">SA 8000</option>
-                  <option value="ccc">CCC</option>
-                  <option value="cmmi3">CMMI LEVEL 3</option>
-                  <option value="go_green">GO GREEN</option>
-                  <option value="pcmm5">PCMM 5</option>
-                  <option value="rios">RIOS</option>
-                  <option value="rohs">ROHS</option>
-                </select>
+                
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (
