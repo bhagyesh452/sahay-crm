@@ -34,8 +34,8 @@ function EmployeesThisMonthBooking() {
     const [uniqueBDE, setUniqueBDE] = useState([]);
     const [redesignedData, setRedesignedData] = useState([]);
     const [companyData, setCompanyData] = useState([]);
-    const [bookingStartDate, setBookingStartDate] = useState(new Date());
-    const [bookingEndDate, setBookingEndDate] = useState(new Date());
+    const [bookingStartDate, setBookingStartDate] = useState(new Date(new Date().getFullYear() , new Date().getMonth() , 1));
+    const [bookingEndDate, setBookingEndDate] = useState(new Date(new Date().getFullYear() , new Date().getMonth() + 1 , 0));
     const [generalStartDate, setGeneralStartDate] = useState(new Date());
     const [generalEndDate, setGeneralEndDate] = useState(new Date());
     const [searchBookingBde, setSearchBookingBde] = useState("")
@@ -335,11 +335,24 @@ function EmployeesThisMonthBooking() {
 
     const functionCalculateMatured = (bdeName) => {
         let maturedCount = 0;
-        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-        if (filterOne) {
+        
+        
             redesignedData.map((mainBooking) => {
+                const bookingDate = new Date(mainBooking.bookingDate);
+                const startDate = new Date(bookingStartDate);
+                const endDate = new Date(bookingEndDate);
+                bookingDate.setHours(0, 0, 0, 0);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(0, 0, 0, 0);
+                const isSameDayMonthYear = (date1, date2) => {
+                    return (
+                        date1.getDate() === date2.getDate() &&
+                        date1.getMonth() === date2.getMonth() &&
+                        date1.getFullYear() === date2.getFullYear()
+                    );
+                };
 
-                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+                if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                     if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
                         if (mainBooking.bdeName === mainBooking.bdmName) {
                             maturedCount = maturedCount + 1
@@ -353,7 +366,9 @@ function EmployeesThisMonthBooking() {
                     }
                 }
                 mainBooking.moreBookings.map((moreObject) => {
-                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                    const moreBookingDate = new Date(moreObject.bookingDate);
+                    moreBookingDate.setHours(0,0,0,0);
+                    if ((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) {
                         if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
                             if (moreObject.bdeName === moreObject.bdmName) {
                                 maturedCount = maturedCount + 1;
@@ -370,41 +385,7 @@ function EmployeesThisMonthBooking() {
 
 
             })
-        } else {
-            redesignedData.map((mainBooking) => {
-
-                if ((new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) || (new Date(mainBooking.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(mainBooking.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
-                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            maturedCount = maturedCount + 1
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            maturedCount = maturedCount + 0.5;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                maturedCount = maturedCount + 1;
-                            }
-                        }
-                    }
-                }
-                mainBooking.moreBookings.map((moreObject) => {
-                    if ((new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) || (new Date(moreObject.bookingDate).getDate() == new Date(bookingStartDate).getDate() && new Date(moreObject.bookingDate).getDate() == new Date(bookingEndDate).getDate())) {
-                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                maturedCount = maturedCount + 1;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                maturedCount = maturedCount + 0.5
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
-                                    maturedCount = maturedCount + 1;
-                                }
-                            }
-                        }
-                    }
-                })
-
-
-            })
-        }
+        
         totalMaturedCount = totalMaturedCount + maturedCount;
 
         return maturedCount;
@@ -414,76 +395,55 @@ function EmployeesThisMonthBooking() {
 
     const functionOnlyCalculateMatured = (bdeName) => {
         let maturedCount = 0;
-        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-        if (filterOne) {
-            redesignedData.map((mainBooking) => {
+        
+        redesignedData.map((mainBooking) => {
+            const bookingDate = new Date(mainBooking.bookingDate);
+            const startDate = new Date(bookingStartDate);
+            const endDate = new Date(bookingEndDate);
+            bookingDate.setHours(0, 0, 0, 0);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+            const isSameDayMonthYear = (date1, date2) => {
+                return (
+                    date1.getDate() === date2.getDate() &&
+                    date1.getMonth() === date2.getMonth() &&
+                    date1.getFullYear() === date2.getFullYear()
+                );
+            };
 
-                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            maturedCount = maturedCount + 1
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            maturedCount = maturedCount + 0.5;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
+            if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
+                if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
+                    if (mainBooking.bdeName === mainBooking.bdmName) {
+                        maturedCount = maturedCount + 1
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        maturedCount = maturedCount + 0.5;
+                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                        if (mainBooking.bdeName === bdeName) {
+                            maturedCount = maturedCount + 1;
+                        }
+                    }
+                }
+            }
+            mainBooking.moreBookings.map((moreObject) => {
+                const moreBookingDate = new Date(moreObject.bookingDate);
+                moreBookingDate.setHours(0,0,0,0);
+                if ((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) {
+                    if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
+                        if (moreObject.bdeName === moreObject.bdmName) {
+                            maturedCount = maturedCount + 1;
+                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                            maturedCount = maturedCount + 0.5
+                        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+                            if (moreObject.bdeName === bdeName) {
                                 maturedCount = maturedCount + 1;
                             }
                         }
                     }
                 }
-                mainBooking.moreBookings.map((moreObject) => {
-                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                maturedCount = maturedCount + 1;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                maturedCount = maturedCount + 0.5
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
-                                    maturedCount = maturedCount + 1;
-                                }
-                            }
-                        }
-                    }
-                })
-
-
             })
-        } else {
-            redesignedData.map((mainBooking) => {
-
-                if (new Date(mainBooking.bookingDate) >= new Date(bookingStartDate) && new Date(mainBooking.bookingDate) <= new Date(bookingEndDate)) {
-                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            maturedCount = maturedCount + 1
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            maturedCount = maturedCount + 0.5;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                maturedCount = maturedCount + 1;
-                            }
-                        }
-                    }
-                }
-                mainBooking.moreBookings.map((moreObject) => {
-                    if (new Date(moreObject.bookingDate) >= new Date(bookingStartDate) && new Date(moreObject.bookingDate) <= new Date(bookingEndDate)) {
-                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                maturedCount = maturedCount + 1;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                maturedCount = maturedCount + 0.5
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
-                                    maturedCount = maturedCount + 1;
-                                }
-                            }
-                        }
-                    }
-                })
 
 
-            })
-        }
+        })
 
         return maturedCount;
     };
@@ -658,12 +618,13 @@ function EmployeesThisMonthBooking() {
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     };
+    console.log(bookingStartDate , bookingEndDate)
     const functionCalculateOnlyAchieved = (bdeName) => {
         let achievedAmount = 0;
         let remainingAmount = 0;
         let expanse = 0;
-        const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-
+    
+        
        
             redesignedData.map((mainBooking) => {
                 const bookingDate = new Date(mainBooking.bookingDate);

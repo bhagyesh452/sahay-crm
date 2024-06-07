@@ -101,13 +101,13 @@ export default function EditableMoreBooking({
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
-    serviceID : '',
+    serviceID : 0,
     type:"IAF",
     IAFtype1:"ISO 9001",
     IAFtype2:"3 YR - IAF",
     Nontype: "ISO 9001"
   }
-  const [isoType, setIsoType] = useState([]);
+  const [isoType, setIsoType] = useState([defaultISOtypes]);
 
   const fetchDataEmp = async () => {
     try {
@@ -3391,11 +3391,11 @@ export default function EditableMoreBooking({
                                             </b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-9 p-0">
+                                        {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
                                             {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
                                           </div>
-                                        </div>
+                                        </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName === "Start-Up India Certificate" && (

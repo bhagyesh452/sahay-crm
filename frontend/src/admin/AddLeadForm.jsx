@@ -219,31 +219,14 @@ export default function AddLeadForm({
           setfetchedService(true);
         }else if (booking.Step4Status === true && booking.Step5Status === false) {
           
-          const servicestoSend = booking.services.map((service, index) => {
-            // Call setIsoType for each service's isoTypeObject
-          setIsoType(service.isoTypeObject);
-          
-            return {
-              ...service,
-              serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
-              secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-                ? service.secondPaymentRemarks
-                : "On Particular Date",
-              thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-                ? service.thirdPaymentRemarks
-                : "On Particular Date",
-              fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-                ? service.fourthPaymentRemarks
-                : "On Particular Date",
-            };
-          });
+       
           const adminName = localStorage.getItem('adminName');
           const managerName = localStorage.getItem('dataManagerName');
           const mainAccess = (adminName || managerName) ? true : false;
 
           updatedLeadData = {
             ...updatedLeadData,
-          services:servicestoSend,
+          services:booking.services,
           caCase:booking.caCase,
           caCommission:booking.caCommission,
           caEmail:booking.caEmail,
