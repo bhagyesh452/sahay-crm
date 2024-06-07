@@ -13,6 +13,9 @@ const ServiceSchema = new mongoose.Schema({
   totalPaymentWGST: {
     type: Number,
   },
+  isoTypeObject: {
+    type:Array,
+  },
   withGST:{
     type:Boolean
   },

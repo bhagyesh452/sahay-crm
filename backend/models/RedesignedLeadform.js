@@ -9,6 +9,9 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  isoTypeObject: {
+    type:Array,
+  },
   totalPaymentWGST: {
     type: Number,
     required: true,

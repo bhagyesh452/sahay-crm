@@ -2224,7 +2224,7 @@ router.post(
           ];
            const draftCondition = newData.services.some((service)=>{
                 return includedServices.includes(service.serviceName);
-              }) ? "block" : "none";
+              }) ? true : false;
           const servicesShubhi = [
             "Pitch Deck Development ",
             "Financial Modeling",
@@ -4066,7 +4066,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
       const draftCondition = newData.services.some((service)=>{
         return includedServices.includes(service.serviceName);
-      }) ? "block" : "none";
+      }) ? true : false;
     const AuthorizedEmail =
       mailName === "Dhruvi Gohel"
         ? "dhruvi@startupsahay.com"
