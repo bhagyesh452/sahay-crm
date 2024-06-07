@@ -221,11 +221,31 @@ export default function RedesignedForm({
           caEmail: data.caEmail,
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step4Status === true && Step5Status === false) {
+      }      
+      else if (Step4Status === true && Step5Status === false) {
+        const servicestoSend = data.services.map((service, index) => {
+          // Call setIsoType for each service's isoTypeObject
+        setIsoType(service.isoTypeObject);
+        
+          return {
+            ...service,
+            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+              ? service.secondPaymentRemarks
+              : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+              ? service.thirdPaymentRemarks
+              : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+              ? service.fourthPaymentRemarks
+              : "On Particular Date",
+          };
+        });
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
         setActiveStep(4);
         setLeadData((prevState) => ({
           ...prevState,
+          services:servicestoSend,
           totalAmount: data.totalAmount,
           pendingAmount: data.pendingAmount,
           receivedAmount: data.receivedAmount,
@@ -886,11 +906,31 @@ function fire(particleRatio, opts) {
 
       if (activeStep === 4) {
         try {
-
          
+          const servicestoSend = leadData.services.map((service , index) => ({
+            ...service,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            secondPaymentRemarks:
+              service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks
+                : service.secondPaymentRemarks,
+            thirdPaymentRemarks:
+              service.thirdPaymentRemarks === "On Particular Date"
+                ? thirdTempRemarks
+                : service.thirdPaymentRemarks,
+            fourthPaymentRemarks:
+              service.fourthPaymentRemarks === "On Particular Date"
+                ? fourthTempRemarks
+                : service.fourthPaymentRemarks,
+            isoTypeObject : isoType
+          }));
+          const tempLeadData = {
+            ...leadData,
+            services:servicestoSend
+          }
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
-            leadData
+            tempLeadData
           );
           const response2 = await axios.post(
             `${secretKey}/bookings/redesigned-leadData/${companysName}/step5`
@@ -3268,11 +3308,11 @@ function fire(particleRatio, opts) {
                                             </b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-9 p-0">
+                                        {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
                                           </div>
-                                        </div>
+                                        </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
