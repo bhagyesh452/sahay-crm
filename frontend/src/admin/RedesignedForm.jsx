@@ -101,6 +101,15 @@ export default function RedesignedForm({
   const [fourthTempRemarks, setFourthTempRemarks] = useState("");
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
+  const defaultISOtypes = {
+    serviceID : '',
+    type:"IAF",
+    IAFtype1:"ISO 9001",
+    IAFtype2:"3 YR - IAF",
+    Nontype: "ISO 9001"
+  }
+  const [isoType, setIsoType] = useState([]);
+
 
   const fetchDataEmp = async () => {
     try {
@@ -174,22 +183,34 @@ export default function RedesignedForm({
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services, "This is services");
+        
+        setSelectedValues(newLeadData.bookingSource);
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
-        const servicestoSend = data.services.map((service) => ({
-          ...service,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-            ? service.secondPaymentRemarks
-            : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-            ? service.thirdPaymentRemarks
-            : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-            ? service.fourthPaymentRemarks
-            : "On Particular Date",
-        }));
+        const servicestoSend = data.services.map((service, index) => {
+          // Call setIsoType for each service's isoTypeObject
+        setIsoType(service.isoTypeObject);
+        
+          return {
+            ...service,
+            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+              ? service.secondPaymentRemarks
+              : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+              ? service.thirdPaymentRemarks
+              : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+              ? service.fourthPaymentRemarks
+              : "On Particular Date",
+          };
+        });
+        
+        
+
+
+
         setLeadData((prevState) => ({
           ...prevState,
           services:
@@ -758,8 +779,9 @@ function fire(particleRatio, opts) {
           }, 0);
 
           // console.log("This are generated total and received amount:-",generatedTotalAmount , generatedReceivedAmount)
-          const servicestoSend = leadData.services.map((service) => ({
+          const servicestoSend = leadData.services.map((service , index) => ({
             ...service,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -772,6 +794,7 @@ function fire(particleRatio, opts) {
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
+            isoTypeObject : isoType
           }));
 
           dataToSend = {
@@ -787,7 +810,7 @@ function fire(particleRatio, opts) {
             generatedReceivedAmount:generatedReceivedAmount,
             generatedTotalAmount:generatedTotalAmount
           };
-          console.log("This is sending", dataToSend);
+       
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step3`,
@@ -1103,6 +1126,17 @@ function fire(particleRatio, opts) {
                           : service
                       ),
                     }));
+                    if(e.target.value === "ISO Certificate"){
+                      if(!isoType.some(obj => obj.serviceID === i)){
+                        const defaultArray = isoType;
+                        defaultArray.push({
+                          ...defaultISOtypes,
+                          serviceID : i
+                        });
+                        setIsoType(defaultArray)
+                      }
+                    }
+                   
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1116,7 +1150,112 @@ function fire(particleRatio, opts) {
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                
+               {leadData.services[i].serviceName.includes("ISO Certificate")  && <> <select className="form-select mt-1 ml-1" style={{width:'120px'}} value={isoType.find(obj =>obj.serviceID === i ).type}  onChange={(e) => {
+                       const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                       if(currentObject){
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject =  {
+                          ...currentObject,
+                          type:e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                       }
+                      }}>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
+                </select>
+                {/* IAF ISO LIST */}
+                {isoType.find(obj=>obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj=>obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e)=>{
+                   const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                   if(currentObject){
+                    const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                    const newCurrentObject =  {
+                      ...currentObject,
+                      IAFtype1:e.target.value
+                    }
+                    remainingObject.push(newCurrentObject);
+                    setIsoType(remainingObject);
+                   }
+                }}>
+                  <option value="ISO 9001">ISO 9001</option>
+                  <option value="ISO 14001">ISO 14001</option>
+                  <option value="ISO 45001">ISO 45001</option>
+                  <option value="ISO 22000">ISO 22000</option>
+                  <option value="ISO 27001">ISO 27001</option>
+                  <option value="ISO 13485">ISO 13485</option>
+                  <option value="ISO 20000-1">ISO 20000-1</option>
+                  <option value="ISO 50001">ISO 50001</option>
+                </select>
+                {/* IAF ISO TYPES */}
+                <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).IAFtype2} onChange={(e)=>{
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                  if(currentObject){
+                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                   const newCurrentObject =  {
+                     ...currentObject,
+                     IAFtype2:e.target.value
+                   }
+                   remainingObject.push(newCurrentObject);
+                   setIsoType(remainingObject);
+                  }
+                }}>
+                  <option value="1 YR - IAF"> 1 YR - IAF</option>
+                  <option value="3 YR - IAF">3 YR - IAF</option>
+                  <option value="1 YR (3 YR FORMAT)- IAF">1 YR (3 YR FORMAT)- IAF</option>
+                </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).Nontype} onChange={(e)=>{
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                  if(currentObject){
+                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                   const newCurrentObject =  {
+                     ...currentObject,
+                     Nontype:e.target.value
+                   }
+                   remainingObject.push(newCurrentObject);
+                   setIsoType(remainingObject);
+                  }
+                }}>
+                <option value="ISO 9001">ISO 9001</option>
+                  <option value="ISO 14001">ISO 14001</option>
+                  <option value="ISO 45001">ISO 45001</option>
+                  <option value="ISO 22000">ISO 22000</option>
+                  <option value="ISO 27001">ISO 27001</option>
+                  <option value="ISO 13485">ISO 13485</option>
+                  <option value="ISO 20000-1">ISO 20000-1</option>
+                  <option value="ISO 50001">ISO 50001</option>
+                  <option value="ISO 21001">ISO 21001</option>
+                  <option value="gmp">GMP</option>
+                  <option value="gap">GAP</option>
+                  <option value="fda">FDA</option>
+                  <option value="halal">HALAL</option>
+                  <option value="organic">ORGANIC</option>
+                  <option value="fssc">FSSC</option>
+                  <option value="fsc">FSC</option>
+                  <option value="bifma">BIFMA</option>
+                  <option value="ce">CE</option>
+                  <option value="haccp">HACCP</option>
+                  <option value="ghp">GHP</option>
+                  <option value="aiota">AIOTA</option>
+                  <option value="green_guard">GREEN GUARD</option>
+                  <option value="sedex">SEDEX</option>
+                  <option value="kosher">KOSHER</option>
+                  <option value="who_gmp">WHO-GMP</option>
+                  <option value="brc">BRC</option>
+                  <option value="vegan">VEGAN</option>
+                  <option value="sa8000">SA 8000</option>
+                  <option value="ccc">CCC</option>
+                  <option value="cmmi3">CMMI LEVEL 3</option>
+                  <option value="go_green">GO GREEN</option>
+                  <option value="pcmm5">PCMM 5</option>
+                  <option value="rios">RIOS</option>
+                  <option value="rohs">ROHS</option>
+                </select> </>}
+                {/* NON-IAF ISO TYPES */}
+                </> }
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (

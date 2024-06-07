@@ -180,14 +180,14 @@ export default function AdminBookingForm({
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services, "This is services");
+
         setSelectedValues(newLeadData.bookingSource);
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
         const servicestoSend = data.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
-          setIsoType(service.isoTypeObject);
+        setIsoType(service.isoTypeObject);
         
           return {
             ...service,
@@ -521,7 +521,7 @@ export default function AdminBookingForm({
             generatedReceivedAmount:generatedReceivedAmount,
             generatedTotalAmount:generatedTotalAmount
           };
-          console.log("This is sending", dataToSend);
+         
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step3`,
@@ -567,7 +567,6 @@ export default function AdminBookingForm({
         formData.append("paymentMethod", leadData.paymentMethod);
         formData.append("extraNotes", leadData.extraNotes ? leadData.extraNotes : "N/A");
      
-
         // Append payment receipt files to formData
         for (let i = 0; i < leadData.paymentReceipt.length; i++) {
           formData.append("paymentReceipt", leadData.paymentReceipt[i]);
