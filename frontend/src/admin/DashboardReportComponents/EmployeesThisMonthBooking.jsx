@@ -493,96 +493,7 @@ function EmployeesThisMonthBooking() {
         let remainingAmount = 0;
         let expanse = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
-
-        if (filterOne) {
-            redesignedData.map((mainBooking) => {
-
-                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount);
-                            mainBooking.services.map(serv => {
-                                // console.log(serv.expanse , bdeName ,"this is services");
-                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            });
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
-                            mainBooking.services.map(serv => {
-                                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                            })
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                achievedAmount += Math.floor(mainBooking.generatedReceivedAmount);
-                                mainBooking.services.map(serv => {
-
-                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                })
-                            }
-                        }
-                    }
-
-                } else if (mainBooking.remainingPayments.length !== 0) {
-                    mainBooking.remainingPayments.map((remainingObj) => {
-                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-                            const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-                            if (mainBooking.bdeName === mainBooking.bdmName) {
-                                remainingAmount += Math.floor(tempAmount);
-                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                                remainingAmount += Math.floor(tempAmount) / 2;
-                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                                if (mainBooking.bdeName === bdeName) {
-                                    remainingAmount += Math.floor(tempAmount);
-                                }
-                            }
-                        }
-                    })
-                }
-                mainBooking.moreBookings.map((moreObject) => {
-                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount);
-                                moreObject.services.map(serv => {
-                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                })
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount) / 2;
-                                moreObject.services.map(serv => {
-                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                                })
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
-                                    achievedAmount += Math.floor(moreObject.generatedReceivedAmount);
-                                    moreObject.services.map(serv => {
-                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                    })
-                                }
-                            }
-                        }
-                    } else if (moreObject.remainingPayments.length !== 0) {
-
-                        moreObject.remainingPayments.map((remainingObj) => {
-                            if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
-
-                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                                const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-                                if (moreObject.bdeName === moreObject.bdmName) {
-                                    remainingAmount += Math.floor(tempAmount);
-                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                    remainingAmount += Math.floor(tempAmount) / 2;
-                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                    if (moreObject.bdeName === bdeName) {
-                                        remainingAmount += Math.floor(tempAmount);
-                                    }
-                                }
-                            }
-                        })
-                    }
-                })
-            })
-        } else {
+ 
             redesignedData.map((mainBooking) => {
                 const bookingDate = new Date(mainBooking.bookingDate);
                 const startDate = new Date(bookingStartDate);
@@ -743,7 +654,7 @@ function EmployeesThisMonthBooking() {
                     }
                 })
             })
-        }
+        
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     };
@@ -753,95 +664,7 @@ function EmployeesThisMonthBooking() {
         let expanse = 0;
         const filterOne = new Date(bookingStartDate).getDate() === new Date().getDate() && new Date(bookingEndDate).getDate() === new Date().getDate();
 
-        if (filterOne) {
-            redesignedData.map((mainBooking) => {
-
-                if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
-                    if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount);
-                            mainBooking.services.map(serv => {
-                                // console.log(serv.expanse , bdeName ,"this is services");
-                                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                            });
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
-                            mainBooking.services.map(serv => {
-                                expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                            })
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === bdeName) {
-                                achievedAmount += Math.floor(mainBooking.generatedReceivedAmount);
-                                mainBooking.services.map(serv => {
-
-                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                })
-                            }
-                        }
-                    }
-
-                } else if (mainBooking.remainingPayments.length !== 0) {
-                    mainBooking.remainingPayments.map((remainingObj) => {
-                        if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-                            const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-                            if (mainBooking.bdeName === mainBooking.bdmName) {
-                                remainingAmount += Math.floor(tempAmount);
-                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                                remainingAmount += Math.floor(tempAmount) / 2;
-                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                                if (mainBooking.bdeName === bdeName) {
-                                    remainingAmount += Math.floor(tempAmount);
-                                }
-                            }
-                        }
-                    })
-                }
-                mainBooking.moreBookings.map((moreObject) => {
-                    if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
-                        if (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName) {
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount);
-                                moreObject.services.map(serv => {
-                                    expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                })
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount) / 2;
-                                moreObject.services.map(serv => {
-                                    expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-                                })
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === bdeName) {
-                                    achievedAmount += Math.floor(moreObject.generatedReceivedAmount);
-                                    moreObject.services.map(serv => {
-                                        expanse = serv.expanse ? expanse + serv.expanse : expanse;
-                                    })
-                                }
-                            }
-                        }
-                    } else if (moreObject.remainingPayments.length !== 0) {
-
-                        moreObject.remainingPayments.map((remainingObj) => {
-                            if (monthNames[new Date(remainingObj.paymentDate).getMonth()] === currentMonth && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
-
-                                const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                                const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-                                if (moreObject.bdeName === moreObject.bdmName) {
-                                    remainingAmount += Math.floor(tempAmount);
-                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                    remainingAmount += Math.floor(tempAmount) / 2;
-                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                    if (moreObject.bdeName === bdeName) {
-                                        remainingAmount += Math.floor(tempAmount);
-                                    }
-                                }
-                            }
-                        })
-                    }
-                })
-            })
-        } else {
+       
             redesignedData.map((mainBooking) => {
                 const bookingDate = new Date(mainBooking.bookingDate);
                 const startDate = new Date(bookingStartDate);
@@ -1002,7 +825,7 @@ function EmployeesThisMonthBooking() {
                     }
                 })
             })
-        }
+        
 
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     }
