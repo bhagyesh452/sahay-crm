@@ -62,11 +62,11 @@ export default function AdminBookingForm({
   const [fetchedService, setfetchedService] = useState(false);
 
   const defaultISOtypes = {
-    serviceID : '',
-    type:"IAF",
-    IAFtype1:"ISO 9001",
-    IAFtype2:"3 YR - IAF",
-    Nontype: "ISO 9001"
+    serviceID: '',
+    type: "",
+    IAFtype1: "",
+    IAFtype2: "",
+    Nontype: ""
   }
   const [isoType, setIsoType] = useState([]);
 
@@ -134,13 +134,13 @@ export default function AdminBookingForm({
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-leadData/${companyNewName.trim()}`
       );
-      console.log(response.data , "This it it now")
+      console.log(response.data, "This it it now")
       let data = response.data;
 
       if (Array.isArray(response.data)) {
         data = response.data.find((item) => item["Company Name"] === companyNewName.trim());
       }
-      
+
       console.log("Fetched Data", data);
       if (!data) {
         setCompleted({});
@@ -165,7 +165,7 @@ export default function AdminBookingForm({
         setLeadData((prevState) => ({
           ...prevState,
           bookingDate: formatDate(new Date()),
-          bdmType:"Close-by"
+          bdmType: "Close-by"
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
@@ -187,8 +187,8 @@ export default function AdminBookingForm({
         setActiveStep(3);
         const servicestoSend = data.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
-        setIsoType(service.isoTypeObject);
-        
+          setIsoType(service.isoTypeObject);
+
           return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -203,8 +203,8 @@ export default function AdminBookingForm({
               : "On Particular Date",
           };
         });
-        
-        
+
+
 
 
 
@@ -224,8 +224,8 @@ export default function AdminBookingForm({
         setActiveStep(4);
         const servicestoSend = data.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
-        setIsoType(service.isoTypeObject);
-        
+          setIsoType(service.isoTypeObject);
+
           return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -242,15 +242,15 @@ export default function AdminBookingForm({
         });
         setLeadData((prevState) => ({
           ...prevState,
-          services:servicestoSend,
+          services: servicestoSend,
           totalAmount: data.totalAmount,
           pendingAmount: data.pendingAmount,
           receivedAmount: data.receivedAmount,
           otherDocs: data.otherDocs,
           paymentReceipt: data.paymentReceipt,
           paymentMethod: data.paymentMethod,
-          extraNotes: data.extraNotes ,
-          isAdmin : true,
+          extraNotes: data.extraNotes,
+          isAdmin: true,
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
@@ -261,10 +261,10 @@ export default function AdminBookingForm({
       console.error("Error fetching data:", error);
     }
   };
-  
 
 
- 
+
+
   useEffect(() => {
     fetchData();
     fetchDataEmp();
@@ -333,13 +333,13 @@ export default function AdminBookingForm({
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
@@ -456,39 +456,39 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 2) {
-        if(!leadData.caCase){
-          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+        if (!leadData.caCase) {
+          Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
 
         let isValid = true;
-              for (let service of leadData.services) {
-        
-                const firstPayment = Number(service.firstPayment);
-                const secondPayment = Number(service.secondPayment);
-                const thirdPayment = Number(service.thirdPayment);
-                const fourthPayment = Number(service.fourthPayment);
-                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-                if (
-                  (service.paymentTerms !== "Full Advanced" &&
-                    (firstPayment < 0 ||
-                      secondPayment < 0 ||
-                      thirdPayment < 0 ||
-                      fourthPayment < 0 ||
-                      firstPayment + secondPayment + thirdPayment + fourthPayment !==
-                        Number(service.totalPaymentWGST))) ||
-                  service.serviceName === "" 
-                ) {
-                  isValid = false;
-                  break;
-                }
-              }
-               if (
-                !isValid
-                ) {
-                  Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
-                  return true;
-                } else {
+        for (let service of leadData.services) {
+
+          const firstPayment = Number(service.firstPayment);
+          const secondPayment = Number(service.secondPayment);
+          const thirdPayment = Number(service.thirdPayment);
+          const fourthPayment = Number(service.fourthPayment);
+          // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+          if (
+            (service.paymentTerms !== "Full Advanced" &&
+              (firstPayment < 0 ||
+                secondPayment < 0 ||
+                thirdPayment < 0 ||
+                fourthPayment < 0 ||
+                firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                Number(service.totalPaymentWGST))) ||
+            service.serviceName === ""
+          ) {
+            isValid = false;
+            break;
+          }
+        }
+        if (
+          !isValid
+        ) {
+          Swal.fire("Incorrect Details", 'Please Enter the Details Properly', 'warning');
+          return true;
+        } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -506,11 +506,11 @@ export default function AdminBookingForm({
           const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
               ? acc + parseInt(curr.totalPaymentWOGST)
-              : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
+              : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
-          const servicestoSend = leadData.services.map((service , index) => ({
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -523,12 +523,12 @@ export default function AdminBookingForm({
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
 
           dataToSend = {
             services: servicestoSend,
-           
+
             numberOfServices: totalServices,
             caCase: leadData.caCase,
             caCommission: leadData.caCommission,
@@ -537,10 +537,10 @@ export default function AdminBookingForm({
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
-            generatedReceivedAmount:generatedReceivedAmount,
-            generatedTotalAmount:generatedTotalAmount
+            generatedReceivedAmount: generatedReceivedAmount,
+            generatedTotalAmount: generatedTotalAmount
           };
-         
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step3`,
@@ -557,8 +557,8 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 3) {
-        if(!leadData.paymentMethod){
-          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+        if (!leadData.paymentMethod) {
+          Swal.fire("Incorrect Details", 'Please Enter Payment Method', 'warning');
           return true;
         }
         console.log(
@@ -585,7 +585,7 @@ export default function AdminBookingForm({
         formData.append("pendingAmount", pendingAmount);
         formData.append("paymentMethod", leadData.paymentMethod);
         formData.append("extraNotes", leadData.extraNotes ? leadData.extraNotes : "N/A");
-     
+
         // Append payment receipt files to formData
         for (let i = 0; i < leadData.paymentReceipt.length; i++) {
           formData.append("paymentReceipt", leadData.paymentReceipt[i]);
@@ -612,9 +612,9 @@ export default function AdminBookingForm({
 
       if (activeStep === 4) {
         try {
-          const servicestoSend = leadData.services.map((service , index) => ({
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -627,11 +627,11 @@ export default function AdminBookingForm({
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
           const tempLeadData = {
             ...leadData,
-            services:servicestoSend
+            services: servicestoSend
           }
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-final-leadData/${companyNewName}`,
@@ -641,7 +641,7 @@ export default function AdminBookingForm({
             `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step5`
           );
 
-         
+
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -674,6 +674,8 @@ export default function AdminBookingForm({
       // Handle error if needed
     }
   };
+
+
   const handleEdit = async () => {
     try {
       const formData = new FormData();
@@ -809,7 +811,7 @@ export default function AdminBookingForm({
       e.preventDefault();
     }
   };
-  
+
   const handleWheel = (e) => {
     e.preventDefault();
   };
@@ -833,11 +835,11 @@ export default function AdminBookingForm({
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
-        
-        setActiveStep(0);
-        setLeadData({...defaultLeadData , bdeName:leadData.bdeName , "Company Email": leadData["Company Email"] , "Company Number":leadData['Company Number'], incoDate:leadData.incoDate})
-        setCompleted([]);
 
+        setActiveStep(0);
+        setLeadData({ ...defaultLeadData, bdeName: leadData.bdeName, "Company Email": leadData["Company Email"], "Company Number": leadData['Company Number'], incoDate: leadData.incoDate })
+        setCompleted([]);
+        setIsoType([]);
       } else {
         console.error("Error resetting draft:", response.statusText);
       }
@@ -846,7 +848,7 @@ export default function AdminBookingForm({
     }
   };
 
-  console.log(isoType , "boom");
+  console.log(isoType, "boom");
 
   const renderServices = () => {
     const services = [];
@@ -879,17 +881,17 @@ export default function AdminBookingForm({
                           : service
                       ),
                     }));
-                    if(e.target.value === "ISO Certificate"){
-                      if(!isoType.some(obj => obj.serviceID === i)){
+                    if (e.target.value === "ISO Certificate") {
+                      if (!isoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = isoType;
                         defaultArray.push({
                           ...defaultISOtypes,
-                          serviceID : i
+                          serviceID: i
                         });
                         setIsoType(defaultArray)
                       }
                     }
-                   
+
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -903,141 +905,145 @@ export default function AdminBookingForm({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-               {leadData.services[i].serviceName.includes("ISO Certificate")  && <> <select className="form-select mt-1 ml-1" style={{width:'120px'}} value={isoType.find(obj =>obj.serviceID === i ).type}  onChange={(e) => {
-                       const currentObject = isoType.find(obj => obj.serviceID === i);
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                       if(currentObject){
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject =  {
-                          ...currentObject,
-                          type:e.target.value
-                        }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                       }
-                      }}>
-                  <option value="IAF">IAF</option>
-                  <option value="Non IAF">Non IAF</option>
-                </select>
-                {/* IAF ISO LIST */}
-                {isoType.find(obj=>obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj=>obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e)=>{
-                   const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                   if(currentObject){
+                  if (currentObject) {
                     const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                    const newCurrentObject =  {
+                    const newCurrentObject = {
                       ...currentObject,
-                      IAFtype1:e.target.value
+                      type: e.target.value
                     }
                     remainingObject.push(newCurrentObject);
                     setIsoType(remainingObject);
-                   }
+                  }
                 }}>
-                  <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
+                  <option value="" selected disabled>Select ISO Body</option>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
                 </select>
-                {/* IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).IAFtype2} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                  {/* IAF ISO LIST */}
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     IAFtype2:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                  <option value="1 YR - IAF"> 1 YR - IAF</option>
-                  <option value="3 YR - IAF">3 YR - IAF</option>
-                  <option value="1 YR (3 YR FORMAT)- IAF">1 YR (3 YR FORMAT)- IAF</option>
-                </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).Nontype} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        IAFtype1: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
+                    }
+                  }}>
+                    <option value="" selected disabled>Select ISO Type</option>
+                    <option value="ISO 9001">ISO 9001</option>
+                    <option value="ISO 14001">ISO 14001</option>
+                    <option value="ISO 45001">ISO 45001</option>
+                    <option value="ISO 22000">ISO 22000</option>
+                    <option value="ISO 27001">ISO 27001</option>
+                    <option value="ISO 13485">ISO 13485</option>
+                    <option value="ISO 20000-1">ISO 20000-1</option>
+                    <option value="ISO 50001">ISO 50001</option>
+                  </select>
+                    {/* IAF ISO TYPES */}
+                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     Nontype:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
-                  <option value="ISO 21001">ISO 21001</option>
-                  <option value="gmp">GMP</option>
-                  <option value="gap">GAP</option>
-                  <option value="fda">FDA</option>
-                  <option value="halal">HALAL</option>
-                  <option value="organic">ORGANIC</option>
-                  <option value="fssc">FSSC</option>
-                  <option value="fsc">FSC</option>
-                  <option value="bifma">BIFMA</option>
-                  <option value="ce">CE</option>
-                  <option value="haccp">HACCP</option>
-                  <option value="ghp">GHP</option>
-                  <option value="aiota">AIOTA</option>
-                  <option value="green_guard">GREEN GUARD</option>
-                  <option value="sedex">SEDEX</option>
-                  <option value="kosher">KOSHER</option>
-                  <option value="who_gmp">WHO-GMP</option>
-                  <option value="brc">BRC</option>
-                  <option value="vegan">VEGAN</option>
-                  <option value="sa8000">SA 8000</option>
-                  <option value="ccc">CCC</option>
-                  <option value="cmmi3">CMMI LEVEL 3</option>
-                  <option value="go_green">GO GREEN</option>
-                  <option value="pcmm5">PCMM 5</option>
-                  <option value="rios">RIOS</option>
-                  <option value="rohs">ROHS</option>
-                </select> </>}
-                {/* NON-IAF ISO TYPES */}
-                </> }
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          IAFtype2: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                      <option value="" selected disabled>Select ISO Duration</option>
+                      <option value="1 YR"> 1 YR</option>
+                      <option value="3 YR">3 YR</option>
+                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          Nontype: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                      <option value="" selected disabled>Select ISO Type</option>
+                      <option value="ISO 9001">ISO 9001</option>
+                      <option value="ISO 14001">ISO 14001</option>
+                      <option value="ISO 45001">ISO 45001</option>
+                      <option value="ISO 22000">ISO 22000</option>
+                      <option value="ISO 27001">ISO 27001</option>
+                      <option value="ISO 13485">ISO 13485</option>
+                      <option value="ISO 20000-1">ISO 20000-1</option>
+                      <option value="ISO 50001">ISO 50001</option>
+                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="GMP">GMP</option>
+                      <option value="GAP">GAP</option>
+                      <option value="FDA">FDA</option>
+                      <option value="HALAL">HALAL</option>
+                      <option value="ORGANIC">ORGANIC</option>
+                      <option value="FSSC">FSSC</option>
+                      <option value="FSC">FSC</option>
+                      <option value="BIFMA">BIFMA</option>
+                      <option value="CE">CE</option>
+                      <option value="HACCP">HACCP</option>
+                      <option value="GHP">GHP</option>
+                      <option value="AIOTA">AIOTA</option>
+                      <option value="GREEN GUARD">GREEN GUARD</option>
+                      <option value="SEDEX">SEDEX</option>
+                      <option value="KOSHER">KOSHER</option>
+                      <option value="WHO-GMP">WHO-GMP</option>
+                      <option value="BRC">BRC</option>
+                      <option value="VEGAN">VEGAN</option>
+                      <option value="SA 8000">SA 8000</option>
+                      <option value="CCC">CCC</option>
+                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                      <option value="GO GREEN">GO GREEN</option>
+                      <option value="PCMM 5">PCMM 5</option>
+                      <option value="RIOS">RIOS</option>
+                      <option value="ROHS">ROHS</option>
+                    </select> </>}
+                  {/* NON-IAF ISO TYPES */}
+                </>}
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (
-                <div className="ml-2">
-                  <div class="form-check m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="dsc"
-                      value="0"
-                      checked={leadData.services[i].withDSC}
-                      onChange={(e) => {
-                        setLeadData((prevState) => ({
-                          ...prevState,
-                          services: prevState.services.map((service, index) =>
-                            index === i
-                              ? { ...service, withDSC: !service.withDSC }
-                              : service
-                          ),
-                        }));
-                      }}
-                      disabled={completed[activeStep] === true}
-                    />
-                    <label class="form-check-label" for="dsc">
-                      WITH DSC
-                    </label>
+                  <div className="ml-2">
+                    <div class="form-check m-0">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dsc"
+                        value="0"
+                        checked={leadData.services[i].withDSC}
+                        onChange={(e) => {
+                          setLeadData((prevState) => ({
+                            ...prevState,
+                            services: prevState.services.map((service, index) =>
+                              index === i
+                                ? { ...service, withDSC: !service.withDSC }
+                                : service
+                            ),
+                          }));
+                        }}
+                        disabled={completed[activeStep] === true}
+                      />
+                      <label class="form-check-label" for="dsc">
+                        WITH DSC
+                      </label>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <hr className="mt-3 mb-3"></hr>
             <div className="row align-items-center mt-2">
@@ -1049,15 +1055,15 @@ export default function AdminBookingForm({
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
-                      onWheel={(e)=>{
+                      onWheel={(e) => {
                         document.activeElement.blur();
-                         }}
+                      }}
                       className="form-control"
                       placeholder="Enter Amount"
                       id={`Amount-${i}`}
                       value={leadData.services[i].totalPaymentWOGST}
-                   
-                     
+
+
                       onInput={(e) => {
                         const newValue = e.target.value;
                         setLeadData((prevState) => ({
@@ -1065,14 +1071,14 @@ export default function AdminBookingForm({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  totalPaymentWOGST: newValue,
-                                  totalPaymentWGST:
-                                    service.withGST === true
-                                      ? Number(newValue) +
-                                        Number(newValue * 0.18)
-                                      : newValue,
-                                }
+                                ...service,
+                                totalPaymentWOGST: newValue,
+                                totalPaymentWGST:
+                                  service.withGST === true
+                                    ? Number(newValue) +
+                                    Number(newValue * 0.18)
+                                    : newValue,
+                              }
                               : service
                           ),
                         }));
@@ -1091,65 +1097,65 @@ export default function AdminBookingForm({
                       id="GST"
                       value="0"
                       checked={leadData.services[i].withGST}
-                      
-                      onWheel={(e)=>{
-                      
+
+                      onWheel={(e) => {
+
                         document.activeElement.blur();
-                        
+
                       }}
                       onChange={(e) => {
-                        
+
                         setLeadData((prevState) => ({
                           ...prevState,
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  withGST: !service.withGST,
-                                  totalPaymentWGST:
-                                    service.withGST === false
-                                      ? Number(
-                                          service.totalPaymentWOGST * 0.18
-                                        ) + Number(service.totalPaymentWOGST)
-                                      : service.totalPaymentWOGST,
-                                  secondPayment:
-                                    service.paymentCount === 2 &&
+                                ...service,
+                                withGST: !service.withGST,
+                                totalPaymentWGST:
+                                  service.withGST === false
+                                    ? Number(
+                                      service.totalPaymentWOGST * 0.18
+                                    ) + Number(service.totalPaymentWOGST)
+                                    : service.totalPaymentWOGST,
+                                secondPayment:
+                                  service.paymentCount === 2 &&
                                     service.secondPayment !== 0
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.secondPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.secondPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.secondPayment,
-                                  thirdPayment:
-                                    service.paymentCount === 3
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.thirdPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.thirdPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.thirdPayment,
-                                  fourthPayment:
-                                    service.paymentCount === 4
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.fourthPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.fourthPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.fourthPayment,
-                                }
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.secondPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.secondPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.secondPayment,
+                                thirdPayment:
+                                  service.paymentCount === 3
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.thirdPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.thirdPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.thirdPayment,
+                                fourthPayment:
+                                  service.paymentCount === 4
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.fourthPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.fourthPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.fourthPayment,
+                              }
                               : service
                           ),
                         }));
@@ -1174,7 +1180,7 @@ export default function AdminBookingForm({
                           parseInt(leadData.services[i].thirdPayment) +
                           parseInt(leadData.services[i].fourthPayment) !==
                           parseInt(leadData.services[i].totalPaymentWGST) &&
-                        leadData.services[i].paymentTerms !== "Full Advanced"
+                          leadData.services[i].paymentTerms !== "Full Advanced"
                           ? "form-control error-border"
                           : "form-control"
                       }
@@ -1214,9 +1220,9 @@ export default function AdminBookingForm({
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                            }
                             : service
                         ),
                       }));
@@ -1238,10 +1244,10 @@ export default function AdminBookingForm({
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                                paymentCount: 2,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                              paymentCount: 2,
+                            }
                             : service
                         ),
                       }));
@@ -1263,11 +1269,11 @@ export default function AdminBookingForm({
                         <div class="input-group mb-2">
                           <input
                             type="number"
-                            onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                            onWheel={(e) => {
+
+                              document.activeElement.blur();
+
+                            }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1278,14 +1284,14 @@ export default function AdminBookingForm({
                                   (service, index) =>
                                     index === i
                                       ? {
-                                          ...service,
-                                          firstPayment: e.target.value,
-                                          secondPayment:
-                                            service.paymentCount === 2
-                                              ? service.totalPaymentWGST -
-                                                e.target.value
-                                              : service.secondPayment,
-                                        }
+                                        ...service,
+                                        firstPayment: e.target.value,
+                                        secondPayment:
+                                          service.paymentCount === 2
+                                            ? service.totalPaymentWGST -
+                                            e.target.value
+                                            : service.secondPayment,
+                                      }
                                       : service
                                 ),
                               }));
@@ -1315,15 +1321,15 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPayment: e.target.value,
-                                            thirdPayment:
-                                              service.paymentCount === 3
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  e.target.value
-                                                : service.thirdPayment,
-                                          }
+                                          ...service,
+                                          secondPayment: e.target.value,
+                                          thirdPayment:
+                                            service.paymentCount === 3
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              e.target.value
+                                              : service.thirdPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1344,10 +1350,10 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          secondPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1359,7 +1365,7 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                                <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1375,7 +1381,7 @@ export default function AdminBookingForm({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1390,22 +1396,22 @@ export default function AdminBookingForm({
                           </div>
                           {leadData.services[i].secondPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={secondTempRemarks}
-                                style={{textTransform:"uppercase"}}
-                                onChange={(e) =>
-                                  setSecondTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                                disabled={
-                                  completed[activeStep] === true
-                                }
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={secondTempRemarks}
+                                  style={{ textTransform: "uppercase" }}
+                                  onChange={(e) =>
+                                    setSecondTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                  disabled={
+                                    completed[activeStep] === true
+                                  }
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1426,16 +1432,16 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPayment: e.target.value,
-                                            fourthPayment:
-                                              service.paymentCount === 4
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  service.secondPayment -
-                                                  e.target.value
-                                                : service.fourthPayment,
-                                          }
+                                          ...service,
+                                          thirdPayment: e.target.value,
+                                          fourthPayment:
+                                            service.paymentCount === 4
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              service.secondPayment -
+                                              e.target.value
+                                              : service.fourthPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1456,9 +1462,9 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPaymentRemarks: e.target.value,
-                                          }
+                                          ...service,
+                                          thirdPaymentRemarks: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1470,7 +1476,7 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                                <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1486,7 +1492,7 @@ export default function AdminBookingForm({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1501,21 +1507,21 @@ export default function AdminBookingForm({
                           </div>
                           {leadData.services[i].thirdPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={thirdTempRemarks}
-                                onChange={(e) =>
-                                  setThirdTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                                disabled={
-                                  completed[activeStep] === true
-                                }
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={thirdTempRemarks}
+                                  onChange={(e) =>
+                                    setThirdTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                  disabled={
+                                    completed[activeStep] === true
+                                  }
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1536,9 +1542,9 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPayment: e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPayment: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1559,10 +1565,10 @@ export default function AdminBookingForm({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1574,7 +1580,7 @@ export default function AdminBookingForm({
                                 completed[activeStep] === true
                               }
                             >
-                                <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1590,7 +1596,7 @@ export default function AdminBookingForm({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1605,22 +1611,22 @@ export default function AdminBookingForm({
                           </div>
                           {leadData.services[i].fourthPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={fourthTempRemarks}
-                                onChange={(e) =>
-                                  setFourthTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                                disabled={
-                                  completed[activeStep] === true
-                                }
-                              />
-                              
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={fourthTempRemarks}
+                                  onChange={(e) =>
+                                    setFourthTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                  disabled={
+                                    completed[activeStep] === true
+                                  }
+                                />
+
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1629,7 +1635,7 @@ export default function AdminBookingForm({
                 <div className="part-payment-plus-minus">
                   <div className="d-flex align-items-end justify-content-between">
                     <button
-                      disabled={leadData.services[i].paymentCount === 4 ||  
+                      disabled={leadData.services[i].paymentCount === 4 ||
                         completed[activeStep] === true
                       }
                       onClick={(e) => {
@@ -1639,20 +1645,20 @@ export default function AdminBookingForm({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount + 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount + 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
                       }}
                       style={{ marginLeft: "5px" }}
                       className="btn btn-primary"
-                     
+
                     >
                       +
                     </button>
@@ -1667,13 +1673,13 @@ export default function AdminBookingForm({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount - 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount - 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1705,9 +1711,9 @@ export default function AdminBookingForm({
                       services: prevState.services.map((service, index) =>
                         index === i
                           ? {
-                              ...service,
-                              paymentRemarks: e.target.value,
-                            }
+                            ...service,
+                            paymentRemarks: e.target.value,
+                          }
                           : service
                       ),
                     }));
@@ -1859,13 +1865,13 @@ export default function AdminBookingForm({
                   {allStepsCompleted() ? (
                     <React.Fragment>
                       <Typography sx={{ mt: 2, mb: 1 }}>
-                       Already you have a booking for this Company , Thank You
+                        Already you have a booking for this Company , Thank You
                       </Typography>
                       <Box
                         sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                       >
                         <Box sx={{ flex: "1 1 auto" }} />
-                        <button className="btn btn-primary" onClick={()=>setFormOpen(false)}>Back</button>
+                        <button className="btn btn-primary" onClick={() => setFormOpen(false)}>Back</button>
                       </Box>
                     </React.Fragment>
                   ) : (
@@ -1980,7 +1986,7 @@ export default function AdminBookingForm({
                                                                             /> */}
                                       <input
                                         type="text" // Use type="text" instead of type="number"
-                                        
+
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
@@ -2321,7 +2327,7 @@ export default function AdminBookingForm({
                                           disabled={
                                             completed[activeStep] === true
                                           }
-                                          //disabled={leadData.bdmEmail}
+                                        //disabled={leadData.bdmEmail}
                                         />
                                       </div>
                                     </div>
@@ -2569,7 +2575,7 @@ export default function AdminBookingForm({
                                             type="radio"
                                             name="ca-case"
                                             onChange={(e) => {
-                                              Swal.fire({text:"Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues."})
+                                              Swal.fire({ text: "Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues." })
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
                                                 caCase: e.target.value, // Set the value based on the selected radio button
@@ -2601,11 +2607,11 @@ export default function AdminBookingForm({
                                         </label>
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2710,11 +2716,11 @@ export default function AdminBookingForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2743,26 +2749,26 @@ export default function AdminBookingForm({
                                       <div class="input-group">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    )
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  )
                                                   : total +
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2782,26 +2788,26 @@ export default function AdminBookingForm({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total + 0
                                                   : total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    ) -
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  ) -
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2899,7 +2905,7 @@ export default function AdminBookingForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                       
+
                                       </label>
                                       <textarea
                                         rows={1}
@@ -3213,28 +3219,28 @@ export default function AdminBookingForm({
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
                                           </div>
                                         </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
                                         "Start-Up India Certificate" && (
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>With DSC</b>
+                                          <div className="row m-0">
+                                            <div className="col-sm-3 p-0">
+                                              <div className="form-label-name">
+                                                <b>With DSC</b>
+                                              </div>
+                                            </div>
+                                            <div className="col-sm-9 p-0">
+                                              <div className="form-label-data">
+                                                {obj.withDSC === true
+                                                  ? "Yes"
+                                                  : "No"}
+                                              </div>
                                             </div>
                                           </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {obj.withDSC === true
-                                                ? "Yes"
-                                                : "No"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
+                                        )}
                                       {/* total amount */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3244,10 +3250,10 @@ export default function AdminBookingForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                          ₹{" "}{obj.totalPaymentWGST !== undefined
+                                            ₹{" "}{obj.totalPaymentWGST !== undefined
                                               ? (parseInt(
-                                                  obj.totalPaymentWGST
-                                                )).toLocaleString()
+                                                obj.totalPaymentWGST
+                                              )).toLocaleString()
                                               : "0"}
                                           </div>
                                         </div>
@@ -3288,7 +3294,7 @@ export default function AdminBookingForm({
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                              ₹{" "}{parseInt(
+                                                ₹{" "}{parseInt(
                                                   obj.firstPayment
                                                 ).toLocaleString()}
                                               </div>
@@ -3301,8 +3307,8 @@ export default function AdminBookingForm({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                              ₹{" "}{parseInt(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
                                                 -{" "}
@@ -3324,8 +3330,8 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                ₹{" "}{parseInt(
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  ₹{" "}{parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
@@ -3348,8 +3354,8 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                ₹{" "}{parseInt(
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
@@ -3366,7 +3372,7 @@ export default function AdminBookingForm({
                                           )}
                                         </>
                                       )}
-                                      
+
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3384,59 +3390,59 @@ export default function AdminBookingForm({
                                     </div>
                                   ))}
                                   <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Case</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCase
-                                              }
-                                          </div>
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>CA Case</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        {leadData.caCase
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {leadData.caCase === "Yes" && <>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Number</b>
                                         </div>
                                       </div>
-                                      {leadData.caCase === "Yes" &&  <>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Number</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caNumber
-                                              }
-                                          </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caNumber
+                                          }
                                         </div>
                                       </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Email</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caEmail
-                                              }
-                                          </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Email</b>
                                         </div>
                                       </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Commission</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCommission
-                                              }
-                                          </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caEmail
+                                          }
                                         </div>
                                       </div>
-                                      </>}
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Commission</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caCommission
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>}
 
                                   {/* total amount */}
                                 </div>
@@ -3487,13 +3493,13 @@ export default function AdminBookingForm({
                                                 return curr.paymentTerms ===
                                                   "Full Advanced"
                                                   ? acc +
-                                                      Number(
-                                                        curr.totalPaymentWGST
-                                                      )
+                                                  Number(
+                                                    curr.totalPaymentWGST
+                                                  )
                                                   : acc +
-                                                      Number(curr.firstPayment);
+                                                  Number(curr.firstPayment);
                                               }, 0)).toLocaleString()
-                                              }
+                                            }
                                           </div>
                                         </div>
                                       </div>
@@ -3509,20 +3515,20 @@ export default function AdminBookingForm({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {parseInt(leadData.services
-                                            .reduce(
-                                              (total, service) =>
-                                                service.paymentTerms ===
-                                                "Full Advanced"
-                                                  ? total + 0
-                                                  : total +
+                                              .reduce(
+                                                (total, service) =>
+                                                  service.paymentTerms ===
+                                                    "Full Advanced"
+                                                    ? total + 0
+                                                    : total +
                                                     Number(
                                                       service.totalPaymentWGST
                                                     ) -
                                                     Number(
                                                       service.firstPayment
                                                     ),
-                                              0
-                                            )
+                                                0
+                                              )
                                             ).toLocaleString()}
                                           </div>
                                         </div>
@@ -3542,12 +3548,12 @@ export default function AdminBookingForm({
                                             className="UploadDocPreview"
                                             onClick={() => {
                                               handleViewPdfReciepts(
-                                               ( leadData.paymentReceipt[0]
+                                                (leadData.paymentReceipt[0]
                                                   .filename
                                                   ? leadData.paymentReceipt[0]
-                                                      .filename
+                                                    .filename
                                                   : leadData.paymentReceipt[0]
-                                                      .name) , leadData["Company Name"]
+                                                    .name), leadData["Company Name"]
                                               );
                                             }}
                                           >
@@ -3654,7 +3660,7 @@ export default function AdminBookingForm({
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.filename , leadData["Company Name"]
+                                                      val.filename, leadData["Company Name"]
                                                     );
                                                   }}
                                                 >
@@ -3684,7 +3690,7 @@ export default function AdminBookingForm({
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.name , leadData["Company Name"]
+                                                      val.name, leadData["Company Name"]
                                                     );
                                                   }}
                                                 >
@@ -3786,11 +3792,11 @@ export default function AdminBookingForm({
                             <>
                               <Button
                                 onClick={() => {
-                                    setCompleted((prevCompleted) => ({
-                                      ...prevCompleted,
-                                      [activeStep]: false,
-                                    }));
-                                  }}
+                                  setCompleted((prevCompleted) => ({
+                                    ...prevCompleted,
+                                    [activeStep]: false,
+                                  }));
+                                }}
                                 variant="contained"
                                 sx={{ mr: 1, background: "#ffba00 " }}
                               >
