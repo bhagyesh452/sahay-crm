@@ -4149,6 +4149,7 @@ function EmployeeDashboard() {
                 </div>
                 {/* Lead reports */}
                 <div className="row mt-2 mb-4">
+                 {/* { <>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <div className="dash-card" style={{minHeight:'299px'}}>
                       <div className="dash-card-head">
@@ -4365,15 +4366,16 @@ function EmployeeDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
-                  </div>
+                  </>} */}
                   {/* calling data report */}
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeCallingReport />
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeForwardedReport moreEmpData={moreEmpData}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
                   </div>
                 </div>
               </div>
