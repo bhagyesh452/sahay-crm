@@ -198,6 +198,10 @@
 .clr-fff536 {
   color: #ede105;
 }
+.clr-fff
+{
+    color: #fff;
+}
 .clr-bg-1ac9bd
 {
   background-color: #1ac9bd;
@@ -502,6 +506,51 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+table.table.top_5_table {
+    border-radius: 8px;
+    background: #eee;
+    overflow: hidden;
+}
+.top_5_table tbody tr
+{
+    transition: transform .2s;
+}
+
+.top_5_table thead tr th:nth-child(2)
+{
+    text-align: left !important;
+}
+.top_5_table tbody tr td:nth-child(2)
+{
+    text-align: left !important;
+}
+table.table.top_5_table td, table.table.top_5_table th {
+    border: none !important;
+    padding: 4px 14px !important;
+    text-align: center;
+    line-height: 25px;
+    font-weight: 500;
+}
+table.table.top_5_table th
+{
+    background: #5f5f5f;
+    color: #fff;
+}
+table.table.top_5_table td
+{
+    border-top: 6px solid #fff !important;
+}
+table.table.top_5_table tbody tr:hover
+{
+    transform: scale(1.05); 
+}
+.ranktd {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border-radius: 100px;
 }
 @media only screen and (max-width: 1350px) and (min-width: 1200px){
     .dsrd-mini-card-name {

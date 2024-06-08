@@ -69,6 +69,13 @@ import { LiaAlgolia } from "react-icons/lia";
 import { LiaClipboardCheckSolid } from "react-icons/lia";
 import { RiFileCloseLine } from "react-icons/ri";
 import EmployeeSalesReport from "./EmployeeDashboardComponents/EmployeeSalesReport.jsx";
+import { VscCallOutgoing } from "react-icons/vsc";
+import { VscCallIncoming } from "react-icons/vsc";
+import { TbPhoneCall } from "react-icons/tb";
+import { HiOutlinePhoneMissedCall } from "react-icons/hi";
+import { MdOutlineCallMissedOutgoing } from "react-icons/md";
+
+
 //PIA CHART IMPORT
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
@@ -4148,6 +4155,73 @@ function EmployeeDashboard() {
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4">
                     <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <div className="dash-card" style={{minHeight:'299px'}}>
+                      <div className="dash-card-head">
+                          <h2 className="m-0">
+                              Top 5 Performer
+                          </h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <table class="table top_5_table m-0">
+                          <thead>
+                            <tr>
+                              <th>Rank </th>
+                              <th>Name</th>
+                              <th>Branch</th>
+                              <th>Achievement Ratio</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="clr-bg-light-1cba19">
+                              <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
+                              <td>Vishnu Suthar</td>
+                              <td>Gota</td>
+                              <td>80%</td>
+                            </tr>
+                            <tr className="clr-bg-light-ffb900">
+                              <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
+                              <td>Vishnu Desai</td>
+                              <td>SBR</td>
+                              <td>80%</td>
+                            </tr>
+                            <tr className="clr-bg-light-00d19d">
+                              <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
+                              <td>Khushi Gandhi</td>
+                              <td>SBR</td>
+                              <td>80%</td>
+                            </tr>
+                            <tr className="clr-bg-light-e65b5b">
+                              <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
+                              <td>Vandit Shah</td>
+                              <td>Gota</td>
+                              <td>80%</td>
+                            </tr>
+                            <tr className="clr-bg-light-4299e1">
+                              <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
+                              <td>Kushal Modh</td>
+                              <td>SBR</td>
+                              <td>80%</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                    <div className="dash-card" style={{minHeight:'299px'}}>
+                      <div className="dash-card-head">
+                          <h2 className="m-0">
+                              Today's Call Report
+                          </h2>
+                      </div>
+                      <div className="dash-card-body">
+                          <div className="call-d-card">
+                              
+                          </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
