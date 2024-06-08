@@ -222,8 +222,27 @@ export default function AdminBookingForm({
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
         setSelectedValues(newLeadData.bookingSource);
         setActiveStep(4);
+        const servicestoSend = data.services.map((service, index) => {
+          // Call setIsoType for each service's isoTypeObject
+        setIsoType(service.isoTypeObject);
+        
+          return {
+            ...service,
+            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+              ? service.secondPaymentRemarks
+              : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+              ? service.thirdPaymentRemarks
+              : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+              ? service.fourthPaymentRemarks
+              : "On Particular Date",
+          };
+        });
         setLeadData((prevState) => ({
           ...prevState,
+          services:servicestoSend,
           totalAmount: data.totalAmount,
           pendingAmount: data.pendingAmount,
           receivedAmount: data.receivedAmount,
@@ -593,15 +612,36 @@ export default function AdminBookingForm({
 
       if (activeStep === 4) {
         try {
+          const servicestoSend = leadData.services.map((service , index) => ({
+            ...service,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            secondPaymentRemarks:
+              service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks
+                : service.secondPaymentRemarks,
+            thirdPaymentRemarks:
+              service.thirdPaymentRemarks === "On Particular Date"
+                ? thirdTempRemarks
+                : service.thirdPaymentRemarks,
+            fourthPaymentRemarks:
+              service.fourthPaymentRemarks === "On Particular Date"
+                ? fourthTempRemarks
+                : service.fourthPaymentRemarks,
+            isoTypeObject : isoType
+          }));
+          const tempLeadData = {
+            ...leadData,
+            services:servicestoSend
+          }
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-final-leadData/${companyNewName}`,
-            leadData
+            tempLeadData
           );
           const response2 = await axios.post(
             `${secretKey}/bookings/redesigned-leadData/${companyNewName}/step5`
           );
 
-          console.log(response.data);
+         
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -3171,11 +3211,11 @@ export default function AdminBookingForm({
                                             </b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-9 p-0">
+                                        {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
                                           </div>
-                                        </div>
+                                        </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===

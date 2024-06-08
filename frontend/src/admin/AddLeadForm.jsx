@@ -224,9 +224,28 @@ export default function AddLeadForm({
           const managerName = localStorage.getItem('dataManagerName');
           const mainAccess = (adminName || managerName) ? true : false;
 
+          const servicestoSend = booking.services.map((service, index) => {
+            // Call setIsoType for each service's isoTypeObject
+          setIsoType(service.isoTypeObject);
+          
+            return {
+              ...service,
+              serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+              secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+                ? service.secondPaymentRemarks
+                : "On Particular Date",
+              thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+                ? service.thirdPaymentRemarks
+                : "On Particular Date",
+              fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+                ? service.fourthPaymentRemarks
+                : "On Particular Date",
+            };
+          });
+
           updatedLeadData = {
             ...updatedLeadData,
-          services:booking.services,
+          services:servicestoSend,
           caCase:booking.caCase,
           caCommission:booking.caCommission,
           caEmail:booking.caEmail,
@@ -822,15 +841,36 @@ let isValid = true;
 
       if (activeStep === 4) {
         try {
+          const servicestoSend = leadData.services.map((service , index) => ({
+            ...service,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            secondPaymentRemarks:
+              service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks
+                : service.secondPaymentRemarks,
+            thirdPaymentRemarks:
+              service.thirdPaymentRemarks === "On Particular Date"
+                ? thirdTempRemarks
+                : service.thirdPaymentRemarks,
+            fourthPaymentRemarks:
+              service.fourthPaymentRemarks === "On Particular Date"
+                ? fourthTempRemarks
+                : service.fourthPaymentRemarks,
+            isoTypeObject : isoType
+          }));
+          const tempLeadData = {
+            ...leadData,
+            services:servicestoSend
+          }
         //   const response = await axios.post(
         //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
         //     leadData
         //   );
         
           const response = await axios.post(
-            `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, leadData
+            `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, tempLeadData
           );
-          console.log(response.data);
+         
           Swal.fire({
             icon: "success",
             title: "Booking Submitted",
@@ -3227,11 +3267,11 @@ let isValid = true;
                                             </b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-9 p-0">
+                                        {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
                                           </div>
-                                        </div>
+                                        </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
