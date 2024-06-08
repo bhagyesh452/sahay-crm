@@ -1068,6 +1068,23 @@ export default function EditableMoreBooking({
       Swal.fire("Request Failed!","Failed to Request Admin","error");
     }
   }else if(activeStep === 4 && isAdmin){
+    const servicestoSend = leadData.services.map((service , index) => ({
+      ...service,
+      serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+      secondPaymentRemarks:
+        service.secondPaymentRemarks === "On Particular Date"
+          ? secondTempRemarks
+          : service.secondPaymentRemarks,
+      thirdPaymentRemarks:
+        service.thirdPaymentRemarks === "On Particular Date"
+          ? thirdTempRemarks
+          : service.thirdPaymentRemarks,
+      fourthPaymentRemarks:
+        service.fourthPaymentRemarks === "On Particular Date"
+          ? fourthTempRemarks
+          : service.fourthPaymentRemarks,
+      isoTypeObject : isoType
+    }));
     const generatedTotalAmount = leadData.services.reduce(
       (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
       0
@@ -1077,7 +1094,7 @@ export default function EditableMoreBooking({
         ? acc + parseInt(curr.totalPaymentWOGST)
         : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
     }, 0);
-    const dataToSend = {...leadData,generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
+    const dataToSend = {...leadData,generatedTotalAmount : generatedTotalAmount , services:servicestoSend  , generatedReceivedAmount:generatedReceivedAmount  ,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
       .reduce(
         (total, service) =>
           service.paymentTerms ===
