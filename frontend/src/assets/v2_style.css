@@ -202,6 +202,10 @@
 {
     color: #fff;
 }
+.clr-bg-ff8800
+{
+  background-color: #ff8800;
+}
 .clr-bg-1ac9bd
 {
   background-color: #1ac9bd;
@@ -233,6 +237,10 @@
 .clr-bg-fff536 {
     background-color: #e5da06;
 }
+.clr-bg-light-ff8800
+{
+  background-color: #ff880024;
+}
 .clr-bg-light-1ac9bd
 {
   background-color: #1ac9bd24;
@@ -247,7 +255,7 @@
 }
 .clr-bg-light-1cba19
 {
-  background-color:#1cba1924;
+  background-color:#6df06a24;
 }
 .clr-bg-light-e65b5b
 {
@@ -264,6 +272,7 @@
 .clr-bg-light-fff536 {
   background-color: #fff53636;
 }
+
 .bdr-l-clr-1ac9bd
 {
   border-color:  #1ac9bd !important;
@@ -294,6 +303,10 @@
 }
 .bdr-l-clr-fff536 {
   border-color: #ede105  !important;
+}
+.bdr-l-clr-ff8800
+{
+    border-color: #ff8800 !important;
 }
 .dash-sales-report-chart
 {
@@ -511,6 +524,7 @@ table.table.top_5_table {
     border-radius: 8px;
     background: #eee;
     overflow: hidden;
+    min-width: 408px;
 }
 .top_5_table tbody tr
 {
@@ -551,6 +565,29 @@ table.table.top_5_table tbody tr:hover
     line-height: 25px;
     text-align: center;
     border-radius: 100px;
+}
+.call-d-card
+{
+    border-radius: 5px;
+}
+.call-d-card-head
+{
+    font-size: 16px;
+    padding: 6px 8px;
+}
+.call-d-card-body
+{
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #727272;
+}
+.timer-I
+{
+    line-height: 0px;
+    margin-right: 3px;
+    font-size: 13px;
+    color: #666666;
 }
 @media only screen and (max-width: 1350px) and (min-width: 1200px){
     .dsrd-mini-card-name {
