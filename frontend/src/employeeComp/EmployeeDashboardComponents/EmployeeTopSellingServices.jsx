@@ -89,18 +89,18 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
                         Top Selling Services
                     </h2>
                     <div className="dash-select-filter">
-            <select class="form-select form-select-sm my-filter-select"
-              aria-label=".form-select-sm example"
-              value={selectedMonthOption}
-              onChange={(e)=>{
-                setSelectedMonthOption(e.target.value)
-              }}
-            >
-              <option value="Today">Today</option>
-              <option value="This Month">This Month</option>
-              <option value="Last Month">Last Month</option>
-            </select>
-          </div>
+                      <select class="form-select form-select-sm my-filter-select"
+                        aria-label=".form-select-sm example"
+                        value={selectedMonthOption}
+                        onChange={(e)=>{
+                          setSelectedMonthOption(e.target.value)
+                        }}
+                      >
+                        <option value="Today">Today</option>
+                        <option value="This Month">This Month</option>
+                        <option value="Last Month">Last Month</option>
+                      </select>
+                    </div>
                 </div>
                 <div className="dash-card-body">
                     <div className="top-selling-s">
