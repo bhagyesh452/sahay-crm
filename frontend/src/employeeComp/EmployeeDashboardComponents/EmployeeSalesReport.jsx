@@ -159,32 +159,92 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           condition = (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
           break;
         case 'Last Month':
-          condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+          condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (new Date(mainBooking.bookingDate).getFullYear() === today.getFullYear())
           break;
         case 'This Month':
-          condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
+          condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) && (new Date(mainBooking.bookingDate).getFullYear() === today.getFullYear())
           break;
         default:
           break;
       }
-      if (condition &&( mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
 
         if (mainBooking.bdeName === mainBooking.bdmName) {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.map(serv => {
-            expanse = serv.expanse ? expanse + serv.expanse : expanse;
-          })
+            // console.log(serv.expanse , bdeName ,"this is services");
+            let expanseDate = null
+            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+            expanseDate.setHours(0, 0, 0, 0);
+            if (serv.expanse) {
+              let expanseCondition = false;
+              switch (Filterby) {
+                case 'Today':
+                  expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                case 'This Month':
+                  expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                default:
+                  break;
+              }
+              expanse = expanseCondition ? expanse + serv.expanse : expanse;
+            }
+          });
         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
           mainBooking.services.map(serv => {
-            expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-          })
+            // console.log(serv.expanse , bdeName ,"this is services");
+            let expanseDate = null
+            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+            expanseDate.setHours(0, 0, 0, 0);
+            if (serv.expanse) {
+              let expanseCondition = false;
+              switch (Filterby) {
+                case 'Today':
+                  expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                case 'This Month':
+                  expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                default:
+                  break;
+              }
+              expanse = expanseCondition ? expanse + serv.expanse/2 : expanse;
+            }
+          });
         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
           if (mainBooking.bdeName === data.ename) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
             mainBooking.services.map(serv => {
-              expanse = serv.expanse ? expanse + serv.expanse : expanse;
-            })
+              // console.log(serv.expanse , bdeName ,"this is services");
+              let expanseDate = null
+              expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+              expanseDate.setHours(0, 0, 0, 0);
+              if (serv.expanse) {
+                let expanseCondition = false;
+                switch (Filterby) {
+                  case 'Today':
+                    expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                    break;
+                  case 'Last Month':
+                    expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                    break;
+                  case 'This Month':
+                    expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                    break;
+                  default:
+                    break;
+                }
+                expanse = expanseCondition ? expanse + serv.expanse : expanse;
+              }
+            });
           }
         }
       } else if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
@@ -237,20 +297,80 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
           if (moreObject.bdeName === moreObject.bdmName) {
             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-            moreObject.services.map(serv => {
-              expanse = serv.expanse ? expanse + serv.expanse : expanse;
-            })
+               moreObject.services.map(serv => {
+            // console.log(serv.expanse , bdeName ,"this is services");
+            let expanseDate = null
+            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+            expanseDate.setHours(0, 0, 0, 0);
+            if (serv.expanse) {
+              let expanseCondition = false;
+              switch (Filterby) {
+                case 'Today':
+                  expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                case 'This Month':
+                  expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                default:
+                  break;
+              }
+              expanse = expanseCondition ? expanse + serv.expanse : expanse;
+            }
+          });
           } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-            moreObject.services.map(serv => {
-              expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
-            })
+               moreObject.services.map(serv => {
+            // console.log(serv.expanse , bdeName ,"this is services");
+            let expanseDate = null
+            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+            expanseDate.setHours(0, 0, 0, 0);
+            if (serv.expanse) {
+              let expanseCondition = false;
+              switch (Filterby) {
+                case 'Today':
+                  expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                case 'This Month':
+                  expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                default:
+                  break;
+              }
+              expanse = expanseCondition ? expanse + serv.expanse : expanse;
+            }
+          });
           } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
             if (moreObject.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-              moreObject.services.map(serv => {
-                expanse = serv.expanse ? expanse + serv.expanse : expanse;
-              })
+                  moreObject.services.map(serv => {
+            // console.log(serv.expanse , bdeName ,"this is services");
+            let expanseDate = null
+            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+            expanseDate.setHours(0, 0, 0, 0);
+            if (serv.expanse) {
+              let expanseCondition = false;
+              switch (Filterby) {
+                case 'Today':
+                  expanseCondition = (expanseDate.toLocaleDateString() === today.toLocaleDateString())
+                  break;
+                case 'Last Month':
+                  expanseCondition = (expanseDate.getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                case 'This Month':
+                  expanseCondition = (expanseDate.getMonth() === today.getMonth()) && (expanseDate.getFullYear() === today.getFullYear())
+                  break;
+                default:
+                  break;
+              }
+              expanse = expanseCondition ? expanse + serv.expanse : expanse;
+            }
+          });
             }
           }
 
@@ -315,7 +435,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         default:
           break;
       }
-      if (condition &&( mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
 
         if (mainBooking.bdeName === mainBooking.bdmName) {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
@@ -335,7 +455,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             })
           }
         }
-      } 
+      }
       mainBooking.moreBookings.map((moreObject) => {
         let condition = false;
         switch (Filterby) {
@@ -372,12 +492,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             }
           }
 
-        } 
+        }
       })
 
 
     })
-    return achievedAmount  - expanse;
+    return achievedAmount - expanse;
   };
   const functionCalculateLastMonthRevenue = () => {
     let achievedAmount = 0;
@@ -772,7 +892,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
     return amount;
   };
-  const improvement = Filterby === "Today" ?  Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateYesterdayRevenue() / functionGetAmount() * 100))   : Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
+  const improvement = Filterby === "Today" ? Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateYesterdayRevenue() / functionGetAmount() * 100)) : Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100) - (functionCalculateLastMonthRevenue() / functionGetAmount() * 100));
 
   //-------------function for projection chart----------------------------------
   const [selectedMonthOption, setSelectedMonthOption] = useState("This Month");
@@ -1016,7 +1136,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         const index = xLabels.indexOf(dateStr);
 
         if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdeName === data.ename)) {
-          const serviceObject = mainBooking.services.filter(service=> service.serviceName === rmObject.serviceName)[0];
+          const serviceObject = mainBooking.services.filter(service => service.serviceName === rmObject.serviceName)[0];
           if (mainBooking.bdeName === mainBooking.bdmName) {
             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
             tempAchievedData[index] += parseInt(payment);
@@ -1076,9 +1196,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           const paymentDate = new Date(rmObject.paymentDate);
           const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
           const index = xLabels.indexOf(dateStr);
-  
+
           if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdeName === data.ename)) {
-            const serviceObject = moreObject.services.filter(service =>  service.serviceName === rmObject.serviceName)[0];
+            const serviceObject = moreObject.services.filter(service => service.serviceName === rmObject.serviceName)[0];
             if (moreObject.bdeName === moreObject.bdmName) {
               const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
               tempAchievedData[index] += parseInt(payment);
@@ -1090,10 +1210,10 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
                 tempAchievedData[index] += parseInt(payment);
               }
-  
+
             }
           }
-  
+
         })
       })
 
@@ -1106,7 +1226,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     normalized.setHours(0, 0, 0, 0);
     return normalized;
   };
- 
+
   //console.log(xLabels)
   useEffect(() => {
     const labels = generateDatesTillToday(selectedMonthOption);
@@ -1117,7 +1237,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     const today = normalizeDate(new Date());
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-  
+
     if (selectedMonthOption === 'This Week') {
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - today.getDay() + 1);
@@ -1125,7 +1245,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
       filteredData = followData.filter((obj) => {
         const paymentDate = normalizeDate(new Date(obj.estPaymentDate));
-     
+
         return paymentDate >= startOfWeek && paymentDate <= today && obj.caseType !== 'Recieved';
       });
     } else if (selectedMonthOption === 'This Month') {
@@ -1149,11 +1269,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     setNewFollowData(filteredData);
 
     const data = getProjectionData(filteredData, labels);
-  
+
     setProjectionData(data);
 
   }, [selectedMonthOption, followData, redesignedData]);
-console.log(achievedData, 'at this time')
+  console.log(achievedData, 'at this time')
 
 
   return (
@@ -1347,7 +1467,7 @@ console.log(achievedData, 'at this time')
                     },
                   }]}
                   yAxis={[{
-                   data: yLabels,
+                    data: yLabels,
                     axisLine: {
                       stroke: '#eee !important', // Color for the y-axis line
                     },
