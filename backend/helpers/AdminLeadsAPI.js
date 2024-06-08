@@ -52,6 +52,14 @@ router.post("/exportLeads/", async (req, res) => {
       "Remarks",
     ]);
 
+    function formatDateFinal(timestamp) {
+      const date = new Date(timestamp);
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+  }
+
     // Push each lead as a row into the csvData array
     leads.forEach((lead, index) => {
       const rowData = [
@@ -59,10 +67,10 @@ router.post("/exportLeads/", async (req, res) => {
         lead["Company Name"],
         lead["Company Number"],
         lead["Company Email"],
-        lead["Company Incorporation Date  "],
+        formatDateFinal(lead["Company Incorporation Date  "]),
         lead["City"],
         lead["State"],
-        `"${lead["Company Address"]}"`,
+        lead["Company Address"],
         lead["Director Name(First)"],
         lead["Director Number(First)"],
         lead["Director Email(First)"],
@@ -72,7 +80,8 @@ router.post("/exportLeads/", async (req, res) => {
         lead["Director Name(Third)"],
         lead["Director Number(Third)"],
         lead["Director Email(Third)"],
-        lead["AssignDate"],
+        lead["ename"],
+        formatDateFinal(lead["AssignDate"]),
         lead["Status"],
         `"${lead["Remarks"]}"`,
       ];

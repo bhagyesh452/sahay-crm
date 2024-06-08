@@ -1,4 +1,4 @@
-import React, {useRef,useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -61,7 +61,7 @@ export default function RedesignedForm({
   bdmName
 }) {
   const [totalServices, setTotalServices] = useState(1);
-  const [notAccess , setNotAccess] = useState(isBdm ? true : false);
+  const [notAccess, setNotAccess] = useState(isBdm ? true : false);
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -72,7 +72,7 @@ export default function RedesignedForm({
     incoDate: companysInco ? companysInco : "",
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
-    bdmName:  bdmName ? bdmName : "",
+    bdmName: bdmName ? bdmName : "",
     bdmType: "",
     otherBdmName: "",
     bdmEmail: "",
@@ -102,11 +102,11 @@ export default function RedesignedForm({
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
-    serviceID : '',
-    type:"IAF",
-    IAFtype1:"ISO 9001",
-    IAFtype2:"3 YR - IAF",
-    Nontype: "ISO 9001"
+    serviceID: '',
+    type: "",
+    IAFtype1: "",
+    IAFtype2: "",
+    Nontype: ""
   }
   const [isoType, setIsoType] = useState([]);
 
@@ -134,7 +134,7 @@ export default function RedesignedForm({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  const [fetchBDE , setFetchBDE] = useState(false);
+  const [fetchBDE, setFetchBDE] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -168,7 +168,7 @@ export default function RedesignedForm({
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
-          
+
         }));
         setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {
@@ -183,15 +183,15 @@ export default function RedesignedForm({
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step3Status === true && Step4Status === false) {
-        
+
         setSelectedValues(newLeadData.bookingSource);
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
         const servicestoSend = data.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
-        setIsoType(service.isoTypeObject);
-        
+          setIsoType(service.isoTypeObject);
+
           return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -206,8 +206,8 @@ export default function RedesignedForm({
               : "On Particular Date",
           };
         });
-        
-        
+
+
 
 
 
@@ -221,12 +221,12 @@ export default function RedesignedForm({
           caEmail: data.caEmail,
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      }      
+      }
       else if (Step4Status === true && Step5Status === false) {
         const servicestoSend = data.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
-        setIsoType(service.isoTypeObject);
-        
+          setIsoType(service.isoTypeObject);
+
           return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -245,7 +245,7 @@ export default function RedesignedForm({
         setActiveStep(4);
         setLeadData((prevState) => ({
           ...prevState,
-          services:servicestoSend,
+          services: servicestoSend,
           totalAmount: data.totalAmount,
           pendingAmount: data.pendingAmount,
           receivedAmount: data.receivedAmount,
@@ -264,13 +264,13 @@ export default function RedesignedForm({
   };
 
   useEffect(() => {
-    if(fetchBDE && unames.length!==0){
+    if (fetchBDE && unames.length !== 0) {
       const foundUser = unames.find((item) => item.ename === employeeName);
-      const foundBDM = unames.find((item)=>item.ename === bdmName)
+      const foundBDM = unames.find((item) => item.ename === bdmName)
       console.log("isme ghusa")
       setLeadData({
         ...leadData,
-        bdeEmail: foundUser ? foundUser.email : "", 
+        bdeEmail: foundUser ? foundUser.email : "",
         bdmEmail: foundBDM ? foundBDM.email : "",
         bdmName: bdmName && bdmName
         // Check if foundUser exists before accessing email
@@ -278,7 +278,7 @@ export default function RedesignedForm({
       setFetchBDE(false)
     }
   }, [fetchBDE])
-  
+
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -485,26 +485,26 @@ export default function RedesignedForm({
   //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
   //   setActiveStep(5);
   // }
-//  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
-const defaults = {
-  disableForReducedMotion: true,
-};
+  //  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
+  const defaults = {
+    disableForReducedMotion: true,
+  };
 
-function confettiExplosion(origin) {
-  fire(0.25, { spread: 400, startVelocity: 55, origin });
-  fire(0.2, { spread: 400, origin });
-  fire(0.85, { spread: 400, decay: 0.91, origin });
-  fire(0.9, { spread: 400, startVelocity: 25, decay: 0.92, origin });
-  fire(0.9, { spread: 400, startVelocity: 45, origin });
-}
+  function confettiExplosion(origin) {
+    fire(0.25, { spread: 400, startVelocity: 55, origin });
+    fire(0.2, { spread: 400, origin });
+    fire(0.85, { spread: 400, decay: 0.91, origin });
+    fire(0.9, { spread: 400, startVelocity: 25, decay: 0.92, origin });
+    fire(0.9, { spread: 400, startVelocity: 45, origin });
+  }
 
-function fire(particleRatio, opts) {
-  confetti(
-    Object.assign({}, defaults, opts, {
-      particleCount: Math.floor(200 * particleRatio),
-    })
-  );
-}
+  function fire(particleRatio, opts) {
+    confetti(
+      Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(200 * particleRatio),
+      })
+    );
+  }
 
 
   const soundRef = useRef(null); // useRef for optional sound element
@@ -537,7 +537,7 @@ function fire(particleRatio, opts) {
 
   const buttonRef = useRef(null);
 
-// -------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------
   useEffect(() => {
     fetchData();
 
@@ -602,9 +602,9 @@ function fire(particleRatio, opts) {
   };
 
   function formatDate(inputDate) {
-    console.log("here is the gadbad" , inputDate)
+    console.log("here is the gadbad", inputDate)
     const date = new Date(inputDate);
-  
+
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Adding 1 to month because it's zero-based
     const day = String(date.getUTCDate()).padStart(2, "0");
@@ -618,13 +618,13 @@ function fire(particleRatio, opts) {
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
@@ -640,7 +640,7 @@ function fire(particleRatio, opts) {
   const handleComplete = async () => {
     try {
       const formData = new FormData();
-    
+
 
       const isEmptyOrNull = (value) => {
         return value === "" || value === null || value === 0;
@@ -648,9 +648,9 @@ function fire(particleRatio, opts) {
 
       // Prepare the data to send to the backend
       let dataToSend = {};
-   
+
       if (activeStep === 0) {
-        console.log("Active step here:" , activeStep)
+        console.log("Active step here:", activeStep)
         if (
           isEmptyOrNull(leadData["Company Email"]) ||
           isEmptyOrNull(leadData["Company Name"]) ||
@@ -663,7 +663,7 @@ function fire(particleRatio, opts) {
             icon: "warning",
           });
         } else {
-          console.log("Active step here:" , activeStep)
+          console.log("Active step here:", activeStep)
           dataToSend = {
             "Company Email": leadData["Company Email"],
             "Company Name": leadData["Company Name"],
@@ -734,50 +734,50 @@ function fire(particleRatio, opts) {
         }
       }
       if (activeStep === 2) {
-        if(!leadData.caCase){
-          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+        if (!leadData.caCase) {
+          Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
         let isValid = true;
-              for (let service of leadData.services) {
-        
-                const firstPayment = Number(service.firstPayment);
-                const secondPayment = Number(service.secondPayment);
-                const thirdPayment = Number(service.thirdPayment);
-                const fourthPayment = Number(service.fourthPayment);
-                if(service.secondPayment!==0 && service.secondPaymentRemarks === "" ){
-                  isValid = false;
-                  break;
-                }
-                if(service.thirdPayment!==0 && service.thirdPaymentRemarks === "" ){
-                  isValid = false;
-                  break;
-                }
-                if(service.fourthPayment!==0 && service.fourthPaymentRemarks === "" ){
-                  isValid = false;
-                  break;
-                }
-                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-                if (
-                  (service.paymentTerms !== "Full Advanced" &&
-                    (firstPayment < 0 ||
-                      secondPayment < 0 ||
-                      thirdPayment < 0 ||
-                      fourthPayment < 0 ||
-                      firstPayment + secondPayment + thirdPayment + fourthPayment !==
-                        Number(service.totalPaymentWGST))) ||
-                  service.serviceName === "" 
-                ) {
-                  isValid = false;
-                  break;
-                }
-              }
-               if (
-                !isValid
-                ) {
-                  Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
-                  return true;
-                } else {
+        for (let service of leadData.services) {
+
+          const firstPayment = Number(service.firstPayment);
+          const secondPayment = Number(service.secondPayment);
+          const thirdPayment = Number(service.thirdPayment);
+          const fourthPayment = Number(service.fourthPayment);
+          if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          if (service.thirdPayment !== 0 && service.thirdPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          if (service.fourthPayment !== 0 && service.fourthPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+          if (
+            (service.paymentTerms !== "Full Advanced" &&
+              (firstPayment < 0 ||
+                secondPayment < 0 ||
+                thirdPayment < 0 ||
+                fourthPayment < 0 ||
+                firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                Number(service.totalPaymentWGST))) ||
+            service.serviceName === ""
+          ) {
+            isValid = false;
+            break;
+          }
+        }
+        if (
+          !isValid
+        ) {
+          Swal.fire("Incorrect Details", 'Please Enter the Details Properly', 'warning');
+          return true;
+        } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
@@ -795,13 +795,13 @@ function fire(particleRatio, opts) {
           const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
               ? acc + parseInt(curr.totalPaymentWOGST)
-              : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
+              : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
 
           // console.log("This are generated total and received amount:-",generatedTotalAmount , generatedReceivedAmount)
-          const servicestoSend = leadData.services.map((service , index) => ({
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -814,7 +814,7 @@ function fire(particleRatio, opts) {
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
 
           dataToSend = {
@@ -827,10 +827,10 @@ function fire(particleRatio, opts) {
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
-            generatedReceivedAmount:generatedReceivedAmount,
-            generatedTotalAmount:generatedTotalAmount
+            generatedReceivedAmount: generatedReceivedAmount,
+            generatedTotalAmount: generatedTotalAmount
           };
-       
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step3`,
@@ -906,10 +906,10 @@ function fire(particleRatio, opts) {
 
       if (activeStep === 4) {
         try {
-         
-          const servicestoSend = leadData.services.map((service , index) => ({
+
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -922,11 +922,11 @@ function fire(particleRatio, opts) {
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
           const tempLeadData = {
             ...leadData,
-            services:servicestoSend
+            services: servicestoSend
           }
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
@@ -962,7 +962,7 @@ function fire(particleRatio, opts) {
         setDataStatus("Matured");
 
         return true;
-      } 
+      }
       // let dataToSend = {
       //   ...leadData,
       //   Step1Status: true,
@@ -1122,11 +1122,12 @@ function fire(particleRatio, opts) {
         console.log("Draft reset successfully");
         setCompleted({});
         setActiveStep(0);
+        setIsoType([])
         setSelectedValues("");
         setNotAccess(isBdm ? true : false)
         setLeadData(defaultLeadData);
         // Optionally, you can perform further actions upon successful deletion
-       
+
       } else {
         console.error("Error resetting draft:", response.statusText);
       }
@@ -1166,17 +1167,17 @@ function fire(particleRatio, opts) {
                           : service
                       ),
                     }));
-                    if(e.target.value === "ISO Certificate"){
-                      if(!isoType.some(obj => obj.serviceID === i)){
+                    if (e.target.value === "ISO Certificate") {
+                      if (!isoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = isoType;
                         defaultArray.push({
                           ...defaultISOtypes,
-                          serviceID : i
+                          serviceID: i
                         });
                         setIsoType(defaultArray)
                       }
                     }
-                   
+
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1190,141 +1191,144 @@ function fire(particleRatio, opts) {
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-               {leadData.services[i].serviceName.includes("ISO Certificate")  && <> <select className="form-select mt-1 ml-1" style={{width:'120px'}} value={isoType.find(obj =>obj.serviceID === i ).type}  onChange={(e) => {
-                       const currentObject = isoType.find(obj => obj.serviceID === i);
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                       if(currentObject){
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject =  {
-                          ...currentObject,
-                          type:e.target.value
-                        }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                       }
-                      }}>
-                  <option value="IAF">IAF</option>
-                  <option value="Non IAF">Non IAF</option>
-                </select>
-                {/* IAF ISO LIST */}
-                {isoType.find(obj=>obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj=>obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e)=>{
-                   const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                   if(currentObject){
+                  if (currentObject) {
                     const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                    const newCurrentObject =  {
+                    const newCurrentObject = {
                       ...currentObject,
-                      IAFtype1:e.target.value
+                      type: e.target.value
                     }
                     remainingObject.push(newCurrentObject);
                     setIsoType(remainingObject);
-                   }
+                  }
                 }}>
-                  <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
                 </select>
-                {/* IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).IAFtype2} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                  {/* IAF ISO LIST */}
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     IAFtype2:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                  <option value="1 YR - IAF"> 1 YR - IAF</option>
-                  <option value="3 YR - IAF">3 YR - IAF</option>
-                  <option value="1 YR (3 YR FORMAT)- IAF">1 YR (3 YR FORMAT)- IAF</option>
-                </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).Nontype} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        IAFtype1: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
+                    }
+                  }}>
+                     <option value="" selected disabled>Select ISO Type</option>
+                    <option value="ISO 9001">ISO 9001</option>
+                    <option value="ISO 14001">ISO 14001</option>
+                    <option value="ISO 45001">ISO 45001</option>
+                    <option value="ISO 22000">ISO 22000</option>
+                    <option value="ISO 27001">ISO 27001</option>
+                    <option value="ISO 13485">ISO 13485</option>
+                    <option value="ISO 20000-1">ISO 20000-1</option>
+                    <option value="ISO 50001">ISO 50001</option>
+                  </select>
+                    {/* IAF ISO TYPES */}
+                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     Nontype:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
-                  <option value="ISO 21001">ISO 21001</option>
-                  <option value="gmp">GMP</option>
-                  <option value="gap">GAP</option>
-                  <option value="fda">FDA</option>
-                  <option value="halal">HALAL</option>
-                  <option value="organic">ORGANIC</option>
-                  <option value="fssc">FSSC</option>
-                  <option value="fsc">FSC</option>
-                  <option value="bifma">BIFMA</option>
-                  <option value="ce">CE</option>
-                  <option value="haccp">HACCP</option>
-                  <option value="ghp">GHP</option>
-                  <option value="aiota">AIOTA</option>
-                  <option value="green_guard">GREEN GUARD</option>
-                  <option value="sedex">SEDEX</option>
-                  <option value="kosher">KOSHER</option>
-                  <option value="who_gmp">WHO-GMP</option>
-                  <option value="brc">BRC</option>
-                  <option value="vegan">VEGAN</option>
-                  <option value="sa8000">SA 8000</option>
-                  <option value="ccc">CCC</option>
-                  <option value="cmmi3">CMMI LEVEL 3</option>
-                  <option value="go_green">GO GREEN</option>
-                  <option value="pcmm5">PCMM 5</option>
-                  <option value="rios">RIOS</option>
-                  <option value="rohs">ROHS</option>
-                </select> </>}
-                {/* NON-IAF ISO TYPES */}
-                </> }
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          IAFtype2: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                     <option value="" selected disabled>Select ISO Duration</option>
+                      <option value="1 YR"> 1 YR</option>
+                      <option value="3 YR">3 YR</option>
+                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          Nontype: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                        <option value="" selected disabled>Select ISO Type</option>
+                      <option value="ISO 9001">ISO 9001</option>
+                      <option value="ISO 14001">ISO 14001</option>
+                      <option value="ISO 45001">ISO 45001</option>
+                      <option value="ISO 22000">ISO 22000</option>
+                      <option value="ISO 27001">ISO 27001</option>
+                      <option value="ISO 13485">ISO 13485</option>
+                      <option value="ISO 20000-1">ISO 20000-1</option>
+                      <option value="ISO 50001">ISO 50001</option>
+                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="GMP">GMP</option>
+                      <option value="GAP">GAP</option>
+                      <option value="FDA">FDA</option>
+                      <option value="HALAL">HALAL</option>
+                      <option value="ORGANIC">ORGANIC</option>
+                      <option value="FSSC">FSSC</option>
+                      <option value="FSC">FSC</option>
+                      <option value="BIFMA">BIFMA</option>
+                      <option value="CE">CE</option>
+                      <option value="HACCP">HACCP</option>
+                      <option value="GHP">GHP</option>
+                      <option value="AIOTA">AIOTA</option>
+                      <option value="GREEN GUARD">GREEN GUARD</option>
+                      <option value="SEDEX">SEDEX</option>
+                      <option value="KOSHER">KOSHER</option>
+                      <option value="WHO-GMP">WHO-GMP</option>
+                      <option value="BRC">BRC</option>
+                      <option value="VEGAN">VEGAN</option>
+                      <option value="SA 8000">SA 8000</option>
+                      <option value="CCC">CCC</option>
+                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                      <option value="GO GREEN">GO GREEN</option>
+                      <option value="PCMM 5">PCMM 5</option>
+                      <option value="RIOS">RIOS</option>
+                      <option value="ROHS">ROHS</option>
+                    </select> </>}
+                  {/* NON-IAF ISO TYPES */}
+                </>}
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (
-                <div className="ml-2">
-                  <div class="form-check m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="dsc"
-                      value="0"
-                      checked={leadData.services[i].withDSC}
-                      onChange={(e) => {
-                        setLeadData((prevState) => ({
-                          ...prevState,
-                          services: prevState.services.map((service, index) =>
-                            index === i
-                              ? { ...service, withDSC: !service.withDSC }
-                              : service
-                          ),
-                        }));
-                      }}
-                      disabled={completed[activeStep] === true}
-                    />
-                    <label class="form-check-label" for="dsc">
-                      WITH DSC
-                    </label>
+                  <div className="ml-2">
+                    <div class="form-check m-0">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dsc"
+                        value="0"
+                        checked={leadData.services[i].withDSC}
+                        onChange={(e) => {
+                          setLeadData((prevState) => ({
+                            ...prevState,
+                            services: prevState.services.map((service, index) =>
+                              index === i
+                                ? { ...service, withDSC: !service.withDSC }
+                                : service
+                            ),
+                          }));
+                        }}
+                        disabled={completed[activeStep] === true}
+                      />
+                      <label class="form-check-label" for="dsc">
+                        WITH DSC
+                      </label>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <hr className="mt-3 mb-3"></hr>
             <div className="row align-items-center mt-2">
@@ -1336,10 +1340,10 @@ function fire(particleRatio, opts) {
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
-                      onWheel={(e)=>{
-                      
+                      onWheel={(e) => {
+
                         document.activeElement.blur();
-                        
+
                       }}
                       className="form-control"
                       placeholder="Enter Amount"
@@ -1352,14 +1356,14 @@ function fire(particleRatio, opts) {
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  totalPaymentWOGST: newValue,
-                                  totalPaymentWGST:
-                                    service.withGST === true
-                                      ? Number(newValue) +
-                                        Number(newValue * 0.18)
-                                      : newValue,
-                                }
+                                ...service,
+                                totalPaymentWOGST: newValue,
+                                totalPaymentWGST:
+                                  service.withGST === true
+                                    ? Number(newValue) +
+                                    Number(newValue * 0.18)
+                                    : newValue,
+                              }
                               : service
                           ),
                         }));
@@ -1385,52 +1389,52 @@ function fire(particleRatio, opts) {
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  withGST: !service.withGST,
-                                  totalPaymentWGST:
-                                    service.withGST === false
-                                      ? Number(
-                                          service.totalPaymentWOGST * 0.18
-                                        ) + Number(service.totalPaymentWOGST)
-                                      : service.totalPaymentWOGST,
-                                  secondPayment:
-                                    service.paymentCount === 2 &&
+                                ...service,
+                                withGST: !service.withGST,
+                                totalPaymentWGST:
+                                  service.withGST === false
+                                    ? Number(
+                                      service.totalPaymentWOGST * 0.18
+                                    ) + Number(service.totalPaymentWOGST)
+                                    : service.totalPaymentWOGST,
+                                secondPayment:
+                                  service.paymentCount === 2 &&
                                     service.secondPayment !== 0
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.secondPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.secondPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.secondPayment,
-                                  thirdPayment:
-                                    service.paymentCount === 3
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.thirdPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.thirdPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.thirdPayment,
-                                  fourthPayment:
-                                    service.paymentCount === 4
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.fourthPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.fourthPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.fourthPayment,
-                                }
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.secondPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.secondPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.secondPayment,
+                                thirdPayment:
+                                  service.paymentCount === 3
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.thirdPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.thirdPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.thirdPayment,
+                                fourthPayment:
+                                  service.paymentCount === 4
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.fourthPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.fourthPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.fourthPayment,
+                              }
                               : service
                           ),
                         }));
@@ -1455,7 +1459,7 @@ function fire(particleRatio, opts) {
                           parseInt(leadData.services[i].thirdPayment) +
                           parseInt(leadData.services[i].fourthPayment) !==
                           parseInt(leadData.services[i].totalPaymentWGST) &&
-                        leadData.services[i].paymentTerms !== "Full Advanced"
+                          leadData.services[i].paymentTerms !== "Full Advanced"
                           ? "form-control error-border"
                           : "form-control"
                       }
@@ -1495,9 +1499,9 @@ function fire(particleRatio, opts) {
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                            }
                             : service
                         ),
                       }));
@@ -1519,10 +1523,10 @@ function fire(particleRatio, opts) {
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                                paymentCount: 2,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                              paymentCount: 2,
+                            }
                             : service
                         ),
                       }));
@@ -1544,9 +1548,9 @@ function fire(particleRatio, opts) {
                         <div class="input-group mb-2">
                           <input
                             type="number"
-                            onWheel={(e)=>{                      
-                        document.activeElement.blur();                        
-                      }}
+                            onWheel={(e) => {
+                              document.activeElement.blur();
+                            }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1557,14 +1561,14 @@ function fire(particleRatio, opts) {
                                   (service, index) =>
                                     index === i
                                       ? {
-                                          ...service,
-                                          firstPayment: e.target.value,
-                                          secondPayment:
-                                            service.paymentCount === 2
-                                              ? service.totalPaymentWGST -
-                                                e.target.value
-                                              : service.secondPayment,
-                                        }
+                                        ...service,
+                                        firstPayment: e.target.value,
+                                        secondPayment:
+                                          service.paymentCount === 2
+                                            ? service.totalPaymentWGST -
+                                            e.target.value
+                                            : service.secondPayment,
+                                      }
                                       : service
                                 ),
                               }));
@@ -1594,15 +1598,15 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPayment: e.target.value,
-                                            thirdPayment:
-                                              service.paymentCount === 3
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  e.target.value
-                                                : service.thirdPayment,
-                                          }
+                                          ...service,
+                                          secondPayment: e.target.value,
+                                          thirdPayment:
+                                            service.paymentCount === 3
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              e.target.value
+                                              : service.thirdPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1623,10 +1627,10 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          secondPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1635,7 +1639,7 @@ function fire(particleRatio, opts) {
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1651,7 +1655,7 @@ function fire(particleRatio, opts) {
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1666,18 +1670,18 @@ function fire(particleRatio, opts) {
                           </div>
                           {leadData.services[i].secondPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={secondTempRemarks}
-                                onChange={(e) =>
-                                  setSecondTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={secondTempRemarks}
+                                  onChange={(e) =>
+                                    setSecondTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1698,16 +1702,16 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPayment: e.target.value,
-                                            fourthPayment:
-                                              service.paymentCount === 4
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  service.secondPayment -
-                                                  e.target.value
-                                                : service.fourthPayment,
-                                          }
+                                          ...service,
+                                          thirdPayment: e.target.value,
+                                          fourthPayment:
+                                            service.paymentCount === 4
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              service.secondPayment -
+                                              e.target.value
+                                              : service.fourthPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1728,9 +1732,9 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPaymentRemarks: e.target.value,
-                                          }
+                                          ...service,
+                                          thirdPaymentRemarks: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1739,7 +1743,7 @@ function fire(particleRatio, opts) {
                               name="optional-remarks"
                               id="optional-remarks-3"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1755,7 +1759,7 @@ function fire(particleRatio, opts) {
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1770,18 +1774,18 @@ function fire(particleRatio, opts) {
                           </div>
                           {leadData.services[i].thirdPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={thirdTempRemarks}
-                                onChange={(e) =>
-                                  setThirdTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={thirdTempRemarks}
+                                  onChange={(e) =>
+                                    setThirdTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1802,9 +1806,9 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPayment: e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPayment: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1825,10 +1829,10 @@ function fire(particleRatio, opts) {
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1837,7 +1841,7 @@ function fire(particleRatio, opts) {
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                                <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1853,7 +1857,7 @@ function fire(particleRatio, opts) {
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1868,18 +1872,18 @@ function fire(particleRatio, opts) {
                           </div>
                           {leadData.services[i].fourthPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={fourthTempRemarks}
-                                onChange={(e) =>
-                                  setFourthTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={fourthTempRemarks}
+                                  onChange={(e) =>
+                                    setFourthTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1896,13 +1900,13 @@ function fire(particleRatio, opts) {
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount + 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount + 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1921,13 +1925,13 @@ function fire(particleRatio, opts) {
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount - 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount - 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1959,9 +1963,9 @@ function fire(particleRatio, opts) {
                       services: prevState.services.map((service, index) =>
                         index === i
                           ? {
-                              ...service,
-                              paymentRemarks: e.target.value,
-                            }
+                            ...service,
+                            paymentRemarks: e.target.value,
+                          }
                           : service
                       ),
                     }));
@@ -1983,12 +1987,12 @@ function fire(particleRatio, opts) {
   const handleInputChange = (value, id) => {
     if (id === "bdmName") {
       const foundUser = unames.find((item) => item.ename === value);
-    
+
       setNotAccess(foundUser.designation === "Sales Manager" ? true : false);
       setLeadData({
         ...leadData,
         bdmName: value,
-        bdmEmail: foundUser ? foundUser.email : "", 
+        bdmEmail: foundUser ? foundUser.email : "",
         // Check if foundUser exists before accessing email
       });
     } else {
@@ -1997,19 +2001,19 @@ function fire(particleRatio, opts) {
   };
   useEffect(() => {
 
-  if(unames.length!==0 && leadData.bdeEmail === ""){
-    const foundUser = unames.find((item) => item.ename === employeeName);
-    const foundBDM = unames.find((item) => item.ename === bdmName);
+    if (unames.length !== 0 && leadData.bdeEmail === "") {
+      const foundUser = unames.find((item) => item.ename === employeeName);
+      const foundBDM = unames.find((item) => item.ename === bdmName);
 
-    setLeadData({
-      ...leadData,
-      bdmName : bdmName ? bdmName : "",
-      bdeEmail:foundUser ? foundUser.email : "",
-      bdmEmail: foundBDM ? foundBDM.email : "" 
-    })
-  }
+      setLeadData({
+        ...leadData,
+        bdmName: bdmName ? bdmName : "",
+        bdeEmail: foundUser ? foundUser.email : "",
+        bdmEmail: foundBDM ? foundBDM.email : ""
+      })
+    }
   }, [unames])
-  
+
 
   const handleRemoveFile = () => {
     setLeadData({ ...leadData, paymentReceipt: null });
@@ -2664,7 +2668,7 @@ function fire(particleRatio, opts) {
                                             type="radio"
                                             name="ca-case"
                                             onChange={(e) => {
-                                              Swal.fire({text:"Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues."})
+                                              Swal.fire({ text: "Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues." })
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
                                                 caCase: e.target.value, // Set the value based on the selected radio button
@@ -2696,11 +2700,11 @@ function fire(particleRatio, opts) {
                                         </label>
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2805,11 +2809,11 @@ function fire(particleRatio, opts) {
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2838,26 +2842,26 @@ function fire(particleRatio, opts) {
                                       <div class="input-group">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    )
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  )
                                                   : total +
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2877,26 +2881,26 @@ function fire(particleRatio, opts) {
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total + 0
                                                   : total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    ) -
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  ) -
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -3310,28 +3314,28 @@ function fire(particleRatio, opts) {
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
                                           </div>
                                         </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
                                         "Start-Up India Certificate" && (
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>With DSC</b>
+                                          <div className="row m-0">
+                                            <div className="col-sm-3 p-0">
+                                              <div className="form-label-name">
+                                                <b>With DSC</b>
+                                              </div>
+                                            </div>
+                                            <div className="col-sm-9 p-0">
+                                              <div className="form-label-data">
+                                                {obj.withDSC === true
+                                                  ? "Yes"
+                                                  : "No"}
+                                              </div>
                                             </div>
                                           </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {obj.withDSC === true
-                                                ? "Yes"
-                                                : "No"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
+                                        )}
                                       {/* total amount */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3343,8 +3347,8 @@ function fire(particleRatio, opts) {
                                           <div className="form-label-data">
                                             {obj.totalPaymentWGST !== undefined
                                               ? Number(
-                                                  obj.totalPaymentWGST
-                                                ).toFixed(2)
+                                                obj.totalPaymentWGST
+                                              ).toFixed(2)
                                               : "0"}
                                           </div>
                                         </div>
@@ -3472,50 +3476,50 @@ function fire(particleRatio, opts) {
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
                                             {leadData.caCase
-                                              }
+                                            }
                                           </div>
                                         </div>
                                       </div>
-                                      {leadData.caCase === "Yes" &&  <>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Number</b>
+                                      {leadData.caCase === "Yes" && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caNumber
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Email</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caEmail
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Commission</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCommission
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
                                       </>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3583,11 +3587,11 @@ function fire(particleRatio, opts) {
                                                 return curr.paymentTerms ===
                                                   "Full Advanced"
                                                   ? acc +
-                                                      Number(
-                                                        curr.totalPaymentWGST
-                                                      )
+                                                  Number(
+                                                    curr.totalPaymentWGST
+                                                  )
                                                   : acc +
-                                                      Number(curr.firstPayment);
+                                                  Number(curr.firstPayment);
                                               }, 0)
                                               .toFixed(2)}
                                           </div>
@@ -3608,15 +3612,15 @@ function fire(particleRatio, opts) {
                                               .reduce(
                                                 (total, service) =>
                                                   service.paymentTerms ===
-                                                  "Full Advanced"
+                                                    "Full Advanced"
                                                     ? total + 0
                                                     : total +
-                                                      Number(
-                                                        service.totalPaymentWGST
-                                                      ) -
-                                                      Number(
-                                                        service.firstPayment
-                                                      ),
+                                                    Number(
+                                                      service.totalPaymentWGST
+                                                    ) -
+                                                    Number(
+                                                      service.firstPayment
+                                                    ),
                                                 0
                                               )
                                               .toFixed(2)}
@@ -3638,12 +3642,12 @@ function fire(particleRatio, opts) {
                                             className="UploadDocPreview"
                                             onClick={() => {
                                               handleViewPdfReciepts(
-                                               ( leadData.paymentReceipt[0]
+                                                (leadData.paymentReceipt[0]
                                                   .filename
                                                   ? leadData.paymentReceipt[0]
-                                                      .filename
+                                                    .filename
                                                   : leadData.paymentReceipt[0]
-                                                      .name) , leadData["Company Name"]
+                                                    .name), leadData["Company Name"]
                                               );
                                             }}
                                           >
@@ -3750,7 +3754,7 @@ function fire(particleRatio, opts) {
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.filename , leadData["Company Name"]
+                                                      val.filename, leadData["Company Name"]
                                                     );
                                                   }}
                                                 >

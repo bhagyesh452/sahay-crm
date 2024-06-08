@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -73,7 +73,7 @@ export default function AddLeadForm({
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
     bdmType: "Close-by",
-    otherBdmName:'',
+    otherBdmName: '',
     bdmEmail: "",
     bookingDate: new Date().toString(),
     bookingSource: "",
@@ -101,11 +101,11 @@ export default function AddLeadForm({
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
-    serviceID : '',
-    type:"IAF",
-    IAFtype1:"ISO 9001",
-    IAFtype2:"3 YR - IAF",
-    Nontype: "ISO 9001"
+    serviceID: '',
+    type: "",
+    IAFtype1: "",
+    IAFtype2: "",
+    Nontype: ""
   }
   const [isoType, setIsoType] = useState([]);
   const fetchDataEmp = async () => {
@@ -139,9 +139,9 @@ export default function AddLeadForm({
       );
       const data = response.data[0] ? response.data[0] : response.data
       console.log("Fetched Data:", response.data);
-  
+
       let updatedLeadData = { ...leadData }; // Create a copy of existing leadData
-  
+
       // Set common properties from fetched data to leadData
       updatedLeadData = {
         ...updatedLeadData,
@@ -153,10 +153,10 @@ export default function AddLeadForm({
         gstNumber: data.gstNumber,
         bdeName: data.bdeName,
         bdeEmail: data.bdeEmail,
-        bookingDate:formatInputDate(new Date())
+        bookingDate: formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data
-      if (data.moreBookings ) {
+      if (data.moreBookings) {
         const booking = data.moreBookings;
         // Check the condition for setting additional leadData
         if (booking.Step2Status === true && booking.Step3Status === false) {
@@ -168,9 +168,9 @@ export default function AddLeadForm({
             bookingDate: booking.bookingDate,
             bookingSource: booking.bookingSource,
             otherBookingSource: booking.otherBookingSource,
-            services:booking.services.length !== 0 ? booking.services.length : [defaultService]
+            services: booking.services.length !== 0 ? booking.services.length : [defaultService]
           };
-  
+
           setActiveStep(2);
           setCompleted({ 0: true, 1: true });
           setSelectedValues(booking.bookingSource);
@@ -180,8 +180,8 @@ export default function AddLeadForm({
 
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
-          setIsoType(service.isoTypeObject);
-          
+            setIsoType(service.isoTypeObject);
+
             return {
               ...service,
               serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -198,36 +198,36 @@ export default function AddLeadForm({
           });
           updatedLeadData = {
             ...updatedLeadData,
-          services:servicestoSend,
-          caCase:booking.caCase,
-          caCommission:booking.caCommission,
-          caEmail:booking.caEmail,
-          caNumber:booking.caNumber,
-          bdmName: booking.bdmName,
-          otherBdmName: booking.otherBdmName,
-          bdmEmail: booking.bdmEmail,
-          bookingDate: booking.bookingDate,
-          bookingSource: booking.bookingSource,
-          otherBookingSource: booking.otherBookingSource,
-          generatedReceivedAmount:booking.generatedReceivedAmount,
-          generatedTotalAmount:booking.generatedTotalAmount
+            services: servicestoSend,
+            caCase: booking.caCase,
+            caCommission: booking.caCommission,
+            caEmail: booking.caEmail,
+            caNumber: booking.caNumber,
+            bdmName: booking.bdmName,
+            otherBdmName: booking.otherBdmName,
+            bdmEmail: booking.bdmEmail,
+            bookingDate: booking.bookingDate,
+            bookingSource: booking.bookingSource,
+            otherBookingSource: booking.otherBookingSource,
+            generatedReceivedAmount: booking.generatedReceivedAmount,
+            generatedTotalAmount: booking.generatedTotalAmount
           };
           setActiveStep(3);
-          setCompleted({ 0: true, 1: true , 2 : true });
+          setCompleted({ 0: true, 1: true, 2: true });
           setSelectedValues(booking.bookingSource);
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
           setfetchedService(true);
-        }else if (booking.Step4Status === true && booking.Step5Status === false) {
-          
-       
+        } else if (booking.Step4Status === true && booking.Step5Status === false) {
+
+
           const adminName = localStorage.getItem('adminName');
           const managerName = localStorage.getItem('dataManagerName');
           const mainAccess = (adminName || managerName) ? true : false;
 
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
-          setIsoType(service.isoTypeObject);
-          
+            setIsoType(service.isoTypeObject);
+
             return {
               ...service,
               serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -245,32 +245,32 @@ export default function AddLeadForm({
 
           updatedLeadData = {
             ...updatedLeadData,
-          services:servicestoSend,
-          caCase:booking.caCase,
-          caCommission:booking.caCommission,
-          caEmail:booking.caEmail,
-          caNumber:booking.caNumber,
-          bdmName: booking.bdmName,
-          otherBdmName: booking.otherBdmName,
-          bdmEmail: booking.bdmEmail,
-          bookingDate: booking.bookingDate,
-          bookingSource: booking.bookingSource,
-          otherBookingSource: booking.otherBookingSource,
-          totalAmount:booking.totalAmount,
-          receivedAmount:booking.receivedAmount,
-          pendingAmount:booking.pendingAmount,
-          paymentReceipt:booking.paymentReceipt,
-          paymentMethod:booking.paymentMethod,
-          extraNotes:booking.extraNotes,
-          otherDocs:booking.otherDocs,
-          isAdmin:mainAccess,
+            services: servicestoSend,
+            caCase: booking.caCase,
+            caCommission: booking.caCommission,
+            caEmail: booking.caEmail,
+            caNumber: booking.caNumber,
+            bdmName: booking.bdmName,
+            otherBdmName: booking.otherBdmName,
+            bdmEmail: booking.bdmEmail,
+            bookingDate: booking.bookingDate,
+            bookingSource: booking.bookingSource,
+            otherBookingSource: booking.otherBookingSource,
+            totalAmount: booking.totalAmount,
+            receivedAmount: booking.receivedAmount,
+            pendingAmount: booking.pendingAmount,
+            paymentReceipt: booking.paymentReceipt,
+            paymentMethod: booking.paymentMethod,
+            extraNotes: booking.extraNotes,
+            otherDocs: booking.otherDocs,
+            isAdmin: mainAccess,
           };
           setActiveStep(4);
-          setCompleted({ 0: true, 1: true , 2 : true , 3:true});
+          setCompleted({ 0: true, 1: true, 2: true, 3: true });
           setSelectedValues(booking.bookingSource);
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
           setfetchedService(true);
-        }else {
+        } else {
           setActiveStep(1);
           setCompleted({ 0: true });
         }
@@ -278,15 +278,15 @@ export default function AddLeadForm({
         setActiveStep(1);
         setCompleted({ 0: true });
       }
-  
+
       // Set the updated leadData
       setLeadData(updatedLeadData);
     } catch (error) {
       console.error("Data not Found", error);
     }
   };
-  
- 
+
+
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -508,7 +508,7 @@ export default function AddLeadForm({
       const newServices = Array.from({ length: totalServices }, () => ({
         ...defaultService,
       }));
-      console.log(fetchedService , newServices , totalServices , "This is elon musk");
+      console.log(fetchedService, newServices, totalServices, "This is elon musk");
       setLeadData((prevState) => ({
         ...prevState,
         services: !fetchedService ? newServices : leadData.services,
@@ -576,13 +576,13 @@ export default function AddLeadForm({
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
@@ -590,7 +590,7 @@ export default function AddLeadForm({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  
+
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -634,7 +634,7 @@ export default function AddLeadForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          
+
           handleNext();
           return true;
         }
@@ -659,7 +659,7 @@ export default function AddLeadForm({
             bdeName: leadData.bdeName,
             bdeEmail: leadData.bdeEmail,
             bdmName: leadData.bdmName,
-            otherBdmName:leadData.otherBdmName,
+            otherBdmName: leadData.otherBdmName,
             bdmType: leadData.bdmType,
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
@@ -677,43 +677,43 @@ export default function AddLeadForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-         fetchData();
+          fetchData();
           handleNext();
           return true;
         }
       }
       if (activeStep === 2) {
-        if(!leadData.caCase){
-          Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+        if (!leadData.caCase) {
+          Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
 
-let isValid = true;
-      for (let service of leadData.services) {
+        let isValid = true;
+        for (let service of leadData.services) {
 
-        const firstPayment = Number(service.firstPayment);
-        const secondPayment = Number(service.secondPayment);
-        const thirdPayment = Number(service.thirdPayment);
-        const fourthPayment = Number(service.fourthPayment);
-        console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-        if (
-          (service.paymentTerms !== "Full Advanced" &&
-            (firstPayment < 0 ||
-              secondPayment < 0 ||
-              thirdPayment < 0 ||
-              fourthPayment < 0 ||
-              firstPayment + secondPayment + thirdPayment + fourthPayment !==
+          const firstPayment = Number(service.firstPayment);
+          const secondPayment = Number(service.secondPayment);
+          const thirdPayment = Number(service.thirdPayment);
+          const fourthPayment = Number(service.fourthPayment);
+          console.log(firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST), "This is it")
+          if (
+            (service.paymentTerms !== "Full Advanced" &&
+              (firstPayment < 0 ||
+                secondPayment < 0 ||
+                thirdPayment < 0 ||
+                fourthPayment < 0 ||
+                firstPayment + secondPayment + thirdPayment + fourthPayment !==
                 Number(service.totalPaymentWGST))) ||
-          service.serviceName === "" 
-        ) {
-          isValid = false;
-          break;
+            service.serviceName === ""
+          ) {
+            isValid = false;
+            break;
+          }
         }
-      }
-       if (
-        !isValid
+        if (
+          !isValid
         ) {
-          Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
+          Swal.fire("Incorrect Details", 'Please Enter the Details Properly', 'warning');
           return true;
         } else {
           const totalAmount = leadData.services.reduce(
@@ -726,9 +726,9 @@ let isValid = true;
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
-          const servicestoSend = leadData.services.map((service , index) => ({
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -741,7 +741,7 @@ let isValid = true;
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
@@ -750,7 +750,7 @@ let isValid = true;
           const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
               ? acc + parseInt(curr.totalPaymentWOGST)
-              : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
+              : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
           setLeadData({
             ...leadData,
@@ -758,7 +758,7 @@ let isValid = true;
             generatedReceivedAmount: generatedReceivedAmount // Check if foundUser exists before accessing email
           });
 
-          
+
           dataToSend = {
             services: servicestoSend,
             numberOfServices: totalServices,
@@ -769,8 +769,8 @@ let isValid = true;
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
-            generatedReceivedAmount:generatedReceivedAmount,
-            generatedTotalAmount:generatedTotalAmount
+            generatedReceivedAmount: generatedReceivedAmount,
+            generatedTotalAmount: generatedTotalAmount
           };
           console.log("This is sending", dataToSend);
           try {
@@ -789,61 +789,61 @@ let isValid = true;
         }
       }
       if (activeStep === 3) {
-        if(!leadData.paymentMethod){
-          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+        if (!leadData.paymentMethod) {
+          Swal.fire("Incorrect Details", 'Please Enter Payment Method', 'warning');
           return true;
-        }            
-          const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
-            0
+        }
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + curr.totalPaymentWGST,
+          0
+        );
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + curr.totalPaymentWGST
+            : acc + curr.firstPayment;
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
+
+        const formData = new FormData();
+        formData.append("totalAmount", totalAmount);
+        formData.append("receivedAmount", receivedAmount);
+        formData.append("pendingAmount", pendingAmount);
+        formData.append("paymentMethod", leadData.paymentMethod);
+        formData.append("extraNotes", leadData.extraNotes);
+
+        // Append payment receipt files to formData
+
+        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+
+        // Append other documents files to formData
+        for (let i = 0; i < leadData.otherDocs.length; i++) {
+          formData.append("otherDocs", leadData.otherDocs[i]);
+        }
+        try {
+          console.log("Api is about to work")
+          for (const pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+          }
+          const response = await axios.post(
+            `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step4`,
+            formData
           );
-          const receivedAmount = leadData.services.reduce((acc, curr) => {
-            return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
-          }, 0);
-          const pendingAmount = totalAmount - receivedAmount;
+          // Handle successful upload
+          fetchData();
+          handleNext();
+          return true;
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
 
-          const formData = new FormData();
-          formData.append("totalAmount", totalAmount);
-          formData.append("receivedAmount", receivedAmount);
-          formData.append("pendingAmount", pendingAmount);
-          formData.append("paymentMethod", leadData.paymentMethod);
-          formData.append("extraNotes", leadData.extraNotes);
-
-          // Append payment receipt files to formData
-        
-            formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-          
-          // Append other documents files to formData
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-          try {
-            console.log("Api is about to work")
-            for (const pair of formData.entries()) {
-              console.log(pair[0], pair[1]);
-            }
-            const response = await axios.post(
-              `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step4`,
-              formData
-            );
-            // Handle successful upload
-           fetchData();
-            handleNext();
-            return true;
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-        
       }
 
       if (activeStep === 4) {
         try {
-          const servicestoSend = leadData.services.map((service , index) => ({
+          const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : "Non IAF " +  isoType.find(obj=>obj.serviceID === index).Nontype ) : service.serviceName,
+            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks
@@ -856,21 +856,21 @@ let isValid = true;
               service.fourthPaymentRemarks === "On Particular Date"
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject : isoType
+            isoTypeObject: isoType
           }));
           const tempLeadData = {
             ...leadData,
-            services:servicestoSend
+            services: servicestoSend
           }
-        //   const response = await axios.post(
-        //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
-        //     leadData
-        //   );
-        
+          //   const response = await axios.post(
+          //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
+          //     leadData
+          //   );
+
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, tempLeadData
           );
-         
+
           Swal.fire({
             icon: "success",
             title: "Booking Submitted",
@@ -892,7 +892,7 @@ let isValid = true;
         newaudio.play()
         setFormOpen(false);
         setDataStatus("Matured");
-      
+
         return true;
       }
       // let dataToSend = {
@@ -1053,6 +1053,8 @@ let isValid = true;
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
+        setIsoType([])
+        
         fetchData();
       } else {
         console.error("Error resetting draft:", response.statusText);
@@ -1093,17 +1095,17 @@ let isValid = true;
                           : service
                       ),
                     }));
-                    if(e.target.value === "ISO Certificate"){
-                      if(!isoType.some(obj => obj.serviceID === i)){
+                    if (e.target.value === "ISO Certificate") {
+                      if (!isoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = isoType;
                         defaultArray.push({
                           ...defaultISOtypes,
-                          serviceID : i
+                          serviceID: i
                         });
                         setIsoType(defaultArray)
                       }
                     }
-                   
+
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1117,141 +1119,144 @@ let isValid = true;
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-               {leadData.services[i].serviceName.includes("ISO Certificate")  && <> <select className="form-select mt-1 ml-1" style={{width:'120px'}} value={isoType.find(obj =>obj.serviceID === i ).type}  onChange={(e) => {
-                       const currentObject = isoType.find(obj => obj.serviceID === i);
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                       if(currentObject){
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject =  {
-                          ...currentObject,
-                          type:e.target.value
-                        }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                       }
-                      }}>
-                  <option value="IAF">IAF</option>
-                  <option value="Non IAF">Non IAF</option>
-                </select>
-                {/* IAF ISO LIST */}
-                {isoType.find(obj=>obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj=>obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e)=>{
-                   const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                   if(currentObject){
+                  if (currentObject) {
                     const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                    const newCurrentObject =  {
+                    const newCurrentObject = {
                       ...currentObject,
-                      IAFtype1:e.target.value
+                      type: e.target.value
                     }
                     remainingObject.push(newCurrentObject);
                     setIsoType(remainingObject);
-                   }
+                  }
                 }}>
-                  <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
                 </select>
-                {/* IAF ISO TYPES */}
-                <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).IAFtype2} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                  {/* IAF ISO LIST */}
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     IAFtype2:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                  <option value="1 YR - IAF"> 1 YR - IAF</option>
-                  <option value="3 YR - IAF">3 YR - IAF</option>
-                  <option value="1 YR (3 YR FORMAT)- IAF">1 YR (3 YR FORMAT)- IAF</option>
-                </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj=>obj.serviceID === i).Nontype} onChange={(e)=>{
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        IAFtype1: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
+                    }
+                  }}>
+                     <option value="" selected disabled>Select ISO Type</option>
+                    <option value="ISO 9001">ISO 9001</option>
+                    <option value="ISO 14001">ISO 14001</option>
+                    <option value="ISO 45001">ISO 45001</option>
+                    <option value="ISO 22000">ISO 22000</option>
+                    <option value="ISO 27001">ISO 27001</option>
+                    <option value="ISO 13485">ISO 13485</option>
+                    <option value="ISO 20000-1">ISO 20000-1</option>
+                    <option value="ISO 50001">ISO 50001</option>
+                  </select>
+                    {/* IAF ISO TYPES */}
+                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if(currentObject){
-                   const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                   const newCurrentObject =  {
-                     ...currentObject,
-                     Nontype:e.target.value
-                   }
-                   remainingObject.push(newCurrentObject);
-                   setIsoType(remainingObject);
-                  }
-                }}>
-                <option value="ISO 9001">ISO 9001</option>
-                  <option value="ISO 14001">ISO 14001</option>
-                  <option value="ISO 45001">ISO 45001</option>
-                  <option value="ISO 22000">ISO 22000</option>
-                  <option value="ISO 27001">ISO 27001</option>
-                  <option value="ISO 13485">ISO 13485</option>
-                  <option value="ISO 20000-1">ISO 20000-1</option>
-                  <option value="ISO 50001">ISO 50001</option>
-                  <option value="ISO 21001">ISO 21001</option>
-                  <option value="gmp">GMP</option>
-                  <option value="gap">GAP</option>
-                  <option value="fda">FDA</option>
-                  <option value="halal">HALAL</option>
-                  <option value="organic">ORGANIC</option>
-                  <option value="fssc">FSSC</option>
-                  <option value="fsc">FSC</option>
-                  <option value="bifma">BIFMA</option>
-                  <option value="ce">CE</option>
-                  <option value="haccp">HACCP</option>
-                  <option value="ghp">GHP</option>
-                  <option value="aiota">AIOTA</option>
-                  <option value="green_guard">GREEN GUARD</option>
-                  <option value="sedex">SEDEX</option>
-                  <option value="kosher">KOSHER</option>
-                  <option value="who_gmp">WHO-GMP</option>
-                  <option value="brc">BRC</option>
-                  <option value="vegan">VEGAN</option>
-                  <option value="sa8000">SA 8000</option>
-                  <option value="ccc">CCC</option>
-                  <option value="cmmi3">CMMI LEVEL 3</option>
-                  <option value="go_green">GO GREEN</option>
-                  <option value="pcmm5">PCMM 5</option>
-                  <option value="rios">RIOS</option>
-                  <option value="rohs">ROHS</option>
-                </select> </>}
-                {/* NON-IAF ISO TYPES */}
-                </> }
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          IAFtype2: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                      <option value="" selected disabled>Select ISO Duration</option>
+                      <option value="1 YR"> 1 YR</option>
+                      <option value="3 YR">3 YR</option>
+                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          Nontype: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                      <option value="" selected disabled>Select ISO Type</option>
+                      <option value="ISO 9001">ISO 9001</option>
+                      <option value="ISO 14001">ISO 14001</option>
+                      <option value="ISO 45001">ISO 45001</option>
+                      <option value="ISO 22000">ISO 22000</option>
+                      <option value="ISO 27001">ISO 27001</option>
+                      <option value="ISO 13485">ISO 13485</option>
+                      <option value="ISO 20000-1">ISO 20000-1</option>
+                      <option value="ISO 50001">ISO 50001</option>
+                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="GMP">GMP</option>
+                      <option value="GAP">GAP</option>
+                      <option value="FDA">FDA</option>
+                      <option value="HALAL">HALAL</option>
+                      <option value="ORGANIC">ORGANIC</option>
+                      <option value="FSSC">FSSC</option>
+                      <option value="FSC">FSC</option>
+                      <option value="BIFMA">BIFMA</option>
+                      <option value="CE">CE</option>
+                      <option value="HACCP">HACCP</option>
+                      <option value="GHP">GHP</option>
+                      <option value="AIOTA">AIOTA</option>
+                      <option value="GREEN GUARD">GREEN GUARD</option>
+                      <option value="SEDEX">SEDEX</option>
+                      <option value="KOSHER">KOSHER</option>
+                      <option value="WHO-GMP">WHO-GMP</option>
+                      <option value="BRC">BRC</option>
+                      <option value="VEGAN">VEGAN</option>
+                      <option value="SA 8000">SA 8000</option>
+                      <option value="CCC">CCC</option>
+                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                      <option value="GO GREEN">GO GREEN</option>
+                      <option value="PCMM 5">PCMM 5</option>
+                      <option value="RIOS">RIOS</option>
+                      <option value="ROHS">ROHS</option>
+                    </select> </>}
+                  {/* NON-IAF ISO TYPES */}
+                </>}
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (
-                <div className="ml-2">
-                  <div class="form-check m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="dsc"
-                      value="0"
-                      checked={leadData.services[i].withDSC}
-                      onChange={(e) => {
-                        setLeadData((prevState) => ({
-                          ...prevState,
-                          services: prevState.services.map((service, index) =>
-                            index === i
-                              ? { ...service, withDSC: !service.withDSC }
-                              : service
-                          ),
-                        }));
-                      }}
-                      readOnly={completed[activeStep] === true}
-                    />
-                    <label class="form-check-label" for="dsc">
-                      WITH DSC
-                    </label>
+                  <div className="ml-2">
+                    <div class="form-check m-0">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dsc"
+                        value="0"
+                        checked={leadData.services[i].withDSC}
+                        onChange={(e) => {
+                          setLeadData((prevState) => ({
+                            ...prevState,
+                            services: prevState.services.map((service, index) =>
+                              index === i
+                                ? { ...service, withDSC: !service.withDSC }
+                                : service
+                            ),
+                          }));
+                        }}
+                        readOnly={completed[activeStep] === true}
+                      />
+                      <label class="form-check-label" for="dsc">
+                        WITH DSC
+                      </label>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <hr className="mt-3 mb-3"></hr>
             <div className="row align-items-center mt-2">
@@ -1263,10 +1268,10 @@ let isValid = true;
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
-                      onWheel={(e)=>{
-                      
+                      onWheel={(e) => {
+
                         document.activeElement.blur();
-                        
+
                       }}
                       className="form-control"
                       placeholder="Enter Amount"
@@ -1279,14 +1284,14 @@ let isValid = true;
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  totalPaymentWOGST: newValue,
-                                  totalPaymentWGST:
-                                    service.withGST === true
-                                      ? Number(newValue) +
-                                        Number(newValue * 0.18)
-                                      : newValue,
-                                }
+                                ...service,
+                                totalPaymentWOGST: newValue,
+                                totalPaymentWGST:
+                                  service.withGST === true
+                                    ? Number(newValue) +
+                                    Number(newValue * 0.18)
+                                    : newValue,
+                              }
                               : service
                           ),
                         }));
@@ -1311,52 +1316,52 @@ let isValid = true;
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  withGST: !service.withGST,
-                                  totalPaymentWGST:
-                                    service.withGST === false
-                                      ? Number(
-                                          service.totalPaymentWOGST * 0.18
-                                        ) + Number(service.totalPaymentWOGST)
-                                      : service.totalPaymentWOGST,
-                                  secondPayment:
-                                    service.paymentCount === 2 &&
+                                ...service,
+                                withGST: !service.withGST,
+                                totalPaymentWGST:
+                                  service.withGST === false
+                                    ? Number(
+                                      service.totalPaymentWOGST * 0.18
+                                    ) + Number(service.totalPaymentWOGST)
+                                    : service.totalPaymentWOGST,
+                                secondPayment:
+                                  service.paymentCount === 2 &&
                                     service.secondPayment !== 0
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.secondPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.secondPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.secondPayment,
-                                  thirdPayment:
-                                    service.paymentCount === 3
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.thirdPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.thirdPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.thirdPayment,
-                                  fourthPayment:
-                                    service.paymentCount === 4
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.fourthPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.fourthPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.fourthPayment,
-                                }
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.secondPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.secondPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.secondPayment,
+                                thirdPayment:
+                                  service.paymentCount === 3
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.thirdPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.thirdPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.thirdPayment,
+                                fourthPayment:
+                                  service.paymentCount === 4
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.fourthPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.fourthPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.fourthPayment,
+                              }
                               : service
                           ),
                         }));
@@ -1381,7 +1386,7 @@ let isValid = true;
                           parseInt(leadData.services[i].thirdPayment) +
                           parseInt(leadData.services[i].fourthPayment) !==
                           parseInt(leadData.services[i].totalPaymentWGST) &&
-                        leadData.services[i].paymentTerms !== "Full Advanced"
+                          leadData.services[i].paymentTerms !== "Full Advanced"
                           ? "form-control error-border"
                           : "form-control"
                       }
@@ -1421,9 +1426,9 @@ let isValid = true;
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                            }
                             : service
                         ),
                       }));
@@ -1445,10 +1450,10 @@ let isValid = true;
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                                paymentCount: 2,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                              paymentCount: 2,
+                            }
                             : service
                         ),
                       }));
@@ -1470,11 +1475,11 @@ let isValid = true;
                         <div class="input-group mb-2">
                           <input
                             type="number"
-                            onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                            onWheel={(e) => {
+
+                              document.activeElement.blur();
+
+                            }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1485,14 +1490,14 @@ let isValid = true;
                                   (service, index) =>
                                     index === i
                                       ? {
-                                          ...service,
-                                          firstPayment: e.target.value,
-                                          secondPayment:
-                                            service.paymentCount === 2
-                                              ? service.totalPaymentWGST -
-                                                e.target.value
-                                              : service.secondPayment,
-                                        }
+                                        ...service,
+                                        firstPayment: e.target.value,
+                                        secondPayment:
+                                          service.paymentCount === 2
+                                            ? service.totalPaymentWGST -
+                                            e.target.value
+                                            : service.secondPayment,
+                                      }
                                       : service
                                 ),
                               }));
@@ -1522,15 +1527,15 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPayment: e.target.value,
-                                            thirdPayment:
-                                              service.paymentCount === 3
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  e.target.value
-                                                : service.thirdPayment,
-                                          }
+                                          ...service,
+                                          secondPayment: e.target.value,
+                                          thirdPayment:
+                                            service.paymentCount === 3
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              e.target.value
+                                              : service.thirdPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1551,10 +1556,10 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          secondPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1563,7 +1568,7 @@ let isValid = true;
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1579,7 +1584,7 @@ let isValid = true;
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1594,19 +1599,19 @@ let isValid = true;
                           </div>
                           {leadData.services[i].secondPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                              style={{textTransform:"uppercase"}}
-                                value={secondTempRemarks}
-                                onChange={(e) =>
-                                  setSecondTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  style={{ textTransform: "uppercase" }}
+                                  value={secondTempRemarks}
+                                  onChange={(e) =>
+                                    setSecondTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1627,16 +1632,16 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPayment: e.target.value,
-                                            fourthPayment:
-                                              service.paymentCount === 4
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  service.secondPayment -
-                                                  e.target.value
-                                                : service.fourthPayment,
-                                          }
+                                          ...service,
+                                          thirdPayment: e.target.value,
+                                          fourthPayment:
+                                            service.paymentCount === 4
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              service.secondPayment -
+                                              e.target.value
+                                              : service.fourthPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1657,9 +1662,9 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPaymentRemarks: e.target.value,
-                                          }
+                                          ...service,
+                                          thirdPaymentRemarks: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1668,8 +1673,8 @@ let isValid = true;
                               name="optional-remarks"
                               id="optional-remarks-3"
                             >
-                             
-                             <option value="" selected disabled>
+
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1685,7 +1690,7 @@ let isValid = true;
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1700,18 +1705,18 @@ let isValid = true;
                           </div>
                           {leadData.services[i].thirdPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={thirdTempRemarks}
-                                onChange={(e) =>
-                                  setThirdTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={thirdTempRemarks}
+                                  onChange={(e) =>
+                                    setThirdTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1732,9 +1737,9 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPayment: e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPayment: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1755,10 +1760,10 @@ let isValid = true;
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1767,7 +1772,7 @@ let isValid = true;
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1783,7 +1788,7 @@ let isValid = true;
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1798,18 +1803,18 @@ let isValid = true;
                           </div>
                           {leadData.services[i].fourthPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={fourthTempRemarks}
-                                onChange={(e) =>
-                                  setFourthTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={fourthTempRemarks}
+                                  onChange={(e) =>
+                                    setFourthTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1826,13 +1831,13 @@ let isValid = true;
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount + 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount + 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1851,13 +1856,13 @@ let isValid = true;
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount - 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount - 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1889,9 +1894,9 @@ let isValid = true;
                       services: prevState.services.map((service, index) =>
                         index === i
                           ? {
-                              ...service,
-                              paymentRemarks: e.target.value,
-                            }
+                            ...service,
+                            paymentRemarks: e.target.value,
+                          }
                           : service
                       ),
                     }));
@@ -1941,7 +1946,7 @@ let isValid = true;
   const defaults = {
     disableForReducedMotion: true,
   };
-  
+
   function confettiExplosion(origin) {
     fire(0.25, { spread: 400, startVelocity: 55, origin });
     fire(0.2, { spread: 400, origin });
@@ -1949,7 +1954,7 @@ let isValid = true;
     fire(0.9, { spread: 400, startVelocity: 25, decay: 0.92, origin });
     fire(0.9, { spread: 400, startVelocity: 45, origin });
   }
-  
+
   function fire(particleRatio, opts) {
     confetti(
       Object.assign({}, defaults, opts, {
@@ -1957,37 +1962,37 @@ let isValid = true;
       })
     );
   }
-  
-  
-    const soundRef = useRef(null); // useRef for optional sound element
-  
-    useEffect(() => {
-      const sound = soundRef.current;
-      if (sound) {
-        // Preload the sound only once on component mount
-        sound.load();
-      }
-    }, [soundRef]); // Dependency array for sound preloading
-  
-    const handleClick = () => {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const center = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      };
-      const origin = {
-        x: center.x / window.innerWidth,
-        y: center.y / window.innerHeight,
-      };
-  
-      if (soundRef.current) {
-        soundRef.current.currentTime = 0;
-        soundRef.current.play();
-      }
-      confettiExplosion(origin);
+
+
+  const soundRef = useRef(null); // useRef for optional sound element
+
+  useEffect(() => {
+    const sound = soundRef.current;
+    if (sound) {
+      // Preload the sound only once on component mount
+      sound.load();
+    }
+  }, [soundRef]); // Dependency array for sound preloading
+
+  const handleClick = () => {
+    const rect = buttonRef.current.getBoundingClientRect();
+    const center = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
     };
-  
-    const buttonRef = useRef(null);
+    const origin = {
+      x: center.x / window.innerWidth,
+      y: center.y / window.innerHeight,
+    };
+
+    if (soundRef.current) {
+      soundRef.current.currentTime = 0;
+      soundRef.current.play();
+    }
+    confettiExplosion(origin);
+  };
+
+  const buttonRef = useRef(null);
 
   return (
     <div>
@@ -2102,7 +2107,7 @@ let isValid = true;
                                       </label>
                                       <input
                                         type="text" // Use type="text" instead of type="number"
-                                     
+
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
@@ -2302,66 +2307,66 @@ let isValid = true;
                                       </select>
                                     </div>
                                   </div>
-                                  {leadData.bdmName === "other" && 
-                                  <>
-                                  <div className="row">
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherBdmName">
-                                        Other BDM Name:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter Other BDM Name"
-                                        id="otherBdmName"
-                                        value={leadData.otherBdmName}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "otherBdmName"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherEmail">
-                                        BDM Email:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM Email"
-                                        id="otherBdmEmail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
+                                  {leadData.bdmName === "other" &&
+                                    <>
+                                      <div className="row">
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherBdmName">
+                                              Other BDM Name:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter Other BDM Name"
+                                              id="otherBdmName"
+                                              value={leadData.otherBdmName}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "otherBdmName"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherEmail">
+                                              BDM Email:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter BDM Email"
+                                              id="otherBdmEmail"
+                                              value={leadData.bdmEmail}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "bdmEmail"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
 
-                                  </div>
-                                  
+                                      </div>
 
-                                  </>}
-                                  
-                                  
+
+                                    </>}
+
+
                                   {leadData.bdmName !== "other" && <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="BDMemail">
@@ -2655,11 +2660,11 @@ let isValid = true;
                                         </label>
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2764,11 +2769,11 @@ let isValid = true;
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2797,26 +2802,26 @@ let isValid = true;
                                       <div class="input-group">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    )
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  )
                                                   : total +
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2836,26 +2841,26 @@ let isValid = true;
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total + 0
                                                   : total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    ) -
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  ) -
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2875,7 +2880,7 @@ let isValid = true;
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                      
+
                                       </label>
                                       <input
                                         type="file"
@@ -2954,7 +2959,7 @@ let isValid = true;
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                    
+
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2979,7 +2984,7 @@ let isValid = true;
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                       
+
                                       </label>
                                       <input
                                         type="file"
@@ -3045,7 +3050,7 @@ let isValid = true;
                         <>
                           <div className="step-3">
                             <h2 className="text-center">
-                              Step:5 - Booking Preview 
+                              Step:5 - Booking Preview
                             </h2>
                             <div className="steprForm-inner">
                               <div className="stepOnePreview">
@@ -3269,28 +3274,28 @@ let isValid = true;
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj=>obj.serviceID === index).type + " " +  (isoType.find(obj=>obj.serviceID === index).type === "IAF" ? isoType.find(obj=>obj.serviceID === index).IAFtype1 + " " + isoType.find(obj=>obj.serviceID === index).IAFtype2 : isoType.find(obj=>obj.serviceID === index).Nontype) :obj.serviceName } 
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
                                           </div>
                                         </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
                                         "Start-Up India Certificate" && (
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>With DSC</b>
+                                          <div className="row m-0">
+                                            <div className="col-sm-3 p-0">
+                                              <div className="form-label-name">
+                                                <b>With DSC</b>
+                                              </div>
+                                            </div>
+                                            <div className="col-sm-9 p-0">
+                                              <div className="form-label-data">
+                                                {obj.withDSC === true
+                                                  ? "Yes"
+                                                  : "No"}
+                                              </div>
                                             </div>
                                           </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {obj.withDSC === true
-                                                ? "Yes"
-                                                : "No"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
+                                        )}
                                       {/* total amount */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3300,10 +3305,10 @@ let isValid = true;
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                          ₹{" "}{obj.totalPaymentWGST !== undefined
+                                            ₹{" "}{obj.totalPaymentWGST !== undefined
                                               ? parseInt(
-                                                  obj.totalPaymentWGST
-                                                ).toLocaleString()
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()
                                               : "0"}
                                           </div>
                                         </div>
@@ -3344,7 +3349,7 @@ let isValid = true;
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                              ₹{" "}{parseInt(
+                                                ₹{" "}{parseInt(
                                                   obj.firstPayment
                                                 ).toLocaleString()}
                                               </div>
@@ -3357,8 +3362,8 @@ let isValid = true;
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                              ₹{" "}{parseInt(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
                                                 -{" "}
@@ -3380,7 +3385,7 @@ let isValid = true;
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data"  style={{textTransform:"uppercase"}}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
@@ -3404,8 +3409,8 @@ let isValid = true;
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                ₹{" "}{parseInt(
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
@@ -3422,7 +3427,7 @@ let isValid = true;
                                           )}
                                         </>
                                       )}
-                                       <div className="row m-0">
+                                      <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3431,50 +3436,50 @@ let isValid = true;
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
                                             {obj.caCase
-                                              }
+                                            }
                                           </div>
                                         </div>
                                       </div>
-                                      {obj.caCase &&  <>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Number</b>
+                                      {obj.caCase && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caNumber
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caNumber
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Email</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caEmail
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caEmail
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Commission</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caCommission
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caCommission
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
                                       </>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3542,11 +3547,11 @@ let isValid = true;
                                                 return curr.paymentTerms ===
                                                   "Full Advanced"
                                                   ? acc +
-                                                      Number(
-                                                        curr.totalPaymentWGST
-                                                      )
+                                                  Number(
+                                                    curr.totalPaymentWGST
+                                                  )
                                                   : acc +
-                                                      Number(curr.firstPayment);
+                                                  Number(curr.firstPayment);
                                               }, 0)
                                               .toFixed(2)}
                                           </div>
@@ -3564,27 +3569,27 @@ let isValid = true;
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {leadData.services
-                                            .reduce(
-                                              (total, service) =>
-                                                service.paymentTerms ===
-                                                "Full Advanced"
-                                                  ? total + 0
-                                                  : total +
+                                              .reduce(
+                                                (total, service) =>
+                                                  service.paymentTerms ===
+                                                    "Full Advanced"
+                                                    ? total + 0
+                                                    : total +
                                                     Number(
                                                       service.totalPaymentWGST
                                                     ) -
                                                     Number(
                                                       service.firstPayment
                                                     ),
-                                              0
-                                            )
-                                            .toFixed(2)}
+                                                0
+                                              )
+                                              .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  {leadData.paymentReceipt.length!==0 && <div className="row m-0">
+                                  {leadData.paymentReceipt.length !== 0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Upload Payment Receipt</b>
@@ -3596,12 +3601,12 @@ let isValid = true;
                                           className="UploadDocPreview"
                                           onClick={() => {
                                             handleViewPdfReciepts(
-                                             ( leadData.paymentReceipt[0]
+                                              (leadData.paymentReceipt[0]
                                                 .filename
                                                 ? leadData.paymentReceipt[0]
-                                                    .filename
+                                                  .filename
                                                 : leadData.paymentReceipt[0]
-                                                    .name) , leadData["Company Name"]
+                                                  .name), leadData["Company Name"]
                                             );
                                           }}
                                         >
@@ -3691,7 +3696,7 @@ let isValid = true;
                                       </div>
                                     </div>
                                   </div>
-                                {leadData.otherDocs.length!==0 &&  <div className="row m-0">
+                                  {leadData.otherDocs.length !== 0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Additional Docs</b>
@@ -3706,7 +3711,7 @@ let isValid = true;
                                                 className="UploadDocPreview"
                                                 onClick={() => {
                                                   handleViewPdOtherDocs(
-                                                    val.filename , leadData["Company Name"]
+                                                    val.filename, leadData["Company Name"]
                                                   );
                                                 }}
                                               >
@@ -3736,7 +3741,7 @@ let isValid = true;
                                                 className="UploadDocPreview"
                                                 onClick={() => {
                                                   handleViewPdOtherDocs(
-                                                    val.name , leadData["Company Name"]
+                                                    val.name, leadData["Company Name"]
                                                   );
                                                 }}
                                               >
@@ -3826,7 +3831,7 @@ let isValid = true;
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                         disabled={!completed[activeStep]}
+                          disabled={!completed[activeStep]}
                         >
                           Next
                         </Button>

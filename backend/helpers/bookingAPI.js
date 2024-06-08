@@ -2315,12 +2315,15 @@ router.post(
       
           //   console.log("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-          const pagelength = 
-          (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
-            ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
-            : (newData.services.length === 1 && mailName === "Shubhi Banthiya") 
-              ? 2 
-              : 3;
+          const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
+          ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
+          : ((newData.services.length === 1 && mailName === "Shubhi Banthiya")) 
+            ? 2 
+            : 3;
+          const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
+            return service.serviceName !== "Start-Up India Certificate"
+          })) ? 2 : tempPageLength;
+          
           const options = {
             format: "A4", // Set the page format to A4 size
             orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -4098,12 +4101,17 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-    const pagelength = 
-    (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
-      ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
-      : (newData.services.length === 1 && mailName === "Shubhi Banthiya") 
-        ? 2 
-        : 3;
+    const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
+    ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
+    : ((newData.services.length === 1 && mailName === "Shubhi Banthiya")) 
+      ? 2 
+      : 3;
+    const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
+      return service.serviceName !== "Start-Up India Certificate"
+    })) ? 2 : tempPageLength;
+    
+
+    
   
 
     const options = {
