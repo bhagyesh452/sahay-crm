@@ -1,10 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react';
+import axios from "axios";
 
 
-function EmployeePerformance({redesignedData , data}) {
+function EmployeePerformance({ data}) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
+    const [redesignedData, setRedesignedData] = useState([])
+
     const [bookingStartDate, setBookingStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     const [bookingEndDate, setBookingEndDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
     const [loading, setLoading] = useState(false)
@@ -46,17 +49,68 @@ function EmployeePerformance({redesignedData , data}) {
 
     useEffect(() => {
      fetchEmployeeInfo()
-    }, [])
-    
+     fetchRedesignedBookings()
+    }, [])  
+    const [sortedEmployeeData, setSortedEmployeeData] = useState([]);
+
     useEffect(() => {
         if (redesignedData.length !== 0 && employeeData.length !== 0) {
-            setEmployeeData(employeeData.sort((a, b) => functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename)));
+            const sortedEmployeeData = employeeData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename));
+            
+            setSortedEmployeeData(sortedEmployeeData);
         }
-
     }, [redesignedData])
 
 
+    //  -----------------------------------   callizer api functions  -----------------------------------------------------------
+
+    const [callData, setCallData] = useState([]);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchCallData = async () => {
+            const apiKey = 'PMAT-01HYZDXSJJ4H2QWV4QKEF926VJ';
+            const url = 'https://api.callizer.com/v1/calls'; 
+
+            try {
+                const response = await axios.get(url, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 200) {
+                    setCallData(response.data);
+                } else {
+                    setError(`Error: ${response.status}`);
+                }
+            } catch (err) {
+                setError(`Error: ${err.message}`);
+            }
+        };
+        fetchCallData();
+    }, []);
+
+    const fetchRedesignedBookings = async () => {
+        try {
+          const response = await axios.get(
+            `${secretKey}/bookings/redesigned-final-leadData`
+          );
+          const bookingsData = response.data;
+    
+    
+          setRedesignedData(bookingsData);
+          
+        } catch (error) {
+          console.log("Error Fetching Bookings Data", error);
+        }
+      };
+
+    
+
     // ------------------------------------  function for Calculation  -----------------------------------------
+ 
 
     const functionCalculateOnlyAchieved = (bdeName) => {
         let achievedAmount = 0;
@@ -64,7 +118,7 @@ function EmployeePerformance({redesignedData , data}) {
         let expanse = 0;
 
 
-
+        console.log("this is redesigned data" , redesignedData)
         redesignedData.map((mainBooking) => {
             const bookingDate = new Date(mainBooking.bookingDate);
             const startDate = new Date(bookingStartDate);
@@ -226,8 +280,9 @@ function EmployeePerformance({redesignedData , data}) {
             })
         })
 
-
-        return achievedAmount + Math.floor(remainingAmount) - expanse;
+        const amount = achievedAmount + Math.floor(remainingAmount) - expanse;
+        console.log(bdeName + "ka " + amount);
+        return amount
     }
     const functionGetOnlyAmount = (object) => {
         if (object.targetDetails.length !== 0) {
@@ -242,7 +297,7 @@ function EmployeePerformance({redesignedData , data}) {
             return 0;
         }
     };
-
+// console.log(data.ename , employeeData)
   return (
     <div>
         <div className="dash-card" style={{minHeight:'299px'}}>
@@ -261,37 +316,43 @@ function EmployeePerformance({redesignedData , data}) {
                               <th>Achievement Ratio</th>
                             </tr>
                           </thead>
-                         {employeeData.length!==0 && <tbody>
-
-                            <tr className="clr-bg-light-1cba19">
+                         {sortedEmployeeData.length!==0 && <tbody>
+                            <tr className={sortedEmployeeData[0].ename === data.ename ? "clr-bg-light-1cba19 myself " : "clr-bg-light-1cba19 " }  >
                               <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
-                              <td>{employeeData[0].ename === data.ename ? "You" : employeeData[0].ename }</td>
-                              <td>{employeeData[0].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(employeeData[0].ename) / functionGetOnlyAmount(employeeData[0])) * 100).toFixed(2)} %</td>
+                              <td>{sortedEmployeeData[0].ename === data.ename ? "You" : sortedEmployeeData[0].ename }</td>
+                              <td>{sortedEmployeeData[0].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[0].ename) / functionGetOnlyAmount(sortedEmployeeData[0])) * 100).toFixed(2)} %</td>
                             </tr>
-                            <tr className="clr-bg-light-ffb900">
+                            <tr className={sortedEmployeeData[1].ename === data.ename ? "clr-bg-light-ffb900 myself " : "clr-bg-light-ffb900 " }  >
+                          
                               <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
-                              <td>{employeeData[1].ename === data.ename ? "You" : employeeData[1].ename}</td>
-                              <td>{employeeData[1].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(employeeData[1].ename) / functionGetOnlyAmount(employeeData[1])) * 100).toFixed(2)} %</td>
+                              <td>{sortedEmployeeData[1].ename === data.ename ? "You" : sortedEmployeeData[1].ename}</td>
+                              <td>{sortedEmployeeData[1].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[1].ename) / functionGetOnlyAmount(sortedEmployeeData[1])) * 100).toFixed(2)} %</td>
                             </tr>
-                            <tr className="clr-bg-light-00d19d">
+                            <tr className={sortedEmployeeData[2].ename === data.ename ? "clr-bg-light-00d19d myself " : "clr-bg-light-00d19d " }  >
+                          
+                        
                               <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
-                              <td>{employeeData[2].ename === data.ename ? "You" : employeeData[2].ename}</td>
-                              <td>{employeeData[2].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(employeeData[2].ename) / functionGetOnlyAmount(employeeData[2])) * 100).toFixed(2)} %</td>
+                              <td>{sortedEmployeeData[2].ename === data.ename ? "You" : sortedEmployeeData[2].ename}</td>
+                              <td>{sortedEmployeeData[2].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[2].ename) / functionGetOnlyAmount(sortedEmployeeData[2])) * 100).toFixed(2)} %</td>
                             </tr>
-                            <tr className="clr-bg-light-e65b5b">
+                            <tr className={sortedEmployeeData[3].ename === data.ename ? "clr-bg-light-e65b5b myself " : "clr-bg-light-e65b5b " }  >
+                          
+                      
                               <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
-                              <td>{employeeData[3].ename === data.ename ? "You" : employeeData[3].ename}</td>
-                              <td>{employeeData[3].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(employeeData[3].ename) / functionGetOnlyAmount(employeeData[3])) * 100).toFixed(2)} %</td>
+                              <td>{sortedEmployeeData[3].ename === data.ename ? "You" : sortedEmployeeData[3].ename}</td>
+                              <td>{sortedEmployeeData[3].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[3].ename) / functionGetOnlyAmount(sortedEmployeeData[3])) * 100).toFixed(2)} %</td>
                             </tr>
-                            <tr className="clr-bg-light-4299e1">
+                            <tr className={sortedEmployeeData[4].ename === data.ename ? "clr-bg-light-4299e1 myself " : "clr-bg-light-4299e1 " }  >
+                          
+                          
                               <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
-                              <td>{employeeData[4].ename === data.ename ? "You" : employeeData[4].ename}</td>
-                              <td>{employeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(employeeData[4].ename) / functionGetOnlyAmount(employeeData[4])) * 100).toFixed(2)} %</td>
+                              <td>{sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}</td>
+                              <td>{sortedEmployeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
                             </tr>
                           </tbody>}
                         </table>

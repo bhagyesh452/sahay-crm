@@ -2077,6 +2077,10 @@ router.post(
             I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
+
+              if(newData.services.includes('Seed Funding Support')){
+                servicesHtml += `Re-application support will be provided at no extra cost`;
+              }
             } 
             if (incomeTaxServices !== "") {
               servicesHtml += `
@@ -2100,6 +2104,7 @@ router.post(
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
       
+          
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const mainPageHtml = `
@@ -3861,6 +3866,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
+    if(newData.services.includes('Seed Funding Support')){
+      servicesHtml += `Re-application support will be provided at no extra cost`;
+    }
       } 
       if (incomeTaxServices !== "") {
         servicesHtml += `

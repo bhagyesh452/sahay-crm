@@ -1836,7 +1836,17 @@ export default function AdminBookingForm({
     });
   };
 
-  console.log("lead", leadData);
+  const functionShowSizeLimit = (e)=>{
+    const file = e.target.files[0];
+    const maxSizeMB = 24;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    if(file.size > maxSizeBytes){
+      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+      return false;
+    }else {
+      return true;
+    }
+  }
 
   return (
     <div>
@@ -2833,15 +2843,19 @@ export default function AdminBookingForm({
                                         className="form-control mt-1"
                                         id="Company"
                                         onChange={(e) => {
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              paymentReceipt: [
+                                                ...(prevLeadData.paymentReceipt ||
+                                                  []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                           // Update the state with the selected files
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            paymentReceipt: [
-                                              ...(prevLeadData.paymentReceipt ||
-                                                []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                         
+                                          
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -2934,14 +2948,17 @@ export default function AdminBookingForm({
                                       <input
                                         type="file"
                                         onChange={(e) => {
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              otherDocs: [
+                                                ...(prevLeadData.otherDocs || []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                           // Update the state with the selected files
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            otherDocs: [
-                                              ...(prevLeadData.otherDocs || []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                         
                                         }}
                                         disabled={
                                           completed[activeStep] === true
