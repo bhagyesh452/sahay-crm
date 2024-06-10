@@ -4152,7 +4152,7 @@ function EmployeeDashboard() {
                 <div className="row mt-2 mb-4">
                  { <>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeePerformance/>
+                    <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
                     <div className="dash-card" style={{minHeight:'299px'}}>
