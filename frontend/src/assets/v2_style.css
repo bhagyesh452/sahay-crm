@@ -554,8 +554,13 @@ table.table.top_5_table th
 table.table.top_5_table td
 {
     border-top: 6px solid #fff !important;
+    background: none !important;
 }
 table.table.top_5_table tbody tr:hover
+{
+    transform: scale(1.05); 
+}
+table.table.top_5_table tbody tr.myself
 {
     transform: scale(1.05); 
 }
