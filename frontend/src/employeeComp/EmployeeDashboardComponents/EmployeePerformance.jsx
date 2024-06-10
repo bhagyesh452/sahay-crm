@@ -311,9 +311,11 @@ function EmployeePerformance({ data}) {
                           <thead>
                             <tr>
                               <th>Rank </th>
+                              
                               <th>Name</th>
                               <th>Branch</th>
-                              <th>Achievement Ratio</th>
+
+                              <th>Achievement Ratio</th>         
                             </tr>
                           </thead>
                          {sortedEmployeeData.length!==0 && <tbody>
