@@ -484,7 +484,8 @@ function TestLeads() {
             console.error("Please upload a valid XLSX file.");
         }
     };
-    const handleOptionChange = (event) => {
+
+     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
     //console.log("selectedOption" , selectedOption)
@@ -517,173 +518,278 @@ function TestLeads() {
     }
     //console.log(csvdata)
 
+    // const handleUploadData = async (e) => {
+    //     // Get current date and time
+
+    //     // newArray now contains objects with updated properties
+    //     const adminName = localStorage.getItem("adminName")
+
+    //     if (selectedOption === "someoneElse") {
+    //         const properDate = new Date();
+    //         const updatedCsvdata = csvdata.map((data) => ({
+    //             ...data,
+    //             ename: newemployeeSelection,
+    //             AssignDate: properDate,
+    //             UploadedBy: adminName ? adminName : "Admin"
+    //         }));
+
+    //         const currentDate = new Date().toLocaleDateString();
+    //         const currentTime = new Date().toLocaleTimeString();
+
+    //         //console.log(updatedCsvdata)
+    //         // Create a new array of objects with desired properties
+    //         const newArray = updatedCsvdata.map((data) => ({
+    //             date: currentDate,
+    //             time: currentTime,
+    //             ename: newemployeeSelection,
+    //             companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
+    //         }));
+    //         if (updatedCsvdata.length !== 0) {
+    //             setLoading(true); // Move setLoading outside of the loop
+    //             setOpenBacdrop(true)
+    //             try {
+    //                 const response = await axios.post(
+    //                     `${secretKey}/company-data/leads`,
+    //                     updatedCsvdata
+    //                 );
+    //                 await axios.post(`${secretKey}/employee/employee-history`, newArray);
+    //                 // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+
+    //                 const counter = response.data.counter;
+    //                 // console.log("counter", counter)
+    //                 const successCounter = response.data.sucessCounter;
+    //                 //console.log(successCounter)
+
+    //                 if (counter === 0) {
+    //                     //console.log(response.data)
+    //                     Swal.fire({
+    //                         title: "Data Send!",
+    //                         text: "Data successfully sent to the Employee",
+    //                         icon: "success",
+    //                     });
+
+    //                 } else {
+    //                     const lines = response.data.split('\n');
+    //                     const numberOfDuplicateEntries = lines.length - 1;
+    //                     const noofSuccessEntries = newArray.length - numberOfDuplicateEntries
+    //                     Swal.fire({
+    //                         title: 'Do you want download duplicate entries report?',
+    //                         html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
+    //                         icon: 'question',
+    //                         showCancelButton: true,
+    //                         confirmButtonText: 'Yes',
+    //                         cancelButtonText: 'No'
+    //                     }).then((result) => {
+    //                         if (result.isConfirmed) {
+    //                             //console.log(response.data)
+    //                             const url = window.URL.createObjectURL(new Blob([response.data]));
+    //                             const link = document.createElement("a");
+    //                             link.href = url;
+    //                             link.setAttribute("download", "DuplicateEntriesLeads.csv");
+    //                             document.body.appendChild(link);
+    //                             link.click();
+    //                             // User clicked "Yes", perform action
+    //                             // Call your function or execute your code here
+    //                         } else if (result.dismiss === Swal.DismissReason.cancel) {
+    //                             return true;
+    //                         }
+    //                     });
+    //                 }
+    //                 fetchData(1, latestSortCount);
+    //                 closeBulkLeadsCSVPopup();
+    //                 setnewEmployeeSelection("Not Alloted");
+    //                 setOpenBacdrop(false);
+    //             } catch (error) {
+    //                 if (error.response.status !== 500) {
+    //                     setErrorMessage(error.response.data.error);
+    //                     Swal.fire("Some of the data are not unique");
+    //                 } else {
+    //                     setErrorMessage("An error occurred. Please try again.");
+    //                     Swal.fire("Please upload unique data");
+    //                 }
+    //                 console.log("Error:", error);
+    //             }
+    //             setLoading(false); // Move setLoading outside of the loop
+    //             setCsvData([]);
+    //         } else {
+    //             Swal.fire("Please upload data");
+    //         }
+    //     } else {
+    //         if (csvdata.length !== 0) {
+    //             setLoading(true); // Move setLoading outside of the loop
+
+    //             try {
+    //                 const response = await axios.post(
+    //                     `${secretKey}/company-data/leads`,
+    //                     csvdata
+    //                 );
+
+    //                 // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+
+    //                 const counter = response.data.counter;
+    //                 // console.log("counter", counter)
+    //                 const successCounter = response.data.sucessCounter;
+    //                 //console.log(successCounter)
+
+    //                 if (counter === 0) {
+    //                     //console.log(response.data)
+    //                     Swal.fire({
+    //                         title: "Data Added!",
+    //                         text: "Data Successfully added to the Leads",
+    //                         icon: "success",
+    //                     });
+    //                 } else {
+    //                     const lines = response.data.split('\n');
+
+    //                     // Count the number of lines (entries)
+    //                     const numberOfDuplicateEntries = lines.length - 1;
+    //                     const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
+    //                     Swal.fire({
+    //                         title: 'Do you want download duplicate entries report?',
+    //                         html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
+    //                         icon: 'question',
+    //                         showCancelButton: true,
+    //                         confirmButtonText: 'Yes',
+    //                         cancelButtonText: 'No'
+    //                     }).then((result) => {
+    //                         if (result.isConfirmed) {
+    //                             //console.log(response.data)
+    //                             const url = window.URL.createObjectURL(new Blob([response.data]));
+    //                             const link = document.createElement("a");
+    //                             link.href = url;
+    //                             link.setAttribute("download", "DuplicateEntriesLeads.csv");
+    //                             document.body.appendChild(link);
+    //                             link.click();
+    //                             // User clicked "Yes", perform action
+    //                             // Call your function or execute your code here
+    //                         } else if (result.dismiss === Swal.DismissReason.cancel) {
+    //                             return true;
+    //                         }
+    //                     });
+    //                 }
+    //                 fetchData(1, latestSortCount);
+    //                 closeBulkLeadsCSVPopup();
+    //                 setnewEmployeeSelection("Not Alloted");
+    //             } catch (error) {
+    //                 if (error.response.status !== 500) {
+    //                     setErrorMessage(error.response.data.error);
+    //                     Swal.fire("Some of the data are not unique");
+    //                 } else {
+    //                     setErrorMessage("An error occurred. Please try again.");
+    //                     Swal.fire("Please upload unique data");
+    //                 }
+    //                 console.log("Error:", error);
+    //             }
+    //             setLoading(false); // Move setLoading outside of the loop
+    //             setCsvData([]);
+    //         } else {
+    //             Swal.fire("Please upload data");
+    //         }
+    //     }
+    // };
+
     const handleUploadData = async (e) => {
-        // Get current date and time
-
-        // newArray now contains objects with updated properties
-        const adminName = localStorage.getItem("adminName")
-
-        if (selectedOption === "someoneElse") {
-            const properDate = new Date();
-            const updatedCsvdata = csvdata.map((data) => ({
-                ...data,
-                ename: newemployeeSelection,
-                AssignDate: properDate,
-                UploadedBy: adminName ? adminName : "Admin"
-            }));
-
-            const currentDate = new Date().toLocaleDateString();
-            const currentTime = new Date().toLocaleTimeString();
-
-            //console.log(updatedCsvdata)
-            // Create a new array of objects with desired properties
-            const newArray = updatedCsvdata.map((data) => ({
-                date: currentDate,
-                time: currentTime,
-                ename: newemployeeSelection,
-                companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
-            }));
-            if (updatedCsvdata.length !== 0) {
-                setLoading(true); // Move setLoading outside of the loop
-
-                try {
-                    const response = await axios.post(
-                        `${secretKey}/company-data/leads`,
-                        updatedCsvdata
-                    );
-                    await axios.post(`${secretKey}/employee/employee-history`, newArray);
-                    // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-
-                    const counter = response.data.counter;
-                    // console.log("counter", counter)
-                    const successCounter = response.data.sucessCounter;
-                    //console.log(successCounter)
-
-                    if (counter === 0) {
-                        //console.log(response.data)
-                        Swal.fire({
-                            title: "Data Send!",
-                            text: "Data successfully sent to the Employee",
-                            icon: "success",
-                        });
-                    } else {
-                        const lines = response.data.split('\n');
-                        const numberOfDuplicateEntries = lines.length - 1;
-                        const noofSuccessEntries = newArray.length - numberOfDuplicateEntries
-                        Swal.fire({
-                            title: 'Do you want download duplicate entries report?',
-                            html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes',
-                            cancelButtonText: 'No'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                //console.log(response.data)
-                                const url = window.URL.createObjectURL(new Blob([response.data]));
-                                const link = document.createElement("a");
-                                link.href = url;
-                                link.setAttribute("download", "DuplicateEntriesLeads.csv");
-                                document.body.appendChild(link);
-                                link.click();
-                                // User clicked "Yes", perform action
-                                // Call your function or execute your code here
-                            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                return true;
-                            }
-                        });
-                    }
-                    fetchData(1, latestSortCount);
-                    closeBulkLeadsCSVPopup();
-                    setnewEmployeeSelection("Not Alloted");
-                } catch (error) {
-                    if (error.response.status !== 500) {
-                        setErrorMessage(error.response.data.error);
-                        Swal.fire("Some of the data are not unique");
-                    } else {
-                        setErrorMessage("An error occurred. Please try again.");
-                        Swal.fire("Please upload unique data");
-                    }
-                    console.log("Error:", error);
-                }
-                setLoading(false); // Move setLoading outside of the loop
-                setCsvData([]);
+        const adminName = localStorage.getItem("adminName") || "Admin";
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const properDate = new Date();
+    
+        if (!csvdata.length) {
+            Swal.fire("Please upload data");
+            return;
+        }
+    
+        const updatedCsvdata = csvdata.map(data => ({
+            ...data,
+            ename: newemployeeSelection,
+            AssignDate: properDate,
+            UploadedBy: adminName
+        }));
+    
+        const newArray = updatedCsvdata.map(data => ({
+            date: currentDate,
+            time: currentTime,
+            ename: newemployeeSelection,
+            companyName: data["Company Name"]
+        }));
+    
+        setLoading(true);
+        setOpenBacdrop(true);
+        closeBulkLeadsCSVPopup();
+    
+        try {
+            if (selectedOption === "someoneElse") {
+                await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
+                await axios.post(`${secretKey}/employee/employee-history`, newArray);
             } else {
-                Swal.fire("Please upload data");
+                await axios.post(`${secretKey}/company-data/leads`, csvdata);
             }
-        } else {
-            if (csvdata.length !== 0) {
-                setLoading(true); // Move setLoading outside of the loop
-
-                try {
-                    const response = await axios.post(
-                        `${secretKey}/company-data/leads`,
-                        csvdata
-                    );
-
-                    // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-
-                    const counter = response.data.counter;
-                    // console.log("counter", counter)
-                    const successCounter = response.data.sucessCounter;
-                    //console.log(successCounter)
-
-                    if (counter === 0) {
-                        //console.log(response.data)
-                        Swal.fire({
-                            title: "Data Added!",
-                            text: "Data Successfully added to the Leads",
-                            icon: "success",
-                        });
-                    } else {
-                        const lines = response.data.split('\n');
-
-                        // Count the number of lines (entries)
-                        const numberOfDuplicateEntries = lines.length - 1;
-                        const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
-                        Swal.fire({
-                            title: 'Do you want download duplicate entries report?',
-                            html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes',
-                            cancelButtonText: 'No'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                //console.log(response.data)
-                                const url = window.URL.createObjectURL(new Blob([response.data]));
-                                const link = document.createElement("a");
-                                link.href = url;
-                                link.setAttribute("download", "DuplicateEntriesLeads.csv");
-                                document.body.appendChild(link);
-                                link.click();
-                                // User clicked "Yes", perform action
-                                // Call your function or execute your code here
-                            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                return true;
-                            }
-                        });
-                    }
-                    fetchData(1, latestSortCount);
-                    closeBulkLeadsCSVPopup();
-                    setnewEmployeeSelection("Not Alloted");
-                } catch (error) {
-                    if (error.response.status !== 500) {
-                        setErrorMessage(error.response.data.error);
-                        Swal.fire("Some of the data are not unique");
-                    } else {
-                        setErrorMessage("An error occurred. Please try again.");
-                        Swal.fire("Please upload unique data");
-                    }
-                    console.log("Error:", error);
-                }
-                setLoading(false); // Move setLoading outside of the loop
-                setCsvData([]);
-            } else {
-                Swal.fire("Please upload data");
-            }
+    
+            const response = await axios.post(`${secretKey}/company-data/leads`, selectedOption === "someoneElse" ? updatedCsvdata : csvdata);
+            handleResponse(response, newArray);
+            fetchData(1, latestSortCount);
+            resetForm();
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+            setOpenBacdrop(false);
+            setCsvData([]);
         }
     };
+    
+    const handleResponse = (response, newArray) => {
+        const counter = response.data.counter;
+        const successCounter = response.data.sucessCounter;
+    
+        if (counter === 0) {
+            Swal.fire({
+                title: selectedOption === "someoneElse" ? "Data Send!" : "Data Added!",
+                text: selectedOption === "someoneElse" ? "Data successfully sent to the Employee" : "Data Successfully added to the Leads",
+                icon: "success"
+            });
+        } else {
+            const lines = response.data.split('\n');
+            const numberOfDuplicateEntries = lines.length - 1;
+            const noofSuccessEntries = newArray.length - numberOfDuplicateEntries;
+    
+            Swal.fire({
+                title: 'Do you want to download the duplicate entries report?',
+                html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download the report.`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", "DuplicateEntriesLeads.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                }
+            });
+        }
+    };
+    
+    const handleError = (error) => {
+        if (error.response && error.response.status !== 500) {
+            setErrorMessage(error.response.data.error);
+            Swal.fire("Some of the data are not unique");
+        } else {
+            setErrorMessage("An error occurred. Please try again.");
+            Swal.fire("Please upload unique data");
+        }
+        console.error("Error:", error);
+    };
+    
+    const resetForm = () => {
+        closeBulkLeadsCSVPopup();
+        setnewEmployeeSelection("Not Alloted");
+    };
+    
+
 
     //----------------------function for export leads data-------------------------------------
     const [selectedRows, setSelectedRows] = useState([]);
@@ -1371,7 +1477,6 @@ function TestLeads() {
                 !selectedCompanyIncoDate) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false);
-                setOpenBacdrop(false);
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
@@ -2781,7 +2886,7 @@ function TestLeads() {
                 </div>
             </Dialog>
 
-            {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
+            {/* ----------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
             <Dialog className='My_Mat_Dialog' open={openLeadsModifyPopUp} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
@@ -3384,12 +3489,12 @@ function TestLeads() {
             </Drawer>
 
             {/* --------------------------------backedrop------------------------- */}
-            <Backdrop
+            {openBacdrop && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBacdrop}
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
-            </Backdrop>
+            </Backdrop>)}
         </div>
     )
 }
