@@ -232,13 +232,12 @@ function TestLeads() {
     //--------------------function to filter company name ------------------------------
 
     const handleFilterSearch = async (searchQuery) => {
-      
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
             setIsFilter(false);
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery }
+                params: { searchQuery, field: "Company Name" }
             });
 
             if (!searchQuery.trim()) {
@@ -247,18 +246,12 @@ function TestLeads() {
                 fetchData(1, latestSortCount)
             } else {
                 // Set data to the search results
-                //setData(response.data);
-                setAssignedData(response.data.assigned)
-                setunAssignedData(response.data.unassigned)
-                setTotalCompaniesAssigned(response.data.totalAssigned)
-                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
-                setTotalCount(response.data.totalPages)
-                setCurrentPage(1)
-                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
-                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned');
+                setData(response.data);
+                if (response.data.length > 0) {
+                    if (response.data[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned')
                     } else {
-                        setDataStatus('Assigned');
+                        setDataStatus('Assigned')
                     }
                 }
             }
@@ -1812,7 +1805,7 @@ function TestLeads() {
                                             </tbody>
                                         ) : (
                                             <tbody>
-                                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                {(isFilter) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1905,7 +1898,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
+                                                {(isFilter) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1998,7 +1991,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {(!isFilter && !isSearching) && data.map((company, index) => (
+                                                {(!isFilter) && data.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
