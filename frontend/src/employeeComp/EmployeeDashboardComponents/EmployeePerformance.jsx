@@ -67,30 +67,30 @@ function EmployeePerformance({ data}) {
     const [callData, setCallData] = useState([]);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchCallData = async () => {
-            const apiKey = 'PMAT-01HYZDXSJJ4H2QWV4QKEF926VJ';
-            const url = 'https://api.callizer.com/v1/calls'; 
+    // useEffect(() => {
+    //     const fetchCallData = async () => {
+    //         const apiKey = 'PMAT-01HYZDXSJJ4H2QWV4QKEF926VJ';
+    //         const url = 'https://api.callizer.com/v1/calls'; 
 
-            try {
-                const response = await axios.get(url, {
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+    //         try {
+    //             const response = await axios.get(url, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${apiKey}`,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
 
-                if (response.status === 200) {
-                    setCallData(response.data);
-                } else {
-                    setError(`Error: ${response.status}`);
-                }
-            } catch (err) {
-                setError(`Error: ${err.message}`);
-            }
-        };
-        fetchCallData();
-    }, []);
+    //             if (response.status === 200) {
+    //                 setCallData(response.data);
+    //             } else {
+    //                 setError(`Error: ${response.status}`);
+    //             }
+    //         } catch (err) {
+    //             setError(`Error: ${err.message}`);
+    //         }
+    //     };
+    //     fetchCallData();
+    // }, []);
 
     const fetchRedesignedBookings = async () => {
         try {
