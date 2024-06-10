@@ -102,6 +102,7 @@ function Employees({ onEyeButtonClick }) {
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
     setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
+    
     setItemIdToDelete(itemId);
     setIsModalOpen(true);
   };
@@ -115,16 +116,17 @@ function Employees({ onEyeButtonClick }) {
     handledeletefromcompany();
     setIsModalOpen(false);
   };
-
+console.log(companyDdata)
   const handledeletefromcompany = async () => {
+    console.log("yahan chala")
     if (companyDdata && companyDdata.length !== 0) {
       // Assuming ename is part of dataToSend
-
+      console.log(companyDdata)
       try {
         // Update companyData in the second database
         await Promise.all(
           companyDdata.map(async (item) => {
-            await axios.delete(`${secretKey}/newcompanynamedelete/${item._id}`);
+            await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
             //console.log(`Deleted name for ${item._id}`);
           })
         );

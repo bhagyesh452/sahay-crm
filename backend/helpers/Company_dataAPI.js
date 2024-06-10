@@ -179,6 +179,54 @@ router.post("/leads", async (req, res) => {
   }
 });
 
+router.delete("/newcompanynamedelete/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Find the employee's data by id
+    const employeeData = await CompanyModel.findById(id);
+
+    if (!employeeData) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    // Update companies where the employee's name matches
+    await CompanyModel.updateMany(
+      { ename: employeeData.ename },
+      {
+        $set: {
+          ename: "Not Alloted",
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [],
+          Status: "Untouched",
+        },
+        $unset: {
+          bdmName: "",
+          bdeOldStatus: "",
+          bdeForwardDate: "",
+          bdmStatusChangeDate: "",
+          bdmStatusChangeTime: "",
+          bdmRemarks: "",
+          RevertBackAcceptedCompanyRequest: ""
+        },
+      }
+    );
+
+    // Delete documents from TeamLeadsModel where the employee's name matches
+    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
+
+    // Delete the corresponding document from CompanyModel collection
+    await CompanyModel.findByIdAndDelete(id);
+
+    res.json({ message: "Employee data deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting employee data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 // 7. Read Muultiple Companies 
 router.get("/leads", async (req, res) => {
   try {
@@ -574,7 +622,7 @@ router.post("/assign-new", async (req, res) => {
             bdmStatusChangeDate: "",
             bdmStatusChangeTime: "",
             bdmRemarks: "",
-            RevertBackAcceptedCompanyRequest:""
+            RevertBackAcceptedCompanyRequest: ""
           },
         },
       },
@@ -707,7 +755,7 @@ router.post('/post-bderevertbackacceptedcompanyrequest', async (req, res) => {
       { _id: companyId },
       { $set: { RevertBackAcceptedCompanyRequest: "Send" } }
     );
-    
+
     await TeamLeadsModel.findOneAndUpdate(
       { _id: companyId },
       { $set: { RevertBackAcceptedCompanyRequest: "Send" } }

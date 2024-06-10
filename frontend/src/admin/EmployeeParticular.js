@@ -2226,9 +2226,10 @@ function EmployeeParticular() {
                             (dataStatus === "Interested" && (
                               <th>View Projection</th>
                             ))}
-                          {dataStatus === "Forwarded" && (
-                            <th>Forwarded Date</th>
-                          )}
+                           {dataStatus === "Forwarded" && (<>
+                              <th>BDM Name</th>
+                              <th>Forwarded Date</th>
+                            </>)}
                           {/* {(dataStatus === "Forwarded" ||
                               dataStatus === "Interested" ||
                               dataStatus === "FollowUp") && (
@@ -2492,13 +2493,10 @@ function EmployeeParticular() {
                                         )}
                                       </td>
                                     )}
-                                  {dataStatus === "Forwarded" && (
-                                    <>
-                                      {company.bdeForwardDate ? (
-                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                      ) : (<td></td>)}
-                                    </>
-                                  )}
+                                 {dataStatus === "Forwarded" && (<>
+                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
+                                  <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                </>)}
 
                                   {/* {dataStatus === "Matured" && (
                                     <>
@@ -2551,7 +2549,44 @@ function EmployeeParticular() {
                                       </td>
                                     </>
                                   )} */}
-                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
+                                  {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
+                                  (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
+                                    <td>
+                                      <IconButton onClick={() => {
+                                        handleViewFeedback(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.feedbackRemarks,
+                                          company.feedbackPoints
+                                        )
+                                      }}>
+                                        <RiInformationLine style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }} color="#fbb900" />
+                                      </IconButton>
+                                    </td>
+                                  ) : (
+                                    <td>
+                                      <IconButton onClick={() => {
+                                        handleViewFeedback(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.feedbackRemarks,
+                                          company.feedbackPoints
+                                        )
+                                      }}>
+                                        <RiInformationLine style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }} color="lightgrey" />
+                                      </IconButton>
+                                    </td>
+                                  )
+                                ) : null}
+                                  {/* {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
                                     <td>
                                       <IconButton onClick={() => {
                                         handleViewFeedback(
@@ -2568,7 +2603,7 @@ function EmployeeParticular() {
                                         }}
                                           color="#fbb900" /></IconButton>
                                     </td>
-                                  )}
+                                  )} */}
                                 </tr>
                               ))}
                             </tbody>
