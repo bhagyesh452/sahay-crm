@@ -101,6 +101,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import EmployeeCallingReport from "./EmployeeDashboardComponents/EmployeeCallingReport.jsx";
 import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwardedReport.jsx";
 import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
+import EmployeePerformance from "./EmployeeDashboardComponents/EmployeePerformance.jsx";
 
 
 
@@ -4149,59 +4150,9 @@ function EmployeeDashboard() {
                 </div>
                 {/* Lead reports */}
                 <div className="row mt-2 mb-4">
-                 {/* { <>
+                 { <>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <div className="dash-card" style={{minHeight:'299px'}}>
-                      <div className="dash-card-head">
-                          <h2 className="m-0">
-                              Top 5 Performer
-                          </h2>
-                      </div>
-                      <div className="dash-card-body table-responsive">
-                        <table class="table top_5_table m-0">
-                          <thead>
-                            <tr>
-                              <th>Rank </th>
-                              <th>Name</th>
-                              <th>Branch</th>
-                              <th>Achievement Ratio</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="clr-bg-light-1cba19">
-                              <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
-                              <td>Vishnu Suthar</td>
-                              <td>Gota</td>
-                              <td>80%</td>
-                            </tr>
-                            <tr className="clr-bg-light-ffb900">
-                              <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
-                              <td>Vishnu Desai</td>
-                              <td>SBR</td>
-                              <td>80%</td>
-                            </tr>
-                            <tr className="clr-bg-light-00d19d">
-                              <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
-                              <td>Khushi Gandhi</td>
-                              <td>SBR</td>
-                              <td>80%</td>
-                            </tr>
-                            <tr className="clr-bg-light-e65b5b">
-                              <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
-                              <td>Vandit Shah</td>
-                              <td>Gota</td>
-                              <td>80%</td>
-                            </tr>
-                            <tr className="clr-bg-light-4299e1">
-                              <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
-                              <td>Kushal Modh</td>
-                              <td>SBR</td>
-                              <td>80%</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
                     <div className="dash-card" style={{minHeight:'299px'}}>
@@ -4366,16 +4317,16 @@ function EmployeeDashboard() {
                       </div>
                     </div>
                   </div>
-                  </>} */}
+                  </>}
                   {/* calling data report */}
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                  </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeCallingReport />
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeForwardedReport moreEmpData={moreEmpData}/>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
                   </div>
                 </div>
               </div>
