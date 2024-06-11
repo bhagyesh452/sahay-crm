@@ -2134,6 +2134,17 @@ export default function EditableMoreBooking({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
+  const functionShowSizeLimit = (e)=>{
+    const file = e.target.files[0];
+    const maxSizeMB = 24;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    if(file.size > maxSizeBytes){
+      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+      return false;
+    }else {
+      return true;
+    }
+  }
   return (
     <div>
       <div className="container mt-2">
@@ -3030,14 +3041,16 @@ export default function EditableMoreBooking({
                                           // Update the state with the selected files
 
                                           setStep4Changed(true)
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            paymentReceipt: [
-                                              ...(prevLeadData.paymentReceipt ||
-                                                []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              paymentReceipt: [
+                                                ...(prevLeadData.paymentReceipt ||
+                                                  []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3132,13 +3145,15 @@ export default function EditableMoreBooking({
                                         onChange={(e) => {
                                           // Update the state with the selected files
                                           setStep4Changed(true)
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            otherDocs: [
-                                              ...(prevLeadData.otherDocs || []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              otherDocs: [
+                                                ...(prevLeadData.otherDocs || []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                         }}
                                         disabled={
                                           completed[activeStep] === true
