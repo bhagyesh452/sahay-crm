@@ -2068,11 +2068,11 @@ router.post(
             }
 
             if (fundingServicesArray !== "") {
-              const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+            //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
               
-              Re-application support will be provided at no extra cost. 
+            //   Re-application support will be provided at no extra cost. 
             
-            ` : ``
+            // ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
@@ -2080,7 +2080,7 @@ router.post(
               </b>
             </p>
             <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. ${seedfundIncluded} I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
 
@@ -3866,10 +3866,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
 
       if (fundingServicesArray !== "") {
-        const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-        Re-application support will be provided at no extra cost.
+      //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+      //   Re-application support will be provided at no extra cost.
   
-      ` : ``;
+      // ` : ``;
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -3877,7 +3877,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. ${seedfundIncluded} I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
    
