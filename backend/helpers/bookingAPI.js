@@ -2069,9 +2069,9 @@ router.post(
 
             if (fundingServicesArray !== "") {
               const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-              <p class="Declaration_text_data">
+              
               Re-application support will be provided at no extra cost. 
-              </p>
+            
             ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
@@ -3867,9 +3867,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
       if (fundingServicesArray !== "") {
         const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-        <p class="Declaration_text_data">
         Re-application support will be provided at no extra cost.
-        </p>
+  
       ` : ``;
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
