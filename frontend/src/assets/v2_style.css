@@ -553,12 +553,6 @@ table.table.top_5_table th
 table.table.top_5_table td
 {
     border-top: 6px solid #fff !important;
-<<<<<<< HEAD
-
-}
-.none-background {
-=======
->>>>>>> f67282ac96b2ba4d8b03fede6d37faa0e831aa98
     background: none !important;
 }
 table.table.top_5_table tbody tr:hover
@@ -568,11 +562,6 @@ table.table.top_5_table tbody tr:hover
 table.table.top_5_table tbody tr.myself
 {
     transform: scale(1.05); 
-<<<<<<< HEAD
-    background: rgb(253, 253, 160) !important;
-    box-shadow: 0px 0px 1px 1px rgb(226, 226, 96) ;
-=======
->>>>>>> f67282ac96b2ba4d8b03fede6d37faa0e831aa98
 }
 .ranktd {
     width: 25px;
