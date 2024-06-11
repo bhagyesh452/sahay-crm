@@ -798,15 +798,17 @@ function EmployeesProjectionSummary() {
                 {loading ?
                   (<tbody>
                     <tr>
-                      <td colSpan="12" className="LoaderTDSatyle">
-                        <ClipLoader
-                          color="lightgrey"
-                          loading
-                          size={20}
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td>
+                        <td colSpan="12">
+                            <div  className="LoaderTDSatyle">
+                                <ClipLoader
+                                color="lightgrey"
+                                loading
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                                />
+                            </div>
+                        </td>
                     </tr>
                   </tbody>) :
                   (<tbody>

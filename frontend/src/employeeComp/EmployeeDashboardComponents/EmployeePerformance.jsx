@@ -281,12 +281,12 @@ function EmployeePerformance({ data}) {
                         <table class="table top_5_table m-0">
                           <thead>
                             <tr>
-                              <th>Rank </th>
+                              <th style={{  borderRadius:' 8px 0 0 0'}}>Rank </th>
                               
                               <th>Name</th>
                               <th>Branch</th>
 
-                              <th>Achievement Ratio</th>         
+                              <th style={{  borderRadius:' 0 8px  0 0'}}>Achievement Ratio</th>         
                             </tr>
                           </thead>
                          {sortedEmployeeData.length!==0 && <tbody>
@@ -322,10 +322,10 @@ function EmployeePerformance({ data}) {
                             <tr className={sortedEmployeeData[4].ename === data.ename ? "clr-bg-light-4299e1 myself " : "clr-bg-light-4299e1 " }  >
                           
                           
-                              <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
+                              <td  style={{  borderRadius:' 0 0 0 8px '}}><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
                               <td>{sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}</td>
                               <td>{sortedEmployeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
+                              <td  style={{  borderRadius:' 0 0  8px 0 '}}>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
                             </tr>
                           </tbody>}
                         </table>

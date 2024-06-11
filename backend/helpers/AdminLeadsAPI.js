@@ -209,10 +209,10 @@ router.post('/exportLeads', async (req, res) => {
 
     // Query to get the leads to be exported
     const leads = await CompanyModel.find(query).lean();
-
+    console.log("leads" , leads)
     // Convert leads to CSV and send as response
     const csv = convertToCSV(leads);
-
+    console.log("csv" , csv)
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=${dataStatus === 'Assigned' ? 'AssignedLeads_Admin.csv' : 'UnAssignedLeads_Admin.csv'}`);
     res.status(200).send(csv);

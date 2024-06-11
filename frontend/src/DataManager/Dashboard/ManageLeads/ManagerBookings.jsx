@@ -2890,7 +2890,6 @@ function ManagerBookings() {
                                                             <div>
                                                               {objMain.remainingPayments.length !== 0 &&
                                                                 (() => {
-
                                                                   if (index === 0) return "Second ";
                                                                   else if (index === 1) return "Third ";
                                                                   else if (index === 2) return "Fourth ";
@@ -2906,7 +2905,7 @@ function ManagerBookings() {
                                                               </div>
 
                                                               {
-                                                                objMain.remainingPayments.length - 1 === index && <IconButton onClick={() => functionDeleteRemainingPayment(BookingIndex + 1, obj.serviceName)} >
+                                                                <IconButton onClick={() => functionDeleteRemainingPayment(BookingIndex + 1, obj.serviceName)}>
                                                                   <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
                                                                 </IconButton>
                                                               }
