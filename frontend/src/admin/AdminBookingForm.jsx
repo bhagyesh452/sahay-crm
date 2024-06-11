@@ -15,6 +15,8 @@ import excelimg from "../static/my-images/excel.png";
 import PdfImageViewer from "../Processing/PdfViewer";
 import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -58,6 +60,7 @@ export default function AdminBookingForm({
   IamAdmin
 }) {
   const [totalServices, setTotalServices] = useState(1);
+  const [loader, setLoader] = useState(false)
 
   const [fetchedService, setfetchedService] = useState(false);
 
@@ -612,6 +615,7 @@ export default function AdminBookingForm({
 
       if (activeStep === 4) {
         try {
+          setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
@@ -658,7 +662,7 @@ export default function AdminBookingForm({
           });
           // Handle error
         }
-
+        setLoader(false);
         fetchData();
         handleNext();
         setFormOpen(false);
@@ -3840,6 +3844,13 @@ export default function AdminBookingForm({
           </div>
         </div>
       </div>
+      {/* --------------------------------backedrop------------------------- */}
+      {loader && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loader}
+                onClick={()=> setLoader(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
     </div>
   );
 }

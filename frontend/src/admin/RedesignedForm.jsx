@@ -17,6 +17,8 @@ import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
 import confetti from 'canvas-confetti';
 import Dhanyavad from './DashboardReportComponents/dhanyavad.wav'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -97,6 +99,7 @@ export default function RedesignedForm({
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [secondTempRemarks, setSecondTempRemarks] = useState("");
+  const [loader, setLoader] = useState(false);
   const [thirdTempRemarks, setThirdTempRemarks] = useState("");
   const [fourthTempRemarks, setFourthTempRemarks] = useState("");
   const [selectedValues, setSelectedValues] = useState("");
@@ -906,7 +909,7 @@ export default function RedesignedForm({
 
       if (activeStep === 4) {
         try {
-
+          setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
@@ -952,7 +955,7 @@ export default function RedesignedForm({
           });
           // Handle error
         }
-
+        setLoader(false);
         fetchData();
         handleNext();
         handleClick()
@@ -3937,6 +3940,13 @@ export default function RedesignedForm({
           </div>
         </div>
       </div>
+      {/* --------------------------------backedrop------------------------- */}
+      {loader && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loader}
+                onClick={()=> setLoader(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
     </div>
   );
 }
