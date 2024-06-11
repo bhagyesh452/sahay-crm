@@ -94,7 +94,7 @@ function TestLeads() {
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
-            console.log(response.data)
+            //console.log(response.data)
             setData(response.data.data);
             setTotalCount(response.data.totalPages)
             setTotalCompaniesUnaasigned(response.data.unAssignedCount)
@@ -224,7 +224,7 @@ function TestLeads() {
             fetchFilteredLeads();
         }else if(isSearching){
             const fetchFilteredLeads = async () => {
-                console.log(searchText)
+                //console.log(searchText)
                 try {
                     const page = 1;
                     const limit = 500;
@@ -330,8 +330,8 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     }
-    console.log("assigned" , assignedData)
-    console.log("unassigneddata" , unAssignedData)
+    //console.log("assigned" , assignedData)
+    //console.log("unassigneddata" , unAssignedData)
     
 
 
@@ -1548,7 +1548,7 @@ function TestLeads() {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
-            console.log(monthIndex)
+            //console.log(monthIndex)
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {

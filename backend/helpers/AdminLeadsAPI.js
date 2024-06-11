@@ -585,7 +585,7 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
       }
       return null;
     }));
-    console.log(response)
+    //console.log(response)
     res.status(200).json({
       message:
         "Rows deleted successfully and backup created successfully.",
