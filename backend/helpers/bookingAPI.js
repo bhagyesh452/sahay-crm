@@ -2068,6 +2068,11 @@ router.post(
             }
 
             if (fundingServicesArray !== "") {
+              const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+              <p class="Declaration_text_data">
+              Re-application support will be provided at no extra cost. 
+              </p>
+            ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
@@ -2075,7 +2080,7 @@ router.post(
               </b>
             </p>
             <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. ${seedfundIncluded} I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
 
@@ -2093,12 +2098,7 @@ router.post(
             </p>
         `;
             }
-            const seedfundIncluded = newData.services.some((service)=>{
-              service.serviceName === 'Seed Funding Support';
-            })
-            if (seedfundIncluded) {
-              servicesHtml += `Re-application support will be provided at no extra cost`;
-            }
+         
             return servicesHtml;
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -2108,11 +2108,7 @@ router.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
-          const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-          <p class="Declaration_text_data">
-          Re-application support will be provided at no extra cost
-          </p>
-        ` : ``
+        
 
 
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
@@ -2128,7 +2124,7 @@ router.post(
                   </div>
                   <div class="Declaration_text">
                     ${serviceKawali}
-                       ${seedfundIncluded}
+                       
                     <p class="Declaration_text_data">
                       I, understands that because of government regulations and portal, I have no objections if the
                       process takes longer than initially committed, knowing it's just how government schemes
@@ -3870,6 +3866,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
 
       if (fundingServicesArray !== "") {
+        const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+        <p class="Declaration_text_data">
+        Re-application support will be provided at no extra cost.
+        </p>
+      ` : ``;
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -3877,7 +3878,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. ${seedfundIncluded} I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
    
@@ -3907,11 +3908,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
-    const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-      <p class="Declaration_text_data">
-      Re-application support will be provided at no extra cost
-      </p>
-    ` : ``
+  
 
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
@@ -3926,7 +3923,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             </div>
             <div class="Declaration_text">
               ${serviceKawali}
-               ${seedfundIncluded}
+               
               <p class="Declaration_text_data">
                 I, understands that because of government regulations and portal, I have no objections if the
                 process takes longer than initially committed, knowing it's just how government schemes
