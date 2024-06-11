@@ -1388,18 +1388,20 @@ function EmployeeDataReport() {
                                 </thead>
                                 {loading ?
                                 (<tbody>
-                                <tr>
-                                  <td colSpan="12" className="LoaderTDSatyle">
-                                    <ClipLoader
-                                      color="lightgrey"
-                                      loading
-                                      size={20}
-                                      aria-label="Loading Spinner"
-                                      data-testid="loader"
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>): 
+                                    <tr>
+                                        <td colSpan="12">
+                                            <div  className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                color="lightgrey"
+                                                loading
+                                                size={30}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>): 
                               (<tbody>
                                     {employeeData.length !== 0 &&
                                         companyData.length !== 0 &&
