@@ -483,53 +483,118 @@ router.get('/filter-leads', async (req, res) => {
 
 
 //9. Filtere search for Reading Multiple Companies
+// router.get('/search-leads', async (req, res) => {
+//   try {
+//     const { searchQuery } = req.query;
+//     const { field } = req.query;
+//     //console.log(searchQuery , "search")
+
+//     let searchResults;
+//     if (field === "Company Name" || field === "Company Email") {
+//       if (searchQuery && searchQuery.trim() !== '') {
+//         // Perform database query to search for leads matching the searchQuery
+//         const query = {};
+//         query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
+
+//         searchResults = await CompanyModel.find(query).limit(500).lean();
+//       } else {
+//         // If search query is empty, fetch 500 data from CompanyModel
+//         searchResults = await CompanyModel.find().limit(500).lean();
+//       }
+//     }
+//     else if (field === "Company Number") {
+//       if (searchQuery && searchQuery.trim() !== '') {
+//         // Check if the searchQuery is a valid number
+//         const searchNumber = Number(searchQuery);
+
+//         if (!isNaN(searchNumber)) {
+//           // Perform database query to search for leads matching the searchQuery as a number
+//           searchResults = await CompanyModel.find({
+//             'Company Number': searchNumber
+//           }).limit(500).lean();
+//         } else {
+//           // If the searchQuery is not a number, perform a regex search (if needed for some reason)
+//           searchResults = await CompanyModel.find({
+//             'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
+//           }).limit(500).lean();
+//         }
+//       } else {
+//         // If search query is empty, fetch 500 data from CompanyModel
+//         searchResults = await CompanyModel.find().limit(500).lean();
+//       }
+//     }
+//     res.json(searchResults);
+//   } catch (error) {
+//     console.error('Error searching leads:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+function escapeRegex(string) {
+  return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
 router.get('/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
-    const { field } = req.query;
-    //console.log(searchQuery , "search")
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
 
+    console.log(searchQuery)
     let searchResults;
-    if (field === "Company Name" || field === "Company Email") {
-      if (searchQuery && searchQuery.trim() !== '') {
-        // Perform database query to search for leads matching the searchQuery
-        const query = {};
-        query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
+    let assignedData = [];
+    let assignedCount = 0;
+    let unassignedData = [];
+    let unassignedCount = 0;
+    
 
-        searchResults = await CompanyModel.find(query).limit(500).lean();
-      } else {
-        // If search query is empty, fetch 500 data from CompanyModel
-        searchResults = await CompanyModel.find().limit(500).lean();
-      }
-    }
-    else if (field === "Company Number") {
-      if (searchQuery && searchQuery.trim() !== '') {
-        // Check if the searchQuery is a valid number
-        const searchNumber = Number(searchQuery);
+    if (searchQuery) {
+      const searchTerm = searchQuery.trim();
+      let query = {};
 
-        if (!isNaN(searchNumber)) {
-          // Perform database query to search for leads matching the searchQuery as a number
-          searchResults = await CompanyModel.find({
-            'Company Number': searchNumber
-          }).limit(500).lean();
+      if (searchTerm !== '') {
+        if (!isNaN(searchTerm)) {
+          query = { 'Company Number': searchTerm };
         } else {
-          // If the searchQuery is not a number, perform a regex search (if needed for some reason)
-          searchResults = await CompanyModel.find({
-            'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
-          }).limit(500).lean();
+          const escapedSearchTerm = escapeRegex(searchTerm);
+          query = {
+            $or: [
+              { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+              { 'Company Email': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+              // Add other fields you want to search with the query here
+              // For example: { anotherField: { $regex: new RegExp(escapedSearchTerm, 'i') } }
+            ]
+          };
         }
-      } else {
-        // If search query is empty, fetch 500 data from CompanyModel
-        searchResults = await CompanyModel.find().limit(500).lean();
       }
-    }
-    res.json(searchResults);
-  } catch (error) {
-    console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+      // Fetch assigned data
+      let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
+      assignedCount = await CompanyModel.countDocuments(assignedQuery);
+      assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
 
+      // Fetch unassigned data
+      let unassignedQuery = { ...query, ename: 'Not Alloted' };
+      unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+      unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+    } 
+    // else {
+    //   searchResults = await CompanyModel.find().limit(500).lean();
+    // }
+
+    res.status(200).json({
+      assigned: assignedData,
+      unassigned: unassignedData,
+      totalAssigned: assignedCount,
+      totalUnassigned: unassignedCount,
+      totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
+      currentPage : page,
+    });
+
+  } catch (error) {
+    console.error("Error searching leads", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+})
 
 //10. Search for Specific Company
 router.get("/specific-company/:companyId", async (req, res) => {
