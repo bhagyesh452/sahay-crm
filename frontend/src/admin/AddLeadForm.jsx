@@ -17,6 +17,8 @@ import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
 import confetti from 'canvas-confetti';
 import Dhanyavad from './DashboardReportComponents/dhanyavad.wav'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -108,6 +110,7 @@ export default function AddLeadForm({
     Nontype: ""
   }
   const [isoType, setIsoType] = useState([]);
+  const [loader, setLoader] = useState(false);
   const fetchDataEmp = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -840,7 +843,9 @@ export default function AddLeadForm({
       }
 
       if (activeStep === 4) {
+
         try {
+          setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
             ...service,
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
@@ -871,11 +876,17 @@ export default function AddLeadForm({
             `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, tempLeadData
           );
 
+
           Swal.fire({
             icon: "success",
             title: "Booking Submitted",
             text: "Your Booking has been submitted Successfully!",
           });
+          setLoader(false);
+          handleClick()
+          const newaudio = new Audio(Dhanyavad);
+          newaudio.play()
+          setFormOpen(false);
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
@@ -885,13 +896,9 @@ export default function AddLeadForm({
             text: "There was an error submitting the form. Please try again later.",
           });
         }
-        handleNext();
+       
         // setNowToFetch(true)
-        handleClick()
-        const newaudio = new Audio(Dhanyavad);
-        newaudio.play()
-        setFormOpen(false);
-        setDataStatus("Matured");
+       
 
         return true;
       }
@@ -1134,6 +1141,7 @@ export default function AddLeadForm({
                     setIsoType(remainingObject);
                   }
                 }}>
+                  <option value="">Select ISO Body </option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
@@ -2644,6 +2652,7 @@ export default function AddLeadForm({
                                             type="radio"
                                             name="ca-case"
                                             onChange={(e) => {
+                                              Swal.fire({ text: "Please ensure this is not a CA case. If not, an automated agreement will be sent to the client's email. If a CA is involved, this could cause issues." })
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
                                                 caCase: e.target.value, // Set the value based on the selected radio button
@@ -3875,6 +3884,7 @@ export default function AddLeadForm({
                               onClick={handleComplete}
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
+                              ref={buttonRef}
                             >
                               {activeStep === 4
                                 ? "Submit"
@@ -3890,6 +3900,14 @@ export default function AddLeadForm({
           </div>
         </div>
       </div>
+
+       {/* --------------------------------backedrop------------------------- */}
+       {loader && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loader}
+                onClick={()=> setLoader(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
     </div>
   );
 }

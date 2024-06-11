@@ -7,7 +7,7 @@ function EmployeePerformance({ data}) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
     const [redesignedData, setRedesignedData] = useState([])
-
+    const [sortedEmployeeData, setSortedEmployeeData] = useState([]);
     const [bookingStartDate, setBookingStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     const [bookingEndDate, setBookingEndDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
     const [loading, setLoading] = useState(false)
@@ -37,8 +37,9 @@ function EmployeePerformance({ data}) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-
-            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            const filteredData = data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+            setEmployeeData(filteredData);
+            setSortedEmployeeData(filteredData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename)));
 
         } catch (error) {
             console.error('Error Fetching Employee Data ', error);
@@ -48,24 +49,19 @@ function EmployeePerformance({ data}) {
     };
 
     useEffect(() => {
-     fetchEmployeeInfo()
-     fetchRedesignedBookings()
+        fetchRedesignedBookings()
     }, [])  
-    const [sortedEmployeeData, setSortedEmployeeData] = useState([]);
 
     useEffect(() => {
-        if (redesignedData.length !== 0 && employeeData.length !== 0) {
-            const sortedEmployeeData = employeeData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename));
-            
-            setSortedEmployeeData(sortedEmployeeData);
-        }
+      fetchEmployeeInfo()
     }, [redesignedData])
+    
+   
+
+
 
 
     //  -----------------------------------   callizer api functions  -----------------------------------------------------------
-
-    const [callData, setCallData] = useState([]);
-    const [error, setError] = useState(null);
 
     const fetchRedesignedBookings = async () => {
         try {
@@ -76,6 +72,9 @@ function EmployeePerformance({ data}) {
     
     
           setRedesignedData(bookingsData);
+        //   const sortedEmployeeData = employeeData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename));
+            
+        //   setSortedEmployeeData(sortedEmployeeData);
           
         } catch (error) {
           console.log("Error Fetching Bookings Data", error);
@@ -91,9 +90,6 @@ function EmployeePerformance({ data}) {
         let achievedAmount = 0;
         let remainingAmount = 0;
         let expanse = 0;
-
-
-        console.log("this is redesigned data" , redesignedData)
         redesignedData.map((mainBooking) => {
             const bookingDate = new Date(mainBooking.bookingDate);
             const startDate = new Date(bookingStartDate);
@@ -276,65 +272,65 @@ function EmployeePerformance({ data}) {
   return (
     <div>
         <div className="dash-card" style={{minHeight:'299px'}}>
-            <div className="dash-card-head">
-                <h2 className="m-0">
-                    Top 5 Performer
-                </h2>
-            </div>
-            <div className="dash-card-body table-responsive">
-            <table class="table top_5_table m-0">
-                <thead>
-                <tr>
-                    <th>Rank </th>
-                    
-                    <th>Name</th>
-                    <th>Branch</th>
+                      <div className="dash-card-head">
+                          <h2 className="m-0">
+                              Top 5 Performer
+                          </h2>
+                      </div>
+                      <div className="dash-card-body table-responsive">
+                        <table class="table top_5_table m-0">
+                          <thead>
+                            <tr>
+                              <th>Rank </th>
+                              
+                              <th>Name</th>
+                              <th>Branch</th>
 
-                    <th>Achievement Ratio</th>         
-                </tr>
-                </thead>
-                {sortedEmployeeData.length!==0 && <tbody>
-                <tr className={sortedEmployeeData[0].ename === data.ename ? "clr-bg-light-1cba19 myself " : "clr-bg-light-1cba19 " }  >
-                    <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
-                    <td>{sortedEmployeeData[0].ename === data.ename ? "You" : sortedEmployeeData[0].ename }</td>
-                    <td>{sortedEmployeeData[0].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                    <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[0].ename) / functionGetOnlyAmount(sortedEmployeeData[0])) * 100).toFixed(2)} %</td>
-                </tr>
-                <tr className={sortedEmployeeData[1].ename === data.ename ? "clr-bg-light-ffb900 myself " : "clr-bg-light-ffb900 " }  >
-                
-                    <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
-                    <td>{sortedEmployeeData[1].ename === data.ename ? "You" : sortedEmployeeData[1].ename}</td>
-                    <td>{sortedEmployeeData[1].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                    <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[1].ename) / functionGetOnlyAmount(sortedEmployeeData[1])) * 100).toFixed(2)} %</td>
-                </tr>
-                <tr className={sortedEmployeeData[2].ename === data.ename ? "clr-bg-light-00d19d myself " : "clr-bg-light-00d19d " }  >
-                
-            
-                    <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
-                    <td>{sortedEmployeeData[2].ename === data.ename ? "You" : sortedEmployeeData[2].ename}</td>
-                    <td>{sortedEmployeeData[2].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                    <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[2].ename) / functionGetOnlyAmount(sortedEmployeeData[2])) * 100).toFixed(2)} %</td>
-                </tr>
-                <tr className={sortedEmployeeData[3].ename === data.ename ? "clr-bg-light-e65b5b myself " : "clr-bg-light-e65b5b " }  >
-                
-            
-                    <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
-                    <td>{sortedEmployeeData[3].ename === data.ename ? "You" : sortedEmployeeData[3].ename}</td>
-                    <td>{sortedEmployeeData[3].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                    <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[3].ename) / functionGetOnlyAmount(sortedEmployeeData[3])) * 100).toFixed(2)} %</td>
-                </tr>
-                <tr className={sortedEmployeeData[4].ename === data.ename ? "clr-bg-light-4299e1 myself " : "clr-bg-light-4299e1 " }  >
-                
-                
-                    <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
-                    <td>{sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}</td>
-                    <td>{sortedEmployeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
-                    <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
-                </tr>
-                </tbody>}
-            </table>
-            </div>
-        </div>
+                              <th>Achievement Ratio</th>         
+                            </tr>
+                          </thead>
+                         {sortedEmployeeData.length!==0 && <tbody>
+                            <tr className={sortedEmployeeData[0].ename === data.ename ? "clr-bg-light-1cba19 myself " : "clr-bg-light-1cba19 " }  >
+                              <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
+                              <td>{sortedEmployeeData[0].ename === data.ename ? "You" : sortedEmployeeData[0].ename }</td>
+                              <td>{sortedEmployeeData[0].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[0].ename) / functionGetOnlyAmount(sortedEmployeeData[0])) * 100).toFixed(2)} %</td>
+                            </tr>
+                            <tr className={sortedEmployeeData[1].ename === data.ename ? "clr-bg-light-ffb900 myself " : "clr-bg-light-ffb900 " }  >
+                          
+                              <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
+                              <td>{sortedEmployeeData[1].ename === data.ename ? "You" : sortedEmployeeData[1].ename}</td>
+                              <td>{sortedEmployeeData[1].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[1].ename) / functionGetOnlyAmount(sortedEmployeeData[1])) * 100).toFixed(2)} %</td>
+                            </tr>
+                            <tr className={sortedEmployeeData[2].ename === data.ename ? "clr-bg-light-00d19d myself " : "clr-bg-light-00d19d " }  >
+                          
+                        
+                              <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
+                              <td>{sortedEmployeeData[2].ename === data.ename ? "You" : sortedEmployeeData[2].ename}</td>
+                              <td>{sortedEmployeeData[2].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[2].ename) / functionGetOnlyAmount(sortedEmployeeData[2])) * 100).toFixed(2)} %</td>
+                            </tr>
+                            <tr className={sortedEmployeeData[3].ename === data.ename ? "clr-bg-light-e65b5b myself " : "clr-bg-light-e65b5b " }  >
+                          
+                      
+                              <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
+                              <td>{sortedEmployeeData[3].ename === data.ename ? "You" : sortedEmployeeData[3].ename}</td>
+                              <td>{sortedEmployeeData[3].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[3].ename) / functionGetOnlyAmount(sortedEmployeeData[3])) * 100).toFixed(2)} %</td>
+                            </tr>
+                            <tr className={sortedEmployeeData[4].ename === data.ename ? "clr-bg-light-4299e1 myself " : "clr-bg-light-4299e1 " }  >
+                          
+                          
+                              <td><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
+                              <td>{sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}</td>
+                              <td>{sortedEmployeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
+                              <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
+                            </tr>
+                          </tbody>}
+                        </table>
+                      </div>
+                    </div>
     </div>
   )
 }
