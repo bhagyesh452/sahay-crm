@@ -2128,6 +2128,7 @@ router.post(
                   </div>
                   <div class="Declaration_text">
                     ${serviceKawali}
+                       ${seedfundIncluded}
                     <p class="Declaration_text_data">
                       I, understands that because of government regulations and portal, I have no objections if the
                       process takes longer than initially committed, knowing it's just how government schemes
@@ -2136,7 +2137,7 @@ router.post(
                     <p class="Declaration_text_data">
                     As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
                     </p>
-                    ${seedfundIncluded}
+                 
                   </div>
                
                   
@@ -3925,6 +3926,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             </div>
             <div class="Declaration_text">
               ${serviceKawali}
+               ${seedfundIncluded}
               <p class="Declaration_text_data">
                 I, understands that because of government regulations and portal, I have no objections if the
                 process takes longer than initially committed, knowing it's just how government schemes
@@ -3933,7 +3935,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               <p class="Declaration_text_data">
               As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
               </p>
-              ${seedfundIncluded}
+             
             </div>
          
             
