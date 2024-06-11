@@ -2245,14 +2245,16 @@ function EmployeesThisMonthBooking() {
                                 {loading ? (
                                     <tbody>
                                         <tr>
-                                            <td colSpan="12" className="LoaderTDSatyle">
-                                                <ClipLoader
+                                            <td colSpan="12">
+                                                <div  className="LoaderTDSatyle">
+                                                    <ClipLoader
                                                     color="lightgrey"
                                                     loading
-                                                    size={20}
+                                                    size={30}
                                                     aria-label="Loading Spinner"
                                                     data-testid="loader"
-                                                />
+                                                    />
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -2355,14 +2357,16 @@ function EmployeesThisMonthBooking() {
                                 {loading ? (
                                     <tbody>
                                         <tr>
-                                            <td colSpan="12" className="LoaderTDSatyle">
-                                                <ClipLoader
+                                            <td colSpan="12">
+                                                <div  className="LoaderTDSatyle">
+                                                    <ClipLoader
                                                     color="lightgrey"
                                                     loading
-                                                    size={20}
+                                                    size={30}
                                                     aria-label="Loading Spinner"
                                                     data-testid="loader"
-                                                />
+                                                    />
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>

@@ -76,6 +76,7 @@ function TestLeads() {
     const [isFilter, setIsFilter] = useState(false)
     const [assignedData, setAssignedData] = useState([])
     const [unAssignedData, setunAssignedData] = useState([])
+    const [searchTerm, setSearchTerm] = useState("")
 
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
@@ -93,7 +94,7 @@ function TestLeads() {
             //console.log("data", response.data.data)
             // Set the retrieved data in the state
             //console.log(response.data.unAssignedCount)
-            console.log(response.data)
+            //console.log(response.data)
             setData(response.data.data);
             setTotalCount(response.data.totalPages)
             setTotalCompaniesUnaasigned(response.data.unAssignedCount)
@@ -168,7 +169,10 @@ function TestLeads() {
         setCurrentPage(nextPage);
         if (isFilter ) {
             handleFilterData(nextPage, itemsPerPage);
-        } else {
+        
+        } else if(isSearching) {
+            handleFilterSearch(nextPage , itemsPerPage)
+        }else{
             fetchData(nextPage, latestSortCount);
         }
     };
@@ -178,7 +182,9 @@ function TestLeads() {
         setCurrentPage(prevPage);
         if (isFilter) {
             handleFilterData(prevPage, itemsPerPage);
-        } else {
+        } else if(isSearching) {
+            handleFilterSearch(prevPage , itemsPerPage);      
+        }else{
             fetchData(prevPage, latestSortCount);
         }
     };
@@ -216,6 +222,30 @@ function TestLeads() {
             };
     
             fetchFilteredLeads();
+        }else if(isSearching){
+            const fetchFilteredLeads = async () => {
+                //console.log(searchText)
+                try {
+                    const page = 1;
+                    const limit = 500;
+                    const response = await axios.get(`${secretKey}/company-data/search-leads`, {
+                        params: {
+                            searchQuery : searchText,
+                            page,  
+                            limit,
+                        }
+                    });
+                    if (dataStatus === "Unassigned") {
+                        setunAssignedData(response.data.unassigned);
+                    } else {
+                        setAssignedData(response.data.assigned);
+                    }
+                } catch (error) {
+                    console.error("Error fetching filtered leads:", error);
+                }
+            };
+    
+            fetchFilteredLeads();
         }
     }, [dataStatus]);
     
@@ -231,38 +261,77 @@ function TestLeads() {
     }
     //--------------------function to filter company name ------------------------------
 
-    const handleFilterSearch = async (searchQuery) => {
-        try {
+    // const handleFilterSearch = async (searchQuery) => {
+    //     try {
+    //         setCurrentDataLoading(true);
+    //         setIsSearching(true);
+    //         setIsFilter(false);
+    //         const response = await axios.get(`${secretKey}/company-data/search-leads`, {
+    //             params: { searchQuery, field: "Company Name" }
+    //         });
+
+    //         if (!searchQuery.trim()) {
+    //             // If search query is empty, reset data to mainData
+    //             setIsSearching(false)
+    //             fetchData(1, latestSortCount)
+    //         } else {
+    //             // Set data to the search results
+    //             setData(response.data);
+    //             if (response.data.length > 0) {
+    //                 if (response.data[0].ename === 'Not Alloted') {
+    //                     setDataStatus('Unassigned')
+    //                 } else {
+    //                     setDataStatus('Assigned')
+    //                 }
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error searching leads:', error.message);
+    //     } finally {
+    //         setCurrentDataLoading(false);
+
+    //     }
+    // };
+
+    const handleFilterSearch = async(searchQuery , page = 1 , limit = itemsPerPage)=>{
+      
+        try{
             setCurrentDataLoading(true);
             setIsSearching(true);
             setIsFilter(false);
-            const response = await axios.get(`${secretKey}/company-data/search-leads`, {
-                params: { searchQuery, field: "Company Name" }
+            handleClearFilter()
+            const response = await axios.get(`${secretKey}/company-data/search-leads` , {
+                params : { 
+                    searchQuery,
+                    page, 
+                    limit  }
             });
-
-            if (!searchQuery.trim()) {
-                // If search query is empty, reset data to mainData
-                setIsSearching(false)
-                fetchData(1, latestSortCount)
-            } else {
-                // Set data to the search results
-                setData(response.data);
-                if (response.data.length > 0) {
-                    if (response.data[0].ename === 'Not Alloted') {
-                        setDataStatus('Unassigned')
+            if(!searchQuery.trim()){
+                setIsSearching(false);
+                fetchData(1 , latestSortCount)
+            }else{
+                setAssignedData(response.data.assigned)
+                setunAssignedData(response.data.unassigned)
+                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
+                setTotalCount(response.data.totalPages)
+                setCurrentPage(1)
+                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                    if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
+                        setDataStatus('Unassigned');
                     } else {
-                        setDataStatus('Assigned')
+                        setDataStatus('Assigned');
                     }
                 }
             }
-        } catch (error) {
-            console.error('Error searching leads:', error.message);
-        } finally {
-            setCurrentDataLoading(false);
-
+        }catch(error){
+            console.error('Error searching leads' , error.message)
+        }finally{
+            setCurrentDataLoading(false)
         }
-    };
-
+    }
+    //console.log("assigned" , assignedData)
+    //console.log("unassigneddata" , unAssignedData)
     
 
 
@@ -814,43 +883,99 @@ function TestLeads() {
     //     }
     // };
 
+    // const handleCheckboxChange = async (id) => {
+    //     if (id === "all") {
+    //         if(isFilter){
+    //             const response = await axios.get(`${secretKey}/admin-leads/getIds`, {
+    //                 params: {
+    //                     dataStatus,
+    //                     selectedStatus,
+    //                     selectedState,
+    //                     selectedNewCity,
+    //                     selectedBDEName,
+    //                     selectedAssignDate,
+    //                     selectedUploadedDate,
+    //                     selectedAdminName,
+    //                     selectedYear,
+    //                     selectedCompanyIncoDate
+    //                 }
+    //             });
+    //         }else if(isSearching){
+    //             const response = await axios.get(`${secretKey}/admin-leads/getIds`, {
+    //                 params: {
+    //                     dataStatus,
+    //                     searchQuery : searchText,
+    //                 }
+    //             });
+
+    //         }
+    //         setAllIds(response.data);
+    //         setSelectedRows((prevSelectedRows) =>
+    //             prevSelectedRows.length === response.data.length ? [] : response.data
+    //         );
+    //     } else {
+    //         setSelectedRows((prevSelectedRows) => {
+    //             if (prevSelectedRows.includes(id)) {
+    //                 return prevSelectedRows.filter((rowId) => rowId !== id);
+    //             } else {
+    //                 return [...prevSelectedRows, id];
+    //             }
+    //         });
+    //     }
+    // };
+
     const handleCheckboxChange = async (id) => {
-        if (id === "all") {
-            const response = await axios.get(`${secretKey}/admin-leads/getIds`, {
-                params: {
-                    dataStatus,
-                    selectedStatus,
-                    selectedState,
-                    selectedNewCity,
-                    selectedBDEName,
-                    selectedAssignDate,
-                    selectedUploadedDate,
-                    selectedAdminName,
-                    selectedYear,
-                    selectedCompanyIncoDate
-                }
-            });
-            setAllIds(response.data);
+        try {
+            let response;
+            if (id === "all") {
+                response = await axios.get(`${secretKey}/admin-leads/getIds`, {
+                    params: {
+                        dataStatus,
+                        selectedStatus,
+                        selectedState,
+                        selectedNewCity,
+                        selectedBDEName,
+                        selectedAssignDate,
+                        selectedUploadedDate,
+                        selectedAdminName,
+                        selectedYear,
+                        selectedCompanyIncoDate,
+                        isFilter,
+                        isSearching,
+                        searchText
+                    }
+                });
+            } else {
+                setSelectedRows((prevSelectedRows) => {
+                    if (prevSelectedRows.includes(id)) {
+                        return prevSelectedRows.filter((rowId) => rowId !== id);
+                    } else {
+                        return [...prevSelectedRows, id];
+                    }
+                });
+                return;
+            }
+    
+            // Process response
+            const { data } = response;
+            // Handle response data as needed
+            setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === response.data.length ? [] : response.data
+                prevSelectedRows.length === data.allIds.length ? [] : data.allIds
             );
-        } else {
-            setSelectedRows((prevSelectedRows) => {
-                if (prevSelectedRows.includes(id)) {
-                    return prevSelectedRows.filter((rowId) => rowId !== id);
-                } else {
-                    return [...prevSelectedRows, id];
-                }
-            });
+        } catch (error) {
+            // Handle errors
+            console.error('Error:', error);
         }
     };
+    
+    
     
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
         let index;
-
-        if (isFilter) {
+        if (isFilter || isSearching) {
             if (dataStatus === 'Unassigned') {
                 index = unAssignedData.findIndex((row) => row._id === id);
             } else if (dataStatus === 'Assigned') {
@@ -870,7 +995,7 @@ function TestLeads() {
         if (startRowIndex !== null) {
             let endRowIndex, dataSet;
 
-            if (isFilter) {
+            if (isFilter || isSearching) {
                 if (dataStatus === 'Unassigned') {
                     dataSet = unAssignedData;
                 } else if (dataStatus === 'Assigned') {
@@ -939,7 +1064,9 @@ function TestLeads() {
                     selectedUploadedDate,
                     selectedAdminName,
                     selectedYear,
-                    selectedCompanyIncoDate
+                    selectedCompanyIncoDate,
+                    isSearching,
+                    searchText,
                 }
             );
 
@@ -971,7 +1098,7 @@ function TestLeads() {
 
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
-        if (isFilter) {
+        if (isFilter || isSearching) {
             if (dataStatus === 'Unassigned') {
                 selectedObjects = unAssignedData.filter((row) =>
                     selectedRows.includes(row._id)
@@ -1065,7 +1192,6 @@ function TestLeads() {
         
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData
         const tempFilter =( !isFilter && !isSearching) ? data : tempStatusData;
-
         const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
     
         try {
@@ -1079,8 +1205,10 @@ function TestLeads() {
     
             if (isFilter) {
                 handleFilterData(1, itemsPerPage);
-            } else {
-                fetchData(1, latestSortCount);
+            } else if(isSearching) {
+                handleFilterSearch(1 , itemsPerPage)
+            }else{
+                fetchData(1 , latestSortCount)
             }
     
             Swal.fire("Data Assigned");
@@ -1228,9 +1356,9 @@ function TestLeads() {
         setIsUpdateMode(true);
         // setCompanyData(cdata.filter((item) => item.ename === echangename));
 
-        // // Find the selected data object
+         // Find the selected data object
         const dataToFilter = dataStatus === "Unassigned" ? unAssignedData : assignedData
-        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter 
+        const finalFiltering = !isFilter || !isSearching ? data : dataToFilter 
         const selectedData = finalFiltering.find((item) => item._id === id);
        
         //console.log(selectedData["Company Incorporation Date  "])
@@ -1420,7 +1548,7 @@ function TestLeads() {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
-            console.log(monthIndex)
+            //console.log(monthIndex)
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {
@@ -1805,7 +1933,7 @@ function TestLeads() {
                                             </tbody>
                                         ) : (
                                             <tbody>
-                                                {(isFilter) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1898,7 +2026,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {(isFilter) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
+                                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -1991,7 +2119,7 @@ function TestLeads() {
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {(!isFilter) && data.map((company, index) => (
+                                                {(!isFilter && !isSearching) && data.map((company, index) => (
                                                     <tr
                                                         key={index}
                                                         className={selectedRows.includes(company._id) ? "selected" : ""}
@@ -2089,7 +2217,7 @@ function TestLeads() {
                                     </table>
                                 </div>
                             </div>
-                            {!isFilter && data.length === 0  && !currentDataLoading && (
+                            {(!isFilter || !isSearching)  && data.length === 0  && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2100,7 +2228,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
-                            {isFilter && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
+                            {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2111,7 +2239,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
-                             {isFilter && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
+                             {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2133,18 +2261,18 @@ function TestLeads() {
                                     </button>
                                 </div>
                             )} */}
-                            {(data.length !== 0 || (isFilter && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
+                            {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
                                     </button>
-                                    {isFilter && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                    {isFilter && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
-                                    {!isFilter && <span>Page {currentPage} / {totalCount}</span>}
+                                    {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
+                                    {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
+                                    {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
-                                        (isFilter && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                        (isFilter && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
-                                        (!isFilter && data.length < itemsPerPage)
+                                        ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
+                                        ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
+                                        ((!isFilter || !isSearching) && data.length < itemsPerPage)
                                     }>
                                         <IconChevronRight />
                                     </button>
