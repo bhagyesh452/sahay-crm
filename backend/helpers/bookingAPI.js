@@ -2079,12 +2079,7 @@ router.post(
             </p>
           `;
 
-          const seedfundIncluded = newData.services.some((service)=>{
-            service.serviceName === 'Seed Funding Support';
-          })
-          if (seedfundIncluded) {
-            servicesHtml += `Re-application support will be provided at no extra cost`;
-          }
+          
             }
             if (incomeTaxServices !== "") {
               servicesHtml += `
@@ -2098,6 +2093,12 @@ router.post(
             </p>
         `;
             }
+            const seedfundIncluded = newData.services.some((service)=>{
+              service.serviceName === 'Seed Funding Support';
+            })
+            if (seedfundIncluded) {
+              servicesHtml += `Re-application support will be provided at no extra cost`;
+            }
             return servicesHtml;
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -2107,6 +2108,11 @@ router.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
+          const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+          <p class="Declaration_text_data">
+          Re-application support will be provided at no extra cost
+          </p>
+        ` : ``
 
 
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
@@ -2130,6 +2136,7 @@ router.post(
                     <p class="Declaration_text_data">
                     As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
                     </p>
+                    ${seedfundIncluded}
                   </div>
                
                   
@@ -3838,6 +3845,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </p>
         
         `;
+       
+        
         } else if (
           newData.services[i].serviceName === "Income Tax Exemption"
         ) {
@@ -3870,6 +3879,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
+   
+
+    
        
       }
       if (incomeTaxServices !== "") {
@@ -3884,12 +3896,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       </p>
   `;
       }
-      const seedfundIncluded = newData.services.some((service)=>{
-        service.serviceName === 'Seed Funding Support';
-      })
-      if (seedfundIncluded) {
-        servicesHtml += `Re-application support will be provided at no extra cost`;
-      }
+     
       return servicesHtml;
     };
     const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -3899,6 +3906,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
+    const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+      <p class="Declaration_text_data">
+      Re-application support will be provided at no extra cost
+      </p>
+    ` : ``
 
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
@@ -3921,6 +3933,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               <p class="Declaration_text_data">
               As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
               </p>
+              ${seedfundIncluded}
             </div>
          
             
