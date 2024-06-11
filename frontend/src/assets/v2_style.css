@@ -523,7 +523,6 @@
 table.table.top_5_table {
     border-radius: 8px;
     background: #eee;
-    overflow: hidden;
     min-width: 408px;
 }
 .top_5_table tbody tr
