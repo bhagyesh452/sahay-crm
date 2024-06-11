@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from "react";
 
-import Navbar from "./Navbar";
-import Header from "./Header";
+import Navbar from "../../Components/Navbar/Navbar.jsx";
+import Header from "../../Components/Header/Header.jsx";
 import { useLocation, useParams } from "react-router-dom";
-import notificationSound from "../assets/media/iphone_sound.mp3";
+import notificationSound from "../../../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
@@ -23,17 +23,17 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import Form from "../components/Form.jsx";
+import Form from "../../../components/Form.jsx";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import "../assets/table.css";
-import "../assets/styles.css";
+import "../../../assets/table.css";
+import "../../../assets/styles.css";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import Nodata from "../components/Nodata.jsx";
-import EditForm from "../components/EditForm.jsx";
+import Nodata from "../../Components/Nodata/Nodata.jsx";
+import EditForm from "../../../components/EditForm.jsx";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import { options } from "../components/Options.js";
+import { options } from "../../../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import io from "socket.io-client";
 import AddCircle from "@mui/icons-material/AddCircle.js";
@@ -44,13 +44,11 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
-import RedesignedForm from "../admin/RedesignedForm.jsx";
-import LeadFormPreview from "../admin/LeadFormPreview.jsx";
+import RedesignedForm from "../../../admin/RedesignedForm.jsx";
+import LeadFormPreview from "../../../admin/LeadFormPreview.jsx";
 import Edit from "@mui/icons-material/Edit";
-import EditableLeadform from "../admin/EditableLeadform.jsx";
-import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
-import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
+import EditableMoreBooking from "../../../admin/EditableMoreBooking.jsx";
 import { RiShareForwardBoxFill } from "react-icons/ri";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
@@ -75,9 +73,6 @@ import { GrDocumentStore } from "react-icons/gr";
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
-import Employee from './Employees.js'
-import Team from './Team.js'
-import EmployeeParticular from "./EmployeeParticular.js";
 import { MdDeleteOutline } from "react-icons/md";
 
 
@@ -88,7 +83,7 @@ import { MdDeleteOutline } from "react-icons/md";
 
 
 
-function AdminEmployeeTeamLeads() {
+function DatamanagerEmployeeTeamLeads() {
     const { id } = useParams();
     const [data, setData] = useState([])
     const [dataStatus, setdataStatus] = useState("All");
@@ -1939,47 +1934,6 @@ function AdminEmployeeTeamLeads() {
 
                             {/* <!-- Page title actions --> */}
                         </div>
-                        {/* <div class="card-header my-tab">
-                            <ul
-                                class="nav nav-tabs card-header-tabs nav-fill p-0"
-                                data-bs-toggle="tabs"
-                            >
-                                <li class="nav-item data-heading">
-                                    <a
-                                        href="#tabs-home-5"
-                                        onClick={() => {
-                                            setCurrentTab("Leads")
-                                            window.location.pathname = `/admin/employees/${id}`
-                                        }}
-                                        className={
-                                            currentTab === 'Leads'
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                    >
-                                        Leads{" "}
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="#tabs-activity-5"
-                                        onClick={() => {
-                                            setCurrentTab("TeamLeads")
-                                            window.location.pathname = `/admin/employeeleads/${id}`
-                                        }}
-                                        className={
-                                            currentTab === "TeamLeads"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                    >
-                                        <span>Team Leads</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div> */}
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -3183,4 +3137,4 @@ function AdminEmployeeTeamLeads() {
     );
 }
 
-export default AdminEmployeeTeamLeads;
+export default DatamanagerEmployeeTeamLeads;

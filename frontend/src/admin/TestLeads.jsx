@@ -58,8 +58,8 @@ function TestLeads() {
     const endIndex = startIndex + itemsPerPage;
     const [searchText, setSearchText] = useState("")
     const [dataStatus, setDataStatus] = useState("Unassigned");
-    const [totalCompaniesUnassigned, setTotalCompaniesUnaasigned] = useState()
-    const [totalCompaniesAssigned, setTotalCompaniesAssigned] = useState()
+    const [totalCompaniesUnassigned, setTotalCompaniesUnaasigned] = useState(0)
+    const [totalCompaniesAssigned, setTotalCompaniesAssigned] = useState(0)
     const [empData, setEmpData] = useState([])
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -190,12 +190,14 @@ function TestLeads() {
     };
 
     useEffect(() => {
-        if (isFilter) {
-            const fetchFilteredLeads = async () => {
-                try {
-                    const page = 1;
-                    const limit = 500;
-                    const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+        const fetchLeads = async () => {
+            try {
+                const page = 1;
+                const limit = 500;
+                let response;
+    
+                if (isFilter) {
+                    response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                         params: {
                             selectedStatus,
                             selectedState,
@@ -210,44 +212,38 @@ function TestLeads() {
                             limit
                         }
                     });
-    
-                    if (dataStatus === "Unassigned") {
-                        setunAssignedData(response.data.unassigned);
-                    } else {
-                        setAssignedData(response.data.assigned);
-                    }
-                } catch (error) {
-                    console.error("Error fetching filtered leads:", error);
-                }
-            };
-    
-            fetchFilteredLeads();
-        }else if(isSearching){
-            const fetchFilteredLeads = async () => {
-                //console.log(searchText)
-                try {
-                    const page = 1;
-                    const limit = 500;
-                    const response = await axios.get(`${secretKey}/company-data/search-leads`, {
+                } else if (isSearching) {
+                    response = await axios.get(`${secretKey}/company-data/search-leads`, {
                         params: {
-                            searchQuery : searchText,
+                            searchQuery: searchText,
                             page,  
                             limit,
                         }
                     });
+                }
+    
+                if (response) {
+                    setTotalCompaniesUnaasigned(response.data.totalUnassigned)
+                    setTotalCompaniesAssigned(response.data.totalAssigned)
                     if (dataStatus === "Unassigned") {
                         setunAssignedData(response.data.unassigned);
+                        
                     } else {
                         setAssignedData(response.data.assigned);
+                        
                     }
-                } catch (error) {
-                    console.error("Error fetching filtered leads:", error);
                 }
-            };
+            } catch (error) {
+                console.error("Error fetching leads:", error);
+            }
+        };
     
-            fetchFilteredLeads();
+        if (isFilter || isSearching) {
+            fetchLeads();
         }
     }, [dataStatus]);
+    
+    
     
 
     //const currentData = mainData.slice(startIndex, endIndex);
@@ -310,6 +306,7 @@ function TestLeads() {
                 setIsSearching(false);
                 fetchData(1 , latestSortCount)
             }else{
+               
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
@@ -330,8 +327,7 @@ function TestLeads() {
             setCurrentDataLoading(false)
         }
     }
-    //console.log("assigned" , assignedData)
-    //console.log("unassigneddata" , unAssignedData)
+    
     
 
 

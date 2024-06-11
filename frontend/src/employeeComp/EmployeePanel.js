@@ -2240,14 +2240,6 @@ function EmployeePanel() {
         // console.log("response", response.data);
         Swal.fire("Data Reversed");
         fetchNewData(empStatus);
-        //setdataStatus(empStatus);
-        // setEmployeeData(
-        //   moreEmpData
-        //     .filter((obj) => obj.Status !== empStatus)
-        //     .sort(
-        //       (a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate)
-        //     )
-        // );
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
       }
