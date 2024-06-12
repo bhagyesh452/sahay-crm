@@ -75,6 +75,9 @@ const CompanySchema = new mongoose.Schema({
     type:Boolean,
     default:"false"
   },
+  UploadedBy:{
+    type:String
+  }
 
 });
 

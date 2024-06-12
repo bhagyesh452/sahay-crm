@@ -63,7 +63,6 @@ function ManagerBookings() {
       //setCurrentDataLoading(true)
 
       const response = await axios.get(`${secretKey}/company-data/leads`);
-
       // Set the retrieved data in the state
       setData(response.data);
       //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));

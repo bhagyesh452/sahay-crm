@@ -733,6 +733,7 @@ function EmployeesThisMonthBooking() {
         let remainingMoreExpense = 0;
 
         redesignedData.map((mainBooking) => {
+
             const bookingDate = new Date(mainBooking.bookingDate);
             const startDate = new Date(bookingStartDate);
             const endDate = new Date(bookingEndDate);
@@ -747,6 +748,8 @@ function EmployeesThisMonthBooking() {
                     date1.getFullYear() === date2.getFullYear()
                 );
             };
+
+
 
             if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                 if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
@@ -785,7 +788,7 @@ function EmployeesThisMonthBooking() {
                             achievedAmount += Math.floor(mainBooking.generatedReceivedAmount);
                             mainBooking.services.map(serv => {
                                 // console.log(serv.expanse , bdeName ,"this is services");
-                                let expanseDate = null
+                                let expanseDate;
                                 if (serv.expanse) {
                                     expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
 
@@ -799,10 +802,40 @@ function EmployeesThisMonthBooking() {
                 }
 
             } else if (mainBooking.remainingPayments.length !== 0) {
+                if (mainBooking.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                    mainBooking.services.forEach(serv => {
+                        if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                            remainingExpense += serv.expanse / 2;
+                        } else if (mainBooking.bdeName === mainBooking.bdmName) {
+                            remainingExpense += serv.expanse;
+                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === bdeName) {
+                            remainingExpense += serv.expanse;
+                        }}
+                    });
+                }   
+                // mainBooking.services.map(serv => {
+                //     // console.log(serv.expanse , bdeName ,"this is services");
+                //     let expanseDate;
+                //     // if (mainBooking["Company Name"] === "DANITUM HEALTHTECH PRIVATE LIMITED") {
+                //     //     console.log("Ye wali company He:", bdeName, tempAmount)
+                //     // }
+                //     if (serv.expanse) {
+                //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
+                //         expanseDate.setHours(0, 0, 0, 0);
+                //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                //         if (mainBooking["Company Name"] === "DANITUM HEALTHTECH PRIVATE LIMITED") {
+                //             console.log("Ye wali compan:", bdeName, serv.expanse, serv.expanseDate, condition)
+                //         }
+                //         remainingExpense = condition ? serv.expanse : remainingExpense;
+                //         console.log(remainingExpense)
+
+                //     }
+                // });
                 mainBooking.remainingPayments.map((remainingObj) => {
                     const moreBookingDate = new Date(remainingObj.paymentDate);
 
                     moreBookingDate.setHours(0, 0, 0, 0);
+
 
 
                     if (((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
@@ -811,41 +844,33 @@ function EmployeesThisMonthBooking() {
                         if (mainBooking.bdeName === mainBooking.bdmName) {
 
                             remainingAmount += Math.floor(tempAmount);
-                            mainBooking.services.map(serv => {
-                                // console.log(serv.expanse , bdeName ,"this is services");
-                                let expanseDate = null
-                                if (serv.expanse) {
-                                    expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
-                                    expanseDate.setHours(0, 0, 0, 0);
-                                    const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                    remainingExpense = condition ? serv.expanse : remainingExpense;
-                                }
-                            });
+
+
                         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
                             remainingAmount += Math.floor(tempAmount) / 2;
-                            mainBooking.services.map(serv => {
-                                // console.log(serv.expanse , bdeName ,"this is services");
-                                let expanseDate = null
-                                if (serv.expanse) {
-                                    expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
-                                    expanseDate.setHours(0, 0, 0, 0);
-                                    const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                    remainingExpense = condition ? serv.expanse / 2 : remainingExpense;
-                                }
-                            });
+                            // mainBooking.services.map(serv => {
+                            //     // console.log(serv.expanse , bdeName ,"this is services");
+                            //     let expanseDate = null
+                            //     if (serv.expanse) {
+                            //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
+                            //         expanseDate.setHours(0, 0, 0, 0);
+                            //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                            //         remainingExpense = condition ? serv.expanse / 2 : remainingExpense;
+                            //     }
+                            // });
                         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
                             if (mainBooking.bdeName === bdeName) {
                                 remainingAmount += Math.floor(tempAmount);
-                                mainBooking.services.map(serv => {
-                                    // console.log(serv.expanse , bdeName ,"this is services");
-                                    let expanseDate = null
-                                    if (serv.expanse) {
-                                        expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
-                                        expanseDate.setHours(0, 0, 0, 0);
-                                        const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                        remainingExpense = condition ? serv.expanse / 2 : remainingExpense;
-                                    }
-                                });
+                                // mainBooking.services.map(serv => {
+                                //     // console.log(serv.expanse , bdeName ,"this is services");
+                                //     let expanseDate = null
+                                //     if (serv.expanse) {
+                                //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
+                                //         expanseDate.setHours(0, 0, 0, 0);
+                                //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                                //         remainingExpense = condition ? serv.expanse : remainingExpense;
+                                //     }
+                                // });
                             }
                         }
                     }
@@ -868,6 +893,7 @@ function EmployeesThisMonthBooking() {
                                     expanseDate.setHours(0, 0, 0, 0);
                                     const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
                                     expanse = condition ? expanse + serv.expanse : expanse;
+
                                 }
                             });
                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
@@ -880,7 +906,7 @@ function EmployeesThisMonthBooking() {
 
                                     expanseDate.setHours(0, 0, 0, 0);
                                     const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                    expanse = condition ? expanse + serv.expanse : expanse;
+                                    expanse = condition ? expanse + serv.expanse / 2 : expanse;
                                 }
                             });
                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
@@ -901,6 +927,20 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 } else if (moreObject.remainingPayments.length !== 0) {
+                    if (moreObject.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+                        moreObject.services.forEach(serv => {
+                            if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){
+                                if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                                    remainingMoreExpense += serv.expanse / 2;
+                                } else if (moreObject.bdeName === moreObject.bdmName) {
+                                    remainingMoreExpense += serv.expanse;
+                                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === bdeName) {
+                                    remainingMoreExpense += serv.expanse;
+                                }
+                            }
+                           
+                        });
+                    } 
 
                     moreObject.remainingPayments.map((remainingObj) => {
                         const moreRemainingDate = new Date(remainingObj.paymentDate);
@@ -911,47 +951,48 @@ function EmployeesThisMonthBooking() {
                             const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
                             if (moreObject.bdeName === moreObject.bdmName) {
                                 remainingAmount += Math.floor(tempAmount);
-                                moreObject.services.map(serv => {
-                                    // console.log(serv.expanse , bdeName ,"this is services");
-                                    let expanseDate = null
-                                    if (serv.expanse) {
-                                        expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
-                                        expanseDate.setHours(0, 0, 0, 0);
-                                        const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                        remainingMoreExpense = condition ? serv.expanse : remainingMoreExpense;
-                                    }
-                                });
+                                // moreObject.services.map(serv => {
+                                //     // console.log(serv.expanse , bdeName ,"this is services");
+                                //     let expanseDate = null
+                                //     if (serv.expanse) {
+                                //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
+                                //         expanseDate.setHours(0, 0, 0, 0);
+                                //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                                //         remainingMoreExpense = condition ? serv.expanse : remainingMoreExpense;
+                                //     }
+                                // });
                             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
                                 remainingAmount += Math.floor(tempAmount) / 2;
-                                moreObject.services.map(serv => {
-                                    // console.log(serv.expanse , bdeName ,"this is services");
-                                    let expanseDate = null
-                                    if (serv.expanse) {
-                                        expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
-                                        expanseDate.setHours(0, 0, 0, 0);
-                                        const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                        remainingMoreExpense = condition ? serv.expanse / 2 : remainingMoreExpense;
-                                    }
-                                });
+                                // moreObject.services.map(serv => {
+                                //     // console.log(serv.expanse , bdeName ,"this is services");
+                                //     let expanseDate = null
+                                //     if (serv.expanse) {
+                                //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
+                                //         expanseDate.setHours(0, 0, 0, 0);
+                                //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                                //         remainingMoreExpense = condition ? serv.expanse / 2 : remainingMoreExpense;
+                                //     }
+                                // });
                             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
                                 if (moreObject.bdeName === bdeName) {
                                     remainingAmount += Math.floor(tempAmount);
-                                    moreObject.services.map(serv => {
-                                        // console.log(serv.expanse , bdeName ,"this is services");
-                                        let expanseDate = null
-                                        if (serv.expanse) {
-                                            expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
-                                            expanseDate.setHours(0, 0, 0, 0);
-                                            const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-                                            remainingMoreExpense = condition ? serv.expanse : remainingMoreExpense;
-                                        }
-                                    });
+                                    // moreObject.services.map(serv => {
+                                    //     // console.log(serv.expanse , bdeName ,"this is services");
+                                    //     let expanseDate = null
+                                    //     if (serv.expanse) {
+                                    //         expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreRemainingDate;
+                                    //         expanseDate.setHours(0, 0, 0, 0);
+                                    //         const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
+                                    //         remainingMoreExpense = condition ? serv.expanse : remainingMoreExpense;
+                                    //     }
+                                    // });
                                 }
                             }
                         }
                     })
                 }
             })
+
         })
 
         expanse = expanse + remainingExpense + remainingMoreExpense;
