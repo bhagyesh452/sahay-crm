@@ -51,8 +51,10 @@ import Tab from '@mui/material/Tab';
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
+import { TiArrowBack } from "react-icons/ti";
 //import Typography from '@mui/material/Typography';
 //import Box from '@mui/material/Box';
+import { MdDeleteOutline } from "react-icons/md";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -133,19 +135,12 @@ function EmployeeParticular() {
 
       // Set eData to the array of _id values
       seteData(salesExecutivesIds);
-      //console.log("kuch bhi" ,salesExecutivesIds)
+      
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
       );
 
-      //
-      //
-      //console.log("selectedemployee" , selectedEmployee)
-      //console.log(selectedEmployee._id)
-
-      //console.log("eData", eData[0])
-      //console.log(salesExecutivesIds)
 
       if (
         salesExecutivesIds.length > 0 &&
@@ -1260,6 +1255,39 @@ function EmployeeParticular() {
     //setOpenPopupByBdm(false);
   };
 
+  //--------------------function to reverse assign-------------------------
+  
+  const handleReverseAssign = async (
+    companyId,
+    companyName,
+    bdmAcceptStatus,
+    empStatus,
+    bdmName
+  ) => {
+    if (bdmAcceptStatus !== "NotForwarded") {
+      try {
+        const response = await axios.post(
+          `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
+          {
+            companyName,
+            bdmAcceptStatus: "NotForwarded",
+            bdmName: "NoOne" // Corrected parameter name
+          }
+        );
+        const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
+          caseType: "NotForwarded"
+        })
+        // console.log("response", response.data);
+        Swal.fire("Data Reversed");
+        fetchNewData(empStatus);
+      } catch (error) {
+        console.log("error reversing bdm forwarded data", error.message);
+      }
+    } else if (bdmAcceptStatus === "NotForwarded") {
+      Swal.fire("Cannot Reforward Data");
+    }
+  };
+
 
 
 
@@ -1281,13 +1309,6 @@ function EmployeeParticular() {
                   <IconButton>
                     <IconChevronLeft onClick={handleChangeUrlPrev} />
                   </IconButton>
-
-                  {/* <Link to={`/admin/employees`}>
-                    <IconButton>
-                      <IconChevronLeft />
-                    </IconButton>
-                  </Link> */}
-
                   <h2 className="page-title">{employeeName}</h2>
                   <div className="nextBtn">
                     <IconButton onClick={handleChangeUrl}>
@@ -1492,20 +1513,6 @@ function EmployeeParticular() {
                       </>}
                     </div>
                   )}
-                </div>
-              </div>
-              {/* <!-- Page title actions --> */}
-              <div className="col-auto ms-auto d-print-none">
-                <div className="btn-list">
-                  <a
-                    href="#"
-                    className="btn btn-primary d-sm-none btn-icon"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-report"
-                    aria-label="Create new report"
-                  >
-                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  </a>
                 </div>
               </div>
             </div>
@@ -2230,18 +2237,17 @@ function EmployeeParticular() {
                               <th>BDM Name</th>
                               <th>Forwarded Date</th>
                             </>)}
-                          {/* {(dataStatus === "Forwarded" ||
-                              dataStatus === "Interested" ||
-                              dataStatus === "FollowUp") && (
-                                <th>Forward to BDM</th>
-                              )} */}
+                        
                           {dataStatus === "Forwarded" &&
                             (dataStatus !== "Interested" ||
                               dataStatus !== "FollowUp" ||
                               dataStatus !== "Untouched" ||
                               dataStatus !== "Matured" ||
-                              dataStatus !== "Not Interested") && (
+                              dataStatus !== "Not Interested") && (<>
                               <th>Feedback</th>
+                            </>)}
+                            {dataStatus === "Forwarded" && (
+                              <th>Action</th>
                             )}
                         </tr>
                       </thead>
@@ -2357,51 +2363,8 @@ function EmployeeParticular() {
                                       {company.Status === "FollowUp" && (
                                         <span>FollowUp</span>
                                       )}
-                                      {/* {company.Status === "Matured" && (
-                                      <span>Matured</span>
-                                    )}
-                                    {(company.Status === "Not Interested" ||
-                                      company.Status === "Junk" ||
-                                      company.Status === "Busy") && (
-                                      <span></span>
-                                    )} */}
                                     </td>
                                   )}
-                                  {/* <td>
-                                    <div
-                                      key={company._id}
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                      }}
-                                    >
-                                      <p
-                                        className="rematkText text-wrap m-0"
-                                        title={company.Remarks}
-                                      >
-                                        {company.Remarks}
-                                      </p>
-                                      <span>
-                                        <IconButton
-                                          onClick={() => {
-                                            functionopenpopupremarks(
-                                              company._id,
-                                              company.Status,
-                                              company.ename
-                                            );
-                                          }}
-                                        >
-                                          <HiOutlineEye
-                                            style={{
-                                              fontSize: "14px",
-                                              color: "#fbb900",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </span>
-                                    </div>
-                                  </td> */}
                                   {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
                                     <td>
                                       <div key={company._id}
@@ -2586,24 +2549,27 @@ function EmployeeParticular() {
                                     </td>
                                   )
                                 ) : null}
-                                  {/* {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
-                                    <td>
-                                      <IconButton onClick={() => {
-                                        handleViewFeedback(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.feedbackRemarks,
-                                          company.feedbackPoints
-                                        )
-                                      }}>
-                                        <RiInformationLine style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                          color="#fbb900" /></IconButton>
-                                    </td>
-                                  )} */}
+                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                  <td>
+                                    <MdDeleteOutline
+                                          onClick={() => {
+                                            handleReverseAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.bdmAcceptStatus,
+                                              company.Status,
+                                              company.bdmName
+                                            )
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#f70000"
+                                        />
+                                  </td>
+                                )}
                                 </tr>
                               ))}
                             </tbody>

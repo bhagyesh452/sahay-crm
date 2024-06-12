@@ -590,6 +590,8 @@ router.get('/search-leads', async (req, res) => {
       currentPage : page,
     });
 
+    //console.log(assignedCount , unassignedCount)
+
   } catch (error) {
     console.error("Error searching leads", error)
     res.status(500).json({ error: "Internal Server Error" })

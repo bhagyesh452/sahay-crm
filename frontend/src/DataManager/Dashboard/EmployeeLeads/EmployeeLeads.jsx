@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import Header from "../../Components/Header/Header.jsx";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
 import PageviewIcon from '@mui/icons-material/Pageview';
 import { IconChevronRight } from "@tabler/icons-react";
@@ -36,6 +36,16 @@ import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 //import LeadFormPreview from "./LeadFormPreview";
+import Box from "@mui/material/Box";
+//import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { AiOutlineTeam } from "react-icons/ai";
+import { GoPerson } from "react-icons/go";
+import { MdOutlinePersonPin } from "react-icons/md";
+import Typography from "@mui/material/Typography";
+import PropTypes from "prop-types";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 
@@ -55,6 +65,8 @@ function EmployeeLeads() {
     const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
     const [openProjection, setOpenProjection] = useState(false);
+    const [currentTab, setCurrentTab] = useState("Leads");
+    const [bdmWorkOn, setBdmWorkOn] = useState(false)
     const [currentProjection, setCurrentProjection] = useState({
         companyName: "",
         ename: "",
@@ -137,6 +149,7 @@ function EmployeeLeads() {
 
             if (selectedEmployee) {
                 setEmployeeName(selectedEmployee.ename);
+                setBdmWorkOn(selectedEmployee.bdmWork)
             } else {
                 // Handle the case where no employee is found with the given id
                 setEmployeeName("Employee not found");
@@ -517,50 +530,50 @@ function EmployeeLeads() {
     const handleUploadData = async (e) => {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
-      
+
         const csvdata = employeeData
-          .filter((employee) => selectedRows.includes(employee._id))
-          .map((employee) => ({
-            ...employee,
-            Status: "Untouched",
-            Remarks: "No Remarks Added",
-          }));
-      
+            .filter((employee) => selectedRows.includes(employee._id))
+            .map((employee) => ({
+                ...employee,
+                Status: "Untouched",
+                Remarks: "No Remarks Added",
+            }));
+
         try {
-          Swal.fire({
-            title: 'Assigning...',
-            allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
-      
-          const response = await axios.post(`${secretKey}/company-data/assign-new`, {
-            ename: newemployeeSelection,
-            data: csvdata,
-          });
-      
-          Swal.close();
-          Swal.fire({
-            title: "Data Sent!",
-            text: "Data sent successfully!",
-            icon: "success",
-          });
-      
-          setnewEmployeeSelection("Not Alloted");
-          fetchEmployeeDetails();
-          fetchNewData();
-          closepopupAssign();
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+                ename: newemployeeSelection,
+                data: csvdata,
+            });
+
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+
+            setnewEmployeeSelection("Not Alloted");
+            fetchEmployeeDetails();
+            fetchNewData();
+            closepopupAssign();
         } catch (error) {
-          console.error("Error updating employee data:", error);
-          Swal.close();
-          Swal.fire({
-            title: "Error!",
-            text: "Failed to update employee data. Please try again later.",
-            icon: "error",
-          });
+            console.error("Error updating employee data:", error);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
         }
-      };
+    };
 
     //console.log(loginDetails);
 
@@ -727,6 +740,80 @@ function EmployeeLeads() {
     console.log(dataManagerName)
 
 
+    // ------------------------------panel-----------------------------------------
+
+    function CustomTabPanel(props) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && (
+                    <Box sx={{ p: 3 }}>
+                        <Typography>{children}</Typography>
+                    </Box>
+                )}
+            </div>
+        );
+    }
+
+    CustomTabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.number.isRequired,
+        value: PropTypes.number.isRequired,
+    };
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        };
+    }
+    const location = useLocation();
+    const [value, setValue] = React.useState(location.pathname === `/datamanager/employeeLeads/${id}` ? 0 : 1);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    //--------------------function to reverse assign-------------------------
+
+    const handleReverseAssign = async (
+        companyId,
+        companyName,
+        bdmAcceptStatus,
+        empStatus,
+        bdmName
+    ) => {
+        if (bdmAcceptStatus !== "NotForwarded") {
+            try {
+                const response = await axios.post(
+                    `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
+                    {
+                        companyName,
+                        bdmAcceptStatus: "NotForwarded",
+                        bdmName: "NoOne" // Corrected parameter name
+                    }
+                );
+                const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
+                    caseType: "NotForwarded"
+                })
+                // console.log("response", response.data);
+                Swal.fire("Data Reversed");
+                fetchNewData(empStatus);
+            } catch (error) {
+                console.log("error reversing bdm forwarded data", error.message);
+            }
+        } else if (bdmAcceptStatus === "NotForwarded") {
+            Swal.fire("Cannot Reforward Data");
+        }
+    };
+
 
 
 
@@ -749,13 +836,6 @@ function EmployeeLeads() {
                                     <IconButton>
                                         <IconChevronLeft onClick={handleChangeUrlPrev} />
                                     </IconButton>
-
-                                    {/* <Link to={`/admin/employees`}>
-                    <IconButton>
-                      <IconChevronLeft />
-                    </IconButton>
-                  </Link> */}
-
                                     <h2 className="page-title">{employeeName}</h2>
                                     <div className="nextBtn">
                                         <IconButton onClick={handleChangeUrl}>
@@ -906,14 +986,6 @@ function EmployeeLeads() {
                                             </option>
                                         </select>
                                     </div>
-                                    {/* <Link
-                    to={`/admin/employees/${id}/login-details`}
-                    style={{ marginLeft: "10px" }}>
-                    <button className="btn btn-primary d-none d-sm-inline-block">
-                      Login Details
-                    </button>
-                  </Link> */}
-
                                     {backButton && <div><Link
                                         to={`/datamanager/employees`}
                                         style={{ marginLeft: "10px" }}>
@@ -922,27 +994,58 @@ function EmployeeLeads() {
                                             Back
                                         </button>
                                     </Link></div>}
-
-
                                 </div>
                             </div>
-
                             {/* <!-- Page title actions --> */}
-                            <div className="col-auto ms-auto d-print-none">
-                                <div className="btn-list">
-                                    <a
-                                        href="#"
-                                        className="btn btn-primary d-sm-none btn-icon"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-report"
-                                        aria-label="Create new report"
-                                    >
-                                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                </div>
+                <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                            <a
+                                href="#tabs-home-5"
+                                onClick={() => {
+                                    setCurrentTab("Leads")
+                                    window.location.pathname = `/datamanager/employeeLeads/${id}`
+                                }}
+                                className={
+                                    currentTab === "Leads"
+                                        ? "nav-link"
+                                        : "nav-link"
+                                }
+                                data-bs-toggle="tab"
+                            ><Tab label={
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                    <span style={{ fontSize: "12px" }}>
+                                        Leads </span>
+                                </div>
+                            } {...a11yProps(0)} /></a>
+                            {bdmWorkOn && (<a
+                                href="#tabs-activity-5"
+                                onClick={() => {
+                                    setCurrentTab("TeamLeads")
+                                    window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`
+                                }}
+                                className={
+                                    currentTab === "TeamLeads"
+                                        ? "nav-link"
+                                        : "nav-link"
+                                }
+                                data-bs-toggle="tab"
+                            ><Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>
+                                                Team Leads</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(1)}
+                                /></a>)}
+                        </Tabs>
+                    </Box>
                 </div>
                 {!openLogin && (
                     <div
@@ -1148,17 +1251,6 @@ function EmployeeLeads() {
                                                 </select>
                                             </div>
                                             <div className="input-icon form-control">
-                                                {/* <input
-                          type="number"
-                          value={year}
-                          defaultValue="Select Year"
-                          className="form-control"
-                          placeholder="Select Year.."
-                          onChange={(e) => {
-                            setYear(e.target.value);
-                          }}
-                          aria-label="Search in website"
-                        /> */}
                                                 <select select
                                                     style={{ border: "none", outline: "none" }}
                                                     value={year}
@@ -1336,6 +1428,45 @@ function EmployeeLeads() {
                                         <a
                                             href="#tabs-activity-5"
                                             onClick={() => {
+                                                setdataStatus("Forwarded");
+                                                setCurrentPage(0);
+                                                setEmployeeData(
+                                                    moreEmpData
+                                                        .filter(
+                                                            (obj) =>
+                                                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                                                obj.Status !== "Matured"
+                                                        )
+                                                        .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                                                );
+                                                //setdataStatus(obj.bdmAcceptStatus);
+                                            }}
+                                            className={
+                                                dataStatus === "Forwarded"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                        >
+                                            Bdm Forwarded{" "}
+                                            <span className="no_badge">
+                                                {" "}
+                                                {
+                                                    moreEmpData.filter(
+                                                        (obj) =>
+                                                            obj.bdmAcceptStatus !== "NotForwarded" &&
+                                                            obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                                            obj.Status !== "Matured"
+                                                    ).length
+                                                }
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a
+                                            href="#tabs-activity-5"
+                                            onClick={() => {
                                                 setdataStatus("NotInterested");
                                                 setCurrentPage(0);
                                                 setEmployeeData(
@@ -1402,8 +1533,6 @@ function EmployeeLeads() {
                                                     <th className="th-sticky1">Company Name</th>
                                                     <th>Company Number</th>
                                                     <th>Status</th>
-                                                    
-
                                                     <th>
                                                         Incorporation Date
                                                         <FilterListIcon
@@ -1486,6 +1615,9 @@ function EmployeeLeads() {
                                                             }}
                                                         />
                                                     </th>
+                                                    {dataStatus === "Forwarded" && (
+                                                        <th>Action</th>
+                                                    )}
                                                     {/* {(dataStatus === "Matured" && <th>Action</th>) ||
                                                         (dataStatus === "FollowUp" && <th>View Projection</th>) ||
                                                         (dataStatus === "Interested" && <th>View Projection</th>)} */}
@@ -1587,6 +1719,27 @@ function EmployeeLeads() {
                                                                             )}
                                                                         </td>
                                                                     )} */}
+                                                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                                                        <td>
+                                                                            <MdDeleteOutline
+                                                                                onClick={() => {
+                                                                                    handleReverseAssign(
+                                                                                        company._id,
+                                                                                        company["Company Name"],
+                                                                                        company.bdmAcceptStatus,
+                                                                                        company.Status,
+                                                                                        company.bdmName
+                                                                                    )
+                                                                                }}
+                                                                                style={{
+                                                                                    cursor: "pointer",
+                                                                                    width: "17px",
+                                                                                    height: "17px",
+                                                                                }}
+                                                                                color="#f70000"
+                                                                            />
+                                                                        </td>
+                                                                    )}
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -1610,11 +1763,10 @@ function EmployeeLeads() {
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                           
+
                                                 </tbody>
                                             ) : (
                                                 <>
-
                                                     {dataStatus === "null" && companies.length !== 0 && (
                                                         <tbody>
                                                             {companies.map((company, index) => (
@@ -1677,7 +1829,6 @@ function EmployeeLeads() {
                                                                     <td>{company["Company Email"]}</td>
                                                                     <td>{formatDate(company["AssignDate"])}</td>
                                                                     <td>
-
                                                                         <IconButton>
                                                                             <RiEditCircleFill
                                                                                 onClick={() => {
@@ -1706,7 +1857,7 @@ function EmployeeLeads() {
                                                     </tr>
                                                 </tbody>
                                             )}
-            
+
                                         </table>
                                     </div>
                                     {currentData.length !== 0 && (

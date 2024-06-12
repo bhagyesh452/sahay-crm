@@ -166,6 +166,61 @@ function ManageLeads() {
         }
     };
 
+    useEffect(() => {
+        const fetchLeads = async () => {
+            try {
+                const page = 1;
+                const limit = 500;
+                let response;
+    
+                if (isFilter) {
+                    response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+                        params: {
+                            selectedStatus,
+                            selectedState,
+                            selectedNewCity,
+                            selectedBDEName,
+                            selectedAssignDate,
+                            selectedUploadedDate,
+                            selectedAdminName,
+                            selectedYear,
+                            selectedCompanyIncoDate,
+                            page,  
+                            limit
+                        }
+                    });
+                } else if (isSearching) {
+                    response = await axios.get(`${secretKey}/company-data/search-leads`, {
+                        params: {
+                            searchQuery: searchText,
+                            page,  
+                            limit,
+                        }
+                    });
+                }
+    
+                if (response) {
+                    setTotalCompaniesUnaasigned(response.data.totalUnassigned)
+                    setTotalCompaniesAssigned(response.data.totalAssigned)
+                    if (dataStatus === "Unassigned") {
+                        setunAssignedData(response.data.unassigned);
+                        
+                    } else {
+                        setAssignedData(response.data.assigned);
+                        
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching leads:", error);
+            }
+        };
+    
+        if (isFilter || isSearching) {
+            fetchLeads();
+        }
+    }, [dataStatus]);
+    
+
     //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
@@ -1466,7 +1521,7 @@ function ManageLeads() {
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-                                                <th>Status</th>
+                                                {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
