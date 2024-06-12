@@ -99,24 +99,73 @@ function Employees({ onEyeButtonClick }) {
   //   };
   // }, []);
 
-  const handleDeleteClick = (itemId, nametochange) => {
+  // const handleDeleteClick = (itemId, nametochange) => {
+  //   // Open the confirm delete modal
+  //   setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
+    
+  //   setItemIdToDelete(itemId);
+  //   setIsModalOpen(true);
+  // };
+
+  const handleDeleteClick = async (itemId, nametochange) => {
     // Open the confirm delete modal
     setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
-    
     setItemIdToDelete(itemId);
-    setIsModalOpen(true);
+  
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to remove this employee?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
+          //const saveResponse = await axios.post(`${secretKey}/employee/savedeletedemployee`, { itemId });
+          
+          // Refresh the data after successful deletion
+          handledeletefromcompany();
+          fetchData();
+          
+          Swal.fire({
+            title: "Employee Removed!",
+            text: "You have successfully removed the employee!",
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please try again later!",
+          });
+        }
+      } else {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Employee is safe!',
+          icon: 'info',
+        });
+      }
+    });
   };
+  
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const handleConfirmDelete = () => {
-    // Perform the delete operation here (call your delete API, etc.)
-    // After deletion, close the modal
-    handleDelete(itemIdToDelete);
-    handledeletefromcompany();
-    setIsModalOpen(false);
-  };
-console.log(companyDdata)
+  // const handleConfirmDelete = () => {
+  //   // Perform the delete operation here (call your delete API, etc.)
+  //   // After deletion, close the modal
+  //   handleDelete(itemIdToDelete);
+  //   handledeletefromcompany();
+  //   setIsModalOpen(false);
+  // };
+
   const handledeletefromcompany = async () => {
     console.log("yahan chala")
     if (companyDdata && companyDdata.length !== 0) {
@@ -145,10 +194,10 @@ console.log(companyDdata)
     }
   };
 
-  const handleCancelDelete = () => {
-    // Cancel the delete operation and close the modal
-    setIsModalOpen(false);
-  };
+  // const handleCancelDelete = () => {
+  //   // Cancel the delete operation and close the modal
+  //   setIsModalOpen(false);
+  // };
   const [bdmWork, setBdmWork] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedFormat, setSortedFormat] = useState({
@@ -651,7 +700,7 @@ console.log(companyDdata)
 
   return (
     <div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         style={{
@@ -664,8 +713,7 @@ console.log(companyDdata)
             margin: "auto",
             textAlign: "center",
           },
-        }}
-      >
+        }}>
         <div className="modal-header">
           <h3 style={{ fontSize: "20px" }} className="modal-title">
             Confirm Delete?
@@ -684,292 +732,7 @@ console.log(companyDdata)
         >
           Cancel
         </button>
-      </Modal>
-      <Dialog className='My_Mat_Dialog'  open={open} onClose={closepopup} fullWidth maxWidth="sm">
-        <DialogTitle>
-          Employee Info{" "}
-          <IconButton onClick={closepopup} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
-        </DialogTitle>
-        <DialogContent>
-          <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Employee Name</label>
-                  <input
-                    type="text"
-                    value={ename}
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Your report name"
-                    onChange={(e) => {
-                      setEname(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Email Address</label>
-                  <input
-                    value={email}
-                    type="email"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Your report name"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Password</label>
-                  <div className="input-group">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Your report name"
-                      required
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                    />
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? "Hide" : "Show"}
-                    </button>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Designation</label>
-                    <div className="form-control">
-                      <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
-                        value={designation}
-                        required
-                        onChange={(e) => {
-                          setDesignation(e.target.value);
-                        }}
-                      >
-                        <option value="" disabled selected>
-                          Select Designation
-                        </option>
-                        <option value="Sales Executive">Sales Executive</option>
-                        <option value="Sales Manager">Sales Manager</option>
-                        <option value="Graphics Designer">
-                          Graphics Designer
-                        </option>
-                        <option value="Software Developer">
-                          Software Developer
-                        </option>
-                        <option value="Finance Analyst">Finance Analyst</option>
-                        <option value="Content Writer">Content Writer</option>
-                        <option value="Data Manager">Data Manager</option>
-                        <option value="Admin Team">Admin Team</option>
-                        <option value="Others">Others</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Branch Office</label>
-                    <div className="form-control">
-                      <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
-                        value={branchOffice}
-                        required
-                        onChange={(e) => {
-                          setBranchOffice(e.target.value);
-                        }}
-                      >
-                        <option value="" disabled selected>
-                          Select Branch Office
-                        </option>
-                        <option value="Gota">Gota</option>
-                        <option value="Sindhu Bhawan">Sindhu Bhawan</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                {/* If the designation is others */}
-                {designation === "Others" && (
-                  <div className="mb-3">
-                    <input
-                      value={otherdesignation}
-                      type="email"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Please enter your designation"
-                      onChange={(e) => {
-                        setotherDesignation(e.target.value);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="row">
-                <div className="col-lg-6">
-                  <div className="mb-3">
-                    <label className="form-label">Phone No.</label>
-                    <input
-                      value={number}
-                      type="number"
-                      className="form-control"
-                      onChange={(e) => {
-                        setNumber(e.target.value);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="mb-3">
-                    <label className="form-label">Joining Date</label>
-                    <input
-                      value={jdate}
-                      type="date"
-                      onChange={(e) => {
-                        setJdate(e.target.value);
-                      }}
-                      className="form-control"
-                    />
-                  </div>
-                </div>
-              </div>
-              <label className="form-label">ADD Target</label>
-
-              {targetObjects.map((obj, index) => (
-
-                <div className="row">
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <div className="form-control">
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
-                          value={obj.year}
-                          onChange={(e) => {
-                            setTargetObjects(prevState => {
-                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                              updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
-                              return updatedTargets; // Set the updated array as the new state
-                            });
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Year
-                          </option>
-                          <option value="2024">2024</option>
-                          <option value="2023">2023</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <div className="form-control">
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
-                          value={obj.month}
-                          onChange={(e) => {
-                            setTargetObjects(prevState => {
-                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                              updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
-                              return updatedTargets; // Set the updated array as the new state
-                            });
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Month
-                          </option>
-                          <option value="January">January</option>
-                          <option value="February">February</option>
-                          <option value="March">March</option>
-                          <option value="April">April</option>
-                          <option value="May">May</option>
-                          <option value="June">June</option>
-                          <option value="July">July</option>
-                          <option value="August">August</option>
-                          <option value="September">September</option>
-                          <option value="October">October</option>
-                          <option value="November">November</option>
-                          <option value="December">December</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-5">
-                    <div className="mb-3">
-                      <input
-                        placeholder="ADD Target value"
-                        type="number"
-                        className="form-control"
-                        value={obj.amount}
-                        onChange={(e) => {
-                          setTargetObjects(prevState => {
-                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
-                            return updatedTargets; // Set the updated array as the new state
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-1">
-                    <div className="mb-3 d-flex">
-                      <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
-                        <MdOutlineAddCircle
-                          color="primary"
-                          style={{
-                            float: "right",
-                            width: "14px",
-                            height: "14px",
-                          }}
-
-                        ></MdOutlineAddCircle>
-                      </IconButton>
-                      <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
-                        <MdDelete
-                          color="primary"
-                          style={{
-                            float: "right",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                        />
-                      </IconButton>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DialogContent>
-        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
-          Submit
-        </Button>
-      </Dialog>
-
+      </Modal> */}
       {/* <Header />
       <Navbar number={1} /> */}
       <div className="">
@@ -1284,6 +1047,288 @@ console.log(companyDdata)
           </div>
         </div>
       </div>
+      <Dialog className='My_Mat_Dialog'  open={open} onClose={closepopup} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Employee Info{" "}
+          <IconButton onClick={closepopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Employee Name</label>
+                  <input
+                    type="text"
+                    value={ename}
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your report name"
+                    onChange={(e) => {
+                      setEname(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Email Address</label>
+                  <input
+                    value={email}
+                    type="email"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your report name"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Password</label>
+                  <div className="input-group">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Your report name"
+                      required
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                    />
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6 mb-3">
+                    <label className="form-label">Designation</label>
+                    <div className="form-control">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
+                        }}
+                        value={designation}
+                        required
+                        onChange={(e) => {
+                          setDesignation(e.target.value);
+                        }}
+                      >
+                        <option value="" disabled selected>
+                          Select Designation
+                        </option>
+                        <option value="Sales Executive">Sales Executive</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                        <option value="Graphics Designer">
+                          Graphics Designer
+                        </option>
+                        <option value="Software Developer">
+                          Software Developer
+                        </option>
+                        <option value="Finance Analyst">Finance Analyst</option>
+                        <option value="Content Writer">Content Writer</option>
+                        <option value="Data Manager">Data Manager</option>
+                        <option value="Admin Team">Admin Team</option>
+                        <option value="Others">Others</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-lg-6 mb-3">
+                    <label className="form-label">Branch Office</label>
+                    <div className="form-control">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
+                        }}
+                        value={branchOffice}
+                        required
+                        onChange={(e) => {
+                          setBranchOffice(e.target.value);
+                        }}
+                      >
+                        <option value="" disabled selected>
+                          Select Branch Office
+                        </option>
+                        <option value="Gota">Gota</option>
+                        <option value="Sindhu Bhawan">Sindhu Bhawan</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                {/* If the designation is others */}
+                {designation === "Others" && (
+                  <div className="mb-3">
+                    <input
+                      value={otherdesignation}
+                      type="email"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Please enter your designation"
+                      onChange={(e) => {
+                        setotherDesignation(e.target.value);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="row">
+                <div className="col-lg-6">
+                  <div className="mb-3">
+                    <label className="form-label">Phone No.</label>
+                    <input
+                      value={number}
+                      type="number"
+                      className="form-control"
+                      onChange={(e) => {
+                        setNumber(e.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-6">
+                  <div className="mb-3">
+                    <label className="form-label">Joining Date</label>
+                    <input
+                      value={jdate}
+                      type="date"
+                      onChange={(e) => {
+                        setJdate(e.target.value);
+                      }}
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+              </div>
+              <label className="form-label">ADD Target</label>
+              {targetObjects.map((obj, index) => (
+                <div className="row">
+                  <div className="col-lg-3">
+                    <div className="mb-3">
+                      <div className="form-control">
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={obj.year}
+                          onChange={(e) => {
+                            setTargetObjects(prevState => {
+                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                              updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                              return updatedTargets; // Set the updated array as the new state
+                            });
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Year
+                          </option>
+                          <option value="2024">2024</option>
+                          <option value="2023">2023</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-3">
+                    <div className="mb-3">
+                      <div className="form-control">
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={obj.month}
+                          onChange={(e) => {
+                            setTargetObjects(prevState => {
+                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                              updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
+                              return updatedTargets; // Set the updated array as the new state
+                            });
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Month
+                          </option>
+                          <option value="January">January</option>
+                          <option value="February">February</option>
+                          <option value="March">March</option>
+                          <option value="April">April</option>
+                          <option value="May">May</option>
+                          <option value="June">June</option>
+                          <option value="July">July</option>
+                          <option value="August">August</option>
+                          <option value="September">September</option>
+                          <option value="October">October</option>
+                          <option value="November">November</option>
+                          <option value="December">December</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-5">
+                    <div className="mb-3">
+                      <input
+                        placeholder="ADD Target value"
+                        type="number"
+                        className="form-control"
+                        value={obj.amount}
+                        onChange={(e) => {
+                          setTargetObjects(prevState => {
+                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
+                            return updatedTargets; // Set the updated array as the new state
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-1">
+                    <div className="mb-3 d-flex">
+                      <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
+                        <MdOutlineAddCircle
+                          color="primary"
+                          style={{
+                            float: "right",
+                            width: "14px",
+                            height: "14px",
+                          }}
+
+                        ></MdOutlineAddCircle>
+                      </IconButton>
+                      <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
+                        <MdDelete
+                          color="primary"
+                          style={{
+                            float: "right",
+                            width: "14px",
+                            height: "14px",
+                          }}
+                        />
+                      </IconButton>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
+          Submit
+        </Button>
+      </Dialog>
     </div>
   );
 }

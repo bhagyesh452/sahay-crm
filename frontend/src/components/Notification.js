@@ -1,4 +1,6 @@
 import * as React from 'react';
+import {useState , useEffect} from 'react'
+import axios from 'axios'
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -14,8 +16,10 @@ import Logout from '@mui/icons-material/Logout';
 import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
-export default function Notification() {
+export default function Notification({name , designation}) {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -24,8 +28,32 @@ export default function Notification() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+console.log(name)
 const navigate = useNavigate();
+const [data, setdata] = useState([])
+const [employeeData, setEmployeeData] = useState([])
+const { newtoken } = useParams();
+const { userId } = useParams();
+
+const fetchEmployeeData =async()=>{
+  
+  try{
+    const response = await axios.get(`${secretKey}/employee/einfo`)
+    console.log(response.data)
+    const data = response.data.filter(item=>item.ename === name)
+    
+    console.log(data)
+    setEmployeeData(data)
+
+
+  }catch(error){
+    console.error("Error fetching employee data" , error)
+
+  }
+}
+React.useEffect(()=>{
+  fetchEmployeeData()
+},[userId])
 
 
 
@@ -91,12 +119,14 @@ const navigate = useNavigate();
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={()=>(
+          window.location.replace(`/employee-profile-details/${userId}`),
+          handleClose)}>
           <Avatar /> Profile
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        {/* <MenuItem onClick={handleClose}>
           <Avatar /> My account
-        </MenuItem>
+        </MenuItem> */}
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>

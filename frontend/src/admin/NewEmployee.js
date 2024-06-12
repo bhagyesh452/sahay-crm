@@ -22,6 +22,8 @@ import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
 import Employee from './Employees.js'
 import Team from './Team.js'
+import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
+import { AiOutlineUserDelete } from "react-icons/ai";
 
 
 
@@ -90,6 +92,15 @@ function NewEmployee() {
                                         <span style={{fontSize:"12px"}}>Employee List</span>
                                     </div>
                                 } {...a11yProps(0)} />
+                                 <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <AiOutlineUserDelete style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Deleted Employees List</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(1)}
+                                />
                                 {/* <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
@@ -103,6 +114,9 @@ function NewEmployee() {
                         </Box>
                         <CustomTabPanel value={value} index={0}>
                             <Employee />
+                        </CustomTabPanel>
+                         <CustomTabPanel value={value} index={1}>
+                            <DeletedEmployeePanel/>
                         </CustomTabPanel>
                         {/* <CustomTabPanel value={value} index={1}>
                             <Team/>

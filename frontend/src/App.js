@@ -57,6 +57,7 @@ import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
+import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 
 
 
@@ -97,6 +98,7 @@ function App() {
           <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings /> : <Navigate to="/" />}>
           </Route>
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
+          <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
 
 
 
