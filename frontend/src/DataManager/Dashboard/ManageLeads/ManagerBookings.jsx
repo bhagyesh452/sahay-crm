@@ -62,7 +62,7 @@ function ManagerBookings() {
       //setIsLoading(true);
       //setCurrentDataLoading(true)
 
-      const response = await axios.get(`${secretKey}/leads`);
+      const response = await axios.get(`${secretKey}/company-data/leads`);
 
       // Set the retrieved data in the state
       setData(response.data);
