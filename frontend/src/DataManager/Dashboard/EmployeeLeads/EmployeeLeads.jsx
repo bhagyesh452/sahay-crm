@@ -45,6 +45,7 @@ import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
 import Typography from "@mui/material/Typography";
 import PropTypes from "prop-types";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 
@@ -780,7 +781,38 @@ function EmployeeLeads() {
         setValue(newValue);
     };
 
-    console.log(value)
+    //--------------------function to reverse assign-------------------------
+
+    const handleReverseAssign = async (
+        companyId,
+        companyName,
+        bdmAcceptStatus,
+        empStatus,
+        bdmName
+    ) => {
+        if (bdmAcceptStatus !== "NotForwarded") {
+            try {
+                const response = await axios.post(
+                    `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
+                    {
+                        companyName,
+                        bdmAcceptStatus: "NotForwarded",
+                        bdmName: "NoOne" // Corrected parameter name
+                    }
+                );
+                const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
+                    caseType: "NotForwarded"
+                })
+                // console.log("response", response.data);
+                Swal.fire("Data Reversed");
+                fetchNewData(empStatus);
+            } catch (error) {
+                console.log("error reversing bdm forwarded data", error.message);
+            }
+        } else if (bdmAcceptStatus === "NotForwarded") {
+            Swal.fire("Cannot Reforward Data");
+        }
+    };
 
 
 
@@ -1393,44 +1425,44 @@ function EmployeeLeads() {
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("Forwarded");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData
-                              .filter(
-                                (obj) =>
-                                  obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                  obj.Status !== "Matured"
-                              )
-                              .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-                          );
-                          //setdataStatus(obj.bdmAcceptStatus);
-                        }}
-                        className={
-                          dataStatus === "Forwarded"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Bdm Forwarded{" "}
-                        <span className="no_badge">
-                          {" "}
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                obj.Status !== "Matured"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
+                                        <a
+                                            href="#tabs-activity-5"
+                                            onClick={() => {
+                                                setdataStatus("Forwarded");
+                                                setCurrentPage(0);
+                                                setEmployeeData(
+                                                    moreEmpData
+                                                        .filter(
+                                                            (obj) =>
+                                                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                                                obj.Status !== "Matured"
+                                                        )
+                                                        .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                                                );
+                                                //setdataStatus(obj.bdmAcceptStatus);
+                                            }}
+                                            className={
+                                                dataStatus === "Forwarded"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                        >
+                                            Bdm Forwarded{" "}
+                                            <span className="no_badge">
+                                                {" "}
+                                                {
+                                                    moreEmpData.filter(
+                                                        (obj) =>
+                                                            obj.bdmAcceptStatus !== "NotForwarded" &&
+                                                            obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                                            obj.Status !== "Matured"
+                                                    ).length
+                                                }
+                                            </span>
+                                        </a>
+                                    </li>
                                     <li class="nav-item">
                                         <a
                                             href="#tabs-activity-5"
@@ -1501,8 +1533,6 @@ function EmployeeLeads() {
                                                     <th className="th-sticky1">Company Name</th>
                                                     <th>Company Number</th>
                                                     <th>Status</th>
-
-
                                                     <th>
                                                         Incorporation Date
                                                         <FilterListIcon
@@ -1585,6 +1615,9 @@ function EmployeeLeads() {
                                                             }}
                                                         />
                                                     </th>
+                                                    {dataStatus === "Forwarded" && (
+                                                        <th>Action</th>
+                                                    )}
                                                     {/* {(dataStatus === "Matured" && <th>Action</th>) ||
                                                         (dataStatus === "FollowUp" && <th>View Projection</th>) ||
                                                         (dataStatus === "Interested" && <th>View Projection</th>)} */}
@@ -1686,6 +1719,27 @@ function EmployeeLeads() {
                                                                             )}
                                                                         </td>
                                                                     )} */}
+                                                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                                                        <td>
+                                                                            <MdDeleteOutline
+                                                                                onClick={() => {
+                                                                                    handleReverseAssign(
+                                                                                        company._id,
+                                                                                        company["Company Name"],
+                                                                                        company.bdmAcceptStatus,
+                                                                                        company.Status,
+                                                                                        company.bdmName
+                                                                                    )
+                                                                                }}
+                                                                                style={{
+                                                                                    cursor: "pointer",
+                                                                                    width: "17px",
+                                                                                    height: "17px",
+                                                                                }}
+                                                                                color="#f70000"
+                                                                            />
+                                                                        </td>
+                                                                    )}
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -1713,7 +1767,6 @@ function EmployeeLeads() {
                                                 </tbody>
                                             ) : (
                                                 <>
-
                                                     {dataStatus === "null" && companies.length !== 0 && (
                                                         <tbody>
                                                             {companies.map((company, index) => (
@@ -1776,7 +1829,6 @@ function EmployeeLeads() {
                                                                     <td>{company["Company Email"]}</td>
                                                                     <td>{formatDate(company["AssignDate"])}</td>
                                                                     <td>
-
                                                                         <IconButton>
                                                                             <RiEditCircleFill
                                                                                 onClick={() => {

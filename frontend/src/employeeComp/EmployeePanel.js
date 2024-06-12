@@ -3252,11 +3252,6 @@ function EmployeePanel() {
                                   obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
                                   obj.Status !== "Matured"
                               )
-                              // .sort(
-                              //   (a, b) =>
-                              //     convertDateFormat(b.bdeForwardDate) > convertDateFormat(a.bdeForwardDate) ? 1 :
-                              //       convertDateFormat(b.bdeForwardDate) < convertDateFormat(a.bdeForwardDate) ? -1 : 0
-                              // )
                               .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                           );
                           //setdataStatus(obj.bdmAcceptStatus);
