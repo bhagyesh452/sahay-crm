@@ -54,6 +54,7 @@ import { MdOutlinePersonPin } from "react-icons/md";
 import { TiArrowBack } from "react-icons/ti";
 //import Typography from '@mui/material/Typography';
 //import Box from '@mui/material/Box';
+import { MdDeleteOutline } from "react-icons/md";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -2550,7 +2551,7 @@ function EmployeeParticular() {
                                 ) : null}
                                 {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
                                   <td>
-                                    <TiArrowBack
+                                    <MdDeleteOutline
                                           onClick={() => {
                                             handleReverseAssign(
                                               company._id,
@@ -2565,7 +2566,7 @@ function EmployeeParticular() {
                                             width: "17px",
                                             height: "17px",
                                           }}
-                                          color="#fbb900"
+                                          color="#f70000"
                                         />
                                   </td>
                                 )}
