@@ -1393,6 +1393,45 @@ function EmployeeLeads() {
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Forwarded");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData
+                              .filter(
+                                (obj) =>
+                                  obj.bdmAcceptStatus !== "NotForwarded" &&
+                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                  obj.Status !== "Matured"
+                              )
+                              .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                          );
+                          //setdataStatus(obj.bdmAcceptStatus);
+                        }}
+                        className={
+                          dataStatus === "Forwarded"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Bdm Forwarded{" "}
+                        <span className="no_badge">
+                          {" "}
+                          {
+                            moreEmpData.filter(
+                              (obj) =>
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                obj.Status !== "Matured"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                                    <li class="nav-item">
                                         <a
                                             href="#tabs-activity-5"
                                             onClick={() => {
