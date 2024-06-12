@@ -83,6 +83,7 @@ app.use('/api/requests', RequestAPI)
 app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
+app.use('/api/employee' , EmployeeAPI)
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -309,22 +310,22 @@ app.post("/api/processingLogin", async (req, res) => {
 
 
 // **************************************  Socket IO Active Status  **************************************************
-app.put("/api/employee/online-status/:id/:socketID", async (req, res) => {
-  const { id } = req.params;
-  const { socketID } = req.params;
-  console.log("kuhi", socketID);
-  try {
-    const admin = await adminModel.findByIdAndUpdate(
-      id,
-      { Active: socketID },
-      { new: true }
-    );
-    res.status(200).json(admin);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// app.put("/api/employee/online-status/:id/:socketID", async (req, res) => {
+//   const { id } = req.params;
+//   const { socketID } = req.params;
+//   console.log("kuhi", socketID);
+//   try {
+//     const admin = await adminModel.findByIdAndUpdate(
+//       id,
+//       { Active: socketID },
+//       { new: true }
+//     );
+//     res.status(200).json(admin);
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 app.put("/api/online-status/:id/disconnect", async (req, res) => {
   const { id } = req.params;
   const date = new Date().toString();
@@ -429,28 +430,28 @@ function createCSVString(data) {
   return csvData.map((row) => row.join(",")).join("\n");
 }
 
-app.post("/api/employee/employee-history", async (req, res) => {
-  const csvData = req.body;
+// app.post("/api/employee/employee-history", async (req, res) => {
+//   const csvData = req.body;
 
-  try {
-    for (const employeeData of csvData) {
-      try {
-        const employee = new EmployeeHistory(employeeData);
-        const savedEmployee = await employee.save();
-      } catch (error) {
-        console.error("Error saving employee:", error.message);
-        // res.status(500).json({ error: 'Internal Server Error' });
+//   try {
+//     for (const employeeData of csvData) {
+//       try {
+//         const employee = new EmployeeHistory(employeeData);
+//         const savedEmployee = await employee.save();
+//       } catch (error) {
+//         console.error("Error saving employee:", error.message);
+//         // res.status(500).json({ error: 'Internal Server Error' });
 
-        // Handle the error for this specific entry, but continue with the next one
-      }
-    }
+//         // Handle the error for this specific entry, but continue with the next one
+//       }
+//     }
 
-    res.status(200).json({ message: "Data sent successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error in bulk save:", error.message);
-  }
-});
+//     res.status(200).json({ message: "Data sent successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//     console.error("Error in bulk save:", error.message);
+//   }
+// });
 
 app.get("/api/employee-history/:companyName", async (req, res) => {
   try {
@@ -506,34 +507,34 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
 
 
 
-app.post("/api/employee/post-bdmwork-request/:eid", async (req, res) => {
-  const eid = req.params.eid;
-  const { bdmWork } = req.body;
+// app.post("/api/employee/post-bdmwork-request/:eid", async (req, res) => {
+//   const eid = req.params.eid;
+//   const { bdmWork } = req.body;
 
-  //console.log("bdmwork" , bdmWork)// Extract bdmWork from req.body
-  try {
-    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
-    // Assuming you're returning updatedCompany and remarksHistory after update
-    res.status(200).json({ message: "Status updated successfully" });
-  } catch (error) {
-    console.error("Error updating BDM work:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//   //console.log("bdmwork" , bdmWork)// Extract bdmWork from req.body
+//   try {
+//     await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
+//     // Assuming you're returning updatedCompany and remarksHistory after update
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating BDM work:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
-app.post("/api/employee/post-bdmwork-revoke/:eid", async (req, res) => {
-  const eid = req.params.eid;
-  const { bdmWork } = req.body;
+// app.post("/api/employee/post-bdmwork-revoke/:eid", async (req, res) => {
+//   const eid = req.params.eid;
+//   const { bdmWork } = req.body;
 
-  try {
-    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
+//   try {
+//     await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
 
-    res.status(200).json({ message: "Status Updated Successfully" });
-  } catch (error) {
-    console.error("error updating bdm work", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({ message: "Status Updated Successfully" });
+//   } catch (error) {
+//     console.error("error updating bdm work", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 // --------------------------api for teams----------------------------------------
 
@@ -809,63 +810,65 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-app.post("/api/employee/einfo", async (req, res) => {
-  try {
-    adminModel.create(req.body).then((result) => { // Change res to result
-      res.json(result); // Change res.json(res) to res.json(result)
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
-// 2. Read the Employee
-app.get("/api/employee/einfo", async (req, res) => {
-  try {
-    const data = await adminModel.find();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-// 3. Update the Employee
-app.put("/api/employee/einfo/:id", async (req, res) => {
-  const id = req.params.id;
 
-  try {
-    const updatedData = await adminModel.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+// app.post("/api/employee/einfo", async (req, res) => {
+//   try {
+//     adminModel.create(req.body).then((result) => { // Change res to result
+//       res.json(result); // Change res.json(res) to res.json(result)
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-    if (!updatedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
+// // 2. Read the Employee
+// app.get("/api/employee/einfo", async (req, res) => {
+//   try {
+//     const data = await adminModel.find();
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+// // 3. Update the Employee
+// app.put("/api/employee/einfo/:id", async (req, res) => {
+//   const id = req.params.id;
 
-    res.json({ message: "Data updated successfully", updatedData });
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-// 4. Delete an Employee 
-app.delete("/api/employee/einfo/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    // Use findByIdAndDelete to delete the document by its ID
-    const deletedData = await adminModel.findByIdAndDelete(id);
+//   try {
+//     const updatedData = await adminModel.findByIdAndUpdate(id, req.body, {
+//       new: true,
+//     });
 
-    if (!deletedData) {
-      return res.status(404).json({ error: "Data not found" });
-    }
+//     if (!updatedData) {
+//       return res.status(404).json({ error: "Data not found" });
+//     }
 
-    res.json({ message: "Data deleted successfully", deletedData });
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.json({ message: "Data updated successfully", updatedData });
+//   } catch (error) {
+//     console.error("Error updating data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+// // 4. Delete an Employee 
+// app.delete("/api/employee/einfo/:id", async (req, res) => {
+//   const id = req.params.id;
+//   try {
+//     // Use findByIdAndDelete to delete the document by its ID
+//     const deletedData = await adminModel.findByIdAndDelete(id);
+
+//     if (!deletedData) {
+//       return res.status(404).json({ error: "Data not found" });
+//     }
+
+//     res.json({ message: "Data deleted successfully", deletedData });
+//   } catch (error) {
+//     console.error("Error deleting data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 // ***************************************************************  Company Data's Hadi  *************************************************************
 
 
@@ -1112,14 +1115,6 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
 });
 
 // ********************************************************pdf files reader *************************************************************************************
-
-
-
-
-
-
-
-
 
 app.get("/download/recieptpdf/:fileName", (req, res) => {
   const fileName = req.params.filePath;

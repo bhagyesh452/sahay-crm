@@ -77,7 +77,7 @@ function Header({ name, designation}) {
                 </a>
               </div>
             </div>
-            <Notification/>
+            <Notification name = {name} designation={designation}/>
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item"
