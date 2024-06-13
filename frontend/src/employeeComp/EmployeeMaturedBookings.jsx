@@ -33,8 +33,8 @@ import PdfImageViewerAdmin from "../admin/PdfViewerAdmin";
 import Tooltip from '@mui/material/Tooltip';
 
 import RemainingAmnt from "../static/my-images/money.png";
-
-
+import { FaList } from "react-icons/fa6";
+import { FaTableCellsLarge } from "react-icons/fa6";
 
 
 function EmployeeMaturedBookings() {
@@ -382,7 +382,7 @@ function EmployeeMaturedBookings() {
         <div className="booking-list-main">
            <div className="booking_list_Filter">
             <div className="container-xl">
-              <div className="row justify-content-between">
+              <div className="row justify-content-between align-items-center">
                 <div className="col-2">
                   <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
                     <div class="input-icon">
@@ -419,8 +419,23 @@ function EmployeeMaturedBookings() {
                     </div>
                   </div>
                 </div>
-                <div className="col-6">
-                 
+                <div className="col-6 d-flex">
+                  <div className="list-gird-main ms-auto"> 
+                    <div className="listgrridradio_main d-flex align-items-center">
+                      <div className="custom_radio"> 
+                        <input type="radio" name="rGroup" value="1" id="r1" checked/>
+                        <label class="custom_radio-alias" for="r1">
+                        <FaTableCellsLarge />
+                        </label>
+                      </div>
+                      <div className="custom_radio"> 
+                        <input type="radio" name="rGroup" value="2" id="r2"/>
+                        <label class="custom_radio-alias" for="r2">
+                        <FaList />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

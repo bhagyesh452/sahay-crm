@@ -561,8 +561,12 @@ table.table.top_5_table td
 } */
 table.table.top_5_table tbody tr.myself
 {
-    transform: scale(1.05); 
-    box-shadow: 0px 4px 4px -5px #000;
+    transform: scale(1.02);
+    box-shadow: 0px 1px 22px -7px #181818;
+}
+table.table.top_5_table tbody tr.myself td {
+    border-top: none !important;
+    border-bottom: 1px solid #1cba19 !important;
 }
 .ranktd {
     width: 25px;

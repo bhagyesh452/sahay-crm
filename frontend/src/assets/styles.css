@@ -2023,3 +2023,38 @@ td input
   overflow: hidden;
   text-align: left;
 }
+.list-gird-main
+{
+
+}
+.listgrridradio_main
+{
+    border-radius: 10px;
+    overflow: hidden;
+}
+.custom_radio
+{
+
+}
+.custom_radio-alias
+{
+  background-color: #f5f5f5;
+  color: #7f7f7f;
+  display: inline-block;
+  padding: 6px 12px;
+  z-index: 1;
+  position: relative;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+  font-size: 14px;
+  height: 32PX;
+  line-height: 18PX;
+}
+.listgrridradio_main input[type=radio]{
+  display: none;
+}
+
+.listgrridradio_main input[type=radio]:checked + .custom_radio-alias{
+  background-color: #b3b3b3;
+  color: #fff;
+}
