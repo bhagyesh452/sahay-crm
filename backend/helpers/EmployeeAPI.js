@@ -90,23 +90,91 @@ router.post("/einfo", async (req, res) => {
   }
 });
 
-router.post('/savedeletedemployee', async (req, res) => {
-  const { itemId } = req.body;
-  
+router.put('/savedeletedemployee', async (req, res) => {
+  const { dataToDelete } = req.body;
+ 
+
+  if (!dataToDelete || dataToDelete.length === 0) {
+    return res.status(400).json({ error: "No employee data to save" });
+  }
   try {
-    const data = await adminModel.findById(itemId).lean();  // Use .lean() to get a plain JS object
-    if (!data) {
-      return res.status(404).json({ error: "Employee not found" });
-    }
-    
-    // Optionally, remove the _id property to avoid duplication error
-    const { _id, ...dataWithoutId } = data;
-    
-    const response = await deletedEmployeeModel.create(dataWithoutId);
-    res.status(200).json(response);
+    const newLeads = await Promise.all(
+      dataToDelete.map(async (data) => {
+        // Retain the original _id
+        const newData = {
+          ...data,
+          _id: data._id,
+          deletedDate: new Date().toISOString()
+        };
+
+        // Create a new document in the deletedEmployeeModel with the same _id
+        return await deletedEmployeeModel.create(newData);
+      })
+    );
+
+    res.status(200).json(newLeads);
   } catch (error) {
     console.error("Error saving deleted employee", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get('/deletedemployeeinfo', async (req, res) => {
+  try {
+    const data = await deletedEmployeeModel.find()
+    res.status(200).json(data)
+
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
+  const { id: itemId } = req.params; // Correct destructuring
+  console.log(itemId);
+  try {
+      const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
+     
+      if (!data) {
+          return res.status(404).json({ error: "Data not found" });
+      } else {
+          return res.status(200).json({ message: "Data deleted successfully", data });
+      }
+  } catch (error) {
+      console.error("Error fetching data:", error.message);
+      return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
+  const { dataToRevertBack } = req.body;
+  
+
+  if (!dataToRevertBack || dataToRevertBack.length === 0) {
+    return res.status(400).json({ error: "No employee data to save" });
+  }
+
+  try {
+    const newLeads = await Promise.all(
+      dataToRevertBack.map(async (data) => {
+        const newData = {
+          ...data,
+          _id: data._id,
+        };
+        return await adminModel.create(newData);
+      })
+    );
+
+    res.status(200).json(newLeads);
+  } catch (error) {
+    if (error.code === 11000) {
+      // Duplicate key error
+      console.error("Duplicate key error:", error.message);
+      return res.status(409).json({ error: "Duplicate key error. Document with this ID already exists." });
+    }
+    console.error("Error reverting back employee:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -140,6 +208,8 @@ router.put("/einfo/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 // 4. Delete an Employee 
 router.delete("/einfo/:id", async (req, res) => {
   const id = req.params.id;
@@ -159,4 +229,4 @@ router.delete("/einfo/:id", async (req, res) => {
 });
 
 
-  module.exports = router;
+module.exports = router;
