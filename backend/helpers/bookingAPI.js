@@ -1845,10 +1845,11 @@ router.post(
               </tr>
               `;
               }
+              const alteredServiceName = newData.services[i].serviceName === "Seed Funding Support" ? "Pitchdeck , Financial Model"? "Income Tax Exemption" : "Pitchdeck, Video Pitchdeck" ? "Raftaar" : "Pitchdeck" ? ("Nidhi Prayash Yojna" || "Nidhi Seed Support Scheme" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon" || "Incubation Support" || "Chunauti") : "Pitchdeck" ? "Stand-Up India" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
-                    <td colspan="4">Service Name : ${newData.services[i].serviceName
+                    <td colspan="4">Service Name : ${alteredServiceName
                 }</td>
                   </thead>
                   <tbody>
@@ -1876,14 +1877,14 @@ router.post(
           const renderMorePaymentDetails = () => {
             let servicesHtml = "";
             let paymentServices = "";
-
+      
             for (let i = 2; i < newData.services.length; i++) {
               const Amount =
                 newData.services[i].paymentTerms === "Full Advanced"
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-
+      
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -1896,7 +1897,7 @@ router.post(
               } else {
                 rowSpan = 1;
               }
-
+      
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -1934,12 +1935,11 @@ router.post(
               </tr>
               `;
               }
-
+              const alteredServiceName = newData.services[i].serviceName === "Seed Funding Support" ? "Pitchdeck , Financial Model"? "Income Tax Exemption" : "Pitchdeck, Video Pitchdeck" ? "Raftaar" : "Pitchdeck" ? ("Nidhi Prayash Yojna" || "Nidhi Seed Support Scheme" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon" || "Incubation Support" || "Chunauti") : "Pitchdeck" ? "Stand-Up India" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
-                    <td colspan="4">Service Name : ${newData.services[i].serviceName
-                }</td>
+                    <td colspan="4">Service Name : ${alteredServiceName}</td>
                   </thead>
                   <tbody>
                     <tr>
@@ -2233,7 +2233,8 @@ router.post(
             "Income Tax Exemption",
             "Mudra Loan",
             "SIDBI Loan",
-            "Incubation Support"
+            "Incubation Support",
+            "Chunauti"
           ];
           const draftCondition = newData.services.some((service) => {
             return includedServices.includes(service.serviceName);
@@ -2289,7 +2290,8 @@ router.post(
             "CRM Development",
             "ERP Development",
             "E-Commerce Website",
-            "Product Development"
+            "Product Development",
+            "Chunauti"
           ];
           const mailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
@@ -3642,10 +3644,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
+        const alteredServiceName = newData.services[i].serviceName === "Seed Funding Support" ? "Pitchdeck , Financial Model"? "Income Tax Exemption" : "Pitchdeck, Video Pitchdeck" ? "Raftaar" : "Pitchdeck" ? ("Nidhi Prayash Yojna" || "Nidhi Seed Support Scheme" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon" || "Incubation Support" || "Chunauti") : "Pitchdeck" ? "Stand-Up India" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${newData.services[i].serviceName
+              <td colspan="4">Service Name : ${alteredServiceName
           }</td>
             </thead>
             <tbody>
@@ -3731,12 +3734,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-
+        const alteredServiceName = newData.services[i].serviceName === "Seed Funding Support" ? "Pitchdeck , Financial Model"? "Income Tax Exemption" : "Pitchdeck, Video Pitchdeck" ? "Raftaar" : "Pitchdeck" ? ("Nidhi Prayash Yojna" || "Nidhi Seed Support Scheme" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon" || "Incubation Support" || "Chunauti") : "Pitchdeck" ? "Stand-Up India" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${newData.services[i].serviceName
-          }</td>
+              <td colspan="4">Service Name : ${alteredServiceName}</td>
             </thead>
             <tbody>
               <tr>
@@ -3760,6 +3762,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
+
+    
     const allowedServiceNames = [
       "Seed Funding Support",
       "Angel Funding Support",
@@ -3783,6 +3787,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Support",
+      "Chunauti"
     ];
     const AuthorizedName = newData.services.some((service) => {
       const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
@@ -4030,7 +4035,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Income Tax Exemption",
       "Mudra Loan",
       "SIDBI Loan",
-      "Incubation Support"
+      "Incubation Support",
+      "Chunauti"
     ];
 
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
@@ -4048,6 +4054,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Broucher Design",
       "Business Profile",
       "Seed Funding Support",
+      "Chunauti",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
