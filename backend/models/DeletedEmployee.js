@@ -41,6 +41,9 @@ const yourSchema = new mongoose.Schema({
       bdmWork:{
         type:Boolean,
         default:false
+      },
+      deletedDate:{
+        type: Date
       }
 })
 

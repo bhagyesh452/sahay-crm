@@ -70,6 +70,7 @@ function Employees({ onEyeButtonClick }) {
   }
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
+  
 
   const [open, openchange] = useState(false);
 
@@ -102,19 +103,21 @@ function Employees({ onEyeButtonClick }) {
   // const handleDeleteClick = (itemId, nametochange) => {
   //   // Open the confirm delete modal
   //   setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
-    
+
   //   setItemIdToDelete(itemId);
   //   setIsModalOpen(true);
   // };
-
-  const handleDeleteClick = async (itemId, nametochange) => {
+  const [dataToDelete, setDataToDelete] = useState([])
+  
+  
+  const handleDeleteClick = async (itemId, nametochange, dataToDelete) => {
     // Open the confirm delete modal
     setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
     setItemIdToDelete(itemId);
-  
+
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you really want to remove this employee?",
+      text: `Do you really want to remove ${nametochange}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -124,13 +127,15 @@ function Employees({ onEyeButtonClick }) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
+            dataToDelete,
+          });
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
-          //const saveResponse = await axios.post(`${secretKey}/employee/savedeletedemployee`, { itemId });
-          
+
           // Refresh the data after successful deletion
           handledeletefromcompany();
           fetchData();
-          
+
           Swal.fire({
             title: "Employee Removed!",
             text: "You have successfully removed the employee!",
@@ -153,7 +158,6 @@ function Employees({ onEyeButtonClick }) {
       }
     });
   };
-  
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -251,8 +255,8 @@ function Employees({ onEyeButtonClick }) {
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
-    console.log("selectedData", selectedData)
-    
+
+
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -314,7 +318,7 @@ function Employees({ onEyeButtonClick }) {
     fetchData();
     fetchCData();
   }, []);
-  
+
   function formatDateWP(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -365,10 +369,10 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
- 
+
 
   const handleSubmit = async (e) => {
-    
+
     // const referenceId = uuidv4();
     const AddedOn = new Date().toLocaleDateString();
     try {
@@ -408,18 +412,18 @@ function Employees({ onEyeButtonClick }) {
         dataToSend.bdmWork = true
       } else {
         dataToSend.bdmWork = false
-      }  
-      console.log(isUpdateMode , "updateMode")
+      }
+      console.log(isUpdateMode, "updateMode")
 
       if (isUpdateMode) {
 
         if (dataToSend.ename === "") {
-          Swal.fire("Invalid Details","Please Enter Details Properly" , "warning");
+          Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
           return true;
-        } 
+        }
         //console.log(dataToSend, "Bhoom");
         //console.log("updateddata",dataToSendUpdated)
-       const response =  await axios.put(
+        const response = await axios.put(
           `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
@@ -988,9 +992,11 @@ function Employees({ onEyeButtonClick }) {
                               <div className="d-flex justify-content-center align-items-center">
                                 {<div className="icons-btn">
                                   <IconButton
-                                    onClick={() =>
-                                      handleDeleteClick(item._id, item.ename)
-                                    }
+                                    onClick={async () => {
+                                      const dataToDelete = data.filter(obj => obj._id === item._id);
+                                      setDataToDelete(dataToDelete);
+                                      handleDeleteClick(item._id, item.ename, dataToDelete);
+                                    }}
                                   >
                                     <IconTrash
                                       style={{
@@ -1001,6 +1007,7 @@ function Employees({ onEyeButtonClick }) {
                                       }}
                                     />
                                   </IconButton>
+
                                 </div>}
                                 <div className="icons-btn">
                                   <IconButton
@@ -1047,7 +1054,7 @@ function Employees({ onEyeButtonClick }) {
           </div>
         </div>
       </div>
-      <Dialog className='My_Mat_Dialog'  open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Employee Info{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>

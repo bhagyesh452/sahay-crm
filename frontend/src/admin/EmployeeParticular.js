@@ -112,6 +112,9 @@ function EmployeeParticular() {
   const [loading, setLoading] = useState(false);
   const [companiesLoading, setCompaniesLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState("Leads");
+  const [selectedEmployee, setSelectedEmployee] = useState()
+  const [selectedEmployee2, setSelectedEmployee2] = useState()
+
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -124,39 +127,122 @@ function EmployeeParticular() {
     return formattedDate;
   }
   // Function to fetch employee details by id
+  // const fetchEmployeeDetails = async () => {
+  //   try {
+  //     const response = await axios.get(`${secretKey}/employee/einfo`)
+  //     const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`)
+
+  //     // Filter the response data to find _id values where designation is "Sales Executive"
+
+
+  //     const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive" || "Sales Manager").map((employee) => employee._id);
+  //     const salesExecutivesIds2 = response2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager").map((employee) => employee._id);
+  //     console.log(salesExecutivesIds2)
+  //     // Set eData to the array of _id values
+  //     seteData(salesExecutivesIds);
+
+  //     // Find the employee by id and set the name
+  //     const selectedEmployee = response.data.find(
+  //       (employee) => employee._id === id
+  //     );
+
+  //     console.log(selectedEmployee)
+
+  //     const selectedEmployee2 = response2.data.find(
+  //       (employee) => employee._id === id
+  //     );
+
+  //     console.log(selectedEmployee2._id)
+
+  //     // if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
+  //     //   // If it's at 0th position, set the visibility of the back button to false
+  //     //   setBackButton(false); // assuming backButton is your back button element
+  //     // } else if(salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id){
+  //     //   console.log("kyu nahi chl rha")
+  //     //   setBackButton(false)
+  //     // }else {
+  //     //   console.log("yahan chal na")
+  //     //   // Otherwise, set the visibility to true
+  //     //   setBackButton(true); // or any other appropriate display style
+  //     // }
+
+  //     if (selectedEmployee._id !== '') {
+  //       console.log("yahan nahi")
+  //       setEmployeeName(selectedEmployee.ename);
+  //       setBdmWorkOn(selectedEmployee.bdmWork);
+  //     } else if (selectedEmployee2._id !== '') {
+  //       console.log("yahan chala")
+  //       setEmployeeName(selectedEmployee2.ename);
+  //       setBdmWorkOn(selectedEmployee2.bdmWork);
+  //     } else {
+  //       console.log("yahan bhi")
+  //       // Handle the case where no employee is found with the given id
+  //       setEmployeeName("Employee not found");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching employee details:", error.message);
+  //   }
+  // };
+
+  let destination;
+
   const fetchEmployeeDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
+      const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
 
-      // Filter the response data to find _id values where designation is "Sales Executive"
+      // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
       const salesExecutivesIds = response.data
-        .filter((employee) => employee.designation === "Sales Executive")
+        .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
         .map((employee) => employee._id);
 
+      const salesExecutivesIds2 = response2.data
+        .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+        .map((employee) => employee._id);
+
+    
+
       // Set eData to the array of _id values
-      seteData(salesExecutivesIds);
-      
+     
+
       // Find the employee by id and set the name
-      const selectedEmployee = response.data.find(
-        (employee) => employee._id === id
-      );
+      const selectedEmployee = response.data.find((employee) => employee._id === id);
+      const selectedEmployee2 = response2.data.find((employee) => employee._id === id);
+      
 
+      if(selectedEmployee){
+        setSelectedEmployee(selectedEmployee)
+       seteData(salesExecutivesIds);
+      }else if(selectedEmployee2){
+        setSelectedEmployee2(selectedEmployee2)
+        seteData(salesExecutivesIds2)
+      }
+      //console.log(selectedEmployee);
+      //console.log(selectedEmployee2);
 
-      if (
-        salesExecutivesIds.length > 0 &&
-        salesExecutivesIds[0] === selectedEmployee._id
-      ) {
-        // If it's at 0th position, set the visibility of the back button to false
+      if ((selectedEmployee && salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) ||
+        (selectedEmployee2 && salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id)) {
+        // If either selectedEmployee matches the condition or selectedEmployee2 matches the condition, set the visibility of the back button to false
+        console.log("false")
         setBackButton(false); // assuming backButton is your back button element
       } else {
+        console.log("true condition")
         // Otherwise, set the visibility to true
         setBackButton(true); // or any other appropriate display style
       }
 
-      if (selectedEmployee) {
+
+      // Check if selectedEmployee or selectedEmployee2 is defined and then access their properties
+      if (selectedEmployee && selectedEmployee._id) {
+        //console.log("yahan nahi");
         setEmployeeName(selectedEmployee.ename);
         setBdmWorkOn(selectedEmployee.bdmWork);
+      } else if (selectedEmployee2 && selectedEmployee2._id) {
+        //console.log("yahan chala");
+        setEmployeeName(selectedEmployee2.ename);
+        setBdmWorkOn(selectedEmployee2.bdmWork);
       } else {
+        //console.log("yahan bhi");
         // Handle the case where no employee is found with the given id
         setEmployeeName("Employee not found");
       }
@@ -164,6 +250,9 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
+
+
+ 
   //console.log(currentProjection);
   const functionopenAnchor = () => {
     setTimeout(() => {
@@ -231,21 +320,22 @@ function EmployeeParticular() {
     }
   }, [employeeName]);
 
-
+ 
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
+    
       setLoading(true);
       const response = await axios.get(
         `${secretKey}/company-data/employees/${employeeName}`
       );
-
+  
       // Sort the data by AssignDate property
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
-
+  
       setmoreEmpData(sortedData);
       setEmployeeData(
         response.data.filter(
@@ -261,7 +351,8 @@ function EmployeeParticular() {
       setLoading(false);
     }
   };
-  //console.log("employeedata", employeeData);
+
+
   useEffect(() => {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
@@ -278,12 +369,15 @@ function EmployeeParticular() {
         console.error("Error fetching login details:", error);
       });
   }, []);
+
+
+
   useEffect(() => {
     if (employeeName) {
-      //console.log("Employee found");
+      
       fetchNewData();
     } else {
-      console.log("No employees found");
+      console.log("No employee name found");
     }
   }, [employeeName]);
 
@@ -447,8 +541,12 @@ function EmployeeParticular() {
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
   };
+
+
   useEffect(() => {
-    fetchNewData();
+    if(employeeName){
+      fetchNewData();
+    }
   }, [nowToFetch]);
 
 
@@ -768,47 +866,47 @@ function EmployeeParticular() {
   //         Swal.showLoading();
   //       }
   //     });
-    
+
   //     const response = await axios.post(`${secretKey}/company-data/assign-new`, {
   //       ename: newemployeeSelection,
   //       data: csvdata,
   //     });
-    
+
   //     // Close the loading Swal
   //     Swal.close();
-    
+
   //     Swal.fire({
   //       title: "Data Sent!",
   //       text: "Data sent successfully!",
   //       icon: "success",
   //     });
-    
+
   //     // Reset the new employee selection
   //     setnewEmployeeSelection("Not Alloted");
-    
+
   //     // Fetch updated employee details and new data
   //     fetchEmployeeDetails();
   //     fetchNewData();
   //     closepopupAssign();
   //   } catch (error) {
   //     console.error("Error updating employee data:", error);
-    
+
   //     // Close the loading Swal
   //     Swal.close();
-    
+
   //     Swal.fire({
   //       title: "Error!",
   //       text: "Failed to update employee data. Please try again later.",
   //       icon: "error",
   //     });
   //   }
-    
+
   // };
 
   const handleUploadData = async (e) => {
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
-  
+
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => ({
@@ -816,7 +914,7 @@ function EmployeeParticular() {
         Status: "Untouched",
         Remarks: "No Remarks Added",
       }));
-  
+
     try {
       Swal.fire({
         title: 'Assigning...',
@@ -825,19 +923,19 @@ function EmployeeParticular() {
           Swal.showLoading();
         }
       });
-  
+
       const response = await axios.post(`${secretKey}/company-data/assign-new`, {
         ename: newemployeeSelection,
         data: csvdata,
       });
-  
+
       Swal.close();
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-  
+
       setnewEmployeeSelection("Not Alloted");
       fetchEmployeeDetails();
       fetchNewData();
@@ -852,7 +950,7 @@ function EmployeeParticular() {
       });
     }
   };
-  
+
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
@@ -987,6 +1085,7 @@ function EmployeeParticular() {
 
   const handleChangeUrlPrev = () => {
     const currId = id;
+    console.log(currId)
     //console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
 
     // Find the index of the currentId in the eData array
@@ -1014,7 +1113,7 @@ function EmployeeParticular() {
 
   const [bdmWorkOn, setBdmWorkOn] = useState(false)
 
-  console.log("bdmWork", bdmWorkOn)
+
 
   const handleAssignBdmWork = async () => {
     const currentId = id;
@@ -1039,7 +1138,7 @@ function EmployeeParticular() {
         });
 
         fetchEmployeeDetails()
-        console.log(response.data)
+        //console.log(response.data)
         // Show success message
         Swal.fire('BDM Work Assigned!', '', 'success');
       } catch (error) {
@@ -1068,7 +1167,7 @@ function EmployeeParticular() {
             bdmWork: false
           });
           fetchEmployeeDetails(); // Assuming this function fetches updated employee details
-          console.log(response.data); // Log response data
+          //console.log(response.data); // Log response data
           // Show success message
           Swal.fire('BDM Work Revoked!', '', 'success');
         } catch (error) {
@@ -1217,7 +1316,7 @@ function EmployeeParticular() {
     setValue(newValue);
   };
 
-  console.log(value)
+
 
   function formatDateNow(timestamp) {
     const date = new Date(timestamp);
@@ -1256,7 +1355,7 @@ function EmployeeParticular() {
   };
 
   //--------------------function to reverse assign-------------------------
-  
+
   const handleReverseAssign = async (
     companyId,
     companyName,
@@ -1472,18 +1571,20 @@ function EmployeeParticular() {
                         Assign Bdm Work
                       </button>
                     )} */}
-                    <Link
+                    {!selectedEmployee2 && (<Link
                       to={`/admin/employees/${id}/login-details`}
                       style={{ marginLeft: "10px" }}>
                       <button className="btn btn-primary d-none d-sm-inline-block">
                         Login Details
                       </button>
-                    </Link>
+                    </Link>)}
                   </>}
 
                   {backButton && (
                     <div>
-                      {!AddForm ? <Link
+                      {!AddForm ? 
+                      <Link
+                      
                         to={`/admin/admin-user`}
                         style={{ marginLeft: "10px" }}
                       >
@@ -2227,34 +2328,34 @@ function EmployeeParticular() {
                             />
                           </th>
                           {/* {(dataStatus === "Matured" && <th>Action</th>) || */}
-                            {(dataStatus === "FollowUp" && (
-                              <th>View Projection</th>
-                            )) ||
+                          {(dataStatus === "FollowUp" && (
+                            <th>View Projection</th>
+                          )) ||
                             (dataStatus === "Interested" && (
                               <th>View Projection</th>
                             ))}
-                           {dataStatus === "Forwarded" && (<>
-                              <th>BDM Name</th>
-                              <th>Forwarded Date</th>
-                            </>)}
-                        
+                          {dataStatus === "Forwarded" && (<>
+                            <th>BDM Name</th>
+                            <th>Forwarded Date</th>
+                          </>)}
+
                           {dataStatus === "Forwarded" &&
                             (dataStatus !== "Interested" ||
                               dataStatus !== "FollowUp" ||
                               dataStatus !== "Untouched" ||
                               dataStatus !== "Matured" ||
                               dataStatus !== "Not Interested") && (<>
-                              <th>Feedback</th>
-                            </>)}
-                            {dataStatus === "Forwarded" && (
-                              <th>Action</th>
-                            )}
+                                <th>Feedback</th>
+                              </>)}
+                          {dataStatus === "Forwarded" && (
+                            <th>Action</th>
+                          )}
                         </tr>
                       </thead>
                       {loading ? (
                         <tbody>
                           <tr>
-                            <td  colSpan="11"  >
+                            <td colSpan="11"  >
                               <div className="LoaderTDSatyle">
                                 <ClipLoader
                                   color="lightgrey"
@@ -2456,10 +2557,10 @@ function EmployeeParticular() {
                                         )}
                                       </td>
                                     )}
-                                 {dataStatus === "Forwarded" && (<>
-                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                  <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                </>)}
+                                  {dataStatus === "Forwarded" && (<>
+                                    {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
+                                    <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                  </>)}
 
                                   {/* {dataStatus === "Matured" && (
                                     <>
@@ -2513,63 +2614,63 @@ function EmployeeParticular() {
                                     </>
                                   )} */}
                                   {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                  (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
-                                    <td>
-                                      <IconButton onClick={() => {
-                                        handleViewFeedback(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.feedbackRemarks,
-                                          company.feedbackPoints
-                                        )
-                                      }}>
-                                        <RiInformationLine style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }} color="#fbb900" />
-                                      </IconButton>
-                                    </td>
-                                  ) : (
-                                    <td>
-                                      <IconButton onClick={() => {
-                                        handleViewFeedback(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.feedbackRemarks,
-                                          company.feedbackPoints
-                                        )
-                                      }}>
-                                        <RiInformationLine style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }} color="lightgrey" />
-                                      </IconButton>
-                                    </td>
-                                  )
-                                ) : null}
-                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
-                                  <td>
-                                    <MdDeleteOutline
-                                          onClick={() => {
-                                            handleReverseAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.bdmAcceptStatus,
-                                              company.Status,
-                                              company.bdmName
-                                            )
-                                          }}
-                                          style={{
+                                    (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
+                                      <td>
+                                        <IconButton onClick={() => {
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          )
+                                        }}>
+                                          <RiInformationLine style={{
                                             cursor: "pointer",
                                             width: "17px",
                                             height: "17px",
-                                          }}
-                                          color="#f70000"
-                                        />
-                                  </td>
-                                )}
+                                          }} color="#fbb900" />
+                                        </IconButton>
+                                      </td>
+                                    ) : (
+                                      <td>
+                                        <IconButton onClick={() => {
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          )
+                                        }}>
+                                          <RiInformationLine style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }} color="lightgrey" />
+                                        </IconButton>
+                                      </td>
+                                    )
+                                  ) : null}
+                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                    <td>
+                                      <MdDeleteOutline
+                                        onClick={() => {
+                                          handleReverseAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.bdmAcceptStatus,
+                                            company.Status,
+                                            company.bdmName
+                                          )
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="#f70000"
+                                      />
+                                    </td>
+                                  )}
                                 </tr>
                               ))}
                             </tbody>
@@ -2579,7 +2680,7 @@ function EmployeeParticular() {
                       {companiesLoading ? (
                         <tbody>
                           <tr>
-                            <td  colSpan="11">
+                            <td colSpan="11">
                               <div className="LoaderTDSatyle">
                                 <ClipLoader
                                   color="lightgrey"
@@ -2593,7 +2694,7 @@ function EmployeeParticular() {
                               </div>
                             </td>
                           </tr>
-                            
+
                         </tbody>
                       ) : (
                         <>

@@ -20,42 +20,40 @@ function EmployeeProfile() {
 
 
 
-//-----------------fetching employee details----------------------------------
-    const fetchEmployeeData =async()=>{
-  
-        try{
-          const response = await axios.get(`${secretKey}/employee/einfo`)
-          console.log(response.data)
-          const tempData = response.data;
-      const data = tempData.find((item) => item._id === userId);
-          
-          console.log(data)
-          setEmployeeData(data)
-          setdata(data)
-      
-      
-        }catch(error){
-          console.error("Error fetching employee data" , error)
-      
+    //-----------------fetching employee details----------------------------------
+    const fetchEmployeeData = async () => {
+
+        try {
+            const response = await axios.get(`${secretKey}/employee/einfo`)
+            console.log(response.data)
+            const tempData = response.data;
+            const data = tempData.find((item) => item._id === userId);
+            console.log(data)
+            setEmployeeData(data)
+            setdata(data)
+
+
+        } catch (error) {
+            console.error("Error fetching employee data", error)
+
         }
-      }
-      React.useEffect(()=>{
+    }
+    React.useEffect(() => {
         fetchEmployeeData()
-      },[])
+    }, [])
 
-console.log(data.ename , data.designation)
-
-
+    
 
 
 
 
-  return (
-    <div>
-        <Header name={data.ename} designation={data.designation} />
-        <EmpNav userId={userId} bdmWork={data.bdmWork} />
-    </div>
-  )
+
+    return (
+        <div>
+            <Header name={data.ename} designation={data.designation} />
+            <EmpNav userId={userId} bdmWork={data.bdmWork} />
+        </div>
+    )
 }
 
 export default EmployeeProfile
