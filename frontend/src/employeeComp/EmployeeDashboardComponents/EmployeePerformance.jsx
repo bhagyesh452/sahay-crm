@@ -5,7 +5,14 @@ import axios from "axios";
 function EmployeePerformance({ data}) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    
+    
+
+    const [callData, setCallData] = useState([]);
+    const [error, setError] = useState(null);
+
     const [employeeData, setEmployeeData] = useState([])
+    
     const [redesignedData, setRedesignedData] = useState([])
     const [sortedEmployeeData, setSortedEmployeeData] = useState([]);
     const [bookingStartDate, setBookingStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
@@ -28,6 +35,38 @@ function EmployeePerformance({ data}) {
         "December",
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
+
+
+
+    // ------------------------  Callizer API   -------------------------------------------
+
+    useEffect(() => {
+        const fetchCallData = async () => {
+            const callizerKey = process.env.REACT_APP_API_KEY;
+            const url = 'https://api1.callyzer.co/api/'; 
+
+            try {
+                const response = await axios.get(url, {
+                    headers: {
+                        'Authorization': `Bearer ${callizerKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 200) {
+                    setCallData(response.data);
+                } else {
+                    setError(`Error: ${response.status}`);
+                }
+            } catch (err) {
+                setError(`Error: ${err.message}`);
+            }
+        };
+
+        fetchCallData();
+    }, []);
+
+    console.log(callData);
      //----------------------fetching employee info----------------------------------------
      const fetchEmployeeInfo = async () => {
         try {
