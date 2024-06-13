@@ -1845,7 +1845,15 @@ router.post(
               </tr>
               `;
               }
-              const alteredServiceName = newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck , Financial Model"? "IIncome Tax Exemption Document Support" : "Pitchdeck, Video Pitchdeck" ? "Raftaar Document Support" : "Pitchdeck" ? ("Nidhi Prayash Yojna Document Support" || "Nidhi SSS Document Support" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF Document Support" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon Document Support" || "Incubation Document Support" || "Chunauti Document Support") : "Pitchdeck" ? "Stand-Up India Document Support" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
+              const alteredServiceName = 
+              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+              newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+              newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+              newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+              newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+              newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -1935,7 +1943,15 @@ router.post(
               </tr>
               `;
               }
-              const alteredServiceName = newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck , Financial Model"? "IIncome Tax Exemption Document Support" : "Pitchdeck, Video Pitchdeck" ? "Raftaar Document Support" : "Pitchdeck" ? ("Nidhi Prayash Yojna Document Support" || "Nidhi SSS Document Support" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF Document Support" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon Document Support" || "Incubation Document Support" || "Chunauti Document Support") : "Pitchdeck" ? "Stand-Up India Document Support" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
+              const alteredServiceName = 
+              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+              newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+              newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+              newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+              newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+              newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -1988,7 +2004,7 @@ router.post(
             "Incubation Document Support",
           ];
           const AuthorizedName = newData.services.some((service) => {
-            const tempServices = [...allowedServiceNames, "IIncome Tax Exemption Document Support"];
+            const tempServices = [...allowedServiceNames, "Income Tax Exemption Document Support"];
             return tempServices.includes(service);
           })
             ? "Shubhi Banthiya"
@@ -1998,7 +2014,7 @@ router.post(
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
-              "IIncome Tax Exemption Document Support",
+              "Income Tax Exemption Document Support",
               "Start-Up India Certificate",
             ];
             return tempServices.includes(service.serviceName);
@@ -2047,13 +2063,13 @@ router.post(
               
               `;
               } else if (
-                newData.services[i].serviceName === "IIncome Tax Exemption Document Support"
+                newData.services[i].serviceName === "Income Tax Exemption Document Support"
               ) {
 
                 incomeTaxServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                IIncome Tax Exemption Document Support Services Acknowledgement:   
+                Income Tax Exemption Document Support Services Acknowledgement:   
                 </b>
               </p>
               <p class="Declaration_text_data">
@@ -2090,7 +2106,7 @@ router.post(
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
-              IIncome Tax Exemption Document Support Services Acknowledgement:     
+              Income Tax Exemption Document Support Services Acknowledgement:     
               </b>
             </p>
             <p class="Declaration_text_data">
@@ -2230,7 +2246,7 @@ router.post(
             "MSME Hackathon Document Support",
             "Gujarat Grant",
             "CGTMSC",
-            "IIncome Tax Exemption Document Support",
+            "Income Tax Exemption Document Support",
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Document Support",
@@ -2271,7 +2287,7 @@ router.post(
             "MSME Hackathon Document Support",
             "Gujarat Grant",
             "CGTMSC",
-            "IIncome Tax Exemption Document Support",
+            "Income Tax Exemption Document Support",
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Document Support",
@@ -3644,7 +3660,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const alteredServiceName = newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck , Financial Model"? "IIncome Tax Exemption Document Support" : "Pitchdeck, Video Pitchdeck" ? "Raftaar Document Support" : "Pitchdeck" ? ("Nidhi Prayash Yojna Document Support" || "Nidhi SSS Document Support" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF Document Support" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon Document Support" || "Incubation Document Support" || "Chunauti Document Support") : "Pitchdeck" ? "Stand-Up India Document Support" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
+        const alteredServiceName = 
+    newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+    newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+    newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+    newData.services[i].serviceName;
+
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
@@ -3734,7 +3759,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const alteredServiceName = newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck , Financial Model"? "IIncome Tax Exemption Document Support" : "Pitchdeck, Video Pitchdeck" ? "Raftaar Document Support" : "Pitchdeck" ? ("Nidhi Prayash Yojna Document Support" || "Nidhi SSS Document Support" ) : "Pitchdeck, Fund Utilization with Milestone" ? "NAIF Document Support" : "Detailed Project Report with Commercial and Financial Feasablity" ? ("MSME Hackathon Document Support" || "Incubation Document Support" || "Chunauti Document Support") : "Pitchdeck" ? "Stand-Up India Document Support" : "Detailed Project Report as per Format, CMA Report" : newData.services[i].serviceName;
+        const alteredServiceName = 
+    newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+    newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+    newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+    newData.services[i].serviceName;
+
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
@@ -3790,7 +3824,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Chunauti Document Support"
     ];
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "IIncome Tax Exemption Document Support"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption Document Support"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -3799,7 +3833,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "IIncome Tax Exemption Document Support",
+        "Income Tax Exemption Document Support",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
@@ -3850,13 +3884,13 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
        
         
         } else if (
-          newData.services[i].serviceName === "IIncome Tax Exemption Document Support"
+          newData.services[i].serviceName === "Income Tax Exemption Document Support"
         ) {
 
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          IIncome Tax Exemption Document Support Services Acknowledgement:   
+          Income Tax Exemption Document Support Services Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -3894,7 +3928,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        IIncome Tax Exemption Document Support Services Acknowledgement:     
+        Income Tax Exemption Document Support Services Acknowledgement:     
         </b>
       </p>
       <p class="Declaration_text_data">
@@ -4032,7 +4066,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "MSME Hackathon Document Support",
       "Gujarat Grant",
       "CGTMSC",
-      "IIncome Tax Exemption Document Support",
+      "Income Tax Exemption Document Support",
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Document Support",
@@ -4073,7 +4107,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "MSME Hackathon Document Support",
       "Gujarat Grant",
       "CGTMSC",
-      "IIncome Tax Exemption Document Support",
+      "Income Tax Exemption Document Support",
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Document Support",
