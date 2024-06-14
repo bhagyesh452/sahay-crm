@@ -1856,7 +1856,7 @@ router.post(
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                   <thead>
-                    <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                    <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Income Tax Exemption (80IAC) Document Support"  : newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
                   </thead>
                   <tbody>
                     <tr>
@@ -1978,7 +1978,7 @@ router.post(
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                               <thead>
-                                <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                                <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Income Tax Exemption (80IAC) Document Support"  : newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
                               </thead>
                               <tbody>
                                 <tr>
@@ -3717,7 +3717,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                         <thead>
-                          <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Income Tax Exemption (80IAC) Document Support"  : newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
                         </thead>
                         <tbody>
                           <tr>
@@ -3841,9 +3841,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                         <thead>
-                          <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Income Tax Exemption (80IAC) Document Support"  : newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
                         </thead>
-                        <tbody>
+                        <tbody> 
                           <tr>
                             <td>Total Payment</td>
                             <td>Advanced Payment</td>
