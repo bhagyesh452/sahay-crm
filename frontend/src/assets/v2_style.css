@@ -598,6 +598,14 @@ table.table.top_5_table tbody tr.myself td {
     font-size: 13px;
     color: #666666;
 }
+.page-top-sub-head
+{
+    background: #fff;
+    padding: 6px 0 6px 0;
+    border-bottom: 1px solid #dadfe5;
+    position: sticky;
+    top: 0;
+}
 @media only screen and (max-width: 1350px) and (min-width: 1200px){
     .dsrd-mini-card-name {
         font-size: 10px;
