@@ -9,10 +9,60 @@ import { IoCall } from "react-icons/io5";
 import { IoBan } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 
-function EmployeeCallLogs() {
+function EmployeeCallLogs({ employeeData }) {
+    const [callData, setCallData] = useState(null);
+
+    // ------------------------  Callizer API   -------------------------------------------
+
+    useEffect(() => {
+        const fetchEmployeeData = async () => {
+            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+
+            const body = {
+                "call_from": 1691649001,
+                "call_to": 1707197072,
+                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+                "emp_numbers": [],
+                "duration_les_than": 20,
+                "emp_tags": [],
+                "is_exclude_numbers": true
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+
+                const data = await response.json();
+
+
+                setCallData(data.result.find(obj => obj.emp_number
+                    === employeeData.number));
+            } catch (err) {
+
+                console.log(err)
+            }
+        };
+
+        fetchEmployeeData();
+    }, []);
+
+    console.log(callData);
     return (
         <div>
-            <div className="dash-card" style={{ minHeight: '299px' }}>
+            {callData && <div className="dash-card" style={{ minHeight: '299px' }}>
                 <div className="dash-card-head d-flex align-items-center justify-content-between">
                     <h2 className="m-0">
                         Your Call Report
@@ -42,14 +92,16 @@ function EmployeeCallLogs() {
                                 </div>
                                 <div className="call-d-card-body d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
-                                        <div className="clr-000">80 Call</div>
+                                        <div className="clr-000">{callData.
+                                            total_outgoing_calls
+                                        } Calls</div>
                                     </div>
                                     <div className="d-flex align-items-center">
                                         <div className="timer-I">
                                             <MdTimer />
                                         </div>
                                         <div className="clr-000">
-                                            1h 56m 45s
+                                           {callData.total_outgoing_duration}s
                                         </div>
                                     </div>
                                 </div>
@@ -182,7 +234,7 @@ function EmployeeCallLogs() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
         </div>
     )
 }

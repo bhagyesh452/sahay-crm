@@ -4148,7 +4148,7 @@ function EmployeeDashboard() {
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
-                    <EmployeeCallLogs data = {data.ename}/>
+                    <EmployeeCallLogs employeeData = {data.ename}/>
                   </div>
                   </>}
                   {/* calling data report */}

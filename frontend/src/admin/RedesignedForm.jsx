@@ -1180,7 +1180,6 @@ export default function RedesignedForm({
                         setIsoType(defaultArray)
                       }
                     }
-
                   }}
                   disabled={completed[activeStep] === true}
                 >

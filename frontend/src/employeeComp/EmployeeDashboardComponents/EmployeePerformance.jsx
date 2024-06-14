@@ -38,53 +38,7 @@ function EmployeePerformance({ data}) {
 
 
 
-    // ------------------------  Callizer API   -------------------------------------------
-
-    useEffect(() => {
-        const fetchEmployeeData = async () => {
-            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-
-            const body = {
-                "call_from": 1691649001,
-                "call_to": 1707197072,
-                "call_types": ["Missed","Rejected","Incoming","Outgoing"],
-                "emp_numbers":[],
-                "duration_les_than":20,
-                "emp_tags": [],
-                "is_exclude_numbers": true
-            }
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-                
-               
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-                }
-
-                const data = await response.json();
-              
-                
-                setCallData(data.result);
-            } catch (err) {
-                setError(err.message);
-                console.log(err)
-            }
-        };
-
-        fetchEmployeeData();
-    }, []);
-
-    console.log(callData);
+  
      //----------------------fetching employee info----------------------------------------
      const fetchEmployeeInfo = async () => {
         try {

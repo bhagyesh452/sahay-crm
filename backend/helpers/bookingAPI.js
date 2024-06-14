@@ -1845,7 +1845,7 @@ router.post(
               }
               const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
               const alteredServiceName =
-          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme Support" :
+          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme" :
             newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
               newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
                 newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
@@ -1866,10 +1866,10 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th >₹ 0 /-</th>
-                          <th>₹ 0 /-</th>
-                          <th >₹ 0 /-</th>
-                          <th> Complimentary Service </th>
+                          <td >₹ 0 /-</td>
+                          <td>₹ 0 /-</td>
+                          <td >₹ 0 /-</td>
+                          <td> Complimentary Service </td>
                     </tr>
                      
            
@@ -1889,12 +1889,12 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                } /-</th>
-                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                          <td rowspan='4' style="border-right:1px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                } /-</td>
+                          <td rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
-                }/-</th>
+                }/-</td>
                     </tr>
                     ${paymentServices}
                   </tbody>
@@ -1967,7 +1967,7 @@ router.post(
               }
               const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
               const alteredServiceName =
-              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme Support" :
+              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme" :
                 newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                   newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
                     newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
@@ -1988,10 +1988,10 @@ router.post(
                                   <td>Remarks</td>
                                 </tr>
                                 <tr>
-                                      <th >₹ 0 /-</th>
-                                      <th>₹ 0 /-</th>
-                                      <th >₹ 0 /-</th>
-                                      <th> Complimentary Service </th>
+                                      <td >₹ 0 /-</td>
+                                      <td>₹ 0 /-</td>
+                                      <td >₹ 0 /-</td>
+                                      <td> Complimentary Service </td>
                                 </tr>
                               </tbody>
                           ` : ``;
@@ -2009,12 +2009,12 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                } /-</th>
-                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                          <td rowspan='4' style="border-right:1px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                } /-</td>
+                          <td rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
-                }/-</th>
+                }/-</td>
                     </tr>
                     ${paymentServices}
                   </tbody>
@@ -3706,7 +3706,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
         const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
         const alteredServiceName =
-          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme Support" :
+          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme" :
             newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
               newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
                 newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
@@ -3727,10 +3727,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                             <td>Remarks</td>
                           </tr>
                           <tr>
-                                <th >₹ 0 /-</th>
-                                <th>₹ 0 /-</th>
-                                <th >₹ 0 /-</th>
-                                <th> Complimentary Service </th>
+                                <td >₹ 0 /-</td>
+                                <td>₹ 0 /-</td>
+                                <td >₹ 0 /-</td>
+                                <td> Complimentary Service </td>
                           </tr>
                            
                  
@@ -3752,12 +3752,12 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-          } /-</th>
-                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                    <td rowspan='4' style="border=right:1px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</td>
+                    <td rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
             : parseInt(newData.services[i].firstPayment).toLocaleString()
-          }/-</th>
+          }/-</td>
               </tr>
               ${paymentServices}
             </tbody>
@@ -3830,7 +3830,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
         const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
         const alteredServiceName =
-        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme Support" :
+        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation for Seed Funding Scheme" :
           newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
             newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
               newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
@@ -3851,10 +3851,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                             <td>Remarks</td>
                           </tr>
                           <tr>
-                                <th >₹ 0 /-</th>
-                                <th>₹ 0 /-</th>
-                                <th >₹ 0 /-</th>
-                                <th> Complimentary Service </th>
+                                <td >₹ 0 /-</td>
+                                <td>₹ 0 /-</td>
+                                <td >₹ 0 /-</td>
+                                <td> Complimentary Service </td>
                           </tr>
                            
                  
@@ -3874,12 +3874,12 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-          } /-</th>
-                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                    <td rowspan='4' style="border-right:1px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</td>
+                    <td rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
             : parseInt(newData.services[i].firstPayment).toLocaleString()
-          }/-</th>
+          }/-</td>
               </tr>
               ${paymentServices}
             </tbody>
