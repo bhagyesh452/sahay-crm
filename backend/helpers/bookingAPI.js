@@ -1846,14 +1846,14 @@ router.post(
               `;
               }
               const alteredServiceName =
-                newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-                  newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-                    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-                      newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-                        newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-                          newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-                            newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-                              newData.services[i].serviceName;
+        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model Creation for Seed Funding Document Support" :
+          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck Creation for Income Tax Exemption Document Support" :
+            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
+                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
+                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
+                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
+                      newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -1944,14 +1944,14 @@ router.post(
               `;
               }
               const alteredServiceName =
-                newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model for Seed Funding Document Support" :
-                  newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck for Income Tax Exemption Document Support" :
-                    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck for Raftaar Document Support" :
-                      newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` for ${newData.services[i].serviceName}` :
-                        newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` for ${newData.services[i].serviceName}` :
-                          newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` for ${newData.services[i].serviceName}` :
-                            newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` for ${newData.services[i].serviceName}` :
-                              newData.services[i].serviceName;
+              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model Creation for Seed Funding Document Support" :
+                newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck Creation for Income Tax Exemption Document Support" :
+                  newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
+                    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
+                      newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
+                        newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
+                          newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
+                            newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -3660,14 +3660,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         `;
         }
         const alteredServiceName =
-        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model for Seed Funding Document Support" :
-          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck for Income Tax Exemption Document Support" :
-            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck for Raftaar Document Support" :
-              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` for ${newData.services[i].serviceName}` :
-                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` for ${newData.services[i].serviceName}` :
-                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` for ${newData.services[i].serviceName}` :
-                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` for ${newData.services[i].serviceName}` :
+        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model Creation for Seed Funding Document Support" :
+          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck Creation for Income Tax Exemption Document Support" :
+            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
+                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
+                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
+                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
                       newData.services[i].serviceName;
+
+        
 
         servicesHtml += `
         <table class="table table-bordered">
@@ -3759,14 +3761,14 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         `;
         }
         const alteredServiceName =
-          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-            newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-                newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-                  newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-                    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-                      newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-                        newData.services[i].serviceName;
+        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model Creation for Seed Funding Document Support" :
+          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck Creation for Income Tax Exemption Document Support" :
+            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
+                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
+                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
+                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
+                      newData.services[i].serviceName;
 
         servicesHtml += `
         <table class="table table-bordered">
