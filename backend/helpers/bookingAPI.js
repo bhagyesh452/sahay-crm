@@ -3840,7 +3840,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                       newData.services[i].serviceName;
 
-
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                         <thead>
                           <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support"  : newData.services[i].serviceName + " Application Support"}</td>

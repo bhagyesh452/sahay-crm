@@ -3735,7 +3735,7 @@ function Leads() {
                             {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                             <td>{formatDateFinal(company["AssignDate"])}</td>
                             <td>
-                              {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash" || mainAdminName === "shivangi") && <> <IconButton onClick={() => handleDeleteClick(company._id)}>
+                              {(mainAdminName === "Nimesh" || mainAdminName === "Ronak Kumar" || mainAdminName === "Aakash" || mainAdminName === "shivangi") && <> <IconButton onClick={() => handleDeleteClick(company._id)}>
                                 <DeleteIcon
                                   style={{
                                     width: "14px",
