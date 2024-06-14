@@ -15,8 +15,6 @@ export const options = [
   { value: "Business Card Design", label: "Business Card Design" },
   { value: "Letter Head Design", label: "Letter Head Design" },
   { value: "Broucher Design", label: "Broucher Design" },
-
-
   { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
   { value: "Financial Modeling", label: "Financial Modeling" },
   { value: "DPR Development", label: "DPR Developmen" },
@@ -30,7 +28,7 @@ export const options = [
   { value: "I-Create", label: "I-Create" },
   { value : "Chunauti " , label :"Chunauti "},
   { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme" },
-  { value: "Nidhi Prayash Yojna Document Support", label: "Nidhi Prayash Yojna" },
+  { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
   { value: "NAIF", label: "NAIF" },
   { value: "Raftaar", label: "Raftaar" },
   { value: "CSR Funding", label: "CSR Funding" },
