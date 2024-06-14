@@ -79,8 +79,8 @@ import Employee from './Employees.js'
 import Team from './Team.js'
 import EmployeeParticular from "./EmployeeParticular.js";
 import { MdDeleteOutline } from "react-icons/md";
-
-
+import { IoFilterOutline } from "react-icons/io5";
+import { TbFileExport } from "react-icons/tb";
 
 
 
@@ -124,27 +124,61 @@ function AdminEmployeeTeamLeads() {
     const [bdmNames, setBdmNames] = useState([])
     const [branchOffice, setBranchOffice] = useState("")
     const [empData, setEmpData] = useState([])
+    const [selectedEmployee, setSelectedEmployee] = useState()
+    const [selectedEmployee2, setSelectedEmployee2] = useState()
+    const [isFilter, setIsFilter] = useState(false)
 
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
-
+            const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
+            const data = response2.data
             const userData = tempData.find((item) => item._id === id);
+            const userData2 = data.find((item) => item._id === id)
+            setSelectedEmployee(userData)
+            setSelectedEmployee2(userData2)
+
             const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive")
                 .map((employee) => employee._id)
-            //console.log(userData);
-            setEmpData(tempData)
-            setBranchOffice(userData.branchOffice)
-            seteData(salesExecutivesIds)
-            setData(userData);
-            setBdmNames(tempData
-                .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
-                .map((employee) => employee.ename)
-            );
+            const salesExecutivesIds2 = response2.data.filter((employee) => employee.designation === "Sales Executive")
+                .map((employee) => employee._id)
 
-            setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+            if (userData) {
+                setEmpData(tempData)
+                setBranchOffice(userData.branchOffice)
+                seteData(salesExecutivesIds)
+                //setData(userData);
+                setBdmNames(tempData
+                    .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
+                    .map((employee) => employee.ename)
+                );
+
+                setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+                setData(userData)
+
+            } else if (userData2) {
+                setEmpData(data)
+                setBranchOffice(userData2.branchOffice)
+                seteData(salesExecutivesIds2)
+                //setData(userData);
+                setBdmNames(
+                    tempData
+                        .filter(
+                            (obj) =>
+                                obj.bdmWork && obj.branchOffice === branchOffice && !userData2.ename.includes(obj.ename)
+                        )
+                        .map((employee) => employee.ename)
+                );
+
+
+                setBdmWorkOn(data.find((item) => item._id === id)?.bdmWork || null);
+                setData(userData2)
+            }
+
+
+
             //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
@@ -579,8 +613,7 @@ function AdminEmployeeTeamLeads() {
                         time,
                     }
                 )
-                console.log("yahan dikha ", bdmnewstatus)
-                // Check if the API call was successful
+
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
 
@@ -1376,7 +1409,7 @@ function AdminEmployeeTeamLeads() {
 
     //----------------- delete bdm from forwarded data----------------------
 
-    const handleDeleteBdm = async (companyId, companyName , bdmStatus) => {
+    const handleDeleteBdm = async (companyId, companyName, bdmStatus) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: `Do you really want to delete the company ${companyName}?`,
@@ -1386,23 +1419,23 @@ function AdminEmployeeTeamLeads() {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
         });
-    
+
         if (result.isConfirmed) {
             try {
                 const response = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
                     params: {
-                      companyId,
-                      companyName
+                        companyId,
+                        companyName
                     }
-                  });
-            
-    
+                });
+
+
                 Swal.fire(
                     'Deleted!',
                     'The company has been deleted.',
                     'success'
                 );
-    
+
                 fetchTeamLeadsData(bdmStatus);
                 //console.log("Company updated and deleted successfully", response.data);
             } catch (error) {
@@ -1415,8 +1448,28 @@ function AdminEmployeeTeamLeads() {
             }
         }
     };
-    
-    
+
+//------------------function to export data---------------------
+const handleExportData = async () => {
+    try {
+
+      const response = await axios.post(
+        `${secretKey}/admin-leads/exportEmployeeTeamLeads/`,
+        {
+          selectedRows
+        }
+      );
+      //console.log("response",response.data)
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "AssginedTeamLeads_Employee.csv");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
 
 
     return (
@@ -1590,22 +1643,15 @@ function AdminEmployeeTeamLeads() {
                                             </option>
                                         </select>
                                     </div>
-                                    {/* {bdmWorkOn ? (
-                                                  <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
-                                                         Revoke Bdm Work
-                                                              </button>
-                                                        ) : (
-                                               <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleAssignBdmWork()}>
-                                                                   Assign Bdm Work
-                                                                           </button>
-                                                                   )} */}
-                                    <Link
-                                        to={`/admin/employees/${id}/login-details`}
-                                        style={{ marginLeft: "10px" }}>
-                                        <button className="btn btn-primary d-none d-sm-inline-block">
-                                            Login Details
-                                        </button>
-                                    </Link>
+                                    {!selectedEmployee2 && (
+                                        <Link
+                                            to={`/admin/employees/${id}/login-details`}
+                                            style={{ marginLeft: "10px" }}>
+                                            <button className="btn btn-primary d-none d-sm-inline-block">
+                                                Login Details
+                                            </button>
+                                        </Link>
+                                    )}
                                     <div>
                                         <Link
                                             to={`/admin/admin-user`}
@@ -1684,7 +1730,52 @@ function AdminEmployeeTeamLeads() {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
-                        <div className="row g-2 align-items-center">
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                            <div className="d-flex align-items-center">
+                                <div className="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button"
+                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                        //onClick={() => setOpenFilterDrawer(true)}
+                                    >
+                                        <IoFilterOutline className='mr-1' /> Filter
+                                    </button>
+                                    <button type="button" className="btn mybtn"
+                                        onClick={() => handleExportData()}
+                                    >
+                                        <TbFileExport className='mr-1' /> Export Leads
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="d-flex align-items-center">
+                                {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                                <div class="input-icon ml-1">
+                                    <span class="input-icon-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                            <path d="M21 21l-6 -6"></path>
+                                        </svg>
+                                    </span>
+                                    <input
+                                        // value={searchQuery}
+                                        // onChange={(e) => {
+                                        //     setSearchQuery(e.target.value);
+                                        //     //handleFilterSearch(e.target.value)
+                                        //     //setCurrentPage(0);
+                                        // }}
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Search…"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
+                                </div>
+                            </div>
+                        </div>
+                        {/* <div className="row g-2 align-items-center">
                             <div className="col-2">
                                 <div
                                     className="form-control"
@@ -1733,7 +1824,7 @@ function AdminEmployeeTeamLeads() {
                                         className="input-icon"
                                     >
                                         <span className="input-icon-addon">
-                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                           
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="icon"
@@ -1825,7 +1916,7 @@ function AdminEmployeeTeamLeads() {
                                 {selectedField === "State" && (
                                     <div style={{ marginLeft: "-16px" }} className="input-icon">
                                         <span className="input-icon-addon">
-                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                            
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="icon"
@@ -1936,9 +2027,7 @@ function AdminEmployeeTeamLeads() {
                                     )}
                                 </div>
                             </div>
-
-                            {/* <!-- Page title actions --> */}
-                        </div>
+                        </div> */}
                         {/* <div class="card-header my-tab">
                             <ul
                                 class="nav nav-tabs card-header-tabs nav-fill p-0"

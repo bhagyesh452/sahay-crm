@@ -40,33 +40,33 @@ function EmployeePerformance({ data}) {
 
     // ------------------------  Callizer API   -------------------------------------------
 
-    useEffect(() => {
-        const fetchCallData = async () => {
-            const callizerKey = process.env.REACT_APP_API_KEY;
-            const url = 'https://api1.callyzer.co/api/'; 
+    // useEffect(() => {
+    //     const fetchCallData = async () => {
+    //         const callizerKey = process.env.REACT_APP_API_KEY;
+    //         const url = 'https://api1.callyzer.co/api/'; 
 
-            try {
-                const response = await axios.get(url, {
-                    headers: {
-                        'Authorization': `Bearer ${callizerKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+    //         try {
+    //             const response = await axios.get(url, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${callizerKey}`,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
 
-                if (response.status === 200) {
-                    setCallData(response.data);
-                } else {
-                    setError(`Error: ${response.status}`);
-                }
-            } catch (err) {
-                setError(`Error: ${err.message}`);
-            }
-        };
+    //             if (response.status === 200) {
+    //                 setCallData(response.data);
+    //             } else {
+    //                 setError(`Error: ${response.status}`);
+    //             }
+    //         } catch (err) {
+    //             setError(`Error: ${err.message}`);
+    //         }
+    //     };
 
-        fetchCallData();
-    }, []);
+    //     fetchCallData();
+    // }, []);
 
-    console.log(callData);
+    // console.log(callData);
      //----------------------fetching employee info----------------------------------------
      const fetchEmployeeInfo = async () => {
         try {

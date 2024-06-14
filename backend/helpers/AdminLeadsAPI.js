@@ -118,6 +118,79 @@ router.get('/', async function (req, res) {
 //   }
 // });
 
+const convertToCSVNew = (leads) => {
+  if (leads.length === 0) return '';
+
+  const headers = Object.keys(leads[0]);
+  const csvRows = [];
+
+  // Add headers row
+  csvRows.push(headers.join(','));
+
+  // Add leads data rows
+  for (const lead of leads) {
+    const values = headers.map(header => {
+      const escaped = ('' + lead[header]).replace(/"/g, '\\"'); // Escape quotes
+      return `"${escaped}"`; // Wrap each value in double quotes
+    });
+    csvRows.push(values.join(','));
+  }
+
+  return csvRows.join('\n');
+};
+
+router.post('/exportEmployeeTeamLeads', async (req, res) => {
+  const { selectedRows } = req.body;
+  
+
+  try {
+    const leads = await CompanyModel.find({
+      _id: { $in: selectedRows },
+    }).lean(); // Use .lean() to get plain JavaScript objects
+
+    // Remove any internal properties
+    const cleanedLeads = leads.map(({ __v, ...lead }) => lead);
+
+    // Convert leads to CSV and send as response
+    const csv = convertToCSVNew(cleanedLeads);
+    console.log('csv', csv);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="AssginedLeads_Employee.csv"`);
+    res.status(200).send(csv);
+
+  } catch (error) {
+    console.error('Error exporting leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/exportEmployeeLeads', async (req, res) => {
+  const { selectedRows } = req.body;
+  
+
+  try {
+    const leads = await TeamLeadsModel.find({
+      _id: { $in: selectedRows },
+    }).lean(); // Use .lean() to get plain JavaScript objects
+
+    // Remove any internal properties
+    const cleanedLeads = leads.map(({ __v, ...lead }) => lead);
+
+    // Convert leads to CSV and send as response
+    const csv = convertToCSVNew(cleanedLeads);
+    console.log('csv', csv);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="AssginedTeamLeads_Employee.csv"`);
+    res.status(200).send(csv);
+
+  } catch (error) {
+    console.error('Error exporting leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.post('/exportLeads', async (req, res) => {
   try {
     const {
