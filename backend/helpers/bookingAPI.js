@@ -1845,15 +1845,15 @@ router.post(
               </tr>
               `;
               }
-              const alteredServiceName = 
-              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-              newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-              newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-              newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-              newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-              newData.services[i].serviceName;
+              const alteredServiceName =
+                newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+                  newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+                    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+                        newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+                          newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+                            newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+                              newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -1885,14 +1885,14 @@ router.post(
           const renderMorePaymentDetails = () => {
             let servicesHtml = "";
             let paymentServices = "";
-      
+
             for (let i = 2; i < newData.services.length; i++) {
               const Amount =
                 newData.services[i].paymentTerms === "Full Advanced"
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-      
+
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -1905,7 +1905,7 @@ router.post(
               } else {
                 rowSpan = 1;
               }
-      
+
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -1943,15 +1943,15 @@ router.post(
               </tr>
               `;
               }
-              const alteredServiceName = 
-              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-              newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-              newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-              newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-              newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-              newData.services[i].serviceName;
+              const alteredServiceName =
+                newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model for Seed Funding Document Support" :
+                  newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck for Income Tax Exemption Document Support" :
+                    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck for Raftaar Document Support" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` for ${newData.services[i].serviceName}` :
+                        newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` for ${newData.services[i].serviceName}` :
+                          newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` for ${newData.services[i].serviceName}` :
+                            newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` for ${newData.services[i].serviceName}` :
+                              newData.services[i].serviceName;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
@@ -2060,7 +2060,6 @@ router.post(
               <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
               </p>
-              
               `;
               } else if (
                 newData.services[i].serviceName === "Income Tax Exemption Document Support"
@@ -2084,11 +2083,11 @@ router.post(
             }
 
             if (fundingServicesArray !== "") {
-            //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
-              
-            //   Re-application support will be provided at no extra cost. 
-            
-            // ` : ``
+              //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
+
+              //   Re-application support will be provided at no extra cost. 
+
+              // ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
@@ -2100,7 +2099,7 @@ router.post(
             </p>
           `;
 
-          
+
             }
             if (incomeTaxServices !== "") {
               servicesHtml += `
@@ -2114,7 +2113,7 @@ router.post(
             </p>
         `;
             }
-         
+
             return servicesHtml;
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -2124,7 +2123,7 @@ router.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
-        
+
 
 
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
@@ -3660,15 +3659,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const alteredServiceName = 
-    newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-    newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-    newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-    newData.services[i].serviceName;
+        const alteredServiceName =
+        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model for Seed Funding Document Support" :
+          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck for Income Tax Exemption Document Support" :
+            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck for Raftaar Document Support" :
+              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` for ${newData.services[i].serviceName}` :
+                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` for ${newData.services[i].serviceName}` :
+                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` for ${newData.services[i].serviceName}` :
+                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` for ${newData.services[i].serviceName}` :
+                      newData.services[i].serviceName;
 
         servicesHtml += `
         <table class="table table-bordered">
@@ -3759,15 +3758,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const alteredServiceName = 
-    newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
-    newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
-    newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
-    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
-    newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
-    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
-    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
-    newData.services[i].serviceName;
+        const alteredServiceName =
+          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitchdeck, Financial Model" :
+            newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitchdeck, Video Pitchdeck" :
+              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck" :
+                newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" :
+                  newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" :
+                    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" :
+                      newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" :
+                        newData.services[i].serviceName;
 
         servicesHtml += `
         <table class="table table-bordered">
@@ -3797,7 +3796,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return servicesHtml;
     };
 
-    
+
     const allowedServiceNames = [
       "Seed Funding Document Support",
       "Angel Funding Support",
@@ -3881,8 +3880,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </p>
         
         `;
-       
-        
+
+
         } else if (
           newData.services[i].serviceName === "Income Tax Exemption Document Support"
         ) {
@@ -3905,10 +3904,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
 
       if (fundingServicesArray !== "") {
-      //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
-      //   Re-application support will be provided at no extra cost.
-  
-      // ` : ``;
+        //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
+        //   Re-application support will be provided at no extra cost.
+
+        // ` : ``;
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -3919,10 +3918,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
-   
 
-    
-       
+
+
+
       }
       if (incomeTaxServices !== "") {
         servicesHtml += `
@@ -3936,7 +3935,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       </p>
   `;
       }
-     
+
       return servicesHtml;
     };
     const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -3946,7 +3945,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
-  
+
 
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
@@ -5028,7 +5027,7 @@ router.post('/export-this-bookings', async (req, res) => {
   try {
     const data = req.body;
     const csv = convertToCSV(data.tempData);
-  
+
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="ThisMonthBooking.csv"`);
     res.status(200).send(csv);
