@@ -2035,7 +2035,8 @@ export default function RedesignedForm({
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-    if(file.size > maxSizeBytes){
+  
+    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
       Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
       return false;
     }else {
