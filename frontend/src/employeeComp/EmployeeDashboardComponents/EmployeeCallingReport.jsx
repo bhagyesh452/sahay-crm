@@ -40,7 +40,7 @@ function EmployeeCallingReport() {
     }
 
     useEffect(() => {
-        fetchData()
+        fetchData();
     }, [])
 
     //-------------------fetching employee data------------------------------
@@ -96,17 +96,6 @@ function EmployeeCallingReport() {
             </StyledText>
         );
     }
-
-
-
-
-
-
-
-
-
-
-
 
     return (
         <div>
