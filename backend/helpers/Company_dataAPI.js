@@ -810,7 +810,7 @@ router.get("/employees/:ename", async (req, res) => {
       ]
     });
 
-    res.status(200).json(data);
+    res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -865,13 +865,11 @@ router.get("/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
     const filteredEmployeeData = await CompanyModel.find({
-      $or: [
-        { ename: employeeName },
-        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-      ]
-    });
-    res.status(200).json(filteredEmployeeData);
+      $or: [{ ename: ename }, 
+        { $and: [{ maturedBdmName: ename }, { Status: "Matured" }] },
+      ],
+    });
+    res.json(filteredEmployeeData);
   } catch (error) {
     console.error("Error fetching employee data:", error);
     res.status(500).json({ error: "Internal Server Error" });
