@@ -55,6 +55,15 @@ import { TiArrowBack } from "react-icons/ti";
 //import Typography from '@mui/material/Typography';
 //import Box from '@mui/material/Box';
 import { MdDeleteOutline } from "react-icons/md";
+import { IoFilterOutline } from "react-icons/io5";
+import { TbFileImport } from "react-icons/tb";
+import { TbFileExport } from "react-icons/tb";
+import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
+import { IoIosClose } from "react-icons/io";
+import { Country, State, City } from 'country-state-city';
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -71,6 +80,9 @@ function EmployeeParticular() {
   const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [openProjection, setOpenProjection] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
+  const [selectedRows, setSelectedRows] = useState([]);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -114,6 +126,9 @@ function EmployeeParticular() {
   const [currentTab, setCurrentTab] = useState("Leads");
   const [selectedEmployee, setSelectedEmployee] = useState()
   const [selectedEmployee2, setSelectedEmployee2] = useState()
+  const [isFilter, setIsFilter] = useState(false)
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+  const [newData, setNewData] = useState([])
 
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
@@ -200,20 +215,20 @@ function EmployeeParticular() {
         .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
         .map((employee) => employee._id);
 
-    
+
 
       // Set eData to the array of _id values
-     
+
 
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find((employee) => employee._id === id);
       const selectedEmployee2 = response2.data.find((employee) => employee._id === id);
-      
 
-      if(selectedEmployee){
+
+      if (selectedEmployee) {
         setSelectedEmployee(selectedEmployee)
-       seteData(salesExecutivesIds);
-      }else if(selectedEmployee2){
+        seteData(salesExecutivesIds);
+      } else if (selectedEmployee2) {
         setSelectedEmployee2(selectedEmployee2)
         seteData(salesExecutivesIds2)
       }
@@ -252,7 +267,7 @@ function EmployeeParticular() {
   };
 
 
- 
+
   //console.log(currentProjection);
   const functionopenAnchor = () => {
     setTimeout(() => {
@@ -281,61 +296,64 @@ function EmployeeParticular() {
     }
   }, [maturedID]);
 
-  useEffect(() => {
-    if (employeeName) {
-      const fetchCompanies = async () => {
-        try {
-          setCompaniesLoading(true);
-          const response = await fetch(`${secretKey}/companies`);
-          const data = await response.json();
+  // useEffect(() => {
+  //   if (employeeName) {
+  //     const fetchCompanies = async () => {
+  //       try {
+  //         setCompaniesLoading(true);
+  //         const response = await fetch(`${secretKey}/companies`);
+  //         const data = await response.json();
 
-          // Filter and format the data based on employeeName
-          const formattedData = data.companies
-            .filter(
-              (entry) =>
-                entry.bdeName === employeeName || entry.bdmName === employeeName
-            )
-            .map((entry) => ({
-              "Company Name": entry.companyName,
-              "Company Number": entry.contactNumber,
-              "Company Email": entry.companyEmail,
-              "Company Incorporation Date": entry.incoDate,
-              City: "NA",
-              State: "NA",
-              ename: employeeName,
-              AssignDate: entry.bookingDate,
-              Status: "Matured",
-              Remarks: "No Remarks Added",
-            }));
-          setCompanies(formattedData);
-        } catch (error) {
-          console.error("Error fetching companies:", error);
-          setCompanies([]);
-        } finally {
-          setCompaniesLoading(false);
-        }
-      };
+  //         // Filter and format the data based on employeeName
+  //         const formattedData = data.companies
+  //           .filter(
+  //             (entry) =>
+  //               entry.bdeName === employeeName || entry.bdmName === employeeName
+  //           )
+  //           .map((entry) => ({
+  //             "Company Name": entry.companyName,
+  //             "Company Number": entry.contactNumber,
+  //             "Company Email": entry.companyEmail,
+  //             "Company Incorporation Date": entry.incoDate,
+  //             City: "NA",
+  //             State: "NA",
+  //             ename: employeeName,
+  //             AssignDate: entry.bookingDate,
+  //             Status: "Matured",
+  //             Remarks: "No Remarks Added",
+  //           }));
+  //         setCompanies(formattedData);
+  //       } catch (error) {
+  //         console.error("Error fetching companies:", error);
+  //         setCompanies([]);
+  //       } finally {
+  //         setCompaniesLoading(false);
+  //       }
+  //     };
 
-      fetchCompanies();
-    }
-  }, [employeeName]);
+  //     fetchCompanies();
+  //   }
+  // }, [employeeName]);
 
- 
+
   // Function to fetch new data based on employee name
+  const [extraData, setExtraData] = useState([])
+
   const fetchNewData = async () => {
     try {
-    
+
       setLoading(true);
       const response = await axios.get(
         `${secretKey}/company-data/employees/${employeeName}`
       );
-  
+
       // Sort the data by AssignDate property
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
-  
+      setExtraData(sortedData)
+      setNewData(sortedData)
       setmoreEmpData(sortedData);
       setEmployeeData(
         response.data.filter(
@@ -374,7 +392,6 @@ function EmployeeParticular() {
 
   useEffect(() => {
     if (employeeName) {
-      
       fetchNewData();
     } else {
       console.log("No employee name found");
@@ -382,52 +399,156 @@ function EmployeeParticular() {
   }, [employeeName]);
 
 
-  const filteredData = employeeData.filter((company) => {
-    const fieldValue = company[selectedField];
+  // const searchQueryLower = searchQuery.toLowerCase();
 
-    if (selectedField === "State" && citySearch) {
-      // Handle filtering by both State and City
-      const stateMatches = fieldValue
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const cityMatches = company.City.toLowerCase().includes(
-        citySearch.toLowerCase()
-      );
-      return stateMatches && cityMatches;
-    } else if (selectedField === "Company Incorporation Date  ") {
-      // Assuming you have the month value in a variable named `month`
-      if (month == 0) {
-        return fieldValue.includes(searchText);
-      } else if (year == 0) {
-        return fieldValue.includes(searchText);
+  // const filteredData = employeeData.filter((company) => {
+  //     const companyName = company["Company Name"];
+  //     const companyNumber = company["Company Number"];
+  //     const companyEmail = company["Company Email"];
+  //     const companyState = company.State;
+  //     const companyCity = company.City;
+
+  //     // Check each field for a match
+  //     if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+  //         return true;
+  //     }
+  //     if (companyNumber && companyNumber.toString().includes(searchQueryLower)) { // Ensure companyNumber is checked correctly
+  //       return true;
+  //   }
+  //     if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+  //         return true;
+  //     }
+  //     if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+  //         return true;
+  //     }
+  //     if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+  //         return true;
+  //     }
+
+  //     return false;
+  // });
+
+  const [filteredData, setFilteredData] = useState([]);
+  const [isSearch, setIsSearch] = useState(false)
+
+  const handleSearch = (searchQuery) => {
+    const searchQueryLower = searchQuery.toLowerCase();
+
+    // Check if searchQuery is empty or null
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      setIsSearch(false);
+      setFilteredData(extraData); // Assuming extraData is your full dataset
+      return;
+    }
+
+    setIsSearch(true);
+
+    const filtered = extraData.filter((company) => {
+      const companyName = company["Company Name"];
+      const companyNumber = company["Company Number"];
+      const companyEmail = company["Company Email"];
+      const companyState = company.State;
+      const companyCity = company.City;
+
+      // Check each field for a match
+      if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
       }
-      const selectedDate = new Date(fieldValue);
-      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-      const selectedYear = selectedDate.getFullYear();
-
-      // Use the provided month variable in the comparison
-      return (
-        selectedMonth.toString().includes(month) &&
-        selectedYear.toString().includes(year)
-      );
-    } else if (selectedField === "Status" && searchText === "All") {
-      // Display all data when Status is "All"
-      return true;
-    } else {
-      // Your existing filtering logic for other fields
-      if (typeof fieldValue === "string") {
-        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-      } else if (typeof fieldValue === "number") {
-        return fieldValue.toString().includes(searchText);
-      } else if (fieldValue instanceof Date) {
-        // Handle date fields
-        return fieldValue.includes(searchText);
+      if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
       }
 
       return false;
-    }
-  });
+    });
 
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    if (filteredData.length !== 0) {
+      setEmployeeData(filteredData)
+      if (filteredData.length === 1) {
+        const currentStatus = filteredData[0].Status; // Access Status directly
+        if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+          setdataStatus('All')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'Interested') {
+          setdataStatus('Interested')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'FollowUp') {
+          setdataStatus('FollowUp')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+          setdataStatus('Matured')
+        } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+          currentStatus !== "Not Interested" &&
+          currentStatus !== "Busy" &&
+          currentStatus !== 'Junk' &&
+          currentStatus !== 'Not Picked Up' &&
+          currentStatus !== 'Matured') {
+          setdataStatus('Forwarded')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+          setdataStatus('NotInterested')
+        }
+      }
+    }
+
+  }, [filteredData])
+
+  // const filteredData = employeeData.filter((company) => {
+  //   const fieldValue = company[selectedField];
+
+  //   if (selectedField === "State" && citySearch) {
+  //     // Handle filtering by both State and City
+  //     const stateMatches = fieldValue
+  //       .toLowerCase()
+  //       .includes(searchText.toLowerCase());
+  //     const cityMatches = company.City.toLowerCase().includes(
+  //       citySearch.toLowerCase()
+  //     );
+  //     return stateMatches && cityMatches;
+  //   } else if (selectedField === "Company Incorporation Date  ") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     if (month == 0) {
+  //       return fieldValue.includes(searchText);
+  //     } else if (year == 0) {
+  //       return fieldValue.includes(searchText);
+  //     }
+  //     const selectedDate = new Date(fieldValue);
+  //     const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+  //     const selectedYear = selectedDate.getFullYear();
+
+  //     // Use the provided month variable in the comparison
+  //     return (
+  //       selectedMonth.toString().includes(month) &&
+  //       selectedYear.toString().includes(year)
+  //     );
+  //   } else if (selectedField === "Status" && searchText === "All") {
+  //     // Display all data when Status is "All"
+  //     return true;
+  //   } else {
+  //     // Your existing filtering logic for other fields
+  //     if (typeof fieldValue === "string") {
+  //       return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+  //     } else if (typeof fieldValue === "number") {
+  //       return fieldValue.toString().includes(searchText);
+  //     } else if (fieldValue instanceof Date) {
+  //       // Handle date fields
+  //       return fieldValue.includes(searchText);
+  //     }
+
+  //     return false;
+  //   }
+  // });
 
   const handleFieldChange = (event) => {
     if (event.target.value === "Company Incorporation Date  ") {
@@ -467,16 +588,17 @@ function EmployeeParticular() {
       setSearchText("");
     }
   };
-  const currentData = filteredData.slice(startIndex, endIndex);
 
-  // useEffect(() => {
-  //   // Fetch new data based on employee name when the name changes
-  //   if (employeeName !== 'Employee not found') {
-  //     fetchNewData();
-  //   }
-  // }, [employeeName]);
+  const currentData = (isSearch || isFilter) ? filteredData.slice(startIndex, endIndex) : employeeData.slice(startIndex, endIndex);
 
-  const [selectedRows, setSelectedRows] = useState([]);
+
+  console.log(isSearch)
+  console.log("currentData", currentData)
+  console.log(newData)
+  console.log("filtered", filteredData)
+  console.log("moreemp", moreEmpData)
+  console.log("employee", employeeData)
+
 
   const handleCheckboxChange = (id, event) => {
     // If the id is 'all', toggle all checkboxes
@@ -544,7 +666,7 @@ function EmployeeParticular() {
 
 
   useEffect(() => {
-    if(employeeName){
+    if (employeeName) {
       fetchNewData();
     }
   }, [nowToFetch]);
@@ -1387,8 +1509,138 @@ function EmployeeParticular() {
     }
   };
 
+  //------------------function to export data---------------------
+  const handleExportData = async () => {
+    try {
 
+      const response = await axios.post(
+        `${secretKey}/admin-leads/exportEmployeeLeads/`,
+        {
+          selectedRows
+        }
+      );
+      //console.log("response",response.data)
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "AssginedLeads_Employee.csv");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
 
+  //----------------filter for employee section-----------------------------
+  const stateList = State.getStatesOfCountry("IN")
+  const cityList = City.getCitiesOfCountry("IN")
+  const [selectedStateCode, setSelectedStateCode] = useState("")
+  const [selectedState, setSelectedState] = useState("")
+  const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+  const [selectedNewCity, setSelectedNewCity] = useState("")
+  const [selectedYear, setSelectedYear] = useState("")
+  const [selectedMonth, setSelectedMonth] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState("")
+  const [selectedBDEName, setSelectedBDEName] = useState("")
+  const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+  const [selectedAdminName, setSelectedAdminName] = useState("")
+  const [daysInMonth, setDaysInMonth] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(0)
+  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
+  const [openBacdrop, setOpenBacdrop] = useState(false)
+  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+
+  const functionCloseFilterDrawer = () => {
+    setOpenFilterDrawer(false)
+  }
+
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  //Create an array of years from 2018 to the current year
+  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+  useEffect(() => {
+    let monthIndex;
+    if (selectedYear && selectedMonth) {
+      monthIndex = months.indexOf(selectedMonth);
+      //console.log(monthIndex)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+    } else {
+      setDaysInMonth([]);
+    }
+  }, [selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth && selectedDate) {
+      const monthIndex = months.indexOf(selectedMonth) + 1;
+      const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+      const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+      const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+      setSelectedCompanyIncoDate(companyIncoDate);
+    }
+  }, [selectedYear, selectedMonth, selectedDate]);
+
+  const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+    try {
+      setIsFilter(true);
+      setOpenBacdrop(true);
+
+      const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
+        params: {
+          employeeName,
+          selectedStatus,
+          selectedState,
+          selectedNewCity,
+          selectedYear,
+          selectedAssignDate,
+          selectedCompanyIncoDate,
+          page,
+          limit
+        }
+      });
+
+      if (
+        !selectedStatus &&
+        !selectedState &&
+        !selectedNewCity &&
+        !selectedYear &&
+        !selectedCompanyIncoDate
+      ) {
+        // If no filters are applied, reset the filter state and stop the backdrop
+        setIsFilter(false);
+
+      } else {
+        // Update the employee data with the filtered results
+        console.log(response.data)
+        setFilteredData(response.data)
+      }
+    } catch (error) {
+      console.log('Error applying filter', error.message);
+    } finally {
+      setOpenBacdrop(false);
+      setOpenFilterDrawer(false);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setIsFilter(false)
+    setSelectedStatus('')
+    setSelectedState('')
+    setSelectedNewCity('')
+    setSelectedYear('')
+    setSelectedMonth('')
+    setSelectedDate(0)
+    setSelectedAssignDate(null)
+    setCompanyIncoDate(null)
+    fetchNewData()
+    //fetchData(1, latestSortCount)
+  }
+  console.log(selectedDate , selectedYear , selectedMonth)
+  console.log(selectedCompanyIncoDate, "incodate")
 
   return (
     <div>
@@ -1447,7 +1699,7 @@ function EmployeeParticular() {
                     </div>
                   )}
                   {!AddForm && <>
-                    <div className="form-control sort-by">
+                    {/* <div className="form-control sort-by">
                       <label htmlFor="sort-by">Sort By:</label>
                       <select
                         style={{
@@ -1561,7 +1813,7 @@ function EmployeeParticular() {
                           C.Inco. Date
                         </option>
                       </select>
-                    </div>
+                    </div> */}
                     {/* {bdmWorkOn ? (
                       <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
                         Revoke Bdm Work
@@ -1579,39 +1831,38 @@ function EmployeeParticular() {
                       </button>
                     </Link>)}
                   </>}
-
                   {backButton && (
                     <div>
-                      {!AddForm ? 
-                      <Link
-                      
-                        to={`/admin/admin-user`}
-                        style={{ marginLeft: "10px" }}
-                      >
-                        <button className="btn btn-primary d-none d-sm-inline-block">
-                          <span>
-                            <FaArrowLeft
-                              style={{
-                                marginRight: "10px",
-                                marginBottom: "3px",
-                              }}
-                            />
-                          </span>
-                          Back
-                        </button>
-                      </Link> : <>
-                        <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => setAddForm(false)}>
-                          <span>
-                            <FaArrowLeft
-                              style={{
-                                marginRight: "10px",
-                                marginBottom: "3px",
-                              }}
-                            />
-                          </span>
-                          Back
-                        </button>
-                      </>}
+                      {!AddForm ?
+                        <Link
+
+                          to={`/admin/admin-user`}
+                          style={{ marginLeft: "10px" }}
+                        >
+                          <button className="btn btn-primary d-none d-sm-inline-block">
+                            <span>
+                              <FaArrowLeft
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "3px",
+                                }}
+                              />
+                            </span>
+                            Back
+                          </button>
+                        </Link> : <>
+                          <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => setAddForm(false)}>
+                            <span>
+                              <FaArrowLeft
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "3px",
+                                }}
+                              />
+                            </span>
+                            Back
+                          </button>
+                        </>}
                     </div>
                   )}
                 </div>
@@ -1672,15 +1923,59 @@ function EmployeeParticular() {
               e.preventDefault();
             }}
             className="page-body"
-            style={{ marginTop: "0px " }}
-          >
+            style={{ marginTop: "0px " }}>
             <div className="container-xl">
-              <div className="row g-2 align-items-center">
+              <div className="d-flex align-items-center justify-content-between mb-2">
+                <div className="d-flex align-items-center">
+                  <div className="btn-group" role="group" aria-label="Basic example">
+                    <button type="button"
+                      className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                      onClick={() => setOpenFilterDrawer(true)}
+                    >
+                      <IoFilterOutline className='mr-1' /> Filter
+                    </button>
+                    <button type="button" className="btn mybtn"
+                      onClick={() => handleExportData()}
+                    >
+                      <TbFileExport className='mr-1' /> Export Leads
+                    </button>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center">
+                  {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                  <div class="input-icon ml-1">
+                    <span class="input-icon-addon">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                        <path d="M21 21l-6 -6"></path>
+                      </svg>
+                    </span>
+                    <input
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        handleSearch(e.target.value)
+                        //handleFilterSearch(e.target.value)
+                        //setCurrentPage(0);
+                      }}
+                      className="form-control search-cantrol mybtn"
+                      placeholder="Search…"
+                      type="text"
+                      name="bdeName-search"
+                      id="bdeName-search" />
+                  </div>
+                </div>
+              </div>
+              {/* <div className="row g-2 align-items-center">
                 <div className="col-2">
                   <div
                     className="form-control"
-                    style={{ height: "fit-content", width: "auto" }}
-                  >
+                    style={{ height: "fit-content", width: "auto" }}>
                     <select
                       style={{
                         border: "none",
@@ -1724,7 +2019,7 @@ function EmployeeParticular() {
                       className="input-icon"
                     >
                       <span className="input-icon-addon">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                        
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="icon"
@@ -1816,7 +2111,7 @@ function EmployeeParticular() {
                   {selectedField === "State" && (
                     <div style={{ marginLeft: "-16px" }} className="input-icon">
                       <span className="input-icon-addon">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                       
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="icon"
@@ -1878,17 +2173,6 @@ function EmployeeParticular() {
                         </select>
                       </div>
                       <div className="input-icon form-control">
-                        {/* <input
-                          type="number"
-                          value={year}
-                          defaultValue="Select Year"
-                          className="form-control"
-                          placeholder="Select Year.."
-                          onChange={(e) => {
-                            setYear(e.target.value);
-                          }}
-                          aria-label="Search in website"
-                        /> */}
                         <select
                           select
                           style={{ border: "none", outline: "none" }}
@@ -1939,8 +2223,8 @@ function EmployeeParticular() {
                   </div>
                 </div>
 
-                {/* <!-- Page title actions --> */}
-              </div>
+               
+              </div> */}
               {/* <div class="card-header my-tab">
                 <ul
                   class="nav nav-tabs card-header-tabs nav-fill p-0"
@@ -1993,8 +2277,9 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("All");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData.filter(
+                          mappedData.filter(
                             (obj) =>
                               obj.Status === "Busy" ||
                               obj.Status === "Not Picked Up" ||
@@ -2012,7 +2297,7 @@ function EmployeeParticular() {
                       General{" "}
                       <span className="no_badge">
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               obj.Status === "Busy" ||
                               obj.Status === "Not Picked Up" ||
@@ -2028,8 +2313,9 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("Interested");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData.filter(
+                          mappedData.filter(
                             (obj) =>
                               obj.Status === "Interested" &&
                               obj.bdmAcceptStatus === "NotForwarded"
@@ -2046,7 +2332,7 @@ function EmployeeParticular() {
                       <span>Interested </span>
                       <span className="no_badge">
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               obj.Status === "Interested" &&
                               obj.bdmAcceptStatus === "NotForwarded"
@@ -2062,8 +2348,9 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("FollowUp");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData.filter(
+                          mappedData.filter(
                             (obj) =>
                               obj.Status === "FollowUp" &&
                               obj.bdmAcceptStatus === "NotForwarded"
@@ -2081,7 +2368,7 @@ function EmployeeParticular() {
 
                       <span className="no_badge">
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               obj.Status === "FollowUp" &&
                               obj.bdmAcceptStatus === "NotForwarded"
@@ -2097,8 +2384,9 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("Matured");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData
+                          mappedData
                             .filter(
                               (obj) =>
                                 obj.Status === "Matured" &&
@@ -2122,10 +2410,12 @@ function EmployeeParticular() {
                       <span className="no_badge">
                         {" "}
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               obj.Status === "Matured" &&
-                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                              (obj.bdmAcceptStatus === "NotForwarded" ||
+                                obj.bdmAcceptStatus === "Pending" ||
+                                obj.bdmAcceptStatus === "Accept")
                           ).length
                         }
                       </span>
@@ -2137,12 +2427,16 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("Forwarded");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData
+                          mappedData
                             .filter(
                               (obj) =>
                                 obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                obj.Status !== "Not Interested" &&
+                                obj.Status !== "Busy" &&
+                                obj.Status !== "Junk" &&
+                                obj.Status !== "Not Picked Up" &&
                                 obj.Status !== "Matured"
                             )
                             // .sort(
@@ -2164,8 +2458,10 @@ function EmployeeParticular() {
                       Bdm Forwarded{" "}
                       <span className="no_badge">
                         {" "}
+
+
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               obj.bdmAcceptStatus !== "NotForwarded" &&
                               obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
@@ -2181,8 +2477,9 @@ function EmployeeParticular() {
                       onClick={() => {
                         setdataStatus("NotInterested");
                         setCurrentPage(0);
+                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                         setEmployeeData(
-                          moreEmpData.filter(
+                          mappedData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
                                 obj.Status === "Junk") &&
@@ -2200,7 +2497,7 @@ function EmployeeParticular() {
                       <span>Not Interested </span>
                       <span className="no_badge">
                         {
-                          moreEmpData.filter(
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
                                 obj.Status === "Junk") &&
@@ -2802,7 +3099,17 @@ function EmployeeParticular() {
                           )}
                         </>
                       )}
-                      {currentData.length === 0 && !loading && (
+                      {(isFilter || isSearch) && filteredData.length === 0 && (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" className="p-2">
+                              <Nodata />
+                            </td>
+                          </tr>
+                        </tbody>
+
+                      )}
+                      {currentData.length === 0 && !loading && !isFilter && !isSearch && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -3374,6 +3681,155 @@ function EmployeeParticular() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </Drawer>
+
+      <Drawer
+        style={{ top: "50px" }}
+        anchor="left"
+        open={openFilterDrawer}
+        onClose={functionCloseFilterDrawer}>
+        <div style={{ width: "31em" }}>
+          <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+            <h2 className="title m-0">
+              Filters
+            </h2>
+            <div>
+              <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                <IoIosClose style={{
+                  height: "36px",
+                  width: "32px",
+                  color: "grey"
+                }} />
+              </button>
+            </div>
+          </div>
+          <hr style={{ margin: "0px" }} />
+          <div className="body-Drawer">
+            <div className='container-xl mt-2 mb-2'>
+              <div className='row'>
+                <div className='col-sm-12 mt-3'>
+                  <div className='form-group'>
+                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                    <select class="form-select form-select-md" aria-label="Default select example"
+                      value={selectedStatus}
+                      onChange={(e) => {
+                        setSelectedStatus(e.target.value)
+                      }}
+                    >
+                      <option selected value='Select Status'>Select Status</option>
+                      <option value='Not Picked Up'>Not Picked Up</option>
+                      <option value="Busy">Busy</option>
+                      <option value="Junk">Junk</option>
+                      <option value="Not Interested">Not Interested</option>
+                      <option value="Untouched">Untouched</option>
+                      <option value="Interested">Interested</option>
+                      <option value="Matured">Matured</option>
+                      <option value="FollowUp">Followup</option>
+                    </select>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='d-flex align-items-center justify-content-between'>
+                    <div className='form-group w-50 mr-1'>
+                      <label for="exampleFormControlInput1" class="form-label">State</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedState}
+                        onChange={(e) => {
+                          setSelectedState(e.target.value)
+                          setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                          setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                          //handleSelectState(e.target.value)
+                        }}
+                      >
+                        <option value=''>State</option>
+                        {stateList.length !== 0 && stateList.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='form-group w-50'>
+                      <label for="exampleFormControlInput1" class="form-label">City</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedNewCity}
+                        onChange={(e) => {
+                          setSelectedNewCity(e.target.value)
+                        }}
+                      >
+                        <option value="">City</option>
+                        {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="assignon" class="form-label">Assign On</label>
+                    <input type="date" class="form-control" id="assignon"
+                      value={selectedAssignDate}
+                      placeholder="dd-mm-yyyy"
+                      defaultValue={null}
+                      onChange={(e) => setSelectedAssignDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <label class="form-label">Incorporation Date</label>
+                  <div className='row align-items-center justify-content-between'>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedYear}
+                        onChange={(e) => {
+                          setSelectedYear(e.target.value)
+                        }}
+                      >
+                        <option value=''>Year</option>
+                        {years.length !== 0 && years.map((item) => (
+                          <option>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedMonth}
+                        disabled={selectedYear === ""}
+                        onChange={(e) => {
+                          setSelectedMonth(e.target.value)
+                        }}
+                      >
+                        <option value=''>Month</option>
+                        {months && months.map((item) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        disabled={selectedMonth === ''}
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                      >
+                        <option value=''>Date</option>
+                        {daysInMonth.map((day) => (
+                          <option key={day} value={day}>{day}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="footer-Drawer d-flex justify-content-between align-items-center">
+            <button className='filter-footer-btn btn-clear'
+              onClick={handleClearFilter}
+            >Clear Filter</button>
+            <button className='filter-footer-btn btn-yellow'
+              onClick={handleFilterData}
+            >Apply Filter</button>
           </div>
         </div>
       </Drawer>

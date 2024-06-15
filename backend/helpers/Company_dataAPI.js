@@ -479,6 +479,64 @@ router.get('/filter-leads', async (req, res) => {
   }
 });
 
+router.get('/filter-employee-leads', async (req, res) => {
+  const {
+    employeeName,
+    selectedStatus,
+    selectedState,
+    selectedNewCity,
+    selectedYear,
+    selectedAssignDate,
+    selectedCompanyIncoDate,
+  } = req.query;
+
+  const page = parseInt(req.query.page) || 1; // Page number
+  //const limit = parseInt(req.query.limit) || 500; // Items per page
+  //const skip = (page - 1) * limit; // Number of documents to skip
+
+  try {
+    let baseQuery = {};
+
+    // Ensure the query is filtered by employeeName
+    if (employeeName) baseQuery.ename = employeeName;
+
+    // Add other filters only if employeeName is present
+    if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedState) baseQuery.State = selectedState;
+    if (selectedNewCity) baseQuery.City = selectedNewCity;
+    if (selectedAssignDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      };
+    }
+    if (selectedYear) {
+      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: yearStartDate,
+        $lt: yearEndDate
+      };
+    }
+    if (selectedCompanyIncoDate) {
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: new Date(selectedCompanyIncoDate).toISOString(),
+        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+      };
+    }
+
+    console.log(baseQuery);
+
+    const data = await CompanyModel.find(baseQuery).lean();
+    console.log(data)
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 
@@ -546,7 +604,7 @@ router.get('/search-leads', async (req, res) => {
     let assignedCount = 0;
     let unassignedData = [];
     let unassignedCount = 0;
-    
+
 
     if (searchQuery) {
       const searchTerm = searchQuery.trim();
@@ -576,7 +634,7 @@ router.get('/search-leads', async (req, res) => {
       let unassignedQuery = { ...query, ename: 'Not Alloted' };
       unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
       unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
-    } 
+    }
     // else {
     //   searchResults = await CompanyModel.find().limit(500).lean();
     // }
@@ -587,7 +645,7 @@ router.get('/search-leads', async (req, res) => {
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
-      currentPage : page,
+      currentPage: page,
     });
 
     //console.log(assignedCount , unassignedCount)

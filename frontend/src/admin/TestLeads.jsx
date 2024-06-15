@@ -1510,9 +1510,6 @@ function TestLeads() {
         openchangeRemarks(false);
         setFilteredRemarks([]);
     };
-    //-----------------------------function for filter -------------------------------
-
-
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
     const stateList = State.getStatesOfCountry("IN")
