@@ -690,7 +690,6 @@ export default function AddLeadForm({
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
-
         let isValid = true;
         for (let service of leadData.services) {
 
@@ -698,7 +697,19 @@ export default function AddLeadForm({
           const secondPayment = Number(service.secondPayment);
           const thirdPayment = Number(service.thirdPayment);
           const fourthPayment = Number(service.fourthPayment);
-          console.log(firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST), "This is it")
+          if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          if (service.thirdPayment !== 0 && service.thirdPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          if (service.fourthPayment !== 0 && service.fourthPaymentRemarks === "") {
+            isValid = false;
+            break;
+          }
+          // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
           if (
             (service.paymentTerms !== "Full Advanced" &&
               (firstPayment < 0 ||
