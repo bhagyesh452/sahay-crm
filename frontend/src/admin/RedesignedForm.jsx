@@ -720,7 +720,7 @@ export default function RedesignedForm({
             bookingSource: selectedValues,
             otherBookingSource: leadData.otherBookingSource,
           };
-          console.log("This is sending", dataToSend);
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step2`,
@@ -1206,6 +1206,7 @@ export default function RedesignedForm({
                     setIsoType(remainingObject);
                   }
                 }}>
+                  <option value="" selected disabled>Select ISO Body</option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
