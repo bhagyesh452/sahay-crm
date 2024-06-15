@@ -1843,21 +1843,22 @@ router.post(
               </tr>
               `;
               }
-              const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
+
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
               const alteredServiceName =
-          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-            newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
-                newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
-                  newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
-                    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
-                      newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
-                        newData.services[i].serviceName;
+                newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                              newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                   <thead>
-                    <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
-                  </thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
                   <tbody>
                     <tr>
                       <td>Total Payment</td>
@@ -1965,21 +1966,21 @@ router.post(
               </tr>
               `;
               }
-              const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
               const alteredServiceName =
-              newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-                newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                  newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
-                    newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
-                      newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
-                        newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
-                          newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
-                            newData.services[i].serviceName;
+                newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                              newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                               <thead>
-                                <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
-                              </thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
                               <tbody>
                                 <tr>
                                   <td>Total Payment</td>
@@ -2025,31 +2026,31 @@ router.post(
             return servicesHtml;
           };
           const allowedServiceNames = [
-            "Seed Funding Document Support",
+            "Seed Funding Support",
             "Angel Funding Support",
             "VC Funding Support",
             "Crowd Funding Support",
             "I-Create",
-            "Nidhi SSS Document Support",
-            "Nidhi Prayash Yojna Document Support",
-            "NAIF Document Support",
-            "Raftaar Document Support",
+            "Nidhi Seed Support Scheme",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
             "CSR Funding",
-            "Stand-Up India Document Support",
+            "Stand-Up India",
             "PMEGP",
             "USAID",
             "UP Grant",
             "DBS Grant",
             "MSME Innovation",
-            "MSME Hackathon Document Support",
+            "MSME Hackathon",
             "Gujarat Grant",
             "CGTMSC",
             "Mudra Loan",
             "SIDBI Loan",
-            "Incubation Document Support",
+            "Incubation Support",
           ];
           const AuthorizedName = newData.services.some((service) => {
-            const tempServices = [...allowedServiceNames, "Income Tax Exemption Document Support"];
+            const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
             return tempServices.includes(service);
           })
             ? "Shubhi Banthiya"
@@ -2059,7 +2060,7 @@ router.post(
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
-              "Income Tax Exemption Document Support",
+              "Income Tax Exemption",
               "Start-Up India Certificate",
             ];
             return tempServices.includes(service.serviceName);
@@ -2095,7 +2096,7 @@ router.post(
               } else if (
                 allowedServiceNames.includes(newData.services[i].serviceName)
               ) {
-                fundingServicesArray += `${newData.services[i].serviceName},`;
+                fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
                 fundingServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
@@ -2107,7 +2108,7 @@ router.post(
               </p>
               `;
               } else if (
-                newData.services[i].serviceName === "Income Tax Exemption Document Support"
+                newData.services[i].serviceName === "Income Tax Exemption"
               ) {
 
                 incomeTaxServices = `
@@ -2128,7 +2129,7 @@ router.post(
             }
 
             if (fundingServicesArray !== "") {
-              //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
+              //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
 
               //   Re-application support will be provided at no extra cost. 
 
@@ -2271,30 +2272,30 @@ router.post(
             "CMA Report Development",
             "Company Profile Write-Up",
             "Business Profile",
-            "Seed Funding Document Support",
+            "Seed Funding Support",
             "Angel Funding Support",
             "VC Funding Support",
             "Crowd Funding Support",
             "I-Create",
-            "Nidhi SSS Document Support",
-            "Nidhi Prayash Yojna Document Support",
-            "NAIF Document Support",
-            "Raftaar Document Support",
+            "Nidhi Seed Support Scheme",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
             "CSR Funding",
-            "Stand-Up India Document Support",
+            "Stand-Up India",
             "PMEGP",
             "USAID",
             "UP Grant",
             "DBS Grant",
             "MSME Innovation",
-            "MSME Hackathon Document Support",
+            "MSME Hackathon",
             "Gujarat Grant",
             "CGTMSC",
-            "Income Tax Exemption Document Support",
+            "Income Tax Exemption",
             "Mudra Loan",
             "SIDBI Loan",
-            "Incubation Document Support",
-            "Chunauti Document Support"
+            "Incubation Support",
+            "Chunauti "
           ];
           const draftCondition = newData.services.some((service) => {
             return includedServices.includes(service.serviceName);
@@ -2312,29 +2313,29 @@ router.post(
             "Letter Head Design",
             "Broucher Design",
             "Business Profile",
-            "Seed Funding Document Support",
+            "Seed Funding Support",
             "Angel Funding Support",
             "VC Funding Support",
             "Crowd Funding Support",
             "I-Create",
             "Nidhi SSS Document Support  ",
-            "Nidhi Prayash Yojna Document Support",
-            "NAIF Document Support",
-            "Raftaar Document Support",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
             "CSR Funding",
-            "Stand-Up India Document Support",
+            "Stand-Up India",
             "PMEGP",
             "USAID",
             "UP Grant",
             "DBS Grant",
             "MSME Innovation",
-            "MSME Hackathon Document Support",
+            "MSME Hackathon",
             "Gujarat Grant",
             "CGTMSC",
-            "Income Tax Exemption Document Support",
+            "Income Tax Exemption",
             "Mudra Loan",
             "SIDBI Loan",
-            "Incubation Document Support",
+            "Incubation Support",
             "Digital Marketing",
             "SEO Services",
             "Branding Services",
@@ -2351,7 +2352,7 @@ router.post(
             "ERP Development",
             "E-Commerce Website",
             "Product Development",
-            "Chunauti Document Support"
+            "Chunauti "
           ];
           const mailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
@@ -3704,20 +3705,20 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
         const alteredServiceName =
-          newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-            newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-              newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
-                newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
-                  newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
-                    newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
-                      newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
+          newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                         newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                         <thead>
-                          <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
                         </thead>
                         <tbody>
                           <tr>
@@ -3828,22 +3829,22 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Document Support", "Income Tax Exemption Document Support", "Raftaar Document Support", "Nidhi Prayash Yojna Document Support", "Nidhi SSS Document Support", "NAIF Document Support", "MSME Hackathon Document Support", "Stand-Up India Document Support", "Chunauti Document Support"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
         const alteredServiceName =
-        newData.services[i].serviceName === "Seed Funding Document Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-          newData.services[i].serviceName === "Income Tax Exemption Document Support" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-            newData.services[i].serviceName === "Raftaar Document Support" ? "Pitchdeck Creation for Raftaar Document Support" :
-              newData.services[i].serviceName === "Nidhi Prayash Yojna Document Support" || newData.services[i].serviceName === "Nidhi SSS Document Support" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName}` :
-                newData.services[i].serviceName === "NAIF Document Support" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName}` :
-                  newData.services[i].serviceName === "MSME Hackathon Document Support" || newData.services[i].serviceName === "Incubation Document Support" || newData.services[i].serviceName === "Chunauti Document Support" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName}` :
-                    newData.services[i].serviceName === "Stand-Up India Document Support" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName}` :
-                      newData.services[i].serviceName;
+          newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                        newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                         <thead>
-                          <td colspan="4">Service: ${newData.services[i].serviceName.replace(/Document Support/g, "Application Support")}</td>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
                         </thead>
-                        <tbody>
+                        <tbody> 
                           <tr>
                             <td>Total Payment</td>
                             <td>Advanced Payment</td>
@@ -3856,8 +3857,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                                 <td >₹ 0 /-</td>
                                 <td> Complimentary Service </td>
                           </tr>
-                           
-                 
                         </tbody>
                     ` : ``;
 
@@ -3876,7 +3875,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               <tr>
                     <td rowspan='4' style="border-right:2px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
           } /-</td>
-                    <td rowspan='4' style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
+             <td rowspan='4' style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
             : parseInt(newData.services[i].firstPayment).toLocaleString()
           }/-</td>
@@ -3892,32 +3891,33 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
 
     const allowedServiceNames = [
-      "Seed Funding Document Support",
+      "Seed Funding Support",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
       "I-Create",
-      "Nidhi SSS Document Support",
-      "Nidhi Prayash Yojna Document Support",
-      "NAIF Document Support",
-      "Raftaar Document Support",
+      "Nidhi Seed Support Scheme",
+      "Nidhi Prayash Yojna",
+      "NAIF",
+      "Raftaar",
       "CSR Funding",
-      "Stand-Up India Document Support",
+      "Stand-Up India",
       "PMEGP",
       "USAID",
       "UP Grant",
       "DBS Grant",
       "MSME Innovation",
-      "MSME Hackathon Document Support",
+      "MSME Hackathon",
       "Gujarat Grant",
       "CGTMSC",
       "Mudra Loan",
       "SIDBI Loan",
-      "Incubation Document Support",
-      "Chunauti Document Support"
+      "Incubation Support",
+      "Chunauti "
     ];
+
     const AuthorizedName = newData.services.some((service) => {
-      const tempServices = [...allowedServiceNames, "Income Tax Exemption Document Support"];
+      const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
       ? "Shubhi Banthiya"
@@ -3926,17 +3926,13 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newPageDisplay = newData.services.some((service) => {
       const tempServices = [
         ...allowedServiceNames,
-        "Income Tax Exemption Document Support",
+        "Income Tax Exemption",
         "Start-Up India Certificate",
       ];
       return tempServices.includes(service.serviceName);
     })
       ? 'style="display:block'
       : 'style="display:none';
-
-
-
-
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -3957,12 +3953,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         <p class="Declaration_text_data">
         I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
         </p>
-        
         `;
         } else if (
           allowedServiceNames.includes(newData.services[i].serviceName)
         ) {
-          fundingServicesArray += `${newData.services[i].serviceName},`;
+          fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"}`;
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
@@ -3977,7 +3972,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
 
         } else if (
-          newData.services[i].serviceName === "Income Tax Exemption Document Support"
+          newData.services[i].serviceName === "Income Tax Exemption"
         ) {
 
           incomeTaxServices = `
@@ -3998,7 +3993,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
 
       if (fundingServicesArray !== "") {
-        //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Document Support") ? `
+        //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
         //   Re-application support will be provided at no extra cost.
 
         // ` : ``;
@@ -4039,8 +4034,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
-
-
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
     const mainPageHtml = `
@@ -4140,30 +4133,30 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "CMA Report Development",
       "Company Profile Write-Up",
       "Business Profile",
-      "Seed Funding Document Support",
+      "Seed Funding Support",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
       "I-Create",
-      "Nidhi SSS Document Support",
-      "Nidhi Prayash Yojna Document Support",
-      "NAIF Document Support",
-      "Raftaar Document Support",
+      "Nidhi Seed Support Scheme",
+      "Nidhi Prayash Yojna",
+      "NAIF",
+      "Raftaar",
       "CSR Funding",
-      "Stand-Up India Document Support",
+      "Stand-Up India",
       "PMEGP",
       "USAID",
       "UP Grant",
       "DBS Grant",
       "MSME Innovation",
-      "MSME Hackathon Document Support",
+      "MSME Hackathon",
       "Gujarat Grant",
       "CGTMSC",
-      "Income Tax Exemption Document Support",
+      "Income Tax Exemption",
       "Mudra Loan",
       "SIDBI Loan",
-      "Incubation Document Support",
-      "Chunauti Document Support"
+      "Incubation Support",
+      "Chunauti "
     ];
 
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
@@ -4180,30 +4173,30 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Letter Head Design",
       "Broucher Design",
       "Business Profile",
-      "Seed Funding Document Support",
-      "Chunauti Document Support",
+      "Seed Funding Support",
+      "Chunauti ",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
       "I-Create",
       "Nidhi SSS Document Support  ",
-      "Nidhi Prayash Yojna Document Support",
-      "NAIF Document Support",
-      "Raftaar Document Support",
+      "Nidhi Prayash Yojna",
+      "NAIF",
+      "Raftaar",
       "CSR Funding",
-      "Stand-Up India Document Support",
+      "Stand-Up India",
       "PMEGP",
       "USAID",
       "UP Grant",
       "DBS Grant",
       "MSME Innovation",
-      "MSME Hackathon Document Support",
+      "MSME Hackathon",
       "Gujarat Grant",
       "CGTMSC",
-      "Income Tax Exemption Document Support",
+      "Income Tax Exemption",
       "Mudra Loan",
       "SIDBI Loan",
-      "Incubation Document Support",
+      "Incubation Support",
       "Digital Marketing",
       "SEO Services",
       "Branding Services",

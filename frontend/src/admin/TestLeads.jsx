@@ -1510,9 +1510,6 @@ function TestLeads() {
         openchangeRemarks(false);
         setFilteredRemarks([]);
     };
-    //-----------------------------function for filter -------------------------------
-
-
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
     const stateList = State.getStatesOfCountry("IN")
@@ -1635,6 +1632,7 @@ function TestLeads() {
         setSelectedMonth('')
         setSelectedDate(0)
         setCompanyIncoDate(null)
+        setSelectedCompanyIncoDate(null)
         fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {

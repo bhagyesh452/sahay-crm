@@ -1650,11 +1650,11 @@ function ManagerBookings() {
                                                           >
                                                             <AddCircle />
                                                           </div>}
-                                                          {
-                                                            currentLeadform.remainingPayments.length - 1 === index && <IconButton onClick={() => functionDeleteRemainingPayment(0, obj.serviceName)}>
+                                                          
+                                                          <IconButton onClick={() => functionDeleteRemainingPayment(0, obj.serviceName)}>
                                                               <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
                                                             </IconButton>
-                                                          }
+                                                          
 
                                                         </div>
 

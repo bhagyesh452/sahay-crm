@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "./Header";
-import Navbar from "./Navbar";
 import Stack from '@mui/material/Stack';
-import Nodata from "../components/Nodata";
 import { styled } from '@mui/material/styles';
 import { Link } from "react-router-dom";
 import { IconEye } from "@tabler/icons-react";
@@ -18,8 +15,18 @@ import {
   IconButton,
 } from "@mui/material";
 import { TiArrowBack } from "react-icons/ti";
+import '../../../dist/css/tabler.min.css?1684106062';
+//import "../../../dist/css/tabler.min.css?1684106062";
+import "../../../dist/css/tabler-flags.min.css?1684106062";
+import "../../../dist/css/tabler-payments.min.css?1684106062";
+import "../../../dist/css/tabler-vendors.min.css?1684106062";
+import "../../../dist/css/demo.min.css?1684106062";
+import { IconTrash } from "@tabler/icons-react";
+import "../../../assets/styles.css";
+import "../../../assets/table.css";
+import Nodata from "../../Components/Nodata/Nodata.jsx";
 
-function DeletedEmployeePanel() {
+function Datamanager_DeletedEmployeePanel() {
   const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
@@ -301,7 +308,8 @@ function DeletedEmployeePanel() {
                           Action
                         </button>
                       </th>
-                      <th>Revoke Employee</th></>}
+                      {/* <th>Revoke Employee</th> */}
+                      </>}
                   </tr>
                 </thead>
                 {filteredData.length == 0 ? (
@@ -350,7 +358,7 @@ function DeletedEmployeePanel() {
                                 <div className="icons-btn">
                                   <Link
                                     style={{ color: "black" }}
-                                    to={`/admin/employees/${item._id}`}
+                                    to={`/datamanager/employeeLeads/${item._id}`}
                                   >
                                     <IconButton>
                                       {" "}
@@ -366,7 +374,7 @@ function DeletedEmployeePanel() {
                                 </div>
                               </div>
                             </td>
-                            <td>
+                            {/* <td>
                               <IconButton>
                               {" "}
                               <TbRestore
@@ -381,7 +389,8 @@ function DeletedEmployeePanel() {
                                 }}
                               />
                             </IconButton>
-                            </td></>}
+                            </td> */}
+                            </>}
                       </tr>
                     ))}
                   </tbody>
@@ -395,4 +404,4 @@ function DeletedEmployeePanel() {
   )
 }
 
-export default DeletedEmployeePanel
+export default Datamanager_DeletedEmployeePanel

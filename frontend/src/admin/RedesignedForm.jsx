@@ -720,7 +720,7 @@ export default function RedesignedForm({
             bookingSource: selectedValues,
             otherBookingSource: leadData.otherBookingSource,
           };
-          console.log("This is sending", dataToSend);
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step2`,
@@ -1206,6 +1206,7 @@ export default function RedesignedForm({
                     setIsoType(remainingObject);
                   }
                 }}>
+                  <option value="" selected disabled>Select ISO Body</option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
@@ -2035,7 +2036,8 @@ export default function RedesignedForm({
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-    if(file.size > maxSizeBytes){
+  
+    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
       Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
       return false;
     }else {

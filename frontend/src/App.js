@@ -58,6 +58,7 @@ import "../src/assets/v2_style.css"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
+import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
 
 
 
@@ -129,6 +130,7 @@ function App() {
           ></Route>
           <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
           <Route path="/datamanager/employees" element={<DataManager_Employees />}></Route>
+          <Route path="/datamanager/newEmployees" element={<DatamanagerNewEmployee />}></Route>
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads />}></Route>
           <Route path="/datamanager/bookings" element={<ManagerBookings />}></Route>
           <Route

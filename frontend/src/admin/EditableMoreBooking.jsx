@@ -131,7 +131,6 @@ export default function EditableMoreBooking({
       const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
       console.log("Here is the data", data);
 
-
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -176,6 +175,10 @@ export default function EditableMoreBooking({
       setActiveStep(bookingIndex === 0 ? 0 : 1);
       setCompleted({ 0: true, 1: true, 2: true, 3: true })
       setSelectedValues(newLeadData.bookingSource)
+      setfetchedService(true);
+      
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+
       if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
@@ -2134,11 +2137,13 @@ export default function EditableMoreBooking({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
+ 
   const functionShowSizeLimit = (e)=>{
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-    if(file.size > maxSizeBytes){
+  
+    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
       Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
       return false;
     }else {

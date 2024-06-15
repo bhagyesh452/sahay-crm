@@ -119,33 +119,67 @@ function DatamanagerEmployeeTeamLeads() {
     const [bdmNames, setBdmNames] = useState([])
     const [branchOffice, setBranchOffice] = useState("")
     const [empData, setEmpData] = useState([])
+    const [selectedEmployee, setSelectedEmployee] = useState()
+    const [selectedEmployee2, setSelectedEmployee2] = useState()
 
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
-
+            const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
+            const data = response2.data
             const userData = tempData.find((item) => item._id === id);
+            const userData2 = data.find((item) => item._id === id)
+            setSelectedEmployee(userData)
+            setSelectedEmployee2(userData2)
+
             const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive")
                 .map((employee) => employee._id)
-            //console.log(userData);
-            setEmpData(tempData)
-            setBranchOffice(userData.branchOffice)
-            seteData(salesExecutivesIds)
-            setData(userData);
-            setBdmNames(tempData
-                .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
-                .map((employee) => employee.ename)
-            );
+            const salesExecutivesIds2 = response2.data.filter((employee) => employee.designation === "Sales Executive")
+                .map((employee) => employee._id)
 
-            setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+            if (userData) {
+                setEmpData(tempData)
+                setBranchOffice(userData.branchOffice)
+                seteData(salesExecutivesIds)
+                //setData(userData);
+                setBdmNames(tempData
+                    .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
+                    .map((employee) => employee.ename)
+                );
+
+                setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+                setData(userData)
+
+            } else if (userData2) {
+                setEmpData(data)
+                setBranchOffice(userData2.branchOffice)
+                seteData(salesExecutivesIds2)
+                //setData(userData);
+                setBdmNames(
+                    tempData
+                        .filter(
+                            (obj) =>
+                                obj.bdmWork && obj.branchOffice === branchOffice && !userData2.ename.includes(obj.ename)
+                        )
+                        .map((employee) => employee.ename)
+                );
+
+
+                setBdmWorkOn(data.find((item) => item._id === id)?.bdmWork || null);
+                setData(userData2)
+            }
+
+
+
             //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+
     const [maturedBooking, setMaturedBooking] = useState(null);
 
     const fetchBDMbookingRequests = async () => {
