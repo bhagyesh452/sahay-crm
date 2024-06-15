@@ -131,7 +131,6 @@ export default function EditableMoreBooking({
       const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
       console.log("Here is the data", data);
 
-
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -176,6 +175,10 @@ export default function EditableMoreBooking({
       setActiveStep(bookingIndex === 0 ? 0 : 1);
       setCompleted({ 0: true, 1: true, 2: true, 3: true })
       setSelectedValues(newLeadData.bookingSource)
+      setfetchedService(true);
+      
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+
       if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
