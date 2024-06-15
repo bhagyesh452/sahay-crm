@@ -744,7 +744,7 @@ function EmployeeLeads() {
             if (currentIndex === 0) {
 
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/datamanager/employees`);
+                window.location.replace(`/datamanager/newEmployees`);
                 //setBackButton(false)
             } else {
                 // Get the previousId from the eData array
@@ -1009,7 +1009,7 @@ function EmployeeLeads() {
                                         </select>
                                     </div>
                                     {backButton && <div><Link
-                                        to={`/datamanager/employees`}
+                                        to={`/datamanager/newEmployees`}
                                         style={{ marginLeft: "10px" }}>
                                         <button className="btn btn-primary d-none d-sm-inline-block">
                                             <span><FaArrowLeft style={{ marginRight: "10px", marginBottom: "3px" }} /></span>
