@@ -115,6 +115,7 @@ function AdminEmployeeTeamLeads() {
     const [currentRemarks, setCurrentRemarks] = useState("");
     const [currentRemarksBdm, setCurrentRemarksBdm] = useState("");
     const [companyId, setCompanyId] = useState("");
+    const [searchQuery, setSearchQuery] = useState("")
     const [bdmNewStatus, setBdmNewStatus] = useState("Untouched");
     const [changeRemarks, setChangeRemarks] = useState("");
     const [updateData, setUpdateData] = useState({});
@@ -127,6 +128,7 @@ function AdminEmployeeTeamLeads() {
     const [selectedEmployee, setSelectedEmployee] = useState()
     const [selectedEmployee2, setSelectedEmployee2] = useState()
     const [isFilter, setIsFilter] = useState(false)
+    const [extraData, setExtraData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -223,6 +225,7 @@ function AdminEmployeeTeamLeads() {
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             setTeamData(response.data)
+            setExtraData(response.data)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -613,7 +616,6 @@ function AdminEmployeeTeamLeads() {
                         time,
                     }
                 )
-
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
 
@@ -1210,51 +1212,51 @@ function AdminEmployeeTeamLeads() {
         console.log(selectedField);
     };
 
-    const filteredData = teamleadsData.filter((company) => {
-        const fieldValue = company[selectedField];
+    // const filteredData = teamleadsData.filter((company) => {
+    //     const fieldValue = company[selectedField];
 
-        if (selectedField === "State" && citySearch) {
-            // Handle filtering by both State and City
-            const stateMatches = fieldValue
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-            const cityMatches = company.City.toLowerCase().includes(
-                citySearch.toLowerCase()
-            );
-            return stateMatches && cityMatches;
-        } else if (selectedField === "Company Incorporation Date  ") {
-            // Assuming you have the month value in a variable named `month`
-            if (month == 0) {
-                return fieldValue.includes(searchText);
-            } else if (year == 0) {
-                return fieldValue.includes(searchText);
-            }
-            const selectedDate = new Date(fieldValue);
-            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-            const selectedYear = selectedDate.getFullYear();
+    //     if (selectedField === "State" && citySearch) {
+    //         // Handle filtering by both State and City
+    //         const stateMatches = fieldValue
+    //             .toLowerCase()
+    //             .includes(searchText.toLowerCase());
+    //         const cityMatches = company.City.toLowerCase().includes(
+    //             citySearch.toLowerCase()
+    //         );
+    //         return stateMatches && cityMatches;
+    //     } else if (selectedField === "Company Incorporation Date  ") {
+    //         // Assuming you have the month value in a variable named `month`
+    //         if (month == 0) {
+    //             return fieldValue.includes(searchText);
+    //         } else if (year == 0) {
+    //             return fieldValue.includes(searchText);
+    //         }
+    //         const selectedDate = new Date(fieldValue);
+    //         const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+    //         const selectedYear = selectedDate.getFullYear();
 
-            // Use the provided month variable in the comparison
-            return (
-                selectedMonth.toString().includes(month) &&
-                selectedYear.toString().includes(year)
-            );
-        } else if (selectedField === "Status" && searchText === "All") {
-            // Display all data when Status is "All"
-            return true;
-        } else {
-            // Your existing filtering logic for other fields
-            if (typeof fieldValue === "string") {
-                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-            } else if (typeof fieldValue === "number") {
-                return fieldValue.toString().includes(searchText);
-            } else if (fieldValue instanceof Date) {
-                // Handle date fields
-                return fieldValue.includes(searchText);
-            }
+    //         // Use the provided month variable in the comparison
+    //         return (
+    //             selectedMonth.toString().includes(month) &&
+    //             selectedYear.toString().includes(year)
+    //         );
+    //     } else if (selectedField === "Status" && searchText === "All") {
+    //         // Display all data when Status is "All"
+    //         return true;
+    //     } else {
+    //         // Your existing filtering logic for other fields
+    //         if (typeof fieldValue === "string") {
+    //             return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+    //         } else if (typeof fieldValue === "number") {
+    //             return fieldValue.toString().includes(searchText);
+    //         } else if (fieldValue instanceof Date) {
+    //             // Handle date fields
+    //             return fieldValue.includes(searchText);
+    //         }
 
-            return false;
-        }
-    });
+    //         return false;
+    //     }
+    // });
 
     const handleDateChange = (e) => {
         const dateValue = e.target.value;
@@ -1449,27 +1451,151 @@ function AdminEmployeeTeamLeads() {
         }
     };
 
-//------------------function to export data---------------------
-const handleExportData = async () => {
-    try {
+    //------------------function to export data---------------------
+    const handleExportData = async () => {
+        try {
 
-      const response = await axios.post(
-        `${secretKey}/admin-leads/exportEmployeeTeamLeads/`,
-        {
-          selectedRows
+            const response = await axios.post(
+                `${secretKey}/admin-leads/exportEmployeeTeamLeads/`,
+                {
+                    selectedRows
+                }
+            );
+            //console.log("response",response.data)
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "AssginedTeamLeads_Employee.csv");
+            document.body.appendChild(link);
+            link.click();
+        } catch (error) {
+            console.error("Error downloading CSV:", error);
         }
-      );
-      //console.log("response",response.data)
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "AssginedTeamLeads_Employee.csv");
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error("Error downloading CSV:", error);
-    }
-  };
+    };
+
+    //------------------------search function--------------------
+
+    const [filteredData, setFilteredData] = useState([]);
+    const [isSearch, setIsSearch] = useState(false)
+
+    const handleSearch = (searchQuery) => {
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        // Check if searchQuery is empty or null
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            setFilteredData(extraData); // Assuming extraData is your full dataset
+            return;
+        }
+
+        setIsSearch(true);
+
+        const filtered = extraData.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            // Check each field for a match
+            if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+
+            return false;
+        });
+
+        setFilteredData(filtered);
+    };
+
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            setTeamLeadsData(filteredData)
+            // if (dataStatus === 'All') {
+            //     setTeamLeadsData(
+            //         filteredData.filter(
+            //             (obj) =>
+            //                 obj.bdmStatus === "Untouched"
+            //         )
+            //     );
+            // } else if (dataStatus === 'Interested') {
+            //     setTeamLeadsData(
+            //         filteredData.filter(
+            //             (obj) =>
+            //                 obj.bdmStatus === "Interested"
+            //         )
+            //     );
+            // } else if (dataStatus === 'FollowUp') {
+            //     setTeamLeadsData(
+            //         filteredData.filter(
+            //             (obj) =>
+            //                 obj.bdmStatus === "FollowUp"
+            //         )
+            //     )
+            // } else if (dataStatus === 'Matured') {
+            //     setTeamLeadsData(
+            //         filteredData
+            //             .filter(
+            //                 (obj) =>
+            //                     obj.bdmStatus === "Matured"
+            //             )
+            //     );
+            // } else if (dataStatus === 'NotInterested') {
+            //     setTeamLeadsData(
+            //         filteredData.filter(
+            //             (obj) =>
+            //                 obj.bdmStatus === "Not Interested" ||
+            //                 obj.bdmStatus === "Busy" ||
+            //                 obj.bdmStatus === "Not Picked Up" ||
+            //                 obj.bdmStatus === "Junk"
+            //         )
+            //     );
+            // }
+            // if (filteredData.length === 1) {
+            //     const currentStatus = filteredData[0].Status; // Access Status directly
+            //     if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+            //         (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+            //         setdataStatus('All')
+            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+            //         currentStatus === 'Interested') {
+            //         setdataStatus('Interested')
+            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+            //         currentStatus === 'FollowUp') {
+            //         setdataStatus('FollowUp')
+            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+            //         setdataStatus('Matured')
+            //     } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+            //         currentStatus !== "Not Interested" &&
+            //         currentStatus !== "Busy" &&
+            //         currentStatus !== 'Junk' &&
+            //         currentStatus !== 'Not Picked Up' &&
+            //         currentStatus !== 'Matured') {
+            //         setdataStatus('Forwarded')
+            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+            //         setdataStatus('NotInterested')
+            //     }
+            // }
+        }
+
+    }, [filteredData])
+
+    console.log("filteredData", filteredData)
+    console.log("team", teamleadsData)
+    console.log("teamData", teamData)
+
+
 
 
     return (
@@ -1735,7 +1861,7 @@ const handleExportData = async () => {
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button"
                                         className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                        //onClick={() => setOpenFilterDrawer(true)}
+                                    //onClick={() => setOpenFilterDrawer(true)}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
@@ -1747,11 +1873,11 @@ const handleExportData = async () => {
                                 </div>
                             </div>
                             <div className="d-flex align-items-center">
-                                {/* {selectedRows.length !== 0 && (
+                                {selectedRows.length !== 0 && (
                                     <div className="selection-data" >
                                         Total Data Selected : <b>{selectedRows.length}</b>
                                     </div>
-                                )} */}
+                                )}
                                 <div class="input-icon ml-1">
                                     <span class="input-icon-addon">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -1761,12 +1887,13 @@ const handleExportData = async () => {
                                         </svg>
                                     </span>
                                     <input
-                                        // value={searchQuery}
-                                        // onChange={(e) => {
-                                        //     setSearchQuery(e.target.value);
-                                        //     //handleFilterSearch(e.target.value)
-                                        //     //setCurrentPage(0);
-                                        // }}
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            handleSearch(e.target.value)
+                                            //handleFilterSearch(e.target.value)
+                                            //setCurrentPage(0);
+                                        }}
                                         className="form-control search-cantrol mybtn"
                                         placeholder="Search…"
                                         type="text"
@@ -2289,7 +2416,7 @@ const handleExportData = async () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {filteredData.map((company, index) => (
+                                            {teamleadsData.map((company, index) => (
                                                 <tr
                                                     key={index}
                                                     className={

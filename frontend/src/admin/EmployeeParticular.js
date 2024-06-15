@@ -199,7 +199,7 @@ function EmployeeParticular() {
   //   }
   // };
 
- 
+
 
   const fetchEmployeeDetails = async () => {
     try {
@@ -485,7 +485,7 @@ function EmployeeParticular() {
             (obj) =>
               obj.Status === "Interested" &&
               obj.bdmAcceptStatus === "NotForwarded" &&
-              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Pending" &&
               obj.bdmAcceptStatus !== "Accept"
           )
         );
@@ -495,7 +495,7 @@ function EmployeeParticular() {
             (obj) =>
               obj.Status === "FollowUp" &&
               obj.bdmAcceptStatus === "NotForwarded" &&
-              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Pending" &&
               obj.bdmAcceptStatus !== "Accept"
           )
         )
@@ -519,7 +519,7 @@ function EmployeeParticular() {
                 obj.Status !== "Busy" &&
                 obj.Status !== "Junk" &&
                 obj.Status !== "Not Picked Up" &&
-                obj.Status !== "Matured" 
+                obj.Status !== "Matured"
             )
             .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
         );
@@ -1115,9 +1115,10 @@ function EmployeeParticular() {
         icon: "success",
       });
 
-      setnewEmployeeSelection("Not Alloted");
+
       fetchEmployeeDetails();
       fetchNewData();
+      setnewEmployeeSelection("Not Alloted");
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
@@ -1334,7 +1335,7 @@ function EmployeeParticular() {
     try {
       const confirmation = await Swal.fire({
         title: 'Revoke BDM Work',
-        text: 'Are you sure you want to revoke BDM work?',
+        text: 'Are you sure you want to restore BDM work?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -1735,7 +1736,7 @@ function EmployeeParticular() {
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-center">
-                  {selectedRows.length !== 0 && (
+                  {/* {selectedRows.length !== 0 && (
                     <div className="request">
                       <div className="btn-list">
                         <button
@@ -1751,11 +1752,11 @@ function EmployeeParticular() {
                           data-bs-target="#modal-report"
                           aria-label="Create new report"
                         >
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          
                         </a>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {!AddForm && <>
                     {/* <div className="form-control sort-by">
                       <label htmlFor="sort-by">Sort By:</label>
@@ -1997,14 +1998,17 @@ function EmployeeParticular() {
                     >
                       <TbFileExport className='mr-1' /> Export Leads
                     </button>
+                    {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
+                      <MdOutlinePostAdd className='mr-1' />Assign Leads
+                    </button>)}
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
-                  {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )} */}
+                  {selectedRows.length !== 0 && (
+                    <div className="selection-data" >
+                      Total Data Selected : <b>{selectedRows.length}</b>
+                    </div>
+                  )}
                   <div class="input-icon ml-1">
                     <span class="input-icon-addon">
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">

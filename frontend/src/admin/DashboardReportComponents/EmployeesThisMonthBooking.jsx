@@ -2666,7 +2666,7 @@ function EmployeesThisMonthBooking() {
 
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
-                                Advanced Payments
+                                Advance Payments
                             </h2>
                         </div>
 
@@ -2685,14 +2685,11 @@ function EmployeesThisMonthBooking() {
 
 
                                         <th>
-                                            <div>REMAINING TOTAL</div>
+                                            <div>TOTAL AMOUNT</div>
                                         </th>
                                         <th>
-                                            <div>REMAINING RECEIVED</div>
+                                            <div>TOTAL ADVANCE RECIEVED</div>
                                         </th>
-                                        {/* <th>
-                        <div>REMAINING PENDING</div>
-                    </th> */}
                                         <th>
                                             PAYMENT DATE
                                         </th>
