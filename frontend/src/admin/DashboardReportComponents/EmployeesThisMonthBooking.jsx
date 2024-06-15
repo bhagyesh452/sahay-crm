@@ -2635,8 +2635,8 @@ function EmployeesThisMonthBooking() {
                                                     <td>-</td>
                                                     <td>-</td>
                                                     <td>{remainingMainObject.length}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0)).toLocaleString() : 0}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0)).toLocaleString() : 0}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
                                                     {/* <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.pendingPayment, 0)).toLocaleString() : 0}</td> */}
 
 
