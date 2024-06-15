@@ -1654,7 +1654,7 @@ function AdminEmployeeTeamLeads() {
                                         </div>
                                     )}
 
-                                    <div className="form-control sort-by">
+                                    {/* <div className="form-control sort-by">
                                         <label htmlFor="sort-by">Sort By:</label>
                                         <select
                                             style={{
@@ -1768,7 +1768,7 @@ function AdminEmployeeTeamLeads() {
                                                 C.Inco. Date
                                             </option>
                                         </select>
-                                    </div>
+                                    </div> */}
                                     {!selectedEmployee2 && (
                                         <Link
                                             to={`/admin/employees/${id}/login-details`}
