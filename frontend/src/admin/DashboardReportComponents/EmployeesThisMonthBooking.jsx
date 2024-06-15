@@ -528,15 +528,17 @@ function EmployeesThisMonthBooking() {
             } else if (mainBooking.remainingPayments.length !== 0) {
                 if (mainBooking.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                     mainBooking.services.forEach(serv => {
-                        if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingExpense += serv.expanse / 2;
-                        } else if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingExpense += serv.expanse;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === bdeName) {
-                            remainingExpense += serv.expanse;
-                        }}
+                        if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
+                            if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                                remainingExpense += serv.expanse / 2;
+                            } else if (mainBooking.bdeName === mainBooking.bdmName) {
+                                remainingExpense += serv.expanse;
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === bdeName) {
+                                remainingExpense += serv.expanse;
+                            }
+                        }
                     });
-                }   
+                }
                 // mainBooking.services.map(serv => {
                 //     // console.log(serv.expanse , bdeName ,"this is services");
                 //     let expanseDate;
@@ -653,7 +655,7 @@ function EmployeesThisMonthBooking() {
                 } else if (moreObject.remainingPayments.length !== 0) {
                     if (moreObject.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
                         moreObject.services.forEach(serv => {
-                            if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){
+                            if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
                                 if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
                                     remainingMoreExpense += serv.expanse / 2;
                                 } else if (moreObject.bdeName === moreObject.bdmName) {
@@ -662,9 +664,9 @@ function EmployeesThisMonthBooking() {
                                     remainingMoreExpense += serv.expanse;
                                 }
                             }
-                           
+
                         });
-                    } 
+                    }
 
                     moreObject.remainingPayments.map((remainingObj) => {
                         const moreRemainingDate = new Date(remainingObj.paymentDate);
@@ -721,7 +723,7 @@ function EmployeesThisMonthBooking() {
 
 
         expanse = expanse + remainingExpense + remainingMoreExpense;
-        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) -expanse ;
+        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     };
 
@@ -804,15 +806,17 @@ function EmployeesThisMonthBooking() {
             } else if (mainBooking.remainingPayments.length !== 0) {
                 if (mainBooking.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                     mainBooking.services.forEach(serv => {
-                        if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingExpense += serv.expanse / 2;
-                        } else if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingExpense += serv.expanse;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === bdeName) {
-                            remainingExpense += serv.expanse;
-                        }}
+                        if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
+                            if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                                remainingExpense += serv.expanse / 2;
+                            } else if (mainBooking.bdeName === mainBooking.bdmName) {
+                                remainingExpense += serv.expanse;
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === bdeName) {
+                                remainingExpense += serv.expanse;
+                            }
+                        }
                     });
-                }   
+                }
                 // mainBooking.services.map(serv => {
                 //     // console.log(serv.expanse , bdeName ,"this is services");
                 //     let expanseDate;
@@ -929,7 +933,7 @@ function EmployeesThisMonthBooking() {
                 } else if (moreObject.remainingPayments.length !== 0) {
                     if (moreObject.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
                         moreObject.services.forEach(serv => {
-                            if(serv.expanseDate && new Date(serv.expanseDate)>= startDate && new Date(serv.expanseDate) <= endDate){
+                            if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
                                 if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
                                     remainingMoreExpense += serv.expanse / 2;
                                 } else if (moreObject.bdeName === moreObject.bdmName) {
@@ -938,9 +942,9 @@ function EmployeesThisMonthBooking() {
                                     remainingMoreExpense += serv.expanse;
                                 }
                             }
-                           
+
                         });
-                    } 
+                    }
 
                     moreObject.remainingPayments.map((remainingObj) => {
                         const moreRemainingDate = new Date(remainingObj.paymentDate);
@@ -2606,10 +2610,10 @@ function EmployeesThisMonthBooking() {
 
 
                                                             <th>
-                                                                <div>₹{obj.totalPayment.toLocaleString()}</div>
+                                                                <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
                                                             </th>
                                                             <th>
-                                                                <div>₹{obj.receivedPayment.toLocaleString()}</div>
+                                                                <div>₹ {Math.round(obj.receivedPayment).toLocaleString()}</div>
                                                             </th>
                                                             {/* <th>
                                             <div>{obj.pendingPayment}</div>
