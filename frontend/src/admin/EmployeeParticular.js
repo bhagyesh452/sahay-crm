@@ -1120,6 +1120,7 @@ function EmployeeParticular() {
       fetchNewData();
       setnewEmployeeSelection("Not Alloted");
       closepopupAssign();
+      setSelectedRows([])
     } catch (error) {
       console.error("Error updating employee data:", error);
       Swal.close();
@@ -1585,6 +1586,7 @@ function EmployeeParticular() {
       link.setAttribute("download", "AssginedLeads_Employee.csv");
       document.body.appendChild(link);
       link.click();
+      setSelectedRows([])
     } catch (error) {
       console.error("Error downloading CSV:", error);
     }

@@ -2660,10 +2660,8 @@ function EmployeesThisMonthBooking() {
                     </div>
                 </div>
                 {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
-                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking"   >
-
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" style={{display : "none"}}   >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
                                 Advance Payments
@@ -2682,8 +2680,6 @@ function EmployeesThisMonthBooking() {
 
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
-
-
                                         <th>
                                             <div>TOTAL AMOUNT</div>
                                         </th>
