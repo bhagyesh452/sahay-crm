@@ -2660,7 +2660,115 @@ function EmployeesThisMonthBooking() {
                     </div>
                 </div>
                 {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking"   >
 
+                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+
+                        <div className="dashboard-title">
+                            <h2 className="m-0 pl-1">
+                                Advanced Payments
+                            </h2>
+                        </div>
+
+                    </div>
+                    <div className="card-body">
+                        <div className="row tbl-scroll">
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
+                                <thead className="admin-dash-tbl-thead">
+                                    <tr  >
+                                        <th>SR.NO</th>
+                                        <th>COMPANY NAME</th>
+                                        <th>SERVICE NAME</th>
+
+                                        <th>BDE NAME</th>
+                                        <th>BDM NAME</th>
+
+
+                                        <th>
+                                            <div>REMAINING TOTAL</div>
+                                        </th>
+                                        <th>
+                                            <div>REMAINING RECEIVED</div>
+                                        </th>
+                                        {/* <th>
+                        <div>REMAINING PENDING</div>
+                    </th> */}
+                                        <th>
+                                            PAYMENT DATE
+                                        </th>
+                                    </tr>
+                                </thead>
+                                {loading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="12">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    remainingMainObject.length !== 0 ? (
+                                        <>
+                                            <tbody>
+                                                {/* {remainingMainObject.map((obj, index) => (
+                                                    <>
+                                                        <tr  >
+                                                            <th>{index + 1}</th>
+                                                            <th>{obj["Company Name"]}</th>
+                                                            <th>{obj.serviceName}</th>
+                                                            <th>{obj.bdeName}</th>
+                                                            <th>{obj.bdmName}</th>
+
+
+                                                            <th>
+                                                                <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
+                                                            </th>
+                                                            <th>
+                                                                <div>₹ {Math.round(obj.receivedPayment).toLocaleString()}</div>
+                                                            </th>
+                                                            <th>
+                                                                {formatDateFinal(obj.paymentDate)}
+                                                            </th>
+                                                        </tr>
+                                                    </>
+                                                ))} */}
+
+                                            </tbody>
+                                            <tfoot className="admin-dash-tbl-tfoot">
+                                                {/* <tr>
+                                                    <td colSpan={2}>Total:</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>{remainingMainObject.length}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>-</td>
+                                                </tr> */}
+                                            </tfoot>
+                                        </>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td className="particular" colSpan={9}>
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    )
+                                )}
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
 
             </div></div>
