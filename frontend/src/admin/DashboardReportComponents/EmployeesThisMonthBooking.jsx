@@ -2606,10 +2606,10 @@ function EmployeesThisMonthBooking() {
 
 
                                                             <th>
-                                                                <div>{obj.totalPayment}</div>
+                                                                <div>₹{obj.totalPayment.toLocaleString()}</div>
                                                             </th>
                                                             <th>
-                                                                <div>{obj.receivedPayment}</div>
+                                                                <div>₹{obj.receivedPayment.toLocaleString()}</div>
                                                             </th>
                                                             {/* <th>
                                             <div>{obj.pendingPayment}</div>
