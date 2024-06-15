@@ -106,6 +106,8 @@ function EmployeeLeads() {
     const [backButton, setBackButton] = useState(false);
     const [loading, setLoading] = useState(false)
     const [companiesLoading, setCompaniesLoading] = useState(false)
+    const [selectedEmployee, setSelectedEmployee] = useState()
+    const [selectedEmployee2, setSelectedEmployee2] = useState()
     // const [updateData, setUpdateData] = useState({});
     const [eData, seteData] = useState([]);
     const [year, setYear] = useState(0);
@@ -121,36 +123,54 @@ function EmployeeLeads() {
     const fetchEmployeeDetails = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
+            const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
 
-            // Filter the response data to find _id values where designation is "Sales Executive"
+            // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
             const salesExecutivesIds = response.data
-                .filter((employee) => employee.designation === "Sales Executive")
+                .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
                 .map((employee) => employee._id);
 
-            // Set eData to the array of _id values
-            seteData(salesExecutivesIds);
-            //console.log("kuch bhi" ,salesExecutivesIds)
+            const salesExecutivesIds2 = response2.data
+                .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+                .map((employee) => employee._id);
+
             // Find the employee by id and set the name
-            const selectedEmployee = response.data.find(
-                (employee) => employee._id === id
-            );
-            //console.log(selectedEmployee._id)
-
-            //console.log("eData", eData[0])
-            //console.log(salesExecutivesIds)
-
-            if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
-                // If it's at 0th position, set the visibility of the back button to false
-                setBackButton(false); // assuming backButton is your back button element
-            } else {
-                // Otherwise, set the visibility to true
-                setBackButton(true) // or any other appropriate display style
-            }
+            const selectedEmployee = response.data.find((employee) => employee._id === id);
+            const selectedEmployee2 = response2.data.find((employee) => employee._id === id);
 
             if (selectedEmployee) {
-                setEmployeeName(selectedEmployee.ename);
-                setBdmWorkOn(selectedEmployee.bdmWork)
+                setSelectedEmployee(selectedEmployee)
+                seteData(salesExecutivesIds);
+            } else if (selectedEmployee2) {
+                setSelectedEmployee2(selectedEmployee2)
+                seteData(salesExecutivesIds2)
+            }
+            //console.log(selectedEmployee);
+            //console.log(selectedEmployee2);
+
+            if ((selectedEmployee && salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) ||
+                (selectedEmployee2 && salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id)) {
+                // If either selectedEmployee matches the condition or selectedEmployee2 matches the condition, set the visibility of the back button to false
+                console.log("false")
+                setBackButton(false); // assuming backButton is your back button element
             } else {
+                console.log("true condition")
+                // Otherwise, set the visibility to true
+                setBackButton(true); // or any other appropriate display style
+            }
+
+
+            // Check if selectedEmployee or selectedEmployee2 is defined and then access their properties
+            if (selectedEmployee && selectedEmployee._id) {
+                //console.log("yahan nahi");
+                setEmployeeName(selectedEmployee.ename);
+                setBdmWorkOn(selectedEmployee.bdmWork);
+            } else if (selectedEmployee2 && selectedEmployee2._id) {
+                //console.log("yahan chala");
+                setEmployeeName(selectedEmployee2.ename);
+                setBdmWorkOn(selectedEmployee2.bdmWork);
+            } else {
+                //console.log("yahan bhi");
                 // Handle the case where no employee is found with the given id
                 setEmployeeName("Employee not found");
             }
@@ -158,7 +178,7 @@ function EmployeeLeads() {
             console.error("Error fetching employee details:", error.message);
         }
     };
-    console.log(currentProjection)
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
@@ -271,6 +291,8 @@ function EmployeeLeads() {
                 console.error("Error fetching login details:", error);
             });
     }, []);
+
+
     useEffect(() => {
         if (employeeName) {
             console.log("Employee found");

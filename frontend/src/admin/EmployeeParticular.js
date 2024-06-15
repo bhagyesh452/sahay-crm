@@ -199,7 +199,7 @@ function EmployeeParticular() {
   //   }
   // };
 
-  let destination;
+ 
 
   const fetchEmployeeDetails = async () => {
     try {
@@ -215,15 +215,9 @@ function EmployeeParticular() {
         .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
         .map((employee) => employee._id);
 
-
-
-      // Set eData to the array of _id values
-
-
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find((employee) => employee._id === id);
       const selectedEmployee2 = response2.data.find((employee) => employee._id === id);
-
 
       if (selectedEmployee) {
         setSelectedEmployee(selectedEmployee)
@@ -655,12 +649,12 @@ function EmployeeParticular() {
   const currentData = employeeData.slice(startIndex, endIndex);
 
 
-  console.log(isSearch)
-  console.log("currentData", currentData)
-  console.log(newData)
-  console.log("filtered", filteredData)
-  console.log("moreemp", moreEmpData)
-  console.log("employee", employeeData)
+  // console.log(isSearch)
+  // console.log("currentData", currentData)
+  // console.log(newData)
+  // console.log("filtered", filteredData)
+  // console.log("moreemp", moreEmpData)
+  // console.log("employee", employeeData)
 
 
   const handleCheckboxChange = (id, event) => {
@@ -704,8 +698,6 @@ function EmployeeParticular() {
       });
     }
   };
-
-  console.log("selectedrows" , selectedRows)
 
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
   const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
@@ -1180,7 +1172,7 @@ function EmployeeParticular() {
   const [cstat, setCstat] = useState("");
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
-  
+
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks/remarks-history`);
