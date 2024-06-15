@@ -1632,6 +1632,7 @@ function TestLeads() {
         setSelectedMonth('')
         setSelectedDate(0)
         setCompanyIncoDate(null)
+        setSelectedCompanyIncoDate(null)
         fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {

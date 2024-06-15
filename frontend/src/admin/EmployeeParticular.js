@@ -475,7 +475,70 @@ function EmployeeParticular() {
 
   useEffect(() => {
     if (filteredData.length !== 0) {
-      setEmployeeData(filteredData)
+      //setEmployeeData(filteredData)
+      if (dataStatus === 'All') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched"
+          )
+        );
+      } else if (dataStatus === 'Interested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Interested" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        );
+      } else if (dataStatus === 'FollowUp') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "FollowUp" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        )
+      } else if (dataStatus === 'Matured') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                obj.Status === "Matured" &&
+                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+            )
+        );
+      } else if (dataStatus === 'Forwarded') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
+                obj.bdmAcceptStatus !== "NotForwarded" &&
+                obj.Status !== "Not Interested" &&
+                obj.Status !== "Busy" &&
+                obj.Status !== "Junk" &&
+                obj.Status !== "Not Picked Up" &&
+                obj.Status !== "Matured" 
+            )
+            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+        );
+      } else if (dataStatus === 'NotInterested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              (obj.Status === "Not Interested" ||
+                obj.Status === "Junk") &&
+              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+          )
+        );
+      }
       if (filteredData.length === 1) {
         const currentStatus = filteredData[0].Status; // Access Status directly
         if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
@@ -589,7 +652,7 @@ function EmployeeParticular() {
     }
   };
 
-  const currentData = (isSearch || isFilter) ? filteredData.slice(startIndex, endIndex) : employeeData.slice(startIndex, endIndex);
+  const currentData = employeeData.slice(startIndex, endIndex);
 
 
   console.log(isSearch)
@@ -605,9 +668,9 @@ function EmployeeParticular() {
     if (id === "all") {
       // If all checkboxes are already selected, clear the selection; otherwise, select all
       setSelectedRows((prevSelectedRows) =>
-        prevSelectedRows.length === filteredData.length
+        prevSelectedRows.length === employeeData.length
           ? []
-          : filteredData.map((row) => row._id)
+          : employeeData.map((row) => row._id)
       );
     } else {
       // Toggle the selection status of the row with the given id
@@ -615,8 +678,8 @@ function EmployeeParticular() {
         // If the Ctrl key is pressed
         if (event.ctrlKey) {
           //console.log("pressed");
-          const selectedIndex = filteredData.findIndex((row) => row._id === id);
-          const lastSelectedIndex = filteredData.findIndex((row) =>
+          const selectedIndex = employeeData.findIndex((row) => row._id === id);
+          const lastSelectedIndex = employeeData.findIndex((row) =>
             prevSelectedRows.includes(row._id)
           );
 
@@ -641,6 +704,8 @@ function EmployeeParticular() {
       });
     }
   };
+
+  console.log("selectedrows" , selectedRows)
 
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
   const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
@@ -1076,19 +1141,19 @@ function EmployeeParticular() {
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
-    setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+    setStartRowIndex(employeeData.findIndex((row) => row._id === id));
   };
 
   const handleMouseEnter = (id) => {
     // Update selected rows during drag selection
     if (startRowIndex !== null) {
-      const endRowIndex = filteredData.findIndex((row) => row._id === id);
+      const endRowIndex = employeeData.findIndex((row) => row._id === id);
       const selectedRange = [];
       const startIndex = Math.min(startRowIndex, endRowIndex);
       const endIndex = Math.max(startRowIndex, endRowIndex);
 
       for (let i = startIndex; i <= endIndex; i++) {
-        selectedRange.push(filteredData[i]._id);
+        selectedRange.push(employeeData[i]._id);
       }
 
       setSelectedRows(selectedRange);
@@ -1115,6 +1180,7 @@ function EmployeeParticular() {
   const [cstat, setCstat] = useState("");
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+  
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -1636,11 +1702,11 @@ function EmployeeParticular() {
     setSelectedDate(0)
     setSelectedAssignDate(null)
     setCompanyIncoDate(null)
+    setSelectedCompanyIncoDate(null)
     fetchNewData()
     //fetchData(1, latestSortCount)
   }
-  console.log(selectedDate , selectedYear , selectedMonth)
-  console.log(selectedCompanyIncoDate, "incodate")
+
 
   return (
     <div>
@@ -2439,11 +2505,6 @@ function EmployeeParticular() {
                                 obj.Status !== "Not Picked Up" &&
                                 obj.Status !== "Matured"
                             )
-                            // .sort(
-                            //   (a, b) =>
-                            //     convertDateFormat(b.bdeForwardDate) > convertDateFormat(a.bdeForwardDate) ? 1 :
-                            //       convertDateFormat(b.bdeForwardDate) < convertDateFormat(a.bdeForwardDate) ? -1 : 0
-                            // )
                             .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                         );
                         //setdataStatus(obj.bdmAcceptStatus);
@@ -3099,7 +3160,7 @@ function EmployeeParticular() {
                           )}
                         </>
                       )}
-                      {(isFilter || isSearch) && filteredData.length === 0 && (
+                      {/* {(isFilter || isSearch) && filteredData.length === 0 && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -3108,8 +3169,8 @@ function EmployeeParticular() {
                           </tr>
                         </tbody>
 
-                      )}
-                      {currentData.length === 0 && !loading && !isFilter && !isSearch && (
+                      )} */}
+                      {currentData.length === 0 && !loading && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">

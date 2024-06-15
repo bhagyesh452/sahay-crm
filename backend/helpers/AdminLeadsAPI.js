@@ -139,7 +139,7 @@ const convertToCSVNew = (leads) => {
   return csvRows.join('\n');
 };
 
-router.post('/exportEmployeeTeamLeads', async (req, res) => {
+router.post('/exportEmployeeLeads', async (req, res) => {
   const { selectedRows } = req.body;
   
 
@@ -165,7 +165,7 @@ router.post('/exportEmployeeTeamLeads', async (req, res) => {
   }
 });
 
-router.post('/exportEmployeeLeads', async (req, res) => {
+router.post('/exportEmployeeTeamLeads', async (req, res) => {
   const { selectedRows } = req.body;
   
 

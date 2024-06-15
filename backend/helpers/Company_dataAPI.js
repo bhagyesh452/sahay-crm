@@ -528,8 +528,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     console.log(baseQuery);
 
     const data = await CompanyModel.find(baseQuery).lean();
-    console.log(data)
-
+   
     res.status(200).json(data);
   } catch (error) {
     console.error('Error searching leads:', error);
