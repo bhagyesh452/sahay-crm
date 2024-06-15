@@ -4365,6 +4365,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
+      { $unset: { maturedBdmName: "" } },
       { new: true }
     );
     if (updateMainBooking.bdmAcceptStatus === "Accept") {

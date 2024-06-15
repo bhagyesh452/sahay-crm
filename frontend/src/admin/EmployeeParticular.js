@@ -1752,7 +1752,6 @@ function EmployeeParticular() {
                           data-bs-target="#modal-report"
                           aria-label="Create new report"
                         >
-                          
                         </a>
                       </div>
                     </div>
