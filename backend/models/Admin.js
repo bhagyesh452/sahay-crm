@@ -43,7 +43,7 @@ const yourSchema = new mongoose.Schema({
   bdmWork:{
     type:Boolean,
     default:false
-  }
+  },
 });
 
 

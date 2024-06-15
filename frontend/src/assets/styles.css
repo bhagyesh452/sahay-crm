@@ -2072,8 +2072,8 @@ td input
 .employee_picture
 {
   overflow: hidden;
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   border-radius: 100px;
   background: #eee;
   box-shadow: 0px 7px 35px -16px #ffba00;
@@ -2092,8 +2092,8 @@ td input
 }
 .employee_profile_data
 {
-  width: calc(100% - 220px);
-  padding: 20px;
+  width: calc(100% - 200px);
+  padding: 20px 20px 20px 0px;
 }
 .profile-pic-upload {
   width: 30px;
@@ -2149,4 +2149,17 @@ td input
 .ep_info_t
 {
   font-size: 12px;
+}
+.EP_personal
+{
+  
+}
+.EP_personal_head
+{
+  padding: 10px 20px;
+  border-bottom: 1px solid #eee;
+}
+.EP_personal_info
+{
+  padding: 10px 20px;
 }

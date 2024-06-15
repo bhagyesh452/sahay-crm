@@ -15,6 +15,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { TbPhoneCall } from "react-icons/tb";
 import { MdOutlineCalendarMonth } from "react-icons/md";
+import { GrLocation } from "react-icons/gr";
 
 
 
@@ -33,30 +34,29 @@ function EmployeeProfile() {
 
 
 
-//-----------------fetching employee details----------------------------------
-    const fetchEmployeeData =async()=>{
-  
-        try{
-          const response = await axios.get(`${secretKey}/employee/einfo`)
-          console.log(response.data)
-          const tempData = response.data;
-      const data = tempData.find((item) => item._id === userId);
-          
-          console.log(data)
-          setEmployeeData(data)
-          setdata(data)
-      
-      
-        }catch(error){
-          console.error("Error fetching employee data" , error)
-      
-        }
-      }
-      React.useEffect(()=>{
-        fetchEmployeeData()
-      },[])
+    //-----------------fetching employee details----------------------------------
+    const fetchEmployeeData = async () => {
 
-console.log(data.ename , data.designation)
+        try {
+            const response = await axios.get(`${secretKey}/employee/einfo`)
+            console.log(response.data)
+            const tempData = response.data;
+            const data = tempData.find((item) => item._id === userId);
+            console.log(data)
+            setEmployeeData(data)
+            setdata(data)
+
+
+        } catch (error) {
+            console.error("Error fetching employee data", error)
+
+        }
+    }
+    React.useEffect(() => {
+        fetchEmployeeData()
+    }, [])
+
+    
 
 
 
@@ -71,12 +71,12 @@ console.log(data.ename , data.designation)
         <div className="employee-profile-main mt-3 mb-3">
           <div className="container-xl">
             <div className="row">
-              <div className="col-lg-5 col-md-5 col-sm-12">
+              <div className="col-lg-4">
                 <div className="my-card">
                   <div className="d-flex align-items-center m-0">
                     <div className="employee_profile_picture d-flex align-items-center justify-content-center">
                       <div className="employee_picture">
-                        <img src={EmpDfaullt}></img>
+                        <img src={EmpImg2}></img>
                       </div>
                       <div className="profile-pic-upload">
                         <FaCamera />
@@ -145,6 +145,80 @@ console.log(data.ename , data.designation)
                             <div className="ep_info_t">02 Dec 2023</div>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3">
+                <div className="my-card EP_personal">
+                  <div className="EP_personal_head">
+                    <h2 className="m-0">Personal Information</h2>
+                  </div>
+                  <div className="EP_personal_info">
+                    <div className="d-flex align-items-center mt-1 mb-1">
+                      <div className="d-flex align-items-center">
+                        <div className="ep_info_icon">
+                          <MdOutlineEmail />
+                        </div>
+                        <div className="ep_info_h">
+                          Email :
+                        </div>
+                      </div>
+                      <div className="ml-1">
+                        <div className="ep_info_t">nirmeshparekh1@gmail.com</div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center mt-1 mb-1">
+                      <div className="d-flex align-items-center">
+                        <div className="ep_info_icon">
+                        <TbPhoneCall />
+                        </div>
+                        <div className="ep_info_h">
+                          Phone No :
+                        </div>
+                      </div>
+                      <div className="ml-1">
+                        <div className="ep_info_t">+91 99242 83530</div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center mt-1 mb-1">
+                      <div className="d-flex align-items-center">
+                        <div className="ep_info_icon">
+                        <TbPhoneCall />
+                        </div>
+                        <div className="ep_info_h">
+                          Emergency Contact :
+                        </div>
+                      </div>
+                      <div className="ml-1">
+                        <div className="ep_info_t">+91 99242 83530</div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center mt-1 mb-1">
+                      <div className="d-flex align-items-center">
+                        <div className="ep_info_icon">
+                        <FaRegCircleUser />
+                        </div>
+                        <div className="ep_info_h">
+                          Contact Persona Name :
+                        </div>
+                      </div>
+                      <div className="ml-1">
+                        <div className="ep_info_t">Nimesh Parekh</div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-start mt-1 mb-1">
+                      <div className="d-flex align-items-center">
+                        <div className="ep_info_icon">
+                          <GrLocation />
+                        </div>
+                        <div className="ep_info_h">
+                          Address:
+                        </div>
+                      </div>
+                      <div className="ml-1">
+                        <div className="ep_info_t">H 21, Suvarna Apartment, Nirnaynagar, Ranip, ahmedabad -382480</div>
                       </div>
                     </div>
                   </div>

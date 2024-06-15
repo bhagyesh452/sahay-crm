@@ -1180,7 +1180,6 @@ export default function RedesignedForm({
                         setIsoType(defaultArray)
                       }
                     }
-
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1189,7 +1188,7 @@ export default function RedesignedForm({
                   </option>
                   {options.map((option, index) => (
                     <option key={index} value={option.value}>
-                      {option.value}
+                      {option.label}
                     </option>
                   ))}
                 </select>
