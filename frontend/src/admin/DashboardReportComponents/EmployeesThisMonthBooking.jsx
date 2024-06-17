@@ -1999,6 +1999,40 @@ function EmployeesThisMonthBooking() {
         link.click();
     }
 
+    //-----------------------------function for advance payment table-------------------------------
+    const advancePaymentObject = [];
+
+    redesignedData.forEach((mainObj) => {
+        const bookingDate = new Date(mainObj.bookingDate)
+        if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
+            mainObj.services.forEach((service) => {
+                if (service.paymentTerms === 'Full Advanced') {
+                    advancePaymentObject.push({
+                        "Company Name": mainObj["Company Name"],
+                        serviceName: service.serviceName,
+                        bdeName: mainObj.bdeName,
+                        bdmName: mainObj.bdmName,
+                        totalPayment: service.totalPaymentWGST,
+                        totalAdvanceRecieved: service.totalPaymentWGST,
+                        paymentDate: mainObj.bookingDate
+                    })
+                } else if (service.paymentTerms === "two-part") {
+                    advancePaymentObject.push({
+                        "Company Name": mainObj["Company Name"],
+                        serviceName: service.serviceName,
+                        bdeName: mainObj.bdeName,
+                        bdmName: mainObj.bdmName,
+                        totalPayment: service.totalPaymentWGST,
+                        totalAdvanceRecieved: service.firstPayment,
+                        paymentDate: mainObj.bookingDate
+                    })
+                }
+            })
+        }
+    })
+
+    console.log(advancePaymentObject)
+
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -2645,7 +2679,7 @@ function EmployeesThisMonthBooking() {
                     </div>
                 </div>
                 {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
-                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" style={{display : "none"}}   >
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
@@ -2693,10 +2727,10 @@ function EmployeesThisMonthBooking() {
                                         </tr>
                                     </tbody>
                                 ) : (
-                                    remainingMainObject.length !== 0 ? (
+                                    advancePaymentObject.length !== 0 ? (
                                         <>
                                             <tbody>
-                                                {/* {remainingMainObject.map((obj, index) => (
+                                                {advancePaymentObject.map((obj, index) => (
                                                     <>
                                                         <tr  >
                                                             <th>{index + 1}</th>
@@ -2704,32 +2738,30 @@ function EmployeesThisMonthBooking() {
                                                             <th>{obj.serviceName}</th>
                                                             <th>{obj.bdeName}</th>
                                                             <th>{obj.bdmName}</th>
-
-
                                                             <th>
                                                                 <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
                                                             </th>
                                                             <th>
-                                                                <div>₹ {Math.round(obj.receivedPayment).toLocaleString()}</div>
+                                                                <div>₹ {Math.round(obj.totalAdvanceRecieved).toLocaleString()}</div>
                                                             </th>
                                                             <th>
                                                                 {formatDateFinal(obj.paymentDate)}
                                                             </th>
                                                         </tr>
                                                     </>
-                                                ))} */}
+                                                ))}
 
                                             </tbody>
                                             <tfoot className="admin-dash-tbl-tfoot">
-                                                {/* <tr>
+                                                <tr>
                                                     <td colSpan={2}>Total:</td>
                                                     <td>-</td>
                                                     <td>-</td>
-                                                    <td>{remainingMainObject.length}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>{advancePaymentObject.length}</td>
+                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalAdvanceRecieved, 0))).toLocaleString() : 0}</td>
                                                     <td>-</td>
-                                                </tr> */}
+                                                </tr>
                                             </tfoot>
                                         </>
                                     ) : (
