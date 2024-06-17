@@ -2031,7 +2031,8 @@ function EmployeesThisMonthBooking() {
         }
     })
 
-    console.log(advancePaymentObject)
+    console.log(advancePaymentObject.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate)));
+    
 
 
     return (
@@ -2040,7 +2041,6 @@ function EmployeesThisMonthBooking() {
             <div className="employee-dashboard mt-2">
                 <div className="card mb-2">
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
                                 Collection Report
@@ -2730,7 +2730,7 @@ function EmployeesThisMonthBooking() {
                                     advancePaymentObject.length !== 0 ? (
                                         <>
                                             <tbody>
-                                                {advancePaymentObject.map((obj, index) => (
+                                                {advancePaymentObject.sort((a , b)=>new Date(b.paymentDate) - new Date(a.paymentDate)).map((obj, index) => (
                                                     <>
                                                         <tr  >
                                                             <th>{index + 1}</th>
@@ -2750,7 +2750,6 @@ function EmployeesThisMonthBooking() {
                                                         </tr>
                                                     </>
                                                 ))}
-
                                             </tbody>
                                             <tfoot className="admin-dash-tbl-tfoot">
                                                 <tr>
@@ -2758,7 +2757,6 @@ function EmployeesThisMonthBooking() {
                                                     <td>{advancePaymentObject.length}</td>
                                                     <td>-</td>
                                                     <td>-</td>
-                                                    
                                                     <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
                                                     <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalAdvanceRecieved, 0))).toLocaleString() : 0}</td>
                                                     <td>-</td>
