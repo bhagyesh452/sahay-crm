@@ -1212,7 +1212,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                      {formatDatePro                                                                                                            (obj.expanseDate)}
+                                      {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
                                         </div>
                                       </div>
                                     </div>
@@ -1401,7 +1401,7 @@ function BookingList() {
                                                           Remaining Payment
                                                         </div>
                                                         <div>
-                                                          {"(" + formatDatePro(paymentObj.publishDate) + ")"}
+                                                          {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
                                                         </div>
                                                       </div>
                                                     </div>
@@ -2304,7 +2304,7 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {formatDatePro(obj.expanseDate)}
+                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
                                             </div>
                                           </div>
                                         </div>
@@ -2495,7 +2495,7 @@ function BookingList() {
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
-                                                                {"(" + formatDatePro(paymentObj.publishDate) + ")"}
+                                                                {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
                                                                 
                                                               </div>
 

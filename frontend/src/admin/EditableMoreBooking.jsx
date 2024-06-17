@@ -154,7 +154,7 @@ export default function EditableMoreBooking({
         console.log(tempDefaultType)
         // Call setIsoType for each service's isoTypeObject
        if(service.serviceName.includes("ISO Certificate")){
-        setIsoType(service.isoTypeObject && service.isoTypeObject[0].serviceID !== undefined ? service.isoTypeObject : [tempDefaultType] );
+        setIsoType(service.isoTypeObject[0] && service.isoTypeObject[0].serviceID !== undefined ? service.isoTypeObject : [tempDefaultType] );
       
        }
 
@@ -1097,6 +1097,8 @@ export default function EditableMoreBooking({
         Swal.fire("Request Failed!", "Failed to Request Admin", "error");
       }
     } else if (activeStep === 4 && isAdmin) {
+      const defaultDate = new Date(1970, 0, 1);
+
       const servicestoSend = leadData.services.map((service, index) => ({
         ...service,
         serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
@@ -1112,7 +1114,10 @@ export default function EditableMoreBooking({
           service.fourthPaymentRemarks === "On Particular Date"
             ? fourthTempRemarks
             : service.fourthPaymentRemarks,
-        isoTypeObject: isoType
+        isoTypeObject: isoType,
+        expanse : service.expanse ? service.expanse : 0,
+        expanseDate : service.expanseDate ? service.expanseDate : defaultDate
+
       }));
       const generatedTotalAmount = leadData.services.reduce(
         (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
@@ -1217,9 +1222,21 @@ export default function EditableMoreBooking({
             // Handle services separately as it's an array
             dataToSend.services.forEach((service, index) => {
               Object.keys(service).forEach((prop) => {
-                formData.append(`services[${index}][${prop}]`, service[prop]);
+                if(prop!=="isoTypeObject"){
+                  formData.append(`services[${index}][${prop}]`, service[prop]);
+                }   
               });
             });
+
+            if(isoType.length!==0){
+               isoType.forEach((isoObj , isoIndex)=>{
+                Object.keys(isoObj).forEach((isoProp)=>{
+                
+                    formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
+                                     
+                })      
+               })
+            }
           } else if (key === "otherDocs") {
             for (let i = 0; i < leadData.otherDocs.length; i++) {
               formData.append("otherDocs", leadData.otherDocs[i]);
@@ -1345,7 +1362,7 @@ export default function EditableMoreBooking({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
                   const currentObject = isoType.find(obj => obj.serviceID === i);
 
                   if (currentObject) {
@@ -1358,12 +1375,12 @@ export default function EditableMoreBooking({
                     setIsoType(remainingObject);
                   }
                 }}>
-                  <option value="">Select IAF Body</option>
+                  <option value="" selected>Select IAF Body</option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
                   {/* IAF ISO LIST */}
-                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
                     const currentObject = isoType.find(obj => obj.serviceID === i);
 
                     if (currentObject) {
@@ -1387,7 +1404,7 @@ export default function EditableMoreBooking({
                     <option value="ISO 50001">ISO 50001</option>
                   </select>
                     {/* IAF ISO TYPES */}
-                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                    <select disabled={completed[activeStep] === true} className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
                       if (currentObject) {
@@ -1404,7 +1421,7 @@ export default function EditableMoreBooking({
                       <option value="1 YR"> 1 YR</option>
                       <option value="3 YR">3 YR</option>
                       <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                    </select></> : <>  <select className="form-select mt-1 ml-1" disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
                       if (currentObject) {
