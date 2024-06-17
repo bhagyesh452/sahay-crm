@@ -199,7 +199,7 @@ function EmployeeParticular() {
   //   }
   // };
 
- 
+
 
   const fetchEmployeeDetails = async () => {
     try {
@@ -350,7 +350,7 @@ function EmployeeParticular() {
       setNewData(sortedData)
       setmoreEmpData(sortedData);
       setEmployeeData(
-        response.data.filter(
+        sortedData.filter(
           (obj) =>
             obj.Status === "Busy" ||
             obj.Status === "Not Picked Up" ||
@@ -485,7 +485,7 @@ function EmployeeParticular() {
             (obj) =>
               obj.Status === "Interested" &&
               obj.bdmAcceptStatus === "NotForwarded" &&
-              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Pending" &&
               obj.bdmAcceptStatus !== "Accept"
           )
         );
@@ -495,7 +495,7 @@ function EmployeeParticular() {
             (obj) =>
               obj.Status === "FollowUp" &&
               obj.bdmAcceptStatus === "NotForwarded" &&
-              obj.bdmAcceptStatus !== "Pending" && 
+              obj.bdmAcceptStatus !== "Pending" &&
               obj.bdmAcceptStatus !== "Accept"
           )
         )
@@ -519,7 +519,7 @@ function EmployeeParticular() {
                 obj.Status !== "Busy" &&
                 obj.Status !== "Junk" &&
                 obj.Status !== "Not Picked Up" &&
-                obj.Status !== "Matured" 
+                obj.Status !== "Matured"
             )
             .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
         );
@@ -681,7 +681,7 @@ function EmployeeParticular() {
           if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
             const start = Math.min(selectedIndex, lastSelectedIndex);
             const end = Math.max(selectedIndex, lastSelectedIndex);
-            const idsToSelect = filteredData
+            const idsToSelect = employeeData
               .slice(start, end + 1)
               .map((row) => row._id);
 
@@ -1115,10 +1115,12 @@ function EmployeeParticular() {
         icon: "success",
       });
 
-      setnewEmployeeSelection("Not Alloted");
+
       fetchEmployeeDetails();
       fetchNewData();
+      setnewEmployeeSelection("Not Alloted");
       closepopupAssign();
+      setSelectedRows([])
     } catch (error) {
       console.error("Error updating employee data:", error);
       Swal.close();
@@ -1155,7 +1157,7 @@ function EmployeeParticular() {
       const mouseY = window.event.clientY;
       const tableHeight = document.querySelector("table").clientHeight;
       const maxVisibleRows = Math.floor(
-        windowHeight / (tableHeight / filteredData.length)
+        windowHeight / (tableHeight / employeeData.length)
       );
 
       if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
@@ -1334,7 +1336,7 @@ function EmployeeParticular() {
     try {
       const confirmation = await Swal.fire({
         title: 'Revoke BDM Work',
-        text: 'Are you sure you want to revoke BDM work?',
+        text: 'Are you sure you want to restore BDM work?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes',
@@ -1584,6 +1586,7 @@ function EmployeeParticular() {
       link.setAttribute("download", "AssginedLeads_Employee.csv");
       document.body.appendChild(link);
       link.click();
+      setSelectedRows([])
     } catch (error) {
       console.error("Error downloading CSV:", error);
     }
@@ -1735,7 +1738,7 @@ function EmployeeParticular() {
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-center">
-                  {selectedRows.length !== 0 && (
+                  {/* {selectedRows.length !== 0 && (
                     <div className="request">
                       <div className="btn-list">
                         <button
@@ -1751,11 +1754,10 @@ function EmployeeParticular() {
                           data-bs-target="#modal-report"
                           aria-label="Create new report"
                         >
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
                         </a>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {!AddForm && <>
                     {/* <div className="form-control sort-by">
                       <label htmlFor="sort-by">Sort By:</label>
@@ -1997,14 +1999,17 @@ function EmployeeParticular() {
                     >
                       <TbFileExport className='mr-1' /> Export Leads
                     </button>
+                    {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
+                      <MdOutlinePostAdd className='mr-1' />Assign Leads
+                    </button>)}
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
-                  {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )} */}
+                  {selectedRows.length !== 0 && (
+                    <div className="selection-data" >
+                      Total Data Selected : <b>{selectedRows.length}</b>
+                    </div>
+                  )}
                   <div class="input-icon ml-1">
                     <span class="input-icon-addon">
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -2342,6 +2347,10 @@ function EmployeeParticular() {
                               obj.Status === "Busy" ||
                               obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
+                          ).sort(
+                            (a, b) =>
+                              new Date(b.lastActionDate) -
+                              new Date(a.lastActionDate)
                           )
                         );
                       }}
@@ -2585,7 +2594,7 @@ function EmployeeParticular() {
                             <input
                               type="checkbox"
                               checked={
-                                selectedRows.length === filteredData.length
+                                selectedRows.length === employeeData.length
                               }
                               onChange={() => handleCheckboxChange("all")}
                             />
@@ -3194,7 +3203,7 @@ function EmployeeParticular() {
                       </IconButton>
                       <span>
                         Page {currentPage + 1} of{" "}
-                        {Math.ceil(filteredData.length / itemsPerPage)}
+                        {Math.ceil(employeeData.length / itemsPerPage)}
                       </span>
 
                       <IconButton
@@ -3202,13 +3211,13 @@ function EmployeeParticular() {
                           setCurrentPage((prevPage) =>
                             Math.min(
                               prevPage + 1,
-                              Math.ceil(filteredData.length / itemsPerPage) - 1
+                              Math.ceil(employeeData.length / itemsPerPage) - 1
                             )
                           )
                         }
                         disabled={
                           currentPage ===
-                          Math.ceil(filteredData.length / itemsPerPage) - 1
+                          Math.ceil(employeeData.length / itemsPerPage) - 1
                         }
                       >
                         <IconChevronRight />

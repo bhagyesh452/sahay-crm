@@ -2563,17 +2563,12 @@ function EmployeesThisMonthBooking() {
 
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
-
-
                                         <th>
                                             <div>REMAINING TOTAL</div>
                                         </th>
                                         <th>
                                             <div>REMAINING RECEIVED</div>
                                         </th>
-                                        {/* <th>
-                                            <div>REMAINING PENDING</div>
-                                        </th> */}
                                         <th>
                                             PAYMENT DATE
                                         </th>
@@ -2607,23 +2602,15 @@ function EmployeesThisMonthBooking() {
                                                             <th>{obj.serviceName}</th>
                                                             <th>{obj.bdeName}</th>
                                                             <th>{obj.bdmName}</th>
-
-
                                                             <th>
                                                                 <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
                                                             </th>
                                                             <th>
                                                                 <div>₹ {Math.round(obj.receivedPayment).toLocaleString()}</div>
                                                             </th>
-                                                            {/* <th>
-                                            <div>{obj.pendingPayment}</div>
-                                        </th> */}
                                                             <th>
                                                                 {formatDateFinal(obj.paymentDate)}
                                                             </th>
-
-
-
                                                         </tr>
                                                     </>
                                                 ))}
@@ -2638,8 +2625,6 @@ function EmployeesThisMonthBooking() {
                                                     <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
                                                     <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
                                                     {/* <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.pendingPayment, 0)).toLocaleString() : 0}</td> */}
-
-
                                                     <td>-</td>
                                                 </tr>
                                             </tfoot>
@@ -2660,13 +2645,11 @@ function EmployeesThisMonthBooking() {
                     </div>
                 </div>
                 {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
-                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking"   >
-
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" style={{display : "none"}}   >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
-                                Advanced Payments
+                                Advance Payments
                             </h2>
                         </div>
 
@@ -2682,17 +2665,12 @@ function EmployeesThisMonthBooking() {
 
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
-
-
                                         <th>
-                                            <div>REMAINING TOTAL</div>
+                                            <div>TOTAL AMOUNT</div>
                                         </th>
                                         <th>
-                                            <div>REMAINING RECEIVED</div>
+                                            <div>TOTAL ADVANCE RECIEVED</div>
                                         </th>
-                                        {/* <th>
-                        <div>REMAINING PENDING</div>
-                    </th> */}
                                         <th>
                                             PAYMENT DATE
                                         </th>
