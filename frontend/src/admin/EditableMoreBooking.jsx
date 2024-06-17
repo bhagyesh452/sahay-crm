@@ -151,9 +151,11 @@ export default function EditableMoreBooking({
           ...defaultISOtypes,
           serviceID: index
         }
+        console.log(tempDefaultType)
         // Call setIsoType for each service's isoTypeObject
        if(service.serviceName.includes("ISO Certificate")){
-        setIsoType(service.isoTypeObject && !service.isoTypeObject[0].serviceID ? service.isoTypeObject : tempDefaultType );
+        setIsoType(service.isoTypeObject && service.isoTypeObject[0].serviceID !== undefined ? service.isoTypeObject : [tempDefaultType] );
+      
        }
 
       
