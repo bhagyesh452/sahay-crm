@@ -736,7 +736,7 @@ router.post("/assign-new", async (req, res) => {
             ename: ename,
             bdmAcceptStatus: "NotForwarded",
             feedbackPoints: [],
-            multiBdmName: [],
+            multiBdmName: [...employeeData.multiBdmName , employeeData.ename],
             Status: "Untouched",
             AssignDate:new Date()
           },

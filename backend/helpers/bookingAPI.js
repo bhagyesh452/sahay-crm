@@ -5126,6 +5126,24 @@ router.post('/export-this-bookings', async (req, res) => {
 
 })
 
+//-------------------------update company for deleted bde status---------------------------------------
+
+router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
+  const nametochange = req.params.ename;
+
+  
+  try {
+    const result = await RedesignedLeadformModel.updateMany(
+      { bdeName: nametochange },  // Filter criteria
+      { $set: { isDeletedEmployeeCompany: true } }  // Update operation
+    );
+
+    res.status(200).json({ message: "Updated successfully", result });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 module.exports = router;
