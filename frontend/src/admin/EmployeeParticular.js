@@ -350,7 +350,7 @@ function EmployeeParticular() {
       setNewData(sortedData)
       setmoreEmpData(sortedData);
       setEmployeeData(
-        response.data.filter(
+        sortedData.filter(
           (obj) =>
             obj.Status === "Busy" ||
             obj.Status === "Not Picked Up" ||
@@ -681,7 +681,7 @@ function EmployeeParticular() {
           if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
             const start = Math.min(selectedIndex, lastSelectedIndex);
             const end = Math.max(selectedIndex, lastSelectedIndex);
-            const idsToSelect = filteredData
+            const idsToSelect = employeeData
               .slice(start, end + 1)
               .map((row) => row._id);
 
@@ -1157,7 +1157,7 @@ function EmployeeParticular() {
       const mouseY = window.event.clientY;
       const tableHeight = document.querySelector("table").clientHeight;
       const maxVisibleRows = Math.floor(
-        windowHeight / (tableHeight / filteredData.length)
+        windowHeight / (tableHeight / employeeData.length)
       );
 
       if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
@@ -2347,6 +2347,10 @@ function EmployeeParticular() {
                               obj.Status === "Busy" ||
                               obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
+                          ).sort(
+                            (a, b) =>
+                              new Date(b.lastActionDate) -
+                              new Date(a.lastActionDate)
                           )
                         );
                       }}
@@ -2590,7 +2594,7 @@ function EmployeeParticular() {
                             <input
                               type="checkbox"
                               checked={
-                                selectedRows.length === filteredData.length
+                                selectedRows.length === employeeData.length
                               }
                               onChange={() => handleCheckboxChange("all")}
                             />
@@ -3199,7 +3203,7 @@ function EmployeeParticular() {
                       </IconButton>
                       <span>
                         Page {currentPage + 1} of{" "}
-                        {Math.ceil(filteredData.length / itemsPerPage)}
+                        {Math.ceil(employeeData.length / itemsPerPage)}
                       </span>
 
                       <IconButton
@@ -3207,13 +3211,13 @@ function EmployeeParticular() {
                           setCurrentPage((prevPage) =>
                             Math.min(
                               prevPage + 1,
-                              Math.ceil(filteredData.length / itemsPerPage) - 1
+                              Math.ceil(employeeData.length / itemsPerPage) - 1
                             )
                           )
                         }
                         disabled={
                           currentPage ===
-                          Math.ceil(filteredData.length / itemsPerPage) - 1
+                          Math.ceil(employeeData.length / itemsPerPage) - 1
                         }
                       >
                         <IconChevronRight />

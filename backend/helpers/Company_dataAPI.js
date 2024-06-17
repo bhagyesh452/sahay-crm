@@ -738,6 +738,7 @@ router.post("/assign-new", async (req, res) => {
             feedbackPoints: [],
             multiBdmName: [],
             Status: "Untouched",
+            AssignDate:new Date()
           },
           $unset: {
             bdmName: "",
