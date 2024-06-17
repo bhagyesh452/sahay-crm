@@ -1185,7 +1185,7 @@ function BookingList() {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="row m-0 bdr-btm-eee">
+                                {obj.expanse && <div className="row m-0 bdr-btm-eee">
                                   <div className="col-lg-6 col-sm-2 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
@@ -1214,7 +1214,7 @@ function BookingList() {
                                       </div>
                                     </div>
                                   </div>
-                                </div>
+                                </div>}
                                 <div className="row m-0 bdr-btm-eee">
                                   {obj.firstPayment !== 0 && (
                                     <div className="col-lg-6 col-sm-6 p-0">
@@ -2277,7 +2277,7 @@ function BookingList() {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="row m-0 bdr-btm-eee">
+                                    {obj.expanse && <div className="row m-0 bdr-btm-eee">
                                       <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
@@ -2306,7 +2306,7 @@ function BookingList() {
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </div>}
                                     <div className="row m-0 bdr-btm-eee">
                                       {obj.firstPayment !== 0 && (
                                         <div className="col-lg-6 col-sm-6 p-0">
