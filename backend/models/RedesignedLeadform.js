@@ -1,5 +1,23 @@
 const mongoose = require("mongoose");
 
+const isoTypeSchema = new mongoose.Schema({
+  serviceID:{
+    type:Number
+  },
+  type:{
+    type:String
+  },
+  IAFtype1:{
+    type:String
+  },
+  IAFtype2:{
+    type:String
+  },
+  Nontype:{
+    type:String
+  }
+})
+
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
@@ -9,9 +27,7 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  isoTypeObject: {
-    type:Array,
-  },
+  isoTypeObject: [isoTypeSchema],
   totalPaymentWGST: {
     type: Number,
     required: true,

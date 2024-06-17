@@ -101,13 +101,13 @@ export default function EditableMoreBooking({
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
-    serviceID: '',
+    serviceID: -1,
     type: "",
     IAFtype1: "",
     IAFtype2: "",
     Nontype: ""
   }
-  const [isoType, setIsoType] = useState([defaultISOtypes]);
+  const [isoType, setIsoType] = useState([]);
 
   const fetchDataEmp = async () => {
     try {
@@ -152,11 +152,16 @@ export default function EditableMoreBooking({
           serviceID: index
         }
         // Call setIsoType for each service's isoTypeObject
-        setIsoType(service.isoTypeObject ? service.isoTypeObject : tempDefaultType);
+       if(service.serviceName.includes("ISO Certificate")){
+        setIsoType(service.isoTypeObject && service.isoTypeObject.length!==0 ? service.isoTypeObject : tempDefaultType );
+       }
+
+      
         return {
           ...service,
-          serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+          serviceName : service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+          paymentCount : service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 :4,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
             ? service.secondPaymentRemarks
             : "On Particular Date",
           thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
@@ -176,7 +181,6 @@ export default function EditableMoreBooking({
       setCompleted({ 0: true, 1: true, 2: true, 3: true })
       setSelectedValues(newLeadData.bookingSource)
       setfetchedService(true);
-      
       setTotalServices(data.services.length !== 0 ? data.services.length : 1);
 
       if (Step2Status === true && Step3Status === false) {
@@ -202,10 +206,8 @@ export default function EditableMoreBooking({
             serviceID: index
           }
           // Call setIsoType for each service's isoTypeObject
-          setIsoType(service.isoTypeObject ? service.isoTypeObject : tempDefaultType);
           return {
             ...service,
-            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -229,9 +231,30 @@ export default function EditableMoreBooking({
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step4Status === true && Step5Status === false) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        const servicestoSend = newLeadData.services.map((service, index) => {
+          const tempDefaultType = {
+            ...defaultISOtypes,
+            serviceID: index
+          }
+          // Call setIsoType for each service's isoTypeObject
+          return {
+            ...service,
+            paymentCount : service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 :4,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+              ? service.secondPaymentRemarks
+              : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+              ? service.thirdPaymentRemarks
+              : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+              ? service.fourthPaymentRemarks
+              : "On Particular Date",
+          };
+        });
         setActiveStep(4);
         setLeadData((prevState) => ({
           ...prevState,
+          services:servicestoSend,
           totalAmount: data.totalAmount,
           pendingAmount: data.pendingAmount,
           receivedAmount: data.receivedAmount,
@@ -506,7 +529,7 @@ export default function EditableMoreBooking({
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
-
+  console.log(isoType, "Boom");
   const handleNext = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
@@ -1137,16 +1160,27 @@ export default function EditableMoreBooking({
 
       if (bookingIndex === 0) {
         try {
-          console.log(leadData.otherDocs, "Boom");
           const formData = new FormData();
           Object.keys(dataToSend).forEach((key) => {
             if (key === "services") {
               // Handle services separately as it's an array
               dataToSend.services.forEach((service, index) => {
                 Object.keys(service).forEach((prop) => {
-                  formData.append(`services[${index}][${prop}]`, service[prop]);
+                  if(prop!=="isoTypeObject"){
+                    formData.append(`services[${index}][${prop}]`, service[prop]);
+                  }   
                 });
               });
+
+              if(isoType.length!==0){
+                 isoType.forEach((isoObj , isoIndex)=>{
+                  Object.keys(isoObj).forEach((isoProp)=>{
+                  
+                      formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
+                                       
+                  })      
+                 })
+              }
             } else if (key === "otherDocs") {
               for (let i = 0; i < leadData.otherDocs.length; i++) {
                 formData.append("otherDocs", leadData.otherDocs[i]);
@@ -1161,7 +1195,7 @@ export default function EditableMoreBooking({
           });
           // console.log(activeStep, dataToSend);
 
-
+     
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -1279,7 +1313,12 @@ export default function EditableMoreBooking({
                           ? { ...service, serviceName: e.target.value }
                           : service
                       ),
+
                     }));
+                    if(isoType.length!==0 && e.target.value !== "ISO Certificate"  ){
+                      setIsoType([]);
+                    }
+                    
                     if (e.target.value === "ISO Certificate") {
                       if (!isoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = isoType;
@@ -1317,6 +1356,7 @@ export default function EditableMoreBooking({
                     setIsoType(remainingObject);
                   }
                 }}>
+                  <option value="">Select IAF Body</option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
