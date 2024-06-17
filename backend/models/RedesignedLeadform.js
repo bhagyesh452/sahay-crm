@@ -320,13 +320,14 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type:Number,
   },
   moreBookings:[TempSchema],
-  remainingPayments : [RemainingPaymentSchema]
+  remainingPayments : [RemainingPaymentSchema],
+  isDeletedEmployeeCompany:{
+    type:Boolean,
+    default:false,
+  }
   
 });
 
-const RedesignedLeadformModel = mongoose.model(
-  "RedesignedLeadform",
-  RedesignedLeadformSchema
-);
+const RedesignedLeadformModel = mongoose.model("RedesignedLeadform",RedesignedLeadformSchema);
 
 module.exports = RedesignedLeadformModel;

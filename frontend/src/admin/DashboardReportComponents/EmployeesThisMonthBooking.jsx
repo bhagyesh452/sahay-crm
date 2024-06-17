@@ -2031,7 +2031,7 @@ function EmployeesThisMonthBooking() {
         }
     })
 
-    console.log(advancePaymentObject.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate)));
+   
     
 
 

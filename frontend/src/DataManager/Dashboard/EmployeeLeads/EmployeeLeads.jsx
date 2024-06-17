@@ -151,10 +151,10 @@ function EmployeeLeads() {
             if ((selectedEmployee && salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) ||
                 (selectedEmployee2 && salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id)) {
                 // If either selectedEmployee matches the condition or selectedEmployee2 matches the condition, set the visibility of the back button to false
-                console.log("false")
+                //console.log("false")
                 setBackButton(false); // assuming backButton is your back button element
             } else {
-                console.log("true condition")
+                //console.log("true condition")
                 // Otherwise, set the visibility to true
                 setBackButton(true); // or any other appropriate display style
             }
@@ -189,7 +189,7 @@ function EmployeeLeads() {
     };
     const fetchRedesignedFormData = async () => {
         try {
-            console.log(maturedID);
+            //console.log(maturedID);
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data.find(obj => obj.company === maturedID);
             setCurrentForm(data);
@@ -199,7 +199,7 @@ function EmployeeLeads() {
         }
     };
     useEffect(() => {
-        console.log("Matured ID Changed", maturedID);
+        //console.log("Matured ID Changed", maturedID);
         if (maturedID) {
             fetchRedesignedFormData();
         }
@@ -274,7 +274,7 @@ function EmployeeLeads() {
             setLoading(false)
         }
     };
-    console.log("employeedata", employeeData)
+    //console.log("employeedata", employeeData)
     useEffect(() => {
         // Fetch employee details and related data when the component mounts or id changes
         fetchEmployeeDetails();
@@ -368,7 +368,7 @@ function EmployeeLeads() {
             setVisibilityOthernew("none");
         }
 
-        console.log(selectedField);
+        //console.log(selectedField);
     };
 
     const handleDateChange = (e) => {
@@ -409,7 +409,7 @@ function EmployeeLeads() {
             setSelectedRows((prevSelectedRows) => {
                 // If the Ctrl key is pressed
                 if (event.ctrlKey) {
-                    console.log("pressed");
+                    //console.log("pressed");
                     const selectedIndex = filteredData.findIndex((row) => row._id === id);
                     const lastSelectedIndex = filteredData.findIndex((row) =>
                         prevSelectedRows.includes(row._id)
@@ -646,7 +646,7 @@ function EmployeeLeads() {
             setRemarksHistory(response.data);
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-            console.log(response.data);
+            //console.log(response.data);
         } catch (error) {
             console.error("Error fetching remarks history:", error);
         }
@@ -842,7 +842,7 @@ function EmployeeLeads() {
 
     return (
         <div>
-            <Header name={dataManagerName} />
+            <Header />
             <Navbar name={dataManagerName} />
             <div className="page-wrapper">
                 <div
