@@ -1029,12 +1029,12 @@ function DatamanagerEmployeeTeamLeads() {
 
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/admin/admin-user`);
+                window.location.replace(`datamanager/newEmployees/`);
                 setBackButton(false)
             } else {
                 // Get the previousId from the eData array
                 const prevId = eData[prevIndex];
-                window.location.replace(`/admin/employeeleads/${prevId}`);
+                window.location.replace(`/datamanager/employeeLeads/${prevId}`);
             }
 
             //setBackButton(prevIndex !== 0);
@@ -1077,7 +1077,7 @@ function DatamanagerEmployeeTeamLeads() {
 
             // Get the nextId from the eData array
             const nextId = eData[nextIndex];
-            window.location.replace(`/admin/employeeleads/${nextId}`);
+            window.location.replace(`/datamanager/employeeLeads/${nextId}`);
 
 
             //setBackButton(nextId !== 0);
@@ -1302,7 +1302,7 @@ function DatamanagerEmployeeTeamLeads() {
         };
     }
     const location = useLocation()
-    const [value, setValue] = React.useState(location.pathname === `/admin/employeesleads/${id}` ? 0 : 1);
+    const [value, setValue] = React.useState(location.pathname === `/datamanager/employeeLeads/${id}` ? 0 : 1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -1628,16 +1628,16 @@ function DatamanagerEmployeeTeamLeads() {
                                                                    Assign Bdm Work
                                                                            </button>
                                                                    )} */}
-                                    <Link
+                                    {/* <Link
                                         to={`/admin/employees/${id}/login-details`}
                                         style={{ marginLeft: "10px" }}>
                                         <button className="btn btn-primary d-none d-sm-inline-block">
                                             Login Details
                                         </button>
-                                    </Link>
+                                    </Link> */}
                                     <div>
                                         <Link
-                                            to={`/admin/admin-user`}
+                                            to={`/datamanager/newEmployees/`}
                                             style={{ marginLeft: "10px" }}>
                                             <button className="btn btn-primary d-none d-sm-inline-block">
                                                 <span>
@@ -1667,7 +1667,7 @@ function DatamanagerEmployeeTeamLeads() {
                                 href="#tabs-home-5"
                                 onClick={() => {
                                     setCurrentTab("Leads")
-                                    window.location.pathname = `/admin/employees/${id}`
+                                    window.location.pathname = `/datamanager/employeeLeads/${id}`
                                 }}
                                 className={
                                     currentTab === "Leads"
@@ -1688,7 +1688,7 @@ function DatamanagerEmployeeTeamLeads() {
                                 href="#tabs-activity-5"
                                 onClick={() => {
                                     setCurrentTab("TeamLeads")
-                                    window.location.pathname = `/admin/employeeleads/${id}`
+                                    window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`
                                 }}
                                 className={
                                     currentTab === "TeamLeads"

@@ -497,6 +497,9 @@ function BookingList() {
       console.error("Error uploading file:", error);
     }
   };
+
+  console.log(leadFormData)
+
   return (
     <div>
       <Header />
