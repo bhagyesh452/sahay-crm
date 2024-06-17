@@ -1185,38 +1185,38 @@ function BookingList() {
                                     </div>
                                   </div>
                                 </div>
-                                {obj.expanse && <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-6 col-sm-2 p-0">
-                                    <div class="row m-0">
-                                      <div class="col-sm-4 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses
+                          {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-2 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Expense
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
-                                      <div class="col-sm-8 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                      <div className="col-lg-6 col-sm-2 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Expanses Date
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-6 col-sm-2 p-0">
-                                    <div class="row m-0">
-                                      <div class="col-sm-4 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses Date
-                                        </div>
-                                      </div>
-                                      <div class="col-sm-8 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                      {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>}
+                                    </div>}
                                 <div className="row m-0 bdr-btm-eee">
-                                  {obj.firstPayment !== 0 && (
+                                  {obj.paymentTerms === "two-part" && (
                                     <div className="col-lg-6 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-4 align-self-stretch p-0">
@@ -2277,7 +2277,7 @@ function BookingList() {
                                         </div>
                                       </div>
                                     </div>
-                                    {obj.expanse && <div className="row m-0 bdr-btm-eee">
+                                    {(obj.expanse !== 0 && obj.expanse) && <div className="row m-0 bdr-btm-eee">
                                       <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
@@ -2308,7 +2308,7 @@ function BookingList() {
                                       </div>
                                     </div>}
                                     <div className="row m-0 bdr-btm-eee">
-                                      {obj.firstPayment !== 0 && (
+                                      {obj.paymentTerms === "two-part" && (
                                         <div className="col-lg-6 col-sm-6 p-0">
                                           <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
