@@ -2755,9 +2755,10 @@ function EmployeesThisMonthBooking() {
                                             <tfoot className="admin-dash-tbl-tfoot">
                                                 <tr>
                                                     <td colSpan={2}>Total:</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
                                                     <td>{advancePaymentObject.length}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    
                                                     <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
                                                     <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalAdvanceRecieved, 0))).toLocaleString() : 0}</td>
                                                     <td>-</td>
