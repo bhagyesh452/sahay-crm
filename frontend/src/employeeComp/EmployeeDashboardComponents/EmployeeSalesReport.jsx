@@ -600,6 +600,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
           if (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) {
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
+     
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
             if (mainBooking.bdeName === mainBooking.bdmName) {
               remainingAmount += Math.round(tempAmount);
