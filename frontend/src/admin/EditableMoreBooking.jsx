@@ -153,7 +153,7 @@ export default function EditableMoreBooking({
         }
         // Call setIsoType for each service's isoTypeObject
        if(service.serviceName.includes("ISO Certificate")){
-        setIsoType(service.isoTypeObject && service.isoTypeObject.length!==0 ? service.isoTypeObject : tempDefaultType );
+        setIsoType(service.isoTypeObject && !service.isoTypeObject[0].serviceID ? service.isoTypeObject : tempDefaultType );
        }
 
       

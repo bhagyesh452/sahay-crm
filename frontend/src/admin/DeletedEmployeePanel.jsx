@@ -10,6 +10,7 @@ import { IconEye } from "@tabler/icons-react";
 import Switch from '@mui/material/Switch';
 import Swal from "sweetalert2";
 import { TbRestore } from "react-icons/tb";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Button,
   Dialog,
@@ -24,7 +25,7 @@ function DeletedEmployeePanel() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
-  
+
 
   //-----------date formats-----------------------
   function formatDateFinal(timestamp) {
@@ -128,46 +129,76 @@ function DeletedEmployeePanel() {
 
 
   const handleRevertBackEmployee = async (itemId, name, dataToRevertBack) => {
-    
-
     Swal.fire({
-        title: `Are you sure you want to revert back ${name}?`,
-        text: "This action will move the employee back to the main database.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, revert back!',
-        cancelButtonText: 'Cancel'
+      title: `Are you sure you want to restore back ${name}?`,
+      text: "This action will move the employee back.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, revert back!',
+      cancelButtonText: 'Cancel'
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const response = await axios.delete(`${secretKey}/employee/deleteemployeedromdeletedemployeedetails/${itemId}`);
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/deleteemployeedromdeletedemployeedetails/${itemId}`);
 
-                const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
-                  dataToRevertBack
-            });
+          const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
+            dataToRevertBack
+          });
 
-                Swal.fire(
-                    'Reverted!',
-                    `Employee ${name} has been reverted back.`,
-                    'success'
-                );
-                
-                fetchData()
-                console.log('Revert back successful:', response2.data);
-            } catch (error) {
-                Swal.fire(
-                    'Error!',
-                    'There was an error reverting the employee back.',
-                    'error'
-                );
+          Swal.fire(
+            'Reverted!',
+            `Employee ${name} has been reverted back.`,
+            'success'
+          );
+          fetchData()
+        } catch (error) {
+          Swal.fire(
+            'Error!',
+            'There was an error reverting the employee back.',
+            'error'
+          );
 
-                console.error('Error reverting employee', error);
-            }
+          console.error('Error reverting employee', error);
         }
+      }
     });
-}
+  }
+
+  //------------------function to delete employee -------------------------
+
+  const handlePermanentDeleteEmployee = async (itemId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to permanently delete this employee? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
+          Swal.fire(
+            'Deleted!',
+            'success'
+          );
+          fetchData();
+        } catch (error) {
+          console.error('Error deleting employee', error);
+          Swal.fire({
+            title: "Error",
+            text: "There was an error deleting the employee. Please try again.",
+            icon: "error",
+          });
+        }
+      }
+    })
+  };
+
+
 
 
 
@@ -363,24 +394,38 @@ function DeletedEmployeePanel() {
                                       />
                                     </IconButton>
                                   </Link>
+                                  <IconButton>
+                                    {" "}
+                                    <DeleteIcon
+                                      style={{
+                                        width: "14px",
+                                        height: "14px",
+                                        color: "red",
+                                      }}
+                                      onClick={async() =>{
+                                        handlePermanentDeleteEmployee(item._id)
+                                      }
+                                      }
+                                    />
+                                  </IconButton>
                                 </div>
                               </div>
                             </td>
                             <td>
                               <IconButton>
-                              {" "}
-                              <TbRestore
-                                style={{
-                                  width: "14px",
-                                  height: "14px",
-                                  color: "#fbb900",
-                                }}
-                                onClick={async () => {
-                                  const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
-                                  handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
-                                }}
-                              />
-                            </IconButton>
+                                {" "}
+                                <TbRestore
+                                  style={{
+                                    width: "14px",
+                                    height: "14px",
+                                    color: "#fbb900",
+                                  }}
+                                  onClick={async () => {
+                                    const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
+                                    handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
+                                  }}
+                                />
+                              </IconButton>
                             </td></>}
                       </tr>
                     ))}

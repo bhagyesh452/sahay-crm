@@ -153,8 +153,7 @@ router.post('/exportEmployeeLeads', async (req, res) => {
 
     // Convert leads to CSV and send as response
     const csv = convertToCSVNew(cleanedLeads);
-    console.log('csv', csv);
-
+    
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="AssginedLeads_Employee.csv"`);
     res.status(200).send(csv);

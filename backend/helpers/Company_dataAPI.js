@@ -738,6 +738,7 @@ router.post("/assign-new", async (req, res) => {
             feedbackPoints: [],
             multiBdmName: [],
             Status: "Untouched",
+            AssignDate:new Date()
           },
           $unset: {
             bdmName: "",
@@ -807,9 +808,8 @@ router.get("/employees/:ename", async (req, res) => {
         { ename: employeeName },
         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-      ]
-    });
-    
+      ]
+    });
 
     res.json(data);
   } catch (error) {
@@ -866,11 +866,9 @@ router.get("/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
     const filteredEmployeeData = await CompanyModel.find({
-      $or: [
-        { ename: employeeName },
-        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-      ]
+      $or: [{ ename: ename }, 
+        { $and: [{ maturedBdmName: ename }, { Status: "Matured" }] },
+      ],
     });
     res.json(filteredEmployeeData);
   } catch (error) {

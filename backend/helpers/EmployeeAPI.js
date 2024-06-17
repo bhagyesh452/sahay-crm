@@ -92,7 +92,7 @@ router.post("/einfo", async (req, res) => {
 
 router.put('/savedeletedemployee', async (req, res) => {
   const { dataToDelete } = req.body;
- 
+
 
   if (!dataToDelete || dataToDelete.length === 0) {
     return res.status(400).json({ error: "No employee data to save" });
@@ -134,22 +134,22 @@ router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) 
   const { id: itemId } = req.params; // Correct destructuring
   console.log(itemId);
   try {
-      const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
-     
-      if (!data) {
-          return res.status(404).json({ error: "Data not found" });
-      } else {
-          return res.status(200).json({ message: "Data deleted successfully", data });
-      }
+    const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
+
+    if (!data) {
+      return res.status(404).json({ error: "Data not found" });
+    } else {
+      return res.status(200).json({ message: "Data deleted successfully", data });
+    }
   } catch (error) {
-      console.error("Error fetching data:", error.message);
-      return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching data:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
   const { dataToRevertBack } = req.body;
-  
+
 
   if (!dataToRevertBack || dataToRevertBack.length === 0) {
     return res.status(400).json({ error: "No employee data to save" });
@@ -228,5 +228,20 @@ router.delete("/einfo/:id", async (req, res) => {
   }
 });
 
+router.delete("/permanentDelete/:id", async (req, res) => {
+  const itemId = req.params.id
+  console.log(itemId)
+  try {
+    const deletedData = await deletedEmployeeModel.findByIdAndDelete(itemId);
+
+    if (!deletedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+    res.status(200).json({ message: "Data deleted successfully", deletedData });
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 module.exports = router;

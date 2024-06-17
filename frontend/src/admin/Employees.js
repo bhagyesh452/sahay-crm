@@ -292,7 +292,7 @@ function Employees({ onEyeButtonClick }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${secretKey}/employee/einfo/${id}`);
+      await axios.delete(`${secretKey}/employee/permanentDelete/${id}`);
       // Refresh the data after successful deletion
       fetchData();
       Swal.fire({
