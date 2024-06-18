@@ -2801,7 +2801,7 @@ function BookingList() {
                                             )
                                           }
                                         >
-                                          {((objMain.paymentReceipt[0]).toLowerCase()).filename.endsWith(
+                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
