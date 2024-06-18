@@ -27,12 +27,64 @@ function EmployeeCallLogs({ employeeData }) {
     
 
     // ------------------------  Callizer API   -------------------------------------------
+    // const fetchMissedData = async () => {
+    //     const apiKey = process.env.REACT_APP_API_KEY; 
+    //     const missed_url = "https://api1.callyzer.co/v2/call-log/not-pickup-by-client";
+    //     const employeeArray = [];
+    //     employeeArray.push(employeeData.number);
+      
+    //     const body_missed = {
+    //         "call_from": startTimestamp,
+    //         "call_to": startTimestamp,
+    //         "call_types": ["Missed","Rejected","Incoming","Outgoing"],
+    //         "emp_numbers":employeeArray,
+    //         "emp_tags": [],
+    //         "is_exclude_numbers": true,
+    //         "page_no":1,
+    //         "page_size":10
+    //     }
 
+    //     try {
+    //         const response = await fetch(missed_url, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${apiKey}`,
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(body_missed)
+    //         });
+    //         // const response_missed = await fetch(missed_url, {
+    //         //     method: 'POST',
+    //         //     headers: {
+    //         //         'Authorization': `Bearer ${apiKey}`,
+    //         //         'Content-Type': 'application/json'
+    //         //     },
+    //         //     body: JSON.stringify(body_missed)
+    //         // });
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    //         }
+    //         // if (!response_missed.ok) {
+    //         //     const errorData = await response_missed.json();
+    //         //     throw new Error(`Error: ${response_missed.status} - ${errorData.message || response_missed.statusText}`);
+    //         // }
+
+    //         const data = await response.json();
+    //         // const data_missed = await response_missed.json();
+
+
+    //         setTotalCalls(data.result);
+    //         // setTotalMissedCalls(data_missed.result)
+    //     } catch (err) {
+
+    //         console.log(err)
+    //     }
+    // };
     useEffect(() => {
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
             const url = 'https://api1.callyzer.co/v2/call-log/analysis';
-            const missed_url = "https://api1.callyzer.co/v2/call-log/not-pickup-by-client";
             const employeeArray = [];
             employeeArray.push(employeeData.number);
           
@@ -44,16 +96,6 @@ function EmployeeCallLogs({ employeeData }) {
                 "working_hour_from":"00:00",
                 "working_hour_to":"20:59",    
                 "is_exclude_numbers": true
-            }
-            const body_missed = {
-                "call_from": startTimestamp,
-                "call_to": startTimestamp,
-                "call_types": ["Missed","Rejected","Incoming","Outgoing"],
-                "emp_numbers":employeeArray,
-                "emp_tags": [],
-                "is_exclude_numbers": true,
-                "page_no":1,
-                "page_size":10
             }
 
             try {
@@ -93,11 +135,12 @@ function EmployeeCallLogs({ employeeData }) {
                 console.log(err)
             }
         };
+    
 
         fetchEmployeeData();
     }, [employeeData]);
 
-    console.log(totalMissedCalls)
+    console.log(totalcalls)
    
     return (
         <div>
@@ -160,7 +203,7 @@ function EmployeeCallLogs({ employeeData }) {
                                     <div className="d-flex align-items-center">
                                         <div className="clr-000">{totalcalls.
                                             top_answered.total_incoming_calls
-                                        } Call</div>
+                                        } Calls</div>
                                     </div>
                                     <div className="d-flex align-items-center">
                                         <div className="timer-I">
@@ -235,14 +278,18 @@ function EmployeeCallLogs({ employeeData }) {
                                 </div>
                                 <div className="call-d-card-body d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
-                                        <div className="clr-000">8 Call</div>
+                                        <div className="clr-000">{totalcalls.
+                                            highest_total_duration.total_calls
+                                        } Calls</div>
                                     </div>
                                     <div className="d-flex align-items-center">
                                         <div className="timer-I">
                                             <MdTimer />
                                         </div>
                                         <div className="clr-000">
-                                            1h 56m 45s
+                                        {totalcalls.
+                                            highest_total_duration.total_duration
+                                        }
                                         </div>
                                     </div>
                                 </div>
