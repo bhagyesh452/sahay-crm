@@ -2029,9 +2029,37 @@ function EmployeesThisMonthBooking() {
                 }
             })
         }
+        mainObj.moreBookings.length !==0 && mainObj.moreBookings.map((moreObject)=>{
+            const bookingDate = new Date(moreObject.bookingDate)
+            if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
+                moreObject.services.forEach((service) => {
+                    if (service.paymentTerms === 'Full Advanced') {
+                        advancePaymentObject.push({
+                            "Company Name": mainObj["Company Name"],
+                            serviceName: service.serviceName,
+                            bdeName: mainObj.bdeName,
+                            bdmName: mainObj.bdmName,
+                            totalPayment: service.totalPaymentWGST,
+                            totalAdvanceRecieved: service.totalPaymentWGST,
+                            paymentDate: mainObj.bookingDate
+                        })
+                    } else if (service.paymentTerms === "two-part") {
+                        advancePaymentObject.push({
+                            "Company Name": mainObj["Company Name"],
+                            serviceName: service.serviceName,
+                            bdeName: mainObj.bdeName,
+                            bdmName: mainObj.bdmName,
+                            totalPayment: service.totalPaymentWGST,
+                            totalAdvanceRecieved: service.firstPayment,
+                            paymentDate: mainObj.bookingDate
+                        })
+                    }
+                })
+            }
+        })
     })
 
-   
+   console.log(redesignedData)
     
 
 
