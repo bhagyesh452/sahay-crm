@@ -17,9 +17,9 @@ const oAuth2Client = new google.auth.OAuth2({
     redirectUri: "https://developers.google.com/oauthplayground",
   });
   
-  oAuth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-  });
+  // oAuth2Client.setCredentials({
+  //   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  // });
   
 
 // Set OAuth2 refresh token
