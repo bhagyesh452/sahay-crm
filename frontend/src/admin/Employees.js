@@ -70,7 +70,7 @@ function Employees({ onEyeButtonClick }) {
   }
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
-  
+
 
   const [open, openchange] = useState(false);
 
@@ -108,11 +108,13 @@ function Employees({ onEyeButtonClick }) {
   //   setIsModalOpen(true);
   // };
   const [dataToDelete, setDataToDelete] = useState([])
-  
-  
-  const handleDeleteClick = async (itemId, nametochange, dataToDelete) => {
+
+
+  const handleDeleteClick = async (itemId, nametochange, dataToDelete , filteredCompanyData) => {
     // Open the confirm delete modal
-    setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
+    // console.log(nametochange)
+    // console.log("filtered" , filteredCompanyData)
+    setCompanyDdata(filteredCompanyData);
     setItemIdToDelete(itemId);
 
     Swal.fire({
@@ -134,8 +136,9 @@ function Employees({ onEyeButtonClick }) {
 
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
+
           // Refresh the data after successful deletion
-          handledeletefromcompany();
+          handledeletefromcompany(filteredCompanyData);
           fetchData();
 
           Swal.fire({
@@ -164,25 +167,20 @@ function Employees({ onEyeButtonClick }) {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  // const handleConfirmDelete = () => {
-  //   // Perform the delete operation here (call your delete API, etc.)
-  //   // After deletion, close the modal
-  //   handleDelete(itemIdToDelete);
-  //   handledeletefromcompany();
-  //   setIsModalOpen(false);
-  // };
-
-  const handledeletefromcompany = async () => {
-    console.log("yahan chala")
-    if (companyDdata && companyDdata.length !== 0) {
-      // Assuming ename is part of dataToSend
-      console.log(companyDdata)
+  const handledeletefromcompany = async (filteredCompanyData) => { 
+    if (filteredCompanyData && filteredCompanyData.length !== 0) {
+      
       try {
         // Update companyData in the second database
         await Promise.all(
-          companyDdata.map(async (item) => {
-            await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
-            //console.log(`Deleted name for ${item._id}`);
+          filteredCompanyData.map(async (item) => {
+            if (item.Status === 'Matured') {
+              
+              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
+
+            } else {
+              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
+            }
           })
         );
         Swal.fire({
@@ -700,7 +698,7 @@ function Employees({ onEyeButtonClick }) {
 
   }
 
-
+  console.log(cdata.filter((obj) => obj.ename === 'Rahul Saiekh'))
 
 
 
@@ -997,7 +995,9 @@ function Employees({ onEyeButtonClick }) {
                                     onClick={async () => {
                                       const dataToDelete = data.filter(obj => obj._id === item._id);
                                       setDataToDelete(dataToDelete);
-                                      handleDeleteClick(item._id, item.ename, dataToDelete);
+                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                                      setCompanyDdata(filteredCompanyData);
+                                      handleDeleteClick(item._id, item.ename, dataToDelete , filteredCompanyData);
                                     }}
                                   >
                                     <IconTrash

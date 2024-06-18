@@ -2059,7 +2059,7 @@ function EmployeesThisMonthBooking() {
         })
     })
 
-   
+   console.log(redesignedData)
     
 
 

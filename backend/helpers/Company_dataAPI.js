@@ -9,6 +9,7 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
+const adminModel = require("../models/Admin");
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -184,8 +185,8 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
 
   try {
     // Find the employee's data by id
-    const employeeData = await CompanyModel.findById(id);
-
+    const employeeData = await adminModel.findById(id);
+    console.log("employee" , employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }
@@ -226,6 +227,45 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
   }
 });
 
+
+router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id" , async(req,res)=>{
+  const itemId = req.params.id
+  try{
+    const employeeData = await CompanyModel.findById(itemId)
+
+    console.log(employeeData)
+    if (!employeeData) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    // Update companies where the employee's name matches
+    const data = await CompanyModel.updateMany(
+      { ename: employeeData.ename },
+      {
+        $set: {
+           //ename: "Not Alloted",
+          //bdmAcceptStatus: "NotForwarded",
+          //feedbackPoints: [],
+          multiBdmName: [...employeeData.multiBdmName , employeeData.ename],
+          //Status: "Untouched",
+          isDeletedEmployeeCompany: true
+        },
+        $unset: {
+          // bdmName: "",
+          // bdeOldStatus: "",
+          // bdeForwardDate: "",
+          // bdmStatusChangeDate: "",
+          // bdmStatusChangeTime: "",
+          // bdmRemarks: "",
+          // RevertBackAcceptedCompanyRequest: ""
+        },
+      }
+    );
+  }catch(error){
+    console.error("Error deleting employee data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 // 7. Read Muultiple Companies 
 router.get("/leads", async (req, res) => {
@@ -528,7 +568,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     console.log(baseQuery);
 
     const data = await CompanyModel.find(baseQuery).lean();
-   
+
     res.status(200).json(data);
   } catch (error) {
     console.error('Error searching leads:', error);
@@ -736,9 +776,9 @@ router.post("/assign-new", async (req, res) => {
             ename: ename,
             bdmAcceptStatus: "NotForwarded",
             feedbackPoints: [],
-            multiBdmName: [...employeeData.multiBdmName , employeeData.ename],
+            multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
             Status: "Untouched",
-            AssignDate:new Date()
+            AssignDate: new Date()
           },
           $unset: {
             bdmName: "",
@@ -808,8 +848,8 @@ router.get("/employees/:ename", async (req, res) => {
         { ename: employeeName },
         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-      ]
-    });
+      ]
+    });
 
     res.json(data);
   } catch (error) {
@@ -866,8 +906,8 @@ router.get("/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
     const filteredEmployeeData = await CompanyModel.find({
-      $or: [{ ename: ename }, 
-        { $and: [{ maturedBdmName: ename }, { Status: "Matured" }] },
+      $or: [{ ename: ename },
+      { $and: [{ maturedBdmName: ename }, { Status: "Matured" }] },
       ],
     });
     res.json(filteredEmployeeData);

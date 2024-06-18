@@ -59,7 +59,9 @@ export default function AddLeadForm({
   employeeName,
   employeeEmail,
   setNowToFetch,
-  isAdmin
+  isAdmin,
+  newBdeName,
+  isDeletedEmployeeCompany
 }) {
   const [totalServices, setTotalServices] = useState(1);
 
@@ -154,8 +156,8 @@ export default function AddLeadForm({
         incoDate: data.incoDate,
         panNumber: data.panNumber,
         gstNumber: data.gstNumber,
-        bdeName: data.bdeName,
-        bdeEmail: data.bdeEmail,
+        bdeName: isDeletedEmployeeCompany ? newBdeName : data.bdeName,
+        bdeEmail: isDeletedEmployeeCompany ? employeeEmail :data.bdeEmail,
         bookingDate: formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data

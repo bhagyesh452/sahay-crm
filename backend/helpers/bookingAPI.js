@@ -881,14 +881,21 @@ router.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
+        console.log(companyData)
         if (companyData) {
           const multiBdmName = [];
           if (companyData.maturedBdmName !== newData.bdmName) {
             multiBdmName.push(newData.bdmName);
             await CompanyModel.findByIdAndUpdate(companyData._id, {
               multiBdmName: multiBdmName,
+              Status : "Matured"
             });
           }
+        }
+        if (companyData && companyData.isDeletedEmployeeCompany){
+          await CompanyModel.findByIdAndUpdate(companyData._id, {
+            Status : "Matured"
+          });
         }
         const boomDate = new Date();
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
