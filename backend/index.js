@@ -89,7 +89,7 @@ app.use('/api/requests', RequestAPI)
 app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
-app.use('/api/employee' , EmployeeAPI)
+app.use('/api/employee', EmployeeAPI)
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -1644,7 +1644,7 @@ app.post(
       console.log(generatedHtml);
 
 
-      // send Thank You email for sendEmail-3.js
+      // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nisargpatel@startupsahay.com"];
       const subject = "Thank you for signing up!";
       const text = "";
@@ -2058,11 +2058,14 @@ app.post(
           res.status(500).send("Error sending email");
         });
 
+      const details = DirectorDetails.find((details) => details.IsMainDirector === true);
+      const DirectorEmail = details.DirectorEmail;
+
 
       // Send Thank You Message with pdf Draft sendMail4.js 
 
-      const recipients = [formData.CompanyEmail];
-      // const ccEmail = formData.DirectorDetails.map(director => director.DirectorEmail);
+      const recipients = [CompanyEmail];
+      const ccEmail = [DirectorEmail];
       const subject1 = "Thank you for submitting the form!";
       const text1 = "";
       const html1 = `
