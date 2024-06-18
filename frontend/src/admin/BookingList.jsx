@@ -1794,7 +1794,7 @@ function BookingList() {
                                         >
                                           {currentLeadform &&
                                             currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                               ".pdf"
                                             ) ? (
                                               <PdfImageViewerAdmin
@@ -1853,7 +1853,7 @@ function BookingList() {
                                               )
                                             }
                                           >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
+                                            {((remainingObject.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="paymentrecieptpdf"
                                                 path={remainingObject.paymentReceipt[0].filename}
@@ -1893,7 +1893,7 @@ function BookingList() {
                                             )
                                           }
                                         >
-                                          {obj.filename.endsWith(".pdf") ? (
+                                          {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2801,7 +2801,7 @@ function BookingList() {
                                             )
                                           }
                                         >
-                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                          {((objMain.paymentReceipt[0]).toLowerCase()).filename.endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -2841,7 +2841,7 @@ function BookingList() {
                                           )
                                         }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
+                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}

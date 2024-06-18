@@ -1544,7 +1544,7 @@ function EmployeeMaturedBookings() {
                                         >
                                           {currentLeadform &&
                                             currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                               ".pdf"
                                             ) ? (
                                               <PdfImageViewerAdmin
@@ -1593,7 +1593,7 @@ function EmployeeMaturedBookings() {
                                             handleViewPdOtherDocs(obj.filename, currentLeadform["Company Name"])
                                           }
                                         >
-                                          {obj.filename.endsWith(".pdf") ? (
+                                          {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2423,7 +2423,7 @@ function EmployeeMaturedBookings() {
                                             )
                                           }
                                         >
-                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -2463,7 +2463,7 @@ function EmployeeMaturedBookings() {
                                           )
                                         }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
+                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}

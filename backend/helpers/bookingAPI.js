@@ -648,7 +648,7 @@ router.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
+        
         newData.otherDocs =
           req.files["otherDocs"] === undefined ||
             req.files["otherDocs"].length === 0
@@ -660,27 +660,30 @@ router.post(
             ? []
             : req.files["paymentReceipt"].map((file) => file);
 
+
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
             {
-              $set: {
-                totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt:
-                  newData.paymentReceipt || existingData.paymentReceipt,
-                otherDocs: newData.otherDocs || existingData.otherDocs,
-                paymentMethod: newData.paymentMethod || newData.paymentMethod,
-                extraNotes: newData.extraNotes || existingData.extraNotes,
-                Step4Status: true,
-              },
+                $set: {
+                    totalAmount: newData.totalAmount || existingData.totalAmount,
+                    pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+                    receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+                    paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+                    paymentMethod: newData.paymentMethod || existingData.paymentMethod,
+                    extraNotes: newData.extraNotes || existingData.extraNotes,
+                    Step4Status: true,
+                },
+                $push: {
+                    otherDocs: {
+                        $each: newData.otherDocs || []
+                    }
+                }
             },
             { new: true }
-          );
+        );
+        
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
