@@ -63,13 +63,13 @@ function Navbar() {
                 </li>
                 <li
                   className={
-                    location.pathname.startsWith("/datamanager/employees/")
+                    location.pathname.startsWith("/datamanager/newEmployees/")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/datamanager/employees/"
+                    to="/datamanager/newEmployees/"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">

@@ -56,7 +56,13 @@ import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerD
 import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
+<<<<<<< HEAD
 import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
+=======
+import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
+import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
+import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
+>>>>>>> e6c8a575941a8069279d0fdd09dd6bf7e3dbf8ad
 
 
 
@@ -67,8 +73,8 @@ function App() {
   const [newtoken, setnewToken] = useState(
     localStorage.getItem("newtoken") || null
   );
-  const [managerToken , setManagerToken] = useState(localStorage.getItem("managerToken") || null)
-  const [bdmToken , setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
+  const [managerToken, setManagerToken] = useState(localStorage.getItem("managerToken") || null)
+  const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
 
   return (
     <div className="App">
@@ -79,9 +85,9 @@ function App() {
             element={<EmployeeLogin setnewToken={setnewToken} />}
           />
 
-          
-        
-          
+
+
+
           <Route
             path="/employee-data/:userId/"
             element={newtoken ? <EmployeePanel /> : <Navigate to="/" />}
@@ -91,54 +97,56 @@ function App() {
             path="/employee-dashboard/:userId/"
             element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
 
-          <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads/> : <Navigate to="/" />}>
-            </Route>
+          <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads /> : <Navigate to="/" />}>
+          </Route>
 
-            <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings/> : <Navigate to="/" />}>
-            </Route>
-            <Route path='/employee-reports/:userId' element={newtoken  ?  <EmployeeReports/>: <Navigate to='/'/>}></Route>
-
-
-
-
-{/* --------------------------------------------------bdm components---------------------------------------------------------- */}
-
-   
-          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken}/>} />
-          <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
-          <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads/>}></Route>
-          <Route path="/bdm/bdmteamleads/:userId/" element={<BdmTeamLeads/>}></Route>
-          <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings/>}></Route>
-         
-
-{/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+          <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings /> : <Navigate to="/" />}>
+          </Route>
+          <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
+          <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
 
 
 
 
+          {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 
-{/* -----------------------------------------datamanager components--------------------------------------- */}
 
-          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />  
-          <Route path='/datamanager-dashboard/:userId/' element= {<DatamanagerDashboard />} />
+          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken} />} />
+          <Route path="/bdmdashboard/:userId/" element={<BdmDashboard />}></Route>
+          <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads />}></Route>
+          <Route path="/bdm/bdmteamleads/:userId/" element={<BdmTeamLeads />}></Route>
+          <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings />}></Route>
+
+
+          {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+
+
+
+
+
+          {/* -----------------------------------------datamanager components--------------------------------------- */}
+
+          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
+          <Route path='/datamanager-dashboard/:userId/' element={<DatamanagerDashboard />} />
           <Route
             path="/datamanager/manageleads/"
-            element={<ManageLeads/>}
+            element={<ManageLeads />}
           ></Route>
-           <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager/>}/>
-          <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
-          <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
-          <Route path="/datamanager/bookings" element={<ManagerBookings/>}></Route>
+          <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
+          <Route path="/datamanager/employees" element={<DataManager_Employees />}></Route>
+          <Route path="/datamanager/newEmployees" element={<DatamanagerNewEmployee />}></Route>
+          <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads />}></Route>
+          <Route path="/datamanager/bookings" element={<ManagerBookings />}></Route>
           <Route
-                path="/datamanager/notification"
-                element={<NotificationDM />}
-              ></Route>
+            path="/datamanager/notification"
+            element={<NotificationDM />}
+          ></Route>
           <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
+          <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} />
 
-          
-          
-{/* -----------------------------------------datamanager components--------------------------------------- */}
-          
+
+          {/* ---------------------------------------admin  components--------------------------------------- */}
+
           <Route
             path="/converted-leads/:userId/"
             element={
@@ -154,13 +162,13 @@ function App() {
             <>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
-              <Route path="/admin/admin-user" element={<NewEmployee/>} />
+              <Route path="/admin/admin-user" element={<NewEmployee />} />
               {/* <Route path="/admin/new-leads" element={<NewLeads />} /> */}
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
               />
-               <Route
+              <Route
                 path="/admin/employeeleads/:id"
                 element={<AdminEmployeeTeamLeads />}
               />

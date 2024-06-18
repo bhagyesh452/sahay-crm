@@ -15,6 +15,7 @@ import AddLeadForm from '../../admin/AddLeadForm.jsx';
 import pdfimg from "../../static/my-images/pdf.png"
 import { FcList } from "react-icons/fc";
 import wordimg from "../../static/my-images/word.png";
+import RemainingAmnt from "../../static/my-images/money.png";
 import Swal from "sweetalert2";
 import {
   Button,
@@ -88,10 +89,15 @@ function BdmBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
+      const sortedData = response.data.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      });
+      const redesignedData = sortedData.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
      
-      setFormData(redesignedData.reverse());
-      setInfiniteBooking(redesignedData.reverse())
+      setFormData(redesignedData);
+      setInfiniteBooking(redesignedData)
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -477,15 +483,20 @@ function BdmBookings() {
                                       </>
                                     ))}
                               </div>
-
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
-                                </div>
-                              )}
+                              <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
+                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                  <img src={RemainingAmnt}></img>
+                                </div>}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">

@@ -100,7 +100,7 @@ function EmployeesForwardedDataReport() {
             setLoading(false)
         }
     };
-//-------------------fetching redesigned data----------------------------------
+    //-------------------fetching redesigned data----------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
     const fetchRedesignedBookings = async () => {
         try {
@@ -158,8 +158,8 @@ function EmployeesForwardedDataReport() {
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
     useEffect(() => {
         //fetchRedesignedBookings();
-      fetchEmployeeInfo()
-      fetchCompanyData()
+        fetchEmployeeInfo()
+        fetchCompanyData()
     }, []);
 
     //--------------------------------bde search forward data-------------------------
@@ -970,6 +970,41 @@ function EmployeesForwardedDataReport() {
         return finalPayment.toLocaleString();
     }
 
+    //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
+
+    const handleExportBookings = async () => {
+        const tempData = [];
+        forwardEmployeeData.forEach((obj, index) => {
+            const tempObj = {
+                SrNo: index + 1,
+                employeeName: obj.ename,
+                branchOffice: obj.branchOffice,
+                ForwardedCases: companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length,
+                RecievedCases: teamLeadsData.filter((company) => company.bdmName === obj.ename).length,
+                ForwardedCaseProjection: obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`,
+                RecievedCaseProjection: functionCalculateTotalProjectionRecieved(obj.ename),
+                MaturedCase: functionCalculateGeneratedMaturedCase(obj.ename),
+                GeneratedRevenue: Math.round(functionCalculateGeneratedRevenue(obj.ename)).toLocaleString()
+            }
+
+            tempData.push(tempObj);
+        });
+
+        const response = await axios.post(
+            `${secretKey}/bookings/export-this-bookings`,
+            {
+                tempData
+            }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "ForwardedData.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+
     return (
         <div>
             <div className="employee-dashboard">
@@ -983,6 +1018,11 @@ function EmployeesForwardedDataReport() {
                         <div className="d-flex align-items-center pr-1">
                             <div className="filter-booking d-flex align-items-center">
                                 <div className="filter-booking mr-1 d-flex align-items-center">
+                                    <div className="export-data">
+                                        <button className="btn btn-link" onClick={handleExportBookings}>
+                                            Export CSV
+                                        </button>
+                                    </div>
                                     <div className="filter-title mr-1">
                                         <h2 className="m-0">
                                             Filter Branch :
@@ -1341,14 +1381,16 @@ function EmployeesForwardedDataReport() {
                                 {loading ?
                                     (<tbody>
                                         <tr>
-                                            <td colSpan="12" className="LoaderTDSatyle">
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    loading
-                                                    size={20}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
+                                            <td colSpan="12">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>) :

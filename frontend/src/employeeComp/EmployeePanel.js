@@ -157,6 +157,7 @@ function EmployeePanel() {
     setIsOpen(false);
   };
   const [employeeData, setEmployeeData] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([])
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
   const [visibility, setVisibility] = useState("none");
@@ -269,7 +270,7 @@ function EmployeePanel() {
     }
   };
 
-  
+
   const fetchBDMbookingRequests = async () => {
     const bdeName = data.ename;
     try {
@@ -311,7 +312,7 @@ function EmployeePanel() {
     }
   };
 
-  
+
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -341,7 +342,7 @@ function EmployeePanel() {
   const [currentCompanyName, setCurrentCompanyName] = useState("");
   const [bdeName, setBdeName] = useState("");
 
-  const functionopenpopupremarks = (companyID, companyStatus, companyName,ename) => {
+  const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
     openchangeRemarks(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -356,9 +357,9 @@ function EmployeePanel() {
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
   const [openPopupByBdm, setOpenPopupByBdm] = useState(false)
-  const [filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
-  const [filteredRemarksBde , setFilteredRemarksBde] = useState([])
-  
+  const [filteredRemarksBdm, setFilteredRemarksBdm] = useState([])
+  const [filteredRemarksBde, setFilteredRemarksBde] = useState([])
+
 
 
   const functionopenpopupremarksEdit = (
@@ -367,14 +368,14 @@ function EmployeePanel() {
     companyName,
     ename
   ) => {
-      setOpenRemarksEdit(true);
-      setFilteredRemarksBde(
-        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
-      );
-      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-      setcid(companyID);
-      setCstat(companyStatus);
-      setCurrentCompanyName(companyName);
+    setOpenRemarksEdit(true);
+    setFilteredRemarksBde(
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    setcid(companyID);
+    setCstat(companyStatus);
+    setCurrentCompanyName(companyName);
 
   };
 
@@ -384,7 +385,7 @@ function EmployeePanel() {
   };
 
 
- const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
+  const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
 
   const functionopenpopupremarksBdm = (
     companyID,
@@ -392,14 +393,14 @@ function EmployeePanel() {
     companyName,
     bdmName
   ) => {
-      setOpenRemarksBdm(true);
-      setFilteredRemarksBdm(
-        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
-      );
-      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-      setcid(companyID);
-      setCstat(companyStatus);
-      setCurrentCompanyName(companyName);
+    setOpenRemarksBdm(true);
+    setFilteredRemarksBdm(
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    setcid(companyID);
+    setCstat(companyStatus);
+    setCurrentCompanyName(companyName);
 
   };
 
@@ -461,7 +462,7 @@ function EmployeePanel() {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
- 
+
 
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -497,7 +498,7 @@ function EmployeePanel() {
     //console.log("ename", ename)
     try {
       const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
-      
+
       //console.log("teamdata", response.data)
       setTeamInfo(response.data);
       setBdmName(response.data.bdmName);
@@ -513,6 +514,7 @@ function EmployeePanel() {
   useEffect(() => {
     fecthTeamData();
     fetchBDMbookingRequests();
+    fetchRedesignedFormDataAll()
   }, [data.ename]);
 
   // console.log("This is elon musk" , BDMrequests);
@@ -539,9 +541,9 @@ function EmployeePanel() {
       }
       const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
       const tempData = response.data;
-      const revertedData = response.data.filter((item)=> item.RevertBackAcceptedCompanyRequest === 'Reject')
+      const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-      console.log("tempData", tempData , data.ename)
+      console.log("tempData", tempData, data.ename)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -577,7 +579,7 @@ function EmployeePanel() {
           sortedData
             .filter((data) =>
               ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-              
+
             )
             .sort((a, b) => {
               if (a.Status === "Busy") return -1;
@@ -626,7 +628,7 @@ function EmployeePanel() {
 
 
   useEffect(() => {
-    if(data.ename){
+    if (data.ename) {
       fetchNewData();
       setdataStatus("Matured");
       setEmployeeData(
@@ -635,8 +637,8 @@ function EmployeePanel() {
           .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
       );
     }
-   
-   
+
+
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
@@ -696,14 +698,14 @@ function EmployeePanel() {
     }
   };
 
-  
+
 
   useEffect(() => {
-    
-    if(revertedData.length !== 0){
+
+    if (revertedData.length !== 0) {
       setOpenRevertBackRequestDialog(true)
-    }else if(data.ename){
-      
+    } else if (data.ename) {
+
       fetchNewData()
     }
   }, [data.ename, revertedData.length]);
@@ -871,6 +873,8 @@ function EmployeePanel() {
   //console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [newBdeName, setNewBdeName] = useState("")
 
   const handleStatusChange = async (
     employeeId,
@@ -880,7 +884,9 @@ function EmployeePanel() {
     cindate,
     cnum,
     oldStatus,
-    bdmAcceptStatus
+    bdmAcceptStatus,
+    isDeletedEmployeeCompany,
+    ename
   ) => {
     if (newStatus === "Matured") {
       // Assuming these are setter functions to update state or perform some action
@@ -889,25 +895,31 @@ function EmployeePanel() {
       setCompanyInco(cindate);
       setCompanyId(employeeId);
       setCompanyNumber(cnum);
-      setFormOpen(true);
+      setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+      setNewBdeName(ename)
+      if (!isDeletedEmployeeCompany) {
+        setFormOpen(true);
+      } else {
+        setAddFormOpen(true)
+      }
       return true;
     }
-  
+
     // Assuming `data` is defined somewhere in your code
     const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-  
+
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
-  
+
     try {
       let response;
-  
+
       if (bdmAcceptStatus === "Accept") {
-        console.log(bdmAcceptStatus , newStatus)
+        console.log(bdmAcceptStatus, newStatus)
         if (newStatus === "Interested" || newStatus === "FollowUp") {
-          
+
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${employeeId}`,
@@ -916,24 +928,24 @@ function EmployeePanel() {
               title,
               date,
               time,
-              
-            })
-            const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
-              bdmAcceptStatus : "NotForwarded"
-            })
 
-            const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`,{
-              caseType:"NotForwarded"
-            }
-            )
-          
+            })
+          const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}`, {
+            bdmAcceptStatus: "NotForwarded"
+          })
+
+          const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`, {
+            caseType: "NotForwarded"
+          }
+          )
+
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
+          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}`, {
             newStatus
           });
 
           //console.log(response.data)
-         
+
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${employeeId}`,
             {
@@ -943,10 +955,10 @@ function EmployeePanel() {
               time,
             }
           );
-          
+
         }
       }
-  
+
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
@@ -959,7 +971,7 @@ function EmployeePanel() {
           }
         );
       }
-  
+
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming `fetchNewData` is a function to fetch updated employee data
@@ -973,8 +985,8 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
-  
-  
+
+
   const fetchBookingDeleteRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
@@ -1236,7 +1248,7 @@ function EmployeePanel() {
     e.preventDefault();
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
-    } 
+    }
     else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
       Swal.fire("Company Number is required");
     } else if (cemail === "") {
@@ -1556,9 +1568,22 @@ function EmployeePanel() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
+
       const data = response.data.find((obj) => obj.company === maturedID);
       //console.log(data);
       setCurrentForm(data);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const fetchRedesignedFormDataAll = async () => {
+    try {
+      //console.log(maturedID);
+      const response = await axios.get(
+        `${secretKey}/bookings/redesigned-final-leadData`
+      );
+
+      setRedesignedData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1927,7 +1952,7 @@ function EmployeePanel() {
       console.log("Error!", "Follow Up Not Found.", "error");
     }
   };
- 
+
 
   const formatDatePro = (dateString) => {
     const [day, month, year] = dateString.split("/");
@@ -2153,12 +2178,12 @@ function EmployeePanel() {
       Swal.fire("Error", "Please select at least one BDM", "error");
       return; // Exit the function early
     }
-  
+
     const selectedDataWithBdm = currentData.filter(
       (company) => company["Company Name"] === forwardedCompany
     );
     //console.log("selecteddatawithbdm", selectedDataWithBdm);
-  
+
     try {
       const response = await axios.post(`${secretKey}/bdm-data/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
@@ -2167,15 +2192,15 @@ function EmployeePanel() {
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: new Date(),
         bdeOldStatus: bdeOldStatus,
-        companyName:forwardedCompany,
+        companyName: forwardedCompany,
         // Assuming bdmName is defined elsewhere in your component
       });
-      const response2 = await axios.post(`${secretKey}/projection/post-followup-forwardeddata/${forwardedCompany}`,{
-        caseType:"Forwarded",
-        bdmName:selectedBDM
+      const response2 = await axios.post(`${secretKey}/projection/post-followup-forwardeddata/${forwardedCompany}`, {
+        caseType: "Forwarded",
+        bdmName: selectedBDM
       })
       Swal.fire("Company Forwarded", "", "success");
-     //console.log("bdeoldstatus", bdeOldStatus);
+      //console.log("bdeoldstatus", bdeOldStatus);
       fetchNewData(bdeOldStatus);
       closeBdmNamePopup();
     } catch (error) {
@@ -2183,7 +2208,7 @@ function EmployeePanel() {
       Swal.fire("Error Assigning Data");
     }
   };
-  
+
 
   const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false)
   const [selectedBDM, setSelectedBDM] = useState("")
@@ -2219,20 +2244,12 @@ function EmployeePanel() {
             bdmName: "NoOne" // Corrected parameter name
           }
         );
-        const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}` , {
+        const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
           caseType: "NotForwarded"
         })
         // console.log("response", response.data);
         Swal.fire("Data Reversed");
         fetchNewData(empStatus);
-        //setdataStatus(empStatus);
-        // setEmployeeData(
-        //   moreEmpData
-        //     .filter((obj) => obj.Status !== empStatus)
-        //     .sort(
-        //       (a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate)
-        //     )
-        // );
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
       }
@@ -2368,7 +2385,7 @@ function EmployeePanel() {
     }
   };
 
- 
+
   const handleDoneInform = async () => {
     try {
       const id = BDMrequests._id;
@@ -2421,7 +2438,7 @@ function EmployeePanel() {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, revert it!'
     });
-  
+
     // If confirmed, proceed with the request
     if (result.isConfirmed) {
       try {
@@ -2448,24 +2465,31 @@ function EmployeePanel() {
       }
     }
   };
-  
-  const handleDoneRejectedRequest = async(companyId , status)=>{
-    try{
-      const reponse = await axios.post(`${secretKey}/bdm-data/rejectedrequestdonebybdm` , null , {
-        params:{
+
+  const handleDoneRejectedRequest = async (companyId, status) => {
+    try {
+      const reponse = await axios.post(`${secretKey}/bdm-data/rejectedrequestdonebybdm`, null, {
+        params: {
           companyId
         }
       })
       fetchNewData(status)
-    }catch(error){
-      console.log("Error done ok" , error)
+    } catch (error) {
+      console.log("Error done ok", error)
     }
 
   }
-  
+
 
   //console.log(feedbackRemarks, feedbakPo
-
+  const functionCalculateBookingDate = (id) => {
+    const bookingObj = redesignedData.find(company => company.company === id);
+    return bookingObj ? formatDate(bookingObj.bookingDate) : "N/A"
+  }
+  const functionCalculatePublishDate = (id) => {
+    const bookingObj = redesignedData.find(company => company.company === id);
+    return bookingObj ? formatDate(bookingObj.bookingPublishDate) : "N/A"
+  }
 
 
   return (
@@ -2509,36 +2533,37 @@ function EmployeePanel() {
                 </DialogContent>
               </Dialog>
             )}
-             {revertedData.length !== 0 && revertedData.map((item) => (
-                    <Dialog key={item._id} open={openRevertBackRequestDialog}>
-                        <DialogContent sx={{ width: "lg" }}>
-                            <div className="request-bdm-card">
-                                <div className="request-title m-2 d-flex justify-content-between">
-                                    <div className="request-content mr-2">
-                                        {item.ename} has rejected the request of reverted company.
-                                        <b>{item["Company Name"]}</b>.
-                                    </div>
-                                </div>
-                                <div className="request-reply d-flex">
-                                    <button
-                                        onClick={()=> {
-                                          setOpenRevertBackRequestDialog(false)
-                                          handleDoneRejectedRequest(
-                                            item._id,
-                                            item.Status
-                                          )}
-                                        }
-                                          
-                                        className="request-accept"
-                                    >
-                                        ok
-                                    </button>
-                                   
-                                </div>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                ))}
+            {revertedData.length !== 0 && revertedData.map((item) => (
+              <Dialog key={item._id} open={openRevertBackRequestDialog}>
+                <DialogContent sx={{ width: "lg" }}>
+                  <div className="request-bdm-card">
+                    <div className="request-title m-2 d-flex justify-content-between">
+                      <div className="request-content mr-2">
+                        {item.ename} has rejected the request of reverted company.
+                        <b>{item["Company Name"]}</b>.
+                      </div>
+                    </div>
+                    <div className="request-reply d-flex">
+                      <button
+                        onClick={() => {
+                          setOpenRevertBackRequestDialog(false)
+                          handleDoneRejectedRequest(
+                            item._id,
+                            item.Status
+                          )
+                        }
+                        }
+
+                        className="request-accept"
+                      >
+                        ok
+                      </button>
+
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            ))}
 
             <div className="page-header d-print-none">
               <div className="container-xl">
@@ -2605,6 +2630,7 @@ function EmployeePanel() {
                           <option value="State">State</option>
                           <option value="Status">Status</option>
                           <option value="AssignDate">Assigned Date</option>
+
                         </select>
                       </div>
                       {visibility === "block" && (
@@ -3236,11 +3262,6 @@ function EmployeePanel() {
                                   obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
                                   obj.Status !== "Matured"
                               )
-                              // .sort(
-                              //   (a, b) =>
-                              //     convertDateFormat(b.bdeForwardDate) > convertDateFormat(a.bdeForwardDate) ? 1 :
-                              //       convertDateFormat(b.bdeForwardDate) < convertDateFormat(a.bdeForwardDate) ? -1 : 0
-                              // )
                               .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                           );
                           //setdataStatus(obj.bdmAcceptStatus);
@@ -3275,7 +3296,7 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
-                                (obj.Status === "Not Interested"||
+                                (obj.Status === "Not Interested" ||
                                   obj.Status === "Junk") &&
                                 (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             )
@@ -3325,7 +3346,7 @@ function EmployeePanel() {
                             <th className="th-sticky">Sr.No</th>
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
-                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>):(<th>Status</th>)}
+                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
                             {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
                             {dataStatus === "Forwarded" && <th>BDM Status</th>}
                             {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
@@ -3517,6 +3538,12 @@ function EmployeePanel() {
                                 }}
                               />
                             </th>
+                            {dataStatus === "Matured" && <><th>
+                              Booking Date
+                            </th>
+                              <th>
+                                Publish Date
+                              </th></>}
 
                             {
                               (dataStatus === "FollowUp" && (
@@ -3552,14 +3579,14 @@ function EmployeePanel() {
                               <td colSpan="11" >
                                 <div className="LoaderTDSatyle w-100" >
                                   <ClipLoader
-                                      color="lightgrey"
-                                      loading
-                                      size={30}
-                                      aria-label="Loading Spinner"
-                                      data-testid="loader"
-                                    />
+                                    color="lightgrey"
+                                    loading
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
                                 </div>
-                             
+
                               </td>
                             </tr>
                           </tbody>
@@ -3615,7 +3642,9 @@ function EmployeePanel() {
                                                 ],
                                                 company["Company Number"],
                                                 company["Status"],
-                                                company.bdmAcceptStatus
+                                                company.bdmAcceptStatus,
+                                                company.isDeletedEmployeeCompany,
+                                                company.ename
                                               )
                                             }
                                           >
@@ -3705,8 +3734,8 @@ function EmployeePanel() {
                                             <option value="Not Interested">
                                               Not Interested
                                             </option>
-                                        <option value="Interested">Interested</option>
-                                        <option value="FollowUp">Follow Up</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="FollowUp">Follow Up</option>
                                           </select>
                                         )}
                                     </>
@@ -3731,44 +3760,44 @@ function EmployeePanel() {
                                         : company.Remarks}
                                     </p>
 
-                                    {(company.bdmAcceptStatus !== "Accept" || 
-                                    (company.Status === "Matured" || 
-                                    company.Status === "Not Interested" || 
-                                    company.Status === "Busy" || 
-                                    company.Status === "Busy" || 
-                                    company.Status === "Not Picked Up" || 
-                                    company.Status === "Junk")) && (
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenpopupremarks(
-                                            company._id,
-                                            company.Status,
-                                            company["Company Name"],
-                                            company.ename
-                                          );
-                                          //setOpenPopupByBdm(false);
-                                          setCurrentRemarks(company.Remarks);
-                                          setCompanyId(company._id);
-                                        }}
-                                      >
-                                        <EditIcon
+                                    {(company.bdmAcceptStatus !== "Accept" ||
+                                      (company.Status === "Matured" ||
+                                        company.Status === "Not Interested" ||
+                                        company.Status === "Busy" ||
+                                        company.Status === "Busy" ||
+                                        company.Status === "Not Picked Up" ||
+                                        company.Status === "Junk")) && (
+                                        <IconButton
                                           onClick={() => {
                                             functionopenpopupremarks(
                                               company._id,
                                               company.Status,
-                                              company["Company Name"]
+                                              company["Company Name"],
+                                              company.ename
                                             );
                                             //setOpenPopupByBdm(false);
                                             setCurrentRemarks(company.Remarks);
                                             setCompanyId(company._id);
                                           }}
-                                          style={{
-                                            width: "12px",
-                                            height: "12px",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
+                                        >
+                                          <EditIcon
+                                            onClick={() => {
+                                              functionopenpopupremarks(
+                                                company._id,
+                                                company.Status,
+                                                company["Company Name"]
+                                              );
+                                              //setOpenPopupByBdm(false);
+                                              setCurrentRemarks(company.Remarks);
+                                              setCompanyId(company._id);
+                                            }}
+                                            style={{
+                                              width: "12px",
+                                              height: "12px",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      )}
                                     {company.bdmAcceptStatus === "Accept" && (company.Status !== "Matured" && company.Status !== "Not Interested" && company.Status !== "Busy" && company.Status !== "Busy" && company.Status !== "Not Picked Up" && company.Status !== "Junk") && (
                                       <IconButton
                                         onClick={() => {
@@ -3904,43 +3933,43 @@ function EmployeePanel() {
                                   </div>
                                 </td> */}
                                 {dataStatus === "Forwarded" && <td>
-                                  <div    key={company._id}
+                                  <div key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
                                       width: "100px",
                                     }}>
-                                  <p
-                                    className="rematkText text-wrap m-0"
-                                    title={company.bdmRemarks}
-                                  >
-                                    {!company.bdmRemarks
-                                      ? "No Remarks"
-                                      : company.bdmRemarks}
-                                  </p>
-                                  <IconButton
-                                    onClick={() => {
-                                      functionopenpopupremarksBdm(
-                                        company._id,
-                                        company.Status,
-                                        company["Company Name"],
-                                        company.bdmName
-                                      );
-                                      //setOpenPopupByBdm(true);
-                                      //setCurrentRemarks(company.Remarks);
-                                      setCompanyId(company._id);
-                                    }}
-                                  >
-                                    <IconEye
-                                      style={{
-                                        width: "14px",
-                                        height: "14px",
-                                        color: "#d6a10c",
-                                        cursor: "pointer",
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.bdmRemarks}
+                                    >
+                                      {!company.bdmRemarks
+                                        ? "No Remarks"
+                                        : company.bdmRemarks}
+                                    </p>
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenpopupremarksBdm(
+                                          company._id,
+                                          company.Status,
+                                          company["Company Name"],
+                                          company.bdmName
+                                        );
+                                        //setOpenPopupByBdm(true);
+                                        //setCurrentRemarks(company.Remarks);
+                                        setCompanyId(company._id);
                                       }}
-                                    />
-                                  </IconButton>
+                                    >
+                                      <IconEye
+                                        style={{
+                                          width: "14px",
+                                          height: "14px",
+                                          color: "#d6a10c",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    </IconButton>
                                   </div>
                                 </td>}
 
@@ -3953,6 +3982,11 @@ function EmployeePanel() {
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDateNew(company["AssignDate"])}</td>
+                                {dataStatus === "Matured" && <>
+                                  <td>{functionCalculateBookingDate(company._id)}</td>
+                                  <td>{functionCalculatePublishDate(company._id)}</td>
+
+                                </>}
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
                                     <>
@@ -4067,7 +4101,7 @@ function EmployeePanel() {
                                   dataStatus === "Forwarded" && (
                                     <td>
                                       {company.bdmAcceptStatus === "NotForwarded" ? (<>
-                                      {console.log("yeh frist wala not forwardede h")}
+
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -4086,7 +4120,7 @@ function EmployeePanel() {
                                           color="grey"
                                         />
                                       </>) : company.bdmAcceptStatus === "Pending" ? (<>
-                                       {console.log("yahan pending  h")}
+
                                         <TiArrowBack
                                           onClick={() => {
                                             handleReverseAssign(
@@ -4095,7 +4129,7 @@ function EmployeePanel() {
                                               company.bdmAcceptStatus,
                                               company.Status,
                                               company.bdmName
-                                           )
+                                            )
                                           }}
                                           style={{
                                             cursor: "pointer",
@@ -4104,72 +4138,92 @@ function EmployeePanel() {
                                           }}
                                           color="#fbb900"
                                         />
-                                      </>) : 
-                                      (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
-                                        <> {console.log("accepted h")}
-                                        <TiArrowBack 
-                                        onClick={()=>handleRevertAcceptedCompany(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.Status
-                                        )}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                          color="black" />
-                                      </>) : 
-                                      (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
-                                        <> {console.log("yahan chala reverted")}
-                                     <TiArrowBack
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                          color="lightgrey" />
-                                      </>)  : (<>{console.log("yahan to forwarded hai last wala")}
-                                      <TiArrowForward
-                                        onClick={() => {
-                                          handleConfirmAssign(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.Status, // Corrected parameter name
-                                            company.ename,
-                                            company.bdmAcceptStatus
-                                          );
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="grey"
-                                      />
-                                     </>)}
+                                      </>) :
+                                        (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                          <>
+                                            <TiArrowBack
+                                              onClick={() => handleRevertAcceptedCompany(
+                                                company._id,
+                                                company["Company Name"],
+                                                company.Status
+                                              )}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="black" />
+                                          </>) :
+                                          (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
+                                            <>
+                                              <TiArrowBack
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                }}
+                                                color="lightgrey" />
+                                            </>) : (<>
+                                              <TiArrowForward
+                                                onClick={() => {
+                                                  handleConfirmAssign(
+                                                    company._id,
+                                                    company["Company Name"],
+                                                    company.Status, // Corrected parameter name
+                                                    company.ename,
+                                                    company.bdmAcceptStatus
+                                                  );
+                                                }}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                }}
+                                                color="grey"
+                                              />
+                                            </>)}
                                     </td>
 
                                   )
                                 }
-                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
-                                  <td>
-                                    <IconButton onClick={() => {
-                                      handleViewFeedback(
-                                        company._id,
-                                        company["Company Name"],
-                                        company.feedbackRemarks,
-                                        company.feedbackPoints
-                                      )
-                                    }}>
-                                      <RiInformationLine style={{
-                                        cursor: "pointer",
-                                        width: "17px",
-                                        height: "17px",
-                                      }}
-                                        color="#fbb900" /></IconButton>
-                                  </td>
-                                )}
+                                {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
+                                  (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
+                                    <td>
+                                      <IconButton onClick={() => {
+                                        handleViewFeedback(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.feedbackRemarks,
+                                          company.feedbackPoints
+                                        )
+                                      }}>
+                                        <RiInformationLine style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }} color="#fbb900" />
+                                      </IconButton>
+                                    </td>
+                                  ) : (
+                                    <td>
+                                      <IconButton onClick={() => {
+                                        handleViewFeedback(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.feedbackRemarks,
+                                          company.feedbackPoints
+                                        )
+                                      }}>
+                                        <RiInformationLine style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }} color="lightgrey" />
+                                      </IconButton>
+                                    </td>
+                                  )
+                                ) : null}
+
                                 {/* {dataStatus === "Matured" && (
                                   <>
                                     <td>
@@ -4387,6 +4441,9 @@ function EmployeePanel() {
         <>
           {" "}
           <AddLeadForm
+            employeeEmail={data.email}
+            newBdeName={newBdeName}
+            isDeletedEmployeeCompany={deletedEmployeeStatus}
             setFormOpen={setAddFormOpen}
             companysName={companyName}
             setNowToFetch={setNowToFetch}
@@ -4756,17 +4813,17 @@ function EmployeePanel() {
                 }}
               ></textarea>
             </div>
-            
+
           </div>
         </DialogContent>
         <button
-              onClick={handleUpdate}
-              type="submit"
-              className="btn btn-primary bdr-radius-none"
-              style={{ width: "100%" }}
-            >
-              Submit
-            </button>
+          onClick={handleUpdate}
+          type="submit"
+          className="btn btn-primary bdr-radius-none"
+          style={{ width: "100%" }}
+        >
+          Submit
+        </button>
       </Dialog>
 
       {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
@@ -5027,7 +5084,7 @@ function EmployeePanel() {
                   <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
-                        Company Incorporation Date 
+                        Company Incorporation Date
                       </label>
                       <input
                         onChange={(e) => {
@@ -5398,7 +5455,7 @@ function EmployeePanel() {
       </Dialog>
       {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
 
-      <Dialog className='My_Mat_Dialog'  
+      <Dialog className='My_Mat_Dialog'
         open={feedbackPopupOpen}
         onClose={closeFeedbackPopup}
         fullWidth
@@ -5488,7 +5545,7 @@ function EmployeePanel() {
 
       {/* -------------------------------------------------------- DIALOG FOR BDM NAMES--------------------------------------------------- */}
 
-      <Dialog className='My_Mat_Dialog'   open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Choose BDM To Forward Data
           <IconButton onClick={closeBdmNamePopup} style={{ float: "right" }}>

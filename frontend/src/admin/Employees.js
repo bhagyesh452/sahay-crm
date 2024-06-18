@@ -71,6 +71,7 @@ function Employees({ onEyeButtonClick }) {
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
 
+
   const [open, openchange] = useState(false);
 
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
@@ -99,33 +100,87 @@ function Employees({ onEyeButtonClick }) {
   //   };
   // }, []);
 
-  const handleDeleteClick = (itemId, nametochange) => {
+  // const handleDeleteClick = (itemId, nametochange) => {
+  //   // Open the confirm delete modal
+  //   setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
+
+  //   setItemIdToDelete(itemId);
+  //   setIsModalOpen(true);
+  // };
+  const [dataToDelete, setDataToDelete] = useState([])
+
+
+  const handleDeleteClick = async (itemId, nametochange, dataToDelete , filteredCompanyData) => {
     // Open the confirm delete modal
-    setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
+    // console.log(nametochange)
+    // console.log("filtered" , filteredCompanyData)
+    setCompanyDdata(filteredCompanyData);
     setItemIdToDelete(itemId);
-    setIsModalOpen(true);
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you really want to remove ${nametochange}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
+            dataToDelete,
+          });
+          const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
+
+          const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
+
+
+          // Refresh the data after successful deletion
+          handledeletefromcompany(filteredCompanyData);
+          fetchData();
+
+          Swal.fire({
+            title: "Employee Removed!",
+            text: "You have successfully removed the employee!",
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Error deleting data:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please try again later!",
+          });
+        }
+      } else {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Employee is safe!',
+          icon: 'info',
+        });
+      }
+    });
   };
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const handleConfirmDelete = () => {
-    // Perform the delete operation here (call your delete API, etc.)
-    // After deletion, close the modal
-    handleDelete(itemIdToDelete);
-    handledeletefromcompany();
-    setIsModalOpen(false);
-  };
-
-  const handledeletefromcompany = async () => {
-    if (companyDdata && companyDdata.length !== 0) {
-      // Assuming ename is part of dataToSend
-
+  const handledeletefromcompany = async (filteredCompanyData) => { 
+    if (filteredCompanyData && filteredCompanyData.length !== 0) {
+      
       try {
         // Update companyData in the second database
         await Promise.all(
-          companyDdata.map(async (item) => {
-            await axios.delete(`${secretKey}/newcompanynamedelete/${item._id}`);
-            //console.log(`Deleted name for ${item._id}`);
+          filteredCompanyData.map(async (item) => {
+            if (item.Status === 'Matured') {
+              
+              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
+
+            } else {
+              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
+            }
           })
         );
         Swal.fire({
@@ -143,10 +198,10 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
-  const handleCancelDelete = () => {
-    // Cancel the delete operation and close the modal
-    setIsModalOpen(false);
-  };
+  // const handleCancelDelete = () => {
+  //   // Cancel the delete operation and close the modal
+  //   setIsModalOpen(false);
+  // };
   const [bdmWork, setBdmWork] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedFormat, setSortedFormat] = useState({
@@ -200,8 +255,8 @@ function Employees({ onEyeButtonClick }) {
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
-    console.log("selectedData", selectedData)
-    
+
+
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -237,7 +292,7 @@ function Employees({ onEyeButtonClick }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${secretKey}/employee/einfo/${id}`);
+      await axios.delete(`${secretKey}/employee/permanentDelete/${id}`);
       // Refresh the data after successful deletion
       fetchData();
       Swal.fire({
@@ -263,7 +318,7 @@ function Employees({ onEyeButtonClick }) {
     fetchData();
     fetchCData();
   }, []);
-  
+
   function formatDateWP(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -314,10 +369,10 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
- 
+
 
   const handleSubmit = async (e) => {
-    
+
     // const referenceId = uuidv4();
     const AddedOn = new Date().toLocaleDateString();
     try {
@@ -357,18 +412,18 @@ function Employees({ onEyeButtonClick }) {
         dataToSend.bdmWork = true
       } else {
         dataToSend.bdmWork = false
-      }  
-      console.log(isUpdateMode , "updateMode")
+      }
+      console.log(isUpdateMode, "updateMode")
 
       if (isUpdateMode) {
 
         if (dataToSend.ename === "") {
-          Swal.fire("Invalid Details","Please Enter Details Properly" , "warning");
+          Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
           return true;
-        } 
+        }
         //console.log(dataToSend, "Bhoom");
         //console.log("updateddata",dataToSendUpdated)
-       const response =  await axios.put(
+        const response = await axios.put(
           `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
@@ -643,13 +698,13 @@ function Employees({ onEyeButtonClick }) {
 
   }
 
-
+  console.log(cdata.filter((obj) => obj.ename === 'Rahul Saiekh'))
 
 
 
   return (
     <div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         style={{
@@ -662,8 +717,7 @@ function Employees({ onEyeButtonClick }) {
             margin: "auto",
             textAlign: "center",
           },
-        }}
-      >
+        }}>
         <div className="modal-header">
           <h3 style={{ fontSize: "20px" }} className="modal-title">
             Confirm Delete?
@@ -682,8 +736,327 @@ function Employees({ onEyeButtonClick }) {
         >
           Cancel
         </button>
-      </Modal>
-      <Dialog className='My_Mat_Dialog'  open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      </Modal> */}
+      {/* <Header />
+      <Navbar number={1} /> */}
+      <div className="">
+        <div className="page-header d-print-none m-0">
+          <div className="row g-2 align-items-center">
+            <div className="col m-0">
+              {/* <!-- Page pre-title --> */}
+              <h2 className="page-title">Employees</h2>
+            </div>
+            <div style={{ width: "20vw" }} className="input-icon">
+              <span className="input-icon-addon">
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon"
+                  width="20"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                  <path d="M21 21l-6 -6" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={searchQuery}
+                className="form-control"
+                placeholder="Search…"
+                aria-label="Search in website"
+                onChange={handleSearch}
+              />
+            </div>
+
+            {/* <!-- Page title actions --> */}
+            <div className="col-auto ms-auto d-print-none">
+              <div className="btn-list">
+                <button
+                  className="btn btn-primary d-none d-sm-inline-block"
+                  onClick={functionopenpopup}
+                >
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                  Add Employees
+                </button>
+                <a
+                  href="#"
+                  className="btn btn-primary d-sm-none btn-icon"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal-report"
+                  aria-label="Create new report"
+                >
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Employee table */}
+      <div
+        onCopy={(e) => {
+          e.preventDefault();
+        }}
+        className="mt-2"
+      >
+        <div className="card">
+          <div style={{ padding: "0px" }} className="card-body">
+            <div
+              id="table-default"
+              style={{ overflow: "auto", maxHeight: "70vh" }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                }}
+                className="table-vcenter table-nowrap"
+              >
+                <thead>
+                  <tr className="tr-sticky">
+                    <th>
+                      <button className="table-sort" data-sort="sort-name">
+                        Sr.No
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        onClick={sortDataByName}
+                        className="table-sort"
+                        data-sort="sort-city"
+                      >
+                        Name
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-type">
+                        Phone No
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-score">
+                        Email
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        onClick={sortDataByJoiningDate}
+                        className="table-sort"
+                        data-sort="sort-date"
+                      >
+                        Joining date
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Designation
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Branch Office
+                      </button>
+                    </th>
+                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi") && <> <th>
+                      <button
+                        onClick={sortDateByAddedOn}
+                        className="table-sort"
+                        data-sort="sort-date"
+                      >
+                        Added on
+                      </button>
+                    </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Status
+                        </button>
+                      </th>
+                      {/* <th>Team Name</th> */}
+                      <th>
+                        BDM Work
+                      </th>
+                      <th>
+                        <button
+                          className="table-sort"
+                          data-sort="sort-quantity"
+                        >
+                          Action
+                        </button>
+                      </th> </>}
+                  </tr>
+                </thead>
+                {filteredData.length == 0 ? (
+                  <tbody>
+                    <tr>
+                      <td
+                        className="particular"
+                        colSpan="10"
+                        style={{ textAlign: "center" }}
+                      >
+                        <Nodata />
+                      </td>
+                    </tr>
+                  </tbody>
+                ) : (
+                  <tbody className="table-tbody">
+                    {filteredData.map((item, index) => (
+                      <tr key={index} style={{ border: "1px solid #ddd" }}>
+                        <td className="td-sticky">{index + 1}</td>
+                        <td>{item.ename}</td>
+                        <td>{item.number}</td>
+                        <td>{item.email}</td>
+                        <td>{formatDateFinal(item.jdate)}</td>
+                        <td>{item.designation}</td>
+                        <td>{item.branchOffice}</td>
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi")
+                          &&
+
+                          <>
+                            <td>
+                              {formatDate(item.AddedOn) === "Invalid Date"
+                                ? "06/02/2024"
+                                : formatDateFinal(item.AddedOn)}
+                            </td>
+                            {item.designation === "Sales Executive" && <td>
+                              {(item.Active && item.Active.includes("GMT")) ? (
+                                <div>
+                                  <span
+                                    style={{ color: "red", marginRight: "5px" }}
+                                  >
+                                    ●
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontWeight: "bold",
+                                      color: "rgb(170 144 144)",
+                                    }}
+                                  >
+                                    {formatDateWP(item.Active)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div>
+                                  <span
+                                    style={{ color: "green", marginRight: "5px" }}
+                                  >
+                                    ●
+                                  </span>
+                                  <span
+                                    style={{ fontWeight: "bold", color: "green" }}
+                                  >
+                                    Online
+                                  </span>
+                                </div>
+                              )}
+                            </td>}
+                            {item.designation !== "Sales Executive" && <td>
+                              N/A
+                            </td>}
+
+                            <td>
+                              <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                  onClick={(event) => {
+                                    handlChecked(item._id, item.bdmWork)
+                                  }} />
+
+                              </Stack>
+                            </td>
+                            <td>
+                              <div className="d-flex justify-content-center align-items-center">
+                                {<div className="icons-btn">
+                                  <IconButton
+                                    onClick={async () => {
+                                      const dataToDelete = data.filter(obj => obj._id === item._id);
+                                      setDataToDelete(dataToDelete);
+                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                                      setCompanyDdata(filteredCompanyData);
+                                      handleDeleteClick(item._id, item.ename, dataToDelete , filteredCompanyData);
+                                    }}
+                                  >
+                                    <IconTrash
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "red",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+
+                                </div>}
+                                <div className="icons-btn">
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenpopup();
+                                      handleUpdateClick(item._id, item.ename);
+                                    }}
+                                  >
+                                    <ModeEditIcon
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "#a29d9d",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </div>
+                                <div className="icons-btn">
+                                  <Link
+                                    style={{ color: "black" }}
+                                    to={`/admin/employees/${item._id}`}
+                                  >
+                                    <IconButton>
+                                      {" "}
+                                      <IconEye
+                                        style={{
+                                          width: "14px",
+                                          height: "14px",
+                                          color: "#d6a10c",
+                                        }}
+                                      />
+                                    </IconButton>
+                                  </Link>
+                                </div>
+                              </div>
+                            </td></>}
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Employee Info{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>
@@ -848,9 +1221,7 @@ function Employees({ onEyeButtonClick }) {
                 </div>
               </div>
               <label className="form-label">ADD Target</label>
-
               {targetObjects.map((obj, index) => (
-
                 <div className="row">
                   <div className="col-lg-3">
                     <div className="mb-3">
@@ -967,321 +1338,6 @@ function Employees({ onEyeButtonClick }) {
           Submit
         </Button>
       </Dialog>
-
-      {/* <Header />
-      <Navbar number={1} /> */}
-      <div className="">
-        <div className="page-header d-print-none m-0">
-          <div className="row g-2 align-items-center">
-            <div className="col m-0">
-              {/* <!-- Page pre-title --> */}
-              <h2 className="page-title">Employees</h2>
-            </div>
-            <div style={{ width: "20vw" }} className="input-icon">
-              <span className="input-icon-addon">
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon"
-                  width="20"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                  <path d="M21 21l-6 -6" />
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                className="form-control"
-                placeholder="Search…"
-                aria-label="Search in website"
-                onChange={handleSearch}
-              />
-            </div>
-
-            {/* <!-- Page title actions --> */}
-            <div className="col-auto ms-auto d-print-none">
-              <div className="btn-list">
-                <button
-                  className="btn btn-primary d-none d-sm-inline-block"
-                  onClick={functionopenpopup}
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 5l0 14" />
-                    <path d="M5 12l14 0" />
-                  </svg>
-                  Add Employees
-                </button>
-                <a
-                  href="#"
-                  className="btn btn-primary d-sm-none btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-report"
-                  aria-label="Create new report"
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Employee table */}
-      <div
-        onCopy={(e) => {
-          e.preventDefault();
-        }}
-        className="mt-2"
-      >
-        <div className="card">
-          <div style={{ padding: "0px" }} className="card-body">
-            <div
-              id="table-default"
-              style={{ overflow: "auto", maxHeight: "70vh" }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                }}
-                className="table-vcenter table-nowrap"
-              >
-                <thead>
-                  <tr className="tr-sticky">
-                    <th>
-                      <button className="table-sort" data-sort="sort-name">
-                        Sr.No
-                      </button>
-                    </th>
-                    <th>
-                      <button
-                        onClick={sortDataByName}
-                        className="table-sort"
-                        data-sort="sort-city"
-                      >
-                        Name
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-type">
-                        Phone No
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-score">
-                        Email
-                      </button>
-                    </th>
-                    <th>
-                      <button
-                        onClick={sortDataByJoiningDate}
-                        className="table-sort"
-                        data-sort="sort-date"
-                      >
-                        Joining date
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-date">
-                        Designation
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-date">
-                        Branch Office
-                      </button>
-                    </th>
-                    {(adminName === "Nimesh" || adminName === "Ronak" || adminName === "Aakash" || adminName === "shivangi") && <> <th>
-                      <button
-                        onClick={sortDateByAddedOn}
-                        className="table-sort"
-                        data-sort="sort-date"
-                      >
-                        Added on
-                      </button>
-                    </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Status
-                        </button>
-                      </th>
-                      {/* <th>Team Name</th> */}
-                      <th>
-                        BDM Work
-                      </th>
-                      <th>
-                        <button
-                          className="table-sort"
-                          data-sort="sort-quantity"
-                        >
-                          Action
-                        </button>
-                      </th> </>}
-                  </tr>
-                </thead>
-                {filteredData.length == 0 ? (
-                  <tbody>
-                    <tr>
-                      <td
-                        className="particular"
-                        colSpan="10"
-                        style={{ textAlign: "center" }}
-                      >
-                        <Nodata />
-                      </td>
-                    </tr>
-                  </tbody>
-                ) : (
-                  <tbody className="table-tbody">
-                    {filteredData.map((item, index) => (
-                      <tr key={index} style={{ border: "1px solid #ddd" }}>
-                        <td className="td-sticky">{index + 1}</td>
-                        <td>{item.ename}</td>
-                        <td>{item.number}</td>
-                        <td>{item.email}</td>
-                        <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.designation}</td>
-                        <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "Ronak" || adminName === "Aakash" || adminName === "shivangi")
-                          &&
-
-                          <>
-                            <td>
-                              {formatDate(item.AddedOn) === "Invalid Date"
-                                ? "06/02/2024"
-                                : formatDateFinal(item.AddedOn)}
-                            </td>
-                            {item.designation === "Sales Executive" && <td>
-                              {(item.Active && item.Active.includes("GMT")) ? (
-                                <div>
-                                  <span
-                                    style={{ color: "red", marginRight: "5px" }}
-                                  >
-                                    ●
-                                  </span>
-                                  <span
-                                    style={{
-                                      fontWeight: "bold",
-                                      color: "rgb(170 144 144)",
-                                    }}
-                                  >
-                                    {formatDateWP(item.Active)}
-                                  </span>
-                                </div>
-                              ) : (
-                                <div>
-                                  <span
-                                    style={{ color: "green", marginRight: "5px" }}
-                                  >
-                                    ●
-                                  </span>
-                                  <span
-                                    style={{ fontWeight: "bold", color: "green" }}
-                                  >
-                                    Online
-                                  </span>
-                                </div>
-                              )}
-                            </td>}
-                            {item.designation !== "Sales Executive" && <td>
-                              N/A
-                            </td>}
-
-                            <td>
-                              <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-                                <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
-                                  onClick={(event) => {
-                                    handlChecked(item._id, item.bdmWork)
-                                  }} />
-
-                              </Stack>
-                            </td>
-                            <td>
-                              <div className="d-flex justify-content-center align-items-center">
-                                {<div className="icons-btn">
-                                  <IconButton
-                                    onClick={() =>
-                                      handleDeleteClick(item._id, item.ename)
-                                    }
-                                  >
-                                    <IconTrash
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "red",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                </div>}
-                                <div className="icons-btn">
-                                  <IconButton
-                                    onClick={() => {
-                                      functionopenpopup();
-                                      handleUpdateClick(item._id, item.ename);
-                                    }}
-                                  >
-                                    <ModeEditIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#a29d9d",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                </div>
-                                <div className="icons-btn">
-                                  <Link
-                                    style={{ color: "black" }}
-                                    to={`/admin/employees/${item._id}`}
-                                  >
-                                    <IconButton>
-                                      {" "}
-                                      <IconEye
-                                        style={{
-                                          width: "14px",
-                                          height: "14px",
-                                          color: "#d6a10c",
-                                        }}
-                                      />
-                                    </IconButton>
-                                  </Link>
-                                </div>
-                              </div>
-                            </td></>}
-                      </tr>
-                    ))}
-                  </tbody>
-                )}
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

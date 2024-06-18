@@ -15,6 +15,7 @@ const RedesignedDraftModel = require("../models/RedesignedDraftModel");
 const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
+const { Parser } = require('json2csv');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -143,7 +144,24 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
 // Get Request for fetching bookings Data
 router.get("/redesigned-final-leadData", async (req, res) => {
   try {
-    const allData = await RedesignedLeadformModel.find().sort({ lastActionDate: -1 });
+    const allData = await RedesignedLeadformModel.aggregate([
+      {
+        $addFields: {
+          lastActionDateAsDate: {
+            $dateFromString: {
+              dateString: "$lastActionDate",
+              onError: new Date(0),  // Default to epoch if conversion fails
+              onNull: new Date(0)    // Default to epoch if null
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          lastActionDateAsDate: -1
+        }
+      }
+    ]);
     res.status(200).json(allData);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -156,7 +174,7 @@ router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
     const companyName = req.params.companyName;
     const allData = await RedesignedLeadformModel.findOne({
       "Company Name": companyName,
-    }).sort({lastActionDate : -1});
+    }).sort({ lastActionDate: -1 });
 
     res.status(200).json(allData);
   } catch (error) {
@@ -214,7 +232,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
     const tempDateToday = new Date();
 
-    const newGoingToUpdate = {...goingToUpdate , lastActionDate : tempDateToday }
+    const newGoingToUpdate = { ...goingToUpdate, lastActionDate: tempDateToday }
 
     try {
       // Find the document by _id and update it with the updatedBooking data
@@ -277,7 +295,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           "Company Name": CompanyName,
         },
         {
-          lastActionDate : newTempDate,
+          lastActionDate: newTempDate,
           [`moreBookings.${bookingIndex - 1}`]: {
             bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
             paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
@@ -288,7 +306,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             "Company Name": CompanyName,
           },
           {
-            lastActionDate : newTempDate,
+            lastActionDate: newTempDate,
             [`moreBookings.${bookingIndex - 1}`]: {
               bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
               paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
@@ -510,7 +528,7 @@ router.post("/redesigned-importData", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// Main Method for submitting Draft
+//----------------------------------------------------------  Main Method for submitting Draft Form  ----------------------------------------------------------
 router.post(
   "/redesigned-leadData/:CompanyName/:step",
   upload.fields([
@@ -632,7 +650,7 @@ router.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
+        
         newData.otherDocs =
           req.files["otherDocs"] === undefined ||
             req.files["otherDocs"].length === 0
@@ -644,27 +662,30 @@ router.post(
             ? []
             : req.files["paymentReceipt"].map((file) => file);
 
+
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
             {
-              $set: {
-                totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt:
-                  newData.paymentReceipt || existingData.paymentReceipt,
-                otherDocs: newData.otherDocs || existingData.otherDocs,
-                paymentMethod: newData.paymentMethod || newData.paymentMethod,
-                extraNotes: newData.extraNotes || existingData.extraNotes,
-                Step4Status: true,
-              },
+                $set: {
+                    totalAmount: newData.totalAmount || existingData.totalAmount,
+                    pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+                    receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+                    paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+                    paymentMethod: newData.paymentMethod || existingData.paymentMethod,
+                    extraNotes: newData.extraNotes || existingData.extraNotes,
+                    Step4Status: true,
+                },
+                $push: {
+                    otherDocs: {
+                        $each: newData.otherDocs || []
+                    }
+                }
             },
             { new: true }
-          );
+        );
+        
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
@@ -750,9 +771,10 @@ router.post(
                 "moreBookings.bdmType": newData.bdmType || "",
                 "moreBookings.bookingDate": newData.bookingDate || "",
                 "moreBookings.bookingSource": newData.bookingSource || "",
-                "moreBookings.otherBookingSource":newData.otherBookingSource || "",
+                "moreBookings.otherBookingSource": newData.otherBookingSource || "",
                 "moreBookings.Step2Status": true,
-                "moreBookings.lastActionDate" : newTempDate
+                "moreBookings.lastActionDate": newTempDate,
+
               },
             },
             { new: true }
@@ -861,23 +883,30 @@ router.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
+        console.log(companyData)
         if (companyData) {
           const multiBdmName = [];
           if (companyData.maturedBdmName !== newData.bdmName) {
             multiBdmName.push(newData.bdmName);
             await CompanyModel.findByIdAndUpdate(companyData._id, {
               multiBdmName: multiBdmName,
+              Status : "Matured"
             });
           }
         }
+        if (companyData && companyData.isDeletedEmployeeCompany){
+          await CompanyModel.findByIdAndUpdate(companyData._id, {
+            Status : "Matured"
+          });
+        }
         const boomDate = new Date();
-        const tempNewData = {...newData , bookingPublishDate : boomDate , lastActionDate : boomDate }
+        const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
             { "Company Name": companyName },
             {
               $set: {
-                lastActionDate:boomDate,
+                lastActionDate: boomDate,
                 moreBookings: [...existingData.moreBookings, tempNewData],
               },
             },
@@ -1752,8 +1781,6 @@ router.post(
           <!-- Step 4 Ends -->
         </div>
       </div>
-        
-  
         `,
             newData.otherDocs,
             newData.paymentReceipt
@@ -1777,7 +1804,7 @@ router.post(
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-      
+
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -1790,7 +1817,7 @@ router.post(
               } else {
                 rowSpan = 1;
               }
-      
+
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -1828,10 +1855,43 @@ router.post(
               </tr>
               `;
               }
+
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
+              const alteredServiceName =
+                newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                              newData.services[i].serviceName;
+
+              const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
+                  <thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total Payment</td>
+                      <td>Advanced Payment</td>
+                      <td>Pending payment</td>
+                      <td>Remarks</td>
+                    </tr>
+                    <tr>
+                          <td >₹ 0 /-</td>
+                          <td>₹ 0 /-</td>
+                          <td >₹ 0 /-</td>
+                          <td> Complimentary Service </td>
+                    </tr>
+                     
+           
+                  </tbody>
+              ` : ``;
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
-                    <td colspan="4">Service Name : ${newData.services[i].serviceName
+                    <td colspan="4">Service: ${alteredServiceName
                 }</td>
                   </thead>
                   <tbody>
@@ -1842,15 +1902,16 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                } /-</th>
-                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                          <td rowspan='4' style="border-right:2px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                } /-</td>
+                          <td rowspan='4' style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
-                }/-</th>
+                }/-</td>
                     </tr>
                     ${paymentServices}
                   </tbody>
+                  ${conditionalHtml}
               </table>
               `;
             }
@@ -1859,14 +1920,14 @@ router.post(
           const renderMorePaymentDetails = () => {
             let servicesHtml = "";
             let paymentServices = "";
-      
+
             for (let i = 2; i < newData.services.length; i++) {
               const Amount =
                 newData.services[i].paymentTerms === "Full Advanced"
                   ? newData.services[i].totalPaymentWGST
                   : newData.services[i].firstPayment;
               let rowSpan;
-      
+
               if (newData.services[i].paymentTerms === "two-part") {
                 if (
                   newData.services[i].thirdPayment !== 0 &&
@@ -1879,7 +1940,7 @@ router.post(
               } else {
                 rowSpan = 1;
               }
-      
+
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
@@ -1917,12 +1978,41 @@ router.post(
               </tr>
               `;
               }
-      
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
+              const alteredServiceName =
+                newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                              newData.services[i].serviceName;
+
+              const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
+                              <thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
+                              <tbody>
+                                <tr>
+                                  <td>Total Payment</td>
+                                  <td>Advanced Payment</td>
+                                  <td>Pending payment</td>
+                                  <td>Remarks</td>
+                                </tr>
+                                <tr>
+                                      <td >₹ 0 /-</td>
+                                      <td>₹ 0 /-</td>
+                                      <td >₹ 0 /-</td>
+                                      <td> Complimentary Service </td>
+                                </tr>
+                              </tbody>
+                          ` : ``;
+
               servicesHtml += `
               <table class="table table-bordered">
                   <thead>
-                    <td colspan="4">Service Name : ${newData.services[i].serviceName
-                }</td>
+                    <td colspan="4">Service: ${alteredServiceName}</td>
                   </thead>
                   <tbody>
                     <tr>
@@ -1932,15 +2022,16 @@ router.post(
                       <td>Remarks</td>
                     </tr>
                     <tr>
-                          <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-                } /-</th>
-                          <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                          <td rowspan='4' style="border-right:2px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                } /-</td>
+                          <td rowspan='4'  style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
                   ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                   : parseInt(newData.services[i].firstPayment).toLocaleString()
-                }/-</th>
+                }/-</td>
                     </tr>
                     ${paymentServices}
                   </tbody>
+                  ${conditionalHtml}
               </table>
               `;
             }
@@ -1976,8 +2067,8 @@ router.post(
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
-      
-         
+
+
           const newPageDisplay = newData.services.some((service) => {
             const tempServices = [
               ...allowedServiceNames,
@@ -1988,17 +2079,17 @@ router.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
-      
-      
-      
-      
-      
+
+
+
+
+
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServices = "";
             let fundingServicesArray = "";
             let incomeTaxServices = "";
-      
+
             for (let i = 0; i < newData.services.length; i++) {
               if (
                 newData.services[i].serviceName === "Start-Up India Certificate"
@@ -2017,7 +2108,7 @@ router.post(
               } else if (
                 allowedServiceNames.includes(newData.services[i].serviceName)
               ) {
-                fundingServicesArray += `${newData.services[i].serviceName},`;
+                fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
                 fundingServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
@@ -2027,16 +2118,15 @@ router.post(
               <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
               </p>
-              
               `;
               } else if (
                 newData.services[i].serviceName === "Income Tax Exemption"
               ) {
-            
+
                 incomeTaxServices = `
                 <p class="Declaration_text_head mt-2">
                 <b>
-                Income Tax Exemption Services Acknowledgement:   
+                Income Tax Exemption Document Support Services Acknowledgement:   
                 </b>
               </p>
               <p class="Declaration_text_data">
@@ -2049,8 +2139,13 @@ router.post(
             `;
               }
             }
-      
+
             if (fundingServicesArray !== "") {
+              //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+
+              //   Re-application support will be provided at no extra cost. 
+
+              // ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
@@ -2061,12 +2156,14 @@ router.post(
             I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
           `;
-            } 
+
+
+            }
             if (incomeTaxServices !== "") {
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
               <b>
-              Income Tax Exemption Services Acknowledgement:     
+              Income Tax Exemption Document Support Services Acknowledgement:     
               </b>
             </p>
             <p class="Declaration_text_data">
@@ -2074,6 +2171,7 @@ router.post(
             </p>
         `;
             }
+
             return servicesHtml;
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -2083,7 +2181,9 @@ router.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
-      
+
+
+
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const mainPageHtml = `
@@ -2097,6 +2197,7 @@ router.post(
                   </div>
                   <div class="Declaration_text">
                     ${serviceKawali}
+                       
                     <p class="Declaration_text_data">
                       I, understands that because of government regulations and portal, I have no objections if the
                       process takes longer than initially committed, knowing it's just how government schemes
@@ -2105,6 +2206,7 @@ router.post(
                     <p class="Declaration_text_data">
                     As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
                     </p>
+                 
                   </div>
                
                   
@@ -2173,7 +2275,7 @@ router.post(
       
           </section>
         </div>` : "";
-      
+
           // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
           const includedServices = [
             "Pitch Deck Development",
@@ -2204,11 +2306,12 @@ router.post(
             "Income Tax Exemption",
             "Mudra Loan",
             "SIDBI Loan",
-            "Incubation Support"
+            "Incubation Support",
+            "Chunauti "
           ];
-           const draftCondition = newData.services.some((service)=>{
-                return includedServices.includes(service.serviceName);
-              }) ? "block" : "none";
+          const draftCondition = newData.services.some((service) => {
+            return includedServices.includes(service.serviceName);
+          }) ? true : false;
           const servicesShubhi = [
             "Pitch Deck Development ",
             "Financial Modeling",
@@ -2227,7 +2330,7 @@ router.post(
             "VC Funding Support",
             "Crowd Funding Support",
             "I-Create",
-            "Nidhi Seed Support Scheme  ",
+            "Nidhi SSS Document Support  ",
             "Nidhi Prayash Yojna",
             "NAIF",
             "Raftaar",
@@ -2260,21 +2363,22 @@ router.post(
             "CRM Development",
             "ERP Development",
             "E-Commerce Website",
-            "Product Development"
+            "Product Development",
+            "Chunauti "
           ];
           const mailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
-      
+
           const AuthorizedEmail =
             mailName === "Dhruvi Gohel"
               ? "dhruvi@startupsahay.com"
               : "rm@startupsahay.com";
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-      
+
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
             .replace("{{Company Name}}", newData["Company Name"])
@@ -2295,11 +2399,19 @@ router.post(
             .replace("{{Company Number}}", newData["Company Number"])
             .replace("{{Conditional}}", conditional)
             .replace("{{Company Email}}", newData["Company Email"]);
-            
-      
+
+
           //   console.log("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-          const pagelength = newData.services.length===1 && mailName === "Dhruvi Gohel" ? 1 ? newData.services.length===1 && mailName === "Shubhi Banthiya" : 2 : 3
+          const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
+            ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1)
+            : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
+              ? 2
+              : 3;
+          const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
+            return service.serviceName !== "Start-Up India Certificate"
+          })) ? 2 : tempPageLength;
+
           const options = {
             format: "A4", // Set the page format to A4 size
             orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -2309,16 +2421,16 @@ router.post(
               contents: ``, // Customize the header content
             },
             paginationOffset: 1,       // Override the initial pagination number
-      "footer": {
-        "height": "100px",
-        "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
-          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-          last: '<span style="color: #444;">2</span>/<span>2</span>'
-        }
-      },
+            "footer": {
+              "height": "100px",
+              "contents": {
+                first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+                2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+                3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+                default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+                last: '<span style="color: #444;">2</span>/<span>2</span>'
+              }
+            },
             childProcessOptions: {
               env: {
                 OPENSSL_CONF: "./dev/null",
@@ -2327,6 +2439,9 @@ router.post(
           };
           const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
           const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
+
+          const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -2349,8 +2464,7 @@ router.post(
                           <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                           <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                           <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                          <p style="display:${draftCondition}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                          <p style="display:${draftCondition}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                         ${draftHtml}
                           <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                           
                           <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
@@ -2371,7 +2485,7 @@ router.post(
                 }
               }
             });
-      
+
           // Send success response
           res.status(201).send("Data sent");
         } else {
@@ -2636,7 +2750,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.company = companyData._id;
     }
     const boomDate = new Date();
-    const tempNewData = { ...newData , lastActionDate: boomDate , bookingPublishDate : boomDate }
+    const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
     const date = new Date();
@@ -3603,10 +3717,44 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
+        const alteredServiceName =
+          newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                        newData.services[i].serviceName;
+
+        const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
+                        <thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Total Payment</td>
+                            <td>Advanced Payment</td>
+                            <td>Pending payment</td>
+                            <td>Remarks</td>
+                          </tr>
+                          <tr>
+                                <td >₹ 0 /-</td>
+                                <td>₹ 0 /-</td>
+                                <td >₹ 0 /-</td>
+                                <td> Complimentary Service </td>
+                          </tr>
+                           
+                 
+                        </tbody>
+                    ` : ``;
+
+
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${newData.services[i].serviceName
+              <td colspan="4">Service: ${alteredServiceName
           }</td>
             </thead>
             <tbody>
@@ -3617,15 +3765,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-          } /-</th>
-                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                    <td rowspan='4' style="border=right:2px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</td>
+                    <td rowspan='4' style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
             : parseInt(newData.services[i].firstPayment).toLocaleString()
-          }/-</th>
+          }/-</td>
               </tr>
               ${paymentServices}
             </tbody>
+            ${conditionalHtml}
         </table>
         `;
       }
@@ -3692,12 +3841,41 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
+        const alteredServiceName =
+          newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                        newData.services[i].serviceName;
+
+        const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
+                        <thead>
+                          <td colspan="4">Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Document Support" : newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" : newData.services[i].serviceName + " Application Support"}</td>
+                        </thead>
+                        <tbody> 
+                          <tr>
+                            <td>Total Payment</td>
+                            <td>Advanced Payment</td>
+                            <td>Pending payment</td>
+                            <td>Remarks</td>
+                          </tr>
+                          <tr>
+                                <td >₹ 0 /-</td>
+                                <td>₹ 0 /-</td>
+                                <td >₹ 0 /-</td>
+                                <td> Complimentary Service </td>
+                          </tr>
+                        </tbody>
+                    ` : ``;
 
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
-              <td colspan="4">Service Name : ${newData.services[i].serviceName
-          }</td>
+              <td colspan="4">Service: ${alteredServiceName}</td>
             </thead>
             <tbody>
               <tr>
@@ -3707,20 +3885,23 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th rowspan='4'>₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
-          } /-</th>
-                    <th rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+                    <td rowspan='4' style="border-right:2px solid #000">₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+          } /-</td>
+             <td rowspan='4' style="border-left:2px solid #000">₹ ${newData.services[i].paymentTerms === "Full Advanced"
             ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
             : parseInt(newData.services[i].firstPayment).toLocaleString()
-          }/-</th>
+          }/-</td>
               </tr>
               ${paymentServices}
             </tbody>
+            ${conditionalHtml}
         </table>
         `;
       }
       return servicesHtml;
     };
+
+
     const allowedServiceNames = [
       "Seed Funding Support",
       "Angel Funding Support",
@@ -3744,7 +3925,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Support",
+      "Chunauti "
     ];
+
     const AuthorizedName = newData.services.some((service) => {
       const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
@@ -3762,10 +3945,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     })
       ? 'style="display:block'
       : 'style="display:none';
-
- 
-
-
 
     const renderServiceKawali = () => {
       let servicesHtml = "";
@@ -3786,12 +3965,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         <p class="Declaration_text_data">
         I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
         </p>
-        
         `;
         } else if (
           allowedServiceNames.includes(newData.services[i].serviceName)
         ) {
-          fundingServicesArray += `${newData.services[i].serviceName},`;
+          fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"}`;
           fundingServices = `
           <p class="Declaration_text_head mt-2">
           <b>
@@ -3803,14 +3981,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </p>
         
         `;
+
+
         } else if (
           newData.services[i].serviceName === "Income Tax Exemption"
         ) {
-      
+
           incomeTaxServices = `
           <p class="Declaration_text_head mt-2">
           <b>
-          Income Tax Exemption Services Acknowledgement:   
+          Income Tax Exemption Document Support Services Acknowledgement:   
           </b>
         </p>
         <p class="Declaration_text_data">
@@ -3825,6 +4005,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
 
       if (fundingServicesArray !== "") {
+        //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+        //   Re-application support will be provided at no extra cost.
+
+        // ` : ``;
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
@@ -3835,12 +4019,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
     `;
-      } 
+
+
+
+
+      }
       if (incomeTaxServices !== "") {
         servicesHtml += `
         <p class="Declaration_text_head mt-2">
         <b>
-        Income Tax Exemption Services Acknowledgement:     
+        Income Tax Exemption Document Support Services Acknowledgement:     
         </b>
       </p>
       <p class="Declaration_text_data">
@@ -3848,6 +4036,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       </p>
   `;
       }
+
       return servicesHtml;
     };
     const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
@@ -3857,7 +4046,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
-
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
     const mainPageHtml = `
@@ -3871,6 +4059,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             </div>
             <div class="Declaration_text">
               ${serviceKawali}
+               
               <p class="Declaration_text_data">
                 I, understands that because of government regulations and portal, I have no objections if the
                 process takes longer than initially committed, knowing it's just how government schemes
@@ -3879,6 +4068,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               <p class="Declaration_text_data">
               As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
               </p>
+             
             </div>
          
             
@@ -3948,38 +4138,39 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     </section>
   </div>` : "";
 
-  const includedServices = [
-    "Pitch Deck Development",
-    "Financial Modeling",
-    "DPR Development",
-    "CMA Report Development",
-    "Company Profile Write-Up",
-    "Business Profile",
-    "Seed Funding Support",
-    "Angel Funding Support",
-    "VC Funding Support",
-    "Crowd Funding Support",
-    "I-Create",
-    "Nidhi Seed Support Scheme",
-    "Nidhi Prayash Yojna",
-    "NAIF",
-    "Raftaar",
-    "CSR Funding",
-    "Stand-Up India",
-    "PMEGP",
-    "USAID",
-    "UP Grant",
-    "DBS Grant",
-    "MSME Innovation",
-    "MSME Hackathon",
-    "Gujarat Grant",
-    "CGTMSC",
-    "Income Tax Exemption",
-    "Mudra Loan",
-    "SIDBI Loan",
-    "Incubation Support"
-  ];
-  
+    const includedServices = [
+      "Pitch Deck Development",
+      "Financial Modeling",
+      "DPR Development",
+      "CMA Report Development",
+      "Company Profile Write-Up",
+      "Business Profile",
+      "Seed Funding Support",
+      "Angel Funding Support",
+      "VC Funding Support",
+      "Crowd Funding Support",
+      "I-Create",
+      "Nidhi Seed Support Scheme",
+      "Nidhi Prayash Yojna",
+      "NAIF",
+      "Raftaar",
+      "CSR Funding",
+      "Stand-Up India",
+      "PMEGP",
+      "USAID",
+      "UP Grant",
+      "DBS Grant",
+      "MSME Innovation",
+      "MSME Hackathon",
+      "Gujarat Grant",
+      "CGTMSC",
+      "Income Tax Exemption",
+      "Mudra Loan",
+      "SIDBI Loan",
+      "Incubation Support",
+      "Chunauti "
+    ];
+
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const servicesShubhi = [
       "Pitch Deck Development ",
@@ -3995,11 +4186,12 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Broucher Design",
       "Business Profile",
       "Seed Funding Support",
+      "Chunauti ",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
       "I-Create",
-      "Nidhi Seed Support Scheme  ",
+      "Nidhi SSS Document Support  ",
       "Nidhi Prayash Yojna",
       "NAIF",
       "Raftaar",
@@ -4041,9 +4233,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       : "Dhruvi Gohel";
 
 
-      const draftCondition = newData.services.some((service)=>{
-        return includedServices.includes(service.serviceName);
-      }) ? "block" : "none";
+    const draftCondition = newData.services.some((service) => {
+      return includedServices.includes(service.serviceName);
+    }) ? true : false;
     const AuthorizedEmail =
       mailName === "Dhruvi Gohel"
         ? "dhruvi@startupsahay.com"
@@ -4071,17 +4263,22 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional)
       .replace("{{Company Email}}", newData["Company Email"]);
-      
+
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
-    const pagelength = 
-    (newData.services.length === 1 && mailName === "Dhruvi Gohel") 
-      ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1) 
-      : (newData.services.length === 1 && mailName === "Shubhi Banthiya") 
-        ? 2 
+    const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
+      ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1)
+      : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
+        ? 2
         : 3;
-  
+    const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
+      return service.serviceName !== "Start-Up India Certificate"
+    })) ? 2 : tempPageLength;
+
+
+
+
 
     const options = {
       format: "A4", // Set the page format to A4 size
@@ -4092,22 +4289,25 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         contents: ``, // Customize the header content
       },
       paginationOffset: 1,       // Override the initial pagination number
-"footer": {
-  "height": "100px",
-  "contents": {
-    first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-    2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-    3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
-    default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-    last: '<span style="color: #444;">2</span>/<span>2</span>'
-  }
-},
+      "footer": {
+        "height": "100px",
+        "contents": {
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+          last: '<span style="color: #444;">2</span>/<span>2</span>'
+        }
+      },
       childProcessOptions: {
         env: {
           OPENSSL_CONF: "./dev/null",
         },
       },
     };
+
+    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
@@ -4133,8 +4333,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                     <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                     <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p style="display:${draftCondition}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                    <p style="display:${draftCondition}"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                    ${draftHtml}
                     <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                     <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
                     <div class="signature">
@@ -4174,15 +4373,16 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
     });
-    
+
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
+      { $unset: { maturedBdmName: "" } },
       { new: true }
     );
-    if(updateMainBooking.bdmAcceptStatus === "Accept"){
+    if (updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(
-      companyId
+        companyId
       )
     }
     if (deletedBooking) {
@@ -4350,7 +4550,7 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: publishDate
       };
-    
+
 
       if (bookingIndex == 0) {
         console.log("Hi guyz");
@@ -4363,7 +4563,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
 
 
-       const latestDate = new Date();
+        const latestDate = new Date();
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
         await RedesignedLeadformModel.updateOne(
@@ -4397,7 +4597,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
         findObject.remainingPayments.$push
 
-  
+
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
@@ -4451,7 +4651,7 @@ router.post(
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
       const publishDate = new Date();
-     
+
 
       const sendingObject = {
         serviceName: objectData.serviceName,
@@ -4464,7 +4664,7 @@ router.post(
         paymentReceipt: newPaymentReceipt,
         withGST: objectData.withGST,
         paymentDate: objectData.paymentDate,
-        publishDate : objectData.publishDate ? objectData.publishDate : publishDate
+        publishDate: objectData.publishDate ? objectData.publishDate : publishDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
@@ -4494,7 +4694,7 @@ router.post(
           { "Company Name": companyName },
           {
             $set: {
-              lastActionDate : latestUpdatedDate,
+              lastActionDate: latestUpdatedDate,
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
               generatedReceivedAmount: newGeneratedReceivedAmount,
@@ -4586,6 +4786,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
 
     // Update the serviceObject with new expanse amount
     const expanse = data.expanseAmount
+
     const updatedServiceObject = {
       serviceName: serviceObject.serviceName, // Spread operator to copy all properties from serviceObject
       totalPaymentWOGST: serviceObject.totalPaymentWOGST, // Spread operator to copy all properties from serviceObject
@@ -4602,7 +4803,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
       paymentRemarks: serviceObject.paymentRemarks,
       _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
-      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+      expanse: parseInt(expanse),
+      expanseDate: data.expanseDate // Update the expanse property with the value of the expanse variable
     };
 
     // Update the services array in mainObject with the updated serviceObject
@@ -4648,9 +4850,11 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       fourthPaymentRemarks: serviceObject.fourthPaymentRemarks, // Spread operator to copy all properties from serviceObject
       paymentRemarks: serviceObject.paymentRemarks,
       _id: serviceObject._id,// Spread operator to copy all properties from serviceObject
-      expanse: parseInt(expanse) // Update the expanse property with the value of the expanse variable
+      expanse: parseInt(expanse),
+      expanseDate: data.expanseDate
+      // Update the expanse property with the value of the expanse variable
     };
-    console.log(updatedServiceObject);
+
     // Update the services array in mainObject with the updated serviceObject
     const updatedServices = moreObject.services.map(service => {
       if (service._id == serviceID) {
@@ -4801,7 +5005,7 @@ router.post("/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
       await company.save();
 
       // Emit socket event
-      
+
 
       res.status(200).send("Documents uploaded and updated successfully!");
     } catch (error) {
@@ -4907,6 +5111,50 @@ router.get("/otherpdf/:CompanyName/:filename", (req, res) => {
   });
 });
 
+
+// --------------------------------------------------  Export CSV API  -----------------------------------------------
+
+const convertToCSV = (json) => {
+  try {
+    const parser = new Parser();
+    return parser.parse(json);
+  } catch (error) {
+    console.error('Error converting to CSV:', error);
+    throw error;
+  }
+};
+router.post('/export-this-bookings', async (req, res) => {
+  try {
+    const data = req.body;
+    const csv = convertToCSV(data.tempData);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="ThisMonthBooking.csv"`);
+    res.status(200).send(csv);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+
+})
+
+//-------------------------update company for deleted bde status---------------------------------------
+
+router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
+  const nametochange = req.params.ename;
+
+  
+  try {
+    const result = await RedesignedLeadformModel.updateMany(
+      { bdeName: nametochange },  // Filter criteria
+      { $set: { isDeletedEmployeeCompany: true } }  // Update operation
+    );
+
+    res.status(200).json({ message: "Updated successfully", result });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 

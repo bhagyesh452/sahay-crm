@@ -9,6 +9,7 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
+const adminModel = require("../models/Admin");
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -178,6 +179,93 @@ router.post("/leads", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+
+router.delete("/newcompanynamedelete/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Find the employee's data by id
+    const employeeData = await adminModel.findById(id);
+    console.log("employee" , employeeData)
+    if (!employeeData) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    // Update companies where the employee's name matches
+    await CompanyModel.updateMany(
+      { ename: employeeData.ename },
+      {
+        $set: {
+          ename: "Not Alloted",
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [],
+          Status: "Untouched",
+        },
+        $unset: {
+          bdmName: "",
+          bdeOldStatus: "",
+          bdeForwardDate: "",
+          bdmStatusChangeDate: "",
+          bdmStatusChangeTime: "",
+          bdmRemarks: "",
+          RevertBackAcceptedCompanyRequest: ""
+        },
+      }
+    );
+
+    // Delete documents from TeamLeadsModel where the employee's name matches
+    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
+
+    // Delete the corresponding document from CompanyModel collection
+    await CompanyModel.findByIdAndDelete(id);
+
+    res.json({ message: "Employee data deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting employee data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id" , async(req,res)=>{
+  const itemId = req.params.id
+  try{
+    const employeeData = await CompanyModel.findById(itemId)
+
+    console.log(employeeData)
+    if (!employeeData) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    // Update companies where the employee's name matches
+    const data = await CompanyModel.updateMany(
+      { ename: employeeData.ename },
+      {
+        $set: {
+           //ename: "Not Alloted",
+          //bdmAcceptStatus: "NotForwarded",
+          //feedbackPoints: [],
+          multiBdmName: [...employeeData.multiBdmName , employeeData.ename],
+          //Status: "Untouched",
+          isDeletedEmployeeCompany: true
+        },
+        $unset: {
+          // bdmName: "",
+          // bdeOldStatus: "",
+          // bdeForwardDate: "",
+          // bdmStatusChangeDate: "",
+          // bdmStatusChangeTime: "",
+          // bdmRemarks: "",
+          // RevertBackAcceptedCompanyRequest: ""
+        },
+      }
+    );
+  }catch(error){
+    console.error("Error deleting employee data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 // 7. Read Muultiple Companies 
 router.get("/leads", async (req, res) => {
@@ -396,7 +484,7 @@ router.get('/filter-leads', async (req, res) => {
       };
     }
 
-    //console.log(baseQuery);
+    console.log(baseQuery);
 
     // Fetch assigned data
     let assignedQuery = { ...baseQuery, ename: { $ne: 'Not Alloted' } };
@@ -431,11 +519,113 @@ router.get('/filter-leads', async (req, res) => {
   }
 });
 
+router.get('/filter-employee-leads', async (req, res) => {
+  const {
+    employeeName,
+    selectedStatus,
+    selectedState,
+    selectedNewCity,
+    selectedYear,
+    selectedAssignDate,
+    selectedCompanyIncoDate,
+  } = req.query;
+
+  const page = parseInt(req.query.page) || 1; // Page number
+  //const limit = parseInt(req.query.limit) || 500; // Items per page
+  //const skip = (page - 1) * limit; // Number of documents to skip
+
+  try {
+    let baseQuery = {};
+
+    // Ensure the query is filtered by employeeName
+    if (employeeName) baseQuery.ename = employeeName;
+
+    // Add other filters only if employeeName is present
+    if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedState) baseQuery.State = selectedState;
+    if (selectedNewCity) baseQuery.City = selectedNewCity;
+    if (selectedAssignDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      };
+    }
+    if (selectedYear) {
+      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: yearStartDate,
+        $lt: yearEndDate
+      };
+    }
+    if (selectedCompanyIncoDate) {
+      baseQuery["Company Incorporation Date  "] = {
+        $gte: new Date(selectedCompanyIncoDate).toISOString(),
+        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+      };
+    }
+
+    console.log(baseQuery);
+
+    const data = await CompanyModel.find(baseQuery).lean();
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 
 //9. Filtere search for Reading Multiple Companies
-// Function to escape special characters in the search query
+// router.get('/search-leads', async (req, res) => {
+//   try {
+//     const { searchQuery } = req.query;
+//     const { field } = req.query;
+//     //console.log(searchQuery , "search")
+
+//     let searchResults;
+//     if (field === "Company Name" || field === "Company Email") {
+//       if (searchQuery && searchQuery.trim() !== '') {
+//         // Perform database query to search for leads matching the searchQuery
+//         const query = {};
+//         query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
+
+//         searchResults = await CompanyModel.find(query).limit(500).lean();
+//       } else {
+//         // If search query is empty, fetch 500 data from CompanyModel
+//         searchResults = await CompanyModel.find().limit(500).lean();
+//       }
+//     }
+//     else if (field === "Company Number") {
+//       if (searchQuery && searchQuery.trim() !== '') {
+//         // Check if the searchQuery is a valid number
+//         const searchNumber = Number(searchQuery);
+
+//         if (!isNaN(searchNumber)) {
+//           // Perform database query to search for leads matching the searchQuery as a number
+//           searchResults = await CompanyModel.find({
+//             'Company Number': searchNumber
+//           }).limit(500).lean();
+//         } else {
+//           // If the searchQuery is not a number, perform a regex search (if needed for some reason)
+//           searchResults = await CompanyModel.find({
+//             'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
+//           }).limit(500).lean();
+//         }
+//       } else {
+//         // If search query is empty, fetch 500 data from CompanyModel
+//         searchResults = await CompanyModel.find().limit(500).lean();
+//       }
+//     }
+//     res.json(searchResults);
+//   } catch (error) {
+//     console.error('Error searching leads:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 function escapeRegex(string) {
   return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
@@ -443,30 +633,27 @@ function escapeRegex(string) {
 router.get('/search-leads', async (req, res) => {
   try {
     const { searchQuery } = req.query;
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
 
-    console.log(searchQuery, "search");
-
+    console.log(searchQuery)
     let searchResults;
     let assignedData = [];
     let assignedCount = 0;
     let unassignedData = [];
     let unassignedCount = 0;
-    const limit = 500;
+
 
     if (searchQuery) {
       const searchTerm = searchQuery.trim();
       let query = {};
 
       if (searchTerm !== '') {
-        // Determine if the searchQuery is a number or not
         if (!isNaN(searchTerm)) {
-          // Search by companyNumber if the query is a number
           query = { 'Company Number': searchTerm };
         } else {
-          // Escape special characters for regex search
           const escapedSearchTerm = escapeRegex(searchTerm);
-
-          // Otherwise, perform a regex search
           query = {
             $or: [
               { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
@@ -476,21 +663,20 @@ router.get('/search-leads', async (req, res) => {
             ]
           };
         }
-
-        // Fetch assigned data
-        let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
-        assignedCount = await CompanyModel.countDocuments(assignedQuery);
-        assignedData = await CompanyModel.find(assignedQuery).lean();
-
-        // Fetch unassigned data
-        let unassignedQuery = { ...query, ename: 'Not Alloted' };
-        unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-        unassignedData = await CompanyModel.find(unassignedQuery).lean();
-      } else {
-        // If search query is empty, fetch 500 data from CompanyModel
-        searchResults = await CompanyModel.find().limit(500).lean();
       }
+      // Fetch assigned data
+      let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
+      assignedCount = await CompanyModel.countDocuments(assignedQuery);
+      assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
+
+      // Fetch unassigned data
+      let unassignedQuery = { ...query, ename: 'Not Alloted' };
+      unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+      unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
     }
+    // else {
+    //   searchResults = await CompanyModel.find().limit(500).lean();
+    // }
 
     res.status(200).json({
       assigned: assignedData,
@@ -498,15 +684,16 @@ router.get('/search-leads', async (req, res) => {
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
+      currentPage: page,
     });
+
+    //console.log(assignedCount , unassignedCount)
+
   } catch (error) {
-    console.error('Error searching leads:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error searching leads", error)
+    res.status(500).json({ error: "Internal Server Error" })
   }
-});
-
-
-
+})
 
 //10. Search for Specific Company
 router.get("/specific-company/:companyId", async (req, res) => {
@@ -589,8 +776,9 @@ router.post("/assign-new", async (req, res) => {
             ename: ename,
             bdmAcceptStatus: "NotForwarded",
             feedbackPoints: [],
-            multiBdmName: [],
+            multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
             Status: "Untouched",
+            AssignDate: new Date()
           },
           $unset: {
             bdmName: "",
@@ -652,22 +840,24 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
 router.get("/employees/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
+    console.log("Employee name:", employeeName);
 
-    // Fetch data from companyModel where ename matches employeeName
+    // Fetch data from CompanyModel where ename matches employeeName
     const data = await CompanyModel.find({
       $or: [
         { ename: employeeName },
-        { maturedBdmName: employeeName },
-        { multiBdmName: { $in: [employeeName] } },
-      ],
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+      ]
     });
-    //console.log(data)
+
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.put("/newcompanyname/:id", async (req, res) => {
   try {
@@ -716,7 +906,9 @@ router.get("/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
     const filteredEmployeeData = await CompanyModel.find({
-      $or: [{ ename: ename }, { maturedBdmName: ename }],
+      $or: [{ ename: ename },
+      { $and: [{ maturedBdmName: ename }, { Status: "Matured" }] },
+      ],
     });
     res.json(filteredEmployeeData);
   } catch (error) {

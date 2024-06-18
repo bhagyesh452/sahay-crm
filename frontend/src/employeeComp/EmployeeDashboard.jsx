@@ -69,6 +69,8 @@ import { LiaAlgolia } from "react-icons/lia";
 import { LiaClipboardCheckSolid } from "react-icons/lia";
 import { RiFileCloseLine } from "react-icons/ri";
 import EmployeeSalesReport from "./EmployeeDashboardComponents/EmployeeSalesReport.jsx";
+
+
 //PIA CHART IMPORT
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
@@ -91,6 +93,8 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import EmployeeCallingReport from "./EmployeeDashboardComponents/EmployeeCallingReport.jsx";
 import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwardedReport.jsx";
 import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
+import EmployeePerformance from "./EmployeeDashboardComponents/EmployeePerformance.jsx";
+import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx";
 
 
 
@@ -4138,16 +4142,24 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 {/* Lead reports */}
-                <div className="row mt-3 mb-4">
+                <div className="row mt-2 mb-4">
+                 { <>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeePerformance redesignedData = {redesignedData} data={data}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                    <EmployeeCallLogs employeeData = {data}/>
+                  </div>
+                  </>}
                   {/* calling data report */}
-                  <div className="col-sm-4 col-md-4 col-lg-4">
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeCallingReport />
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4">
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeForwardedReport moreEmpData={moreEmpData}/>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
                   </div>
                 </div>
               </div>

@@ -1463,7 +1463,24 @@ th.th-sticky1::after {
 .bookings_Company_Name:hover .b_Services_multipal_services {
   background: #c4e5ff;
 }
-
+.b_Service_remaining_receive
+{
+  width: 24px;
+  text-align: center;
+  height: 24px;
+  background: #fdf4e1;
+  border-radius: 100px;
+  color: #868686;
+  margin-right: 3px;
+}
+.bookings_Company_Name:hover .b_Service_remaining_receive
+{
+  background: #f3e2bd;
+}
+.b_Service_remaining_receive img
+{
+  width: 16px;
+}
 .booking-deatils-heading {
   padding: 6px 20px 8px 20px;
   background: #f5f5f5;
@@ -1842,8 +1859,12 @@ th.th-sticky1::after {
 .clr-1ac9bd {
   color: #1ac9bd;
 }
-
-.clr-ffb900 {
+.clr-ff8800
+{
+  color: #ff8800;
+}
+.clr-ffb900
+{
   color: #ffb900;
 }
 
@@ -1866,8 +1887,12 @@ th.th-sticky1::after {
 .clr-a0b1ad {
   color: #a0b1ad;
 }
-
-.dash-card-1-head2 {
+.clr-000
+{
+  color:#000;
+}
+.dash-card-1-head2
+{
   font-size: 11px;
   font-weight: 500;
   padding: 4px 0px;

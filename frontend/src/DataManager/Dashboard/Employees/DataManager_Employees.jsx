@@ -697,13 +697,12 @@ function Employees({ onEyeButtonClick }) {
         </Button>
       </Dialog>
 
-      <Header name={dataManagerName} />
-      <Navbar number={1} name={data} />
-      <div className="page-wrapper">
-        <div className="page-header d-print-none">
-          <div className="container-xl">
+      {/* <Header name={dataManagerName} />
+      <Navbar number={1} name={data} /> */}
+      <div className="">
+        <div className="page-header d-print-none m-0">
             <div className="row g-2 align-items-center">
-              <div className="col">
+              <div className="col m-0">
                 {/* <!-- Page pre-title --> */}
                 <h2 className="page-title">Employees</h2>
               </div>
@@ -774,19 +773,15 @@ function Employees({ onEyeButtonClick }) {
                 </div>
               </div> */}
             </div>
-          </div>
+          
         </div>
         {/* Employee table */}
         <div
           onCopy={(e) => {
             e.preventDefault();
           }}
-          className="page-body"
+          className="mt-2"
         >
-          <div
-            style={{ maxWidth: "89vw", overflowX: "auto" }}
-            className="container-xl"
-          >
             <div className="card">
               <div style={{ padding: "0px" }} className="card-body">
                 <div
@@ -967,7 +962,8 @@ function Employees({ onEyeButtonClick }) {
                                   <Link
                                     style={{ color: "black" }}
                                     to={`/datamanager/employeeLeads/${item._id}`}
-                                  ><IconButton >  <IconEye
+                                  ><IconButton >  
+                                    <IconEye
                                     style={{
                                       width: "14px",
                                       height: "14px",
@@ -988,7 +984,7 @@ function Employees({ onEyeButtonClick }) {
                 </div>
               </div>
             </div>
-          </div>
+          
         </div>
       </div>
 

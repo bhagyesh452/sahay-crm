@@ -1,5 +1,23 @@
 const mongoose = require("mongoose");
 
+const isoTypeSchema = new mongoose.Schema({
+  serviceID:{
+    type:Number
+  },
+  type:{
+    type:String
+  },
+  IAFtype1:{
+    type:String
+  },
+  IAFtype2:{
+    type:String
+  },
+  Nontype:{
+    type:String
+  }
+})
+
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
@@ -9,6 +27,7 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  isoTypeObject: [isoTypeSchema],
   totalPaymentWGST: {
     type: Number,
     required: true,
@@ -50,6 +69,9 @@ const ServiceSchema = new mongoose.Schema({
   },
   expanse:{
     type:Number
+  },
+  expanseDate:{
+    type:Date
   }
 });
 
@@ -84,8 +106,6 @@ const RemainingPaymentSchema = new mongoose.Schema({
   publishDate:{
     type:Date
   }
-
-
 })
 
 const TempSchema = new mongoose.Schema({
@@ -115,7 +135,7 @@ const TempSchema = new mongoose.Schema({
     type: String,
   },
   lastActionDate: {
-    type: String,
+    type: Date,
   },
   bookingSource: {
     type: String,
@@ -300,13 +320,14 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type:Number,
   },
   moreBookings:[TempSchema],
-  remainingPayments : [RemainingPaymentSchema]
+  remainingPayments : [RemainingPaymentSchema],
+  isDeletedEmployeeCompany:{
+    type:Boolean,
+    default:false,
+  }
   
 });
 
-const RedesignedLeadformModel = mongoose.model(
-  "RedesignedLeadform",
-  RedesignedLeadformSchema
-);
+const RedesignedLeadformModel = mongoose.model("RedesignedLeadform",RedesignedLeadformSchema);
 
 module.exports = RedesignedLeadformModel;

@@ -73,7 +73,7 @@ export default function EditableMoreBooking({
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
     bdmType: "Close-by",
-    otherBdmName:'',
+    otherBdmName: '',
     bdmEmail: "",
     bookingDate: "",
     bookingSource: "",
@@ -100,6 +100,14 @@ export default function EditableMoreBooking({
   const [fourthTempRemarks, setFourthTempRemarks] = useState("");
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
+  const defaultISOtypes = {
+    serviceID: -1,
+    type: "",
+    IAFtype1: "",
+    IAFtype2: "",
+    Nontype: ""
+  }
+  const [isoType, setIsoType] = useState([]);
 
   const fetchDataEmp = async () => {
     try {
@@ -115,98 +123,156 @@ export default function EditableMoreBooking({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
-      );
-      const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex-1]: response.data;
-      console.log("Here is the data",data);
-      
-      
-      if (!data) {
-        setCompleted({});
-        setActiveStep(0);
-        setSelectedValues("");
-        setLeadData(defaultLeadData);
-        return true;
-      }
-      const {
-        Step1Status,
-        Step2Status,
-        Step3Status,
-        Step4Status,
-        Step5Status,
-        ...newLeadData
-      } = data;
-      console.log("Fetched Data" , newLeadData);
-      setLeadData(newLeadData);
-      setActiveStep(bookingIndex === 0 ? 0 : 1);
-      setCompleted({0:true , 1:true , 2 : true , 3 : true})
-      setSelectedValues(newLeadData.bookingSource)
-     if (Step2Status === true && Step3Status === false) {
-        setCompleted({ 0: true, 1: true });
-        setActiveStep(2);
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? data.services : [defaultService],
-          numberOfServices:
-            data.services.length !== 0 ? data.services.length : 1,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services, "This is services");
-        setfetchedService(true);
-        setCompleted({ 0: true, 1: true, 2: true });
-        setActiveStep(3);
-        const servicestoSend = data.services.map((service) => ({
-          ...service,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-            ? service.secondPaymentRemarks
-            : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-            ? service.thirdPaymentRemarks
-            : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-            ? service.fourthPaymentRemarks
-            : "On Particular Date",
-        }));
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? servicestoSend : [defaultService],
-          caCase: data.caCase,
-          caCommission: data.caCommission,
-          caNumber: data.caNumber,
-          caEmail: data.caEmail,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step4Status === true && Step5Status === false) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setActiveStep(4);
-        setLeadData((prevState) => ({
-          ...prevState,
-          totalAmount: data.totalAmount,
-          pendingAmount: data.pendingAmount,
-          receivedAmount: data.receivedAmount,
-          otherDocs: data.otherDocs,
-          paymentReceipt: data.paymentReceipt,
-          paymentMethod: data.paymentMethod,
-          extraNotes: data.extraNotes,
-        }));
-      } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setSelectedValues(data.bookingSource);
 
-        setActiveStep(4);
-        setfetchedService(true);
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const fetchData = async () => {
+  try {
+    const response = await axios.get(
+      `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
+    );
+    const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
+    console.log("Here is the data", data);
+
+    if (!data) {
+      setCompleted({});
+      setActiveStep(0);
+      setSelectedValues("");
+      setLeadData(defaultLeadData);
+      return true;
     }
-  };
+
+    const {
+      Step1Status,
+      Step2Status,
+      Step3Status,
+      Step4Status,
+      Step5Status,
+      ...newLeadData
+    } = data;
+
+    let allIsoTypes = [...isoType]; // Initialize with existing isoType state
+
+    const servicestoSend = newLeadData.services.map((service, index) => {
+      const tempDefaultType = {
+        ...defaultISOtypes,
+        serviceID: index
+      };
+
+      if (service.serviceName.includes("ISO Certificate")) {
+        const uniqueServiceIDs = new Set(allIsoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
+        service.isoTypeObject.forEach(isoObj => {
+          if (isoObj.serviceID !== undefined && !uniqueServiceIDs.has(isoObj.serviceID)) {
+            allIsoTypes.push(isoObj);
+            uniqueServiceIDs.add(isoObj.serviceID); // Add new serviceID to the Set
+          }
+        });
+
+        // Ensure tempDefaultType is added only if there is no valid isoTypeObject
+        if (!service.isoTypeObject.length || service.isoTypeObject[0].serviceID === undefined) {
+          allIsoTypes.push(tempDefaultType);
+        }
+      }
+
+      return {
+        ...service,
+        serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+        paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
+        secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+        thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+        fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+      };
+    });
+
+    // Set all isoTypes once after processing all services
+    setIsoType(allIsoTypes);
+
+    const latestLeadData = {
+      ...newLeadData,
+      services: servicestoSend
+    };
+
+    setLeadData(latestLeadData);
+    setActiveStep(bookingIndex === 0 ? 0 : 1);
+    setCompleted({ 0: true, 1: true, 2: true, 3: true });
+    setSelectedValues(newLeadData.bookingSource);
+    setfetchedService(true);
+    setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+
+    if (Step2Status === true && Step3Status === false) {
+      setCompleted({ 0: true, 1: true });
+      setActiveStep(2);
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: data.services.length !== 0 ? data.services : [defaultService],
+        numberOfServices: data.services.length !== 0 ? data.services.length : 1,
+      }));
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+    } else if (Step3Status === true && Step4Status === false) {
+      console.log(data.services, "This is services");
+      setfetchedService(true);
+      setCompleted({ 0: true, 1: true, 2: true });
+      setActiveStep(3);
+      const servicestoSend = newLeadData.services.map((service, index) => {
+        const tempDefaultType = {
+          ...defaultISOtypes,
+          serviceID: index
+        };
+        return {
+          ...service,
+          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+        };
+      });
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: data.services.length !== 0 ? servicestoSend : [defaultService],
+        caCase: data.caCase,
+        caCommission: data.caCommission,
+        caNumber: data.caNumber,
+        caEmail: data.caEmail,
+      }));
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+    } else if (Step4Status === true && Step5Status === false) {
+      setCompleted({ 0: true, 1: true, 2: true, 3: true });
+      const servicestoSend = newLeadData.services.map((service, index) => {
+        const tempDefaultType = {
+          ...defaultISOtypes,
+          serviceID: index
+        };
+        return {
+          ...service,
+          paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
+          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+        };
+      });
+      setActiveStep(4);
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: servicestoSend,
+        totalAmount: data.totalAmount,
+        pendingAmount: data.pendingAmount,
+        receivedAmount: data.receivedAmount,
+        otherDocs: data.otherDocs,
+        paymentReceipt: data.paymentReceipt,
+        paymentMethod: data.paymentMethod,
+        extraNotes: data.extraNotes,
+      }));
+    } else if (Step5Status === true) {
+      setCompleted({ 0: true, 1: true, 2: true, 3: true });
+      setSelectedValues(data.bookingSource);
+
+      setActiveStep(4);
+      setfetchedService(true);
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
   const handleTextAreaChange = (e) => {
     e.target.style.height = '1px';
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -461,7 +527,7 @@ export default function EditableMoreBooking({
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
-
+  console.log(isoType, "Boom");
   const handleNext = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
@@ -474,7 +540,7 @@ export default function EditableMoreBooking({
   const handleBack = () => {
     if (activeStep !== 0 && bookingIndex === 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    }else if((activeStep !== 1 && bookingIndex !== 0)){
+    } else if ((activeStep !== 1 && bookingIndex !== 0)) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       // setDataStatus("Matured");
@@ -500,13 +566,13 @@ export default function EditableMoreBooking({
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
@@ -514,561 +580,664 @@ export default function EditableMoreBooking({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  
+
   const handleComplete = async () => {
-  //   try {
-  //     const formData = new FormData();
+    //   try {
+    //     const formData = new FormData();
 
-  //     const isEmptyOrNull = (value) => {
-  //       return value === "" || value === null || value === 0;
-  //     };
+    //     const isEmptyOrNull = (value) => {
+    //       return value === "" || value === null || value === 0;
+    //     };
 
-  //     // Prepare the data to send to the backend
-  //     let dataToSend = {};
-  //     if (activeStep === 0) {
-  //       if (
-  //         isEmptyOrNull(leadData["Company Email"]) ||
-  //         isEmptyOrNull(leadData["Company Name"]) ||
-  //         isEmptyOrNull(leadData["Company Number"]) ||
-  //         isEmptyOrNull(leadData.incoDate) ||
-  //         isEmptyOrNull(leadData.panNumber)
-  //       ) {
-  //         Swal.fire({
-  //           title: "Please fill all the details",
-  //           icon: "warning",
-  //         });
-  //       } else {
-  //         dataToSend = {
-  //           "Company Email": leadData["Company Email"],
-  //           "Company Name": leadData["Company Name"],
-  //           "Company Number": leadData["Company Number"],
-  //           incoDate: leadData.incoDate,
-  //           panNumber: leadData.panNumber,
-  //           gstNumber: leadData.gstNumber,
-  //         };
+    //     // Prepare the data to send to the backend
+    //     let dataToSend = {};
+    //     if (activeStep === 0) {
+    //       if (
+    //         isEmptyOrNull(leadData["Company Email"]) ||
+    //         isEmptyOrNull(leadData["Company Name"]) ||
+    //         isEmptyOrNull(leadData["Company Number"]) ||
+    //         isEmptyOrNull(leadData.incoDate) ||
+    //         isEmptyOrNull(leadData.panNumber)
+    //       ) {
+    //         Swal.fire({
+    //           title: "Please fill all the details",
+    //           icon: "warning",
+    //         });
+    //       } else {
+    //         dataToSend = {
+    //           "Company Email": leadData["Company Email"],
+    //           "Company Name": leadData["Company Name"],
+    //           "Company Number": leadData["Company Number"],
+    //           incoDate: leadData.incoDate,
+    //           panNumber: leadData.panNumber,
+    //           gstNumber: leadData.gstNumber,
+    //         };
 
-  //         console.log("This is sending", dataToSend);
-  //         try {
-  //           const response = await axios.post(
-  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step1`,
-  //             dataToSend
-  //           );
-  //           // Handle response data as needed
-  //         } catch (error) {
-  //           console.error("Error uploading data:", error);
-  //           // Handle error
-  //         }
-          
-  //         handleNext();
-  //         return true;
-  //       }
-  //     }
-  //     if (activeStep === 1) {
-  //       console.log(leadData.bookingDate);
-  //       if (
-  //         !leadData.bdeName ||
-  //         !leadData.bdmName ||
-  //         !leadData.bdmEmail ||
-  //         !leadData.bdmEmail ||
-  //         !leadData.bookingDate ||
-  //         !selectedValues
-  //       ) {
-  //         Swal.fire({
-  //           title: "Please fill all the details",
-  //           icon: "warning",
-  //         });
-  //         return true;
-  //       } else {
-  //         dataToSend = {
-  //           bdeName: leadData.bdeName,
-  //           bdeEmail: leadData.bdeEmail,
-  //           bdmName: leadData.bdmName,
-  //           otherBdmName:leadData.otherBdmName,
-  //           bdmEmail: leadData.bdmEmail,
-  //           bookingDate: leadData.bookingDate,
-  //           bookingSource: selectedValues,
-  //           otherBookingSource: leadData.otherBookingSource,
-  //         };
-  //         console.log("This is sending", dataToSend);
-  //         try {
-  //           const response = await axios.post(
-  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step2`,
-  //             dataToSend
-  //           );
-  //           // Handle response data as needed
-  //         } catch (error) {
-  //           console.error("Error uploading data:", error);
-  //           // Handle error
-  //         }
-         
-  //         handleNext();
-  //         return true;
-  //       }
-  //     }
-  //     if (activeStep === 2) {
-  //       if (
-  //         !leadData.services[0].serviceName ||
-  //         !leadData.services[0].totalPaymentWOGST
-  //       ) {
-  //         Swal.fire({
-  //           title: "Please fill all the details",
-  //           icon: "warning",
-  //         });
-  //         return true;
-  //       } else {
-  //         const totalAmount = leadData.services.reduce(
-  //           (acc, curr) => acc + curr.totalPaymentWGST,
-  //           0
-  //         );
-  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
-  //           return curr.paymentTerms === "Full Advanced"
-  //             ? acc + curr.totalPaymentWGST
-  //             : acc + curr.firstPayment;
-  //         }, 0);
-  //         const pendingAmount = totalAmount - receivedAmount;
-  //         const servicestoSend = leadData.services.map((service) => ({
-  //           ...service,
-  //           secondPaymentRemarks:
-  //             service.secondPaymentRemarks === "On Particular Date"
-  //               ? secondTempRemarks
-  //               : service.secondPaymentRemarks,
-  //           thirdPaymentRemarks:
-  //             service.thirdPaymentRemarks === "On Particular Date"
-  //               ? thirdTempRemarks
-  //               : service.thirdPaymentRemarks,
-  //           fourthPaymentRemarks:
-  //             service.fourthPaymentRemarks === "On Particular Date"
-  //               ? fourthTempRemarks
-  //               : service.fourthPaymentRemarks,
-  //         }));
+    //         console.log("This is sending", dataToSend);
+    //         try {
+    //           const response = await axios.post(
+    //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step1`,
+    //             dataToSend
+    //           );
+    //           // Handle response data as needed
+    //         } catch (error) {
+    //           console.error("Error uploading data:", error);
+    //           // Handle error
+    //         }
 
-  //         dataToSend = {
-  //           services: servicestoSend,
-  //           numberOfServices: totalServices,
-  //           caCase: leadData.caCase,
-  //           caCommission: leadData.caCommission,
-  //           caNumber: leadData.caNumber,
-  //           caEmail: leadData.caEmail,
-  //           totalAmount: totalAmount,
-  //           receivedAmount: receivedAmount,
-  //           pendingAmount: pendingAmount,
-  //         };
-  //         console.log("This is sending", dataToSend);
-  //         try {
-  //           const response = await axios.post(
-  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step3`,
-  //             dataToSend
-  //           );
-  //           // Handle response data as needed
-  //         } catch (error) {
-  //           console.error("Error uploading data:", error);
-  //           // Handle error
-  //         }
-       
-  //         handleNext();
-  //         return true;
-  //       }
-  //     }
-  //     if (activeStep === 3) {
-  //       console.log(
-  //         "I am in step 4",
-  //         leadData.paymentReceipt,
-  //         leadData.otherDocs
-  //       );
-  //       if (
-  //         leadData.paymentReceipt.length === 0 ||
-  //         leadData.otherDocs.length === 0
-  //       ) {
-  //         Swal.fire({
-  //           title: "Please fill all the details",
-  //           icon: "warning",
-  //         });
-  //         return true;
-  //       } else {
-       
-  //         const totalAmount = leadData.services.reduce(
-  //           (acc, curr) => acc + curr.totalPaymentWGST,
-  //           0
-  //         );
-  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
-  //           return curr.paymentTerms === "Full Advanced"
-  //             ? acc + curr.totalPaymentWGST
-  //             : acc + curr.firstPayment;
-  //         }, 0);
-  //         const pendingAmount = totalAmount - receivedAmount;
+    //         handleNext();
+    //         return true;
+    //       }
+    //     }
+    //     if (activeStep === 1) {
+    //       console.log(leadData.bookingDate);
+    //       if (
+    //         !leadData.bdeName ||
+    //         !leadData.bdmName ||
+    //         !leadData.bdmEmail ||
+    //         !leadData.bdmEmail ||
+    //         !leadData.bookingDate ||
+    //         !selectedValues
+    //       ) {
+    //         Swal.fire({
+    //           title: "Please fill all the details",
+    //           icon: "warning",
+    //         });
+    //         return true;
+    //       } else {
+    //         dataToSend = {
+    //           bdeName: leadData.bdeName,
+    //           bdeEmail: leadData.bdeEmail,
+    //           bdmName: leadData.bdmName,
+    //           otherBdmName:leadData.otherBdmName,
+    //           bdmEmail: leadData.bdmEmail,
+    //           bookingDate: leadData.bookingDate,
+    //           bookingSource: selectedValues,
+    //           otherBookingSource: leadData.otherBookingSource,
+    //         };
+    //         console.log("This is sending", dataToSend);
+    //         try {
+    //           const response = await axios.post(
+    //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step2`,
+    //             dataToSend
+    //           );
+    //           // Handle response data as needed
+    //         } catch (error) {
+    //           console.error("Error uploading data:", error);
+    //           // Handle error
+    //         }
 
-  //         const formData = new FormData();
-  //         formData.append("totalAmount", totalAmount);
-  //         formData.append("receivedAmount", receivedAmount);
-  //         formData.append("pendingAmount", pendingAmount);
-  //         formData.append("paymentMethod", leadData.paymentMethod);
-  //         formData.append("extraNotes", leadData.extraNotes);
+    //         handleNext();
+    //         return true;
+    //       }
+    //     }
+    //     if (activeStep === 2) {
+    //       if (
+    //         !leadData.services[0].serviceName ||
+    //         !leadData.services[0].totalPaymentWOGST
+    //       ) {
+    //         Swal.fire({
+    //           title: "Please fill all the details",
+    //           icon: "warning",
+    //         });
+    //         return true;
+    //       } else {
+    //         const totalAmount = leadData.services.reduce(
+    //           (acc, curr) => acc + curr.totalPaymentWGST,
+    //           0
+    //         );
+    //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+    //           return curr.paymentTerms === "Full Advanced"
+    //             ? acc + curr.totalPaymentWGST
+    //             : acc + curr.firstPayment;
+    //         }, 0);
+    //         const pendingAmount = totalAmount - receivedAmount;
+    //         const servicestoSend = leadData.services.map((service) => ({
+    //           ...service,
+    //           secondPaymentRemarks:
+    //             service.secondPaymentRemarks === "On Particular Date"
+    //               ? secondTempRemarks
+    //               : service.secondPaymentRemarks,
+    //           thirdPaymentRemarks:
+    //             service.thirdPaymentRemarks === "On Particular Date"
+    //               ? thirdTempRemarks
+    //               : service.thirdPaymentRemarks,
+    //           fourthPaymentRemarks:
+    //             service.fourthPaymentRemarks === "On Particular Date"
+    //               ? fourthTempRemarks
+    //               : service.fourthPaymentRemarks,
+    //         }));
 
-  //         // Append payment receipt files to formData
-        
-  //           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-          
-  //         // Append other documents files to formData
-  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
-  //           formData.append("otherDocs", leadData.otherDocs[i]);
-  //         }
-  //         try {
-  //           console.log("Api is about to work")
-  //           const response = await axios.post(
-  //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step4`,
-  //             formData
-  //           );
-  //           // Handle successful upload
-           
-  //           handleNext();
-  //           return true;
-  //         } catch (error) {
-  //           console.error("Error uploading data:", error);
-  //           // Handle error
-  //         }
-  //       }
-  //     }
+    //         dataToSend = {
+    //           services: servicestoSend,
+    //           numberOfServices: totalServices,
+    //           caCase: leadData.caCase,
+    //           caCommission: leadData.caCommission,
+    //           caNumber: leadData.caNumber,
+    //           caEmail: leadData.caEmail,
+    //           totalAmount: totalAmount,
+    //           receivedAmount: receivedAmount,
+    //           pendingAmount: pendingAmount,
+    //         };
+    //         console.log("This is sending", dataToSend);
+    //         try {
+    //           const response = await axios.post(
+    //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step3`,
+    //             dataToSend
+    //           );
+    //           // Handle response data as needed
+    //         } catch (error) {
+    //           console.error("Error uploading data:", error);
+    //           // Handle error
+    //         }
 
-  //     if (activeStep === 4) {
-  //       try {
-  //       //   const response = await axios.post(
-  //       //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
-  //       //     leadData
-  //       //   );
-        
+    //         handleNext();
+    //         return true;
+    //       }
+    //     }
+    //     if (activeStep === 3) {
+    //       console.log(
+    //         "I am in step 4",
+    //         leadData.paymentReceipt,
+    //         leadData.otherDocs
+    //       );
+    //       if (
+    //         leadData.paymentReceipt.length === 0 ||
+    //         leadData.otherDocs.length === 0
+    //       ) {
+    //         Swal.fire({
+    //           title: "Please fill all the details",
+    //           icon: "warning",
+    //         });
+    //         return true;
+    //       } else {
 
-  //         const dataSending = {
-  //           requestBy:employeeName,
-  //           services:leadData.services
-  //         }
-  //         const response = await axios.post(
-  //           `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step5`, dataSending
-  //         );
-  //         console.log(response.data);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Request Sent",
-  //           text: "Your Request has been successfully sent to the Admin!",
-  //         });
-  //         // Handle response data as needed
-  //       } catch (error) {
-  //         console.error("Error uploading data:", error);
-  //         Swal.fire({
-  //           icon: "error",
-  //           title: "Error",
-  //           text: "There was an error submitting the form. Please try again later.",
-  //         });
-  //       }
+    //         const totalAmount = leadData.services.reduce(
+    //           (acc, curr) => acc + curr.totalPaymentWGST,
+    //           0
+    //         );
+    //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+    //           return curr.paymentTerms === "Full Advanced"
+    //             ? acc + curr.totalPaymentWGST
+    //             : acc + curr.firstPayment;
+    //         }, 0);
+    //         const pendingAmount = totalAmount - receivedAmount;
 
-      
-  //       handleNext();
-  //       setFormOpen(false);
-  //       return true;
-  //     }
-  //     // let dataToSend = {
-  //     //   ...leadData,
-  //     //   Step1Status: true,
-  //     // };
-  //   } catch (error) {
-  //     console.error("Error sending data to backend:", error);
-  //     // Handle error if needed
-  //   }
-  // };
-  // const handleEdit = async () => {
-  //   try {
-  //     const formData = new FormData();
+    //         const formData = new FormData();
+    //         formData.append("totalAmount", totalAmount);
+    //         formData.append("receivedAmount", receivedAmount);
+    //         formData.append("pendingAmount", pendingAmount);
+    //         formData.append("paymentMethod", leadData.paymentMethod);
+    //         formData.append("extraNotes", leadData.extraNotes);
 
-  //     let dataToSend = {
-  //       ...dataToSend,
-  //       Step1Status: true,
-  //     };
-  //     if (activeStep === 3) {
-  //       dataToSend = {
-  //         ...leadData,
-  //       };
-  //       for (let i = 0; i < leadData.otherDocs.length; i++) {
-  //         formData.append("otherDocs", leadData.otherDocs[i]);
-  //       }
-  //       formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-  //       console.log(dataToSend, activeStep);
-  //     } else if (activeStep === 1) {
-  //       dataToSend = {
-  //         ...dataToSend,
-  //         bookingSource: selectedValues,
-  //       };
-  //       console.log("Step 1", dataToSend);
-  //     } else if (activeStep === 2) {
-  //       const totalAmount = leadData.services.reduce(
-  //         (acc, curr) => acc + curr.totalPaymentWOGST,
-  //         0
-  //       );
-  //       const receivedAmount = leadData.services.reduce((acc, curr) => {
-  //         return curr.paymentTerms === "Full Advanced"
-  //           ? acc + curr.totalPaymentWOGST
-  //           : acc + curr.firstPayment;
-  //       }, 0);
-  //       const pendingAmount = totalAmount - receivedAmount;
-  //       dataToSend = {
-  //         ...leadData,
-  //         totalAmount: totalAmount,
-  //         receivedAmount: receivedAmount,
-  //         pendingAmount: pendingAmount,
-  //       };
-  //     } else if (activeStep === 3) {
-  //       dataToSend = {
-  //         ...leadData,
-  //         Step3Status: true,
-  //         Step4Status: true,
-  //       };
-  //     } else if (activeStep === 4) {
-  //       dataToSend = {
-  //         ...leadData,
-  //         Step3Status: true,
-  //         Step4Status: true,
-  //         Step5Status: true,
-  //       };
-  //     }
-  //     // console.log(activeStep, dataToSend);
-  //     Object.keys(dataToSend).forEach((key) => {
-  //       if (key === "services") {
-  //         // Handle services separately as it's an array
-  //         dataToSend.services.forEach((service, index) => {
-  //           Object.keys(service).forEach((prop) => {
-  //             formData.append(`services[${index}][${prop}]`, service[prop]);
-  //           });
-  //         });
-  //       } else if (key === "otherDocs" && activeStep === 3) {
-  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
-  //           formData.append("otherDocs", leadData.otherDocs[i]);
-  //         }
-  //       } else if (key === "paymentReceipt" && activeStep === 3) {
-  //         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-  //       } else {
-  //         formData.append(key, dataToSend[key]);
-  //       }
-  //     });
-  //     if (activeStep === 4) {
-  //       dataToSend = {
-  //         ...leadData,
-  //         paymentReceipt: leadData.paymentReceipt
-  //           ? leadData.paymentReceipt
-  //           : null,
-  //       };
-  //       try {
-  //         const response = await axios.post(
-  //           `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
-  //           leadData
-  //         );
-  //         console.log(response.data);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Form Submitted",
-  //           text: "Your form has been submitted successfully!",
-  //         });
-  //         // Handle response data as needed
-  //       } catch (error) {
-  //         console.error("Error uploading data:", error);
-  //         Swal.fire({
-  //           icon: "error",
-  //           title: "Error",
-  //           text: "There was an error submitting the form. Please try again later.",
-  //         });
-  //         // Handle error
-  //       }
-  //     } else {
-  //       try {
-  //         const response = await axios.post(
-  //           `${secretKey}/bookings/redesigned-leadData/${companysName}`,
-  //           formData,
-  //           {
-  //             headers: {
-  //               "Content-Type": "multipart/form-data",
-  //             },
-  //           }
-  //         );
+    //         // Append payment receipt files to formData
 
-  //         // Handle response data as needed
-  //       } catch (error) {
-  //         console.error("Error uploading data:", error);
-  //         // Handle error
-  //       }
-  //     }
+    //           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+
+    //         // Append other documents files to formData
+    //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+    //           formData.append("otherDocs", leadData.otherDocs[i]);
+    //         }
+    //         try {
+    //           console.log("Api is about to work")
+    //           const response = await axios.post(
+    //             `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step4`,
+    //             formData
+    //           );
+    //           // Handle successful upload
+
+    //           handleNext();
+    //           return true;
+    //         } catch (error) {
+    //           console.error("Error uploading data:", error);
+    //           // Handle error
+    //         }
+    //       }
+    //     }
+
+    //     if (activeStep === 4) {
+    //       try {
+    //       //   const response = await axios.post(
+    //       //     `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
+    //       //     leadData
+    //       //   );
 
 
-  //     // Log the response from the backend
+    //         const dataSending = {
+    //           requestBy:employeeName,
+    //           services:leadData.services
+    //         }
+    //         const response = await axios.post(
+    //           `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step5`, dataSending
+    //         );
+    //         console.log(response.data);
+    //         Swal.fire({
+    //           icon: "success",
+    //           title: "Request Sent",
+    //           text: "Your Request has been successfully sent to the Admin!",
+    //         });
+    //         // Handle response data as needed
+    //       } catch (error) {
+    //         console.error("Error uploading data:", error);
+    //         Swal.fire({
+    //           icon: "error",
+    //           title: "Error",
+    //           text: "There was an error submitting the form. Please try again later.",
+    //         });
+    //       }
 
-  //     handleNext();
-  //   } catch (error) {
-  //     console.error("Error sending data to backend:", error);
-  //     // Handle error if needed
-  //   }
-    if(activeStep === 2){
-      if(!leadData.caCase){
-        Swal.fire("Empty Field!","Please Enter CA Case" , "warning")
+
+    //       handleNext();
+    //       setFormOpen(false);
+    //       return true;
+    //     }
+    //     // let dataToSend = {
+    //     //   ...leadData,
+    //     //   Step1Status: true,
+    //     // };
+    //   } catch (error) {
+    //     console.error("Error sending data to backend:", error);
+    //     // Handle error if needed
+    //   }
+    // };
+    // const handleEdit = async () => {
+    //   try {
+    //     const formData = new FormData();
+
+    //     let dataToSend = {
+    //       ...dataToSend,
+    //       Step1Status: true,
+    //     };
+    //     if (activeStep === 3) {
+    //       dataToSend = {
+    //         ...leadData,
+    //       };
+    //       for (let i = 0; i < leadData.otherDocs.length; i++) {
+    //         formData.append("otherDocs", leadData.otherDocs[i]);
+    //       }
+    //       formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+    //       console.log(dataToSend, activeStep);
+    //     } else if (activeStep === 1) {
+    //       dataToSend = {
+    //         ...dataToSend,
+    //         bookingSource: selectedValues,
+    //       };
+    //       console.log("Step 1", dataToSend);
+    //     } else if (activeStep === 2) {
+    //       const totalAmount = leadData.services.reduce(
+    //         (acc, curr) => acc + curr.totalPaymentWOGST,
+    //         0
+    //       );
+    //       const receivedAmount = leadData.services.reduce((acc, curr) => {
+    //         return curr.paymentTerms === "Full Advanced"
+    //           ? acc + curr.totalPaymentWOGST
+    //           : acc + curr.firstPayment;
+    //       }, 0);
+    //       const pendingAmount = totalAmount - receivedAmount;
+    //       dataToSend = {
+    //         ...leadData,
+    //         totalAmount: totalAmount,
+    //         receivedAmount: receivedAmount,
+    //         pendingAmount: pendingAmount,
+    //       };
+    //     } else if (activeStep === 3) {
+    //       dataToSend = {
+    //         ...leadData,
+    //         Step3Status: true,
+    //         Step4Status: true,
+    //       };
+    //     } else if (activeStep === 4) {
+    //       dataToSend = {
+    //         ...leadData,
+    //         Step3Status: true,
+    //         Step4Status: true,
+    //         Step5Status: true,
+    //       };
+    //     }
+    //     // console.log(activeStep, dataToSend);
+    //     Object.keys(dataToSend).forEach((key) => {
+    //       if (key === "services") {
+    //         // Handle services separately as it's an array
+    //         dataToSend.services.forEach((service, index) => {
+    //           Object.keys(service).forEach((prop) => {
+    //             formData.append(`services[${index}][${prop}]`, service[prop]);
+    //           });
+    //         });
+    //       } else if (key === "otherDocs" && activeStep === 3) {
+    //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+    //           formData.append("otherDocs", leadData.otherDocs[i]);
+    //         }
+    //       } else if (key === "paymentReceipt" && activeStep === 3) {
+    //         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+    //       } else {
+    //         formData.append(key, dataToSend[key]);
+    //       }
+    //     });
+    //     if (activeStep === 4) {
+    //       dataToSend = {
+    //         ...leadData,
+    //         paymentReceipt: leadData.paymentReceipt
+    //           ? leadData.paymentReceipt
+    //           : null,
+    //       };
+    //       try {
+    //         const response = await axios.post(
+    //           `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
+    //           leadData
+    //         );
+    //         console.log(response.data);
+    //         Swal.fire({
+    //           icon: "success",
+    //           title: "Form Submitted",
+    //           text: "Your form has been submitted successfully!",
+    //         });
+    //         // Handle response data as needed
+    //       } catch (error) {
+    //         console.error("Error uploading data:", error);
+    //         Swal.fire({
+    //           icon: "error",
+    //           title: "Error",
+    //           text: "There was an error submitting the form. Please try again later.",
+    //         });
+    //         // Handle error
+    //       }
+    //     } else {
+    //       try {
+    //         const response = await axios.post(
+    //           `${secretKey}/bookings/redesigned-leadData/${companysName}`,
+    //           formData,
+    //           {
+    //             headers: {
+    //               "Content-Type": "multipart/form-data",
+    //             },
+    //           }
+    //         );
+
+    //         // Handle response data as needed
+    //       } catch (error) {
+    //         console.error("Error uploading data:", error);
+    //         // Handle error
+    //       }
+    //     }
+
+
+    //     // Log the response from the backend
+
+    //     handleNext();
+    //   } catch (error) {
+    //     console.error("Error sending data to backend:", error);
+    //     // Handle error if needed
+    //   }
+    if (activeStep === 2) {
+      if (!leadData.caCase) {
+        Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
         return true;
       }
-     
+
       setLeadData((prevState) => ({
         ...prevState,
-       receivedAmount : parseInt( leadData.services
-       .reduce(
-         (total, service) =>
-           service.paymentTerms ===
-           "Full Advanced"
-             ? total +
-               Number(
-                 service.totalPaymentWGST
-               )
-             : total +
-               Number(
-                 service.firstPayment
-               ),
-         0
-       ))
-       .toFixed(2) ,
-       pendingAmount:parseInt(leadData.services
-       .reduce(
-         (total, service) =>
-           service.paymentTerms ===
-           "Full Advanced"
-             ? total + 0
-             : total +
-               Number(
-                 service.totalPaymentWGST
-               ) -
-               Number(
-                 service.firstPayment
-               ),
-         0
-       ))
-       .toFixed(2),
-       totalAmount : parseInt(leadData.services.reduce((total,service)=>
-       total + Number(service.totalPaymentWGST)
-       ))
-      
+        receivedAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total +
+                Number(
+                  service.totalPaymentWGST
+                )
+                : total +
+                Number(
+                  service.firstPayment
+                ),
+            0
+          ))
+          .toFixed(2),
+        pendingAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total + 0
+                : total +
+                Number(
+                  service.totalPaymentWGST
+                ) -
+                Number(
+                  service.firstPayment
+                ),
+            0
+          ))
+          .toFixed(2),
+        totalAmount: parseInt(leadData.services.reduce((total, service) =>
+          total + Number(service.totalPaymentWGST)
+        ))
+
       }));
-    
+
     }
-  if(activeStep===4 && !isAdmin){
-    const generatedTotalAmount = leadData.services.reduce(
-      (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
-      0
-    );
-    const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
-      return curr.paymentTerms === "Full Advanced"
-        ? acc + parseInt(curr.totalPaymentWOGST)
-        : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
-    }, 0);
-   
-    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues, generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  receivedAmount : parseInt( leadData.services
-      .reduce(
-        (total, service) =>
-          service.paymentTerms ===
-          "Full Advanced"
-            ? total +
-              Number(
-                service.totalPaymentWGST
-              )
-            : total +
-              Number(
-                service.firstPayment
-              ),
+    if (activeStep === 4 && !isAdmin) {
+      const generatedTotalAmount = leadData.services.reduce(
+        (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
         0
-      ))
-      .toFixed(2) ,
-      pendingAmount:parseInt(leadData.services
-        .reduce(
-          (total, service) =>
-            service.paymentTerms ===
-            "Full Advanced"
-              ? total + 0
-              : total +
+      );
+      const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+        return curr.paymentTerms === "Full Advanced"
+          ? acc + parseInt(curr.totalPaymentWOGST)
+          : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
+      }, 0);
+
+      const servicestoSend = leadData.services.map((service, index) => ({
+        ...service,
+        serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
+        secondPaymentRemarks:
+          service.secondPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks
+            : service.secondPaymentRemarks,
+        thirdPaymentRemarks:
+          service.thirdPaymentRemarks === "On Particular Date"
+            ? thirdTempRemarks
+            : service.thirdPaymentRemarks,
+        fourthPaymentRemarks:
+          service.fourthPaymentRemarks === "On Particular Date"
+            ? fourthTempRemarks
+            : service.fourthPaymentRemarks,
+        isoTypeObject: isoType
+      }));
+
+      const dataToSend = {
+        ...leadData, services: servicestoSend, requestBy: employeeName, bookingSource: selectedValues, generatedTotalAmount: generatedTotalAmount, generatedReceivedAmount: generatedReceivedAmount, receivedAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total +
+                Number(
+                  service.totalPaymentWGST
+                )
+                : total +
+                Number(
+                  service.firstPayment
+                ),
+            0
+          ))
+          .toFixed(2),
+        pendingAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total + 0
+                : total +
                 Number(
                   service.totalPaymentWGST
                 ) -
                 Number(
                   service.firstPayment
                 ),
-          0
-        ))
-        .toFixed(2) , 
-         totalAmount : leadData.services.reduce((total, service) =>
-        total + parseFloat(service.totalPaymentWGST || 0), 0)
-      
-        }
-    
-    try {
-      const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
-      console.log('Data created:', response.data);
-      Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
-      setFormOpen(false)
-    
-    } catch (error) {
-      console.error('Error creating data:', error);
-      Swal.fire("Request Failed!","Failed to Request Admin","error");
-    }
-  }else if(activeStep === 4 && isAdmin){
-    const generatedTotalAmount = leadData.services.reduce(
-      (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
-      0
-    );
-    const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
-      return curr.paymentTerms === "Full Advanced"
-        ? acc + parseInt(curr.totalPaymentWOGST)
-        : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
-    }, 0);
-    const dataToSend = {...leadData,generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
-      .reduce(
-        (total, service) =>
-          service.paymentTerms ===
-          "Full Advanced"
-            ? total +
-              Number(
-                service.totalPaymentWGST
-              )
-            : total +
-              Number(
-                service.firstPayment
-              ),
-        0
-      ))
-      .toFixed(2) ,
-      pendingAmount:parseInt(leadData.services
-        .reduce(
-          (total, service) =>
-            service.paymentTerms ===
-            "Full Advanced"
-              ? total + 0
-              : total +
-                Number(
-                  service.totalPaymentWGST
-                ) -
-                Number(
-                  service.firstPayment
-                ),
-          0
-        ))
-        .toFixed(2) , 
-        totalAmount : leadData.services.reduce((total, service) =>
-        total + parseFloat(service.totalPaymentWGST || 0), 0) }
-  
-    if(bookingIndex === 0){
+            0
+          ))
+          .toFixed(2),
+        totalAmount: leadData.services.reduce((total, service) =>
+          total + parseFloat(service.totalPaymentWGST || 0), 0)
+
+      }
+
       try {
-        console.log(leadData.otherDocs , "Boom");
+        const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+        console.log('Data created:', response.data);
+        Swal.fire("Request Sent!", "Request has been successfully sent to the Admin", "success");
+        setFormOpen(false)
+
+      } catch (error) {
+        console.error('Error creating data:', error);
+        Swal.fire("Request Failed!", "Failed to Request Admin", "error");
+      }
+    } else if (activeStep === 4 && isAdmin) {
+      const defaultDate = new Date(1970, 0, 1);
+
+      const servicestoSend = leadData.services.map((service, index) => ({
+        ...service,
+        serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
+        secondPaymentRemarks:
+          service.secondPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks
+            : service.secondPaymentRemarks,
+        thirdPaymentRemarks:
+          service.thirdPaymentRemarks === "On Particular Date"
+            ? thirdTempRemarks
+            : service.thirdPaymentRemarks,
+        fourthPaymentRemarks:
+          service.fourthPaymentRemarks === "On Particular Date"
+            ? fourthTempRemarks
+            : service.fourthPaymentRemarks,
+        isoTypeObject: isoType,
+        expanse : service.expanse ? service.expanse : 0,
+        expanseDate : service.expanseDate ? service.expanseDate : defaultDate
+
+      }));
+      const generatedTotalAmount = leadData.services.reduce(
+        (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+        0
+      );
+      const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+        return curr.paymentTerms === "Full Advanced"
+          ? acc + parseInt(curr.totalPaymentWOGST)
+          : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
+      }, 0);
+      const dataToSend = {
+        ...leadData, generatedTotalAmount: generatedTotalAmount, services: servicestoSend, generatedReceivedAmount: generatedReceivedAmount, bookingSource: selectedValues, step4changed: step4changed, receivedAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total +
+                Number(
+                  service.totalPaymentWGST
+                )
+                : total +
+                Number(
+                  service.firstPayment
+                ),
+            0
+          ))
+          .toFixed(2),
+        pendingAmount: parseInt(leadData.services
+          .reduce(
+            (total, service) =>
+              service.paymentTerms ===
+                "Full Advanced"
+                ? total + 0
+                : total +
+                Number(
+                  service.totalPaymentWGST
+                ) -
+                Number(
+                  service.firstPayment
+                ),
+            0
+          ))
+          .toFixed(2),
+        totalAmount: leadData.services.reduce((total, service) =>
+          total + parseFloat(service.totalPaymentWGST || 0), 0)
+      }
+
+      if (bookingIndex === 0) {
+        try {
+          const formData = new FormData();
+          Object.keys(dataToSend).forEach((key) => {
+            if (key === "services") {
+              // Handle services separately as it's an array
+              dataToSend.services.forEach((service, index) => {
+                Object.keys(service).forEach((prop) => {
+                  if(prop!=="isoTypeObject"){
+                    formData.append(`services[${index}][${prop}]`, service[prop]);
+                  }   
+                });
+              });
+
+              if(isoType.length!==0){
+                 isoType.forEach((isoObj , isoIndex)=>{
+                  Object.keys(isoObj).forEach((isoProp)=>{
+                  
+                      formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
+                                       
+                  })      
+                 })
+              }
+            } else if (key === "otherDocs") {
+              for (let i = 0; i < leadData.otherDocs.length; i++) {
+                formData.append("otherDocs", leadData.otherDocs[i]);
+              }
+            } else if (key === "paymentReceipt") {
+              for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+                formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+              }
+            } else {
+              formData.append(key, dataToSend[key]);
+            }
+          });
+          // console.log(activeStep, dataToSend);
+
+     
+          const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          Swal.fire({ title: "Data Updated", icon: "success" }) // Display success message
+          setFormOpen(false)
+          setNowToFetch(true)
+        } catch (error) {
+          console.log("Error updating data", error);
+          Swal.fire({ title: "Error Updating Data", icon: "error" })// Display error message
+        }
+      } else {
         const formData = new FormData();
         Object.keys(dataToSend).forEach((key) => {
           if (key === "services") {
             // Handle services separately as it's an array
             dataToSend.services.forEach((service, index) => {
               Object.keys(service).forEach((prop) => {
-                formData.append(`services[${index}][${prop}]`, service[prop]);
+                if(prop!=="isoTypeObject"){
+                  formData.append(`services[${index}][${prop}]`, service[prop]);
+                }   
               });
             });
-          } else if (key === "otherDocs" ) {
+
+            if(isoType.length!==0){
+               isoType.forEach((isoObj , isoIndex)=>{
+                Object.keys(isoObj).forEach((isoProp)=>{
+                
+                    formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
+                                     
+                })      
+               })
+            }
+          } else if (key === "otherDocs") {
             for (let i = 0; i < leadData.otherDocs.length; i++) {
               formData.append("otherDocs", leadData.otherDocs[i]);
             }
-          } else if (key === "paymentReceipt" ) {
+          } else if (key === "paymentReceipt") {
             for (let i = 0; i < leadData.paymentReceipt.length; i++) {
               formData.append("paymentReceipt", leadData.paymentReceipt[i]);
             }
@@ -1076,65 +1245,28 @@ export default function EditableMoreBooking({
             formData.append(key, dataToSend[key]);
           }
         });
-        // console.log(activeStep, dataToSend);
-    
-      
-        const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData ,{
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-       Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
-       setFormOpen(false)
-       setNowToFetch(true)
-      } catch (error) {
-        console.log("Error updating data" ,error) ;
-        Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
-      }
-    }else {
-      const formData = new FormData();
-      Object.keys(dataToSend).forEach((key) => {
-        if (key === "services") {
-          // Handle services separately as it's an array
-          dataToSend.services.forEach((service, index) => {
-            Object.keys(service).forEach((prop) => {
-              formData.append(`services[${index}][${prop}]`, service[prop]);
-            });
+        try {
+          const response = await axios.put(`${secretKey}/bookings/update-more-booking/${companysName}/${bookingIndex}`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           });
-        } else if (key === "otherDocs" ) {
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-        } else if (key === "paymentReceipt" ) {
-          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
-            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
-          }
-        } else {
-          formData.append(key, dataToSend[key]);
+          setFormOpen(false)
+          setNowToFetch(true)
+          Swal.fire({ title: "Data Updated", icon: "success" }) // Display success message
+        } catch (error) {
+          console.log("Error updating data", error);
+          Swal.fire({ title: "Error Updating Data", icon: "error" })// Display error message
         }
-      });
-      try {
-        const response = await axios.put(`${secretKey}/bookings/update-more-booking/${companysName}/${bookingIndex}`, formData ,{
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        setFormOpen(false)
-        setNowToFetch(true)
-       Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
-      } catch (error) {
-        console.log("Error updating data" ,error) ;
-        Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
       }
     }
-  }
-  else {
-    setCompleted((prevCompleted) => ({
-      ...prevCompleted,
-      [activeStep]: true,
-    }));
-    handleNext();
-  }
+    else {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true,
+      }));
+      handleNext();
+    }
 
 
   };
@@ -1183,7 +1315,7 @@ export default function EditableMoreBooking({
                   Select Service: {<span style={{ color: "red" }}>*</span>}
                 </label>
               </div>
-              <div className="selectservices-label-selct">
+              <div className="selectservices-label-selct d-flex">
                 <select
                   className="form-select mt-1"
                   id={`Service-${i}`}
@@ -1196,7 +1328,23 @@ export default function EditableMoreBooking({
                           ? { ...service, serviceName: e.target.value }
                           : service
                       ),
+
                     }));
+                    if(isoType.length!==0 && e.target.value !== "ISO Certificate"  ){
+                      setIsoType([]);
+                    }
+                    
+                    if (e.target.value === "ISO Certificate") {
+                      if (!isoType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = isoType;
+                        defaultArray.push({
+                          ...defaultISOtypes,
+                          serviceID: i
+                        });
+                        setIsoType(defaultArray)
+                      }
+                    }
+
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1205,39 +1353,150 @@ export default function EditableMoreBooking({
                   </option>
                   {options.map((option, index) => (
                     <option key={index} value={option.value}>
-                      {option.value}
+                      {option.label}
                     </option>
                   ))}
                 </select>
+                {/* IAF and Non IAF */}
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                  const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                  if (currentObject) {
+                    const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                    const newCurrentObject = {
+                      ...currentObject,
+                      type: e.target.value
+                    }
+                    remainingObject.push(newCurrentObject);
+                    setIsoType(remainingObject);
+                  }
+                }}>
+                  <option value="" selected>Select IAF Body</option>
+                  <option value="IAF">IAF</option>
+                  <option value="Non IAF">Non IAF</option>
+                </select>
+                  {/* IAF ISO LIST */}
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        IAFtype1: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
+                    }
+                  }}>
+                     <option value="" selected disabled>Select ISO Type</option>
+                    <option value="ISO 9001">ISO 9001</option>
+                    <option value="ISO 14001">ISO 14001</option>
+                    <option value="ISO 45001">ISO 45001</option>
+                    <option value="ISO 22000">ISO 22000</option>
+                    <option value="ISO 27001">ISO 27001</option>
+                    <option value="ISO 13485">ISO 13485</option>
+                    <option value="ISO 20000-1">ISO 20000-1</option>
+                    <option value="ISO 50001">ISO 50001</option>
+                  </select>
+                    {/* IAF ISO TYPES */}
+                    <select disabled={completed[activeStep] === true} className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          IAFtype2: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                     <option value="" selected disabled>Select ISO Duration</option>
+                      <option value="1 YR"> 1 YR</option>
+                      <option value="3 YR">3 YR</option>
+                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                    </select></> : <>  <select className="form-select mt-1 ml-1" disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                      const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          Nontype: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setIsoType(remainingObject);
+                      }
+                    }}>
+                        <option value="" selected disabled>Select ISO Type</option>
+                      <option value="ISO 9001">ISO 9001</option>
+                      <option value="ISO 14001">ISO 14001</option>
+                      <option value="ISO 45001">ISO 45001</option>
+                      <option value="ISO 22000">ISO 22000</option>
+                      <option value="ISO 27001">ISO 27001</option>
+                      <option value="ISO 13485">ISO 13485</option>
+                      <option value="ISO 20000-1">ISO 20000-1</option>
+                      <option value="ISO 50001">ISO 50001</option>
+                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="GMP">GMP</option>
+                      <option value="GAP">GAP</option>
+                      <option value="FDA">FDA</option>
+                      <option value="HALAL">HALAL</option>
+                      <option value="ORGANIC">ORGANIC</option>
+                      <option value="FSSC">FSSC</option>
+                      <option value="FSC">FSC</option>
+                      <option value="BIFMA">BIFMA</option>
+                      <option value="CE">CE</option>
+                      <option value="HACCP">HACCP</option>
+                      <option value="GHP">GHP</option>
+                      <option value="AIOTA">AIOTA</option>
+                      <option value="GREEN GUARD">GREEN GUARD</option>
+                      <option value="SEDEX">SEDEX</option>
+                      <option value="KOSHER">KOSHER</option>
+                      <option value="WHO-GMP">WHO-GMP</option>
+                      <option value="BRC">BRC</option>
+                      <option value="VEGAN">VEGAN</option>
+                      <option value="SA 8000">SA 8000</option>
+                      <option value="CCC">CCC</option>
+                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                      <option value="GO GREEN">GO GREEN</option>
+                      <option value="PCMM 5">PCMM 5</option>
+                      <option value="RIOS">RIOS</option>
+                      <option value="ROHS">ROHS</option>
+                    </select> </>}
+                  {/* NON-IAF ISO TYPES */}
+                </>}
               </div>
               {leadData.services[i].serviceName ===
                 "Start-Up India Certificate" && (
-                <div className="ml-2">
-                  <div class="form-check m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="dsc"
-                      value="0"
-                      checked={leadData.services[i].withDSC}
-                      onChange={(e) => {
-                        setLeadData((prevState) => ({
-                          ...prevState,
-                          services: prevState.services.map((service, index) =>
-                            index === i
-                              ? { ...service, withDSC: !service.withDSC }
-                              : service
-                          ),
-                        }));
-                      }}
-                      readOnly={completed[activeStep] === true}
-                    />
-                    <label class="form-check-label" for="dsc">
-                      WITH DSC
-                    </label>
+                  <div className="ml-2">
+                    <div class="form-check m-0">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dsc"
+                        value="0"
+                        checked={leadData.services[i].withDSC}
+                        onChange={(e) => {
+                          setLeadData((prevState) => ({
+                            ...prevState,
+                            services: prevState.services.map((service, index) =>
+                              index === i
+                                ? { ...service, withDSC: !service.withDSC }
+                                : service
+                            ),
+                          }));
+                        }}
+                        readOnly={completed[activeStep] === true}
+                      />
+                      <label class="form-check-label" for="dsc">
+                        WITH DSC
+                      </label>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <hr className="mt-3 mb-3"></hr>
             <div className="row align-items-center mt-2">
@@ -1249,8 +1508,8 @@ export default function EditableMoreBooking({
                   <div class="input-group total-payment-inputs mb-2">
                     <input
                       type="number"
-                      onWheel={(e)=>{
-                        document.activeElement.blur();                        
+                      onWheel={(e) => {
+                        document.activeElement.blur();
                       }}
                       className="form-control"
                       placeholder="Enter Amount"
@@ -1263,14 +1522,14 @@ export default function EditableMoreBooking({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  totalPaymentWOGST: newValue,
-                                  totalPaymentWGST:
-                                    service.withGST === true
-                                      ? Number(newValue) +
-                                        Number(newValue * 0.18)
-                                      : newValue,
-                                }
+                                ...service,
+                                totalPaymentWOGST: newValue,
+                                totalPaymentWGST:
+                                  service.withGST === true
+                                    ? Number(newValue) +
+                                    Number(newValue * 0.18)
+                                    : newValue,
+                              }
                               : service
                           ),
                         }));
@@ -1295,52 +1554,52 @@ export default function EditableMoreBooking({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  withGST: !service.withGST,
-                                  totalPaymentWGST:
-                                    service.withGST === false
-                                      ? Number(
-                                          service.totalPaymentWOGST * 0.18
-                                        ) + Number(service.totalPaymentWOGST)
-                                      : service.totalPaymentWOGST,
-                                  secondPayment:
-                                    service.paymentCount === 2 &&
+                                ...service,
+                                withGST: !service.withGST,
+                                totalPaymentWGST:
+                                  service.withGST === false
+                                    ? Number(
+                                      service.totalPaymentWOGST * 0.18
+                                    ) + Number(service.totalPaymentWOGST)
+                                    : service.totalPaymentWOGST,
+                                secondPayment:
+                                  service.paymentCount === 2 &&
                                     service.secondPayment !== 0
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.secondPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.secondPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.secondPayment,
-                                  thirdPayment:
-                                    service.paymentCount === 3
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.thirdPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.thirdPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.thirdPayment,
-                                  fourthPayment:
-                                    service.paymentCount === 4
-                                      ? service.withGST === true
-                                        ? Number(
-                                            service.fourthPayment -
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                        : Number(
-                                            service.fourthPayment +
-                                              service.totalPaymentWOGST * 0.18
-                                          ).toFixed(2)
-                                      : service.fourthPayment,
-                                }
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.secondPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.secondPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.secondPayment,
+                                thirdPayment:
+                                  service.paymentCount === 3
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.thirdPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.thirdPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.thirdPayment,
+                                fourthPayment:
+                                  service.paymentCount === 4
+                                    ? service.withGST === true
+                                      ? Number(
+                                        service.fourthPayment -
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                      : Number(
+                                        service.fourthPayment +
+                                        service.totalPaymentWOGST * 0.18
+                                      ).toFixed(2)
+                                    : service.fourthPayment,
+                              }
                               : service
                           ),
                         }));
@@ -1365,7 +1624,7 @@ export default function EditableMoreBooking({
                           parseInt(leadData.services[i].thirdPayment) +
                           parseInt(leadData.services[i].fourthPayment) !==
                           parseInt(leadData.services[i].totalPaymentWGST) &&
-                        leadData.services[i].paymentTerms !== "Full Advanced"
+                          leadData.services[i].paymentTerms !== "Full Advanced"
                           ? "form-control error-border"
                           : "form-control"
                       }
@@ -1405,13 +1664,13 @@ export default function EditableMoreBooking({
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                                firstPayment:0,
-                                secondPayment:0,
-                                thirdPayment:0,
-                                fourthPayment:0
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                              fourthPayment: 0
+                            }
                             : service
                         ),
                       }));
@@ -1433,10 +1692,10 @@ export default function EditableMoreBooking({
                         services: prevState.services.map((service, index) =>
                           index === i
                             ? {
-                                ...service,
-                                paymentTerms: e.target.value,
-                                paymentCount: 2,
-                              }
+                              ...service,
+                              paymentTerms: e.target.value,
+                              paymentCount: 2,
+                            }
                             : service
                         ),
                       }));
@@ -1458,11 +1717,11 @@ export default function EditableMoreBooking({
                         <div class="input-group mb-2">
                           <input
                             type="number"
-                            onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                            onWheel={(e) => {
+
+                              document.activeElement.blur();
+
+                            }}
                             class="form-control"
                             placeholder="Enter First Payment"
                             value={leadData.services[i].firstPayment}
@@ -1473,14 +1732,14 @@ export default function EditableMoreBooking({
                                   (service, index) =>
                                     index === i
                                       ? {
-                                          ...service,
-                                          firstPayment: e.target.value,
-                                          secondPayment:
-                                            service.paymentCount === 2
-                                              ? service.totalPaymentWGST -
-                                                e.target.value
-                                              : service.secondPayment,
-                                        }
+                                        ...service,
+                                        firstPayment: e.target.value,
+                                        secondPayment:
+                                          service.paymentCount === 2
+                                            ? service.totalPaymentWGST -
+                                            e.target.value
+                                            : service.secondPayment,
+                                      }
                                       : service
                                 ),
                               }));
@@ -1510,15 +1769,15 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPayment: e.target.value,
-                                            thirdPayment:
-                                              service.paymentCount === 3
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  e.target.value
-                                                : service.thirdPayment,
-                                          }
+                                          ...service,
+                                          secondPayment: e.target.value,
+                                          thirdPayment:
+                                            service.paymentCount === 3
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              e.target.value
+                                              : service.thirdPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1539,10 +1798,10 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            secondPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          secondPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1551,7 +1810,7 @@ export default function EditableMoreBooking({
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                                 <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1567,7 +1826,7 @@ export default function EditableMoreBooking({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1582,19 +1841,19 @@ export default function EditableMoreBooking({
                           </div>
                           {leadData.services[i].secondPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                              style={{textTransform:"uppercase"}}
-                                value={secondTempRemarks}
-                                onChange={(e) =>
-                                  setSecondTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  style={{ textTransform: "uppercase" }}
+                                  value={secondTempRemarks}
+                                  onChange={(e) =>
+                                    setSecondTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1615,16 +1874,16 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPayment: e.target.value,
-                                            fourthPayment:
-                                              service.paymentCount === 4
-                                                ? service.totalPaymentWGST -
-                                                  service.firstPayment -
-                                                  service.secondPayment -
-                                                  e.target.value
-                                                : service.fourthPayment,
-                                          }
+                                          ...service,
+                                          thirdPayment: e.target.value,
+                                          fourthPayment:
+                                            service.paymentCount === 4
+                                              ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              service.secondPayment -
+                                              e.target.value
+                                              : service.fourthPayment,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1645,9 +1904,9 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            thirdPaymentRemarks: e.target.value,
-                                          }
+                                          ...service,
+                                          thirdPaymentRemarks: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1656,7 +1915,7 @@ export default function EditableMoreBooking({
                               name="optional-remarks"
                               id="optional-remarks-3"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1672,7 +1931,7 @@ export default function EditableMoreBooking({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1687,18 +1946,18 @@ export default function EditableMoreBooking({
                           </div>
                           {leadData.services[i].thirdPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={thirdTempRemarks}
-                                onChange={(e) =>
-                                  setThirdTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={thirdTempRemarks}
+                                  onChange={(e) =>
+                                    setThirdTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1719,9 +1978,9 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPayment: e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPayment: e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1742,10 +2001,10 @@ export default function EditableMoreBooking({
                                     (service, index) =>
                                       index === i
                                         ? {
-                                            ...service,
-                                            fourthPaymentRemarks:
-                                              e.target.value,
-                                          }
+                                          ...service,
+                                          fourthPaymentRemarks:
+                                            e.target.value,
+                                        }
                                         : service
                                   ),
                                 }));
@@ -1754,7 +2013,7 @@ export default function EditableMoreBooking({
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                               <option value="" selected disabled>
+                              <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="AFTER APPLICATION">
@@ -1770,7 +2029,7 @@ export default function EditableMoreBooking({
                                 AFTER SERVICE COMPLETION
                               </option>
                               <option value=" AT THE TIME OF APPLICATION">
-                               AT THE TIME OF APPLICATION
+                                AT THE TIME OF APPLICATION
                               </option>
                               <option value="AFTER DOCUMENT">
                                 AFTER DOCUMENT
@@ -1785,18 +2044,18 @@ export default function EditableMoreBooking({
                           </div>
                           {leadData.services[i].fourthPaymentRemarks ===
                             "On Particular Date" && (
-                            <div className="mt-2">
-                              <input
-                                value={fourthTempRemarks}
-                                onChange={(e) =>
-                                  setFourthTempRemarks(e.target.value)
-                                }
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
-                          )}
+                              <div className="mt-2">
+                                <input
+                                  value={fourthTempRemarks}
+                                  onChange={(e) =>
+                                    setFourthTempRemarks(e.target.value)
+                                  }
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
+                            )}
                         </div>
                       </div>
                     )}
@@ -1813,13 +2072,13 @@ export default function EditableMoreBooking({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount + 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount + 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1838,13 +2097,13 @@ export default function EditableMoreBooking({
                           services: prevState.services.map((service, index) =>
                             index === i
                               ? {
-                                  ...service,
-                                  paymentCount: service.paymentCount - 1,
-                                  firstPayment: 0,
-                                  secondPayment: 0,
-                                  thirdPayment: 0,
-                                  fourthPayment: 0,
-                                }
+                                ...service,
+                                paymentCount: service.paymentCount - 1,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
+                              }
                               : service
                           ),
                         }));
@@ -1876,9 +2135,9 @@ export default function EditableMoreBooking({
                       services: prevState.services.map((service, index) =>
                         index === i
                           ? {
-                              ...service,
-                              paymentRemarks: e.target.value,
-                            }
+                            ...service,
+                            paymentRemarks: e.target.value,
+                          }
                           : service
                       ),
                     }));
@@ -1933,6 +2192,19 @@ export default function EditableMoreBooking({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
+ 
+  const functionShowSizeLimit = (e)=>{
+    const file = e.target.files[0];
+    const maxSizeMB = 24;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+  
+    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
+      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+      return false;
+    }else {
+      return true;
+    }
+  }
   return (
     <div>
       <div className="container mt-2">
@@ -1948,8 +2220,8 @@ export default function EditableMoreBooking({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
-                      disabled={index===0 && bookingIndex!==0}
-                     
+                      disabled={index === 0 && bookingIndex !== 0}
+
                     >
                       {label}
                     </StepButton>
@@ -2047,7 +2319,7 @@ export default function EditableMoreBooking({
                                       </label>
                                       <input
                                         type="text" // Use type="text" instead of type="number"
-                                        
+
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
@@ -2247,66 +2519,66 @@ export default function EditableMoreBooking({
                                       </select>
                                     </div>
                                   </div>
-                                  {leadData.bdmName === "other" && 
-                                  <>
-                                  <div className="row">
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherBdmName">
-                                        Other BDM Name:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter Other BDM Name"
-                                        id="otherBdmName"
-                                        value={leadData.otherBdmName}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "otherBdmName"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherEmail">
-                                        BDM Email:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM Email"
-                                        id="otherBdmEmail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
+                                  {leadData.bdmName === "other" &&
+                                    <>
+                                      <div className="row">
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherBdmName">
+                                              Other BDM Name:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter Other BDM Name"
+                                              id="otherBdmName"
+                                              value={leadData.otherBdmName}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "otherBdmName"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherEmail">
+                                              BDM Email:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter BDM Email"
+                                              id="otherBdmEmail"
+                                              value={leadData.bdmEmail}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "bdmEmail"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
 
-                                  </div>
-                                  
+                                      </div>
 
-                                  </>}
 
-                                  
+                                    </>}
+
+
                                   {leadData.bdmName !== "other" && <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="BDMemail">
@@ -2599,11 +2871,11 @@ export default function EditableMoreBooking({
                                         </label>
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           name="ca-number"
                                           id="ca-number"
                                           placeholder="Enter CA's Number"
@@ -2708,11 +2980,11 @@ export default function EditableMoreBooking({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Total Payment"
                                           value={leadData.services
@@ -2741,26 +3013,26 @@ export default function EditableMoreBooking({
                                       <div class="input-group">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Received Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    )
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  )
                                                   : total +
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2780,26 +3052,26 @@ export default function EditableMoreBooking({
                                       <div class="input-group mb-2">
                                         <input
                                           type="number"
-                                          onWheel={(e)=>{
-                      
-                        document.activeElement.blur();
-                        
-                      }}
+                                          onWheel={(e) => {
+
+                                            document.activeElement.blur();
+
+                                          }}
                                           class="form-control"
                                           placeholder="Pending Payment"
                                           value={leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
-                                                "Full Advanced"
+                                                  "Full Advanced"
                                                   ? total + 0
                                                   : total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    ) -
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  ) -
+                                                  Number(
+                                                    service.firstPayment
+                                                  ),
                                               0
                                             )
                                             .toFixed(2)}
@@ -2819,7 +3091,7 @@ export default function EditableMoreBooking({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                        
+
                                       </label>
                                       <input
                                         type="file"
@@ -2827,16 +3099,18 @@ export default function EditableMoreBooking({
                                         id="Company"
                                         onChange={(e) => {
                                           // Update the state with the selected files
-                                         
+
                                           setStep4Changed(true)
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            paymentReceipt: [
-                                              ...(prevLeadData.paymentReceipt ||
-                                                []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              paymentReceipt: [
+                                                ...(prevLeadData.paymentReceipt ||
+                                                  []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -2899,7 +3173,7 @@ export default function EditableMoreBooking({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                      
+
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2924,20 +3198,22 @@ export default function EditableMoreBooking({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                       
+
                                       </label>
                                       <input
                                         type="file"
                                         onChange={(e) => {
                                           // Update the state with the selected files
                                           setStep4Changed(true)
-                                          setLeadData((prevLeadData) => ({
-                                            ...prevLeadData,
-                                            otherDocs: [
-                                              ...(prevLeadData.otherDocs || []),
-                                              ...e.target.files,
-                                            ],
-                                          }));
+                                          if(functionShowSizeLimit(e)){
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              otherDocs: [
+                                                ...(prevLeadData.otherDocs || []),
+                                                ...e.target.files,
+                                              ],
+                                            }));
+                                          }
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3213,11 +3489,11 @@ export default function EditableMoreBooking({
                                             </b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-9 p-0">
+                                        {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
                                           </div>
-                                        </div>
+                                        </div>}
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName === "Start-Up India Certificate" && (
@@ -3245,10 +3521,10 @@ export default function EditableMoreBooking({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                          ₹ {obj.totalPaymentWGST !== undefined
+                                            ₹ {obj.totalPaymentWGST !== undefined
                                               ? parseInt(
-                                                  obj.totalPaymentWGST
-                                                ).toLocaleString()
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()
                                               : "0"}
                                           </div>
                                         </div>
@@ -3289,7 +3565,7 @@ export default function EditableMoreBooking({
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                              ₹ {parseInt(
+                                                ₹ {parseInt(
                                                   obj.firstPayment
                                                 ).toLocaleString()}
                                               </div>
@@ -3302,8 +3578,8 @@ export default function EditableMoreBooking({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data"  style={{textTransform:"uppercase"}}>
-                                              ₹ {parseInt(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                ₹ {parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
                                                 -{" "}
@@ -3320,13 +3596,13 @@ export default function EditableMoreBooking({
                                           {obj.thirdPayment !== 0 && (
                                             <div className="row m-0">
                                               <div className="col-sm-3 p-0">
-                                                <div className="form-label-name"  style={{textTransform:"uppercase"}}>
+                                                <div className="form-label-name" style={{ textTransform: "uppercase" }}>
                                                   <b>Third Payment</b>
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
                                                 <div className="form-label-data">
-                                                ₹ {parseInt(
+                                                  ₹ {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
@@ -3349,7 +3625,7 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data"  style={{textTransform:"uppercase"}}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   {parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
@@ -3367,7 +3643,7 @@ export default function EditableMoreBooking({
                                           )}
                                         </>
                                       )}
-                                       <div className="row m-0">
+                                      <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3376,50 +3652,50 @@ export default function EditableMoreBooking({
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
                                             {obj.caCase
-                                              }
+                                            }
                                           </div>
                                         </div>
                                       </div>
-                                      {obj.caCase &&  <>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Number</b>
+                                      {obj.caCase && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caNumber
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caNumber
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Email</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caEmail
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caEmail
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Commission</b>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {obj.caCommission
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.caCommission
                                               }
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
                                       </>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
@@ -3487,11 +3763,11 @@ export default function EditableMoreBooking({
                                                 return curr.paymentTerms ===
                                                   "Full Advanced"
                                                   ? acc +
-                                                      Number(
-                                                        curr.totalPaymentWGST
-                                                      )
+                                                  Number(
+                                                    curr.totalPaymentWGST
+                                                  )
                                                   : acc +
-                                                      Number(curr.firstPayment);
+                                                  Number(curr.firstPayment);
                                               }, 0)
                                               .toFixed(2)}
                                           </div>
@@ -3509,27 +3785,27 @@ export default function EditableMoreBooking({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {parseInt(leadData.services
-                                            .reduce(
-                                              (total, service) =>
-                                                service.paymentTerms ===
-                                                "Full Advanced"
-                                                  ? total + 0
-                                                  : total +
+                                              .reduce(
+                                                (total, service) =>
+                                                  service.paymentTerms ===
+                                                    "Full Advanced"
+                                                    ? total + 0
+                                                    : total +
                                                     Number(
                                                       service.totalPaymentWGST
                                                     ) -
                                                     Number(
                                                       service.firstPayment
                                                     ),
-                                              0
-                                            ))
-                                            .toLocaleString()}
+                                                0
+                                              ))
+                                              .toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                {leadData.paymentReceipt.length!==0 &&  <div className="row m-0">
+                                  {leadData.paymentReceipt.length !== 0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Upload Payment Receipt</b>
@@ -3541,12 +3817,12 @@ export default function EditableMoreBooking({
                                           className="UploadDocPreview"
                                           onClick={() => {
                                             handleViewPdfReciepts(
-                                             ( leadData.paymentReceipt[0]
+                                              (leadData.paymentReceipt[0]
                                                 .filename
                                                 ? leadData.paymentReceipt[0]
-                                                    .filename
+                                                  .filename
                                                 : leadData.paymentReceipt[0]
-                                                    .name) , leadData["Company Name"]
+                                                  .name), leadData["Company Name"]
                                             );
                                           }}
                                         >
@@ -3636,7 +3912,7 @@ export default function EditableMoreBooking({
                                       </div>
                                     </div>
                                   </div>
-                                  {leadData.otherDocs.length!==0  && <div className="row m-0">
+                                  {leadData.otherDocs.length !== 0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Additional Docs</b>
@@ -3651,7 +3927,7 @@ export default function EditableMoreBooking({
                                                 className="UploadDocPreview"
                                                 onClick={() => {
                                                   handleViewPdOtherDocs(
-                                                    val.filename , leadData["Company Name"]
+                                                    val.filename, leadData["Company Name"]
                                                   );
                                                 }}
                                               >
@@ -3681,7 +3957,7 @@ export default function EditableMoreBooking({
                                                 className="UploadDocPreview"
                                                 onClick={() => {
                                                   handleViewPdOtherDocs(
-                                                    val.name , leadData["Company Name"]
+                                                    val.name, leadData["Company Name"]
                                                   );
                                                 }}
                                               >
@@ -3753,9 +4029,9 @@ export default function EditableMoreBooking({
                         <Button
                           variant="contained"
                           onClick={handleBack}
-                          sx={{ mr: 1, background: "#ffba00 " }}                          
+                          sx={{ mr: 1, background: "#ffba00 " }}
                         >
-                          {bookingIndex===0 ? activeStep !== 0 ? "Back" : "Back to Main" : activeStep !==1 ? "Back" : "Back to Main"}
+                          {bookingIndex === 0 ? activeStep !== 0 ? "Back" : "Back to Main" : activeStep !== 1 ? "Back" : "Back to Main"}
                         </Button>
                         {/* <Button
                           color="primary"
@@ -3796,8 +4072,8 @@ export default function EditableMoreBooking({
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
-                                  {activeStep === 4 
-                                ?  !isAdmin ? "Request Changes" : "Confirm Edit"
+                              {activeStep === 4
+                                ? !isAdmin ? "Request Changes" : "Confirm Edit"
                                 : "Save Draft"}
                             </Button>
                           ))}

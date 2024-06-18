@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from "react";
 
-import Navbar from "./Navbar";
-import Header from "./Header";
+import Navbar from "../../Components/Navbar/Navbar.jsx";
+import Header from "../../Components/Header/Header.jsx";
 import { useLocation, useParams } from "react-router-dom";
-import notificationSound from "../assets/media/iphone_sound.mp3";
+import notificationSound from "../../../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
@@ -23,17 +23,17 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import Form from "../components/Form.jsx";
+import Form from "../../../components/Form.jsx";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import "../assets/table.css";
-import "../assets/styles.css";
+import "../../../assets/table.css";
+import "../../../assets/styles.css";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import Nodata from "../components/Nodata.jsx";
-import EditForm from "../components/EditForm.jsx";
+import Nodata from "../../Components/Nodata/Nodata.jsx";
+import EditForm from "../../../components/EditForm.jsx";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import { options } from "../components/Options.js";
+import { options } from "../../../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import io from "socket.io-client";
 import AddCircle from "@mui/icons-material/AddCircle.js";
@@ -44,13 +44,11 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
-import RedesignedForm from "../admin/RedesignedForm.jsx";
-import LeadFormPreview from "../admin/LeadFormPreview.jsx";
+import RedesignedForm from "../../../admin/RedesignedForm.jsx";
+import LeadFormPreview from "../../../admin/LeadFormPreview.jsx";
 import Edit from "@mui/icons-material/Edit";
-import EditableLeadform from "../admin/EditableLeadform.jsx";
-import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
-import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
+import EditableMoreBooking from "../../../admin/EditableMoreBooking.jsx";
 import { RiShareForwardBoxFill } from "react-icons/ri";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
@@ -75,12 +73,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
-import Employee from './Employees.js'
-import Team from './Team.js'
-import EmployeeParticular from "./EmployeeParticular.js";
 import { MdDeleteOutline } from "react-icons/md";
-import { IoFilterOutline } from "react-icons/io5";
-import { TbFileExport } from "react-icons/tb";
 
 
 
@@ -88,7 +81,9 @@ import { TbFileExport } from "react-icons/tb";
 
 
 
-function AdminEmployeeTeamLeads() {
+
+
+function DatamanagerEmployeeTeamLeads() {
     const { id } = useParams();
     const [data, setData] = useState([])
     const [dataStatus, setdataStatus] = useState("All");
@@ -115,7 +110,6 @@ function AdminEmployeeTeamLeads() {
     const [currentRemarks, setCurrentRemarks] = useState("");
     const [currentRemarksBdm, setCurrentRemarksBdm] = useState("");
     const [companyId, setCompanyId] = useState("");
-    const [searchQuery, setSearchQuery] = useState("")
     const [bdmNewStatus, setBdmNewStatus] = useState("Untouched");
     const [changeRemarks, setChangeRemarks] = useState("");
     const [updateData, setUpdateData] = useState({});
@@ -127,8 +121,6 @@ function AdminEmployeeTeamLeads() {
     const [empData, setEmpData] = useState([])
     const [selectedEmployee, setSelectedEmployee] = useState()
     const [selectedEmployee2, setSelectedEmployee2] = useState()
-    const [isFilter, setIsFilter] = useState(false)
-    const [extraData, setExtraData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -187,6 +179,7 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error.message);
         }
     };
+
     const [maturedBooking, setMaturedBooking] = useState(null);
 
     const fetchBDMbookingRequests = async () => {
@@ -225,7 +218,6 @@ function AdminEmployeeTeamLeads() {
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             setTeamData(response.data)
-            setExtraData(response.data)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -616,6 +608,8 @@ function AdminEmployeeTeamLeads() {
                         time,
                     }
                 )
+                console.log("yahan dikha ", bdmnewstatus)
+                // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
 
@@ -1035,12 +1029,12 @@ function AdminEmployeeTeamLeads() {
 
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/admin/admin-user`);
+                window.location.replace(`datamanager/newEmployees/`);
                 setBackButton(false)
             } else {
                 // Get the previousId from the eData array
                 const prevId = eData[prevIndex];
-                window.location.replace(`/admin/employeeleads/${prevId}`);
+                window.location.replace(`/datamanager/employeeLeads/${prevId}`);
             }
 
             //setBackButton(prevIndex !== 0);
@@ -1083,7 +1077,7 @@ function AdminEmployeeTeamLeads() {
 
             // Get the nextId from the eData array
             const nextId = eData[nextIndex];
-            window.location.replace(`/admin/employeeleads/${nextId}`);
+            window.location.replace(`/datamanager/employeeLeads/${nextId}`);
 
 
             //setBackButton(nextId !== 0);
@@ -1212,51 +1206,51 @@ function AdminEmployeeTeamLeads() {
         console.log(selectedField);
     };
 
-    // const filteredData = teamleadsData.filter((company) => {
-    //     const fieldValue = company[selectedField];
+    const filteredData = teamleadsData.filter((company) => {
+        const fieldValue = company[selectedField];
 
-    //     if (selectedField === "State" && citySearch) {
-    //         // Handle filtering by both State and City
-    //         const stateMatches = fieldValue
-    //             .toLowerCase()
-    //             .includes(searchText.toLowerCase());
-    //         const cityMatches = company.City.toLowerCase().includes(
-    //             citySearch.toLowerCase()
-    //         );
-    //         return stateMatches && cityMatches;
-    //     } else if (selectedField === "Company Incorporation Date  ") {
-    //         // Assuming you have the month value in a variable named `month`
-    //         if (month == 0) {
-    //             return fieldValue.includes(searchText);
-    //         } else if (year == 0) {
-    //             return fieldValue.includes(searchText);
-    //         }
-    //         const selectedDate = new Date(fieldValue);
-    //         const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-    //         const selectedYear = selectedDate.getFullYear();
+        if (selectedField === "State" && citySearch) {
+            // Handle filtering by both State and City
+            const stateMatches = fieldValue
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
+            const cityMatches = company.City.toLowerCase().includes(
+                citySearch.toLowerCase()
+            );
+            return stateMatches && cityMatches;
+        } else if (selectedField === "Company Incorporation Date  ") {
+            // Assuming you have the month value in a variable named `month`
+            if (month == 0) {
+                return fieldValue.includes(searchText);
+            } else if (year == 0) {
+                return fieldValue.includes(searchText);
+            }
+            const selectedDate = new Date(fieldValue);
+            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+            const selectedYear = selectedDate.getFullYear();
 
-    //         // Use the provided month variable in the comparison
-    //         return (
-    //             selectedMonth.toString().includes(month) &&
-    //             selectedYear.toString().includes(year)
-    //         );
-    //     } else if (selectedField === "Status" && searchText === "All") {
-    //         // Display all data when Status is "All"
-    //         return true;
-    //     } else {
-    //         // Your existing filtering logic for other fields
-    //         if (typeof fieldValue === "string") {
-    //             return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-    //         } else if (typeof fieldValue === "number") {
-    //             return fieldValue.toString().includes(searchText);
-    //         } else if (fieldValue instanceof Date) {
-    //             // Handle date fields
-    //             return fieldValue.includes(searchText);
-    //         }
+            // Use the provided month variable in the comparison
+            return (
+                selectedMonth.toString().includes(month) &&
+                selectedYear.toString().includes(year)
+            );
+        } else if (selectedField === "Status" && searchText === "All") {
+            // Display all data when Status is "All"
+            return true;
+        } else {
+            // Your existing filtering logic for other fields
+            if (typeof fieldValue === "string") {
+                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+            } else if (typeof fieldValue === "number") {
+                return fieldValue.toString().includes(searchText);
+            } else if (fieldValue instanceof Date) {
+                // Handle date fields
+                return fieldValue.includes(searchText);
+            }
 
-    //         return false;
-    //     }
-    // });
+            return false;
+        }
+    });
 
     const handleDateChange = (e) => {
         const dateValue = e.target.value;
@@ -1308,7 +1302,7 @@ function AdminEmployeeTeamLeads() {
         };
     }
     const location = useLocation()
-    const [value, setValue] = React.useState(location.pathname === `/admin/employeesleads/${id}` ? 0 : 1);
+    const [value, setValue] = React.useState(location.pathname === `/datamanager/employeeLeads/${id}` ? 0 : 1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -1411,7 +1405,7 @@ function AdminEmployeeTeamLeads() {
 
     //----------------- delete bdm from forwarded data----------------------
 
-    const handleDeleteBdm = async (companyId, companyName, bdmStatus) => {
+    const handleDeleteBdm = async (companyId, companyName , bdmStatus) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: `Do you really want to delete the company ${companyName}?`,
@@ -1421,23 +1415,23 @@ function AdminEmployeeTeamLeads() {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
         });
-
+    
         if (result.isConfirmed) {
             try {
                 const response = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
                     params: {
-                        companyId,
-                        companyName
+                      companyId,
+                      companyName
                     }
-                });
-
-
+                  });
+            
+    
                 Swal.fire(
                     'Deleted!',
                     'The company has been deleted.',
                     'success'
                 );
-
+    
                 fetchTeamLeadsData(bdmStatus);
                 //console.log("Company updated and deleted successfully", response.data);
             } catch (error) {
@@ -1450,152 +1444,8 @@ function AdminEmployeeTeamLeads() {
             }
         }
     };
-
-    //------------------function to export data---------------------
-    const handleExportData = async () => {
-        try {
-
-            const response = await axios.post(
-                `${secretKey}/admin-leads/exportEmployeeTeamLeads/`,
-                {
-                    selectedRows
-                }
-            );
-            //console.log("response",response.data)
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "AssginedTeamLeads_Employee.csv");
-            document.body.appendChild(link);
-            link.click();
-        } catch (error) {
-            console.error("Error downloading CSV:", error);
-        }
-    };
-
-    //------------------------search function--------------------
-
-    const [filteredData, setFilteredData] = useState([]);
-    const [isSearch, setIsSearch] = useState(false)
-
-    const handleSearch = (searchQuery) => {
-        const searchQueryLower = searchQuery.toLowerCase();
-
-        // Check if searchQuery is empty or null
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            setIsSearch(false);
-            setFilteredData(extraData); // Assuming extraData is your full dataset
-            return;
-        }
-
-        setIsSearch(true);
-
-        const filtered = extraData.filter((company) => {
-            const companyName = company["Company Name"];
-            const companyNumber = company["Company Number"];
-            const companyEmail = company["Company Email"];
-            const companyState = company.State;
-            const companyCity = company.City;
-
-            // Check each field for a match
-            if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-
-            return false;
-        });
-
-        setFilteredData(filtered);
-    };
-
-    useEffect(() => {
-        if (filteredData.length !== 0) {
-            setTeamLeadsData(filteredData)
-            // if (dataStatus === 'All') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Untouched"
-            //         )
-            //     );
-            // } else if (dataStatus === 'Interested') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Interested"
-            //         )
-            //     );
-            // } else if (dataStatus === 'FollowUp') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "FollowUp"
-            //         )
-            //     )
-            // } else if (dataStatus === 'Matured') {
-            //     setTeamLeadsData(
-            //         filteredData
-            //             .filter(
-            //                 (obj) =>
-            //                     obj.bdmStatus === "Matured"
-            //             )
-            //     );
-            // } else if (dataStatus === 'NotInterested') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Not Interested" ||
-            //                 obj.bdmStatus === "Busy" ||
-            //                 obj.bdmStatus === "Not Picked Up" ||
-            //                 obj.bdmStatus === "Junk"
-            //         )
-            //     );
-            // }
-            // if (filteredData.length === 1) {
-            //     const currentStatus = filteredData[0].Status; // Access Status directly
-            //     if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
-            //         setdataStatus('All')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         currentStatus === 'Interested') {
-            //         setdataStatus('Interested')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         currentStatus === 'FollowUp') {
-            //         setdataStatus('FollowUp')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
-            //         setdataStatus('Matured')
-            //     } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
-            //         currentStatus !== "Not Interested" &&
-            //         currentStatus !== "Busy" &&
-            //         currentStatus !== 'Junk' &&
-            //         currentStatus !== 'Not Picked Up' &&
-            //         currentStatus !== 'Matured') {
-            //         setdataStatus('Forwarded')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
-            //         setdataStatus('NotInterested')
-            //     }
-            // }
-        }
-
-    }, [filteredData])
-
-    console.log("filteredData", filteredData)
-    console.log("team", teamleadsData)
-    console.log("teamData", teamData)
-
-
+    
+    
 
 
     return (
@@ -1654,7 +1504,7 @@ function AdminEmployeeTeamLeads() {
                                         </div>
                                     )}
 
-                                    {/* <div className="form-control sort-by">
+                                    <div className="form-control sort-by">
                                         <label htmlFor="sort-by">Sort By:</label>
                                         <select
                                             style={{
@@ -1768,19 +1618,26 @@ function AdminEmployeeTeamLeads() {
                                                 C.Inco. Date
                                             </option>
                                         </select>
-                                    </div> */}
-                                    {!selectedEmployee2 && (
-                                        <Link
-                                            to={`/admin/employees/${id}/login-details`}
-                                            style={{ marginLeft: "10px" }}>
-                                            <button className="btn btn-primary d-none d-sm-inline-block">
-                                                Login Details
-                                            </button>
-                                        </Link>
-                                    )}
+                                    </div>
+                                    {/* {bdmWorkOn ? (
+                                                  <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
+                                                         Revoke Bdm Work
+                                                              </button>
+                                                        ) : (
+                                               <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleAssignBdmWork()}>
+                                                                   Assign Bdm Work
+                                                                           </button>
+                                                                   )} */}
+                                    {/* <Link
+                                        to={`/admin/employees/${id}/login-details`}
+                                        style={{ marginLeft: "10px" }}>
+                                        <button className="btn btn-primary d-none d-sm-inline-block">
+                                            Login Details
+                                        </button>
+                                    </Link> */}
                                     <div>
                                         <Link
-                                            to={`/admin/admin-user`}
+                                            to={`/datamanager/newEmployees/`}
                                             style={{ marginLeft: "10px" }}>
                                             <button className="btn btn-primary d-none d-sm-inline-block">
                                                 <span>
@@ -1810,7 +1667,7 @@ function AdminEmployeeTeamLeads() {
                                 href="#tabs-home-5"
                                 onClick={() => {
                                     setCurrentTab("Leads")
-                                    window.location.pathname = `/admin/employees/${id}`
+                                    window.location.pathname = `/datamanager/employeeLeads/${id}`
                                 }}
                                 className={
                                     currentTab === "Leads"
@@ -1831,7 +1688,7 @@ function AdminEmployeeTeamLeads() {
                                 href="#tabs-activity-5"
                                 onClick={() => {
                                     setCurrentTab("TeamLeads")
-                                    window.location.pathname = `/admin/employeeleads/${id}`
+                                    window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`
                                 }}
                                 className={
                                     currentTab === "TeamLeads"
@@ -1856,53 +1713,7 @@ function AdminEmployeeTeamLeads() {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
-                        <div className="d-flex align-items-center justify-content-between mb-2">
-                            <div className="d-flex align-items-center">
-                                <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button"
-                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                    //onClick={() => setOpenFilterDrawer(true)}
-                                    >
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
-                                    <button type="button" className="btn mybtn"
-                                        onClick={() => handleExportData()}
-                                    >
-                                        <TbFileExport className='mr-1' /> Export Leads
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="d-flex align-items-center">
-                                {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )}
-                                <div class="input-icon ml-1">
-                                    <span class="input-icon-addon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                            <path d="M21 21l-6 -6"></path>
-                                        </svg>
-                                    </span>
-                                    <input
-                                        value={searchQuery}
-                                        onChange={(e) => {
-                                            setSearchQuery(e.target.value);
-                                            handleSearch(e.target.value)
-                                            //handleFilterSearch(e.target.value)
-                                            //setCurrentPage(0);
-                                        }}
-                                        className="form-control search-cantrol mybtn"
-                                        placeholder="Search…"
-                                        type="text"
-                                        name="bdeName-search"
-                                        id="bdeName-search" />
-                                </div>
-                            </div>
-                        </div>
-                        {/* <div className="row g-2 align-items-center">
+                        <div className="row g-2 align-items-center">
                             <div className="col-2">
                                 <div
                                     className="form-control"
@@ -1951,7 +1762,7 @@ function AdminEmployeeTeamLeads() {
                                         className="input-icon"
                                     >
                                         <span className="input-icon-addon">
-                                           
+                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="icon"
@@ -2043,7 +1854,7 @@ function AdminEmployeeTeamLeads() {
                                 {selectedField === "State" && (
                                     <div style={{ marginLeft: "-16px" }} className="input-icon">
                                         <span className="input-icon-addon">
-                                            
+                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="icon"
@@ -2154,48 +1965,9 @@ function AdminEmployeeTeamLeads() {
                                     )}
                                 </div>
                             </div>
-                        </div> */}
-                        {/* <div class="card-header my-tab">
-                            <ul
-                                class="nav nav-tabs card-header-tabs nav-fill p-0"
-                                data-bs-toggle="tabs"
-                            >
-                                <li class="nav-item data-heading">
-                                    <a
-                                        href="#tabs-home-5"
-                                        onClick={() => {
-                                            setCurrentTab("Leads")
-                                            window.location.pathname = `/admin/employees/${id}`
-                                        }}
-                                        className={
-                                            currentTab === 'Leads'
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                    >
-                                        Leads{" "}
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="#tabs-activity-5"
-                                        onClick={() => {
-                                            setCurrentTab("TeamLeads")
-                                            window.location.pathname = `/admin/employeeleads/${id}`
-                                        }}
-                                        className={
-                                            currentTab === "TeamLeads"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                    >
-                                        <span>Team Leads</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div> */}
+
+                            {/* <!-- Page title actions --> */}
+                        </div>
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -2416,7 +2188,7 @@ function AdminEmployeeTeamLeads() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {teamleadsData.map((company, index) => (
+                                            {filteredData.map((company, index) => (
                                                 <tr
                                                     key={index}
                                                     className={
@@ -3399,4 +3171,4 @@ function AdminEmployeeTeamLeads() {
     );
 }
 
-export default AdminEmployeeTeamLeads;
+export default DatamanagerEmployeeTeamLeads;

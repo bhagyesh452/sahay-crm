@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "./Header";
-import Navbar from "./Navbar";
-import "../dist/css/tabler.min.css?1684106062";
-import "../dist/css/tabler-flags.min.css?1684106062";
-import "../dist/css/tabler-payments.min.css?1684106062";
-import "../dist/css/tabler-vendors.min.css?1684106062";
-import "../dist/css/demo.min.css?1684106062";
-
-import "../assets/styles.css";
-import "../assets/table.css";
+import Header from "../../Components/Header/Header.jsx";
+import Navbar from "../../Components/Navbar/Navbar.jsx";
+import '../../../dist/css/tabler.min.css?1684106062';
+//import "../../../dist/css/tabler.min.css?1684106062";
+import "../../../dist/css/tabler-flags.min.css?1684106062";
+import "../../../dist/css/tabler-payments.min.css?1684106062";
+import "../../../dist/css/tabler-vendors.min.css?1684106062";
+import "../../../dist/css/demo.min.css?1684106062";
+import { IconTrash } from "@tabler/icons-react";
+import "../../../assets/styles.css";
+import "../../../assets/table.css";
 // import EmployeeTable from "./EmployeeTable";
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -20,10 +21,11 @@ import { GrDocumentStore } from "react-icons/gr";
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
-import Employee from './Employees.js'
-import Team from './Team.js'
-import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
+//import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
 import { AiOutlineUserDelete } from "react-icons/ai";
+import Nodata from "../../Components/Nodata/Nodata.jsx";
+import DataManager_Employees from '../Employees/DataManager_Employees.jsx'
+import Datamanager_DeletedEmployeePanel from "./Datamanager_DeletedEmployeePanel.jsx";
 
 
 
@@ -32,7 +34,7 @@ import { AiOutlineUserDelete } from "react-icons/ai";
 
 
 
-function NewEmployee() {
+function DatamanagerNewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -113,14 +115,11 @@ function NewEmployee() {
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0}>
-                            <Employee />
+                            <DataManager_Employees />
                         </CustomTabPanel>
                          <CustomTabPanel value={value} index={1}>
-                            <DeletedEmployeePanel/>
+                            <Datamanager_DeletedEmployeePanel/>
                         </CustomTabPanel>
-                        {/* <CustomTabPanel value={value} index={1}>
-                            <Team/>
-                        </CustomTabPanel> */}
                     </div>
                 </div>
             </div>
@@ -130,4 +129,4 @@ function NewEmployee() {
     );
 }
 
-export default NewEmployee;
+export default DatamanagerNewEmployee;

@@ -22,6 +22,7 @@ import Select from '@mui/material/Select';
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
+import axios from "axios";
 
 function EmployeeDataReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -79,25 +80,25 @@ function EmployeeDataReport() {
     };
 
     //-------fetching employees info--------------------------------------------
-   const[loading , setLoading] = useState(false)
-   const fetchEmployeeInfo = async () => {
-    try {
-        setLoading(true);
-        const response = await fetch(`${secretKey}/employee/einfo`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    const [loading, setLoading] = useState(false)
+    const fetchEmployeeInfo = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${secretKey}/employee/einfo`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+
+            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+        } catch (error) {
+            console.error('Error Fetching Employee Data ', error);
+        } finally {
+            setLoading(false);
         }
-        const data = await response.json();
-        
-        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-    } catch (error) {
-        console.error('Error Fetching Employee Data ', error);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     const debounceDelay = 300;
     //const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
@@ -875,6 +876,111 @@ function EmployeeDataReport() {
         selectedEmployee !== "" &&
         companyData.filter((obj) => obj.ename === selectedEmployee);
 
+
+
+    //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
+
+    const handleExportBookings = async () => {
+        const tempData = [];
+        employeeData.forEach((obj, index) => {
+            const tempObj = {
+                SrNo: index + 1,
+                employeeName: obj.ename,
+                Untouched: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Untouched"
+                    )
+                    .length.toLocaleString(),
+                Busy: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Busy"
+                    )
+                    .length.toLocaleString(),
+                NotPickedUp: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Not Picked Up"
+                    )
+                    .length.toLocaleString(),
+                Junk: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Junk"
+                    )
+                    .length.toLocaleString(),
+                FollowUp: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "FollowUp"
+                    )
+                    .length.toLocaleString(),
+                Interested: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Interested"
+                    )
+                    .length.toLocaleString(),
+                NotInterested: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Not Interested"
+                    )
+                    .length.toLocaleString(),
+                Matured: companyData
+                    .filter(
+                        (data) =>
+                            data.ename === obj.ename &&
+                            data.Status === "Matured"
+                    )
+                    .length.toLocaleString(),
+                TotalLeads: companyData
+                    .filter(
+                        (data) => data.ename === obj.ename
+                    )
+                    .length.toLocaleString(),
+                LastleadAssignDate: formatDateFinal(
+                    companyData
+                        .filter(
+                            (data) => data.ename === obj.ename
+                        )
+                        .reduce(
+                            (latestDate, data) => {
+                                return latestDate.AssignDate >
+                                    data.AssignDate
+                                    ? latestDate
+                                    : data;
+                            },
+                            { AssignDate: 0 }
+                        ).AssignDate
+                )
+            }
+
+            tempData.push(tempObj);
+        });
+
+        const response = await axios.post(
+            `${secretKey}/bookings/export-this-bookings`,
+            {
+                tempData
+            }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "LeadReport.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
     return (
         <div>
             <div className="employee-dashboard" id="employeedashboardadmin">
@@ -888,6 +994,11 @@ function EmployeeDataReport() {
                         <div className="d-flex align-items-center pr-1">
                             <div className="filter-booking d-flex align-items-center">
                                 <div className="filter-booking mr-1 d-flex align-items-center">
+                                    <div className="export-data">
+                                        <button className="btn btn-link" onClick={handleExportBookings}>
+                                            Export CSV
+                                        </button>
+                                    </div>
                                     <div className="filter-title mr-1">
                                         <h2 className="m-0">
                                             Filter Branch :
@@ -1387,241 +1498,243 @@ function EmployeeDataReport() {
                                     </tr>
                                 </thead>
                                 {loading ?
-                                (<tbody>
-                                <tr>
-                                  <td colSpan="12" className="LoaderTDSatyle">
-                                    <ClipLoader
-                                      color="lightgrey"
-                                      loading
-                                      size={20}
-                                      aria-label="Loading Spinner"
-                                      data-testid="loader"
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>): 
-                              (<tbody>
-                                    {employeeData.length !== 0 &&
-                                        companyData.length !== 0 &&
-                                        employeeData.map((obj, index) => (
-                                            <React.Fragment key={index}>
-                                                <tr>
-                                                    <td
-                                                        key={`row-${index}-1`}
-                                                    >
-                                                        {index + 1}
-                                                    </td>
-                                                    <td key={`row-${index}-2`}>
-                                                        {obj.ename}
-                                                    </td>
+                                    (<tbody>
+                                        <tr>
+                                            <td colSpan="12">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>) :
+                                    (<tbody>
+                                        {employeeData.length !== 0 &&
+                                            companyData.length !== 0 &&
+                                            employeeData.map((obj, index) => (
+                                                <React.Fragment key={index}>
+                                                    <tr>
+                                                        <td
+                                                            key={`row-${index}-1`}
+                                                        >
+                                                            {index + 1}
+                                                        </td>
+                                                        <td key={`row-${index}-2`}>
+                                                            {obj.ename}
+                                                        </td>
 
-                                                    <td key={`row-${index}-3`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Untouched`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Untouched"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
+                                                        <td key={`row-${index}-3`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Untouched`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Untouched"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
 
-                                                    <td key={`row-${index}-4`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Busy`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Busy"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
+                                                        <td key={`row-${index}-4`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Busy`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Busy"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
 
-                                                    <td key={`row-${index}-5`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Not Picked Up`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Not Picked Up"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
+                                                        <td key={`row-${index}-5`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Not Picked Up`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Not Picked Up"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
 
-                                                    <td key={`row-${index}-6`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Junk`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Junk"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-7`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/FollowUp`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "FollowUp"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-8`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Interested`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Interested"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-9`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Not Interested`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Not Interested"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-10`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/Matured`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) =>
-                                                                        data.ename === obj.ename &&
-                                                                        data.Status === "Matured"
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-11`}>
-                                                        <Link
-                                                            to={`/employeereport/${obj.ename}/complete`}
-                                                            style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            {companyData
-                                                                .filter(
-                                                                    (data) => data.ename === obj.ename
-                                                                )
-                                                                .length.toLocaleString()}
-                                                        </Link>
-                                                    </td>
-                                                    <td key={`row-${index}-12`}>
-                                                        {formatDateFinal(
-                                                            companyData
-                                                                .filter(
-                                                                    (data) => data.ename === obj.ename
-                                                                )
-                                                                .reduce(
-                                                                    (latestDate, data) => {
-                                                                        return latestDate.AssignDate >
-                                                                            data.AssignDate
-                                                                            ? latestDate
-                                                                            : data;
-                                                                    },
-                                                                    { AssignDate: 0 }
-                                                                ).AssignDate
-                                                        )}
-                                                        <OpenInNewIcon
-                                                            onClick={() => {
-                                                                functionOpenEmployeeTable(
-                                                                    obj.ename
-                                                                );
-                                                            }}
-                                                            style={{
-                                                                cursor: "pointer",
-                                                                marginRight: "-41px",
-                                                                marginLeft: "21px",
-                                                                fontSize: "17px",
-                                                            }}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            </React.Fragment>
-                                        ))}
-                                </tbody>
-                              )}
+                                                        <td key={`row-${index}-6`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Junk`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Junk"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-7`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/FollowUp`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "FollowUp"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-8`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Interested`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Interested"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-9`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Not Interested`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Not Interested"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-10`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/Matured`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) =>
+                                                                            data.ename === obj.ename &&
+                                                                            data.Status === "Matured"
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-11`}>
+                                                            <Link
+                                                                to={`/employeereport/${obj.ename}/complete`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {companyData
+                                                                    .filter(
+                                                                        (data) => data.ename === obj.ename
+                                                                    )
+                                                                    .length.toLocaleString()}
+                                                            </Link>
+                                                        </td>
+                                                        <td key={`row-${index}-12`}>
+                                                            {formatDateFinal(
+                                                                companyData
+                                                                    .filter(
+                                                                        (data) => data.ename === obj.ename
+                                                                    )
+                                                                    .reduce(
+                                                                        (latestDate, data) => {
+                                                                            return latestDate.AssignDate >
+                                                                                data.AssignDate
+                                                                                ? latestDate
+                                                                                : data;
+                                                                        },
+                                                                        { AssignDate: 0 }
+                                                                    ).AssignDate
+                                                            )}
+                                                            <OpenInNewIcon
+                                                                onClick={() => {
+                                                                    functionOpenEmployeeTable(
+                                                                        obj.ename
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    marginRight: "-41px",
+                                                                    marginLeft: "21px",
+                                                                    fontSize: "17px",
+                                                                }}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </React.Fragment>
+                                            ))}
+                                    </tbody>
+                                    )}
                                 {employeeData.length !== 0 && !loading &&
                                     companyData.length !== 0 && (
                                         <tfoot className="admin-dash-tbl-tfoot"    >

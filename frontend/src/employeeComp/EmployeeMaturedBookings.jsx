@@ -32,7 +32,7 @@ import {
 import PdfImageViewerAdmin from "../admin/PdfViewerAdmin";
 import Tooltip from '@mui/material/Tooltip';
 
-
+import RemainingAmnt from "../static/my-images/money.png";
 
 
 
@@ -90,7 +90,11 @@ function EmployeeMaturedBookings() {
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
-      const sortedData = redesignedData.sort((a,b)=>new Date(b.bookingDate) - new Date(a.bookingDate) )
+       const sortedData = redesignedData.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      });
       setFormData(sortedData);
       setInfiniteBooking(sortedData)
     } catch (error) {
@@ -513,14 +517,20 @@ function EmployeeMaturedBookings() {
                                     ))}
                               </div>
 
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
-                                </div>
-                              )}
+                              <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
+                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                  <img src={RemainingAmnt}></img>
+                                </div>}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
@@ -1534,7 +1544,7 @@ function EmployeeMaturedBookings() {
                                         >
                                           {currentLeadform &&
                                             currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                               ".pdf"
                                             ) ? (
                                               <PdfImageViewerAdmin
@@ -1583,7 +1593,7 @@ function EmployeeMaturedBookings() {
                                             handleViewPdOtherDocs(obj.filename, currentLeadform["Company Name"])
                                           }
                                         >
-                                          {obj.filename.endsWith(".pdf") ? (
+                                          {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2413,7 +2423,7 @@ function EmployeeMaturedBookings() {
                                             )
                                           }
                                         >
-                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -2453,7 +2463,7 @@ function EmployeeMaturedBookings() {
                                           )
                                         }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
+                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}

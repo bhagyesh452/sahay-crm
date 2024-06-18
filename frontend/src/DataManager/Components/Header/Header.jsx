@@ -98,6 +98,9 @@ function Header({ name }) {
     }
   };
 
+ const dataManagerName = localStorage.getItem("dataManagerName")
+ 
+
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
@@ -133,7 +136,7 @@ function Header({ name }) {
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" , textAlign:"left" }}>{name ? name : "Name"}</div>
+                  <div style={{ textTransform: "capitalize" , textAlign:"left" }}>{dataManagerName ? dataManagerName : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     Data Manager
                   </div>

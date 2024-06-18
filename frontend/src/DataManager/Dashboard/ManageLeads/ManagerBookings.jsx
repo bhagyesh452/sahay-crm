@@ -17,6 +17,7 @@ import AddLeadForm from "../../../admin/AddLeadForm.jsx";
 import { FaPlus } from "react-icons/fa6";
 import { IoAdd } from "react-icons/io5";
 import CloseIcon from "@mui/icons-material/Close";
+import RemainingAmnt from "../../../static/my-images/money.png";
 import { IconX } from "@tabler/icons-react";
 import {
   Button,
@@ -61,8 +62,7 @@ function ManagerBookings() {
       //setIsLoading(true);
       //setCurrentDataLoading(true)
 
-      const response = await axios.get(`${secretKey}/leads`);
-
+      const response = await axios.get(`${secretKey}/company-data/leads`);
       // Set the retrieved data in the state
       setData(response.data);
       //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
@@ -100,7 +100,11 @@ function ManagerBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const sortedData = response.data; // Reverse the order of data
+      const sortedData = response.data.sort((a, b) => {
+        const dateA = new Date(a.lastActionDate);
+        const dateB = new Date(b.lastActionDate);
+        return dateB - dateA; // Sort in descending order
+      }); // Reverse the order of data
 
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data
@@ -279,10 +283,10 @@ function ManagerBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(formData);
+
       setCurrentCompanyName(currentLeadform["Company Name"]);
       const response = await fetch(
-        `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
+        `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
         {
           method: "POST",
           body: formData,
@@ -406,7 +410,7 @@ function ManagerBookings() {
   formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
   formData.append("withGST", remainingObject.withGST);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
-  formData.append("paymentDate" , remainingObject["paymentDate"])
+  formData.append("paymentDate", remainingObject["paymentDate"])
   const handleSubmitMorePayments = async () => {
     if (!remainingObject.paymentDate || !remainingObject.paymentMethod) {
       Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
@@ -463,28 +467,43 @@ function ManagerBookings() {
       }
     }
   };
+  function formatDateInput(inputDate) {
+    const date = new Date(inputDate);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Adding 1 to month because it's zero-based
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
 
   console.log("Remaining Object", remainingObject)
-const [expanseObject, setExpanseObject] = useState({
-  serviceName : "",
-  bookingIndex : 0,
-  expanseAmount : 0,
-  serviceID: ""
-})
-  
-
-  const functionOpenAddExpanse = (bookingIndex,serviceName, serviceID) => {
-
-  setExpanseObject({
-    ...expanseObject,
-    bookingIndex: bookingIndex,
-    serviceName: serviceName,
-    serviceID: serviceID
+  const [expanseObject, setExpanseObject] = useState({
+    serviceName: "",
+    bookingIndex: 0,
+    expanseAmount: 0,
+    serviceID: "",
+    expanseDate: null
   })
-   setOpenAddExpanse(true)
+
+
+  const functionOpenAddExpanse = (bookingIndex, serviceName, serviceID) => {
+    const expanseToday = new Date();
+    const booking = bookingIndex === 0 ? currentLeadform : currentLeadform.moreBookings[bookingIndex - 1];
+    const findService = booking.services.find(obj => obj._id === serviceID);
+
+
+    setExpanseObject({
+      ...expanseObject,
+      bookingIndex: bookingIndex,
+      serviceName: serviceName,
+      serviceID: serviceID,
+      expanseDate: findService.expanseDate ? formatDateInput(findService.expanseDate) : formatDateInput(expanseToday),
+      expanseAmount: findService.expanse ? findService.expanse : 0
+    })
+    setOpenAddExpanse(true)
   }
-  const functionDeleteRemainingPayment = async(BookingIndex , serviceName) => {
-    console.log("ye ghus raha", BookingIndex , serviceName)
+  const functionDeleteRemainingPayment = async (BookingIndex, serviceName) => {
+    console.log("ye ghus raha", BookingIndex, serviceName)
     const encodedServiceName = encodeURIComponent(serviceName);
     try {
       const response = await axios.delete(
@@ -495,7 +514,7 @@ const [expanseObject, setExpanseObject] = useState({
         "Thank you, your payment has been updated successfully!",
         "success"
       );
-    
+
     } catch (error) {
       Swal.fire(
         "Error Updating Payment!",
@@ -504,7 +523,7 @@ const [expanseObject, setExpanseObject] = useState({
       );
     }
   }
-   const submitExpanse = async()=>{
+  const submitExpanse = async () => {
     try {
       const response = await axios.post(
         `${secretKey}/bookings/redesigned-submit-expanse/${currentLeadform["Company Name"]}`, expanseObject
@@ -516,7 +535,7 @@ const [expanseObject, setExpanseObject] = useState({
       );
       setNowToFetch(true);
       setOpenAddExpanse(false);
-    
+
     } catch (error) {
       Swal.fire(
         "Error Adding Expanse!",
@@ -524,7 +543,9 @@ const [expanseObject, setExpanseObject] = useState({
         "error"
       );
     }
-   }
+  }
+
+
   return (
     <div>
       <Header name={dataManagerName} />
@@ -679,14 +700,20 @@ const [expanseObject, setExpanseObject] = useState({
                                     ))}
                               </div>
 
-                              {obj.moreBookings.length !== 0 && (
-                                <div
-                                  className="b_Services_multipal_services"
-                                  title="Multipal Bookings"
-                                >
-                                  <FcList />
-                                </div>
-                              )}
+                              <div className="d-flex align-items-center justify-content-between">
+                                {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
+                                  <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                    <img src={RemainingAmnt}></img>
+                                  </div>}
+                                {obj.moreBookings.length !== 0 && (
+                                  <div
+                                    className="b_Services_multipal_services"
+                                    title="Multipal Bookings"
+                                  >
+                                    <FcList />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
@@ -1139,7 +1166,7 @@ const [expanseObject, setExpanseObject] = useState({
 
                                             {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                             <div className="d-flex">
-                                              <button onClick={() => functionOpenAddExpanse(0 , obj.serviceName , obj._id)} className="btn btn-link btn-small">
+                                              <button onClick={() => functionOpenAddExpanse(0, obj.serviceName, obj._id)} className="btn btn-link btn-small">
                                                 + Expanse
                                               </button>
 
@@ -1154,6 +1181,13 @@ const [expanseObject, setExpanseObject] = useState({
                                                     <h2>{expanseObject.serviceName}</h2>
                                                   </div>
                                                   <div className="expanse-close">
+                                                    <button className="btn btn-link" onClick={() => setExpanseObject({
+                                                      ...expanseObject,
+                                                      expanseDate: "",
+                                                      expanseAmount: 0
+                                                    })} >
+                                                      Clear
+                                                    </button>
                                                     <IconButton onClick={() => setOpenAddExpanse(false)}>
                                                       <CloseIcon />
                                                     </IconButton>
@@ -1164,14 +1198,26 @@ const [expanseObject, setExpanseObject] = useState({
                                               </DialogTitle>
                                               <DialogContent>
                                                 <div className="expanse-content">
-                                                  <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
-                                                  <input value={expanseObject.expanseAmount} onChange={(e)=>{
-                                                    setExpanseObject({
-                                                      ...expanseObject,
-                                                      expanseAmount: e.target.value
-                                                    })
-                                                  }} type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
+                                                  <div className="expanse-input">
+                                                    <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
+                                                    <input value={expanseObject.expanseAmount} onChange={(e) => {
+                                                      setExpanseObject({
+                                                        ...expanseObject,
+                                                        expanseAmount: e.target.value
+                                                      })
+                                                    }} type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
+                                                  </div>
+                                                  <div className="expanse-date">
+                                                    <label className="mb-2" htmlFor="expansee-input"> <b>Expanse Date</b></label>
+                                                    <input placeholder="Select Date" value={expanseObject.expanseDate} onChange={(e) => {
+                                                      setExpanseObject({
+                                                        ...expanseObject,
+                                                        expanseDate: e.target.value
+                                                      })
+                                                    }} type="date" className="form-control" id="expanse-input"/>
+                                                  </div>
                                                 </div>
+
 
 
                                               </DialogContent>
@@ -1190,7 +1236,7 @@ const [expanseObject, setExpanseObject] = useState({
                                   </div>
                                 </div>
                                 <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-5 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100">
@@ -1206,7 +1252,7 @@ const [expanseObject, setExpanseObject] = useState({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-5 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-3 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -1215,8 +1261,8 @@ const [expanseObject, setExpanseObject] = useState({
                                       </div>
                                       <div class="col-sm-9 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                            ? obj.paymentRemarks
-                                            : "N/A"}>
+                                          ? obj.paymentRemarks
+                                          : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1224,23 +1270,39 @@ const [expanseObject, setExpanseObject] = useState({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-2 col-sm-2 p-0">
+                                </div>
+                                {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-2 p-0">
                                     <div class="row m-0">
-                                      <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses
+                                          Expense
                                         </div>
                                       </div>
-                                      <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                           - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-6 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expanses Date
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-6 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>}
                                 <div className="row m-0 bdr-btm-eee">
-                                  {obj.firstPayment !== 0 && (
+                                  {obj.paymentTerms === "two-part" && (
                                     <div className="col-lg-6 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-4 align-self-stretch p-0">
@@ -1570,9 +1632,8 @@ const [expanseObject, setExpanseObject] = useState({
                                                         </div>
                                                         <div className="d-flex align-items-center">
                                                           <div>
-                                                            {formatDatePro(
-                                                              paymentObj.paymentDate
-                                                            )}
+                                                            {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDated) + ")"}
+
                                                           </div>
                                                           {parseInt(currentLeadform.pendingAmount) !== 0 && <div
                                                             className="Services_Preview_action_edit mr-2"
@@ -1589,21 +1650,21 @@ const [expanseObject, setExpanseObject] = useState({
                                                           >
                                                             <AddCircle />
                                                           </div>}
-                                                          {
-                                                          currentLeadform.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(0, obj.serviceName)}>
-                                                            <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
-                                                          </IconButton>
-                                                        }
+                                                          
+                                                          <IconButton onClick={() => functionDeleteRemainingPayment(0, obj.serviceName)}>
+                                                              <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
+                                                            </IconButton>
+                                                          
 
                                                         </div>
 
-                                                      
+
 
                                                       </div>
                                                     </div>
                                                   </div>
                                                   <div className="row m-0 bdr-btm-eee">
-                                                    <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100">
@@ -1618,7 +1679,7 @@ const [expanseObject, setExpanseObject] = useState({
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -1651,17 +1712,35 @@ const [expanseObject, setExpanseObject] = useState({
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                    <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                            Payment Date
+                                                          </div>
+                                                        </div>
+                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
+                                                            {formatDatePro(
+                                                              paymentObj.paymentDate
+                                                            )}
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="row m-0 bdr-btm-eee">
+                                                    <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                      <div class="row m-0 h-100">
+                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                          <div class="booking_inner_dtl_h h-100">
                                                             Payment Method
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.paymentMethod
-                                                            }>
+                                                            paymentObj.paymentMethod
+                                                          }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1671,15 +1750,15 @@ const [expanseObject, setExpanseObject] = useState({
                                                     </div>
                                                     <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
                                                       <div class="row m-0 h-100">
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-4 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                             Extra Remarks
                                                           </div>
                                                         </div>
-                                                        <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="col-sm-8 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.extraRemarks
-                                                            }>
+                                                            paymentObj.extraRemarks
+                                                          }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1922,7 +2001,7 @@ const [expanseObject, setExpanseObject] = useState({
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.paymentMethod}>
+                                      currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1938,7 +2017,7 @@ const [expanseObject, setExpanseObject] = useState({
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}>
+                                      currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes !== "undefined" ? currentLeadform.extraNotes : "N/A"}
                                     </div>
@@ -1972,7 +2051,7 @@ const [expanseObject, setExpanseObject] = useState({
                                         >
                                           {currentLeadform &&
                                             currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                               ".pdf"
                                             ) ? (
                                               <PdfImageViewerAdmin
@@ -2031,7 +2110,7 @@ const [expanseObject, setExpanseObject] = useState({
                                               )
                                             }
                                           >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
+                                            {((remainingObject.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="paymentrecieptpdf"
                                                 path={remainingObject.paymentReceipt[0].filename}
@@ -2071,7 +2150,7 @@ const [expanseObject, setExpanseObject] = useState({
                                             )
                                           }
                                         >
-                                          {obj.filename.endsWith(".pdf") ? (
+                                          {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2289,7 +2368,7 @@ const [expanseObject, setExpanseObject] = useState({
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             <span>
-                                            <i>{objMain.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
+                                              <i>{objMain.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                             </span>{" "}
                                             {objMain.bdmName}
                                           </div>
@@ -2416,11 +2495,11 @@ const [expanseObject, setExpanseObject] = useState({
                                                 </div>
                                                 {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                                 <div>
-                                                  <button onClick={() => functionOpenAddExpanse(BookingIndex + 1 , obj.serviceName, obj._id)} className="btn btn-link btn-small">
+                                                  <button onClick={() => functionOpenAddExpanse(BookingIndex + 1, obj.serviceName, obj._id)} className="btn btn-link btn-small">
                                                     + Expanse
                                                   </button>
 
-                                                </div>                                              
+                                                </div>
 
                                                 {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                               </div>
@@ -2430,7 +2509,7 @@ const [expanseObject, setExpanseObject] = useState({
                                       </div>
                                     </div>
                                     <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-5 col-sm-5 p-0">
+                                      <div className="col-lg-6 col-sm-5 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100">
@@ -2444,7 +2523,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-5 col-sm-5 p-0">
+                                      <div className="col-lg-6 col-sm-5 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-3 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -2453,8 +2532,8 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                           <div class="col-sm-9 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                ? obj.paymentRemarks
-                                                : "N/A"}>
+                                              ? obj.paymentRemarks
+                                              : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2462,23 +2541,39 @@ const [expanseObject, setExpanseObject] = useState({
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-2 col-sm-2 p-0">
+                                    </div>
+                                   {obj.expanse && obj.expanse !== 0 && <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
-                                          <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                               Expanses
                                             </div>
                                           </div>
-                                          <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                              - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
+                                      <div className="col-lg-6 col-sm-2 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Expanses Date
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {formatDatePro(obj.expanseDate ? obj.expansesDate : currentLeadform.bookingDate)}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>}
                                     <div className="row m-0 bdr-btm-eee">
-                                      {obj.firstPayment !== 0 && (
+                                      {obj.paymentTerms === "two-part" && (
                                         <div className="col-lg-6 col-sm-6 p-0">
                                           <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
@@ -2794,7 +2889,6 @@ const [expanseObject, setExpanseObject] = useState({
                                                             <div>
                                                               {objMain.remainingPayments.length !== 0 &&
                                                                 (() => {
-
                                                                   if (index === 0) return "Second ";
                                                                   else if (index === 1) return "Third ";
                                                                   else if (index === 2) return "Fourth ";
@@ -2806,22 +2900,20 @@ const [expanseObject, setExpanseObject] = useState({
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
-                                                              {formatDatePro(
-                                                                paymentObj.paymentDate
-                                                              )}
+                                                                {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
                                                               </div>
-                                                              
-                                                               {
-                                                          objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1 , obj.serviceName)} >
-                                                            <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
-                                                          </IconButton>
-                                                        }
+
+                                                              {
+                                                                <IconButton onClick={() => functionDeleteRemainingPayment(BookingIndex + 1, obj.serviceName)}>
+                                                                  <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
+                                                                </IconButton>
+                                                              }
                                                             </div>
                                                           </div>
                                                         </div>
                                                       </div>
                                                       <div className="row m-0 bdr-btm-eee">
-                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100">
@@ -2836,7 +2928,7 @@ const [expanseObject, setExpanseObject] = useState({
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -2869,7 +2961,25 @@ const [expanseObject, setExpanseObject] = useState({
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                          <div class="row m-0 h-100">
+                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                Payment Date
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
+                                                                {formatDatePro(
+                                                                  paymentObj.paymentDate
+                                                                )}
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div className="row m-0 bdr-btm-eee">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
                                                             <div class="col-sm-5 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -2878,8 +2988,8 @@ const [expanseObject, setExpanseObject] = useState({
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                  paymentObj.paymentMethod
-                                                                }>
+                                                                paymentObj.paymentMethod
+                                                              }>
                                                                 {
                                                                   paymentObj.paymentMethod
                                                                 }
@@ -2887,17 +2997,17 @@ const [expanseObject, setExpanseObject] = useState({
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
                                                           <div class="row m-0 h-100">
-                                                            <div class="col-sm-6 align-self-stretc p-0">
-                                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                            <div class="col-sm-4 align-self-stretc p-0">
+                                                              <div class="booking_inner_dtl_h h-100">
                                                                 Extra Remarks
                                                               </div>
                                                             </div>
-                                                            <div class="col-sm-6 align-self-stretc p-0">
+                                                            <div class="col-sm-8 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                  paymentObj.extraRemarks
-                                                                }>
+                                                                paymentObj.extraRemarks
+                                                              }>
                                                                 {
                                                                   paymentObj.extraRemarks
                                                                 }
@@ -3095,7 +3205,7 @@ const [expanseObject, setExpanseObject] = useState({
                                             )
                                           }
                                         >
-                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -3135,7 +3245,7 @@ const [expanseObject, setExpanseObject] = useState({
                                           )
                                         }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
+                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}
