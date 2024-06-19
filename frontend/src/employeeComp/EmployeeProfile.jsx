@@ -16,6 +16,9 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { TbPhoneCall } from "react-icons/tb";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { GrLocation } from "react-icons/gr";
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+
 
 
 
@@ -71,78 +74,146 @@ function EmployeeProfile() {
         <div className="employee-profile-main mt-3 mb-3">
           <div className="container-xl">
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-lg-7">
                 <div className="my-card">
-                  <div className="d-flex align-items-center m-0">
+                  <div className="d-flex align-items-start m-0">
                     <div className="employee_profile_picture d-flex align-items-center justify-content-center">
                       <div className="employee_picture">
-                        <img src={EmpImg2}></img>
+                        <img src={EmpImg1}></img>
                       </div>
                       <div className="profile-pic-upload">
                         <FaCamera />
                       </div>
                     </div>
                     <div className="employee_profile_data">
-                      <div className="EP_Name d-flex align-items-center">
-                        <h2 className="m-0">Nimesh Parekh</h2>
+                      <div className="EP_Name d-flex justify-content-between align-items-center">
+                        <h3 className="m-0">
+                          Nimesh Parekh
+                          <div className="EP_Designation">
+                              Sales Executive
+                          </div>
+                        </h3>
                         <div className="employee_active">
                           Active
                         </div>
                       </div>
-                      <div className="EP_Designation">
-                          Sales Executive
-                      </div>
-                      <div className="EP_Other_info mt-3">
-                        <div className="d-flex align-items-center mt-1 mb-1">
-                          <div className="d-flex align-items-center">
-                            <div className="ep_info_icon">
-                            <FaRegCircleUser />
+                      <div className="row m-0 aling-items-start" >
+                        <div className="col-sm-6">
+                          <div className="EP_Other_info clr-bg-light-4299e1 mt-3">
+                            <div className="EP_Other_info_head clr-4299e1" style={{background:'#e4f1fb'}}>
+                                Office Details
                             </div>
-                            <div className="ep_info_h">
-                              Employee Id :
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-4299e1">
+                                <FaRegCircleUser />
+                                </div>
+                                <div className="ep_info_h">
+                                  Employee Id :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">2456</div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="ml-1">
-                            <div className="ep_info_t">2456</div>
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-4299e1">
+                                  <MdOutlineEmail />
+                                </div>
+                                <div className="ep_info_h">
+                                  Email :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">nirmeshparekh1@gmail.com</div>
+                              </div>
+                            </div>
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-4299e1">
+                                <TbPhoneCall />
+                                </div>
+                                <div className="ep_info_h">
+                                  Phone No :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">+91 99242 83530</div>
+                              </div>
+                            </div>
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-4299e1">
+                                <MdOutlineCalendarMonth />
+                                </div>
+                                <div className="ep_info_h">
+                                  Joining Date:
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">02 Dec 2023</div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className="d-flex align-items-center mt-1 mb-1">
-                          <div className="d-flex align-items-center">
-                            <div className="ep_info_icon">
-                              <MdOutlineEmail />
+                        <div className="col-sm-6">
+                          <div className="EP_Other_info clr-bg-light-00d19d mt-3">
+                            <div className="EP_Other_info_head clr-00d19d" style={{background:'#dbf9f1'}}>
+                                Personal Details
                             </div>
-                            <div className="ep_info_h">
-                              Email :
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-00d19d">
+                                  <MdOutlineEmail />
+                                </div>
+                                <div className="ep_info_h">
+                                  Email :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">nirmeshparekh1@gmail.com</div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="ml-1">
-                            <div className="ep_info_t">nirmeshparekh1@gmail.com</div>
-                          </div>
-                        </div>
-                        <div className="d-flex align-items-center mt-1 mb-1">
-                          <div className="d-flex align-items-center">
-                            <div className="ep_info_icon">
-                            <TbPhoneCall />
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-00d19d">
+                                <TbPhoneCall />
+                                </div>
+                                <div className="ep_info_h">
+                                  Phone No :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">+91 99242 83530</div>
+                              </div>
                             </div>
-                            <div className="ep_info_h">
-                              Phone No :
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-00d19d">
+                                <FaRegCircleUser />
+                                </div>
+                                <div className="ep_info_h">
+                                  Emergency Contact :
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">2456</div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="ml-1">
-                            <div className="ep_info_t">+91 99242 83530</div>
-                          </div>
-                        </div>
-                        <div className="d-flex align-items-center mt-1 mb-1">
-                          <div className="d-flex align-items-center">
-                            <div className="ep_info_icon">
-                            <MdOutlineCalendarMonth />
+                            <div className="d-flex align-items-center mt-1 mb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-00d19d">
+                                <GrLocation />
+                                </div>
+                                <div className="ep_info_h">
+                                  Address:
+                                </div>
+                              </div>
+                              <div className="ml-1">
+                                <div className="ep_info_t">02 Dec 2023</div>
+                              </div>
                             </div>
-                            <div className="ep_info_h">
-                              Joining Date:
-                            </div>
-                          </div>
-                          <div className="ml-1">
-                            <div className="ep_info_t">02 Dec 2023</div>
                           </div>
                         </div>
                       </div>
@@ -150,77 +221,13 @@ function EmployeeProfile() {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3">
-                <div className="my-card EP_personal">
-                  <div className="EP_personal_head">
-                    <h2 className="m-0">Personal Information</h2>
-                  </div>
-                  <div className="EP_personal_info">
-                    <div className="d-flex align-items-center mt-1 mb-1">
-                      <div className="d-flex align-items-center">
-                        <div className="ep_info_icon">
-                          <MdOutlineEmail />
-                        </div>
-                        <div className="ep_info_h">
-                          Email :
-                        </div>
-                      </div>
-                      <div className="ml-1">
-                        <div className="ep_info_t">nirmeshparekh1@gmail.com</div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center mt-1 mb-1">
-                      <div className="d-flex align-items-center">
-                        <div className="ep_info_icon">
-                        <TbPhoneCall />
-                        </div>
-                        <div className="ep_info_h">
-                          Phone No :
-                        </div>
-                      </div>
-                      <div className="ml-1">
-                        <div className="ep_info_t">+91 99242 83530</div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center mt-1 mb-1">
-                      <div className="d-flex align-items-center">
-                        <div className="ep_info_icon">
-                        <TbPhoneCall />
-                        </div>
-                        <div className="ep_info_h">
-                          Emergency Contact :
-                        </div>
-                      </div>
-                      <div className="ml-1">
-                        <div className="ep_info_t">+91 99242 83530</div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center mt-1 mb-1">
-                      <div className="d-flex align-items-center">
-                        <div className="ep_info_icon">
-                        <FaRegCircleUser />
-                        </div>
-                        <div className="ep_info_h">
-                          Contact Persona Name :
-                        </div>
-                      </div>
-                      <div className="ml-1">
-                        <div className="ep_info_t">Nimesh Parekh</div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-start mt-1 mb-1">
-                      <div className="d-flex align-items-center">
-                        <div className="ep_info_icon">
-                          <GrLocation />
-                        </div>
-                        <div className="ep_info_h">
-                          Address:
-                        </div>
-                      </div>
-                      <div className="ml-1">
-                        <div className="ep_info_t">H 21, Suvarna Apartment, Nirnaynagar, Ranip, ahmedabad -382480</div>
-                      </div>
-                    </div>
+              <div className="col-lg-5">
+                <div className="my-card">
+                  <div className="my-card-body p-2">
+                    <FullCalendar
+                      plugins={[ dayGridPlugin ]}
+                      initialView="dayGridMonth"
+                    />
                   </div>
                 </div>
               </div>

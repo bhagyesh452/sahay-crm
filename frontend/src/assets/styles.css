@@ -2068,6 +2068,9 @@ td input
 {
   padding: 20px;
   position: relative;
+  padding: 20px;
+  position: relative;
+  border-right: 1px solid #eee;
 }
 .employee_picture
 {
@@ -2093,7 +2096,11 @@ td input
 .employee_profile_data
 {
   width: calc(100% - 200px);
-  padding: 20px 20px 20px 0px;
+}
+.EP_Name
+{
+  padding: 10px 20px 10px 20px;
+  border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
   width: 30px;
@@ -2133,6 +2140,8 @@ td input
 {
   font-size: 12px;
   color: #6a6a6a;
+  line-height: 1;
+  font-weight: 400;
 }
 .ep_info_icon
 {
@@ -2150,16 +2159,22 @@ td input
 {
   font-size: 12px;
 }
-.EP_personal
+
+.EP_Other_info
 {
-  
+  position: relative;
+  min-height: 115px;
+  padding: 18px 13px 0px 13px;
+  border-radius: 20px;
 }
-.EP_personal_head
+.EP_Other_info_head
 {
-  padding: 10px 20px;
-  border-bottom: 1px solid #eee;
-}
-.EP_personal_info
-{
-  padding: 10px 20px;
+  position: absolute;
+  top: -13px;
+  border-radius: 21px;
+  border: 3px solid #fff;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  left: 15px;
 }
