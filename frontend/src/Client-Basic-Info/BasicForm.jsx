@@ -26,6 +26,8 @@ const BasicForm = () => {
     CompanyNo: "",
     BrandName: "",
     WebsiteLink: "",
+    CompanyAddress:"",
+    CompanyPanNumber:"",
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -174,6 +176,12 @@ const BasicForm = () => {
     }
     if (!formData.WebsiteLink && formData.WebsiteLink !== "") {
       newErrors.CompanyNo = "Enter Website Link";
+    }
+    if (!formData.CompanyAddress && formData.CompanyAddress !== "") {
+      newErrors.CompanyAddress = "Enter Company Address";
+    }
+    if (!formData.CompanyPanNumber && formData.CompanyPanNumber !== "") {
+      newErrors.CompanyPanNumber = "Enter Pan Number";
     }
     if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
       newErrors.CompanyActivities = "Enter Your Company Activities";
@@ -871,6 +879,7 @@ const BasicForm = () => {
                   )} */}
                 </div>
               </div>
+              
               <div className="col-lg-4">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor="CompanyNo">
@@ -921,6 +930,40 @@ const BasicForm = () => {
                   />
                   {formSubmitted && !formData.WebsiteLink && (
                     <div style={{ color: "red" }}>{"Mention Website Link"}</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor="WebsiteLink">Company Address: <span style={{ color: "red" }}>*</span></label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Company Address"
+                    id="CompanyAddress"
+                    value={formData.CompanyAddress}
+                    onChange={(e) => handleInputChange(e, "WebsiteLink")}
+                  />
+                  {formSubmitted && !formData.CompanyAddress && (
+                    <div style={{ color: "red" }}>{"Enter Company Address"}</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor="WebsiteLink">Company Pan Number: <span style={{ color: "red" }}>*</span></label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Pan Number"
+                    id="CompanyPanNumber"
+                    value={formData.CompanyPanNumber}
+                    onChange={(e) => handleInputChange(e, "CompanyPanNumber")}
+                  />
+                  {formSubmitted && !formData.CompanyPanNumber && (
+                    <div style={{ color: "red" }}>{"Enter Pan Number"}</div>
                   )}
                 </div>
               </div>
