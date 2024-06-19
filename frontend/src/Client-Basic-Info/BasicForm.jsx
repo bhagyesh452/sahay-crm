@@ -94,6 +94,15 @@ const BasicForm = () => {
         method: "POST",
         body: data,
       });
+      if (response.ok) {
+        console.log("Form data submitted successfully!");
+        // Refresh the page after a short delay (e.g., 1 second)
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+      } else {
+        console.error("Failed to submit form data:", response.statusText);
+      }
       return response.data; // You can return data from the backend if needed
     }
     catch (error) {
@@ -104,6 +113,7 @@ const BasicForm = () => {
 
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const [showLinks, setShowLinks] = useState(false);
   const [showTechnologyDetails, setShowTechnologyDetails] = useState(false);
@@ -225,7 +235,7 @@ const BasicForm = () => {
     // Check if there are any errors
     if (Object.keys(newErrors).length > 0) {
       // setErrors(newErrors);
-      setFormSubmitted(false); // Reset form submission state
+      setFormSubmitted(true); // Reset form submission state
     }
 
     // setErrors(true);
@@ -697,8 +707,8 @@ const BasicForm = () => {
                     className="form-check-input"
                     type="radio"
                     name={`DirectorGender${index}`}
-                    value="male"
-                    checked={formData.DirectorDetails.DirectorGender === 'male'}
+                    value="Male"
+                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Male'}
                     onChange={(e) => {
                       setFormData((prevState) => ({
                         ...prevState,
@@ -718,8 +728,8 @@ const BasicForm = () => {
                     className="form-check-input"
                     type="radio"
                     name={`DirectorGender${index}`}
-                    value="female"
-                    checked={formData.DirectorDetails.DirectorGender === 'female'}
+                    value="Female"
+                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Female'}
                     onChange={(e) => {
                       setFormData((prevState) => ({
                         ...prevState,
@@ -732,7 +742,7 @@ const BasicForm = () => {
                       }));
                     }}
                   />
-                  <span className="form-check-label">FeMale</span>
+                  <span className="form-check-label">Female</span>
                 </label>
               </div>
               {formSubmitted && !formData.DirectorDetails[0].DirectorGender && (

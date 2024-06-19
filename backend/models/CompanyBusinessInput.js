@@ -44,7 +44,7 @@ const DirectorSchema = new mongoose.Schema({
     type: String,
     enum: ['Male', 'Female'],
     required: true
-  },
+}
 })
 
 

@@ -1642,400 +1642,399 @@ app.post("/api/users",
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
       console.log(generatedHtml);
 
-
       // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nisargpatel@startupsahay.com"];
       const subject = "Thank you for signing up!";
       const text = "";
       const html = ` 
-       <body>
-     <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
-       <h3 style="text-align: center">Basic Details Form</h3>
-       <div
-         style="
-           width: 95%;
-           margin: 0 auto;
-           padding: 20px 20px;
-           background: #fff;
-           border-radius: 10px;
-         "
-       >
-         <div style="width: 95%; margin: 10px auto">
-           <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-             <div
-               style="
-                 width: 30px;
-                 height: 30px;
-                 line-height: 30px;
-                 text-align: center;
-                 font-weight: bold;
-                 color: black;
-               "
-             >
-               1
-             </div>
-             <div style="margin-left: 10px">Basic Information</div>
-           </div>
+     <body>
+   <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
+     <h3 style="text-align: center">Basic Details Form</h3>
+     <div
+       style="
+         width: 95%;
+         margin: 0 auto;
+         padding: 20px 20px;
+         background: #fff;
+         border-radius: 10px;
+       "
+     >
+       <div style="width: 95%; margin: 10px auto">
+         <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
            <div
              style="
-               background: #f7f7f7;
-               padding: 15px;
-               border-radius: 10px;
-               position: relative;
-               margin-top: 15px;
+               width: 30px;
+               height: 30px;
+               line-height: 30px;
+               text-align: center;
+               font-weight: bold;
+               color: black;
              "
            >
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Company Name
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${CompanyName}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Company Email
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${CompanyEmail}
-                 </div>
+             1
+           </div>
+           <div style="margin-left: 10px">Basic Information</div>
+         </div>
+         <div
+           style="
+             background: #f7f7f7;
+             padding: 15px;
+             border-radius: 10px;
+             position: relative;
+             margin-top: 15px;
+           "
+         >
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Company Name
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Company No
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${CompanyNo}
-                 </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyName}
                </div>
              </div>
- 
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Brand Name
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${BrandName}
-                 </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Company Email
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Website Link
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${WebsiteLink}
-                 </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyEmail}
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 100%">
-                 <div>
-                 ${facebookHtml}
-                 </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Company No
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width:100%">
-                 <div>
-                  ${instagramHtml}
-                 </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyNo}
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width:100%">
-                 <div>
-                 ${linkedInHtml}
-                 </div>
+           </div>
+
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Brand Name
                </div>
              </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width:100%">
-                 <div>
-                 ${youtubeHtml} 
-                 </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${BrandName}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Website Link
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${WebsiteLink}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 100%">
+               <div>
+               ${facebookHtml}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width:100%">
+               <div>
+                ${instagramHtml}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width:100%">
+               <div>
+               ${linkedInHtml}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width:100%">
+               <div>
+               ${youtubeHtml} 
                </div>
              </div>
            </div>
          </div>
- 
-         <div style="width: 95%; margin: 10px auto">
-           <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-             <div
-               style="
-                 width: 30px;
-                 height: 30px;
-                 line-height: 30px;
-                 text-align: center;
-                 font-weight: bold;
-                 color: black;
-               "
-             >
-               2
-             </div>
-             <div style="margin-left: 10px">Brief About Your Business</div>
-           </div>
+       </div>
+
+       <div style="width: 95%; margin: 10px auto">
+         <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
            <div
              style="
-               background: #f7f7f7;
-               padding: 15px;
-               border-radius: 10px;
-               position: relative;
-               margin-top: 15px;
+               width: 30px;
+               height: 30px;
+               line-height: 30px;
+               text-align: center;
+               font-weight: bold;
+               color: black;
              "
            >
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Company Activities
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${CompanyActivities}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Problems and Solution
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${ProductService}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   USP
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${CompanyUSP}
-                 </div>
-               </div>
-             </div>
- 
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Value Proposition
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${ValueProposition}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 100%">
-                 <div>
-                   ${TechnologyInvolvedHtml}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 25%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   Direct/Indirect Competitor
-                 </div>
-               </div>
-               <div style="width: 75%">
-                 <div
-                   style="
-                     border: 1px solid #ccc;
-                     font-size: 12px;
-                     padding: 5px 10px;
-                   "
-                 >
-                   ${DirectInDirectMarket}
-                 </div>
-               </div>
-             </div>
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 100%">
-                 <div>
-                   ${businessModelHtml}
-                 </div>
-               </div>
-             </div>
-             
-             <div style="display: flex; flex-wrap: wrap">
-               <div style="width: 100%">
-                 <div>
-                 ${financeDetailsHtml}
-                </div>
-              </div>
-              </div>
-              </div>
-            <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-             <div
-               style="
-                 width: 30px;
-                 height: 30px;
-                 line-height: 30px;
-                 text-align: center;
-                 font-weight: bold;
-                 color: black;
-                 margin-top:5px;
-               "
-             >
-               3
-             </div>
-             <div style="margin-left: 10px">Directors And Team Details</div>
+             2
            </div>
+           <div style="margin-left: 10px">Brief About Your Business</div>
+         </div>
+         <div
+           style="
+             background: #f7f7f7;
+             padding: 15px;
+             border-radius: 10px;
+             position: relative;
+             margin-top: 15px;
+           "
+         >
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Company Activities
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyActivities}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Problems and Solution
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${ProductService}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 USP
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyUSP}
+               </div>
+             </div>
+           </div>
+
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Value Proposition
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${ValueProposition}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 100%">
+               <div>
+                 ${TechnologyInvolvedHtml}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Direct/Indirect Competitor
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${DirectInDirectMarket}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 100%">
+               <div>
+                 ${businessModelHtml}
+               </div>
+             </div>
+           </div>
+           
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 100%">
+               <div>
+               ${financeDetailsHtml}
+              </div>
+            </div>
+            </div>
+            </div>
+          <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
            <div
              style="
-               background: #f7f7f7;
-               padding: 15px;
-               border-radius: 10px;
-               position: relative;
-               margin-top: 15px;
+               width: 30px;
+               height: 30px;
+               line-height: 30px;
+               text-align: center;
+               font-weight: bold;
+               color: black;
+               margin-top:5px;
              "
            >
-           ${generatedHtml}
-        </div>
+             3
+           </div>
+           <div style="margin-left: 10px">Directors And Team Details</div>
+         </div>
+         <div
+           style="
+             background: #f7f7f7;
+             padding: 15px;
+             border-radius: 10px;
+             position: relative;
+             margin-top: 15px;
+           "
+         >
+         ${generatedHtml}
       </div>
-    </body>
-     `;
+    </div>
+  </body>
+   `;
 
       await sendMail3(
         email,
@@ -2057,11 +2056,14 @@ app.post("/api/users",
           res.status(500).send("Error sending email");
         });
 
-      const details = DirectorDetails.find((details) => details.IsMainDirector === true);
+
+
+        
+      const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
       const DirectorEmail = details.DirectorEmail;
 
 
-      // Send Thank You Message with pdf Draft sendMail4.js 
+      // Send Thank You Message with pdf Draft sendMaiel4.js 
 
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
@@ -2101,6 +2103,7 @@ app.post("/api/users",
         .catch((error) => {
           console.error("Error sending email:", error);
         });
+
 
 
       const newUser = new userModel({
@@ -2149,7 +2152,7 @@ app.post("/api/users",
 //     }
 //   }
 //   const clientMail = ["shivangi@startupsahay.com"]
-  
+
 //   pdf.create(filedHtml , options).toFile(pdfFilePath , async(err , response)=>{
 //     if(err){
 //       console.error("Error generating PDF:", err);
