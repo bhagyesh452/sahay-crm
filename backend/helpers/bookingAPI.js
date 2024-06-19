@@ -902,6 +902,9 @@ router.post(
           });
         }
         const boomDate = new Date();
+        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate)}
+        appendDataToSheet(sheetData);
+       
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
