@@ -5,7 +5,7 @@ const path = require('path');
 require("dotenv").config();
 
 // Load client secrets from a local file.
-const credentialsPath = path.join(__dirname, 'googlesheet' ,'googlesheet.json');
+const credentialsPath = path.join(__dirname, 'googlesheet' , 'googlesheet.json');
 const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
 
 // Define the required scopes
@@ -27,13 +27,15 @@ const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 function transformData(jsonData) {
   const headers = [
     "bookingDate", "bookingPublishDate", "Company Name", "Company Email", "Company Number", "panNumber",
-    "bdeName", "bdmName", "bookingSource", "numberOfServices", "totalAmount", "receivedAmount", "pendingAmount",
-    "caCase", "caNumber", "caEmail", "caCommission", "paymentMethod"
+    "bdeName", "bdmName", "bookingSource", "numberOfServices", "totalAmount", "receivedAmount", "pendingAmount", "paymentMethod",
+    "caCase", "caNumber", "caEmail", "caCommission"
   ];
 
 
   jsonData.services.forEach((serviceObj, index) => {
     headers.push(`services[${index}].serviceName`);
+    headers.push(`services[${index}].totalPaymentWOGST`);
+    headers.push(`services[${index}].totalPaymentWGST`);
     headers.push(serviceObj.paymentTerms === "Full Advanced" ? `services[${index}].totalPaymentWGST` : `services[${index}].firstPayment`);
     headers.push(`services[${index}].secondPayment`);
     headers.push(`services[${index}].thirdPayment`);
@@ -43,9 +45,9 @@ function transformData(jsonData) {
   const data = headers.map(header => {
     if (header.startsWith("services")) {
       const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
-      return jsonData.services[serviceIndex][serviceProp];
+      return jsonData.services[serviceIndex][serviceProp] ? jsonData.services[serviceIndex][serviceProp] : "-";
     } else {
-      return jsonData[header];
+      return jsonData[header] ? jsonData[header] : "-";
     }
   });
   return [data];
@@ -55,9 +57,10 @@ function transformData(jsonData) {
 async function appendDataToSheet(data) {
   try {
     const transformedData = transformData(data);
+    
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!A1', // Update range here
+      range: 'Sheet1!B1', // Update range here
       valueInputOption: 'RAW',
       resource: {
         values: transformedData,
