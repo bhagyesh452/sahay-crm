@@ -440,6 +440,7 @@ router.get('/filter-leads', async (req, res) => {
     selectedUploadedDate,
     selectedAdminName,
     selectedYear,
+    monthIndex,
     selectedCompanyIncoDate,
   } = req.query;
 
@@ -469,14 +470,35 @@ router.get('/filter-leads', async (req, res) => {
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
     }
+    // if (selectedYear) {
+    //   const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+    //   const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+    //   baseQuery["Company Incorporation Date  "] = {
+    //     $gte: yearStartDate,
+    //     $lt: yearEndDate
+    //   };
+    // }
+    console.log(monthIndex)
     if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      baseQuery["Company Incorporation Date  "] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
+      if (monthIndex) {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex)-1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate
+        };
+      }
     }
+
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),
