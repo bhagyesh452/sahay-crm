@@ -943,7 +943,7 @@ const BasicForm = () => {
                     placeholder="Enter Company Address"
                     id="CompanyAddress"
                     value={formData.CompanyAddress}
-                    onChange={(e) => handleInputChange(e, "WebsiteLink")}
+                    onChange={(e) => handleInputChange(e, "CompanyAddress")}
                   />
                   {formSubmitted && !formData.CompanyAddress && (
                     <div style={{ color: "red" }}>{"Enter Company Address"}</div>

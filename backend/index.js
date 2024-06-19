@@ -1139,6 +1139,8 @@ app.post("/api/users",
         CompanyNo,
         BrandName,
         WebsiteLink,
+        CompanyAddress,
+        CompanyPanNumber,
         FacebookLink,
         InstagramLink,
         LinkedInLink,
@@ -1806,6 +1808,54 @@ app.post("/api/users",
              </div>
            </div>
            <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                Company Address
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyAddress}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Company Pan Number
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${CompanyPanNumber}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
              <div style="width: 100%">
                <div>
                ${facebookHtml}
@@ -2095,7 +2145,7 @@ app.post("/api/users",
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      let forGender = DirectorDetails.find((details) => IsMainDirector === "true")
+      let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
 
       const filedHtml = htmlNewTemplate
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
