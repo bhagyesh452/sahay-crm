@@ -16,6 +16,7 @@ const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
+const { appendDataToSheet } = require('./Google_sheetsAPI.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -752,6 +753,8 @@ router.post(
       const companyName = req.params.CompanyName;
       const newTempDate = new Date();
       const newData = req.body;
+
+  
       const Step = req.params.step;
       if (Step === "step2") {
         const existingData = await RedesignedDraftModel.findOne({
@@ -883,7 +886,8 @@ router.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
-        console.log(companyData)
+        const sheetData = {...newData , bookingPublishDate : formatDate(newTempDate)}
+        appendDataToSheet(sheetData);
         if (companyData) {
           const multiBdmName = [];
           if (companyData.maturedBdmName !== newData.bdmName) {
@@ -2738,6 +2742,10 @@ router.post(
 router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
+    const boomDate = new Date();
+
+    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate)}
+    appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
     console.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
@@ -2749,7 +2757,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
-    const boomDate = new Date();
+   
     const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
