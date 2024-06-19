@@ -60,7 +60,7 @@ async function appendDataToSheet(data) {
     
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!B2:B2', 
+      range: 'Sheet1!B', 
       valueInputOption: 'RAW',
       resource: {
         values: transformedData,
