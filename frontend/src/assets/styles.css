@@ -10,15 +10,8 @@ body {
   height: calc(100vh - 112px) !important;
   overflow: hidden !important;
   overflow-y: scroll !important;
-<<<<<<< HEAD
   position: relative;
 } 
-.pl-1
-{
-  padding-left:10px;
-=======
->>>>>>> 1f7f046b8c73345b9af09792ce7cce0f2ce4e221
-}
 
 .pl-1 {
   padding-left: 10px;
