@@ -186,7 +186,7 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
   try {
     // Find the employee's data by id
     const employeeData = await adminModel.findById(id);
-    console.log("employee" , employeeData)
+    console.log("employee", employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }
@@ -228,9 +228,9 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
 });
 
 
-router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id" , async(req,res)=>{
+router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, res) => {
   const itemId = req.params.id
-  try{
+  try {
     const employeeData = await CompanyModel.findById(itemId)
 
     console.log(employeeData)
@@ -243,10 +243,10 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id" , async(req,r
       { ename: employeeData.ename },
       {
         $set: {
-           //ename: "Not Alloted",
+          //ename: "Not Alloted",
           //bdmAcceptStatus: "NotForwarded",
           //feedbackPoints: [],
-          multiBdmName: [...employeeData.multiBdmName , employeeData.ename],
+          multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
           //Status: "Untouched",
           isDeletedEmployeeCompany: true
         },
@@ -261,7 +261,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id" , async(req,r
         },
       }
     );
-  }catch(error){
+  } catch (error) {
     console.error("Error deleting employee data:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -440,6 +440,7 @@ router.get('/filter-leads', async (req, res) => {
     selectedUploadedDate,
     selectedAdminName,
     selectedYear,
+    monthIndex,
     selectedCompanyIncoDate,
   } = req.query;
 
@@ -469,14 +470,57 @@ router.get('/filter-leads', async (req, res) => {
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
     }
+    console.log(selectedYear)
+    // if (selectedYear) {
+    //   const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+    //   const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+    //   baseQuery["Company Incorporation Date  "] = {
+    //     $gte: yearStartDate,
+    //     $lt: yearEndDate
+    //   };
+    // }
+    console.log(monthIndex)
     if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      baseQuery["Company Incorporation Date  "] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate
+        };
+      }
     }
+
+    // if (selectedYear) {
+    //   console.log("chal")
+    //   const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+    //   const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+    //   baseQuery["Company Incorporation Date  "] = {
+    //     $gte: yearStartDate,
+    //     $lt: yearEndDate
+    //   };
+    // }
+    // if (monthIndex !== "0") {
+    //   const year = parseInt(selectedYear);
+    //   const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+    //   const monthStartDate = new Date(year, month, 1);
+    //   const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+    //   baseQuery["Company Incorporation Date  "] = {
+    //     $gte: monthStartDate,
+    //     $lt: monthEndDate
+    //   };
+    // }
+
+
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),

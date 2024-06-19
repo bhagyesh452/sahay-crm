@@ -184,6 +184,7 @@ function ManageLeads() {
                             selectedUploadedDate,
                             selectedAdminName,
                             selectedYear,
+                            monthIndex,
                             selectedCompanyIncoDate,
                             page,  
                             limit
@@ -1212,6 +1213,7 @@ function ManageLeads() {
     const [unAssignedData, setunAssignedData] = useState([])
     const currentYear = new Date().getFullYear();
     const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [monthIndex, setMonthIndex] = useState(0)
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -1223,6 +1225,7 @@ function ManageLeads() {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
+            setMonthIndex(monthIndex+1)
             console.log(monthIndex)
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
@@ -1241,7 +1244,7 @@ function ManageLeads() {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-
+console.log(selectedYear)
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         try {
@@ -1257,6 +1260,7 @@ function ManageLeads() {
                     selectedUploadedDate,
                     selectedAdminName,
                     selectedYear,
+                    monthIndex,
                     selectedCompanyIncoDate,
                     page,  // Start from the first page
                     limit
