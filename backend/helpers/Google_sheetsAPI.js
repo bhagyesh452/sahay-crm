@@ -26,9 +26,34 @@ const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
 function transformData(jsonData) {
   const headers = ["bookingDate", "bookingPublishDate", "Company Name", "Company Email", "Company Number", "panNumber",
-    "bdeName", "bdmName", "bookingSource", "numberOfServices", "totalAmount", "receivedAmount", "pendingAmount", "paymentMethod",
+    "bdeName", "bdmName" , "bdmType" , "bookingSource", "numberOfServices", "totalAmount", "receivedAmount", "pendingAmount", "paymentMethod",
     "caCase", "caNumber", "caEmail", "caCommission"
   ];
+
+
+  jsonData.services.forEach((serviceObj, index) => {
+    headers.push(`services[${index}].serviceName`);
+    headers.push(`services[${index}].totalPaymentWOGST`);
+    headers.push(`services[${index}].totalPaymentWGST`);
+    headers.push(serviceObj.paymentTerms === "Full Advanced" ? `services[${index}].totalPaymentWGST` : `services[${index}].firstPayment`);
+    headers.push(`services[${index}].secondPayment`);
+    headers.push(`services[${index}].thirdPayment`);
+    headers.push(`services[${index}].fourthPayment`);
+  });
+
+  const data = headers.map(header => {
+    if (header.startsWith("services")) {
+      const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
+      return jsonData.services[serviceIndex][serviceProp] ? jsonData.services[serviceIndex][serviceProp] : "-";
+    }   
+    else {
+      return jsonData[header] ? jsonData[header] : "-";
+    }
+  });
+  return [data];
+}
+function transformRemainingData(jsonData) {
+  const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks"];
 
 
   jsonData.services.forEach((serviceObj, index) => {

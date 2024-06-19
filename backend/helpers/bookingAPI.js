@@ -902,7 +902,7 @@ router.post(
           });
         }
         const boomDate = new Date();
-        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate)}
+        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
         appendDataToSheet(sheetData);
        
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
@@ -2740,7 +2740,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newData = req.body;
     const boomDate = new Date();
 
-    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate)}
+    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
     appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
     console.log("Admin :-", isAdmin)
