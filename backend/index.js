@@ -2123,56 +2123,37 @@ app.post("/api/users",
   }
 );
 
-// app.get("/api/generate-pdf-client" , async(req,res)=>{
-//   const  htmlNewTemplate = fs.readFileSync("./helpers/client_mail.html" , "utf-8")
-//   const filedHtml = htmlNewTemplate.replace("{{Company Name}}" , "Anything")
-//   const pdfFilePath = `./NewDocs/anything.pdf`;
-//   const options ={
-//     format : "A4",
-//     orientation : "portrait",
-//     border : "10mm",
-//     header : {
-//       height : "70px",
-//       contents : ``,
-//     },
-//     paginationOffset:1,
-//     "footer":{
-//       "height":"100px",
-//       "contents":{
-//         first:`Page 1 out of 1`
-//       }
-//     },
-//     childProcessOptions:{
-//       env:{
-//         OPENSSL_CONF: "./dev/null",
-//       }
-//     }
-//   }
-//   const clientMail = ["shivangi@startupsahay.com"]
-  
-//   pdf.create(filedHtml , options).toFile(pdfFilePath , async(err , response)=>{
-//     if(err){
-//       console.error("Error generating PDF:", err);
-//       res.status(500).send("Error generating PDF");
-//     }else{
-//       try{
-//         const mainBuffer = fs.readFileSync(pdfFilePath);
-//         sendMail4(
-//           clientMail , 
-//           ``,
-//           `this is just dummy pdf`,
-//           ``,
-//           ``,
-//           mainBuffer
-//         )
-//         res.status(201).send("Data sent");
-//       }catch (emailError) {
-//         console.error("Error sending email:", emailError);
-//         res.status(500).send("Error sending email with PDF attachment");
-//       }
-//     }
-//   })
-// })
+
+// API endpoint
+app.get('/api/generate-pdf-client', async (req, res) => {
+  try {
+    let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+    const pdfFilePath = './GeneratedDocs/LOA.pdf';
+
+    const options = {
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: './dev/null',
+        },
+      },
+    };
+
+    const clientMail = ['shivangi@startupsahay.com'];
+
+    pdf.create(htmlNewTemplate, options).toFile(pdfFilePath, async (err, response) => {
+      if (err) {
+        console.error('Error generating PDF:', err);
+        return res.status(500).send('Error generating PDF');
+      }else{
+        return res.status(200).send('Generated Pdf Successfully');
+      }
+    });
+  } catch (error) {
+    console.error('Error in endpoint:', error);
+    res.status(500).send('Server error');
+  }
+});;
+
 
 
 
