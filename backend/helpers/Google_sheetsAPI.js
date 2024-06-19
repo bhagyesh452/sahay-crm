@@ -85,7 +85,7 @@ async function appendDataToSheet(jsonData) {
     console.log('Data appended successfully.');
   } catch (error) {
     console.error('Error appending data: ', error);
-    throw error; // Re-throw error to handle it in the route
+    throw error; 
   }
 }
 
