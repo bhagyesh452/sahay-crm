@@ -1640,7 +1640,7 @@ app.post("/api/users",
         return team;
       };
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
-      console.log(generatedHtml);
+
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nisargpatel@startupsahay.com"];
@@ -2057,10 +2057,8 @@ app.post("/api/users",
         });
 
 
-
-        
       const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
-      const DirectorEmail = details.DirectorEmail;
+      const DirectorEmail = details.DirectorEmail
 
 
       // Send Thank You Message with pdf Draft sendMaiel4.js 
@@ -2096,13 +2094,59 @@ app.post("/api/users",
       const attachments = [pdfAttachment];
 
       // Sending email for CompanyEmail 
-      sendMail4(recipients, ccEmail, subject1, text1, html1, attachments)
-        .then((info) => {
-          console.log("Email sent:", info);
-        })
-        .catch((error) => {
-          console.error("Error sending email:", error);
-        });
+      let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+      let forGender = DirectorDetails.find((details) => IsMainDirector === "true")
+
+      const filedHtml = htmlNewTemplate
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
+        .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
+        .replace("{{CompanyName}}", CompanyName)
+
+      const pdfFilePath = './GeneratedDocs/LOA.pdf';
+      const options = {
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: './dev/null',
+          },
+        },
+      };
+
+      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
+        if (err) {
+          console.error('Error generating PDF:', err);
+          return res.status(500).send('Error generating PDF');
+        } else {
+          try {
+            setTimeout(() => {
+              const mainBuffer = fs.readFileSync(pdfFilePath);
+              sendMail4(
+                recipients,
+                ccEmail,
+                " Letter of Authorization for filing in SISFS Application",
+                ``,
+                ``,
+                mainBuffer
+              )
+
+            }, 4000)
+
+          } catch (error) {
+            console.error("Error sending email:", error);
+            res.status(500).send("Error sending email with PDF attachment");
+          }
+          return res.status(200).send('Generated Pdf Successfully');
+        }
+      });
+
+      // sendMail4(recipients, ccEmail, subject1, text1, html1, attachments)
+      //   .then((info) => {
+      //     console.log("Email sent:", info);
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error sending email:", error);
+      //   });
 
 
 
@@ -2126,56 +2170,36 @@ app.post("/api/users",
   }
 );
 
-// app.get("/api/generate-pdf-client" , async(req,res)=>{
-//   const  htmlNewTemplate = fs.readFileSync("./helpers/client_mail.html" , "utf-8")
-//   const filedHtml = htmlNewTemplate.replace("{{Company Name}}" , "Anything")
-//   const pdfFilePath = `./NewDocs/anything.pdf`;
-//   const options ={
-//     format : "A4",
-//     orientation : "portrait",
-//     border : "10mm",
-//     header : {
-//       height : "70px",
-//       contents : ``,
-//     },
-//     paginationOffset:1,
-//     "footer":{
-//       "height":"100px",
-//       "contents":{
-//         first:`Page 1 out of 1`
-//       }
-//     },
-//     childProcessOptions:{
-//       env:{
-//         OPENSSL_CONF: "./dev/null",
-//       }
-//     }
-//   }
-//   const clientMail = ["shivangi@startupsahay.com"]
+// API endpoint
+app.get('/api/generate-pdf-client', async (req, res) => {
+  try {
+    let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+    const pdfFilePath = './GeneratedDocs/LOA.pdf';
 
-//   pdf.create(filedHtml , options).toFile(pdfFilePath , async(err , response)=>{
-//     if(err){
-//       console.error("Error generating PDF:", err);
-//       res.status(500).send("Error generating PDF");
-//     }else{
-//       try{
-//         const mainBuffer = fs.readFileSync(pdfFilePath);
-//         sendMail4(
-//           clientMail , 
-//           ``,
-//           `this is just dummy pdf`,
-//           ``,
-//           ``,
-//           mainBuffer
-//         )
-//         res.status(201).send("Data sent");
-//       }catch (emailError) {
-//         console.error("Error sending email:", emailError);
-//         res.status(500).send("Error sending email with PDF attachment");
-//       }
-//     }
-//   })
-// })
+    const options = {
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: './dev/null',
+        },
+      },
+    };
+
+    const clientMail = ['shivangi@startupsahay.com'];
+
+    pdf.create(htmlNewTemplate, options).toFile(pdfFilePath, async (err, response) => {
+      if (err) {
+        console.error('Error generating PDF:', err);
+        return res.status(500).send('Error generating PDF');
+      } else {
+        return res.status(200).send('Generated Pdf Successfully');
+      }
+    });
+  } catch (error) {
+    console.error('Error in endpoint:', error);
+    res.status(500).send('Server error');
+  }
+});;
+
 
 
 
