@@ -123,160 +123,155 @@ export default function EditableMoreBooking({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
-      );
-      const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
-      console.log("Here is the data", data);
 
-      if (!data) {
-        setCompleted({});
-        setActiveStep(0);
-        setSelectedValues("");
-        setLeadData(defaultLeadData);
-        return true;
+  const fetchData = async () => {
+  try {
+    const response = await axios.get(
+      `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
+    );
+    const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
+    console.log("Here is the data", data);
+
+    if (!data) {
+      setCompleted({});
+      setActiveStep(0);
+      setSelectedValues("");
+      setLeadData(defaultLeadData);
+      return true;
+    }
+
+    const {
+      Step1Status,
+      Step2Status,
+      Step3Status,
+      Step4Status,
+      Step5Status,
+      ...newLeadData
+    } = data;
+
+    let allIsoTypes = [...isoType]; // Initialize with existing isoType state
+
+    const servicestoSend = newLeadData.services.map((service, index) => {
+      const tempDefaultType = {
+        ...defaultISOtypes,
+        serviceID: index
+      };
+
+      if (service.serviceName.includes("ISO Certificate")) {
+        const uniqueServiceIDs = new Set(allIsoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
+        service.isoTypeObject.forEach(isoObj => {
+          if (isoObj.serviceID !== undefined && !uniqueServiceIDs.has(isoObj.serviceID)) {
+            allIsoTypes.push(isoObj);
+            uniqueServiceIDs.add(isoObj.serviceID); // Add new serviceID to the Set
+          }
+        });
+
+        // Ensure tempDefaultType is added only if there is no valid isoTypeObject
+        if (!service.isoTypeObject.length || service.isoTypeObject[0].serviceID === undefined) {
+          allIsoTypes.push(tempDefaultType);
+        }
       }
-      const {
-        Step1Status,
-        Step2Status,
-        Step3Status,
-        Step4Status,
-        Step5Status,
-        ...newLeadData
-      } = data;
+      return {
+        ...service,
+        serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+        paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
+        secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+        thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+        fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+      };
+    });
+
+    // Set all isoTypes once after processing all services
+    setIsoType(allIsoTypes);
+
+    const latestLeadData = {
+      ...newLeadData,
+      services: servicestoSend
+    };
+
+    setLeadData(latestLeadData);
+    setActiveStep(bookingIndex === 0 ? 0 : 1);
+    setCompleted({ 0: true, 1: true, 2: true, 3: true });
+    setSelectedValues(newLeadData.bookingSource);
+    setfetchedService(true);
+    setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+
+    if (Step2Status === true && Step3Status === false) {
+      setCompleted({ 0: true, 1: true });
+      setActiveStep(2);
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: data.services.length !== 0 ? data.services : [defaultService],
+        numberOfServices: data.services.length !== 0 ? data.services.length : 1,
+      }));
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+    } else if (Step3Status === true && Step4Status === false) {
+      console.log(data.services, "This is services");
+      setfetchedService(true);
+      setCompleted({ 0: true, 1: true, 2: true });
+      setActiveStep(3);
       const servicestoSend = newLeadData.services.map((service, index) => {
         const tempDefaultType = {
           ...defaultISOtypes,
           serviceID: index
-        }
-        console.log(tempDefaultType)
-        // Call setIsoType for each service's isoTypeObject
-       if(service.serviceName.includes("ISO Certificate")){
-        setIsoType(service.isoTypeObject[0] && service.isoTypeObject[0].serviceID !== undefined ? service.isoTypeObject : [tempDefaultType] );
-      
-       }
-
-      
+        };
         return {
           ...service,
-          serviceName : service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
-          paymentCount : service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 :4,
-            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-            ? service.secondPaymentRemarks
-            : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-            ? service.thirdPaymentRemarks
-            : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-            ? service.fourthPaymentRemarks
-            : "On Particular Date",
+          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
         };
       });
-      const latestLeadData = {
-        ...newLeadData,
-        services: servicestoSend
-      }
-      setLeadData(latestLeadData);
-      setActiveStep(bookingIndex === 0 ? 0 : 1);
-      setCompleted({ 0: true, 1: true, 2: true, 3: true })
-      setSelectedValues(newLeadData.bookingSource)
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: data.services.length !== 0 ? servicestoSend : [defaultService],
+        caCase: data.caCase,
+        caCommission: data.caCommission,
+        caNumber: data.caNumber,
+        caEmail: data.caEmail,
+      }));
+      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+    } else if (Step4Status === true && Step5Status === false) {
+      setCompleted({ 0: true, 1: true, 2: true, 3: true });
+      const servicestoSend = newLeadData.services.map((service, index) => {
+        const tempDefaultType = {
+          ...defaultISOtypes,
+          serviceID: index
+        };
+        return {
+          ...service,
+          paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
+          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+        };
+      });
+      setActiveStep(4);
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: servicestoSend,
+        totalAmount: data.totalAmount,
+        pendingAmount: data.pendingAmount,
+        receivedAmount: data.receivedAmount,
+        otherDocs: data.otherDocs,
+        paymentReceipt: data.paymentReceipt,
+        paymentMethod: data.paymentMethod,
+        extraNotes: data.extraNotes,
+      }));
+    } else if (Step5Status === true) {
+      setCompleted({ 0: true, 1: true, 2: true, 3: true });
+      setSelectedValues(data.bookingSource);
+
+      setActiveStep(4);
       setfetchedService(true);
       setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-
-      if (Step2Status === true && Step3Status === false) {
-        setCompleted({ 0: true, 1: true });
-        setActiveStep(2);
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? data.services : [defaultService],
-          numberOfServices:
-            data.services.length !== 0 ? data.services.length : 1,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services, "This is services");
-        setfetchedService(true);
-        setCompleted({ 0: true, 1: true, 2: true });
-        setActiveStep(3);
-        const servicestoSend = newLeadData.services.map((service, index) => {
-          // Call setIsoType for each service's isoTypeObject
-          const tempDefaultType = {
-            ...defaultISOtypes,
-            serviceID: index
-          }
-          // Call setIsoType for each service's isoTypeObject
-          return {
-            ...service,
-            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-              ? service.secondPaymentRemarks
-              : "On Particular Date",
-            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-              ? service.thirdPaymentRemarks
-              : "On Particular Date",
-            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-              ? service.fourthPaymentRemarks
-              : "On Particular Date",
-          };
-        });
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? servicestoSend : [defaultService],
-          caCase: data.caCase,
-          caCommission: data.caCommission,
-          caNumber: data.caNumber,
-          caEmail: data.caEmail,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step4Status === true && Step5Status === false) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        const servicestoSend = newLeadData.services.map((service, index) => {
-          const tempDefaultType = {
-            ...defaultISOtypes,
-            serviceID: index
-          }
-          // Call setIsoType for each service's isoTypeObject
-          return {
-            ...service,
-            paymentCount : service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 :4,
-            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-              ? service.secondPaymentRemarks
-              : "On Particular Date",
-            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-              ? service.thirdPaymentRemarks
-              : "On Particular Date",
-            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-              ? service.fourthPaymentRemarks
-              : "On Particular Date",
-          };
-        });
-        setActiveStep(4);
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:servicestoSend,
-          totalAmount: data.totalAmount,
-          pendingAmount: data.pendingAmount,
-          receivedAmount: data.receivedAmount,
-          otherDocs: data.otherDocs,
-          paymentReceipt: data.paymentReceipt,
-          paymentMethod: data.paymentMethod,
-          extraNotes: data.extraNotes,
-        }));
-      } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setSelectedValues(data.bookingSource);
-
-        setActiveStep(4);
-        setfetchedService(true);
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
   const handleTextAreaChange = (e) => {
     e.target.style.height = '1px';
     e.target.style.height = `${e.target.scrollHeight}px`;

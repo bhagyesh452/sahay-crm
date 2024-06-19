@@ -56,6 +56,7 @@ import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerD
 import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
+import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
@@ -205,6 +206,8 @@ function App() {
           <Route path="/employeereport/:ename/:status" element={<StausInfo />} />
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/client/basic-form" element={<BasicForm />} />
+
         </Routes>
 
       </BrowserRouter>

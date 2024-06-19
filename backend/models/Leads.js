@@ -119,7 +119,11 @@ const CompanySchema = new mongoose.Schema({
   },
    RevertBackAcceptedCompanyRequest:{
     type:String,
-  }
+  },
+  isDeletedEmployeeCompany:{
+    type:Boolean,
+    default:false,
+  },
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

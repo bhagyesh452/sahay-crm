@@ -16,6 +16,7 @@ const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
+const { appendDataToSheet , appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -27,6 +28,8 @@ const storage = multer.diskStorage({
       destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'ExtraDocs');
     } else if (file.fieldname === "paymentReceipt") {
       destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'PaymentReceipts');
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = path.resolve(__dirname, '../ClientDocuments');
     }
 
     // Create the directory if it doesn't exist
@@ -526,7 +529,7 @@ router.post("/redesigned-importData", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// Main Method for submitting Draft
+//----------------------------------------------------------  Main Method for submitting Draft Form  ----------------------------------------------------------
 router.post(
   "/redesigned-leadData/:CompanyName/:step",
   upload.fields([
@@ -660,6 +663,7 @@ router.post(
             ? []
             : req.files["paymentReceipt"].map((file) => file);
 
+
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
@@ -667,20 +671,22 @@ router.post(
             {
               $set: {
                 totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt:
-                  newData.paymentReceipt || existingData.paymentReceipt,
-                otherDocs: newData.otherDocs || existingData.otherDocs,
-                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+                paymentMethod: newData.paymentMethod || existingData.paymentMethod,
                 extraNotes: newData.extraNotes || existingData.extraNotes,
                 Step4Status: true,
               },
+              $push: {
+                otherDocs: {
+                  $each: newData.otherDocs || []
+                }
+              }
             },
             { new: true }
           );
+
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
@@ -747,6 +753,8 @@ router.post(
       const companyName = req.params.CompanyName;
       const newTempDate = new Date();
       const newData = req.body;
+
+  
       const Step = req.params.step;
       if (Step === "step2") {
         const existingData = await RedesignedDraftModel.findOne({
@@ -884,10 +892,19 @@ router.post(
             multiBdmName.push(newData.bdmName);
             await CompanyModel.findByIdAndUpdate(companyData._id, {
               multiBdmName: multiBdmName,
+              Status: "Matured"
             });
           }
         }
+        if (companyData && companyData.isDeletedEmployeeCompany) {
+          await CompanyModel.findByIdAndUpdate(companyData._id, {
+            Status: "Matured"
+          });
+        }
         const boomDate = new Date();
+        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+        appendDataToSheet(sheetData);
+       
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
@@ -2067,11 +2084,6 @@ router.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
-
-
-
-
-
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServices = "";
@@ -2726,6 +2738,10 @@ router.post(
 router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
+    const boomDate = new Date();
+
+    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+    appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
     console.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
@@ -2737,7 +2753,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
-    const boomDate = new Date();
+   
     const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
@@ -4538,6 +4554,16 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: publishDate
       };
+      
+      const sheetObject = {
+        "Company Name" : companyName,
+        serviceName : objectData.serviceName,
+        "Remaining Payment" : objectData.receivedAmount,
+        "Payment Method":objectData.paymentMethod,
+        "Payment Date":formatDate(objectData.paymentDate),
+        "Payment Remarks" : objectData.extraRemarks
+      }
+      await appendRemainingDataToSheet(sheetObject);
 
 
       if (bookingIndex == 0) {
@@ -5131,7 +5157,7 @@ router.post('/export-this-bookings', async (req, res) => {
 router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
   const nametochange = req.params.ename;
 
-  
+
   try {
     const result = await RedesignedLeadformModel.updateMany(
       { bdeName: nametochange },  // Filter criteria

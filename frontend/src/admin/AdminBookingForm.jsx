@@ -1865,6 +1865,9 @@ export default function AdminBookingForm({
     }
   }
 
+
+  console.log("Lead-Data : ",leadData)
+
   return (
     <div>
       <div className="container mt-2">
@@ -2936,7 +2939,6 @@ export default function AdminBookingForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2974,8 +2976,7 @@ export default function AdminBookingForm({
                                               ],
                                             }));
                                           }
-                                          // Update the state with the selected files
-                                         
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true

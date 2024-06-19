@@ -1271,7 +1271,7 @@ function ManagerBookings() {
                                     </div>
                                   </div>
                                 </div>
-                                {obj.expanse && <div className="row m-0 bdr-btm-eee">
+                                {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
                                   <div className="col-lg-6 col-sm-2 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
@@ -1302,7 +1302,7 @@ function ManagerBookings() {
                                   </div>
                                 </div>}
                                 <div className="row m-0 bdr-btm-eee">
-                                  {obj.firstPayment !== 0 && (
+                                  {obj.paymentTerms === "two-part" && (
                                     <div className="col-lg-6 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-4 align-self-stretch p-0">
@@ -2051,7 +2051,7 @@ function ManagerBookings() {
                                         >
                                           {currentLeadform &&
                                             currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                               ".pdf"
                                             ) ? (
                                               <PdfImageViewerAdmin
@@ -2110,7 +2110,7 @@ function ManagerBookings() {
                                               )
                                             }
                                           >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
+                                            {((remainingObject.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="paymentrecieptpdf"
                                                 path={remainingObject.paymentReceipt[0].filename}
@@ -2150,7 +2150,7 @@ function ManagerBookings() {
                                             )
                                           }
                                         >
-                                          {obj.filename.endsWith(".pdf") ? (
+                                          {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2542,7 +2542,7 @@ function ManagerBookings() {
                                         </div>
                                       </div>
                                     </div>
-                                   {obj.expanse && <div className="row m-0 bdr-btm-eee">
+                                   {obj.expanse && obj.expanse !== 0 && <div className="row m-0 bdr-btm-eee">
                                       <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
@@ -2573,7 +2573,7 @@ function ManagerBookings() {
                                       </div>
                                     </div>}
                                     <div className="row m-0 bdr-btm-eee">
-                                      {obj.firstPayment !== 0 && (
+                                      {obj.paymentTerms === "two-part" && (
                                         <div className="col-lg-6 col-sm-6 p-0">
                                           <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
@@ -3205,7 +3205,7 @@ function ManagerBookings() {
                                             )
                                           }
                                         >
-                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -3245,7 +3245,7 @@ function ManagerBookings() {
                                           )
                                         }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
+                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}

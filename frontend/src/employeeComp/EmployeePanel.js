@@ -873,6 +873,8 @@ function EmployeePanel() {
   //console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [newBdeName, setNewBdeName] = useState("")
 
   const handleStatusChange = async (
     employeeId,
@@ -882,7 +884,9 @@ function EmployeePanel() {
     cindate,
     cnum,
     oldStatus,
-    bdmAcceptStatus
+    bdmAcceptStatus,
+    isDeletedEmployeeCompany,
+    ename
   ) => {
     if (newStatus === "Matured") {
       // Assuming these are setter functions to update state or perform some action
@@ -891,7 +895,13 @@ function EmployeePanel() {
       setCompanyInco(cindate);
       setCompanyId(employeeId);
       setCompanyNumber(cnum);
-      setFormOpen(true);
+      setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+      setNewBdeName(ename)
+      if (!isDeletedEmployeeCompany) {
+        setFormOpen(true);
+      } else {
+        setAddFormOpen(true)
+      }
       return true;
     }
 
@@ -3632,7 +3642,9 @@ function EmployeePanel() {
                                                 ],
                                                 company["Company Number"],
                                                 company["Status"],
-                                                company.bdmAcceptStatus
+                                                company.bdmAcceptStatus,
+                                                company.isDeletedEmployeeCompany,
+                                                company.ename
                                               )
                                             }
                                           >
@@ -4429,6 +4441,9 @@ function EmployeePanel() {
         <>
           {" "}
           <AddLeadForm
+            employeeEmail={data.email}
+            newBdeName={newBdeName}
+            isDeletedEmployeeCompany={deletedEmployeeStatus}
             setFormOpen={setAddFormOpen}
             companysName={companyName}
             setNowToFetch={setNowToFetch}
