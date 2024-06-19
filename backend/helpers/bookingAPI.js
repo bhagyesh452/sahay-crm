@@ -16,7 +16,7 @@ const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
-const { appendDataToSheet } = require('./Google_sheetsAPI.js');
+const { appendDataToSheet , appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -4554,6 +4554,16 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: publishDate
       };
+      
+      const sheetObject = {
+        "Company Name" : companyName,
+        serviceName : objectData.serviceName,
+        "Remaining Payment" : objectData.receivedAmount,
+        "Payment Method":objectData.paymentMethod,
+        "Payment Date":formatDate(objectData.paymentDate),
+        "Payment Remarks" : objectData.extraRemarks
+      }
+      await appendRemainingDataToSheet(sheetObject);
 
 
       if (bookingIndex == 0) {

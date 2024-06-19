@@ -55,25 +55,10 @@ function transformData(jsonData) {
 function transformRemainingData(jsonData) {
   const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks"];
 
-
-  jsonData.services.forEach((serviceObj, index) => {
-    headers.push(`services[${index}].serviceName`);
-    headers.push(`services[${index}].totalPaymentWOGST`);
-    headers.push(`services[${index}].totalPaymentWGST`);
-    headers.push(serviceObj.paymentTerms === "Full Advanced" ? `services[${index}].totalPaymentWGST` : `services[${index}].firstPayment`);
-    headers.push(`services[${index}].secondPayment`);
-    headers.push(`services[${index}].thirdPayment`);
-    headers.push(`services[${index}].fourthPayment`);
-  });
-
   const data = headers.map(header => {
-    if (header.startsWith("services")) {
-      const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
-      return jsonData.services[serviceIndex][serviceProp] ? jsonData.services[serviceIndex][serviceProp] : "-";
-    }   
-    else {
+  
       return jsonData[header] ? jsonData[header] : "-";
-    }
+    
   });
   return [data];
 }
@@ -96,5 +81,22 @@ async function appendDataToSheet(data) {
     throw error; // Re-throw error to handle it in the route
   }
 }
+async function appendRemainingDataToSheet(data) {
+  try {
+    const transformedData = transformRemainingData(data);
+    
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: 'Remaining!A1', 
+      valueInputOption: 'RAW',
+      resource: {
+        values: transformedData,
+      },
+    });
+  } catch (error) {
+    console.error('Error appending data: ', error);
+    throw error; // Re-throw error to handle it in the route
+  }
+}
 
-module.exports = { appendDataToSheet };
+module.exports = { appendDataToSheet , appendRemainingDataToSheet };
