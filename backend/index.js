@@ -1141,6 +1141,7 @@ app.post("/api/users",
         WebsiteLink,
         CompanyAddress,
         CompanyPanNumber,
+        SelectServices,
         FacebookLink,
         InstagramLink,
         LinkedInLink,
@@ -1153,7 +1154,7 @@ app.post("/api/users",
         DirectInDirectMarket,
         Finance,
         BusinessModel,
-        DirectorDetails,
+        DirectorDetails, 
       } = req.body;
 
       console.log(req.body);
@@ -1852,6 +1853,30 @@ app.post("/api/users",
                  "
                >
                  ${CompanyPanNumber}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Select Your Services
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${SelectServices}
                </div>
              </div>
            </div>
