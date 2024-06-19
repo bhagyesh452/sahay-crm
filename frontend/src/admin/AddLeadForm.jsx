@@ -157,7 +157,7 @@ export default function AddLeadForm({
         panNumber: data.panNumber,
         gstNumber: data.gstNumber,
         bdeName: isDeletedEmployeeCompany ? newBdeName : data.bdeName,
-        bdeEmail: isDeletedEmployeeCompany ? employeeEmail :data.bdeEmail,
+        bdeEmail: isDeletedEmployeeCompany ? employeeEmail : data.bdeEmail,
         bookingDate: formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data
@@ -819,24 +819,20 @@ export default function AddLeadForm({
             : acc + curr.firstPayment;
         }, 0);
         const pendingAmount = totalAmount - receivedAmount;
-
         const formData = new FormData();
         formData.append("totalAmount", totalAmount);
         formData.append("receivedAmount", receivedAmount);
         formData.append("pendingAmount", pendingAmount);
         formData.append("paymentMethod", leadData.paymentMethod);
         formData.append("extraNotes", leadData.extraNotes);
-
         // Append payment receipt files to formData
-
         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-
+        
         // Append other documents files to formData
         for (let i = 0; i < leadData.otherDocs.length; i++) {
           formData.append("otherDocs", leadData.otherDocs[i]);
         }
         try {
-          console.log("Api is about to work")
           for (const pair of formData.entries()) {
             console.log(pair[0], pair[1]);
           }
@@ -856,7 +852,6 @@ export default function AddLeadForm({
       }
 
       if (activeStep === 4) {
-
         try {
           setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
@@ -909,9 +904,9 @@ export default function AddLeadForm({
             text: "There was an error submitting the form. Please try again later.",
           });
         }
-       
+
         // setNowToFetch(true)
-       
+
 
         return true;
       }
@@ -1074,7 +1069,7 @@ export default function AddLeadForm({
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
         setIsoType([])
-        
+
         fetchData();
       } else {
         console.error("Error resetting draft:", response.statusText);
@@ -1084,7 +1079,7 @@ export default function AddLeadForm({
     }
   };
 
-  
+
 
   const renderServices = () => {
     const services = [];
@@ -1172,7 +1167,7 @@ export default function AddLeadForm({
                       setIsoType(remainingObject);
                     }
                   }}>
-                     <option value="" selected disabled>Select ISO Type</option>
+                    <option value="" selected disabled>Select ISO Type</option>
                     <option value="ISO 9001">ISO 9001</option>
                     <option value="ISO 14001">ISO 14001</option>
                     <option value="ISO 45001">ISO 45001</option>
@@ -2018,15 +2013,15 @@ export default function AddLeadForm({
   const buttonRef = useRef(null);;
 
 
-  const functionShowSizeLimit = (e)=>{
+  const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-  
-    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
-      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+
+    if (Math.round(file.size / (1024 * 1024)) > maxSizeMB) {
+      Swal.fire('Size limit exceeded!', 'Please Upload file less than 24MB', 'warning');
       return false;
-    }else {
+    } else {
       return true;
     }
   }
@@ -2925,7 +2920,7 @@ export default function AddLeadForm({
                                         className="form-control mt-1"
                                         id="Company"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               paymentReceipt: [
@@ -2936,8 +2931,8 @@ export default function AddLeadForm({
                                             }));
                                           }
                                           // Update the state with the selected files
-                                         
-                                          
+
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3031,7 +3026,7 @@ export default function AddLeadForm({
                                       <input
                                         type="file"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               otherDocs: [
@@ -3041,7 +3036,7 @@ export default function AddLeadForm({
                                             }));
                                           }
                                           // Update the state with the selected files
-                                         
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3915,13 +3910,13 @@ export default function AddLeadForm({
         </div>
       </div>
 
-       {/* --------------------------------backedrop------------------------- */}
-       {loader && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={loader}
-                onClick={()=> setLoader(false)}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+      {/* --------------------------------backedrop------------------------- */}
+      {loader && (<Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loader}
+        onClick={() => setLoader(false)}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
     </div>
   );
 }

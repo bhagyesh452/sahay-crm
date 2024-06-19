@@ -207,6 +207,7 @@ function TestLeads() {
                             selectedUploadedDate,
                             selectedAdminName,
                             selectedYear,
+                            monthIndex ,
                             selectedCompanyIncoDate,
                             page,  
                             limit
@@ -1529,6 +1530,7 @@ function TestLeads() {
     const [selectedDate, setSelectedDate] = useState(0)
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
     const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [monthIndex, setMonthIndex] = useState(0)
 
     const currentYear = new Date().getFullYear();
     const months = [
@@ -1541,13 +1543,15 @@ function TestLeads() {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
-            //console.log(monthIndex)
+           setMonthIndex(monthIndex+1)
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {
             setDaysInMonth([]);
         }
     }, [selectedYear, selectedMonth]);
+
+    console.log(monthIndex)
 
     useEffect(() => {
         if (selectedYear && selectedMonth && selectedDate) {
@@ -1575,6 +1579,7 @@ function TestLeads() {
                     selectedUploadedDate,
                     selectedAdminName,
                     selectedYear,
+                    monthIndex,
                     selectedCompanyIncoDate,
                     page,  // Start from the first page
                     limit
@@ -1629,6 +1634,7 @@ function TestLeads() {
         setSelectedUploadedDate(null)
         setSelectedAdminName('')
         setSelectedYear('')
+        setMonthIndex(0)
         setSelectedMonth('')
         setSelectedDate(0)
         setCompanyIncoDate(null)

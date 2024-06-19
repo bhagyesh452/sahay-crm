@@ -17,9 +17,9 @@ const oAuth2Client = new google.auth.OAuth2({
     redirectUri: "https://developers.google.com/oauthplayground",
   });
   
-  oAuth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-  });
+  // oAuth2Client.setCredentials({
+  //   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  // });
   
 
 // Set OAuth2 refresh token
@@ -85,21 +85,41 @@ async function createTransporter() {
 //   return attachments;
 // };
 
+// const processAttachments = (files) => {
+//     const attachments = [];
+
+//     files.forEach((file) => {
+//         const mimeType = mime.lookup(file.filename);
+//         const attachment = {
+//             filename: file.filename,
+//             contentType: mimeType,
+//             path: file.path,
+//         };
+//         attachments.push(attachment);
+//     });
+
+//     return attachments;
+// };
 const processAttachments = (files) => {
-    const attachments = [];
+  const attachments = [];
+  
+  if (Array.isArray(files)) {
+      files.forEach((file) => {
+          const mimeType = mime.lookup(file.filename);
+          const attachment = {
+              filename: file.filename,
+              contentType: mimeType,
+              path: file.path,
+          };
+          attachments.push(attachment);
+      });
+  } else {
+      console.warn("Attachments are not an array or are undefined");
+  }
 
-    files.forEach((file) => {
-        const mimeType = mime.lookup(file.filename);
-        const attachment = {
-            filename: file.filename,
-            contentType: mimeType,
-            path: file.path,
-        };
-        attachments.push(attachment);
-    });
-
-    return attachments;
+  return attachments;
 };
+
 
 // Function to send email with attachments and CC
 const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachments) => {
@@ -109,6 +129,9 @@ const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachment
     // Process attachments
     const processedAttachments = processAttachments(attachments);
     console.log("This is docs",processedAttachments)
+
+    
+    console.log(recipients);
 
     // Send email
     const info = await transporter.sendMail({

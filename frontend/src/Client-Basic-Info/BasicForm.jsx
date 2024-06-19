@@ -26,6 +26,8 @@ const BasicForm = () => {
     CompanyNo: "",
     BrandName: "",
     WebsiteLink: "",
+    CompanyAddress:"",
+    CompanyPanNumber:"",
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -94,6 +96,15 @@ const BasicForm = () => {
         method: "POST",
         body: data,
       });
+      if (response.ok) {
+        console.log("Form data submitted successfully!");
+        // Refresh the page after a short delay (e.g., 1 second)
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+      } else {
+        console.error("Failed to submit form data:", response.statusText);
+      }
       return response.data; // You can return data from the backend if needed
     }
     catch (error) {
@@ -104,6 +115,7 @@ const BasicForm = () => {
 
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const [showLinks, setShowLinks] = useState(false);
   const [showTechnologyDetails, setShowTechnologyDetails] = useState(false);
@@ -113,13 +125,31 @@ const BasicForm = () => {
   const [numberOfDirectors, setNumberOfDirectors] = useState(1);
 
 
-  const handleInputChange = (e, field) => {
-    const { value } = e.target;
-    setFormData({
-      ...formData,
-      [field]: value,
-    });
+  const handleInputChange = (e, fieldName, index) => {
+    const value = e.target.value;
+    if (fieldName === "DirectorDetails") {
+      const updatedDirectorDetails = [...formData.DirectorDetails];
+      updatedDirectorDetails[index][e.target.name] = value;
+      setFormData((prevState) => ({
+        ...prevState,
+        DirectorDetails: updatedDirectorDetails,
+      }));
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    }
   };
+
+
+  // const handleInputChange = (e, field) => {
+  //   const { value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [field]: value,
+  //   });
+  // };
 
 
   const handleDirectorsChange = (e) => {
@@ -127,7 +157,6 @@ const BasicForm = () => {
     setDirectorLength(value);
     setNumberOfDirectors(e.target.value);
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -147,6 +176,12 @@ const BasicForm = () => {
     }
     if (!formData.WebsiteLink && formData.WebsiteLink !== "") {
       newErrors.CompanyNo = "Enter Website Link";
+    }
+    if (!formData.CompanyAddress && formData.CompanyAddress !== "") {
+      newErrors.CompanyAddress = "Enter Company Address";
+    }
+    if (!formData.CompanyPanNumber && formData.CompanyPanNumber !== "") {
+      newErrors.CompanyPanNumber = "Enter Pan Number";
     }
     if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
       newErrors.CompanyActivities = "Enter Your Company Activities";
@@ -169,59 +204,53 @@ const BasicForm = () => {
     if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
       newErrors.RelevantDocument = "Comapny Name is required";
     }
-    if (!formData.DirectorName && formData.DirectorName !== "") {
+    if (!formData.DirectorDetails[0].DirectorName) {
       newErrors.DirectorName = "Enter Director Name";
     }
-    if (!formData.DirectorEmail && formData.DirectorEmail !== "") {
+    if (!formData.DirectorDetails[0].DirectorEmail) {
       newErrors.DirectorEmail = "Enter Director Email Id";
     }
-    if (!formData.DirectorMobileNo && formData.DirectorMobileNo !== "") {
-      newErrors.DirectorMobileNo = "Comapny Name is required";
+    if (!formData.DirectorDetails[0].DirectorMobileNo) {
+      newErrors.DirectorMobileNo = "Mobile No is required";
     }
-    if (!formData.DirectorQualification && formData.DirectorQualification !== "") {
-      newErrors.DirectorQualification = "Enter Your Director Qualification";
+    if (!formData.DirectorDetails[0].DirectorQualification) {
+      newErrors.DirectorQualification = "Enter Director Qualification";
     }
-    if (!formData.DirectorWorkExperience && formData.DirectorWorkExperience !== "") {
-      newErrors.DirectorWorkExperience = "Enter Your Director Work Experience";
+    if (!formData.DirectorDetails[0].DirectorWorkExperience) {
+      newErrors.DirectorWorkExperience = "Enter Director Work Experience";
     }
-    if (!formData.DirectorAnnualIncome && formData.DirectorAnnualIncome !== "") {
-      newErrors.DirectorAnnualIncome = "Enter Your Director Annual Income";
+    if (!formData.DirectorDetails[0].DirectorAnnualIncome) {
+      newErrors.DirectorAnnualIncome = "Enter Director Annual Income";
     }
-    if (!formData.DirectorPassportPhoto && formData.DirectorPassportPhoto !== "") {
+    if (!formData.DirectorDetails[0].DirectorPassportPhoto) {
       newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
     }
-    if (!formData.DirectorAdharCard && formData.DirectorAdharCard !== "") {
-      newErrors.DirectorAdharCard = "Upload your AdharCard";
+    if (!formData.DirectorDetails[0].DirectorAdharCard) {
+      newErrors.DirectorAdharCard = "Upload your Adhar Card";
     }
-    if (!formData.DirectorDesignation && formData.DirectorDesignation !== "") {
+    if (!formData.DirectorDetails[0].DirectorDesignation) {
       newErrors.DirectorDesignation = "Enter Director Designation";
     }
-    if (!formData.DirectorAdharCardNumber && formData.DirectorAdharCardNumber !== "") {
-      newErrors.DirectorAdharCardNumber = "Enter Director AdharCard Number";
+    if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
+      newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
     }
-    if (!formData.DirectorGender && formData.DirectorGender !== "") {
+    if (!formData.DirectorDetails[0].DirectorGender) {
       newErrors.DirectorGender = "Select Director Gender";
     }
 
-    // Validate formData before submission
-    if (!formData.DirectorDetails.every(director => director.DirectorGender)) {
-      alert("Please fill all required fields.");
-      return;
-    }
-
-
+    setErrors(newErrors);
 
     // Check if there are any errors
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setFormSubmitted(false); // Reset form submission state
+      // setErrors(newErrors);
+      setFormSubmitted(true); // Reset form submission state
     }
 
-    setErrors(true);
+    // setErrors(true);
     setFormSubmitted(true);
-    // if(Object.keys(newErrors).length === 0){
-    // }
-    sendDataToBackend();
+    if (Object.keys(newErrors).length === 0) {
+      sendDataToBackend();
+    }
   };
 
 
@@ -295,6 +324,7 @@ const BasicForm = () => {
     }
   };
 
+  // Director and Team Details code
 
   const renderDirectorFields = () => {
     return Array.from({ length: numberOfDirectors }, (_, index) => (
@@ -340,9 +370,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorName && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorName && (
+                <div style={{ color: "red" }}>Enter Director Name</div>
               )}
+              {/* {formSubmitted && !formData.DirectorName && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -372,9 +405,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorEmail${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorEmail && (
+                <div style={{ color: "red" }}>Enter Director Email</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorEmail${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -405,9 +441,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorMobileNo${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorMobileNo && (
+                <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorMobileNo${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -438,9 +477,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorQualification${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorQualification && (
+                <div style={{ color: "red" }}>Enter Director Qualification</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorQualification${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -471,11 +513,14 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorWorkExperience${index}`] && (
+              {formSubmitted && !formData.DirectorDetails[0].DirectorWorkExperience && (
+                <div style={{ color: "red" }}>Enter Director Work Experience</div>
+              )}
+              {/* {formSubmitted && !formData[`DirectorWorkExperience${index}`] && (
                 <div style={{ color: "red" }}>
 
                 </div>
-              )}
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -506,9 +551,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorAnnualIncome${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorAnnualIncome && (
+                <div style={{ color: "red" }}>Enter Director Annual Income</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorAnnualIncome${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -538,11 +586,14 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorPassportPhoto${index}`] && (
+              {formSubmitted && !formData.DirectorDetails[0].DirectorPassportPhoto && (
+                <div style={{ color: "red" }}>Upload Passport Size Photo</div>
+              )}
+              {/* {formSubmitted && !formData[`DirectorPassportPhoto${index}`] && (
                 <div style={{ color: "red" }}>
 
                 </div>
-              )}
+              )} */}
               <div className="input-note">
                 (Files size should be less than 500KB)
               </div>
@@ -574,9 +625,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorAdharCard${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCard && (
+                <div style={{ color: "red" }}>Upload Director AdharCard</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorAdharCard${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -606,9 +660,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorAdharCardNumber${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCardNumber && (
+                <div style={{ color: "red" }}>Enter Director AdharCard Number</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorAdharCardNumber${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -638,9 +695,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`DirectorDesignation${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorDesignation && (
+                <div style={{ color: "red" }}>Enter Director Designation</div>
               )}
+              {/* {formSubmitted && !formData[`DirectorDesignation${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -655,8 +715,8 @@ const BasicForm = () => {
                     className="form-check-input"
                     type="radio"
                     name={`DirectorGender${index}`}
-                    value="male"
-                    checked={formData.DirectorDetails[index].DirectorGender === 'male'}
+                    value="Male"
+                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Male'}
                     onChange={(e) => {
                       setFormData((prevState) => ({
                         ...prevState,
@@ -676,8 +736,8 @@ const BasicForm = () => {
                     className="form-check-input"
                     type="radio"
                     name={`DirectorGender${index}`}
-                    value="female"
-                    checked={formData.DirectorDetails[index].DirectorGender === 'female'}
+                    value="Female"
+                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Female'}
                     onChange={(e) => {
                       setFormData((prevState) => ({
                         ...prevState,
@@ -690,13 +750,16 @@ const BasicForm = () => {
                       }));
                     }}
                   />
-                  <span className="form-check-label">FeMale</span>
+                  <span className="form-check-label">Female</span>
                 </label>
               </div>
-
-              {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].DirectorGender && (
+                <div style={{ color: "red" }}>Select the Director Gender</div>
               )}
+
+              {/* {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -726,9 +789,12 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData[`LinkedInProfileLink${index}`] && (
-                <div style={{ color: "red" }}></div>
+              {formSubmitted && !formData.DirectorDetails[0].LinkedInProfileLink && (
+                <div style={{ color: "red" }}>Enter Director Profile Link</div>
               )}
+              {/* {formSubmitted && !formData[`LinkedInProfileLink${index}`] && (
+                <div style={{ color: "red" }}></div>
+              )} */}
             </div>
           </div>
         </div>
@@ -802,12 +868,18 @@ const BasicForm = () => {
                     id="CompanyEmail"
                     value={formData.CompanyEmail}
                     onChange={e => handleInputChange(e, 'CompanyEmail')}
+                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                    title="Enter a valid email address"
                   />
                   {formSubmitted && !formData.CompanyEmail && (
                     <div style={{ color: "red" }}>{"Enter Email Id"}</div>
                   )}
+                  {/* {formSubmitted && formData.CompanyEmail && !isValidEmail(formData.CompanyEmail) && (
+                    <div style={{ color: "red" }}>Enter a valid email address</div>
+                  )} */}
                 </div>
               </div>
+              
               <div className="col-lg-4">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor="CompanyNo">
@@ -840,7 +912,7 @@ const BasicForm = () => {
                     onChange={e => handleInputChange(e, 'BrandName')}
                   />
                   {formSubmitted && !formData.BrandName && (
-                    <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                    <div style={{ color: "red" }}>{"Enter Brand Name"}</div>
                   )}
                 </div>
               </div>
@@ -857,7 +929,41 @@ const BasicForm = () => {
                     onChange={(e) => handleInputChange(e, "WebsiteLink")}
                   />
                   {formSubmitted && !formData.WebsiteLink && (
-                    <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                    <div style={{ color: "red" }}>{"Mention Website Link"}</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor="WebsiteLink">Company Address: <span style={{ color: "red" }}>*</span></label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Company Address"
+                    id="CompanyAddress"
+                    value={formData.CompanyAddress}
+                    onChange={(e) => handleInputChange(e, "CompanyAddress")}
+                  />
+                  {formSubmitted && !formData.CompanyAddress && (
+                    <div style={{ color: "red" }}>{"Enter Company Address"}</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor="WebsiteLink">Company Pan Number: <span style={{ color: "red" }}>*</span></label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Pan Number"
+                    id="CompanyPanNumber"
+                    value={formData.CompanyPanNumber}
+                    onChange={(e) => handleInputChange(e, "CompanyPanNumber")}
+                  />
+                  {formSubmitted && !formData.CompanyPanNumber && (
+                    <div style={{ color: "red" }}>{"Enter Pan Number"}</div>
                   )}
                 </div>
               </div>
@@ -883,7 +989,7 @@ const BasicForm = () => {
                     }
                   />
                   {formSubmitted && !formData.UploadMOA && (
-                    <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                    <div style={{ color: "red" }}>{"Upload MOA"}</div>
                   )}
                 </div>
               </div>
@@ -899,7 +1005,7 @@ const BasicForm = () => {
                     }
                   />
                   {formSubmitted && !formData.UploadAOA && (
-                    <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                    <div style={{ color: "red" }}>{"Upload AOA"}</div>
                   )}
                 </div>
               </div>
@@ -945,11 +1051,11 @@ const BasicForm = () => {
                           id="Facebook_link"
                           onChange={(e) => handleInputChange(e, "FacebookLink")}
                         />
-                        {formSubmitted && !formData.FacebookLink && (
+                        {/* {formSubmitted && !formData.FacebookLink && (
                           <div style={{ color: "red" }}>
-                            {"Enter Company Activities"}
+                            {"Mention Facebook Link"}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -964,11 +1070,11 @@ const BasicForm = () => {
                             handleInputChange(e, "InstagramLink")
                           }
                         />
-                        {formSubmitted && !formData.InstagramLink && (
+                        {/* {formSubmitted && !formData.InstagramLink && (
                           <div style={{ color: "red" }}>
                             {"Enter Company Activities"}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -981,11 +1087,11 @@ const BasicForm = () => {
                           id="LinkedIn_link"
                           onChange={(e) => handleInputChange(e, "LinkedInLink")}
                         />
-                        {formSubmitted && !formData.LinkedInLink && (
+                        {/* {formSubmitted && !formData.LinkedInLink && (
                           <div style={{ color: "red" }}>
                             {"Enter Company Activities"}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -998,11 +1104,11 @@ const BasicForm = () => {
                           id="YouTube_link"
                           onChange={(e) => handleInputChange(e, "YoutubeLink")}
                         />
-                        {formSubmitted && !formData.YoutubeLink && (
+                        {/* {formSubmitted && !formData.YoutubeLink && (
                           <div style={{ color: "red" }}>
                             {"Enter Company Activities"}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -1198,7 +1304,7 @@ const BasicForm = () => {
                       }
                     />
                     {formSubmitted && !formData.UploadPhotos && (
-                      <div style={{ color: "red" }}>{"Enter Technology"}</div>
+                      <div style={{ color: "red" }}>{"Upload Photos"}</div>
                     )}
                   </div>
                 </div>
@@ -1261,7 +1367,7 @@ const BasicForm = () => {
                       }
                     />
                     {formSubmitted && !formData.RelevantDocument && (
-                      <div style={{ color: "red" }}>{"Enter Technology"}</div>
+                      <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>
                     )}
                   </div>
                 </div>
@@ -1399,7 +1505,7 @@ const BasicForm = () => {
                       onChange={(e) => handleInputChange(e, "Finance")}
                     ></textarea>
                     {formSubmitted && !formData.Finance && (
-                      <div style={{ color: "red" }}>{"Enter Technology"}</div>
+                      <div style={{ color: "red" }}>{"Enter details about Finance"}</div>
                     )}
                   </div>
                 </div>

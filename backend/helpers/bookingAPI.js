@@ -651,7 +651,7 @@ router.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-        
+
         newData.otherDocs =
           req.files["otherDocs"] === undefined ||
             req.files["otherDocs"].length === 0
@@ -669,24 +669,24 @@ router.post(
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
             {
-                $set: {
-                    totalAmount: newData.totalAmount || existingData.totalAmount,
-                    pendingAmount: newData.pendingAmount || existingData.pendingAmount,
-                    receivedAmount: newData.receivedAmount || existingData.receivedAmount,
-                    paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
-                    paymentMethod: newData.paymentMethod || existingData.paymentMethod,
-                    extraNotes: newData.extraNotes || existingData.extraNotes,
-                    Step4Status: true,
-                },
-                $push: {
-                    otherDocs: {
-                        $each: newData.otherDocs || []
-                    }
+              $set: {
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+                paymentMethod: newData.paymentMethod || existingData.paymentMethod,
+                extraNotes: newData.extraNotes || existingData.extraNotes,
+                Step4Status: true,
+              },
+              $push: {
+                otherDocs: {
+                  $each: newData.otherDocs || []
                 }
+              }
             },
             { new: true }
-        );
-        
+          );
+
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
@@ -886,21 +886,19 @@ router.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
-        const sheetData = {...newData , bookingPublishDate : formatDate(newTempDate)}
-        appendDataToSheet(sheetData);
         if (companyData) {
           const multiBdmName = [];
           if (companyData.maturedBdmName !== newData.bdmName) {
             multiBdmName.push(newData.bdmName);
             await CompanyModel.findByIdAndUpdate(companyData._id, {
               multiBdmName: multiBdmName,
-              Status : "Matured"
+              Status: "Matured"
             });
           }
         }
-        if (companyData && companyData.isDeletedEmployeeCompany){
+        if (companyData && companyData.isDeletedEmployeeCompany) {
           await CompanyModel.findByIdAndUpdate(companyData._id, {
-            Status : "Matured"
+            Status: "Matured"
           });
         }
         const boomDate = new Date();
@@ -2083,11 +2081,6 @@ router.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
-
-
-
-
-
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServices = "";
@@ -5151,7 +5144,7 @@ router.post('/export-this-bookings', async (req, res) => {
 router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
   const nametochange = req.params.ename;
 
-  
+
   try {
     const result = await RedesignedLeadformModel.updateMany(
       { bdeName: nametochange },  // Filter criteria

@@ -5,7 +5,7 @@ const path = require('path');
 require("dotenv").config();
 
 // Load client secrets from a local file.
-const credentialsPath = path.join(__dirname, 'credentials.json');
+const credentialsPath = path.join(__dirname, 'googlesheet' ,'googlesheet.json');
 const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
 
 // Define the required scopes

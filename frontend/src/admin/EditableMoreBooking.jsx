@@ -172,7 +172,6 @@ export default function EditableMoreBooking({
           allIsoTypes.push(tempDefaultType);
         }
       }
-
       return {
         ...service,
         serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,

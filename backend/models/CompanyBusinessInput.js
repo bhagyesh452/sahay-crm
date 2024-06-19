@@ -44,7 +44,7 @@ const DirectorSchema = new mongoose.Schema({
     type: String,
     enum: ['Male', 'Female'],
     required: true
-  },
+  }
 })
 
 
@@ -69,6 +69,14 @@ const userSchema = new mongoose.Schema({
   },
   WebsiteLink: {
     type: String,
+    required: true
+  },
+  CompanyAddress: {
+    type: String,
+    required: true
+  },
+  CompanyPanNumber: {
+    type: Number,
     required: true
   },
   BrandName: {
@@ -134,7 +142,7 @@ const userSchema = new mongoose.Schema({
   Financing: {
     type: String,
   },
-  DirectorDetails:[DirectorSchema]
+  DirectorDetails: [DirectorSchema]
 });
 
 
