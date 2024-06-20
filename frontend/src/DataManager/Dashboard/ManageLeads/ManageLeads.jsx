@@ -1244,7 +1244,7 @@ function ManageLeads() {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-console.log(selectedYear)
+
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         try {

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
+import Select from "react-select";
 import img from "../static/logo.jpg";
 import "../assets/styles.css";
 import axios from "axios";
+// import { options } from "../components/Options";
 
 const BasicForm = () => {
   const DirectorForm = {
@@ -26,8 +29,9 @@ const BasicForm = () => {
     CompanyNo: "",
     BrandName: "",
     WebsiteLink: "",
-    CompanyAddress:"",
-    CompanyPanNumber:"",
+    CompanyAddress: "",
+    CompanyPanNumber: "",
+    SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -48,6 +52,51 @@ const BasicForm = () => {
   });
 
   console.log(formData);
+
+
+  // Select Your Services
+  const options1 = [
+    { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
+    { value: "Financial Modeling", label: "Financial Modeling" },
+    { value: "DPR Development", label: "DPR Developmen" },
+    { value: "CMA Report Development", label: "CMA Report Development" },
+    { value: "Company Profile Write-Up", label: "Company Profile" },
+    { value: "Business Profile", label: "Business Profile" },
+    { value: "Seed Funding Support", label: "Seed Funding Support" },
+    { value: "Angel Funding Support", label: "Angel Funding Support" },
+    { value: "VC Funding Support", label: "VC Funding Support" },
+    { value: "Crowd Funding Support", label: "Crowd Funding Support" },
+    { value: "I-Create", label: "I-Create" },
+    { value: "Chunauti ", label: "Chunauti " },
+    { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme" },
+    { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
+    { value: "NAIF", label: "NAIF" },
+    { value: "Raftaar", label: "Raftaar" },
+    { value: "CSR Funding", label: "CSR Funding" },
+    { value: "Stand-Up India", label: 'Stand-Up India' },
+    { value: 'PMEGP', label: 'PMEGP' },
+    { value: 'USAID', label: 'USAID' },
+    { value: 'UP Grant', label: 'UP Grant' },
+    { value: 'DBS Grant', label: 'DBS Grant' },
+    { value: 'MSME Innovation', label: 'MSME Innovation' },
+    { value: "MSME Hackathon", label: 'MSME Hackathon' },
+    { value: 'Gujarat Grant', label: 'Gujarat Grant' },
+    { value: 'CGTMSC', label: 'CGTMSC' },
+    { value: "Income Tax Exemption", label: 'Income Tax Exemption' },
+    { value: 'Mudra Loan', label: 'Mudra Loan' },
+    { value: 'SIDBI Loan', label: 'SIDBI Loan' },
+    { value: "Incubation Support", label: 'Incubation Support' },
+  ];
+
+  // const [selectedOptions, setSelectedOptions] = useState([]);
+
+  const handleChange = selectedOptions => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      SelectServices: selectedOptions.map(option => option.value),
+    }));
+  };
+  console.log(formData.SelectServices);
 
   const [directorLength, setDirectorLength] = useState(1);
 
@@ -72,9 +121,18 @@ const BasicForm = () => {
   async function sendDataToBackend() {
     try {
       const data = new FormData();
+
+      console.log("data" , data)
       Object.keys(formData).forEach((key) => {
-        if (!["DirectorDetails"].includes(key)) {
+        if (!["DirectorDetails", "SelectServices"].includes(key)) {
           data.append(key, formData[key]);
+        } else if (key === "SelectServices") {
+          
+            Object.keys(formData.SelectServices).forEach((serviceProp,index)=>{
+              data.append(`SelectServices[${index}]`,formData.SelectServices[index])
+            })
+         
+          // data.append(key, JSON.stringify(formData[key]));
         } else {
           formData.DirectorDetails.forEach((director, index) => {
             Object.keys(director).forEach((prop) => {
@@ -97,21 +155,41 @@ const BasicForm = () => {
         body: data,
       });
       if (response.ok) {
-        console.log("Form data submitted successfully!");
-        // Refresh the page after a short delay (e.g., 1 second)
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000); // 1000 milliseconds = 1 second
+        // Call function to handle success and show SweetAlert
+        handleSuccess();
       } else {
         console.error("Failed to submit form data:", response.statusText);
+        // Handle error case here, optionally show an error message
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to submit form data.",
+          icon: "error",
+        });
       }
       return response.data; // You can return data from the backend if needed
     }
     catch (error) {
       console.error("Error sending data to backend:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to submit form data.",
+        icon: "error",
+      });
       throw error; // Rethrow the error for handling it in the calling code
     }
   }
+
+  const handleSuccess = () => {
+    // Show success message using SweetAlert
+    Swal.fire({
+      title: "Success!",
+      text: "Form submitted successfully.",
+      icon: "success",
+    }).then(() => {
+      // Optionally reload the page or handle further actions
+      window.location.reload();
+    });
+  };
 
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -123,6 +201,7 @@ const BasicForm = () => {
   const [showIp, setShowIp] = useState(false);
   const [showFinance, setShowFinance] = useState(false);
   const [numberOfDirectors, setNumberOfDirectors] = useState(1);
+
 
 
   const handleInputChange = (e, fieldName, index) => {
@@ -182,6 +261,9 @@ const BasicForm = () => {
     }
     if (!formData.CompanyPanNumber && formData.CompanyPanNumber !== "") {
       newErrors.CompanyPanNumber = "Enter Pan Number";
+    }
+    if (!formData.SelectServices.length && formData.SelectServices !== "") {
+      newErrors.SelectServices = "Select Your Servicees";
     }
     if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
       newErrors.CompanyActivities = "Enter Your Company Activities";
@@ -244,6 +326,7 @@ const BasicForm = () => {
     if (Object.keys(newErrors).length > 0) {
       // setErrors(newErrors);
       setFormSubmitted(true); // Reset form submission state
+      return;
     }
 
     // setErrors(true);
@@ -287,36 +370,36 @@ const BasicForm = () => {
       case "B2B":
         return (
           <div>
-            <h3>Email Details for B2B</h3>
-            <p>Select Your BusinessModel: B2B Options</p>
+            <h3></h3>
+            <p></p>
           </div>
         );
       case "B2C":
         return (
           <div>
-            <h3>Email Details for B2C</h3>
-            <p>Select Your BusinessModel: B2C Options</p>
+            <h3></h3>
+            <p></p>
           </div>
         );
       case "B2G":
         return (
           <div>
-            <h3>Email Details for B2G</h3>
-            <p>Select Your BusinessModel: B2G Options</p>
+            <h3></h3>
+            <p></p>
           </div>
         );
       case "D2C":
         return (
           <div>
-            <h3>Email Details for D2C</h3>
-            <p>Select Your BusinessModel: D2C Options</p>
+            <h3></h3>
+            <p></p>
           </div>
         );
       case "C2C":
         return (
           <div>
-            <h3>Email Details for C2C</h3>
-            <p>Select Your BusinessModel: C2C Options</p>
+            <h3></h3>
+            <p></p>
           </div>
         );
       default:
@@ -330,11 +413,11 @@ const BasicForm = () => {
     return Array.from({ length: numberOfDirectors }, (_, index) => (
       <div className="directors-details-box p-3" key={index}>
         <div className="row">
-          <div className="col-lg-12 d-flex align-items-center gap-5">
+          <div className="col-lg-12 d-flex align-items-center justify-content-between">
             <h5>{index + 1}</h5>
             <div>
-              <label className="Director">Main Director</label>
-              <input type="radio" name="maindirector_radio" checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
+              <label className="Director">Authorized Person</label>
+              <input type="radio" name="maindirector_radio"  checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
                 setFormData((prevState) => ({
                   ...prevState,
                   DirectorDetails: prevState.DirectorDetails.map((director, i) =>
@@ -879,7 +962,7 @@ const BasicForm = () => {
                   )} */}
                 </div>
               </div>
-              
+
               <div className="col-lg-4">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor="CompanyNo">
@@ -968,13 +1051,28 @@ const BasicForm = () => {
                 </div>
               </div>
               <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
+                <div className="mt-2 mb-2">
                   <label htmlFor="Services">
                     Select Your Services <span style={{ color: "red" }}>*</span>
                   </label>
-                  <select className="form-select mt-1" id="Services">
-                    <option>Seed Fund</option>
-                  </select>
+                  <Select
+                    className="mt-1"
+                    isMulti
+                    options={options1}
+                    id="Services"
+                    // value={formData.selectedOptions}
+                    value={options1.filter(option => formData.SelectServices.includes(option.value))}
+                    placeholder="SelectServices"
+                    onChange={handleChange}>
+                    {options1.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Select>
+                  {formSubmitted && !formData.SelectServices.length && (
+                    <div style={{ color: "red" }}>{"Select Your Services"}</div>
+                  )}
                 </div>
               </div>
               <div className="col-lg-4">
