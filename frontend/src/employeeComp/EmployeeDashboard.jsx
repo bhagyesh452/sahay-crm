@@ -375,6 +375,7 @@ function EmployeeDashboard() {
     if (data._id && socketID) {
       try {
         const id = data._id;
+        console.log("Request is sending for socket id" + socketID + data._id);
         const response = await axios.put(
           `${secretKey}/employee/online-status/${id}/${socketID}`
         );

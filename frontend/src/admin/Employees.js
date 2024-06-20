@@ -87,12 +87,12 @@ function Employees({ onEyeButtonClick }) {
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
-        //fetchData();
-      }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
+        fetchData(); // Don't fetch instead, just change that particular active status
+      }, 5000); 
     });
 
     socket.on("user-disconnected", () => {
-      //fetchData();
+      fetchData(); // Same condition
     });
 
     return () => {

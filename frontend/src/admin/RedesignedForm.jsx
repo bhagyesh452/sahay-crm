@@ -98,10 +98,11 @@ export default function RedesignedForm({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [secondTempRemarks, setSecondTempRemarks] = useState("");
+  const [secondTempRemarks, setSecondTempRemarks] = useState([]);
+  const [thirdTempRemarks, setThirdTempRemarks] = useState([]);
+  const [fourthTempRemarks, setFourthTempRemarks] = useState([]);
   const [loader, setLoader] = useState(false);
-  const [thirdTempRemarks, setThirdTempRemarks] = useState("");
-  const [fourthTempRemarks, setFourthTempRemarks] = useState("");
+
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
@@ -191,9 +192,54 @@ export default function RedesignedForm({
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
-        const servicestoSend = data.services.map((service, index) => {
+        const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
+          
+          if(!isNaN(new Date(service.secondPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.secondPaymentRemarks
+            };
+            const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setSecondTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setSecondTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.thirdPaymentRemarks
+            };
+            const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setThirdTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setThirdTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.fourthPaymentRemarks
+            };
+            const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setFourthTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setFourthTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+
+          
 
           return {
             ...service,
@@ -226,9 +272,53 @@ export default function RedesignedForm({
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       }
       else if (Step4Status === true && Step5Status === false) {
-        const servicestoSend = data.services.map((service, index) => {
+        const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
+
+
+          if(!isNaN(new Date(service.secondPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.secondPaymentRemarks
+            };
+            const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setSecondTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setSecondTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.thirdPaymentRemarks
+            };
+            const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setThirdTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setThirdTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+            const tempState = {
+              serviceID: index,
+              value: service.fourthPaymentRemarks
+            };
+            const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setFourthTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setFourthTempRemarks(prev => [...prev, tempState]);
+            }
+          }
 
           return {
             ...service,
@@ -807,15 +897,15 @@ export default function RedesignedForm({
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
@@ -915,15 +1005,15 @@ export default function RedesignedForm({
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
+                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
+                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
@@ -1675,10 +1765,21 @@ export default function RedesignedForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={secondTempRemarks}
-                                  onChange={(e) =>
-                                    setSecondTempRemarks(e.target.value)
-                                  }
+                                   value={secondTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                   onChange={(e) => {
+                                     const tempState = {
+                                       serviceID: i,
+                                       value: e.target.value
+                                     };
+                                     const prevState = secondTempRemarks.find(obj => obj.serviceID === i);
+                                     if (prevState) {
+                                       setSecondTempRemarks(prev =>
+                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                       );
+                                     } else {
+                                       setSecondTempRemarks(prev => [...prev, tempState]);
+                                     }
+                                   }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1779,10 +1880,21 @@ export default function RedesignedForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={thirdTempRemarks}
-                                  onChange={(e) =>
-                                    setThirdTempRemarks(e.target.value)
-                                  }
+                                  value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setThirdTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setThirdTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1877,10 +1989,21 @@ export default function RedesignedForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={fourthTempRemarks}
-                                  onChange={(e) =>
-                                    setFourthTempRemarks(e.target.value)
-                                  }
+                                   value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                   onChange={(e) => {
+                                     const tempState = {
+                                       serviceID: i,
+                                       value: e.target.value
+                                     };
+                                     const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
+                                     if (prevState) {
+                                       setFourthTempRemarks(prev =>
+                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                       );
+                                     } else {
+                                       setFourthTempRemarks(prev => [...prev, tempState]);
+                                     }
+                                   }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -3425,18 +3548,14 @@ export default function RedesignedForm({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data">
-                                                {Number(
+                                            <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                ₹{" "}{parseInt(
                                                   obj.secondPayment
-                                                ).toFixed(2)}{" "}
+                                                ).toLocaleString()}{" "}
                                                 -{" "}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.secondPaymentRemarks
-                                                  )
-                                                )
+                                                {obj.secondPaymentRemarks !== "On Particular Date"
                                                   ? obj.secondPaymentRemarks
-                                                  : `Payment On ${obj.secondPaymentRemarks}`}
+                                                  : `Payment On ${secondTempRemarks.find(obj => obj.serviceID === index).value}`}
                                               </div>
                                             </div>
                                           </div>
@@ -3448,18 +3567,14 @@ export default function RedesignedForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
-                                                  {Number(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  {parseInt(
                                                     obj.thirdPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.thirdPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.thirdPaymentRemarks
-                                                    : `Payment On ${obj.thirdPaymentRemarks}`}
+                                                    : `Payment On ${thirdTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>
@@ -3472,18 +3587,14 @@ export default function RedesignedForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
-                                                  {Number(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  ₹{" "}{parseInt(
                                                     obj.fourthPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.fourthPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.fourthPaymentRemarks
-                                                    : `Payment On ${obj.fourthPaymentRemarks}`}
+                                                    : `Payment On ${fourthTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>
