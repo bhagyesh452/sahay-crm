@@ -2245,8 +2245,6 @@ app.post("/api/users",
                 clientDocument = [pdfAttachment]
                 console.log("Service 'Seed Funding Support' not found.");
               }
-              
-
               sendMail4(
                 recipients,
                 ccEmail,
