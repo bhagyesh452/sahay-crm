@@ -95,9 +95,9 @@ export default function EditableMoreBooking({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [secondTempRemarks, setSecondTempRemarks] = useState("");
-  const [thirdTempRemarks, setThirdTempRemarks] = useState("");
-  const [fourthTempRemarks, setFourthTempRemarks] = useState("");
+  const [secondTempRemarks, setSecondTempRemarks] = useState([]);
+  const [thirdTempRemarks, setThirdTempRemarks] = useState([]);
+  const [fourthTempRemarks, setFourthTempRemarks] = useState([]);
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
@@ -172,6 +172,51 @@ export default function EditableMoreBooking({
           allIsoTypes.push(tempDefaultType);
         }
       }
+      if(!isNaN(new Date(service.secondPaymentRemarks))){
+        const tempState = {
+          serviceID: index,
+          value: service.secondPaymentRemarks
+        };
+        const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+        if (prevState) {
+          setSecondTempRemarks(prev =>
+            prev.map(obj => (obj.serviceID === index ? tempState : obj))
+          );
+        } else {
+          setSecondTempRemarks(prev => [...prev, tempState]);
+        }
+      }
+      if(!isNaN(new Date(service.thirdPaymentRemarks))){
+        const tempState = {
+          serviceID: index,
+          value: service.thirdPaymentRemarks
+        };
+        const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+        if (prevState) {
+          setThirdTempRemarks(prev =>
+            prev.map(obj => (obj.serviceID === index ? tempState : obj))
+          );
+        } else {
+          setThirdTempRemarks(prev => [...prev, tempState]);
+        }
+      }
+      if(!isNaN(new Date(service.fourthPaymentRemarks))){
+        const tempState = {
+          serviceID: index,
+          value: service.fourthPaymentRemarks
+        };
+        const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+        if (prevState) {
+          setFourthTempRemarks(prev =>
+            prev.map(obj => (obj.serviceID === index ? tempState : obj))
+          );
+        } else {
+          setFourthTempRemarks(prev => [...prev, tempState]);
+        }
+      }
+
+
+
       return {
         ...service,
         serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
@@ -216,6 +261,48 @@ export default function EditableMoreBooking({
           ...defaultISOtypes,
           serviceID: index
         };
+        if(!isNaN(new Date(service.secondPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.secondPaymentRemarks
+          };
+          const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setSecondTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setSecondTempRemarks(prev => [...prev, tempState]);
+          }
+        }
+        if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.thirdPaymentRemarks
+          };
+          const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setThirdTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setThirdTempRemarks(prev => [...prev, tempState]);
+          }
+        }
+        if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.fourthPaymentRemarks
+          };
+          const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setFourthTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setFourthTempRemarks(prev => [...prev, tempState]);
+          }
+        }
         return {
           ...service,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
@@ -239,6 +326,48 @@ export default function EditableMoreBooking({
           ...defaultISOtypes,
           serviceID: index
         };
+        if(!isNaN(new Date(service.secondPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.secondPaymentRemarks
+          };
+          const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setSecondTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setSecondTempRemarks(prev => [...prev, tempState]);
+          }
+        }
+        if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.thirdPaymentRemarks
+          };
+          const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setThirdTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setThirdTempRemarks(prev => [...prev, tempState]);
+          }
+        }
+        if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          const tempState = {
+            serviceID: index,
+            value: service.fourthPaymentRemarks
+          };
+          const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+          if (prevState) {
+            setFourthTempRemarks(prev =>
+              prev.map(obj => (obj.serviceID === index ? tempState : obj))
+            );
+          } else {
+            setFourthTempRemarks(prev => [...prev, tempState]);
+          }
+        }
         return {
           ...service,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
@@ -1029,17 +1158,17 @@ export default function EditableMoreBooking({
         ...service,
         serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
         secondPaymentRemarks:
-          service.secondPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks
-            : service.secondPaymentRemarks,
-        thirdPaymentRemarks:
-          service.thirdPaymentRemarks === "On Particular Date"
-            ? thirdTempRemarks
-            : service.thirdPaymentRemarks,
-        fourthPaymentRemarks:
-          service.fourthPaymentRemarks === "On Particular Date"
-            ? fourthTempRemarks
-            : service.fourthPaymentRemarks,
+              service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.secondPaymentRemarks,
+            thirdPaymentRemarks:
+              service.thirdPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.thirdPaymentRemarks,
+            fourthPaymentRemarks:
+              service.fourthPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.fourthPaymentRemarks,
         isoTypeObject: isoType
       }));
 
@@ -1098,17 +1227,17 @@ export default function EditableMoreBooking({
         ...service,
         serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
         secondPaymentRemarks:
-          service.secondPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks
-            : service.secondPaymentRemarks,
-        thirdPaymentRemarks:
-          service.thirdPaymentRemarks === "On Particular Date"
-            ? thirdTempRemarks
-            : service.thirdPaymentRemarks,
-        fourthPaymentRemarks:
-          service.fourthPaymentRemarks === "On Particular Date"
-            ? fourthTempRemarks
-            : service.fourthPaymentRemarks,
+              service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.secondPaymentRemarks,
+            thirdPaymentRemarks:
+              service.thirdPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.thirdPaymentRemarks,
+            fourthPaymentRemarks:
+              service.fourthPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                : service.fourthPaymentRemarks,
         isoTypeObject: isoType,
         expanse : service.expanse ? service.expanse : 0,
         expanseDate : service.expanseDate ? service.expanseDate : defaultDate
@@ -1843,10 +1972,21 @@ export default function EditableMoreBooking({
                               <div className="mt-2">
                                 <input
                                   style={{ textTransform: "uppercase" }}
-                                  value={secondTempRemarks}
-                                  onChange={(e) =>
-                                    setSecondTempRemarks(e.target.value)
-                                  }
+                                  value={secondTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = secondTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setSecondTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setSecondTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1947,10 +2087,21 @@ export default function EditableMoreBooking({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={thirdTempRemarks}
-                                  onChange={(e) =>
-                                    setThirdTempRemarks(e.target.value)
-                                  }
+                                   value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                   onChange={(e) => {
+                                     const tempState = {
+                                       serviceID: i,
+                                       value: e.target.value
+                                     };
+                                     const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
+                                     if (prevState) {
+                                       setThirdTempRemarks(prev =>
+                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                       );
+                                     } else {
+                                       setThirdTempRemarks(prev => [...prev, tempState]);
+                                     }
+                                   }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -2045,10 +2196,21 @@ export default function EditableMoreBooking({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={fourthTempRemarks}
-                                  onChange={(e) =>
-                                    setFourthTempRemarks(e.target.value)
-                                  }
+                                 value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                 onChange={(e) => {
+                                   const tempState = {
+                                     serviceID: i,
+                                     value: e.target.value
+                                   };
+                                   const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
+                                   if (prevState) {
+                                     setFourthTempRemarks(prev =>
+                                       prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                     );
+                                   } else {
+                                     setFourthTempRemarks(prev => [...prev, tempState]);
+                                   }
+                                 }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -3577,18 +3739,14 @@ export default function EditableMoreBooking({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
-                                                ₹ {parseInt(
+                                            <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
                                                 -{" "}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.secondPaymentRemarks
-                                                  )
-                                                )
+                                                {obj.secondPaymentRemarks !== "On Particular Date"
                                                   ? obj.secondPaymentRemarks
-                                                  : `Payment On ${obj.secondPaymentRemarks}`}
+                                                  : `Payment On ${secondTempRemarks.find(obj => obj.serviceID === index).value}`}
                                               </div>
                                             </div>
                                           </div>
@@ -3600,18 +3758,14 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
-                                                  ₹ {parseInt(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.thirdPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.thirdPaymentRemarks
-                                                    : `Payment On ${obj.thirdPaymentRemarks}`}
+                                                    : `Payment On ${thirdTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>
@@ -3624,18 +3778,14 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
-                                                  {parseInt(
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                  ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.fourthPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.fourthPaymentRemarks
-                                                    : `Payment On ${obj.fourthPaymentRemarks}`}
+                                                    : `Payment On ${fourthTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>

@@ -99,9 +99,13 @@ export default function AddLeadForm({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [secondTempRemarks, setSecondTempRemarks] = useState("");
-  const [thirdTempRemarks, setThirdTempRemarks] = useState("");
-  const [fourthTempRemarks, setFourthTempRemarks] = useState("");
+  const tempTempRemarks = {
+    serviceID: -1,
+    value: ""
+  }
+  const [secondTempRemarks, setSecondTempRemarks] = useState([]);
+  const [thirdTempRemarks, setThirdTempRemarks] = useState([]);
+  const [fourthTempRemarks, setFourthTempRemarks] = useState([]);
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
   const defaultISOtypes = {
@@ -186,6 +190,51 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
+            
+            if(!isNaN(new Date(service.secondPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.secondPaymentRemarks
+              };
+              const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setSecondTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setSecondTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if(!isNaN(new Date(service.thirdPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.thirdPaymentRemarks
+              };
+              const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setThirdTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setThirdTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if(!isNaN(new Date(service.fourthPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.fourthPaymentRemarks
+              };
+              const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setFourthTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setFourthTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+
+            
 
             return {
               ...service,
@@ -232,6 +281,50 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
+
+
+            if(!isNaN(new Date(service.secondPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.secondPaymentRemarks
+              };
+              const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setSecondTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setSecondTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if(!isNaN(new Date(service.thirdPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.thirdPaymentRemarks
+              };
+              const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setThirdTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setThirdTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if(!isNaN(new Date(service.fourthPaymentRemarks))){
+              const tempState = {
+                serviceID: index,
+                value: service.fourthPaymentRemarks
+              };
+              const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setFourthTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setFourthTempRemarks(prev => [...prev, tempState]);
+              }
+            }
 
             return {
               ...service,
@@ -747,18 +840,19 @@ export default function AddLeadForm({
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
+          
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
             0
@@ -771,9 +865,8 @@ export default function AddLeadForm({
           setLeadData({
             ...leadData,
             generatedTotalAmount: generatedTotalAmount,
-            generatedReceivedAmount: generatedReceivedAmount // Check if foundUser exists before accessing email
+            generatedReceivedAmount: generatedReceivedAmount 
           });
-
 
           dataToSend = {
             services: servicestoSend,
@@ -827,7 +920,7 @@ export default function AddLeadForm({
         formData.append("extraNotes", leadData.extraNotes);
         // Append payment receipt files to formData
         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        
+
         // Append other documents files to formData
         for (let i = 0; i < leadData.otherDocs.length; i++) {
           formData.append("otherDocs", leadData.otherDocs[i]);
@@ -852,6 +945,7 @@ export default function AddLeadForm({
       }
 
       if (activeStep === 4) {
+     
         try {
           setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
@@ -859,15 +953,15 @@ export default function AddLeadForm({
             serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
             secondPaymentRemarks:
               service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
+                ? secondTempRemarks.find(obj => obj.serviceID === index).value
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
+                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
+                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
@@ -883,8 +977,6 @@ export default function AddLeadForm({
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, tempLeadData
           );
-
-
           Swal.fire({
             icon: "success",
             title: "Booking Submitted",
@@ -1078,7 +1170,6 @@ export default function AddLeadForm({
       console.error("Error resetting draft:", error.message);
     }
   };
-
 
 
   const renderServices = () => {
@@ -1620,10 +1711,21 @@ export default function AddLeadForm({
                               <div className="mt-2">
                                 <input
                                   style={{ textTransform: "uppercase" }}
-                                  value={secondTempRemarks}
-                                  onChange={(e) =>
-                                    setSecondTempRemarks(e.target.value)
-                                  }
+                                  value={secondTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = secondTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setSecondTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setSecondTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1725,10 +1827,21 @@ export default function AddLeadForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={thirdTempRemarks}
-                                  onChange={(e) =>
-                                    setThirdTempRemarks(e.target.value)
-                                  }
+                                  value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setThirdTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setThirdTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1823,10 +1936,21 @@ export default function AddLeadForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                  value={fourthTempRemarks}
-                                  onChange={(e) =>
-                                    setFourthTempRemarks(e.target.value)
-                                  }
+                                   value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setFourthTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setFourthTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -3407,13 +3531,9 @@ export default function AddLeadForm({
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
                                                 -{" "}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.secondPaymentRemarks
-                                                  )
-                                                )
+                                                {obj.secondPaymentRemarks !== "On Particular Date"
                                                   ? obj.secondPaymentRemarks
-                                                  : `Payment On ${obj.secondPaymentRemarks}`}
+                                                  : `Payment On ${secondTempRemarks.find(obj => obj.serviceID === index).value}`}
                                               </div>
                                             </div>
                                           </div>
@@ -3430,13 +3550,9 @@ export default function AddLeadForm({
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.thirdPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.thirdPaymentRemarks
-                                                    : `Payment On ${obj.thirdPaymentRemarks}`}
+                                                    : `Payment On ${thirdTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>
@@ -3454,13 +3570,9 @@ export default function AddLeadForm({
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {isNaN(
-                                                    new Date(
-                                                      obj.fourthPaymentRemarks
-                                                    )
-                                                  )
+                                                  {obj.secondPaymentRemarks !== "On Particular Date"
                                                     ? obj.fourthPaymentRemarks
-                                                    : `Payment On ${obj.fourthPaymentRemarks}`}
+                                                    : `Payment On ${fourthTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
                                               </div>
                                             </div>

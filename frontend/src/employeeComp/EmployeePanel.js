@@ -233,28 +233,28 @@ function EmployeePanel() {
   }
 
 
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
-  //   socket.on("connect", () => {
-  //     //console.log("Socket connected with ID:", socket.id);
-  //     setSocketID(socket.id);
-  //   });
+  useEffect(() => {
+    const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
+    socket.on("connect", () => {
+      //console.log("Socket connected with ID:", socket.id);
+      setSocketID(socket.id);
+    });
 
-  //   socket.on("request-seen", () => {
-  //     // Call fetchRequestDetails function to update request details
-  //     fetchRequestDetails();
-  //   });
+    socket.on("request-seen", () => {
+      // Call fetchRequestDetails function to update request details
+      fetchRequestDetails();
+    });
 
-  //   socket.on("data-sent", () => {
-  //     fetchRequestDetails();
-  //     playNotificationSound();
-  //   });
+    socket.on("data-sent", () => {
+      fetchRequestDetails();
+      playNotificationSound();
+    });
 
-  //   // Clean up the socket connection when the component unmounts
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
 
   const functionopenpopup = () => {
@@ -686,6 +686,7 @@ function EmployeePanel() {
     if (data._id && socketID) {
       try {
         const id = data._id;
+        console.log("Request is sending for" + socketID + " " + data._id)
         const response = await axios.put(
           `${secretKey}/employee/online-status/${id}/${socketID}`
         );
