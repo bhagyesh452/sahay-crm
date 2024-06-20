@@ -53,7 +53,7 @@ const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
 const InformBDEModel = require("./models/InformBDE.js");
-const { dataform_v1beta1 } = require("googleapis");
+const { dataform_v1beta1, servicecontrol_v2 } = require("googleapis");
 const bookingsAPI = require("./helpers/bookingAPI.js");
 const AdminLeadsAPI = require("./helpers/AdminLeadsAPI.js");
 const RemarksAPI = require("./helpers/Remarks.js");
@@ -1164,9 +1164,9 @@ app.post("/api/users",
       //console.log("select services" , SelectServices)
       // const services = SelectServices.map(service => service);
 
-  // Now join the mapped array to create a comma-separated string
-  // const commaSeparatedValues = services.join(", ");
-  // console.log("comma" , commaSeparatedValues);
+      // Now join the mapped array to create a comma-separated string
+      // const commaSeparatedValues = services.join(", ");
+      // console.log("comma" , commaSeparatedValues);
 
 
       // Construct the HTML content conditionally
@@ -2170,16 +2170,9 @@ app.post("/api/users",
 <p>Start-Up Sahay Private Limited</p>
       `;
 
-      // const pdfAttachment = {
-      //   filename: 'MITC.pdf', // Replace with actual file name
-      //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-      // };
-
-      // const attachments = [pdfAttachment];
-
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
+      //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
       const filedHtml = htmlNewTemplate
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
@@ -2193,7 +2186,8 @@ app.post("/api/users",
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
         .replace("{{DirectorName}}", forGender.DirectorName)
-
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
 
       const pdfFilePath = './GeneratedDocs/LOA.pdf';
       const options = {
@@ -2203,46 +2197,54 @@ app.post("/api/users",
           },
         },
       };
+      console.log(SelectServices)
+      // const service = toArray(SelectServices).forEach((service, index) => {
+      //       if(service.includes("Seed Funding Support")){
+      //         return service;
+      //       }else {
+      //         return false;
+      //       }
+      //       });
+      const servicesArray = Object.values(SelectServices);
+      console.log(servicesArray)
 
+      const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
 
-      const outputDir = path.join(__dirname, './GeneratedDocs');
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+      if (selectedService) {
+        console.log("Service found:", selectedService);
+      } else {
+        console.log("Service 'Seed Funding Support' not found.");
       }
 
-
-      let fileBuffer;
-      try {
-        fileBuffer = await HTMLtoDOCX(filedHtml, null, {
-          table: { row: { cantSplit: true } },
-          footer: true,
-          pageNumber: true,
-        });
-      } catch (error) {
-        console.error('Error converting HTML to DOCX:', error);
-        return;
-      }
-      console.log("selectSwrvices" , SelectServices)
-      console.log("selectSwrvices" , typeof(SelectServices))
-
-      // Write the DOCX file
-      fs.writeFile(filePath, fileBuffer, (error) => {
-        if (error) {
-          console.log('Docx file creation failed');
-          return;
+      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
+        if (err) {
+          console.error('Error generating PDF:', err);
+          return res.status(500).send('Error generating PDF');
         } else {
           try {
-            const mainBuffer = {
-              filename: 'example.docx',
-              path: path.join(__dirname, 'GeneratedDocs', 'example.docx'),
-              //contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            };
-            const pdfAttachment = {
-              filename: 'MITC.pdf', // Replace with actual file name
-              path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-            };
-            const clientDocument = [mainBuffer, pdfAttachment];
             setTimeout(() => {
+              const servicesArray = Object.values(SelectServices);
+              console.log(servicesArray)
+              const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
+              //const mainBuffer = fs.readFileSync(pdfFilePath);
+              const pdfAttachment = {
+                filename: 'MITC.pdf', // Replace with actual file name
+                path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+              };
+
+              const mainBuffer = {
+                filename: 'LOA.pdf', // Replace with actual file name
+                path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+              };
+              
+              let clientDocument;
+              if (selectedService) {
+                clientDocument = [mainBuffer, pdfAttachment]
+                console.log("Service found:", selectedService);
+              } else {
+                clientDocument = [pdfAttachment]
+                console.log("Service 'Seed Funding Support' not found.");
+              }
               sendMail4(
                 recipients,
                 ccEmail,
@@ -2253,13 +2255,13 @@ app.post("/api/users",
               );
             }, 4000);
             //res.status(200).send('Generated Pdf Successfully');
-
           } catch (error) {
             console.error("Error sending email:", error);
+            // No need to send another response here because one was already sent
           }
-
         }
       });
+
       const newUser = new userModel({
         ...req.body,
         DirectorPassportPhoto,
@@ -2283,7 +2285,7 @@ app.post("/api/users",
 app.get('/api/generate-pdf-client', async (req, res) => {
   try {
     const htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-    const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
+    const filePath = path.join(__dirname, './GeneratedDocs/LOA.docx');
 
     // Ensure the directory exists
     const outputDir = path.join(__dirname, './GeneratedDocs');

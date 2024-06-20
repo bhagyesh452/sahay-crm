@@ -1724,16 +1724,7 @@ function EmployeeParticular() {
                   <h2 className="page-title">{employeeName}</h2>
                   <div className="nextBtn">
                     <IconButton onClick={handleChangeUrl}>
-                      <IconChevronRight
-                        style={
-                          {
-                            // backgroundColor: "#fbb900",
-                            // borderRadius: "5px",
-                            // padding: "2px",
-                            // color: "white"
-                          }
-                        }
-                      />
+                      <IconChevronRight />
                     </IconButton>
                   </div>
                 </div>
