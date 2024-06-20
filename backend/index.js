@@ -2169,6 +2169,33 @@ app.post("/api/users",
 <p>+91-9998992601</p>
 <p>Start-Up Sahay Private Limited</p>
       `;
+      console.log(DirectorDetails)
+      console.log(typeof (DirectorDetails))
+
+      let MainDirectorName;
+      let MainDirectorDesignation;
+      if (DirectorDetails.length > 1) {
+        if (DirectorDetails[0].IsMainDirector === "true") {
+          MainDirectorName = DirectorDetails[1].DirectorName
+          MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
+        } else if (DirectorDetails[1].IsMainDirector === "true") {
+          MainDirectorName = DirectorDetails[0].DirectorName
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+        } else{
+          MainDirectorName = DirectorDetails[0].DirectorName
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+        }
+      }else {
+        MainDirectorName = DirectorDetails[0].DirectorName
+        MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+      }
+
+      console.log(MainDirectorName , MainDirectorDesignation)
+
+
+
+
+
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
@@ -2186,8 +2213,8 @@ app.post("/api/users",
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
         .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
+        .replace("{{DirectorName}}", MainDirectorName)
+        .replace("{{DirectorDesignation}}", MainDirectorDesignation)
 
       const pdfFilePath = './GeneratedDocs/LOA.pdf';
       const options = {
@@ -2197,24 +2224,6 @@ app.post("/api/users",
           },
         },
       };
-      console.log(SelectServices)
-      // const service = toArray(SelectServices).forEach((service, index) => {
-      //       if(service.includes("Seed Funding Support")){
-      //         return service;
-      //       }else {
-      //         return false;
-      //       }
-      //       });
-      const servicesArray = Object.values(SelectServices);
-      console.log(servicesArray)
-
-      const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
-
-      if (selectedService) {
-        console.log("Service found:", selectedService);
-      } else {
-        console.log("Service 'Seed Funding Support' not found.");
-      }
 
       pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
         if (err) {
@@ -2236,7 +2245,7 @@ app.post("/api/users",
                 filename: 'LOA.pdf', // Replace with actual file name
                 path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
               };
-              
+
               let clientDocument;
               if (selectedService) {
                 clientDocument = [mainBuffer, pdfAttachment]
