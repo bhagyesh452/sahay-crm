@@ -46,7 +46,7 @@ const { sendMail2 } = require("./helpers/sendMail2");
 const { sendMail3 } = require("./helpers/sendMail3");
 const { sendMail4 } = require("./helpers/sendMail4");
 const pdfAttachment = path.join("./helpers/src", './MITC.pdf');
-
+const HTMLtoDOCX = require('html-to-docx');
 //const axios = require('axios');
 const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
@@ -68,6 +68,7 @@ const processAttachments = require("./helpers/sendMail3.js");
 const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
+
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -1157,7 +1158,7 @@ app.post("/api/users",
         DirectInDirectMarket,
         Finance,
         BusinessModel,
-        DirectorDetails, 
+        DirectorDetails,
       } = req.body;
 
 
@@ -2173,6 +2174,7 @@ app.post("/api/users",
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+      const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
       const filedHtml = htmlNewTemplate
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
@@ -2196,35 +2198,46 @@ app.post("/api/users",
           },
         },
       };
-      
-      const wordBuffer = htmlDocx.asBlob(filedHtml);
-      saveAs(wordBuffer, 'test.docx');
-      const pdfAttachment = {
-        filename: 'MITC.pdf', // Replace with actual file name
-        path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-      };
-    
-      const mainBuffer = {
-        filename: 'LOA.docx',
-        content: wordBuffer,
-        path: path.join(__dirname, './GeneratedDocs/LOA.pdf'),
-        contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      };
 
-      const clientDocument = [mainBuffer, pdfAttachment];
-     try {
+
+      const outputDir = path.join(__dirname, './GeneratedDocs');
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+
+
+      let fileBuffer;
+      try {
+        fileBuffer = await HTMLtoDOCX(filedHtml, null, {
+          table: { row: { cantSplit: true } },
+          footer: true,
+          pageNumber: true,
+        });
+      } catch (error) {
+        console.error('Error converting HTML to DOCX:', error);
+        return;
+      }
+      console.log("selectSwrvices" , SelectServices)
+      console.log("selectSwrvices" , typeof(SelectServices))
+
+      // Write the DOCX file
+      fs.writeFile(filePath, fileBuffer, (error) => {
+        if (error) {
+          console.log('Docx file creation failed');
+          return;
+        } else {
+          try {
+            const mainBuffer = {
+              filename: 'example.docx',
+              path: path.join(__dirname, 'GeneratedDocs', 'example.docx'),
+              //contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            };
+            const pdfAttachment = {
+              filename: 'MITC.pdf', // Replace with actual file name
+              path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+            };
+            const clientDocument = [mainBuffer, pdfAttachment];
             setTimeout(() => {
-              //const mainBuffer = fs.readFileSync(pdfFilePath);
-              // const pdfAttachment = {
-              //   filename: 'MITC.pdf', // Replace with actual file name
-              //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-              // };
-        
-              // const mainBuffer = {
-              //   filename: 'LOA.pdf', // Replace with actual file name
-              //   path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
-              // };
-              // const clientDocument = [mainBuffer,pdfAttachment]
               sendMail4(
                 recipients,
                 ccEmail,
@@ -2235,56 +2248,13 @@ app.post("/api/users",
               );
             }, 4000);
             //res.status(200).send('Generated Pdf Successfully');
+
           } catch (error) {
             console.error("Error sending email:", error);
-            // No need to send another response here because one was already sent
           }
-      
-      // pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
-      //   if (err) {
-      //     console.error('Error generating PDF:', err);
-      //     return res.status(500).send('Error generating PDF');
-      //   } else {
-      //     try {
-      //       setTimeout(() => {
-      //         //const mainBuffer = fs.readFileSync(pdfFilePath);
-      //         const pdfAttachment = {
-      //           filename: 'MITC.pdf', // Replace with actual file name
-      //           path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-      //         };
-        
-      //         const mainBuffer = {
-      //           filename: 'LOA.pdf', // Replace with actual file name
-      //           path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
-      //         };
-      //         const clientDocument = [mainBuffer,pdfAttachment]
-      //         sendMail4(
-      //           recipients,
-      //           ccEmail,
-      //           "Letter of Authorization for filing in SISFS Application",
-      //           ``,
-      //           html1,
-      //           clientDocument
-      //         );
-      //       }, 4000);
-      //       //res.status(200).send('Generated Pdf Successfully');
-      //     } catch (error) {
-      //       console.error("Error sending email:", error);
-      //       // No need to send another response here because one was already sent
-      //     }
-      //   }
-      // });
 
-      // sendMail4(recipients, ccEmail, subject1, text1, html1, attachments)
-      //   .then((info) => {
-      //     console.log("Email sent:", info);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error sending email:", error);
-      //   });
-
-
-
+        }
+      });
       const newUser = new userModel({
         ...req.body,
         DirectorPassportPhoto,
@@ -2307,33 +2277,35 @@ app.post("/api/users",
 // API endpoint
 app.get('/api/generate-pdf-client', async (req, res) => {
   try {
-    let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-    const pdfFilePath = './GeneratedDocs/LOA.pdf';
+    const htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+    const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
 
-    const options = {
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: './dev/null',
-        },
-      },
-    };
+    // Ensure the directory exists
+    const outputDir = path.join(__dirname, './GeneratedDocs');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
 
-    const clientMail = ['shivangi@startupsahay.com'];
+    const fileBuffer = await HTMLtoDOCX(htmlNewTemplate, null, {
+      table: { row: { cantSplit: true } },
+      footer: true,
+      pageNumber: true,
+    });
 
-    pdf.create(htmlNewTemplate, options).toFile(pdfFilePath, async (err, response) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        return res.status(500).send('Error generating PDF');
-      } else {
-        return res.status(200).send('Generated Pdf Successfully');
+    // Write the DOCX file
+    fs.writeFile(filePath, fileBuffer, (error) => {
+      if (error) {
+        console.error('Docx file creation failed:', error);
+        return res.status(500).send('Error generating DOCX file');
       }
+      console.log('Docx file created successfully');
+      return res.status(200).send('Generated DOCX Successfully');
     });
   } catch (error) {
     console.error('Error in endpoint:', error);
     res.status(500).send('Server error');
   }
-});;
-
+});
 
 
 
