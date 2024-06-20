@@ -109,15 +109,15 @@ const BasicForm = () => {
     return pattern.test(Mobile);
   }
 
-  function isValidDirectorEmail(Directoremail) {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(Directoremail);
-  }
+  // function isValidDirectorEmail(Directoremail) {
+  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   return pattern.test(Directoremail);
+  // }
 
-  function isValidDirectorMobileNo(mobileNo) {
-    const pattern = /^\d{10}$/;
-    return pattern.test(mobileNo);
-  }
+  // function isValidDirectorMobileNo(mobileNo) {
+  //   const pattern = /^\d{10}$/;
+  //   return pattern.test(mobileNo);
+  // }
 
   const handleChange = selectedOptions => {
     setFormData(prevFormData => ({
@@ -322,15 +322,15 @@ const BasicForm = () => {
     if (!formData.DirectorDetails[0].DirectorEmail) {
       newErrors.DirectorEmail = "Enter Director Email Id";
     }
-    if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
-      newErrors.DirectorEmail = "Please Enter a Valid Email"
-    }
+    // if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
+    //   newErrors.DirectorEmail = "Please Enter a Valid Email"
+    // }
     if (!formData.DirectorDetails[0].DirectorMobileNo) {
       newErrors.DirectorMobileNo = "Mobile No is required";
     }
-    if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
-      newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
-    }
+    // if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
+    //   newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
+    // }
     if (!formData.DirectorDetails[0].DirectorQualification) {
       newErrors.DirectorQualification = "Enter Director Qualification";
     }
@@ -529,11 +529,11 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[0].DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
-              {formSubmitted &&
+              {/* {formSubmitted &&
                 formData.DirectorDetails[0].DirectorEmail &&
                 !isValidDirectorEmail(formData.DirectorDetails[0].DirectorEmail) && (
                   <div style={{ color: "red" }}>Enter a valid Email Address</div>
-                )}
+                )} */}
               {/* {formSubmitted && !formData[`DirectorEmail${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
@@ -570,11 +570,11 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[0].DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
-              {formSubmitted &&
+              {/* {formSubmitted &&
                 formData.DirectorDetails[0].DirectorMobileNo &&
                 !isValidDirectorMobileNo(formData.DirectorDetails[0].DirectorMobileNo) && (
                   <div style={{ color: "red" }}>Enter a valid 10-digit Mobile Number</div>
-                )}
+                )} */}
               {/* {formSubmitted && !formData[`DirectorMobileNo${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
