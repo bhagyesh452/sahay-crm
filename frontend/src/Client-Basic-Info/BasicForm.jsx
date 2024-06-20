@@ -109,6 +109,11 @@ const BasicForm = () => {
     return pattern.test(Mobile);
   }
 
+  function isValidAadhaarNumber(aadhaarNumber) {
+    const pattern = /^\d{12}$/;
+    return pattern.test(aadhaarNumber);
+  }
+
   // function isValidDirectorEmail(Directoremail) {
   //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   //   return pattern.test(Directoremail);
@@ -351,6 +356,8 @@ const BasicForm = () => {
     }
     if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
       newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
+    } else if (!isValidAadhaarNumber(formData.DirectorDetails[0].DirectorAdharCardNumber)) {
+      newErrors.DirectorAdharCardNumber = "Please enter a valid 12-digit Aadhaar Card Number";
     }
     if (!formData.DirectorDetails[0].DirectorGender) {
       newErrors.DirectorGender = "Select Director Gender";
@@ -794,6 +801,11 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCardNumber && (
                 <div style={{ color: "red" }}>Enter Director AdharCard Number</div>
               )}
+              {formSubmitted &&
+                formData.DirectorDetails[index].DirectorAdharCardNumber !== "" &&
+                !isValidAadhaarNumber(formData.DirectorDetails[index].DirectorAdharCardNumber) && (
+                  <div style={{ color: "red" }}>Enter a valid 12-digit Aadhaar Card Number</div>
+                )}
               {/* {formSubmitted && !formData[`DirectorAdharCardNumber${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
