@@ -31,7 +31,7 @@ const BasicForm = () => {
     WebsiteLink: "",
     CompanyAddress: "",
     CompanyPanNumber: "",
-    SelectServices: "",
+    SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -90,8 +90,15 @@ const BasicForm = () => {
 
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const handleChange = (selectedValues) => {
-    setSelectedOptions(selectedValues);
+  // const handleChange = (selectedValues) => {
+  //   setSelectedOptions(selectedValues);
+  // };
+
+  const handleChange = selectedOptions => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      SelectServices: selectedOptions.map(option => option.value),
+    }));
   };
 
   const [directorLength, setDirectorLength] = useState(1);
@@ -1049,7 +1056,8 @@ const BasicForm = () => {
                     isMulti
                     options={options1}
                     id="Services"
-                    value={formData.selectedOptions}
+                    // value={formData.selectedOptions}
+                    value={options1.filter(option => formData.SelectServices.includes(option.value))}
                     placeholder="SelectServices"
                     onChange={handleChange}>
                     {options1.map((option) => (

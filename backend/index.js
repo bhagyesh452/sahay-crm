@@ -2213,7 +2213,7 @@ app.post("/api/users",
             console.error("Error sending email:", error);
             res.status(500).send("Error sending email with PDF attachment");
           }
-          return res.status(200).send('Generated Pdf Successfully');
+          //return res.status(200).send('Generated Pdf Successfully');
         }
       });
 
