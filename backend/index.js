@@ -2239,11 +2239,6 @@ app.post("/api/users",
             console.error("Error sending email:", error);
             // No need to send another response here because one was already sent
           }
-<<<<<<< HEAD
-          //return res.status(200).send('Generated Pdf Successfully');
-        }
-      });
-=======
       
       // pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
       //   if (err) {
@@ -2279,7 +2274,6 @@ app.post("/api/users",
       //     }
       //   }
       // });
->>>>>>> fb9e7ed631c4af90619e654d039fbb4acf35a604
 
       // sendMail4(recipients, ccEmail, subject1, text1, html1, attachments)
       //   .then((info) => {
