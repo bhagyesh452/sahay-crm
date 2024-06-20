@@ -10,7 +10,8 @@ body {
   height: calc(100vh - 112px) !important;
   overflow: hidden !important;
   overflow-y: scroll !important;
-}
+  position: relative;
+} 
 
 .pl-1 {
   padding-left: 10px;
@@ -1501,7 +1502,7 @@ th.th-sticky1::after {
 
 .my-card {
   border: 1px solid #eee;
-  border-radius: 5px;
+  border-radius: 14px;
   box-shadow: 2px 2px 10px -3px #ebebeb;
   background: #fff;
   overflow: hidden;
@@ -1854,8 +1855,6 @@ th.th-sticky1::after {
   font-size: 18px;
 }
 
-.dash-card-1-icon {}
-
 .clr-1ac9bd {
   color: #1ac9bd;
 }
@@ -1942,7 +1941,6 @@ th.th-sticky1::after {
   width: 200px;
 }
 
-.admin-dashboard {}
 
 .admin-dashboard table {
   width: 100%;
@@ -2127,10 +2125,155 @@ td input {
   overflow: hidden;
   text-align: left;
 }
+.listgrridradio_main
+{
+    border-radius: 10px;
+    overflow: hidden;
+}
+.custom_radio-alias
+{
+  background-color: #f5f5f5;
+  color: #7f7f7f;
+  display: inline-block;
+  padding: 6px 12px;
+  z-index: 1;
+  position: relative;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+  font-size: 14px;
+  height: 32PX;
+  line-height: 18PX;
+}
+.listgrridradio_main input[type=radio]{
+  display: none;
+}
 
+.listgrridradio_main input[type=radio]:checked + .custom_radio-alias{
+  background-color: #b3b3b3;
+  color: #fff;
+}
+/***************************************Employee Profile Page***************************************/
+.employee-profile-main
+{
+  position: relative;
+}
+.employee_profile_picture
+{
+  padding: 20px;
+  position: relative;
+  padding: 20px;
+  position: relative;
+  border-right: 1px solid #eee;
+}
+.employee_picture
+{
+  overflow: hidden;
+  width: 160px;
+  height: 160px;
+  border-radius: 100px;
+  background: #eee;
+  box-shadow: 0px 7px 35px -16px #ffba00;
+}
+.employee_picture img
+{
+  -o-object-fit: contain;
+  object-fit: contain;
+  -o-object-position: center center;
+  object-position: center center;
+  position: relative;
+  transition: 0.5s;
+  transform-origin: center center;
+  width: 100%;
+  height: 100%;
+}
+.employee_profile_data
+{
+  width: calc(100% - 200px);
+}
+.EP_Name
+{
+  padding: 10px 20px 10px 20px;
+  border-bottom: 1px solid #eee;
+}
+.profile-pic-upload {
+  width: 30px;
+  text-align: center;
+  height: 30px;
+  line-height: 26px;
+  border-radius: 100px;
+  background: #ffba00;
+  position: absolute;
+  right: 34px;
+  bottom: 34px;
+  cursor: pointer;
+  transition: transform .2s;
+  box-shadow: 0px 7px 35px -16px #ffba00;
+}
+.profile-pic-upload:hover
+{
+  color: #ffba00;
+  background: #000;
+}
+.profile-pic-upload:active
+{
+  color: #fff;
+  transform: scale(1.08);
+}
+.employee_active {
+  padding: 3px 10px 3px 10px;
+  background: #38e037;
+  margin-left: 18px;
+  margin-top: 2px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #fff;
+  box-shadow: 3px 2px 10px -4px #38e037;
+}
+.EP_Designation
+{
+  font-size: 12px;
+  color: #6a6a6a;
+  line-height: 1;
+  font-weight: 400;
+}
+.ep_info_icon
+{
+  font-size: 14px;
+  line-height: 15px;
+  height: 18px;
+  width: 18px;
+}
+.ep_info_h
+{
+  font-size: 12px;
+  font-weight: 600;
+}
+.ep_info_t
+{
+  font-size: 12px;
+}
 
+.EP_Other_info
+{
+  position: relative;
+  min-height: 115px;
+  padding: 18px 13px 0px 13px;
+  border-radius: 20px;
+}
+.EP_Other_info_head
+{
+  position: absolute;
+  top: -13px;
+  border-radius: 21px;
+  border: 3px solid #fff;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  left: 15px;
+
+}
 /*****************************Basic Information Form******************************************/
-.form-control,
+.form-control,  
 .form-select {
   border: 1px solid #dadfe5 !important;
 }
