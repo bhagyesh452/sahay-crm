@@ -88,6 +88,10 @@ const userSchema = new mongoose.Schema({
     type: Array,
     required: true
   },
+  SelectServices: {
+    type: Array,
+    required: true
+  },
   BrandName: {
     type: String,
   },
