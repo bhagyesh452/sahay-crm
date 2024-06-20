@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { stringify } = require("uuid");
 
 
 // Define Director Schema
@@ -76,7 +77,15 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   CompanyPanNumber: {
-    type: Number,
+    type: String,
+    required: true
+  },
+  SelectServices: {
+    type: Array,
+    required: true
+  },
+  SelectServices: {
+    type: Array,
     required: true
   },
   BrandName: {

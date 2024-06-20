@@ -15,6 +15,9 @@ export const options = [
   { value: "Business Card Design", label: "Business Card Design" },
   { value: "Letter Head Design", label: "Letter Head Design" },
   { value: "Broucher Design", label: "Broucher Design" },
+
+
+  // Funding Services
   { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
   { value: "Financial Modeling", label: "Financial Modeling" },
   { value: "DPR Development", label: "DPR Developmen" },
