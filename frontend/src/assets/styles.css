@@ -1855,8 +1855,6 @@ th.th-sticky1::after {
   font-size: 18px;
 }
 
-.dash-card-1-icon {}
-
 .clr-1ac9bd {
   color: #1ac9bd;
 }
@@ -1943,7 +1941,6 @@ th.th-sticky1::after {
   width: 200px;
 }
 
-.admin-dashboard {}
 
 .admin-dashboard table {
   width: 100%;
@@ -2128,18 +2125,10 @@ td input {
   overflow: hidden;
   text-align: left;
 }
-.list-gird-main
-{
-
-}
 .listgrridradio_main
 {
     border-radius: 10px;
     overflow: hidden;
-}
-.custom_radio
-{
-
 }
 .custom_radio-alias
 {
