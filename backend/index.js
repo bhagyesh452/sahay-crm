@@ -46,6 +46,7 @@ const { sendMail2 } = require("./helpers/sendMail2");
 const { sendMail3 } = require("./helpers/sendMail3");
 const { sendMail4 } = require("./helpers/sendMail4");
 const pdfAttachment = path.join("./helpers/src", './MITC.pdf');
+
 //const axios = require('axios');
 const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
@@ -66,7 +67,7 @@ const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
 const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
-
+const htmlDocx = require('html-docx-js');
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -609,7 +610,7 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 
   try {
     const existingData = await TeamModel.findById(teamId);
-    console.log(existingData);
+
 
     if (existingData) {
       await TeamModel.findByIdAndDelete(teamId); // Use findByIdAndDelete to delete by ID
@@ -666,7 +667,7 @@ app.put("/api/teaminfo/:teamId", async (req, res) => {
 
   const dataToUpdated = req.body;
 
-  console.log("Update", dataToUpdated);
+
 
   try {
     const updatedData = await TeamModel.findByIdAndUpdate(
@@ -1112,7 +1113,7 @@ app.post("/api/undo", (req, res) => {
   );
 });
 
-console.log(pdfAttachment);
+
 
 /*****************************************************CompanyBusinessInput *****************************************************************/
 
@@ -1143,6 +1144,7 @@ app.post("/api/users",
         WebsiteLink,
         CompanyAddress,
         CompanyPanNumber,
+        SelectServices,
         FacebookLink,
         InstagramLink,
         LinkedInLink,
@@ -1155,10 +1157,10 @@ app.post("/api/users",
         DirectInDirectMarket,
         Finance,
         BusinessModel,
-        DirectorDetails,
+        DirectorDetails, 
       } = req.body;
 
-      console.log(req.body);
+
 
 
       // Construct the HTML content conditionally
@@ -1345,7 +1347,7 @@ app.post("/api/users",
           } = DirectorDetails[index];
 
           // Check if this is the first director and they are marked as the main director
-          console.log(DirectorDetails[index].IsMainDirector, "This is it")
+
           if (DirectorDetails[index].IsMainDirector === "true") {
             team += `
            <div 
@@ -1858,6 +1860,30 @@ app.post("/api/users",
              </div>
            </div>
            <div style="display: flex; flex-wrap: wrap">
+             <div style="width: 25%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 Select Your Services
+               </div>
+             </div>
+             <div style="width: 75%">
+               <div
+                 style="
+                   border: 1px solid #ccc;
+                   font-size: 12px;
+                   padding: 5px 10px;
+                 "
+               >
+                 ${SelectServices}
+               </div>
+             </div>
+           </div>
+           <div style="display: flex; flex-wrap: wrap">
              <div style="width: 100%">
                <div>
                ${facebookHtml}
@@ -2122,7 +2148,7 @@ app.post("/api/users",
       const html1 = `
        <p>Dear Client,</p>
 
-<p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company [company-name]. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
+<p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
 
 <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
 
@@ -2138,23 +2164,29 @@ app.post("/api/users",
 <p>Start-Up Sahay Private Limited</p>
       `;
 
-      const pdfAttachment = {
-        filename: 'MITC.pdf', // Replace with actual file name
-        path: path.join(__dirname, './helpers/src/MITC.pdf') // Adjust the path accordingly
-      };
+      // const pdfAttachment = {
+      //   filename: 'MITC.pdf', // Replace with actual file name
+      //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+      // };
 
-      const attachments = [pdfAttachment];
+      // const attachments = [pdfAttachment];
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
       let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
-
       const filedHtml = htmlNewTemplate
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
         .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
         .replace("{{CompanyName}}", CompanyName)
+        .replace("{{CompanyAddress}}", CompanyAddress)
+        .replace("{{CompanyPanNumber}}", CompanyPanNumber)
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+
 
       const pdfFilePath = './GeneratedDocs/LOA.pdf';
       const options = {
@@ -2164,33 +2196,84 @@ app.post("/api/users",
           },
         },
       };
+      
+      const wordBuffer = htmlDocx.asBlob(filedHtml);
+      saveAs(wordBuffer, 'test.docx');
+      const pdfAttachment = {
+        filename: 'MITC.pdf', // Replace with actual file name
+        path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+      };
+    
+      const mainBuffer = {
+        filename: 'LOA.docx',
+        content: wordBuffer,
+        path: path.join(__dirname, './GeneratedDocs/LOA.pdf'),
+        contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      };
 
-      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
-        if (err) {
-          console.error('Error generating PDF:', err);
-          return res.status(500).send('Error generating PDF');
-        } else {
-          try {
+      const clientDocument = [mainBuffer, pdfAttachment];
+     try {
             setTimeout(() => {
-              const mainBuffer = fs.readFileSync(pdfFilePath);
+              //const mainBuffer = fs.readFileSync(pdfFilePath);
+              // const pdfAttachment = {
+              //   filename: 'MITC.pdf', // Replace with actual file name
+              //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+              // };
+        
+              // const mainBuffer = {
+              //   filename: 'LOA.pdf', // Replace with actual file name
+              //   path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+              // };
+              // const clientDocument = [mainBuffer,pdfAttachment]
               sendMail4(
                 recipients,
                 ccEmail,
-                " Letter of Authorization for filing in SISFS Application",
+                "Letter of Authorization for filing in SISFS Application",
                 ``,
-                ``,
-                mainBuffer
-              )
-
-            }, 4000)
-
+                html1,
+                clientDocument
+              );
+            }, 4000);
+            //res.status(200).send('Generated Pdf Successfully');
           } catch (error) {
             console.error("Error sending email:", error);
-            res.status(500).send("Error sending email with PDF attachment");
+            // No need to send another response here because one was already sent
           }
-          return res.status(200).send('Generated Pdf Successfully');
-        }
-      });
+      
+      // pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
+      //   if (err) {
+      //     console.error('Error generating PDF:', err);
+      //     return res.status(500).send('Error generating PDF');
+      //   } else {
+      //     try {
+      //       setTimeout(() => {
+      //         //const mainBuffer = fs.readFileSync(pdfFilePath);
+      //         const pdfAttachment = {
+      //           filename: 'MITC.pdf', // Replace with actual file name
+      //           path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+      //         };
+        
+      //         const mainBuffer = {
+      //           filename: 'LOA.pdf', // Replace with actual file name
+      //           path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+      //         };
+      //         const clientDocument = [mainBuffer,pdfAttachment]
+      //         sendMail4(
+      //           recipients,
+      //           ccEmail,
+      //           "Letter of Authorization for filing in SISFS Application",
+      //           ``,
+      //           html1,
+      //           clientDocument
+      //         );
+      //       }, 4000);
+      //       //res.status(200).send('Generated Pdf Successfully');
+      //     } catch (error) {
+      //       console.error("Error sending email:", error);
+      //       // No need to send another response here because one was already sent
+      //     }
+      //   }
+      // });
 
       // sendMail4(recipients, ccEmail, subject1, text1, html1, attachments)
       //   .then((info) => {
@@ -2213,7 +2296,6 @@ app.post("/api/users",
       });
 
       await newUser.save();
-
       res.status(201).send(newUser);
     } catch (error) {
       console.log(error);
