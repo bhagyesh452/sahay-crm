@@ -82,23 +82,23 @@ function Employees({ onEyeButtonClick }) {
     onEyeButtonClick(id);
     //console.log(id);
   };
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3001");
-  //   socket.on("employee-entered", () => {
-  //     //console.log("One user Entered");
-  //     setTimeout(() => {
-  //       //fetchData();
-  //     }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
-  //   });
+  useEffect(() => {
+    const socket = io("http://localhost:3001");
+    socket.on("employee-entered", () => {
+      console.log("One user Entered");
+      setTimeout(() => {
+        //fetchData();
+      }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
+    });
 
-  //   socket.on("user-disconnected", () => {
-  //     //fetchData();
-  //   });
+    socket.on("user-disconnected", () => {
+      //fetchData();
+    });
 
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   // const handleDeleteClick = (itemId, nametochange) => {
   //   // Open the confirm delete modal
