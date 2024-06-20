@@ -1157,10 +1157,15 @@ app.post("/api/users",
         DirectInDirectMarket,
         Finance,
         BusinessModel,
-        DirectorDetails, 
+        DirectorDetails,
       } = req.body;
 
+      //console.log("select services" , SelectServices)
+      // const services = SelectServices.map(service => service);
 
+  // Now join the mapped array to create a comma-separated string
+  // const commaSeparatedValues = services.join(", ");
+  // console.log("comma" , commaSeparatedValues);
 
 
       // Construct the HTML content conditionally
@@ -2152,7 +2157,7 @@ app.post("/api/users",
 
 <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
 
-<p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the [selct_multiselct-164]</p>
+<p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
 
 <p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
 
@@ -2196,14 +2201,14 @@ app.post("/api/users",
           },
         },
       };
-      
+
       const wordBuffer = htmlDocx.asBlob(filedHtml);
-      saveAs(wordBuffer, 'test.docx');
+      // saveAs(wordBuffer, 'test.docx');
       const pdfAttachment = {
         filename: 'MITC.pdf', // Replace with actual file name
         path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
       };
-    
+
       const mainBuffer = {
         filename: 'LOA.docx',
         content: wordBuffer,
@@ -2212,34 +2217,34 @@ app.post("/api/users",
       };
 
       const clientDocument = [mainBuffer, pdfAttachment];
-     try {
-            setTimeout(() => {
-              //const mainBuffer = fs.readFileSync(pdfFilePath);
-              // const pdfAttachment = {
-              //   filename: 'MITC.pdf', // Replace with actual file name
-              //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-              // };
-        
-              // const mainBuffer = {
-              //   filename: 'LOA.pdf', // Replace with actual file name
-              //   path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
-              // };
-              // const clientDocument = [mainBuffer,pdfAttachment]
-              sendMail4(
-                recipients,
-                ccEmail,
-                "Letter of Authorization for filing in SISFS Application",
-                ``,
-                html1,
-                clientDocument
-              );
-            }, 4000);
-            //res.status(200).send('Generated Pdf Successfully');
-          } catch (error) {
-            console.error("Error sending email:", error);
-            // No need to send another response here because one was already sent
-          }
-      
+      try {
+        setTimeout(() => {
+          //const mainBuffer = fs.readFileSync(pdfFilePath);
+          // const pdfAttachment = {
+          //   filename: 'MITC.pdf', // Replace with actual file name
+          //   path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+          // };
+
+          // const mainBuffer = {
+          //   filename: 'LOA.pdf', // Replace with actual file name
+          //   path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+          // };
+          // const clientDocument = [mainBuffer,pdfAttachment]
+          sendMail4(
+            recipients,
+            ccEmail,
+            "Letter of Authorization for filing in SISFS Application",
+            ``,
+            html1,
+            clientDocument
+          );
+        }, 4000);
+        //res.status(200).send('Generated Pdf Successfully');
+      } catch (error) {
+        console.error("Error sending email:", error);
+        // No need to send another response here because one was already sent
+      }
+
       // pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
       //   if (err) {
       //     console.error('Error generating PDF:', err);
@@ -2252,7 +2257,7 @@ app.post("/api/users",
       //           filename: 'MITC.pdf', // Replace with actual file name
       //           path : path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
       //         };
-        
+
       //         const mainBuffer = {
       //           filename: 'LOA.pdf', // Replace with actual file name
       //           path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
