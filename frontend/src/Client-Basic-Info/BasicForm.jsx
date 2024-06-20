@@ -31,7 +31,7 @@ const BasicForm = () => {
     WebsiteLink: "",
     CompanyAddress: "",
     CompanyPanNumber: "",
-    SelectServices: "",
+    SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -88,11 +88,15 @@ const BasicForm = () => {
     { value: "Incubation Support", label: 'Incubation Support' },
   ];
 
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  // const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const handleChange = (selectedValues) => {
-    setSelectedOptions(selectedValues);
+  const handleChange = selectedOptions => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      SelectServices: selectedOptions.map(option => option.value),
+    }));
   };
+  console.log(formData.SelectServices);
 
   const [directorLength, setDirectorLength] = useState(1);
 
@@ -117,11 +121,18 @@ const BasicForm = () => {
   async function sendDataToBackend() {
     try {
       const data = new FormData();
+
+      console.log("data" , data)
       Object.keys(formData).forEach((key) => {
         if (!["DirectorDetails", "SelectServices"].includes(key)) {
           data.append(key, formData[key]);
         } else if (key === "SelectServices") {
-          data.append(key, JSON.stringify(formData[key]));
+          
+            Object.keys(formData.SelectServices).forEach((serviceProp,index)=>{
+              data.append(`SelectServices[${index}]`,formData.SelectServices[index])
+            })
+         
+          // data.append(key, JSON.stringify(formData[key]));
         } else {
           formData.DirectorDetails.forEach((director, index) => {
             Object.keys(director).forEach((prop) => {
@@ -1049,7 +1060,8 @@ const BasicForm = () => {
                     isMulti
                     options={options1}
                     id="Services"
-                    value={formData.selectedOptions}
+                    // value={formData.selectedOptions}
+                    value={options1.filter(option => formData.SelectServices.includes(option.value))}
                     placeholder="SelectServices"
                     onChange={handleChange}>
                     {options1.map((option) => (

@@ -1161,7 +1161,12 @@ app.post("/api/users",
         DirectorDetails,
       } = req.body;
 
+      //console.log("select services" , SelectServices)
+      // const services = SelectServices.map(service => service);
 
+  // Now join the mapped array to create a comma-separated string
+  // const commaSeparatedValues = services.join(", ");
+  // console.log("comma" , commaSeparatedValues);
 
 
       // Construct the HTML content conditionally
@@ -2153,7 +2158,7 @@ app.post("/api/users",
 
 <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
 
-<p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the [selct_multiselct-164]</p>
+<p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
 
 <p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
 
