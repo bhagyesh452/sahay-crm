@@ -5,6 +5,8 @@ import img from "../static/logo.jpg";
 import "../assets/styles.css";
 import axios from "axios";
 // import { options } from "../components/Options";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const BasicForm = () => {
   const DirectorForm = {
@@ -31,7 +33,7 @@ const BasicForm = () => {
     WebsiteLink: "",
     CompanyAddress: "",
     CompanyPanNumber: "",
-    SelectServices: "",
+    SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
     FacebookLink: "",
@@ -88,11 +90,42 @@ const BasicForm = () => {
     { value: "Incubation Support", label: 'Incubation Support' },
   ];
 
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  // const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const handleChange = (selectedValues) => {
-    setSelectedOptions(selectedValues);
+
+  const [openBacdrop, setOpenBacdrop] = useState(false)  // state for backdrop loader
+
+
+
+  // pattern validation 
+
+  function isValidEmail(email) {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  }
+
+  function isValidMobileNo(Mobile) {
+    const pattern = /^\d{10}$/;
+    return pattern.test(Mobile);
+  }
+
+  // function isValidDirectorEmail(Directoremail) {
+  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   return pattern.test(Directoremail);
+  // }
+
+  // function isValidDirectorMobileNo(mobileNo) {
+  //   const pattern = /^\d{10}$/;
+  //   return pattern.test(mobileNo);
+  // }
+
+  const handleChange = selectedOptions => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      SelectServices: selectedOptions.map(option => option.value),
+    }));
   };
+  console.log(formData.SelectServices);
 
   const [directorLength, setDirectorLength] = useState(1);
 
@@ -115,13 +148,21 @@ const BasicForm = () => {
   // console.log(formData);
 
   async function sendDataToBackend() {
+    setOpenBacdrop(true);  // show backdrop loader
     try {
       const data = new FormData();
+
+      console.log("data", data)
       Object.keys(formData).forEach((key) => {
         if (!["DirectorDetails", "SelectServices"].includes(key)) {
           data.append(key, formData[key]);
         } else if (key === "SelectServices") {
-          data.append(key, JSON.stringify(formData[key]));
+
+          Object.keys(formData.SelectServices).forEach((serviceProp, index) => {
+            data.append(`SelectServices[${index}]`, formData.SelectServices[index])
+          })
+
+          // data.append(key, JSON.stringify(formData[key]));
         } else {
           formData.DirectorDetails.forEach((director, index) => {
             Object.keys(director).forEach((prop) => {
@@ -165,6 +206,8 @@ const BasicForm = () => {
         icon: "error",
       });
       throw error; // Rethrow the error for handling it in the calling code
+    } finally {
+      setOpenBacdrop(false); // hide backdrop loader in any case
     }
   }
 
@@ -211,15 +254,6 @@ const BasicForm = () => {
   };
 
 
-  // const handleInputChange = (e, field) => {
-  //   const { value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [field]: value,
-  //   });
-  // };
-
-
   const handleDirectorsChange = (e) => {
     const value = parseInt(e.target.value);
     setDirectorLength(value);
@@ -228,6 +262,7 @@ const BasicForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // const email = e.target.email.value;
 
     const newErrors = {};
     if (!formData.CompanyName && formData.CompanyName !== "") {
@@ -236,8 +271,14 @@ const BasicForm = () => {
     if (!formData.CompanyEmail && formData.CompanyEmail !== "") {
       newErrors.CompanyEmail = "Email is required";
     }
+    if (formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail)) {
+      newErrors.CompanyEmail = "Please Enter a Valid Email"
+    }
     if (!formData.CompanyNo && formData.CompanyNo !== "") {
       newErrors.CompanyNo = "Mobile No is required";
+    }
+    if (formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo)) {
+      newErrors.CompanyNo = "Please Enter a Valid Mobile Number"
     }
     if (!formData.BrandName && formData.BrandName !== "") {
       newErrors.CompanyNo = "Enter Brand Name";
@@ -281,9 +322,15 @@ const BasicForm = () => {
     if (!formData.DirectorDetails[0].DirectorEmail) {
       newErrors.DirectorEmail = "Enter Director Email Id";
     }
+    // if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
+    //   newErrors.DirectorEmail = "Please Enter a Valid Email"
+    // }
     if (!formData.DirectorDetails[0].DirectorMobileNo) {
       newErrors.DirectorMobileNo = "Mobile No is required";
     }
+    // if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
+    //   newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
+    // }
     if (!formData.DirectorDetails[0].DirectorQualification) {
       newErrors.DirectorQualification = "Enter Director Qualification";
     }
@@ -309,6 +356,8 @@ const BasicForm = () => {
       newErrors.DirectorGender = "Select Director Gender";
     }
 
+
+    // console.log(newErrors)
     setErrors(newErrors);
 
     // Check if there are any errors
@@ -406,7 +455,7 @@ const BasicForm = () => {
             <h5>{index + 1}</h5>
             <div>
               <label className="Director">Authorized Person</label>
-              <input type="radio" name="maindirector_radio"  checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
+              <input type="radio" name="maindirector_radio" checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
                 setFormData((prevState) => ({
                   ...prevState,
                   DirectorDetails: prevState.DirectorDetails.map((director, i) =>
@@ -480,6 +529,11 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[0].DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
+              {/* {formSubmitted &&
+                formData.DirectorDetails[0].DirectorEmail &&
+                !isValidDirectorEmail(formData.DirectorDetails[0].DirectorEmail) && (
+                  <div style={{ color: "red" }}>Enter a valid Email Address</div>
+                )} */}
               {/* {formSubmitted && !formData[`DirectorEmail${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
@@ -516,6 +570,11 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[0].DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
+              {/* {formSubmitted &&
+                formData.DirectorDetails[0].DirectorMobileNo &&
+                !isValidDirectorMobileNo(formData.DirectorDetails[0].DirectorMobileNo) && (
+                  <div style={{ color: "red" }}>Enter a valid 10-digit Mobile Number</div>
+                )} */}
               {/* {formSubmitted && !formData[`DirectorMobileNo${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
@@ -946,9 +1005,9 @@ const BasicForm = () => {
                   {formSubmitted && !formData.CompanyEmail && (
                     <div style={{ color: "red" }}>{"Enter Email Id"}</div>
                   )}
-                  {/* {formSubmitted && formData.CompanyEmail && !isValidEmail(formData.CompanyEmail) && (
+                  {formSubmitted && formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail) && (
                     <div style={{ color: "red" }}>Enter a valid email address</div>
-                  )} */}
+                  )}
                 </div>
               </div>
 
@@ -968,6 +1027,9 @@ const BasicForm = () => {
                   />
                   {formSubmitted && !formData.CompanyNo && (
                     <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                  )}
+                  {formSubmitted && formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo) && (
+                    <div style={{ color: "red" }}>Enter a valid Mobile Number</div>
                   )}
                 </div>
               </div>
@@ -1049,7 +1111,8 @@ const BasicForm = () => {
                     isMulti
                     options={options1}
                     id="Services"
-                    value={formData.selectedOptions}
+                    // value={formData.selectedOptions}
+                    value={options1.filter(option => formData.SelectServices.includes(option.value))}
                     placeholder="SelectServices"
                     onChange={handleChange}>
                     {options1.map((option) => (
@@ -1645,6 +1708,12 @@ const BasicForm = () => {
           </div>
         )}
       </div>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBacdrop}
+        onClick={() => setOpenBacdrop(false)}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };
