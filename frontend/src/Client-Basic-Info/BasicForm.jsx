@@ -56,7 +56,6 @@ const BasicForm = () => {
 
   // Select Your Services
   const options1 = [
-    { value: "Seed Fund ", label: "Seed Fund" },
     { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
     { value: "Financial Modeling", label: "Financial Modeling" },
     { value: "DPR Development", label: "DPR Developmen" },
