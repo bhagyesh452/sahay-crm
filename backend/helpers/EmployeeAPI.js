@@ -79,6 +79,8 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   }
 });
 
+
+
 router.post("/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((result) => { // Change res to result
@@ -243,5 +245,22 @@ router.delete("/permanentDelete/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 })
+
+router.get("/einfo/:email/:password", async (req, res) => {
+  const { email, password } = req.params;
+  
+  try {
+    const data = await adminModel.findOne({ email: email, password: password });
+    
+    if (data) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).json({ error: "Employee not found" });
+    }
+  } catch (error) {
+    console.log("Error fetching employee data", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;

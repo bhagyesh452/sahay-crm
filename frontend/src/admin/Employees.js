@@ -1147,6 +1147,8 @@ function Employees({ onEyeButtonClick }) {
                         <option value="Content Writer">Content Writer</option>
                         <option value="Data Manager">Data Manager</option>
                         <option value="Admin Team">Admin Team</option>
+                        <option value="RM-Certification">RM-Certification</option>
+                        <option value="RM-Funding">RM-Funding</option>
                         <option value="Others">Others</option>
                       </select>
                     </div>

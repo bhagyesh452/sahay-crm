@@ -1414,7 +1414,7 @@ function AdminEmployeeTeamLeads() {
     const handleDeleteBdm = async (companyId, companyName, bdmStatus) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: `Do you really want to delete the company ${companyName}?`,
+            text: `Do you really want to delete this company ${companyName} from BDM?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

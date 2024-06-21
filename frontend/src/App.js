@@ -60,6 +60,12 @@ import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
+import RMofCertification from "./RM-CERTIFICATION/RM-CERT-LOGIN/RMofCertification.jsx";
+import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCertificationDashboard.jsx";
+import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
+import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
+import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
+
 
 
 
@@ -72,7 +78,9 @@ function App() {
   );
   const [managerToken, setManagerToken] = useState(localStorage.getItem("managerToken") || null)
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
-
+  const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
+  const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
+  
   return (
     <div className="App">
       <BrowserRouter>
@@ -115,10 +123,14 @@ function App() {
           <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings />}></Route>
 
 
-          {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+          {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
+          <Route path='/rmofcertification/login-rmofcertification' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
+          <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
+          <Route path='/rmofcertification/rmofcertification-bookings' element={<RmofCertificationBookings />} />
 
-
-
+          {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
+          <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken}/>} />
+          <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
 
 
           {/* -----------------------------------------datamanager components--------------------------------------- */}
