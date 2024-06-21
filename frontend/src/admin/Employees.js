@@ -83,26 +83,26 @@ function Employees({ onEyeButtonClick }) {
     //console.log(id);
   };
 
-  const updateActiveStatus = async ()=>{
-    const response = await axios.get(`${secretKey}/employee/einfo`);
-    
-    setFilteredData(response.data);
+  const updateActiveStatus = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/einfo`);
       setData(response.data);
-    
-  }
+      setFilteredData(response.data);
+    } catch (error) {
+      console.error('Error fetching employee info:', error);
+    }
+  };
   useEffect(() => {
     const socket = io("http://localhost:3001");
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
-
-       
-        fetchData(); // Don't fetch instead, just change that particular active status
+        updateActiveStatus(); // Don't fetch instead, just change that particular active status
       }, 5000); 
     });
 
     socket.on("user-disconnected", () => {
-      fetchData(); // Same condition
+      updateActiveStatus(); // Same condition
     });
 
     return () => {
