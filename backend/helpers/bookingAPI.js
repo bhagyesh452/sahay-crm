@@ -1826,26 +1826,26 @@ router.post(
               if (rowSpan === 3) {
                 paymentServices = `
               <tr>
-                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
                 <td>${newData.services[i].secondPaymentRemarks}</td>
               </tr>
               <tr>
-               <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+               <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
                <td>${newData.services[i].thirdPaymentRemarks}</td>
               </tr>
               <tr>
-               <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+               <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
                <td>${newData.services[i].fourthPaymentRemarks}</td>
               </tr>
               `;
               } else if (rowSpan === 2) {
                 paymentServices = `
               <tr>
-                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+                <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
                 <td >${newData.services[i].secondPaymentRemarks}</td>
               </tr>
               <tr>
-                <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+                <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
                 <td >${newData.services[i].thirdPaymentRemarks}</td>
               </tr>
               `;
@@ -2401,7 +2401,7 @@ router.post(
             .replace("{{Company Email}}", newData["Company Email"]);
 
 
-          //   console.log("This is html file reading:-", filledHtml);
+          //   3("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
           const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
             ? (newData.services[0].serviceName === "Start-Up India Certificate" ? 2 : 1)
@@ -3687,26 +3687,26 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+         <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td >${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td style="border-right:1px solid #ddd">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+          <td style="border-right:1px solid #000">₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
           <td >${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;

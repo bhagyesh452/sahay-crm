@@ -1163,11 +1163,11 @@ export default function EditableMoreBooking({
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
         isoTypeObject: isoType
       }));

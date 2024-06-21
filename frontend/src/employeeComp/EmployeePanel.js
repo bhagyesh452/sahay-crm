@@ -696,6 +696,8 @@ function EmployeePanel() {
         console.error("Error:", error);
         throw error; // Throw error for handling in the caller function
       }
+    }else{
+      console.log(data._id , socketID , "This is it")
     }
   };
 
@@ -711,15 +713,30 @@ function EmployeePanel() {
     }
   }, [data.ename, revertedData.length]);
 
+ 
   useEffect(() => {
+    const checkAndRunActiveStatus = () => {
+      if (data._id) {
+        activeStatus();
+      } else {
+        const intervalId = setInterval(() => {
+          if (data._id) {
+            activeStatus();
+            clearInterval(intervalId);
+          }
+        }, 1000);
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
+      }
+    };
+
     const timerId = setTimeout(() => {
-      activeStatus();
+      checkAndRunActiveStatus();
     }, 2000);
 
     return () => {
       clearTimeout(timerId);
     };
-  }, [socketID]);
+  }, [socketID, data._id]);
 
   const fetchRequestDetails = async () => {
     try {

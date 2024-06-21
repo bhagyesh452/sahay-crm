@@ -180,13 +180,13 @@ function ManagerBookings() {
   const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const dataManagerName = localStorage.getItem("dataManagerName");
   // ------------------------------------------------- Delete booking ----------------------------------------------
@@ -2074,7 +2074,7 @@ function ManagerBookings() {
                                                 ".jpeg"
                                               ) ? (
                                               <img
-                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
@@ -2120,7 +2120,7 @@ function ManagerBookings() {
                                               remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
                                               remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
                                               <img
-                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
@@ -2160,7 +2160,7 @@ function ManagerBookings() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                              src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                               alt={pdfimg}
                                             ></img>
                                           )}
@@ -3220,7 +3220,7 @@ function ManagerBookings() {
                                             />
                                           ) : (
                                             <img
-                                              src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                               alt={"MyImg"}
                                             ></img>
                                           )}
@@ -3255,7 +3255,7 @@ function ManagerBookings() {
                                           />
                                         ) : (
                                           <img
-                                            src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                            src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                             alt={pdfimg}
                                           ></img>
                                         )}
