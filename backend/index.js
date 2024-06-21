@@ -2192,11 +2192,6 @@ app.post("/api/users",
 
       console.log(MainDirectorName , MainDirectorDesignation)
 
-
-
-
-
-
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
