@@ -82,11 +82,21 @@ function Employees({ onEyeButtonClick }) {
     onEyeButtonClick(id);
     //console.log(id);
   };
+
+  const updateActiveStatus = async ()=>{
+    const response = await axios.get(`${secretKey}/employee/einfo`);
+    
+    setFilteredData(response.data);
+      setData(response.data);
+    
+  }
   useEffect(() => {
     const socket = io("http://localhost:3001");
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
+
+       
         fetchData(); // Don't fetch instead, just change that particular active status
       }, 5000); 
     });

@@ -99,10 +99,7 @@ export default function AddLeadForm({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const tempTempRemarks = {
-    serviceID: -1,
-    value: ""
-  }
+
   const [secondTempRemarks, setSecondTempRemarks] = useState([]);
   const [thirdTempRemarks, setThirdTempRemarks] = useState([]);
   const [fourthTempRemarks, setFourthTempRemarks] = useState([]);
@@ -190,7 +187,7 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
-            
+            console.log(service.secondPaymentRemarks , "TEST")
             if(!isNaN(new Date(service.secondPaymentRemarks))){
               const tempState = {
                 serviceID: index,
@@ -281,14 +278,13 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
-
-
             if(!isNaN(new Date(service.secondPaymentRemarks))){
               const tempState = {
                 serviceID: index,
                 value: service.secondPaymentRemarks
               };
               const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+              console.log(prevState , "2nd Does exists")
               if (prevState) {
                 setSecondTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -303,6 +299,7 @@ export default function AddLeadForm({
                 value: service.thirdPaymentRemarks
               };
               const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+              console.log(prevState , "3rd Does exists")
               if (prevState) {
                 setThirdTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -384,7 +381,7 @@ export default function AddLeadForm({
     }
   };
 
-
+console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is Temp Remarks");
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -844,11 +841,11 @@ export default function AddLeadForm({
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
