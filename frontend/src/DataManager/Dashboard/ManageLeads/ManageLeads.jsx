@@ -1034,7 +1034,7 @@ function ManageLeads() {
 
          // Find the selected data object
         const dataToFilter = dataStatus === "Unassigned" ? unAssignedData : assignedData
-        const finalFiltering = !isFilter || !isSearching ? data : dataToFilter 
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter 
         const selectedData = finalFiltering.find((item) => item._id === id);
        
         //console.log(selectedData["Company Incorporation Date  "])
