@@ -8,7 +8,92 @@ import logo from "../../static/mainLogo.png"
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
-function HrLogin(){
+function HrLogin({ setHrToken }){
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+
+    const [data, setData] = useState([])
+    const [email , setEmail] = useState("")
+    const [password , setPassword] = useState("")
+    const [showPassword , setShowPassword] = useState(false)
+    const [designation , setDesignation] = useState("")
+    const [userId , setUserId] = useState(null)
+    const[errorMessage , setErrorMessage] = useState("")
+    const [ename , setEname] = useState("")
+
+
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/hrlogin`);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    useEffect(() => {
+        fetchData()
+        console.log("data",data);
+    }, [])
+
+
+    const findUserId = () => {
+        const user = data.find(
+            (user) => user.email === email && user.password === password
+        );
+        console.log(user);
+        if(user){
+            setDesignation(user.designation)
+            setUserId(user._id);
+        } else {
+            setUserId(null);
+        }
+    };
+
+    useEffect(() => {
+        findUserId();
+    }, [email , password])
+
+
+    console.log(email , password , designation);
+
+
+    const handleSubmit = async(e) => {
+        e.preventDefault()
+        try {
+            const response = await axios.post(`${secretKey}/hrlogin`, {
+                email,
+                password,
+                designation
+            })
+            console.log(response.data);
+            const { hrToken } = response.data
+            setHrToken(hrToken);
+            localStorage.setItem("hrName", ename)
+            localStorage.setItem("hrToken", hrToken)
+            localStorage.setItem("hrUserId", userId)
+            Window.location.replace(`/hrDashboard/${userId}`)
+        } catch (error) {
+            console.error("Login Failed", error);
+            if (error.response === 401) {
+                if(error.response.data.message === "Invalid email or Password"){
+                    setErrorMessage("Invalid Credentials");
+                } else if (error.response.data.message === "Designation id incorrect") {
+                    setErrorMessage("Only Authorizedd for hr")
+                } else {
+                    setErrorMessage("Unknown Error Occured")
+                } 
+            } else {
+                setErrorMessage("Unknown Error Occured")
+            }
+        }
+    }
+
+
+
+
     return (
         <div>
             <div className="page page-center">
@@ -32,9 +117,9 @@ function HrLogin(){
                                             <div className="mb-3">
                                                 <label className="form-label">Username</label>
                                                 <input
-                                                    // onChange={(e)=>{
-                                                    //     setEmail(e.target.value)
-                                                    // }}
+                                                    onChange={(e)=>{
+                                                        setEmail(e.target.value)
+                                                    }}
                                                     type="email"
                                                     className="form-control"
                                                     placeholder="Email or Phone Number"
@@ -47,10 +132,10 @@ function HrLogin(){
                                                 </label>
                                                 <div className="input-group input-group-flat">
                                                     <input
-                                                        // onChange={(e)=>{
-                                                        //     setPassword(e.target.value)
-                                                        // }}
-                                                        // type={showPassword ? "text" : "password"}
+                                                        onChange={(e)=>{
+                                                            setPassword(e.target.value)
+                                                        }}
+                                                        type={showPassword ? "text" : "password"}
                                                         className="form-control"
                                                         placeholder="Your password"
                                                         autoComplete="off"
@@ -61,7 +146,7 @@ function HrLogin(){
                                                             className="link-secondary"
                                                             title="Show password"
                                                             data-bs-toggle="tooltip"
-                                                            // onClick={() => setShowPassword(!showPassword)}
+                                                            onClick={() => setShowPassword(!showPassword)}
                                                         >
                                                             <svg
                                                                 xmlns="http://www.w3.org/2000/svg"
@@ -84,12 +169,12 @@ function HrLogin(){
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: "center", color: "red" }}>
-                                                {/* <span>{errorMessage}</span> */}
+                                                <span>{errorMessage}</span>
                                             </div>
                                             <div className="form-footer">
                                                 <button
                                                     type="submit"
-                                                    // onClick={handleSubmit}
+                                                    onClick={handleSubmit}
                                                     className="btn btn-primary w-100"
                                                 >
                                                     Submit

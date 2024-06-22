@@ -66,6 +66,7 @@ import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCer
 import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
 import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
+import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 
 
 
@@ -81,6 +82,7 @@ function App() {
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
   const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
+  const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
   
   return (
     <div className="App">
@@ -225,7 +227,8 @@ function App() {
 
 
           {/**********************************************  HR-Login-Portal   *******************************************************/}
-          <Route path="/hr/login-hr" element={<HrLogin />} />
+          <Route path="/hr/login-hr" element={<HrLogin setHrToken={setHrToken} />} />
+          <Route path="/hrDashboard/:userId/" element={<HrDashboard.jsx />} />
 
         </Routes>
 
