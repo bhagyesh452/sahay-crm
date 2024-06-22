@@ -31,6 +31,7 @@ import StausInfo from "./admin/StausInfo.js";
 import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import BookingList from "./admin/BookingList.jsx";
 import BDMLogin from "./BDM/Login/BDMLogin.jsx";
+import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
 import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
 import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
 import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
@@ -207,6 +208,12 @@ function App() {
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/client/basic-form" element={<BasicForm />} />
+
+
+
+
+          {/**********************************************  HR-Login-Portal   *******************************************************/}
+          <Route path="/hr/login-hr" element={<HrLogin />} />
 
         </Routes>
 
