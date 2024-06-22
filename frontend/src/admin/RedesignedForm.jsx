@@ -901,11 +901,11 @@ export default function RedesignedForm({
                 : service.secondPaymentRemarks,
             thirdPaymentRemarks:
               service.thirdPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
                 : service.thirdPaymentRemarks,
             fourthPaymentRemarks:
               service.fourthPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
@@ -948,13 +948,7 @@ export default function RedesignedForm({
           );
           return true;
         }
-        console.log(
-          "I am in step 4",
-          leadData.paymentReceipt,
-          leadData.otherDocs
-        );
-
-        console.log("Re work");
+       
         const totalAmount = leadData.services.reduce(
           (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
           0
@@ -1029,7 +1023,7 @@ export default function RedesignedForm({
             `${secretKey}/bookings/redesigned-leadData/${companysName}/step5`
           );
 
-          console.log(response.data);
+         
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -1080,14 +1074,14 @@ export default function RedesignedForm({
         for (let i = 0; i < leadData.otherDocs.length; i++) {
           formData.append("otherDocs", leadData.otherDocs[i]);
         }
-        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        console.log(dataToSend, activeStep);
+       
+        
       } else if (activeStep === 1) {
         dataToSend = {
           ...dataToSend,
           bookingSource: selectedValues,
         };
-        console.log("Step 1", dataToSend);
+   
       } else if (activeStep === 2) {
         const totalAmount = leadData.services.reduce(
           (acc, curr) => acc + curr.totalPaymentWOGST,
@@ -1150,7 +1144,7 @@ export default function RedesignedForm({
             `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             leadData
           );
-          console.log(response.data);
+         
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -1212,7 +1206,7 @@ export default function RedesignedForm({
         }
       );
       if (response.ok) {
-        console.log("Draft reset successfully");
+     
         setCompleted({});
         setActiveStep(0);
         setIsoType([])
