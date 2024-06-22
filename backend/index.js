@@ -2397,10 +2397,21 @@ app.post("/api/hrlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ hrToken });
+    res.status(200).json({ hrToken , userId: user._id , ename:user.ename });
     //socketIO.emit("Employee-login");
   }
 });
+
+
+// app.get("/api/hrlogin", async (req, res) => {
+//   try {
+//     const employeeData = await adminModel.find();
+//     res.json(employeeData);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 

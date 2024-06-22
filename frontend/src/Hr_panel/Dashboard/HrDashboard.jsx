@@ -1,8 +1,15 @@
 import React from "react";
-import Dashboard from "../../admin/DashboardReportComponents/Dashboard";
+import { useParams } from 'react-router-dom';
 
-function Dashbaord(){
-    <div>Hello</div>
+function Dashboard(){
+    const { userId } = useParams();
+
+    return(
+        <div>
+            <h1>HR Dashboard</h1>
+            <p>user ID: {userId}</p>
+        </div>
+    )
 }
 
 export default Dashboard;

@@ -269,16 +269,16 @@ const BasicForm = () => {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.CompanyName.CompanyName !== "") {
+    if (!formData.CompanyName) {
       newErrors.CompanyName = "CompanyName is required";
     }
-    if (!formData.CompanyEmail.CompanyEmail !== "") {
+    if (!formData.CompanyEmail) {
       newErrors.CompanyEmail = "Email is required";
     }
     if (formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail)) {
       newErrors.CompanyEmail = "Please enter a valid email";
     }
-    if (!formData.CompanyNo.CompanyNo !== "") {
+    if (!formData.CompanyNo) {
       newErrors.CompanyNo = "Mobile No is required";
     }
     if (formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo)) {
@@ -320,10 +320,10 @@ const BasicForm = () => {
     if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
       newErrors.RelevantDocument = "Upload Relevant Documents";
     }
-    if (!formData.DirectInDirectMarket.DirectInDirectMarket) {
+    if (!formData.DirectInDirectMarket) {
       newErrors.DirectInDirectMarket = "Enter Direct/InDirect Competitor";
     }
-    if (!formData.BusinessModel.BusinessModel) {
+    if (!formData.BusinessModel) {
       newErrors.BusinessModel = "Please Select Business Model";
     }
     if (!formData.DirectorDetails[0].IsMainDirector) {
@@ -376,6 +376,8 @@ const BasicForm = () => {
       });
       return;
     }
+
+    console.log(newErrors);
 
     setFormSubmitted(true);
     sendDataToBackend();
@@ -1111,8 +1113,8 @@ const BasicForm = () => {
                     onChange={(e) => handleInputChange(e, "CompanyName")}
                   />
                   {formSubmitted && errors.CompanyName && (
-                <div style={{ color: "red" }}>{errors.CompanyName}</div>
-              )}
+                    <div style={{ color: "red" }}>{errors.CompanyName}</div>
+                  )}
                 </div>
               </div>
               <div className="col-lg-4">
@@ -1669,8 +1671,8 @@ const BasicForm = () => {
                     }
                   />
                   {formSubmitted && errors.DirectInDirectMarket && (
-                <div style={{ color: "red" }}>{errors.DirectInDirectMarket}</div>
-              )}
+                    <div style={{ color: "red" }}>{errors.DirectInDirectMarket}</div>
+                  )}
                 </div>
               </div>
               <div class="col-lg-6">
