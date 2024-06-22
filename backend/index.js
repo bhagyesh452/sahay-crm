@@ -269,7 +269,7 @@ app.post("/api/bdmlogin", async (req, res) => {
     email: email,
     password: password,
   });
-  //console.log(user)
+  //console.log(user)M
   if (!user) {
     // If user is not found
     return res.status(401).json({ message: "Invalid email or password" });
@@ -1655,7 +1655,7 @@ app.post("/api/users",
 
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nisargpatel@startupsahay.com"];
+      const email = ["nimesh@incscale.in"];
       const subject = "Thank you for signing up!";
       const text = "";
       const html = ` 
@@ -2322,6 +2322,22 @@ app.get('/api/generate-pdf-client', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+/**************************************HR Login Portal API********************************************************************/
+
+app.post("/api/hrlogin", async (req,res) => {
+  const { email , password } = req.body;
+
+})
+
+
+
+
+
+
+
+
 
 
 
