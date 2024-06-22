@@ -20,8 +20,7 @@
             
         }
         .header {
-            margin-bottom: 40px;
-            margin-right: 40px;
+            margin-right: 50px;
         }
         .title {
             text-align: center;
@@ -43,52 +42,69 @@
             margin-top: 40px;
             font-style: italic;
         }
+        .businnes-input-loa-main
+        {
+            margin-top: 20px;
+        }
+        p{
+            letter-spacing: 1px;
+            color: #333333;
+        }
+        .variable_span
+        {
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <p>Date:</p>
-        </div>
-        <div class="content">
-            <p>To,<br>
-            Chairperson<br>
-            Incubator Seed Management Committee</p>
-            
-            <p>Dear Ma’am/ Sir,</p>
-            
-            <p>Sub: Letter of Authorization for filing in SISFS Application</p>
-            
-            <p>We hereby authorize {{Gender}} {{DirectorName}} {{DirectorDesignation}} holding Aadhaar {{AadhaarNumber}}; (COPY TO BE ATTACHED) to submit the application for Startup India Seed Fund Scheme (“SISFS”) on behalf of our Society/Trust/ Company/ Statutory Body {{CompanyName}}, having registered office at {{CompanyAddress}}; and PAN {{CompanyPanNumber}}.</p>
-            
-            <p>We also authorize {{Gender}} {{DirectorName}} to make declarations and to submit documents, wherever required, on our behalf. These declarations and submissions are made towards the requirement of the SISFS application.</p>
-            
-            <p>We further confirm that we are liable for and bound by all acts of commission and omission by the authorized representative. All acts committed by the above authorized representatives shall be treated as if these acts were committed by the Incubator.</p>
-            
-            <p>The Specimen signature of {{Gender}} {{DirectorName}} is attested below:</p>
-            
-            <div class="signature-section">
-                <div class="signature-line">
-                    <p>____________________<br>
-                    (Specimen Signature of authorized representative – Name mentioned in 1st Paragraph)</p>
-                </div>
-                
-                <p>Yours faithfully,</p>
-                
-                <div class="signature-line">
-                    <p>___________________________<br>
-                    Signature of Director (in case of Company)/ Head of Trustee or Trustee (in case of a Trust)/ Head of Society or Member (in case of Society)/ Director (in case of Statutory Body)</p>
-                </div>
-                
-                <p>Name: {{DirectorName}}<br>
-                Designation: {{DirectorDesignation}}<br>
-                Date:</p>
-                
-                <p>Seal of the Signing Authority</p>
+        <div class="businnes-input-loa-main">
+            <div class="header">
+                <p>Date:</p>
             </div>
-            
-            <div class="note">
-                <p>Note: The Letter of Authorisation cannot be signed by the person nominated as Authorized Representative. It should be signed by another Director/Partner from the entity as given in prescribed format.</p>
+            <div class="content">
+                <p>To,<br>
+                Chairperson<br>
+                Incubator Seed Management Committee</p>
+                
+                <p>Dear Ma’am/ Sir,</p>
+                
+                <p>Sub: Letter of Authorization for filing in SISFS Application</p>
+                
+                <p>We hereby authorize <span class="variable_span">{{Gender}} {{DirectorName}}, {{DirectorDesignation}}</span> holding Aadhaar <span class="variable_span">{{AadhaarNumber}} (COPY TO BE ATTACHED)</span> to submit the application for Startup India Seed Fund Scheme (“SISFS”) on behalf of our Society/Trust/ Company/ Statutory Body 
+                    <span class="variable_span">{{CompanyName}},</span> having registered office at 
+                    <span class="variable_span">____________________________________________________________________________________________</span> 
+                    and PAN <span class="variable_span">{{CompanyPanNumber}}.</span></p>
+                
+                <p>We also authorize <span class="variable_span">{{Gender}} {{DirectorName}}</span> to make declarations and to submit documents, wherever required, on our behalf. These declarations and submissions are made towards the requirement of the SISFS application.</p>
+                
+                <p>We further confirm that we are liable for and bound by all acts of commission and omission by the authorized representative. All acts committed by the above authorized representatives shall be treated as if these acts were committed by the Incubator.</p>
+                
+                <p>The Specimen signature of<span class="variable_span">{{Gender}} {{DirectorName}}</span> is attested below:</p>
+                
+                <div class="signature-section">
+                    <div class="signature-line">
+                        <p>____________________<br>
+                        (Specimen Signature of authorized representative – Name mentioned in 1st Paragraph)</p>
+                    </div>
+                    
+                    <p>Yours faithfully,</p>
+                    
+                    <div class="signature-line">
+                        <p>___________________________<br>
+                        Signature of Director (in case of Company)/ Head of Trustee or Trustee (in case of a Trust)/ Head of Society or Member (in case of Society)/ Director (in case of Statutory Body)</p>
+                    </div>
+                    
+                    <p>Name: <span class="variable_span">{{DirectorName}}</span><br>
+                    Designation: <span class="variable_span">{{DirectorDesignation}}</span><br>
+                    Date:______________________________</p>
+                    
+                    <p>Seal of the Signing Authority</p>
+                </div>
+                
+                <div class="note">
+                    <p>Note: The Letter of Authorisation cannot be signed by the person nominated as Authorized Representative. It should be signed by another Director/Partner from the entity as given in prescribed format.</p>
+                </div>
             </div>
         </div>
     </div>
