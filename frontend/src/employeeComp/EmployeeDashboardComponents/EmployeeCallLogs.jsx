@@ -145,8 +145,13 @@ function EmployeeCallLogs({ employeeData }) {
     console.log("End Timestamp:", endTimestamp);
     // console.log(typeof(totalcalls))
 
-   
-     
+    const convertSecondsToHMS = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 3600 % 60;
+      
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      };
     
 
     return (
@@ -209,7 +214,7 @@ function EmployeeCallLogs({ employeeData }) {
                                             <MdTimer />
                                         </div>
                                         <div className="clr-000">
-                                            {totalcalls[0].total_outgoing_duration} s
+                                            {convertSecondsToHMS(totalcalls[0].total_outgoing_duration)}
                                         </div>
                                     </div>
                                 </div>
@@ -235,7 +240,7 @@ function EmployeeCallLogs({ employeeData }) {
                                             <MdTimer />
                                         </div>
                                         <div className="clr-000">
-                                            {totalcalls[0].total_incoming_duration} s
+                                            {convertSecondsToHMS(totalcalls[0].total_incoming_duration)}
                                         </div>
                                     </div>
                                 </div>
@@ -311,7 +316,7 @@ function EmployeeCallLogs({ employeeData }) {
                                             <MdTimer />
                                         </div>
                                         <div className="clr-000">
-                                            {totalcalls[0].total_duration}
+                                            {convertSecondsToHMS(totalcalls[0].total_duration)}
                                         </div>
                                     </div>
                                 </div>
