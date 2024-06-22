@@ -31,6 +31,7 @@ import StausInfo from "./admin/StausInfo.js";
 import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import BookingList from "./admin/BookingList.jsx";
 import BDMLogin from "./BDM/Login/BDMLogin.jsx";
+import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
 import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
 import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
 import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
@@ -65,6 +66,7 @@ import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCer
 import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
 import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
+import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 
 
 
@@ -80,6 +82,7 @@ function App() {
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
   const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
+  const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
   
   return (
     <div className="App">
@@ -219,6 +222,13 @@ function App() {
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/client/basic-form" element={<BasicForm />} />
+
+
+
+
+          {/**********************************************  HR-Login-Portal   *******************************************************/}
+          <Route path="/hr/login-hr" element={<HrLogin setHrToken={setHrToken} />} />
+          <Route path="/hrDashboard/:userId/" element={<HrDashboard.jsx />} />
 
         </Routes>
 

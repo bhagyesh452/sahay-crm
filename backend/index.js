@@ -269,7 +269,7 @@ app.post("/api/bdmlogin", async (req, res) => {
     email: email,
     password: password,
   });
-  //console.log(user)
+  //console.log(user)M
   if (!user) {
     // If user is not found
     return res.status(401).json({ message: "Invalid email or password" });
@@ -1712,8 +1712,8 @@ app.post("/api/users",
 
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nisargpatel@startupsahay.com"];
-      const subject = "Thank you for signing up!";
+      const email = ["nimesh@incscale.in"];
+      const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = ` 
      <body>
@@ -2373,6 +2373,42 @@ app.get('/api/generate-pdf-client', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+/**************************************HR Login Portal API********************************************************************/
+
+app.post("/api/hrlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "HR") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ hrToken });
+    //socketIO.emit("Employee-login");
+  }
+});
+
+
+
+
+
+
+
+
 
 
 
