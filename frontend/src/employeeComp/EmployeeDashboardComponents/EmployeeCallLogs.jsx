@@ -162,7 +162,7 @@ function EmployeeCallLogs({ employeeData }) {
                         Your Call Report
                     </h2>
                     <div className="dash-select-filter d-flex align-items-center">
-                        <input type="date" class="form-select form-select-sm my-filter-select mr-1"
+                        <input type="date" class="form-select-sm my-filter-select mr-1"
                             onChange={(e) => {
                                 setSelectDate(e.target.value)
                             }} />
