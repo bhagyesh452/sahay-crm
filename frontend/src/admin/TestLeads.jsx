@@ -1354,15 +1354,22 @@ function TestLeads() {
         // setCompanyData(cdata.filter((item) => item.ename === echangename));
 
          // Find the selected data object
+
         const dataToFilter = dataStatus === "Unassigned" ? unAssignedData : assignedData
-        const finalFiltering = !isFilter || !isSearching ? data : dataToFilter 
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter 
         const selectedData = finalFiltering.find((item) => item._id === id);
+        
+        console.log("id" , id)
+        console.log("finalfiletering" , finalFiltering)
+        console.log("assigned" , assignedData)
+        console.log("unassigned" , unAssignedData)
+        console.log("selectedData" , selectedData)
        
         //console.log(selectedData["Company Incorporation Date  "])
         //console.log(selectedData)
         // console.log(echangename);
        
-        // // Update the form data with the selected data values
+        // Update the form data with the selected data values
         setCompanyEmail(selectedData["Company Email"]);
         setCompanyName(selectedData["Company Name"]);
         //setCompanyIncoDate(new Date(selectedData["Company Incorporation Date  "]));
@@ -1551,7 +1558,7 @@ function TestLeads() {
         }
     }, [selectedYear, selectedMonth]);
 
-    console.log(monthIndex)
+    
 
     useEffect(() => {
         if (selectedYear && selectedMonth && selectedDate) {

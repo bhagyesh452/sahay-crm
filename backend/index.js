@@ -88,7 +88,10 @@ app.use("/api/admin-leads", AdminLeadsAPI);
 app.use("/api/remarks", RemarksAPI);
 app.use("/api/bookings", bookingsAPI)
 app.use('/api/company-data', companyAPI)
-app.use('/api/requests', RequestAPI)
+app.use('/api/requests', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, RequestAPI);
 app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)

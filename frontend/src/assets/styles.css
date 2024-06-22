@@ -272,6 +272,38 @@ input[type=number] {
   background-color: #f2f2f2 !important;
 }
 
+.item-act-noti {
+  background-color: #f2f2f2 !important;
+  color: #ff8080 !important ;
+font-weight:bold !important;
+ border: 1px solid #ffb0b0 !important;
+background-color: #ffdede !important;
+}
+.item-act2-noti {
+  color: #48ee67 !important;
+  font-weight: bold !important;
+  border: 1px solid #b6febe !important;
+  background-color: #e7ffde !important;
+}
+.item-act3-noti {
+  color: #4299e1 !important;
+  font-weight: bold !important;
+  border: 1px solid #63a6de !important;
+  background-color: #cce8ff !important;
+}
+.item-act4-noti {
+  color: #ffb900 !important;
+  font-weight: bold !important;
+  border: 1px solid #ffdd84 !important;
+  background-color: #ffefc6 !important;
+}
+.item-act5-noti{
+  color: #07dcf7 !important;
+  font-weight: bold !important;
+  border: 1px solid #84ffdc !important;
+  background-color: #d7fff4 !important;
+}
+
 select:focus,
 input:focus,
 textarea:focus {
@@ -2432,4 +2464,73 @@ td input {
   margin-right: 8px;
   font-size: 16px;
   font-family: 'poopins' sans-serif;
+}
+
+.Notification_acceptbtn{
+  border: 1px solid #4dc760;
+  background-color: #c8ffc8;
+  border-radius: 10px;
+  color: #088a08;
+  padding: 1px 4px 3px 3px;
+  transition: all 0.1s;
+}
+.Notification_completedbtn{
+  border: 1px solid #ffe6e6;
+  background-color: #e7e7e7;
+  border-radius: 10px;
+  color: #8f8f8f;
+  padding: 1px 4px 3px 3px;
+  transition: all 0.1s;
+}
+.Notification_acceptbtn:hover{
+  border: 1px solid #4dc760;
+  background-color: #67ff67;
+  border-radius: 10px;
+  color: #088a08;
+  padding: 1px 4px 3px 3px;
+  cursor: pointer;
+}
+.Notification_rejectbtn{
+  border: 1px solid #ff6666;
+  background-color: #ffc8c8;
+  font-size: 9px;
+  border-radius: 10px;
+  color: #ff6666;
+  padding: 3px 6px 5px 4px;
+  margin-left: 5px;
+  transition: all 0.1s;
+}
+.Notification_rejectbtn:hover{
+  cursor: pointer;
+  border: 1px solid #ff6666;
+  background-color: #ff8c8c;
+  font-size: 9px;
+  border-radius: 10px;
+  color: #de5959;
+  padding: 3px 6px 5px 4px;
+  margin-left: 5px;
+}
+
+
+.Notification-table thead tr th
+{
+  background: #ffb9b9;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  color: #a77b7b;
+  font-weight: bold !important;
+}
+.Notification-table tbody tr td
+{
+  vertical-align: middle;
+  padding: 6px 0px !important;
+  color: #946969 !important;
+  border: none !important;
+}
+.Notification-table tbody tr:nth-of-type(even)
+{
+  background: #ffeeee !important;
+}
+.Notification_filter input, .Notification_filter select{
+border: 1px solid #ffd3d3 !important;
 }

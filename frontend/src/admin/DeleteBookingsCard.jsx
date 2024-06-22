@@ -24,15 +24,11 @@ function DeleteBookingsCard({
     verifyDelete();
   }, []);
   const isToday = (dateString) => {
-  
-  
     // Get today's date in dd/mm/yyyy format
     const today = new Date().toLocaleDateString();
-  
     return dateString === today;
   };
   
-
   const handleDelete = async () => {
     // Assuming you have an API endpoint for deleting a company
     try {
@@ -123,7 +119,6 @@ function DeleteBookingsCard({
                 <div
                   style={{
                     fontSize: "16px",
-
                     marginBottom: "8px",
                     color: "#333",
                   }}
