@@ -3,6 +3,7 @@ var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
 
+
 const CompanyRequestModel = require("../models/LeadsRequest");
 const RequestModel = require("../models/Request");
 const RequestGModel = require("../models/RequestG");
@@ -227,6 +228,7 @@ router.post("/deleterequestbybde", async (req, res) => {
       ename,
       bookingIndex,
     } = req.body;
+    const socketIO = req.io;
 
     // Check if the request already exists
     const findRequest = await RequestDeleteByBDE.findOne({
@@ -252,7 +254,7 @@ router.post("/deleterequestbybde", async (req, res) => {
 
     // Save the delete request to the database
     await deleteRequest.save();
-
+    socketIO.emit('delete-booking-requested');
     res.status(200).json({ message: "Delete request created successfully" });
   } catch (error) {
     console.error("Error creating delete request:", error);
@@ -279,10 +281,9 @@ router.get("/editRequestByBde", async (req, res) => {
   }
 });
 
-router.delete("/deleterequestbybde/:cname", async (req, res) => {
+router.delete("/deleterequestbybde/:id", async (req, res) => {
   try {
     const companyName = req.params.cname;
-
     // Find document by company name and delete it
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
       { companyName, request: undefined },
