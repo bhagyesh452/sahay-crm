@@ -8,7 +8,7 @@ import logo from "../../static/mainLogo.png"
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
-export default function HrLogin(){
+function HrLogin(){
     return (
         <div>
             <div className="page page-center">
@@ -106,3 +106,5 @@ export default function HrLogin(){
         </div>
     )
 }
+
+export default HrLogin;

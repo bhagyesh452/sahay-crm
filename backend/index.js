@@ -1713,7 +1713,7 @@ app.post("/api/users",
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nimesh@incscale.in"];
-      const subject = "Thank you for signing up!";
+      const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = ` 
      <body>
