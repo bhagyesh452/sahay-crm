@@ -2191,20 +2191,17 @@ td input {
 }
 .employee_profile_picture
 {
-  padding: 20px;
   position: relative;
-  padding: 20px;
   position: relative;
   border-right: 1px solid #eee;
 }
 .employee_picture
 {
   overflow: hidden;
-  width: 160px;
-  height: 160px;
-  border-radius: 100px;
+  width: 200px;
+  height: 200px;
   background: #eee;
-  box-shadow: 0px 7px 35px -16px #ffba00;
+  /* box-shadow: 1px 1px 8px -3px #ffba00; */
 }
 .employee_picture img
 {
@@ -2228,18 +2225,18 @@ td input {
   border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
-  width: 30px;
-  text-align: center;
-  height: 30px;
-  line-height: 26px;
-  border-radius: 100px;
-  background: #ffba00;
-  position: absolute;
-  right: 34px;
-  bottom: 34px;
-  cursor: pointer;
-  transition: transform .2s;
-  box-shadow: 0px 7px 35px -16px #ffba00;
+    width: 30px;
+    text-align: center;
+    height: 30px;
+    line-height: 26px;
+    border-radius: 100px;
+    background: #ffba00;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    cursor: pointer;
+    transition: transform .2s;
+    box-shadow: 3px 4px 12px -3px #686868;
 }
 .profile-pic-upload:hover
 {
@@ -2271,39 +2268,118 @@ td input {
 .ep_info_icon
 {
   font-size: 14px;
-  line-height: 15px;
+  line-height: 14px;
   height: 18px;
+  color: #474747;
   width: 18px;
+  margin-left: 10px;
 }
 .ep_info_h
 {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 .ep_info_t
 {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .EP_Other_info
 {
-  position: relative;
-  min-height: 115px;
-  padding: 18px 13px 0px 13px;
-  border-radius: 20px;
+  
 }
 .EP_Other_info_head
 {
-  position: absolute;
-  top: -13px;
-  border-radius: 21px;
-  border: 3px solid #fff;
-  padding: 4px 12px;
+  padding: 10px 20px 10px 20px;
   font-size: 12px;
-  font-weight: bold;
-  left: 15px;
-
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
 }
+.e-profile-tab
+{
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 100px;
+  overflow: hidden;
+}
+.e-profile-tab-item {
+  padding:8px 16px 8px 16px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #eee;
+  cursor: pointer;
+  background: #fff;
+  font-weight: 500;
+}
+.e-profile-tab-item.active
+{
+  background: linear-gradient(45deg, #ffba00, #ffde00, #ffba00);
+}
+.e-profile-tab-item:first-child
+{
+  border-radius: 100px 0 0 100px;
+}
+.e-profile-tab-item:last-child
+{
+  border-radius: 0 100px 100px 0;
+}
+.e-profile-tab-main
+{
+  min-height: 330px;
+}
+.dash-table table
+{
+  border: none !important;
+  border-collapse: collapse;
+  border-radius: 15px;
+  border-spacing: 0;
+  padding: 0;
+  width: 100%;
+}
+.dash-table table thead tr th
+{
+  background: #f2f2f2 !important;
+}
+.dash-table table tbody tr td
+{
+  padding: 6px 0 !important;
+}
+.dash-table
+{
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  min-height: 240px;
+}
+.dash-table table thead tr th:first-child
+{
+  border-radius: 18px 0 0 0;
+}
+.dash-table table thead tr th:last-child
+{
+  border-radius: 0 18px 0 0;
+}
+.e-profile-tab-data
+{
+  padding: 15px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*****************************Basic Information Form******************************************/
 .form-control,  
 .form-select {

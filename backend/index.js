@@ -191,13 +191,13 @@ const upload = multer({ storage: storage });
 // ***************************************   Login Section  **********************************************
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
-  console.log(username, password);
+ 
 
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
-  console.log("user", user);
+ 
   //console.log(user);
   if (user) {
     // Generate a JWT token
@@ -206,7 +206,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    console.log(adminName, token);
+  
     res.status(200).json({ token, adminName });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
@@ -272,7 +272,7 @@ app.post("/api/bdmlogin", async (req, res) => {
     email: email,
     password: password,
   });
-  //console.log(user)
+  //console.log(user)M
   if (!user) {
     // If user is not found
     return res.status(401).json({ message: "Invalid email or password" });
@@ -309,6 +309,63 @@ app.post("/api/processingLogin", async (req, res) => {
     res.status(401).json({ message: "Invalid credentials" });
   }
 });
+
+app.post("/api/rmofcertificationlogin" , async(req , res)=>{
+  const { email , password } = req.body;
+
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "RM-Certification") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const rmofcertificationToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ rmofcertificationToken });
+    //socketIO.emit("Employee-login");
+  }
+})
+
+app.post("/api/rmoffundinglogin" , async(req , res)=>{
+  const { email , password } = req.body;
+
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "RM-Funding") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const rmoffundingToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ rmoffundingToken });
+    //socketIO.emit("Employee-login");
+  }
+})
+
+
+
+
+
+
+
 //   const { email, password } = req.body;
 //   console.log(email,password)
 //   // Replace this with your actual Employee authentication logic
@@ -1658,8 +1715,8 @@ app.post("/api/users",
 
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nisargpatel@startupsahay.com"];
-      const subject = "Thank you for signing up!";
+      const email = ["nimesh@incscale.in"];
+      const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = ` 
      <body>
@@ -2136,7 +2193,7 @@ app.post("/api/users",
         RelevantDocument
       )
         .then((info) => {
-          console.log("Email Sent:", info);
+          console.log("Email Sent:");
         })
         .catch((error) => {
           console.error("Error sending email:", error);
@@ -2172,8 +2229,7 @@ app.post("/api/users",
 <p>+91-9998992601</p>
 <p>Start-Up Sahay Private Limited</p>
       `;
-      console.log(DirectorDetails)
-      console.log(typeof (DirectorDetails))
+ 
 
       let MainDirectorName;
       let MainDirectorDesignation;
@@ -2193,7 +2249,7 @@ app.post("/api/users",
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
       }
 
-      console.log(MainDirectorName , MainDirectorDesignation)
+      
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
@@ -2231,7 +2287,7 @@ app.post("/api/users",
           try {
             setTimeout(() => {
               const servicesArray = Object.values(SelectServices);
-              console.log(servicesArray)
+            
               const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
               //const mainBuffer = fs.readFileSync(pdfFilePath);
               const pdfAttachment = {
@@ -2247,7 +2303,7 @@ app.post("/api/users",
               let clientDocument;
               if (selectedService) {
                 clientDocument = [mainBuffer, pdfAttachment]
-                console.log("Service found:", selectedService);
+              
               } else {
                 clientDocument = [pdfAttachment]
                 console.log("Service 'Seed Funding Support' not found.");
@@ -2320,6 +2376,42 @@ app.get('/api/generate-pdf-client', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+/**************************************HR Login Portal API********************************************************************/
+
+app.post("/api/hrlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "HR") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ hrToken });
+    //socketIO.emit("Employee-login");
+  }
+});
+
+
+
+
+
+
+
+
 
 
 

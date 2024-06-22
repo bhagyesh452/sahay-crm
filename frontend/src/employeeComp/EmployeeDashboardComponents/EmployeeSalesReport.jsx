@@ -1341,7 +1341,6 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     setProjectionData(data);
 
   }, [selectedMonthOption, followData, redesignedData]);
-  console.log(achievedData, 'at this time')
 
 
   return (

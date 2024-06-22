@@ -31,6 +31,7 @@ import StausInfo from "./admin/StausInfo.js";
 import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import BookingList from "./admin/BookingList.jsx";
 import BDMLogin from "./BDM/Login/BDMLogin.jsx";
+import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
 import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
 import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
 import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
@@ -60,6 +61,13 @@ import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
+import RMofCertification from "./RM-CERTIFICATION/RM-CERT-LOGIN/RMofCertification.jsx";
+import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCertificationDashboard.jsx";
+import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
+import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
+import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
+import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
+
 
 
 
@@ -72,7 +80,10 @@ function App() {
   );
   const [managerToken, setManagerToken] = useState(localStorage.getItem("managerToken") || null)
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
-
+  const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
+  const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
+  const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
+  
   return (
     <div className="App">
       <BrowserRouter>
@@ -115,10 +126,14 @@ function App() {
           <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings />}></Route>
 
 
-          {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+          {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
+          <Route path='/rmofcertification/login-rmofcertification' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
+          <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
+          <Route path='/rmofcertification/rmofcertification-bookings' element={<RmofCertificationBookings />} />
 
-
-
+          {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
+          <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken}/>} />
+          <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
 
 
           {/* -----------------------------------------datamanager components--------------------------------------- */}
@@ -207,6 +222,13 @@ function App() {
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/client/basic-form" element={<BasicForm />} />
+
+
+
+
+          {/**********************************************  HR-Login-Portal   *******************************************************/}
+          <Route path="/hr/login-hr" element={<HrLogin setHrToken={setHrToken} />} />
+          <Route path="/hrDashboard/:userId/" element={<HrDashboard.jsx />} />
 
         </Routes>
 

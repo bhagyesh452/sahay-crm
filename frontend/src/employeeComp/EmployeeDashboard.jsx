@@ -4148,9 +4148,9 @@ function EmployeeDashboard() {
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                  {data.length !==0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
                     <EmployeeCallLogs employeeData = {data}/>
-                  </div>
+                  </div>)}
                   </>}
                   {/* calling data report */}
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">

@@ -145,8 +145,7 @@ function Employees({ onEyeButtonClick }) {
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
-
-
+          
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
           fetchData();
@@ -185,7 +184,6 @@ function Employees({ onEyeButtonClick }) {
         await Promise.all(
           filteredCompanyData.map(async (item) => {
             if (item.Status === 'Matured') {
-              
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
 
             } else {
@@ -1157,6 +1155,9 @@ function Employees({ onEyeButtonClick }) {
                         <option value="Content Writer">Content Writer</option>
                         <option value="Data Manager">Data Manager</option>
                         <option value="Admin Team">Admin Team</option>
+                        <option value="HR">HR</option>
+                        <option value="RM-Certification">RM-Certification</option>
+                        <option value="RM-Funding">RM-Funding</option>
                         <option value="Others">Others</option>
                       </select>
                     </div>
