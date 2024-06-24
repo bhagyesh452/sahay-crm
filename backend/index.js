@@ -162,15 +162,11 @@ const storage = multer.diskStorage({
       destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
     } else if (file.fieldname === "paymentReceipt") {
       destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
-    } else if (
-      file.fieldname === "DirectorPassportPhoto" ||
-      file.fieldname === "DirectorAdharCard" ||
-      file.fieldname === "UploadMOA" ||
-      file.fieldname === "UploadAOA" ||
-      file.fieldname === "UploadPhotos" ||
-      file.fieldname === "RelevantDocument"
-    ) {
-      destinationPath = `ClientDocuments`;
+    }
+    else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
+      destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
+    } else {
+      destinationPath = `ClientDocuments/${companyName}/OtherDocs`
     }
 
     // Create the directory if it doesn't exist
@@ -191,13 +187,13 @@ const upload = multer({ storage: storage });
 // ***************************************   Login Section  **********************************************
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
- 
+
 
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
- 
+
   //console.log(user);
   if (user) {
     // Generate a JWT token
@@ -206,7 +202,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-  
+
     res.status(200).json({ token, adminName });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
@@ -310,8 +306,8 @@ app.post("/api/processingLogin", async (req, res) => {
   }
 });
 
-app.post("/api/rmofcertificationlogin" , async(req , res)=>{
-  const { email , password } = req.body;
+app.post("/api/rmofcertificationlogin", async (req, res) => {
+  const { email, password } = req.body;
 
   const user = await adminModel.findOne({
     email: email,
@@ -335,8 +331,8 @@ app.post("/api/rmofcertificationlogin" , async(req , res)=>{
   }
 })
 
-app.post("/api/rmoffundinglogin" , async(req , res)=>{
-  const { email , password } = req.body;
+app.post("/api/rmoffundinglogin", async (req, res) => {
+  const { email, password } = req.body;
 
   const user = await adminModel.findOne({
     email: email,
@@ -1178,7 +1174,7 @@ app.post("/api/undo", (req, res) => {
 
 /*****************************************************CompanyBusinessInput *****************************************************************/
 
-app.post("/api/users",
+app.post("/api/users/:CompanyName",
   upload.fields([
     { name: "DirectorPassportPhoto", maxCount: 10 },
     { name: "DirectorAdharCard", maxCount: 10 },
@@ -1188,6 +1184,7 @@ app.post("/api/users",
     { name: "RelevantDocument", maxCount: 1 },
   ]),
   async (req, res) => {
+
     try {
       const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
       const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
@@ -1195,6 +1192,11 @@ app.post("/api/users",
       const UploadAOA = req.files["UploadAOA"] || [];
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
+
+
+
+
+
 
       // Get user details from the request body
       const {
@@ -1220,6 +1222,8 @@ app.post("/api/users",
         BusinessModel,
         DirectorDetails,
       } = req.body;
+
+
 
       //console.log("select services" , SelectServices)
       // const services = SelectServices.map(service => service);
@@ -2229,7 +2233,7 @@ app.post("/api/users",
 <p>+91-9998992601</p>
 <p>Start-Up Sahay Private Limited</p>
       `;
- 
+
 
       let MainDirectorName;
       let MainDirectorDesignation;
@@ -2240,16 +2244,16 @@ app.post("/api/users",
         } else if (DirectorDetails[1].IsMainDirector === "true") {
           MainDirectorName = DirectorDetails[0].DirectorName
           MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-        } else{
+        } else {
           MainDirectorName = DirectorDetails[0].DirectorName
           MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
         }
-      }else {
+      } else {
         MainDirectorName = DirectorDetails[0].DirectorName
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
       }
 
-      
+
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
@@ -2287,7 +2291,7 @@ app.post("/api/users",
           try {
             setTimeout(() => {
               const servicesArray = Object.values(SelectServices);
-            
+
               const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
               //const mainBuffer = fs.readFileSync(pdfFilePath);
               const pdfAttachment = {
@@ -2303,7 +2307,7 @@ app.post("/api/users",
               let clientDocument;
               if (selectedService) {
                 clientDocument = [mainBuffer, pdfAttachment]
-              
+
               } else {
                 clientDocument = [pdfAttachment]
                 console.log("Service 'Seed Funding Support' not found.");
@@ -2400,7 +2404,7 @@ app.post("/api/hrlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ hrToken , userId: user._id , ename:user.ename });
+    res.status(200).json({ hrToken, userId: user._id, ename: user.ename });
     //socketIO.emit("Employee-login");
   }
 });

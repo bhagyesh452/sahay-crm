@@ -9,6 +9,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const BasicForm = () => {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const DirectorForm = {
     DirectorName: "",
     DirectorEmail: "",
@@ -114,16 +115,6 @@ const BasicForm = () => {
     return pattern.test(aadhaarNumber);
   }
 
-  // function isValidDirectorEmail(Directoremail) {
-  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return pattern.test(Directoremail);
-  // }
-
-  // function isValidDirectorMobileNo(mobileNo) {
-  //   const pattern = /^\d{10}$/;
-  //   return pattern.test(mobileNo);
-  // }
-
   const handleChange = selectedOptions => {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -185,7 +176,7 @@ const BasicForm = () => {
         console.log(`${key}: ${value}`);
       }
 
-      const response = await fetch("http://localhost:3001/api/users", {
+      const response = await fetch(`${secretKey}/users/${formData.CompanyName}`, {
         method: "POST",
         body: data,
       });
@@ -402,9 +393,6 @@ const BasicForm = () => {
       if (!director.DirectorAnnualIncome) {
         newErrors[`DirectorAnnualIncome${index}`] = `Enter Director Annual Income for Director ${index + 1}`;
       }
-      // if (!director.DirectorPassportPhoto) {
-      //   newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
-      // }
       if (!director.DirectorAdharCard) {
         newErrors[`DirectorAdharCard${index}`] = `Upload your Adhar Card for Director ${index + 1}`;
       }
@@ -439,124 +427,18 @@ const BasicForm = () => {
     await sendDataToBackend();
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   // const email = e.target.email.value;
+  const functionShowSizeLimit = (file) => {
+    const maxSizeMB = 24;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
-  //   const newErrors = {};
-  //   if (!formData.CompanyName && formData.CompanyName !== "") {
-  //     newErrors.CompanyName = "Comapny Name is required";
-  //   }
-  //   if (!formData.CompanyEmail && formData.CompanyEmail !== "") {
-  //     newErrors.CompanyEmail = "Email is required";
-  //   }
-  //   if (formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail)) {
-  //     newErrors.CompanyEmail = "Please Enter a Valid Email"
-  //   }
-  //   if (!formData.CompanyNo && formData.CompanyNo !== "") {
-  //     newErrors.CompanyNo = "Mobile No is required";
-  //   }
-  //   if (formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo)) {
-  //     newErrors.CompanyNo = "Please Enter a Valid Mobile Number"
-  //   }
-  //   if (!formData.BrandName && formData.BrandName !== "") {
-  //     newErrors.CompanyNo = "Enter Brand Name";
-  //   }
-  //   if (!formData.WebsiteLink && formData.WebsiteLink !== "") {
-  //     newErrors.CompanyNo = "Enter Website Link";
-  //   }
-  //   if (!formData.CompanyAddress && formData.CompanyAddress !== "") {
-  //     newErrors.CompanyAddress = "Enter Company Address";
-  //   }
-  //   if (!formData.CompanyPanNumber && formData.CompanyPanNumber !== "") {
-  //     newErrors.CompanyPanNumber = "Enter Pan Number";
-  //   }
-  //   if (!formData.SelectServices.length && formData.SelectServices !== "") {
-  //     newErrors.SelectServices = "Select Your Servicees";
-  //   }
-  //   if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
-  //     newErrors.CompanyActivities = "Enter Your Company Activities";
-  //   }
-  //   if (!formData.ProductService && formData.ProductService !== "") {
-  //     newErrors.ProductService = "Enter Your Problems";
-  //   }
-  //   if (!formData.CompanyUSP && formData.CompanyUSP !== "") {
-  //     newErrors.CompanyUSP = "Enter Your USP";
-  //   }
-  //   if (!formData.ValueProposition && formData.ValueProposition !== "") {
-  //     newErrors.ValueProposition = "Enter Your Company  Value Proposition";
-  //   }
-  //   if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
-  //     newErrors.TechnologyInvolved = "Enter Your Technology";
-  //   }
-  //   if (!formData.UploadPhotos && formData.UploadPhotos !== "") {
-  //     newErrors.UploadPhotos = "Comapny Name is required";
-  //   }
-  //   if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
-  //     newErrors.RelevantDocument = "Comapny Name is required";
-  //   }
-  //   if (!formData.DirectorDetails[0].IsMainDirector) {
-  //     newErrors.IsMainDirector = "Select Authorised person";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorName) {
-  //     newErrors.DirectorName = "Enter Director Name";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorEmail) {
-  //     newErrors.DirectorEmail = "Enter Director Email Id";
-  //   }
-  //   // if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
-  //   //   newErrors.DirectorEmail = "Please Enter a Valid Email"
-  //   // }
-  //   if (!formData.DirectorDetails[0].DirectorMobileNo) {
-  //     newErrors.DirectorMobileNo = "Mobile No is required";
-  //   }
-  //   // if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
-  //   //   newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
-  //   // }
-  //   if (!formData.DirectorDetails[0].DirectorQualification) {
-  //     newErrors.DirectorQualification = "Enter Director Qualification";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorWorkExperience) {
-  //     newErrors.DirectorWorkExperience = "Enter Director Work Experience";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorAnnualIncome) {
-  //     newErrors.DirectorAnnualIncome = "Enter Director Annual Income";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorPassportPhoto) {
-  //     newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorAdharCard) {
-  //     newErrors.DirectorAdharCard = "Upload your Adhar Card";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorDesignation) {
-  //     newErrors.DirectorDesignation = "Enter Director Designation";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
-  //     newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
-  //   } else if (!isValidAadhaarNumber(formData.DirectorDetails[0].DirectorAdharCardNumber)) {
-  //     newErrors.DirectorAdharCardNumber = "Please enter a valid 12-digit Aadhaar Card Number";
-  //   }
-  //   if (!formData.DirectorDetails[0].DirectorGender) {
-  //     newErrors.DirectorGender = "Select Director Gender";
-  //   }
+    if (file.size > maxSizeBytes) {
+      Swal.fire('Size limit exceeded!', 'Please upload a file less than 24MB', 'warning');
+      return false;
+    } else {
+      return true;
+    }
+  };
 
-
-  //   // console.log(newErrors)
-  //   setErrors(newErrors);
-
-  //   // Check if there are any errors
-  //   if (Object.keys(newErrors).length > 0) {
-  //     // setErrors(newErrors);
-  //     setFormSubmitted(true); // Reset form submission state
-  //     return;
-  //   }
-
-  //   // setErrors(true);
-  //   setFormSubmitted(true);
-  //   if (Object.keys(newErrors).length === 0) {
-  //     sendDataToBackend();
-  //   }
-  // };
 
 
   const handleRadioChange = (e, index) => {
@@ -681,9 +563,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorName && (
                 <div style={{ color: "red" }}>Enter Director Name</div>
               )}
-              {/* {formSubmitted && !formData.DirectorName && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -716,14 +595,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
-              {/* {formSubmitted &&
-                formData.DirectorDetails[0].DirectorEmail &&
-                !isValidDirectorEmail(formData.DirectorDetails[0].DirectorEmail) && (
-                  <div style={{ color: "red" }}>Enter a valid Email Address</div>
-                )} */}
-              {/* {formSubmitted && !formData[`DirectorEmail${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -757,14 +628,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
-              {/* {formSubmitted &&
-                formData.DirectorDetails[0].DirectorMobileNo &&
-                !isValidDirectorMobileNo(formData.DirectorDetails[0].DirectorMobileNo) && (
-                  <div style={{ color: "red" }}>Enter a valid 10-digit Mobile Number</div>
-                )} */}
-              {/* {formSubmitted && !formData[`DirectorMobileNo${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -798,9 +661,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorQualification && (
                 <div style={{ color: "red" }}>Enter Director Qualification</div>
               )}
-              {/* {formSubmitted && !formData[`DirectorQualification${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -834,11 +694,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorWorkExperience && (
                 <div style={{ color: "red" }}>Enter Director Work Experience</div>
               )}
-              {/* {formSubmitted && !formData[`DirectorWorkExperience${index}`] && (
-                <div style={{ color: "red" }}>
-
-                </div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -868,12 +723,6 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {/* {formSubmitted && !formData.DirectorDetails[0].DirectorAnnualIncome && (
-                <div style={{ color: "red" }}>Enter Director Annual Income</div>
-              )} */}
-              {/* {formSubmitted && !formData[`DirectorAnnualIncome${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -888,28 +737,24 @@ const BasicForm = () => {
                 id={`DirectorPassportPhoto${index}`}
                 value={formData.DirectorDetails[index.DirectorPassportPhoto]}
                 onChange={(e) => {
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
+                  const file = e.target.files[0];
+                  if (functionShowSizeLimit(file)) {
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      DirectorDetails: prevState.DirectorDetails.map((director, i) =>
                         i === index
                           ? {
-                            ...DirectorDetails,
-                            DirectorPassportPhoto: e.target.files[0],
+                            ...director,
+                            DirectorPassportPhoto: file,
                           }
-                          : DirectorDetails
-                    ),
-                  }));
+                          : director
+                      ),
+                    }));
+                  } else {
+                    e.target.value = null; // Clear the input value to prevent invalid file selection
+                  }
                 }}
               />
-              {/* {formSubmitted && !formData.DirectorDetails[0].DirectorPassportPhoto && (
-                <div style={{ color: "red" }}>Upload Passport Size Photo</div>
-              )} */}
-              {/* {formSubmitted && !formData[`DirectorPassportPhoto${index}`] && (
-                <div style={{ color: "red" }}>
-
-                </div>
-              )} */}
               <div className="input-note">
                 (Files size should be less than 500KB)
               </div>
@@ -927,26 +772,27 @@ const BasicForm = () => {
                 id={`DirectorAdharCard${index}`}
                 value={formData.DirectorDetails[index.DirectorAdharCard]}
                 onChange={(e) => {
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
+                  const file = e.target.files[0];
+                  if (functionShowSizeLimit(file)) {
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      DirectorDetails: prevState.DirectorDetails.map((director, i) =>
                         i === index
                           ? {
-                            ...DirectorDetails,
-                            DirectorAdharCard: e.target.files[0],
+                            ...director,
+                            DirectorAdharCard: file,
                           }
-                          : DirectorDetails
-                    ),
-                  }));
+                          : director
+                      ),
+                    }));
+                  } else {
+                    e.target.value = null; // Clear the input value to prevent invalid file selection
+                  }
                 }}
               />
               {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCard && (
                 <div style={{ color: "red" }}>Upload Director AdharCard</div>
               )}
-              {/* {formSubmitted && !formData[`DirectorAdharCard${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -984,9 +830,6 @@ const BasicForm = () => {
                 !isValidAadhaarNumber(formData.DirectorDetails[index].DirectorAdharCardNumber) && (
                   <div style={{ color: "red" }}>Enter a valid 12-digit Aadhaar Card Number</div>
                 )}
-              {/* {formSubmitted && !formData[`DirectorAdharCardNumber${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -1019,9 +862,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorDesignation && (
                 <div style={{ color: "red" }}>Enter Director Designation</div>
               )}
-              {/* {formSubmitted && !formData[`DirectorDesignation${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -1077,10 +917,6 @@ const BasicForm = () => {
               {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
                 <div style={{ color: "red" }}>Select the Director Gender</div>
               )}
-
-              {/* {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
           <div className="col-lg-4">
@@ -1109,12 +945,6 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {/* {formSubmitted && !formData.DirectorDetails[0].LinkedInProfileLink && (
-                <div style={{ color: "red" }}>Enter Director Profile Link</div>
-              )} */}
-              {/* {formSubmitted && !formData[`LinkedInProfileLink${index}`] && (
-                <div style={{ color: "red" }}></div>
-              )} */}
             </div>
           </div>
         </div>
@@ -1189,9 +1019,6 @@ const BasicForm = () => {
                     pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                     title="Enter a valid email address"
                   />
-                  {/* {formSubmitted && errors.CompanyEmail && (
-                <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
-              )} */}
                   {formSubmitted && formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail) && (
                     <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
                   )}
@@ -1266,9 +1093,6 @@ const BasicForm = () => {
                     value={formData.CompanyAddress}
                     onChange={(e) => handleInputChange(e, "CompanyAddress")}
                   />
-                  {/* {formSubmitted && !formData.CompanyAddress && (
-                    <div style={{ color: "red" }}>{"Enter Company Address"}</div>
-                  )} */}
                 </div>
               </div>
               <div className="col-lg-6">
@@ -1298,7 +1122,6 @@ const BasicForm = () => {
                     isMulti
                     options={options1}
                     id="Services"
-                    // value={formData.selectedOptions}
                     value={options1.filter(option => formData.SelectServices.includes(option.value))}
                     placeholder="SelectServices"
                     onChange={handleChange}>
@@ -1320,14 +1143,18 @@ const BasicForm = () => {
                     type="file"
                     class="form-control mt-1"
                     id="Upload-MOA"
-                    onChange={(e) => handleFileChange(e, "UploadMOA")}
-                  // onChange={(e) =>
-                  //   setFormData({ ...formData, UploadMOA: e.target.files[0] })
-                  // }
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (functionShowSizeLimit(file)) {
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          UploadMOA: file,
+                        }));
+                      } else {
+                        e.target.value = null; // Clear the input value to prevent invalid file selection
+                      }
+                    }}
                   />
-                  {/* {formSubmitted && !formData.UploadMOA && (
-                    <div style={{ color: "red" }}>{"Upload MOA"}</div>
-                  )} */}
                 </div>
               </div>
               <div className="col-lg-4">
@@ -1337,14 +1164,18 @@ const BasicForm = () => {
                     type="file"
                     className="form-control mt-1"
                     id="Upload-AOA"
-                    onChange={(e) => handleFileChange(e, "UploadAOA")}
-                  // onChange={(e) =>
-                  //   setFormData({ ...formData, UploadAOA: e.target.files[0] })
-                  // }
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (functionShowSizeLimit(file)) {
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          UploadAOA: file,
+                        }));
+                      } else {
+                        e.target.value = null; // Clear the input value to prevent invalid file selection
+                      }
+                    }}
                   />
-                  {/* {formSubmitted && !formData.UploadAOA && (
-                    <div style={{ color: "red" }}>{"Upload AOA"}</div>
-                  )} */}
                 </div>
               </div>
               <div className="col-lg-12">
@@ -1389,11 +1220,6 @@ const BasicForm = () => {
                           id="Facebook_link"
                           onChange={(e) => handleInputChange(e, "FacebookLink")}
                         />
-                        {/* {formSubmitted && !formData.FacebookLink && (
-                          <div style={{ color: "red" }}>
-                            {"Mention Facebook Link"}
-                          </div>
-                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -1408,11 +1234,6 @@ const BasicForm = () => {
                             handleInputChange(e, "InstagramLink")
                           }
                         />
-                        {/* {formSubmitted && !formData.InstagramLink && (
-                          <div style={{ color: "red" }}>
-                            {"Enter Company Activities"}
-                          </div>
-                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -1425,11 +1246,6 @@ const BasicForm = () => {
                           id="LinkedIn_link"
                           onChange={(e) => handleInputChange(e, "LinkedInLink")}
                         />
-                        {/* {formSubmitted && !formData.LinkedInLink && (
-                          <div style={{ color: "red" }}>
-                            {"Enter Company Activities"}
-                          </div>
-                        )} */}
                       </div>
                     </div>
                     <div className="col-lg-3">
@@ -1442,11 +1258,6 @@ const BasicForm = () => {
                           id="YouTube_link"
                           onChange={(e) => handleInputChange(e, "YoutubeLink")}
                         />
-                        {/* {formSubmitted && !formData.YoutubeLink && (
-                          <div style={{ color: "red" }}>
-                            {"Enter Company Activities"}
-                          </div>
-                        )} */}
                       </div>
                     </div>
                   </div>
@@ -1634,13 +1445,17 @@ const BasicForm = () => {
                       type="file"
                       class="form-control mt-1"
                       id="Photos-logos"
-                      onChange={(e) => handleFileChange(e, "UploadPhotos")}
-                    // onChange={(e) =>
-                    //   setFormData({
-                    //     ...formData,
-                    //     UploadPhotos: e.target.files[0],
-                    //   })
-                    // }
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (functionShowSizeLimit(file)) {
+                          setFormData((prevState) => ({
+                            ...prevState,
+                            UploadPhotos: file,
+                          }));
+                        } else {
+                          e.target.value = null; // Clear the input value to prevent invalid file selection
+                        }
+                      }}
                     />
                     {formSubmitted && !formData.UploadPhotos && (
                       <div style={{ color: "red" }}>{"Upload Photos"}</div>
@@ -1698,13 +1513,17 @@ const BasicForm = () => {
                       type="file"
                       className="form-control mt-1"
                       id="ip"
-                      onChange={(e) => handleFileChange(e, "UploadPhotos")}
-                    // onChange={(e) =>
-                    //   setFormData({
-                    //     ...formData,
-                    //     RelevantDocument: e.target.files[0],
-                    //   })
-                    // }
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (functionShowSizeLimit(file)) {
+                          setFormData((prevState) => ({
+                            ...prevState,
+                            RelevantDocument: file,
+                          }));
+                        } else {
+                          e.target.value = null; // Clear the input value to prevent invalid file selection
+                        }
+                      }}
                     />
                     {formSubmitted && !formData.RelevantDocument && (
                       <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>
