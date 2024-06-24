@@ -118,6 +118,14 @@ router.get('/', async function (req, res) {
 //   }
 // });
 
+function formatDateFinal(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 const convertToCSVNew = (leads) => {
   if (leads.length === 0) return '';
 
@@ -281,6 +289,12 @@ router.post('/exportLeads', async (req, res) => {
 
     // Query to get the leads to be exported
     const leads = await CompanyModel.find(query).lean();
+    leads.forEach(lead => {
+      if (lead.AssignDate && lead["Company Incorporation Date  "]) {
+        lead.AssignDate = formatDateFinal(lead.AssignDate)
+        lead["Company Incorporation Date  "] = formatDateFinal(lead["Company Incorporation Date  "])
+      }
+    });
     console.log("leads" , leads)
     // Convert leads to CSV and send as response
     const csv = convertToCSV(leads);

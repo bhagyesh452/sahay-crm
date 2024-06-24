@@ -271,40 +271,52 @@ function EmployeeProfile() {
                       Holidays 
                     </div>
                   </div> 
-                  <div className="table-resposive dash-table e-profile-tab-data mt-3">
+                  <div className="table-resposive e-profile-tab-data mt-2">
                     <div className="d-flex justify-content-between aling-items-center">
-                      
+                      <div className="form-group">
+                        <div class="input-group">
+                          <span class="input-group-text" style={{fontSize: '12px'}}>
+                            Filter By Date
+                          </span>
+                          <input type="date" class="form-control form-control-sm" placeholder="Enter Your City"/>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <button className="btn btn-sm btn-primary">+ Leave Request</button>
+                      </div>
                     </div>
-                    <table className="table table-vcenter table-nowrap m-0">
-                      <thead>
-                        <tr class="tr-sticky">
-                          <th>Sr.No</th>
-                          <th>Date</th>
-                          <th>Reason</th>
-                          <th>Leave Type</th>
-                          <th>Paid/Unpaid</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                              1                          
-                          </td>
-                          <td>
-                            20 Jun 2023
-                          </td>
-                          <td>
-                            Out of City
-                          </td>
-                          <td>
-                              Full Day
-                          </td>
-                          <td>
-                              Unpaid
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="table-resposive emply-p-table">
+                      <table className="table table-nowrap mt-2">
+                        <thead>
+                          <tr class="tr-sticky">
+                            <th>Sr.No</th>
+                            <th>Date</th>
+                            <th>Reason</th>
+                            <th>Leave Type</th>
+                            <th>Paid/Unpaid</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>  
+                    </div>
                   </div>
                 </div>
               </div>
