@@ -54,18 +54,19 @@ function ShowNotification() {
       console.error("Error fetching Current Booking" , error.message);
     }
   }
-  useEffect(() => {
-    const socket = io("http://localhost:3001");
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3001");
   
 
-    socket.on("delete-booking-requested", () => {
-      fetchDataDelete(); // Same condition
-    });
+  //   socket.on("delete-booking-requested", () => {
+  //     console.log("One delete request came")
+  //     fetchDataDelete(); // Same condition
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
   useEffect(() => {
     fetchCompareBooking();
    setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
@@ -82,14 +83,7 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
-  const fetchDataDelete = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
-      setDeleteData(response.data.reverse()); // Assuming your data is returned as an array
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+
   const fetchEditRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
@@ -149,16 +143,16 @@ function ShowNotification() {
     fetchRequestDetails();
     fetchRequestGDetails();
     fetchApproveRequests();
-    fetchDataDelete();
+
     fetchEditRequests();
   }, []);
 
-  useEffect(()=>{
-    if(fetchBookingRequests){
-      fetchDataDelete();
-      setfetchBookingRequests(false);
-    }
-  },[fetchBookingRequests])
+  // useEffect(()=>{
+  //   if(fetchBookingRequests){
+  //     fetchDataDelete();
+  //     setfetchBookingRequests(false);
+  //   }
+  // },[fetchBookingRequests])
   const [expandedRow, setExpandedRow] = useState(null);
 
   const handleRowClick = (index) => {
@@ -316,7 +310,7 @@ function ShowNotification() {
                   time={company.time}
                 />
               ))} */}
-              {dataType === "deleteBookingRequests" && deleteData.length!==0 && <DeleteBookingComponent deletedData = {deleteData} setNowToFetch={setfetchBookingRequests}/>}
+              {dataType === "deleteBookingRequests" && <DeleteBookingComponent/>}
             {dataType === "editBookingRequests" &&
               editData.length !== 0 && !currentBooking && !compareBooking &&
               editData.map((company) => (
@@ -370,7 +364,7 @@ function ShowNotification() {
                 <Nodata />
               </span>
             )}
-            {deleteData.length === 0 &&
+            {/* {deleteData.length === 0 &&
               dataType === "deleteBookingRequests" && (
                 <span
                   style={{
@@ -381,7 +375,7 @@ function ShowNotification() {
                 >
                   <Nodata />
                 </span>
-              )}
+              )} */}
             {editData.length === 0 &&
               dataType === "editBookingRequests" && (
                 <span

@@ -13,10 +13,13 @@ import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import notification_audio from "../assets/media/notification_tone.mp3"
 // import "./styles/header.css"
 
 
 function Header({ name, designation}) {
+ 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   //console.log(name)
@@ -39,6 +42,16 @@ function Header({ name, designation}) {
       fetchRequestDetails();
     fetchRequestGDetails();
     });
+
+    socket.on("delete-booking-requested", (res) => {
+      enqueueSnackbar(`${res} sent a Booking Delete Request`, {
+        variant: 'info'
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
@@ -99,6 +112,9 @@ function Header({ name, designation}) {
     }
   };
 
+
+
+
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
@@ -127,6 +143,7 @@ function Header({ name, designation}) {
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
           <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+          
           <Avatar sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button
@@ -165,12 +182,14 @@ function Header({ name, designation}) {
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item"
-            >
-              
+            >             
             </div>
           </div>
         </div>
       </header>
+      <SnackbarProvider maxSnack={3}>
+   
+    </SnackbarProvider>
     </div>
   );
 }

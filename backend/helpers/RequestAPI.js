@@ -254,7 +254,7 @@ router.post("/deleterequestbybde", async (req, res) => {
 
     // Save the delete request to the database
     await deleteRequest.save();
-    socketIO.emit('delete-booking-requested');
+    socketIO.emit('delete-booking-requested' , ename);
     res.status(200).json({ message: "Delete request created successfully" });
   } catch (error) {
     console.error("Error creating delete request:", error);
@@ -283,13 +283,9 @@ router.get("/editRequestByBde", async (req, res) => {
 
 router.delete("/deleterequestbybde/:id", async (req, res) => {
   try {
-    const companyName = req.params.cname;
+    const _id = req.params.id;
     // Find document by company name and delete it
-    const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
-      { companyName, request: undefined },
-      { $set: { request: true } },
-      { new: true }
-    );
+    const updatedCompany = await RequestDeleteByBDE.findByIdAndDelete(_id);
     if (!updatedCompany) {
       return res.status(404).json({ error: "Company not found" });
     }

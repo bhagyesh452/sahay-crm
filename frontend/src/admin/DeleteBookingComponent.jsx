@@ -6,14 +6,28 @@ import { RxAvatar } from "react-icons/rx";
 import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import Swal from "sweetalert2";
 import axios from "axios";
+import io from "socket.io-client";
 
 
-function DeleteBookingComponent({ deletedData , setNowToFetch }) {
+function DeleteBookingComponent() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const [deletedData , setDeletedData] = useState([]);
   const [filterBy, setFilterBy] = useState("Pending");
   const [searchText, setSearchText] = useState("");
   const [data , setData] = useState(deletedData.filter((obj)=>obj.request === false));
   const [totalData , setTotalData] = useState(deletedData.filter((obj)=>obj.request === false));
+  const fetchDataDelete = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
+      const tempData = response.data.reverse();
+      setDeletedData(tempData); // Assuming your data is returned as an array
+      setData(filterBy === "Pending" ? tempData.filter(obj=>obj.request === false): tempData.filter(obj=>obj.request === true));
+      setTotalData(filterBy === "Pending" ? tempData.filter(obj=>obj.request === false): tempData.filter(obj=>obj.request === true));
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   
   
   function formatDate(timestamp) {
@@ -23,6 +37,29 @@ function DeleteBookingComponent({ deletedData , setNowToFetch }) {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   }
+
+
+  // ------------------------------------------   Fetching Functions --------------------------------------------------
+
+
+
+  useEffect(() => {
+    fetchDataDelete()
+  }, [])
+    useEffect(() => {
+    const socket = io("http://localhost:3001");
+  
+
+    socket.on("delete-booking-requested", () => {
+      console.log("One delete request came")
+      fetchDataDelete(); // Same condition
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+  
 
   useEffect(() => {
    setData(filterBy === "Pending" ? deletedData.filter(obj=>obj.request === false): deletedData.filter(obj=>obj.request === true));
@@ -54,24 +91,27 @@ function DeleteBookingComponent({ deletedData , setNowToFetch }) {
         title: "Booking Deleted Successfully",
         icon: "success",
       });
-      setNowToFetch(true);
+      fetchDataDelete();
+    
     } catch (error) {
       Swal.fire({
         title: "Error Deleting the booking!",
         icon: "error",
       });
       console.error("Error deleting booking:", error);
+      fetchDataDelete();
       // Optionally, you can show an error message to the user
     }
   };
 
-  const handleDeleteRequest = async (companyName) => {
+  const handleDeleteRequest = async (Id) => {
     try {
       const response = await axios.delete(
-        `${secretKey}/requests/deleterequestbybde/${companyName}`
+        `${secretKey}/requests/deleterequestbybde/${Id}`
       );
       console.log("Deleted company:", response.data);
-      Swal.fire({ title: "Success", icon: "success" });
+      Swal.fire({ title: "Request Rejected", icon: "success" });
+      fetchDataDelete();
 
       // Handle success or update state as needed
     } catch (error) {
@@ -121,7 +161,7 @@ function DeleteBookingComponent({ deletedData , setNowToFetch }) {
               </tr>
             </thead>
             <tbody>
-              {data.map((obj, index) => (
+              {data.length!==0 && data.map((obj, index) => (
                 <tr>
                   <td>{index + 1}</td>
                   <td className="text-muted">
@@ -160,7 +200,7 @@ function DeleteBookingComponent({ deletedData , setNowToFetch }) {
                       <div className="Notification_acceptbtn"  onClick={()=>handleDelete(obj.companyID , obj.bookingIndex )}>
                         <TiTick />
                       </div>
-                      <div className="Notification_rejectbtn"  onClick={()=>handleDeleteRequest(obj.companyName)}>
+                      <div className="Notification_rejectbtn"  onClick={()=>handleDeleteRequest(obj._id)}>
                         <ImCross />
                       </div>
                     </div>}
