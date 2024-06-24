@@ -245,8 +245,6 @@ function TestLeads() {
     }, [dataStatus]);
     
     
-    
-
     //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
