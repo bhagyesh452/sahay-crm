@@ -503,8 +503,8 @@ th {
 
 span.input-group-text {
   padding: 0px 9px !important;
-  border: 1px solid #ffb900;
-  background: #ffb900 !important;
+  /* border: 1px solid #ffb900;
+  background: #ffb900 !important; */
   color: #000 !important;
 }
 
@@ -2327,42 +2327,19 @@ td input {
 {
   min-height: 330px;
 }
-.dash-table table
-{
-  border: none !important;
-  border-collapse: collapse;
-  border-radius: 15px;
-  border-spacing: 0;
-  padding: 0;
-  width: 100%;
-}
-.dash-table table thead tr th
-{
-  background: #f2f2f2 !important;
-}
-.dash-table table tbody tr td
-{
-  padding: 6px 0 !important;
-}
-.dash-table
-{
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid #eee;
-  min-height: 240px;
-}
-.dash-table table thead tr th:first-child
-{
-  border-radius: 18px 0 0 0;
-}
-.dash-table table thead tr th:last-child
-{
-  border-radius: 0 18px 0 0;
-}
 .e-profile-tab-data
 {
-  padding: 15px;
+  padding: 6px 3px 6px 3px;
 }
+.e-profile-tab-data .form-control-sm
+{
+  padding: 4px 10px !important;
+}
+.e-profile-tab-data .btn-sm
+{
+  padding: 4px 10px !important;
+}
+
 
 
 
