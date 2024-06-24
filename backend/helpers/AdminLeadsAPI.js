@@ -289,15 +289,15 @@ router.post('/exportLeads', async (req, res) => {
 
     // Query to get the leads to be exported
     const leads = await CompanyModel.find(query).lean();
-    leads.forEach(lead => {
+    const tempLeads = leads.forEach(lead => {
       if (lead.AssignDate && lead["Company Incorporation Date  "]) {
         lead.AssignDate = formatDateFinal(lead.AssignDate)
         lead["Company Incorporation Date  "] = formatDateFinal(lead["Company Incorporation Date  "])
       }
     });
-    console.log("leads" , leads)
+    console.log("leads" , tempLeads)
     // Convert leads to CSV and send as response
-    const csv = convertToCSV(leads);
+    const csv = convertToCSV(tempLeads);
     console.log("csv" , csv)
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=${dataStatus === 'Assigned' ? 'AssignedLeads_Admin.csv' : 'UnAssignedLeads_Admin.csv'}`);

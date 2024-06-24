@@ -4436,6 +4436,7 @@ router.delete(
               },
             }
           );
+
         } else {
           return res.status(404).send("Booking not found");
         }

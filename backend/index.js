@@ -86,7 +86,10 @@ app.use(
 );
 app.use("/api/admin-leads", AdminLeadsAPI);
 app.use("/api/remarks", RemarksAPI);
-app.use("/api/bookings", bookingsAPI)
+app.use('/api/bookings', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, bookingsAPI);
 app.use('/api/company-data', companyAPI)
 app.use('/api/requests', (req, res, next) => {
   req.io = socketIO;
