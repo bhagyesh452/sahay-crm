@@ -9,6 +9,15 @@ const TeamLeadsModel = require('../models/TeamLeads.js');
 const FollowUpModel = require("../models/FollowUp");
 const { Parser } = require('json2csv');
 
+
+function formatDateFinal(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 const convertToCSV = (json) => {
   try {
     const parser = new Parser();
@@ -149,7 +158,7 @@ const convertToCSVNew = (leads) => {
 
 router.post('/exportEmployeeLeads', async (req, res) => {
   const { selectedRows } = req.body;
-  
+
 
   try {
     const leads = await CompanyModel.find({
@@ -161,7 +170,7 @@ router.post('/exportEmployeeLeads', async (req, res) => {
 
     // Convert leads to CSV and send as response
     const csv = convertToCSVNew(cleanedLeads);
-    
+
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="AssginedLeads_Employee.csv"`);
     res.status(200).send(csv);
@@ -174,7 +183,7 @@ router.post('/exportEmployeeLeads', async (req, res) => {
 
 router.post('/exportEmployeeTeamLeads', async (req, res) => {
   const { selectedRows } = req.body;
-  
+
 
   try {
     const leads = await TeamLeadsModel.find({
@@ -247,13 +256,13 @@ router.post('/exportLeads', async (req, res) => {
       if (selectedYear) {
         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-        query["Company Incorporation Date"] = {
+        query["Company Incorporation Date  "] = {
           $gte: yearStartDate,
           $lt: yearEndDate
         };
       }
       if (selectedCompanyIncoDate) {
-        query["Company Incorporation Date"] = {
+        query["Company Incorporation Date  "] = {
           $gte: new Date(selectedCompanyIncoDate).toISOString(),
           $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
         };
@@ -289,18 +298,21 @@ router.post('/exportLeads', async (req, res) => {
 
     // Query to get the leads to be exported
     const leads = await CompanyModel.find(query).lean();
-    leads.forEach(lead => {
+    const tempLeads = leads.map(lead => {
       if (lead.AssignDate && lead["Company Incorporation Date  "]) {
-        lead.AssignDate = formatDateFinal(lead.AssignDate)
-        lead["Company Incorporation Date  "] = formatDateFinal(lead["Company Incorporation Date  "])
+        lead.AssignDate = formatDateFinal(lead.AssignDate);
+        lead["Company Incorporation Date  "] = formatDateFinal(lead["Company Incorporation Date  "]);
       }
+      return lead;
     });
-    console.log("leads" , leads)
-    const csv = convertToCSV(leads);
+
+    console.log("leads", tempLeads);
+
+    // Convert leads to CSV and send as response
+    const csv = convertToCSV(tempLeads);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=${dataStatus === 'Assigned' ? 'AssignedLeads_Admin.csv' : 'UnAssignedLeads_Admin.csv'}`);
     res.status(200).send(csv);
-
   } catch (error) {
     console.error('Error exporting leads:', error);
     res.status(500).json({ error: 'Internal server error' });
