@@ -11,6 +11,8 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { LiaDigitalTachographSolid } from "react-icons/lia";
 import { VscGraph } from "react-icons/vsc";
 import { GrDocumentStore } from "react-icons/gr";
+import { FaList } from "react-icons/fa6";
+import { FaTableCellsLarge } from "react-icons/fa6";
 
 function RmCertificationNavbar({ rmCertificationUserId }) {
   const location = useLocation();
@@ -108,6 +110,21 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
 
                   </li>
                 )} */}
+                <li
+                  className={
+                    location.pathname === `/rmofcertification/rmofcertification-bookings` ? "nav-item active" : "nav-item"
+                  }
+                  onClick={handleClickMyBookings}
+                >
+
+                  <a className="nav-link" href="#">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <BiBookContent style={{ height: "24px", width: "19px" }} />
+                    </span>
+                    <span className="nav-link-title">Bookings</span>
+                  </a>
+
+                </li>
                 <li
                   className={
                     location.pathname === `/rmofcertification/rmofcertification-bookings` ? "nav-item active" : "nav-item"

@@ -31,6 +31,16 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import { FaList } from "react-icons/fa6";
+import { FaTableCellsLarge } from "react-icons/fa6";
+import { MdOutlineSwapHoriz } from "react-icons/md";
+import { MdOutlineAddCircle } from "react-icons/md";
+import OutlinedInput from '@mui/material/OutlinedInput'
+//import MenuItem from '@mui/material/MenuItem';
+//import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+//import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -51,10 +61,12 @@ function RmofCertificationBookings() {
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
+  const [mainDataSwap, setMainDataSwap] = useState([])
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
+
   const fetchDatadebounce = async () => {
     try {
       // Set isLoading to true while fetching data
@@ -88,7 +100,7 @@ function RmofCertificationBookings() {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   console.log(rmCertificationUserId)
 
-const [employeeData, setEmployeeData] = useState([])
+  const [employeeData, setEmployeeData] = useState([])
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -126,7 +138,8 @@ const [employeeData, setEmployeeData] = useState([])
         return dateB - dateA; // Sort in descending order
       });
       setInfiniteBooking(sortedData);
-      setLeadFormData(sortedData); // Set both states with the sorted data
+      setLeadFormData(sortedData);
+      setMainDataSwap(sortedData)// Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -517,13 +530,78 @@ const [employeeData, setEmployeeData] = useState([])
     }
   };
 
-  console.log(leadFormData)
+  //-------------- swap services function ----------
+  const [openServicesPopup, setOpenServicesPopup] = useState(false)
+  const [selectServices, setSelectServices] = useState([]);
+  const [serviceNames, setServiceNames] = useState([])
+  const [selectedServices, setSelectedServices] = useState([]);
+
+  const handleCloseServicesPopup = () => {
+    setOpenServicesPopup(false)
+    setSelectedServices([])
+  }
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const names = [
+    'Oliver Hansen',
+    'Van Henry',
+    'April Tucker',
+    'Ralph Hubbard',
+    'Omar Alexander',
+    'Carlos Abbott',
+    'Miriam Wagner',
+    'Bradley Wilkerson',
+    'Virginia Andrews',
+    'Kelly Snyder',
+  ];
+
+  const handleChange = (event) => {
+    setSelectServices(
+      // On autofill we get a stringified value.
+      typeof event === 'string' ? event.split(',') : event,
+    );
+  };
+
+  const handleOpenServices = (companyName) => {
+    // Filter the mainDataSwap array to get the companies that match the provided companyName
+    const selectedServices = mainDataSwap
+      .filter((company) => company["Company Name"] === companyName)
+      .flatMap((company) => company.services); // Flatten the array of services
+
+    // Map through the selected services to get the service names
+    const servicesNames = selectedServices.map((service) => service.serviceName);
+
+    // Log the selected services and service names
+    setServiceNames(servicesNames)
+  };
+  const handleCheckboxChange = (service) => {
+    setSelectedServices(prevSelected =>
+      prevSelected.includes(service)
+        ? prevSelected.filter(s => s !== service)
+        : [...prevSelected, service]
+    );
+  };
+
+  console.log("selected", selectedServices)
+  console.log("leadFormData", leadFormData)
+  console.log("services", leadFormData.map((service) => service.services))
+
 
   return (
     <div>
       <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
-      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId}/>
-    
+      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
+
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
@@ -663,17 +741,28 @@ const [employeeData, setEmployeeData] = useState([])
                               <div className="b_cmpny_name cName-text-wrap">
                                 {obj["Company Name"]}
                               </div>
-                              <div className="b_cmpny_time">
-                                {
-                                  formatDatePro(
-                                    obj.moreBookings &&
-                                      obj.moreBookings.length !== 0
-                                      ? obj.moreBookings[
-                                        obj.moreBookings.length - 1
-                                      ].bookingDate // Get the latest bookingDate from moreBookings
-                                      : obj.bookingDate
-                                  ) // Use obj.bookingDate if moreBookings is empty or not present
-                                }
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div className="b_Services_multipal_services mr-1"
+                                  title="Swap Services">
+                                  <MdOutlineSwapHoriz onClick={() => (
+                                    setOpenServicesPopup(true),
+                                    handleOpenServices(obj["Company Name"])
+
+                                  )
+                                  } />
+                                </div>
+                                <div className="b_cmpny_time">
+                                  {
+                                    formatDatePro(
+                                      obj.moreBookings &&
+                                        obj.moreBookings.length !== 0
+                                        ? obj.moreBookings[
+                                          obj.moreBookings.length - 1
+                                        ].bookingDate // Get the latest bookingDate from moreBookings
+                                        : obj.bookingDate
+                                    ) // Use obj.bookingDate if moreBookings is empty or not present
+                                  }
+                                </div>
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
@@ -718,10 +807,10 @@ const [employeeData, setEmployeeData] = useState([])
                                     ))}
                               </div>
                               <div className="d-flex align-items-center justify-content-between">
-                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
-                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
-                                  <img src={RemainingAmnt}></img>
-                                </div>}
+                                {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
+                                  <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                    <img src={RemainingAmnt}></img>
+                                  </div>}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
@@ -978,7 +1067,7 @@ const [employeeData, setEmployeeData] = useState([])
                               onClick={() =>
                                 handleDeleteBooking(currentLeadform.company)
                               }
-                              //className="Services_Preview_action_delete"
+                            //className="Services_Preview_action_delete"
                             >
                               {/* <MdDelete /> */}
                             </div>
@@ -1208,36 +1297,36 @@ const [employeeData, setEmployeeData] = useState([])
                                     </div>
                                   </div>
                                 </div>
-                          {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-6 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expense
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
-                                            </div>
-                                          </div>
+                                {(obj.expanse !== 0 && obj.expanse) && <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expense
                                         </div>
                                       </div>
-                                      <div className="col-lg-6 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses Date
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
-                                            </div>
-                                          </div>
+                                      <div class="col-sm-8 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
-                                    </div>}
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expanses Date
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>}
                                 <div className="row m-0 bdr-btm-eee">
                                   {obj.paymentTerms === "two-part" && (
                                     <div className="col-lg-6 col-sm-6 p-0">
@@ -1487,7 +1576,7 @@ const [employeeData, setEmployeeData] = useState([])
                                                             {formatDatePro(
                                                               paymentObj.paymentDate
                                                             )}
-                                                          </div>  
+                                                          </div>
                                                         </div>
                                                       </div>
                                                     </div>
@@ -2324,7 +2413,7 @@ const [employeeData, setEmployeeData] = useState([])
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
+                                              {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
                                             </div>
                                           </div>
                                         </div>
@@ -2511,12 +2600,12 @@ const [employeeData, setEmployeeData] = useState([])
                                                                   // Add more conditions as needed
                                                                   return ""; // Return default value if none of the conditions match
                                                                 })()}
-                                                              Remaining Payment 
+                                                              Remaining Payment
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
                                                                 {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
-                                                                
+
                                                               </div>
 
                                                               {/* {
@@ -3051,6 +3140,173 @@ const [employeeData, setEmployeeData] = useState([])
           />
         </>
       )}
+
+      {/* -----------------------------------------------dialog box for adding teams ------------------------------------------------------ */}
+
+
+      <Dialog open={openServicesPopup} onClose={handleCloseServicesPopup} fullWidth maxWidth="s">
+        <DialogTitle>
+          Select Services To Swap
+          <IconButton onClick={handleCloseServicesPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  {serviceNames.length !== 0 && serviceNames.map((service, index) => (
+                    <div key={index}>
+                      <input
+                        className="mr-1"
+                        type="checkbox"
+                        id={`service-${index}`}
+                        name={service}
+                        value={service}
+                        //checked={serviceNames.includes(service)}
+                        onChange={() => handleCheckboxChange(service)}
+                      />
+                      <label htmlFor={`service-${index}`}>{service}</label>
+                    </div>
+                  ))}
+                  {/* <FormControl  sx={{ ml: 1, minWidth: 200 }}>
+                  <InputLabel id="demo-select-small-label">Select Service</InputLabel>
+                    <Select
+                    className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={selectServices ? selectServices : "Select Services"}
+                      onChange={(e)=>handleChange(e.target.value)}
+                      input={<OutlinedInput label="Tag" />}
+                      renderValue={(selected) => selected.join(', ')}
+                      MenuProps={MenuProps}
+                    >
+                      {serviceNames.map((name) => (
+                        <MenuItem key={name} value={name}>
+                          <Checkbox checked={selectServices.indexOf(name) > -1} />
+                          <ListItemText primary={name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl> */}
+                  {/* <label className="form-label">Select Services</label>
+                                    <div className="form-control">
+                                        <select
+                                            style={{
+                                                border: "none",
+                                                outline: "none",
+                                                width: "100%",
+                                            }}
+                                            value={designation}
+                                            required
+                                            onChange={(e) => {
+                                                setDesignation(e.target.value);
+                                            }}
+                                            >
+                                            <option value="" disabled selected>
+                                                Select Services
+                                            </option>
+                                            {
+                                                employeeData && Array.isArray(employeeData) && employeeData
+                                                    .filter((employee) => employee.designation === "Sales Manager")
+                                                    .map((employee) => (
+                                                        <option key={employee._id} value={employee.ename}>{employee.ename}</option>
+                                                    ))
+                                            }
+                                        </select>
+                                    </div> */}
+                </div>
+                {/* {bdmNameSelected && (
+                                    <div key={0} className="mb-3">
+                                        <div className="d-flex align-items-center justify-content-between">
+                                            <label className="form-label">BDE Selection</label>
+                                            {
+                                                bdeFields.length > 1 && (
+                                                    <IconButton>
+                                                        <MdDelete
+                                                            color="#bf2020"
+                                                            style={{ width: "14px", height: "14px" }}
+                                                            onClick={() => handleRemoveBdeField(0)}
+                                                        />
+                                                    </IconButton>
+
+                                                )
+                                            }
+                                        </div>
+                                        <div className="form-control">
+                                            <select
+                                                style={{
+                                                    border: "none",
+                                                    outline: "none",
+                                                    width: "100%",
+                                                }}
+                                                value={selectedBdes.length > 0 ? selectedBdes[0] : ""}
+                                                onChange={(event) => handleBdeSelect(0, event.target.value)}
+                                                required
+                                            >
+                                                <option value="" disabled>Select BDE Name</option>
+                                                {employeeData
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice) 
+                                                    .map(employee => (
+                                                        <option key={employee._id} value={employee.ename} disabled={allEnames.includes(employee.ename)} >
+                                                            {employee.ename}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                )} */}
+                {/* {bdeFields.slice(1).map((bdeField, index) => (
+                                    <div key={index + 1} className="mb-3">
+                                        <div className="d-flex align-items-center justify-content-between">
+                                            <label className="form-label">BDE Selection</label>
+                                            <IconButton>
+                                                <MdDelete
+                                                    color="#bf2020"
+                                                    style={{ width: "14px", height: "14px" }}
+                                                    onClick={() => handleRemoveBdeField(index + 1)}
+                                                />
+                                            </IconButton>
+                                        </div>
+                                        <div className="form-control">
+                                            <select
+                                                style={{
+                                                    border: "none",
+                                                    outline: "none",
+                                                    width: "100%",
+                                                }}
+                                                value={selectedBdes[index + 1] || ''}
+                                                onChange={(event) => handleBdeSelect(index + 1, event.target.value)}
+                                                required
+                                            >
+                                                <option value="" disabled>Select BDE Name</option>
+                                                {employeeData
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
+                                                    .map(employee => (
+                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename) || allEnames.includes(employee.ename)}>
+                                                            {employee.ename}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                ))} */}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <Button variant="contained" style={{ backgroundColor: "#fbb900" }}>
+          Submit
+        </Button>
+      </Dialog>
+
+
+
+
+
+
     </div>
   );
 }

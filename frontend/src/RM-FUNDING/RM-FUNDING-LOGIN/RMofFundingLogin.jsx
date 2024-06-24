@@ -62,7 +62,7 @@ try{
        if(error.response.data.message === "Invalid email or password"){
         setErrorMessage("Invalid Credentials");
        }else if(error.response.data.message === "Designation id incorrect"){
-        setErrorMessage("Only Authorized for Sales Manager or BDM !")
+        setErrorMessage("Only Authorized for RM-FUNDING!")
        }else{
         setErrorMessage("Unknown Error Occured")
        }
