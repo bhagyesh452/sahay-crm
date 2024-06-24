@@ -1666,7 +1666,7 @@ app.post("/api/users",
                   padding: 5px 10px;
                 "
               >
-                Director AdharCard Number
+                Director AadhaarCard Number
               </div>
             </div>
             <div style="width: 75%">
@@ -2404,24 +2404,6 @@ app.post("/api/hrlogin", async (req, res) => {
     //socketIO.emit("Employee-login");
   }
 });
-
-
-// app.get("/api/hrlogin", async (req, res) => {
-//   try {
-//     const employeeData = await adminModel.find();
-//     res.json(employeeData);
-//   } catch (error) {
-//     console.error("Error fetching data:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
-
-
-
-
-
 
 
 

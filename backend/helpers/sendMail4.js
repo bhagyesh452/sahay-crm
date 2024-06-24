@@ -138,7 +138,7 @@ const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachment
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
       to: recipients.join(", "),
       cc: ccEmail,
-      replyTo: "nisargpatel@startupsahay.com",
+      replyTo: "nimesh@incscale.in",
       subject:subject1,
       text:text1,
       html:html1,

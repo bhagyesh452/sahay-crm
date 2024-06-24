@@ -866,7 +866,7 @@ const BasicForm = () => {
           <div className="col-lg-4">
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`DirectorAdharCard${index}`}>
-                Director's Adhar Card <span style={{ color: "red" }}>*</span>
+                Director's Aadhaar Card <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 required
@@ -900,7 +900,7 @@ const BasicForm = () => {
           <div className="col-lg-4">
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`DirectorAdharCardNumber${index}`}>
-                Director's Adharcard Number
+                Director's Aadhaar Number
                 <span style={{ color: "red" }}>*</span>
               </label>
               <input
