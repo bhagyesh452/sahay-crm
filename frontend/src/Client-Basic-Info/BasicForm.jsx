@@ -326,44 +326,48 @@ const BasicForm = () => {
     if (!formData.BusinessModel) {
       newErrors.BusinessModel = "Please Select Business Model";
     }
-    if (!formData.DirectorDetails[0].IsMainDirector) {
+    if (!formData.DirectorDetails.some((obj) => obj.IsMainDirector === true)) {
       newErrors.IsMainDirector = "Please Select Authorised person";
     }
-    if (!formData.DirectorDetails[0].DirectorName) {
-      newErrors.DirectorName = "Enter Director Name";
-    }
-    if (!formData.DirectorDetails[0].DirectorEmail) {
-      newErrors.DirectorEmail = "Enter Director Email Id";
-    }
-    if (!formData.DirectorDetails[0].DirectorMobileNo) {
-      newErrors.DirectorMobileNo = "Mobile No is required";
-    }
-    if (!formData.DirectorDetails[0].DirectorQualification) {
-      newErrors.DirectorQualification = "Enter Director Qualification";
-    }
-    if (!formData.DirectorDetails[0].DirectorWorkExperience) {
-      newErrors.DirectorWorkExperience = "Enter Director Work Experience";
-    }
-    if (!formData.DirectorDetails[0].DirectorAnnualIncome) {
-      newErrors.DirectorAnnualIncome = "Enter Director Annual Income";
-    }
-    // if (!formData.DirectorDetails[0].DirectorPassportPhoto) {
-    //   newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
-    // }
-    if (!formData.DirectorDetails[0].DirectorAdharCard) {
-      newErrors.DirectorAdharCard = "Upload your Adhar Card";
-    }
-    if (!formData.DirectorDetails[0].DirectorDesignation) {
-      newErrors.DirectorDesignation = "Enter Director Designation";
-    }
-    if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
-      newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
-    } else if (!isValidAadhaarNumber(formData.DirectorDetails[0].DirectorAdharCardNumber)) {
-      newErrors.DirectorAdharCardNumber = "Please enter a valid 12-digit Aadhaar Card Number";
-    }
-    if (!formData.DirectorDetails[0].DirectorGender) {
-      newErrors.DirectorGender = "Select Director Gender";
-    }
+    formData.DirectorDetails.forEach((director, index) => {
+      if (!director.DirectorName) {
+        newErrors[`DirectorName${index}`] = `Enter Director Name for Director ${index + 1}`;
+      }
+      if (!director.DirectorEmail) {
+        newErrors[`DirectorEmail${index}`] = `Enter Director Email Id for Director ${index + 1}`;
+      } else if (!isValidEmail(director.DirectorEmail)) {
+        newErrors[`DirectorEmail${index}`] = `Please enter a valid email for Director ${index + 1}`;
+      }
+      if (!director.DirectorMobileNo) {
+        newErrors[`DirectorMobileNo${index}`] = `Enter Director Mobile No for Director ${index + 1}`;
+      }
+      if (!director.DirectorQualification) {
+        newErrors[`DirectorQualification${index}`] = `Enter Director Qualification for Director ${index + 1}`;
+      }
+      if (!director.DirectorWorkExperience) {
+        newErrors[`DirectorWorkExperience${index}`] = `Enter Director Work Experience for Director ${index + 1}`;
+      }
+      if (!director.DirectorAnnualIncome) {
+        newErrors[`DirectorAnnualIncome${index}`] = `Enter Director Annual Income for Director ${index + 1}`;
+      }
+      // if (!director.DirectorPassportPhoto) {
+      //   newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
+      // }
+      if (!director.DirectorAdharCard) {
+        newErrors[`DirectorAdharCard${index}`] = `Upload your Adhar Card for Director ${index + 1}`;
+      }
+      if (!director.DirectorDesignation) {
+        newErrors[`DirectorDesignation${index}`] = `Enter Director Designation for Director ${index + 1}`;
+      }
+      if (!director.DirectorAdharCardNumber) {
+        newErrors[`DirectorAdharCardNumber${index}`] = `Enter Director Adhar Card Number for Director ${index + 1}`;
+      } else if (!isValidAadhaarNumber(director.DirectorAdharCardNumber)) {
+        newErrors[`DirectorAdharCardNumber${index}`] = `Please enter a valid 12-digit Aadhaar Card Number for Director ${index + 1}`;
+      }
+      if (!director.DirectorGender) {
+        newErrors[`DirectorGender${index}`] = `Select Director Gender for Director ${index + 1}`;
+      }
+    });
 
     setErrors(newErrors);
 
@@ -622,7 +626,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorName && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorName && (
                 <div style={{ color: "red" }}>Enter Director Name</div>
               )}
               {/* {formSubmitted && !formData.DirectorName && (
@@ -657,7 +661,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorEmail && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
               {/* {formSubmitted &&
@@ -698,7 +702,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorMobileNo && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
               {/* {formSubmitted &&
@@ -739,7 +743,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorQualification && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorQualification && (
                 <div style={{ color: "red" }}>Enter Director Qualification</div>
               )}
               {/* {formSubmitted && !formData[`DirectorQualification${index}`] && (
@@ -775,7 +779,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorWorkExperience && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorWorkExperience && (
                 <div style={{ color: "red" }}>Enter Director Work Experience</div>
               )}
               {/* {formSubmitted && !formData[`DirectorWorkExperience${index}`] && (
@@ -885,7 +889,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCard && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCard && (
                 <div style={{ color: "red" }}>Upload Director AdharCard</div>
               )}
               {/* {formSubmitted && !formData[`DirectorAdharCard${index}`] && (
@@ -920,7 +924,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCardNumber && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCardNumber && (
                 <div style={{ color: "red" }}>Enter Director AdharCard Number</div>
               )}
               {formSubmitted &&
@@ -960,7 +964,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorDesignation && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorDesignation && (
                 <div style={{ color: "red" }}>Enter Director Designation</div>
               )}
               {/* {formSubmitted && !formData[`DirectorDesignation${index}`] && (
@@ -1018,7 +1022,7 @@ const BasicForm = () => {
                   <span className="form-check-label">Female</span>
                 </label>
               </div>
-              {formSubmitted && !formData.DirectorDetails[0].DirectorGender && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
                 <div style={{ color: "red" }}>Select the Director Gender</div>
               )}
 
