@@ -1,4 +1,4 @@
-import React , { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdDateRange } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
@@ -7,33 +7,34 @@ import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
+import Nodata from "../components/Nodata";
 
 
 function DeleteBookingComponent() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [deletedData , setDeletedData] = useState([]);
+  const [deletedData, setDeletedData] = useState([]);
   const [filterBy, setFilterBy] = useState("Pending");
   const [searchText, setSearchText] = useState("");
-  const [data , setData] = useState(deletedData.filter((obj)=>obj.request === false));
-  const [totalData , setTotalData] = useState(deletedData.filter((obj)=>obj.request === false));
+  const [data, setData] = useState(deletedData.filter((obj) => obj.request === false));
+  const [totalData, setTotalData] = useState(deletedData.filter((obj) => obj.request === false));
   const fetchDataDelete = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
       const tempData = response.data.reverse();
       setDeletedData(tempData); // Assuming your data is returned as an array
-      setData(filterBy === "Pending" ? tempData.filter(obj=>obj.request === false): tempData.filter(obj=>obj.request === true));
-      setTotalData(filterBy === "Pending" ? tempData.filter(obj=>obj.request === false): tempData.filter(obj=>obj.request === true));
+      setData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
+      setTotalData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
-  
+
+
   function formatDate(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); 
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   }
@@ -46,9 +47,9 @@ function DeleteBookingComponent() {
   useEffect(() => {
     fetchDataDelete()
   }, [])
-    useEffect(() => {
+  useEffect(() => {
     const socket = io("http://localhost:3001");
-  
+
 
     socket.on("delete-booking-requested", () => {
       console.log("One delete request came")
@@ -59,21 +60,21 @@ function DeleteBookingComponent() {
       socket.disconnect();
     };
   }, []);
-  
+
 
   useEffect(() => {
-   setData(filterBy === "Pending" ? deletedData.filter(obj=>obj.request === false): deletedData.filter(obj=>obj.request === true));
-   setTotalData(filterBy === "Pending" ? deletedData.filter(obj=>obj.request === false): deletedData.filter(obj=>obj.request === true));
+    setData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
+    setTotalData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
   }, [filterBy])
 
-  useEffect(()=>{
-   if(searchText!==""){
-    setData(totalData.filter(obj=>obj.ename.toLowerCase().includes(searchText.toLowerCase())));
-   }else {
-    setData(totalData)
-   }
-  } , [searchText])
-  
+  useEffect(() => {
+    if (searchText !== "") {
+      setData(totalData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
+    } else {
+      setData(totalData)
+    }
+  }, [searchText])
+
   const handleDelete = async (Id, bookingIndex) => {
     // Assuming you have an API endpoint for deleting a company
     try {
@@ -86,13 +87,13 @@ function DeleteBookingComponent() {
           },
         }
       );
-     
+
       Swal.fire({
         title: "Booking Deleted Successfully",
         icon: "success",
       });
       fetchDataDelete();
-    
+
     } catch (error) {
       Swal.fire({
         title: "Error Deleting the booking!",
@@ -131,7 +132,7 @@ function DeleteBookingComponent() {
               <label htmlFor="search_bde ">BDE : </label>
             </div>
             <div className='Notification_filter'>
-              <input type="text" name="search_bde" id="search_bde" value={searchText} onChange={(e)=>setSearchText(e.target.value)} className='form-control col-sm-8' placeholder='Please Enter BDE name' />
+              <input type="text" name="search_bde" id="search_bde" value={searchText} onChange={(e) => setSearchText(e.target.value)} className='form-control col-sm-8' placeholder='Please Enter BDE name' />
             </div>
           </div>
           <div className="filter-by-date d-flex align-items-center">
@@ -139,7 +140,7 @@ function DeleteBookingComponent() {
               <label htmlFor="search_bde "> Filter By : </label>
             </div>
             <div className='Notification_filter'>
-              <select value={filterBy} onChange={(e)=>setFilterBy(e.target.value)} style={{ border: "1px solid #ffc8c8 " }} name="filter_requests" id="filter_requests" className="form-select">
+              <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)} style={{ border: "1px solid #ffc8c8 " }} name="filter_requests" id="filter_requests" className="form-select">
                 <option value="Pending" selected>Pending</option>
                 <option value="Completed" >Completed</option>
               </select>
@@ -161,7 +162,7 @@ function DeleteBookingComponent() {
               </tr>
             </thead>
             <tbody>
-              {data.length!==0 && data.map((obj, index) => (
+              {data.length !== 0 ? data.map((obj, index) => (
                 <tr>
                   <td>{index + 1}</td>
                   <td className="text-muted">
@@ -177,7 +178,7 @@ function DeleteBookingComponent() {
 
                           {obj.ename}
                         </b>
-                       
+
                       </div>
                     </div>
 
@@ -196,22 +197,36 @@ function DeleteBookingComponent() {
 
                   </td>
                   <td>
-                   {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
-                      <div className="Notification_acceptbtn"  onClick={()=>handleDelete(obj.companyID , obj.bookingIndex )}>
+                    {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
+                      <div className="Notification_acceptbtn" onClick={() => handleDelete(obj.companyID, obj.bookingIndex)}>
                         <TiTick />
                       </div>
-                      <div className="Notification_rejectbtn"  onClick={()=>handleDeleteRequest(obj._id)}>
+                      <div className="Notification_rejectbtn" onClick={() => handleDeleteRequest(obj._id)}>
                         <ImCross />
                       </div>
                     </div>}
-                   {filterBy === "Completed" && <div className='d-flex align-items-center justify-content-center'>
+                    {filterBy === "Completed" && <div className='d-flex align-items-center justify-content-center'>
                       <div className="Notification_completedbtn">
-                      <IoCheckmarkDoneCircle/>
+                        <IoCheckmarkDoneCircle />
                       </div>
                     </div>}
                   </td>
                 </tr>
-              ))}
+              )) : <tr>
+                <td colSpan={5}>
+                  <span
+                    style={{
+                      textAlign: "center",
+                      fontSize: "25px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Nodata />
+                  </span>
+                </td>
+
+
+              </tr>}
 
 
             </tbody>
