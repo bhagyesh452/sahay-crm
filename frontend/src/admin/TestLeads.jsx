@@ -245,8 +245,6 @@ function TestLeads() {
     }, [dataStatus]);
     
     
-    
-
     //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
@@ -925,6 +923,7 @@ function TestLeads() {
         try {
             let response;
             if (id === "all") {
+                setOpenBacdrop(true)
                 response = await axios.get(`${secretKey}/admin-leads/getIds`, {
                     params: {
                         dataStatus,
@@ -952,7 +951,6 @@ function TestLeads() {
                 });
                 return;
             }
-    
             // Process response
             const { data } = response;
             // Handle response data as needed
@@ -963,6 +961,8 @@ function TestLeads() {
         } catch (error) {
             // Handle errors
             console.error('Error:', error);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
     
@@ -1046,7 +1046,7 @@ function TestLeads() {
 
     const exportData = async () => {
         try {
-            
+            setOpenBacdrop(true)
             const response = await axios.post(
                 `${secretKey}/admin-leads/exportLeads/`,
                 {
@@ -1078,6 +1078,8 @@ function TestLeads() {
             //setSelectedRows([])
         } catch (error) {
             console.error("Error downloading CSV:", error);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
     
