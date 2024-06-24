@@ -436,7 +436,7 @@ const BasicForm = () => {
     console.log(newErrors);
 
     setFormSubmitted(true);
-    sendDataToBackend();
+    await sendDataToBackend();
   };
 
   // const handleSubmit = async (e) => {
@@ -1321,9 +1321,9 @@ const BasicForm = () => {
                     class="form-control mt-1"
                     id="Upload-MOA"
                     onChange={(e) => handleFileChange(e, "UploadMOA")}
-                    // onChange={(e) =>
-                    //   setFormData({ ...formData, UploadMOA: e.target.files[0] })
-                    // }
+                  // onChange={(e) =>
+                  //   setFormData({ ...formData, UploadMOA: e.target.files[0] })
+                  // }
                   />
                   {/* {formSubmitted && !formData.UploadMOA && (
                     <div style={{ color: "red" }}>{"Upload MOA"}</div>
@@ -1338,9 +1338,9 @@ const BasicForm = () => {
                     className="form-control mt-1"
                     id="Upload-AOA"
                     onChange={(e) => handleFileChange(e, "UploadAOA")}
-                    // onChange={(e) =>
-                    //   setFormData({ ...formData, UploadAOA: e.target.files[0] })
-                    // }
+                  // onChange={(e) =>
+                  //   setFormData({ ...formData, UploadAOA: e.target.files[0] })
+                  // }
                   />
                   {/* {formSubmitted && !formData.UploadAOA && (
                     <div style={{ color: "red" }}>{"Upload AOA"}</div>
@@ -1635,12 +1635,12 @@ const BasicForm = () => {
                       class="form-control mt-1"
                       id="Photos-logos"
                       onChange={(e) => handleFileChange(e, "UploadPhotos")}
-                      // onChange={(e) =>
-                      //   setFormData({
-                      //     ...formData,
-                      //     UploadPhotos: e.target.files[0],
-                      //   })
-                      // }
+                    // onChange={(e) =>
+                    //   setFormData({
+                    //     ...formData,
+                    //     UploadPhotos: e.target.files[0],
+                    //   })
+                    // }
                     />
                     {formSubmitted && !formData.UploadPhotos && (
                       <div style={{ color: "red" }}>{"Upload Photos"}</div>
@@ -1699,12 +1699,12 @@ const BasicForm = () => {
                       className="form-control mt-1"
                       id="ip"
                       onChange={(e) => handleFileChange(e, "UploadPhotos")}
-                      // onChange={(e) =>
-                      //   setFormData({
-                      //     ...formData,
-                      //     RelevantDocument: e.target.files[0],
-                      //   })
-                      // }
+                    // onChange={(e) =>
+                    //   setFormData({
+                    //     ...formData,
+                    //     RelevantDocument: e.target.files[0],
+                    //   })
+                    // }
                     />
                     {formSubmitted && !formData.RelevantDocument && (
                       <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>
