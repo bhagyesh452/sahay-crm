@@ -28,9 +28,12 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import io from "socket.io-client";
 
 import PdfImageViewerAdmin from "../admin/PdfViewerAdmin";
 import Tooltip from '@mui/material/Tooltip';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import notification_audio from "../assets/media/notification_tone.mp3"
 
 import RemainingAmnt from "../static/my-images/money.png";
 import { FaList } from "react-icons/fa6";
@@ -45,8 +48,6 @@ function EmployeeMaturedBookings() {
   const { userId } = useParams();
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-
-
 
   console.log(userId)
 
@@ -76,11 +77,6 @@ function EmployeeMaturedBookings() {
   const [formData, setFormData] = useState([])
   const [openBooking, setOpenBooking] = useState(false);
   const [infiniteBooking , setInfiniteBooking] = useState([]);
-
-
-
-
-
 
 
   const fetchRedesignedFormData1 = async () => {
@@ -125,6 +121,26 @@ function EmployeeMaturedBookings() {
     }
 
   }, [formData]);
+
+  useEffect(() => {
+    const socket = io("http://localhost:3001");
+
+
+    socket.on("delete-request-done", (res) => {
+      console.log("Delete request done")
+      fetchRedesignedFormData1(); // Same condition
+      enqueueSnackbar(`Delete Request Accepted`, {
+        variant: 'success'
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
@@ -2730,6 +2746,12 @@ function EmployeeMaturedBookings() {
         </DialogContent>
       </Dialog>
 
+
+{/* ---------------------------------------------------------  Snackbar  -------------------------------------------- */}
+
+<SnackbarProvider maxSnack={3}>
+   
+   </SnackbarProvider>
 
     </div>
   )

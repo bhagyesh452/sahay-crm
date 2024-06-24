@@ -4407,6 +4407,7 @@ router.delete(
   "/redesigned-delete-all-booking/:companyId/:bookingIndex",
   async (req, res) => {
     try {
+      const socketIO = req.io;
       const companyID = req.params.companyId;
       const bookingIndex = req.params.bookingIndex;
       // Find and delete the booking with the given companyId
@@ -4436,12 +4437,12 @@ router.delete(
               },
             }
           );
-
+          companyName = deletedBooking["Company Name"]
+          socketIO.emit('delete-request-done' , companyName);
         } else {
           return res.status(404).send("Booking not found");
         }
       } else {
-        console.log("I am here in 1 index");
         const moreObject = await RedesignedLeadformModel.findOne({
           company: companyID,
         });
@@ -4463,6 +4464,9 @@ router.delete(
             },
           }
         );
+        const companyName = moreObject["Company Name"];
+        socketIO.emit('delete-request-done' , companyName);
+        console.log("Delete request emitted")
 
         return res.status(200).send("booking Deleted Successfuly");
       }

@@ -7,7 +7,6 @@ import axios from "axios";
 import NewGCard from "./NewGcard";
 import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
-import DeleteBookingsCard from "./DeleteBookingsCard";
 import EditBookingsCard from "./EditBookingsCard";
 import EditBookingPreview from "./EditBookingPreview";
 import DeleteBookingComponent from "./DeleteBookingComponent";
@@ -159,7 +158,7 @@ function ShowNotification() {
     setExpandedRow(expandedRow === index ? null : index);
   };
   // setEnameArray(uniqueEnames);
-  console.log("Current Booking" , currentBooking, compareBooking)
+
   return (
     <div>
       {" "}

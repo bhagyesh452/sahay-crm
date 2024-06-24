@@ -8,9 +8,9 @@ import axios from "axios";
 import NewGCard from "../../../admin/NewGcard";
 import ApproveCard from "../../../admin/ApproveCard";
 import Nodata from "../../Components/Nodata/Nodata";
-import DeleteBookingsCard from "../../../admin/DeleteBookingsCard";
 import EditBookingsCard from "../../../admin/EditBookingsCard";
 import EditBookingPreview from "../../../admin/EditBookingPreview";
+import DeleteBookingComponent from "../../../admin/DeleteBookingComponent";
 
 function NotificationDM() {
   const [RequestData, setRequestData] = useState([]);
@@ -164,91 +164,100 @@ function NotificationDM() {
 
             <div className="container-xl">
               <div class="card-header row mt-2">
-                <ul
-                  class="nav nav-tabs card-header-tabs nav-fill"
-                  data-bs-toggle="tabs"
+              <ul class="nav nav-tabs card-header-tabs nav-fill noti-nav"  data-bs-toggle="tabs"  >
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "General"
+                      ? "nav-link item-act4-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("General");
+                  }}
                 >
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "General"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("General");
-                      }}
-                    >
-                      General Data
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "Manual"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("Manual");
-                      }}
-                    >
-                      Manual Data
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "AddRequest"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("AddRequest");
-                      }}
-                    >
-                      Approve Requests
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "deleteBookingRequests"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("deleteBookingRequests");
-                      }}
-                    >
-                      Delete Booking Requests
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "editBookingRequests"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("editBookingRequests");
-                      }}
-                    >
-                      Bookings Edit Requests
-                    </a>
-                  </li>
-                </ul>
+                  General Data
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "Manual"
+                      ? "nav-link item-act3-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("Manual");
+                  }}
+                >
+                  Manual Data
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "AddRequest"
+                      ? "nav-link item-act2-noti"
+                      : "nav-link"
+                  }
+                  style={dataType === "AddRequest" ? {
+                    color: "yellow",
+                    fontWeight: "bold",
+                    border: "1px solid yellow",
+                    backgroundColor: "yellow"
+                  } : {}}
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("AddRequest");
+                  }}
+                >
+                  Approve Requests
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "deleteBookingRequests"
+                      ? "nav-link item-act-noti"
+                      : "nav-link"
+                  }
+                  style={dataType === "deleteBookingRequests" ? {
+                    color: "#ff8080",
+                    fontWeight: "bold",
+                    border: "1px solid #ffb0b0",
+                    backgroundColor: "#fff4f4"
+                  } : {}}
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("deleteBookingRequests");
+                  }}
+                >
+                  Delete Booking Requests
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "editBookingRequests"
+                      ? "nav-link item-act5-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("editBookingRequests");
+                  }}
+                >
+                  Bookings Edit Requests
+                </a>
+              </li>
+            </ul>
               </div>
               <div
                 style={{ backgroundColor: "#f2f2f2" , overflow:'scroll', height:'70vh' }}
@@ -281,18 +290,7 @@ function NotificationDM() {
                       cDate={company.cDate}
                     />
                   ))}
-                {dataType === "deleteBookingRequests" &&
-                  deleteData.length !== 0 &&
-                  deleteData.map((company) => (
-                    <DeleteBookingsCard
-                      request={company.request}
-                      companyId={company.companyId}
-                      name={company.ename}
-                      companyName={company.companyName}
-                      date={company.date}
-                      time={company.time}
-                    />
-                  ))}
+                  {dataType === "deleteBookingRequests" && <DeleteBookingComponent/>}
                 {dataType === "editBookingRequests" &&
                   editData.length !== 0 && !currentBooking && !compareBooking &&
                   editData.map((company) => (
@@ -346,18 +344,7 @@ function NotificationDM() {
                     <Nodata />
                   </span>
                 )}
-                {deleteData.length === 0 &&
-                  dataType === "deleteBookingRequests" && (
-                    <span
-                      style={{
-                        textAlign: "center",
-                        fontSize: "25px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <Nodata />
-                    </span>
-                  )}
+              
                 {editData.length === 0 &&
                   dataType === "editBookingRequests" && (
                     <span
