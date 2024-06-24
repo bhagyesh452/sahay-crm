@@ -267,29 +267,28 @@ const BasicForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const email = e.target.email.value;
 
     const newErrors = {};
-    if (!formData.CompanyName && formData.CompanyName !== "") {
-      newErrors.CompanyName = "Comapny Name is required";
+    if (!formData.CompanyName) {
+      newErrors.CompanyName = "CompanyName is required";
     }
-    if (!formData.CompanyEmail && formData.CompanyEmail !== "") {
+    if (!formData.CompanyEmail) {
       newErrors.CompanyEmail = "Email is required";
     }
     if (formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail)) {
-      newErrors.CompanyEmail = "Please Enter a Valid Email"
+      newErrors.CompanyEmail = "Please enter a valid email";
     }
-    if (!formData.CompanyNo && formData.CompanyNo !== "") {
+    if (!formData.CompanyNo) {
       newErrors.CompanyNo = "Mobile No is required";
     }
     if (formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo)) {
-      newErrors.CompanyNo = "Please Enter a Valid Mobile Number"
+      newErrors.CompanyNo = "Please enter a valid mobile number";
     }
     if (!formData.BrandName && formData.BrandName !== "") {
-      newErrors.CompanyNo = "Enter Brand Name";
+      newErrors.BrandName = "Enter Brand Name";
     }
     if (!formData.WebsiteLink && formData.WebsiteLink !== "") {
-      newErrors.CompanyNo = "Enter Website Link";
+      newErrors.WebsiteLink = "Enter Website Link";
     }
     if (!formData.CompanyAddress && formData.CompanyAddress !== "") {
       newErrors.CompanyAddress = "Enter Company Address";
@@ -298,88 +297,214 @@ const BasicForm = () => {
       newErrors.CompanyPanNumber = "Enter Pan Number";
     }
     if (!formData.SelectServices.length && formData.SelectServices !== "") {
-      newErrors.SelectServices = "Select Your Servicees";
+      newErrors.SelectServices = "Select Your Services";
     }
     if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
       newErrors.CompanyActivities = "Enter Your Company Activities";
     }
     if (!formData.ProductService && formData.ProductService !== "") {
-      newErrors.ProductService = "Enter Your Problems";
+      newErrors.ProductService = "Enter Your Products/Services";
     }
     if (!formData.CompanyUSP && formData.CompanyUSP !== "") {
       newErrors.CompanyUSP = "Enter Your USP";
     }
     if (!formData.ValueProposition && formData.ValueProposition !== "") {
-      newErrors.ValueProposition = "Enter Your Company  Value Proposition";
+      newErrors.ValueProposition = "Enter Your Company Value Proposition";
     }
     if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
       newErrors.TechnologyInvolved = "Enter Your Technology";
     }
     if (!formData.UploadPhotos && formData.UploadPhotos !== "") {
-      newErrors.UploadPhotos = "Comapny Name is required";
+      newErrors.UploadPhotos = "Upload Company Photos";
     }
     if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
-      newErrors.RelevantDocument = "Comapny Name is required";
+      newErrors.RelevantDocument = "Upload Relevant Documents";
     }
-    if (!formData.DirectorDetails[0].DirectorName) {
-      newErrors.DirectorName = "Enter Director Name";
+    if (!formData.DirectInDirectMarket) {
+      newErrors.DirectInDirectMarket = "Enter Direct/InDirect Competitor";
     }
-    if (!formData.DirectorDetails[0].DirectorEmail) {
-      newErrors.DirectorEmail = "Enter Director Email Id";
+    if (!formData.BusinessModel) {
+      newErrors.BusinessModel = "Please Select Business Model";
     }
-    // if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
-    //   newErrors.DirectorEmail = "Please Enter a Valid Email"
-    // }
-    if (!formData.DirectorDetails[0].DirectorMobileNo) {
-      newErrors.DirectorMobileNo = "Mobile No is required";
+    if (!formData.DirectorDetails.some((obj) => obj.IsMainDirector === true)) {
+      newErrors.IsMainDirector = "Please Select Authorised person";
     }
-    // if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
-    //   newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
-    // }
-    if (!formData.DirectorDetails[0].DirectorQualification) {
-      newErrors.DirectorQualification = "Enter Director Qualification";
-    }
-    if (!formData.DirectorDetails[0].DirectorWorkExperience) {
-      newErrors.DirectorWorkExperience = "Enter Director Work Experience";
-    }
-    if (!formData.DirectorDetails[0].DirectorAnnualIncome) {
-      newErrors.DirectorAnnualIncome = "Enter Director Annual Income";
-    }
-    if (!formData.DirectorDetails[0].DirectorPassportPhoto) {
-      newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
-    }
-    if (!formData.DirectorDetails[0].DirectorAdharCard) {
-      newErrors.DirectorAdharCard = "Upload your Adhar Card";
-    }
-    if (!formData.DirectorDetails[0].DirectorDesignation) {
-      newErrors.DirectorDesignation = "Enter Director Designation";
-    }
-    if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
-      newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
-    } else if (!isValidAadhaarNumber(formData.DirectorDetails[0].DirectorAdharCardNumber)) {
-      newErrors.DirectorAdharCardNumber = "Please enter a valid 12-digit Aadhaar Card Number";
-    }
-    if (!formData.DirectorDetails[0].DirectorGender) {
-      newErrors.DirectorGender = "Select Director Gender";
-    }
+    formData.DirectorDetails.forEach((director, index) => {
+      if (!director.DirectorName) {
+        newErrors[`DirectorName${index}`] = `Enter Director Name for Director ${index + 1}`;
+      }
+      if (!director.DirectorEmail) {
+        newErrors[`DirectorEmail${index}`] = `Enter Director Email Id for Director ${index + 1}`;
+      } else if (!isValidEmail(director.DirectorEmail)) {
+        newErrors[`DirectorEmail${index}`] = `Please enter a valid email for Director ${index + 1}`;
+      }
+      if (!director.DirectorMobileNo) {
+        newErrors[`DirectorMobileNo${index}`] = `Enter Director Mobile No for Director ${index + 1}`;
+      }
+      if (!director.DirectorQualification) {
+        newErrors[`DirectorQualification${index}`] = `Enter Director Qualification for Director ${index + 1}`;
+      }
+      if (!director.DirectorWorkExperience) {
+        newErrors[`DirectorWorkExperience${index}`] = `Enter Director Work Experience for Director ${index + 1}`;
+      }
+      if (!director.DirectorAnnualIncome) {
+        newErrors[`DirectorAnnualIncome${index}`] = `Enter Director Annual Income for Director ${index + 1}`;
+      }
+      // if (!director.DirectorPassportPhoto) {
+      //   newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
+      // }
+      if (!director.DirectorAdharCard) {
+        newErrors[`DirectorAdharCard${index}`] = `Upload your Adhar Card for Director ${index + 1}`;
+      }
+      if (!director.DirectorDesignation) {
+        newErrors[`DirectorDesignation${index}`] = `Enter Director Designation for Director ${index + 1}`;
+      }
+      if (!director.DirectorAdharCardNumber) {
+        newErrors[`DirectorAdharCardNumber${index}`] = `Enter Director Adhar Card Number for Director ${index + 1}`;
+      } else if (!isValidAadhaarNumber(director.DirectorAdharCardNumber)) {
+        newErrors[`DirectorAdharCardNumber${index}`] = `Please enter a valid 12-digit Aadhaar Card Number for Director ${index + 1}`;
+      }
+      if (!director.DirectorGender) {
+        newErrors[`DirectorGender${index}`] = `Select Director Gender for Director ${index + 1}`;
+      }
+    });
 
-
-    // console.log(newErrors)
     setErrors(newErrors);
 
-    // Check if there are any errors
     if (Object.keys(newErrors).length > 0) {
-      // setErrors(newErrors);
-      setFormSubmitted(true); // Reset form submission state
+      setFormSubmitted(true);
+      Swal.fire({
+        icon: 'error',
+        title: 'Incorrect Details',
+        html: Object.values(newErrors).join('<br>'),
+      });
       return;
     }
 
-    // setErrors(true);
+    console.log(newErrors);
+
     setFormSubmitted(true);
-    if (Object.keys(newErrors).length === 0) {
-      sendDataToBackend();
-    }
+    sendDataToBackend();
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // const email = e.target.email.value;
+
+  //   const newErrors = {};
+  //   if (!formData.CompanyName && formData.CompanyName !== "") {
+  //     newErrors.CompanyName = "Comapny Name is required";
+  //   }
+  //   if (!formData.CompanyEmail && formData.CompanyEmail !== "") {
+  //     newErrors.CompanyEmail = "Email is required";
+  //   }
+  //   if (formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail)) {
+  //     newErrors.CompanyEmail = "Please Enter a Valid Email"
+  //   }
+  //   if (!formData.CompanyNo && formData.CompanyNo !== "") {
+  //     newErrors.CompanyNo = "Mobile No is required";
+  //   }
+  //   if (formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo)) {
+  //     newErrors.CompanyNo = "Please Enter a Valid Mobile Number"
+  //   }
+  //   if (!formData.BrandName && formData.BrandName !== "") {
+  //     newErrors.CompanyNo = "Enter Brand Name";
+  //   }
+  //   if (!formData.WebsiteLink && formData.WebsiteLink !== "") {
+  //     newErrors.CompanyNo = "Enter Website Link";
+  //   }
+  //   if (!formData.CompanyAddress && formData.CompanyAddress !== "") {
+  //     newErrors.CompanyAddress = "Enter Company Address";
+  //   }
+  //   if (!formData.CompanyPanNumber && formData.CompanyPanNumber !== "") {
+  //     newErrors.CompanyPanNumber = "Enter Pan Number";
+  //   }
+  //   if (!formData.SelectServices.length && formData.SelectServices !== "") {
+  //     newErrors.SelectServices = "Select Your Servicees";
+  //   }
+  //   if (!formData.CompanyActivities && formData.CompanyActivities !== "") {
+  //     newErrors.CompanyActivities = "Enter Your Company Activities";
+  //   }
+  //   if (!formData.ProductService && formData.ProductService !== "") {
+  //     newErrors.ProductService = "Enter Your Problems";
+  //   }
+  //   if (!formData.CompanyUSP && formData.CompanyUSP !== "") {
+  //     newErrors.CompanyUSP = "Enter Your USP";
+  //   }
+  //   if (!formData.ValueProposition && formData.ValueProposition !== "") {
+  //     newErrors.ValueProposition = "Enter Your Company  Value Proposition";
+  //   }
+  //   if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
+  //     newErrors.TechnologyInvolved = "Enter Your Technology";
+  //   }
+  //   if (!formData.UploadPhotos && formData.UploadPhotos !== "") {
+  //     newErrors.UploadPhotos = "Comapny Name is required";
+  //   }
+  //   if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
+  //     newErrors.RelevantDocument = "Comapny Name is required";
+  //   }
+  //   if (!formData.DirectorDetails[0].IsMainDirector) {
+  //     newErrors.IsMainDirector = "Select Authorised person";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorName) {
+  //     newErrors.DirectorName = "Enter Director Name";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorEmail) {
+  //     newErrors.DirectorEmail = "Enter Director Email Id";
+  //   }
+  //   // if (formData.DirectorEmail !== "" && !isValidDirectorEmail(formData.DirectorEmail)) {
+  //   //   newErrors.DirectorEmail = "Please Enter a Valid Email"
+  //   // }
+  //   if (!formData.DirectorDetails[0].DirectorMobileNo) {
+  //     newErrors.DirectorMobileNo = "Mobile No is required";
+  //   }
+  //   // if (formData.DirectorMobileNo !== "" && !isValidDirectorMobileNo(formData.DirectorMobileNo)) {
+  //   //   newErrors.DirectorMobileNo = "Please Enter a Valid Director Email Address"
+  //   // }
+  //   if (!formData.DirectorDetails[0].DirectorQualification) {
+  //     newErrors.DirectorQualification = "Enter Director Qualification";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorWorkExperience) {
+  //     newErrors.DirectorWorkExperience = "Enter Director Work Experience";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorAnnualIncome) {
+  //     newErrors.DirectorAnnualIncome = "Enter Director Annual Income";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorPassportPhoto) {
+  //     newErrors.DirectorPassportPhoto = "Upload Your Passport Photo";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorAdharCard) {
+  //     newErrors.DirectorAdharCard = "Upload your Adhar Card";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorDesignation) {
+  //     newErrors.DirectorDesignation = "Enter Director Designation";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorAdharCardNumber) {
+  //     newErrors.DirectorAdharCardNumber = "Enter Director Adhar Card Number";
+  //   } else if (!isValidAadhaarNumber(formData.DirectorDetails[0].DirectorAdharCardNumber)) {
+  //     newErrors.DirectorAdharCardNumber = "Please enter a valid 12-digit Aadhaar Card Number";
+  //   }
+  //   if (!formData.DirectorDetails[0].DirectorGender) {
+  //     newErrors.DirectorGender = "Select Director Gender";
+  //   }
+
+
+  //   // console.log(newErrors)
+  //   setErrors(newErrors);
+
+  //   // Check if there are any errors
+  //   if (Object.keys(newErrors).length > 0) {
+  //     // setErrors(newErrors);
+  //     setFormSubmitted(true); // Reset form submission state
+  //     return;
+  //   }
+
+  //   // setErrors(true);
+  //   setFormSubmitted(true);
+  //   if (Object.keys(newErrors).length === 0) {
+  //     sendDataToBackend();
+  //   }
+  // };
 
 
   const handleRadioChange = (e, index) => {
@@ -472,6 +597,9 @@ const BasicForm = () => {
                   ),
                 }));
               }} />
+              {formSubmitted && errors.IsMainDirector && (
+                <div style={{ color: "red" }}>{errors.IsMainDirector}</div>
+              )}
             </div>
           </div>
           <div className="col-lg-4">
@@ -498,7 +626,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorName && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorName && (
                 <div style={{ color: "red" }}>Enter Director Name</div>
               )}
               {/* {formSubmitted && !formData.DirectorName && (
@@ -533,7 +661,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorEmail && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
               {/* {formSubmitted &&
@@ -574,7 +702,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorMobileNo && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
               {/* {formSubmitted &&
@@ -615,7 +743,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorQualification && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorQualification && (
                 <div style={{ color: "red" }}>Enter Director Qualification</div>
               )}
               {/* {formSubmitted && !formData[`DirectorQualification${index}`] && (
@@ -651,7 +779,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorWorkExperience && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorWorkExperience && (
                 <div style={{ color: "red" }}>Enter Director Work Experience</div>
               )}
               {/* {formSubmitted && !formData[`DirectorWorkExperience${index}`] && (
@@ -665,7 +793,6 @@ const BasicForm = () => {
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`Directorincome${index}`}>
                 Annual Income Of Director's Family (Approx):{" "}
-                <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 required
@@ -689,9 +816,9 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorAnnualIncome && (
+              {/* {formSubmitted && !formData.DirectorDetails[0].DirectorAnnualIncome && (
                 <div style={{ color: "red" }}>Enter Director Annual Income</div>
-              )}
+              )} */}
               {/* {formSubmitted && !formData[`DirectorAnnualIncome${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
@@ -701,7 +828,6 @@ const BasicForm = () => {
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`DirectorPassportPhoto${index}`}>
                 Director's Passport Size Photo{" "}
-                <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 required
@@ -724,9 +850,9 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorPassportPhoto && (
+              {/* {formSubmitted && !formData.DirectorDetails[0].DirectorPassportPhoto && (
                 <div style={{ color: "red" }}>Upload Passport Size Photo</div>
-              )}
+              )} */}
               {/* {formSubmitted && !formData[`DirectorPassportPhoto${index}`] && (
                 <div style={{ color: "red" }}>
 
@@ -763,7 +889,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCard && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCard && (
                 <div style={{ color: "red" }}>Upload Director AdharCard</div>
               )}
               {/* {formSubmitted && !formData[`DirectorAdharCard${index}`] && (
@@ -798,7 +924,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorAdharCardNumber && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCardNumber && (
                 <div style={{ color: "red" }}>Enter Director AdharCard Number</div>
               )}
               {formSubmitted &&
@@ -838,7 +964,7 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].DirectorDesignation && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorDesignation && (
                 <div style={{ color: "red" }}>Enter Director Designation</div>
               )}
               {/* {formSubmitted && !formData[`DirectorDesignation${index}`] && (
@@ -896,7 +1022,7 @@ const BasicForm = () => {
                   <span className="form-check-label">Female</span>
                 </label>
               </div>
-              {formSubmitted && !formData.DirectorDetails[0].DirectorGender && (
+              {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
                 <div style={{ color: "red" }}>Select the Director Gender</div>
               )}
 
@@ -909,7 +1035,6 @@ const BasicForm = () => {
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`DirectorLinkedIn${index}`}>
                 LinkedIn Profile Link
-                <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="text"
@@ -932,9 +1057,9 @@ const BasicForm = () => {
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[0].LinkedInProfileLink && (
+              {/* {formSubmitted && !formData.DirectorDetails[0].LinkedInProfileLink && (
                 <div style={{ color: "red" }}>Enter Director Profile Link</div>
-              )}
+              )} */}
               {/* {formSubmitted && !formData[`LinkedInProfileLink${index}`] && (
                 <div style={{ color: "red" }}></div>
               )} */}
@@ -991,10 +1116,8 @@ const BasicForm = () => {
                     value={formData.CompanyName}
                     onChange={(e) => handleInputChange(e, "CompanyName")}
                   />
-                  {formSubmitted && !formData.CompanyName && (
-                    <div style={{ color: "red" }}>
-                      {"Company Name is required"}
-                    </div>
+                  {formSubmitted && errors.CompanyName && (
+                    <div style={{ color: "red" }}>{errors.CompanyName}</div>
                   )}
                 </div>
               </div>
@@ -1014,11 +1137,11 @@ const BasicForm = () => {
                     pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                     title="Enter a valid email address"
                   />
-                  {formSubmitted && !formData.CompanyEmail && (
-                    <div style={{ color: "red" }}>{"Enter Email Id"}</div>
-                  )}
+                  {/* {formSubmitted && errors.CompanyEmail && (
+                <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
+              )} */}
                   {formSubmitted && formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail) && (
-                    <div style={{ color: "red" }}>Enter a valid email address</div>
+                    <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
                   )}
                 </div>
               </div>
@@ -1041,7 +1164,7 @@ const BasicForm = () => {
                     <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
                   )}
                   {formSubmitted && formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo) && (
-                    <div style={{ color: "red" }}>Enter a valid Mobile Number</div>
+                    <div style={{ color: "red" }}>{errors.CompanyNo}</div>
                   )}
                 </div>
               </div>
@@ -1081,7 +1204,7 @@ const BasicForm = () => {
               </div>
               <div className="col-lg-6">
                 <div className="form-group mt-2 mb-2">
-                  <label htmlFor="WebsiteLink">Company Address: <span style={{ color: "red" }}>*</span></label>
+                  <label htmlFor="WebsiteLink">Company Address: </label>
                   <input
                     required
                     type="text"
@@ -1091,9 +1214,9 @@ const BasicForm = () => {
                     value={formData.CompanyAddress}
                     onChange={(e) => handleInputChange(e, "CompanyAddress")}
                   />
-                  {formSubmitted && !formData.CompanyAddress && (
+                  {/* {formSubmitted && !formData.CompanyAddress && (
                     <div style={{ color: "red" }}>{"Enter Company Address"}</div>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className="col-lg-6">
@@ -1149,9 +1272,9 @@ const BasicForm = () => {
                       setFormData({ ...formData, UploadMOA: e.target.files[0] })
                     }
                   />
-                  {formSubmitted && !formData.UploadMOA && (
+                  {/* {formSubmitted && !formData.UploadMOA && (
                     <div style={{ color: "red" }}>{"Upload MOA"}</div>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className="col-lg-4">
@@ -1165,9 +1288,9 @@ const BasicForm = () => {
                       setFormData({ ...formData, UploadAOA: e.target.files[0] })
                     }
                   />
-                  {formSubmitted && !formData.UploadAOA && (
+                  {/* {formSubmitted && !formData.UploadAOA && (
                     <div style={{ color: "red" }}>{"Upload AOA"}</div>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className="col-lg-12">
@@ -1551,8 +1674,8 @@ const BasicForm = () => {
                       handleInputChange(e, "DirectInDirectMarket")
                     }
                   />
-                  {formSubmitted && !formData.DirectInDirectMarket && (
-                    <div style={{ color: "red" }}></div>
+                  {formSubmitted && errors.DirectInDirectMarket && (
+                    <div style={{ color: "red" }}>{errors.DirectInDirectMarket}</div>
                   )}
                 </div>
               </div>

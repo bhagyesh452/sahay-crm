@@ -10,6 +10,9 @@ import Nodata from "../components/Nodata";
 import DeleteBookingsCard from "./DeleteBookingsCard";
 import EditBookingsCard from "./EditBookingsCard";
 import EditBookingPreview from "./EditBookingPreview";
+import DeleteBookingComponent from "./DeleteBookingComponent";
+import io from "socket.io-client";
+
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
@@ -25,6 +28,7 @@ function ShowNotification() {
   const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
   const [deleteData, setDeleteData] = useState([]);
+  const [fetchBookingRequests, setfetchBookingRequests] = useState(false);
 
   const [totalBookings, setTotalBookings] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -51,7 +55,18 @@ function ShowNotification() {
     }
   }
   useEffect(() => {
+    const socket = io("http://localhost:3001");
+  
 
+    socket.on("delete-booking-requested", () => {
+      fetchDataDelete(); // Same condition
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+  useEffect(() => {
     fetchCompareBooking();
    setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
   }, [currentCompany]);
@@ -137,6 +152,13 @@ function ShowNotification() {
     fetchDataDelete();
     fetchEditRequests();
   }, []);
+
+  useEffect(()=>{
+    if(fetchBookingRequests){
+      fetchDataDelete();
+      setfetchBookingRequests(false);
+    }
+  },[fetchBookingRequests])
   const [expandedRow, setExpandedRow] = useState(null);
 
   const handleRowClick = (index) => {
@@ -150,226 +172,228 @@ function ShowNotification() {
       <Header />
       <Navbar />
       <div className="page-wrapper">
-        <div className="page-header d-print-none">
+        <div className="page-header">
           <div className="container-xl">
-            <div className="row g-2 align-items-center">
-              <div className="col">
-                {/* <!-- Page pre-title --> */}
-                <h2 className="page-title">Notifications </h2>
-              </div>
-            </div>
-
-            <div className="container-xl">
-              <div class="card-header row mt-2">
-                <ul
-                  class="nav nav-tabs card-header-tabs nav-fill"
-                  data-bs-toggle="tabs"
-                >
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "General"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("General");
-                      }}
-                    >
-                      General Data
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "Manual"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("Manual");
-                      }}
-                    >
-                      Manual Data
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "AddRequest"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("AddRequest");
-                      }}
-                    >
-                      Approve Requests
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "deleteBookingRequests"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("deleteBookingRequests");
-                      }}
-                    >
-                      Delete Booking Requests
-                    </a>
-                  </li>
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      className={
-                        dataType === "editBookingRequests"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                      onClick={() => {
-                        setDataType("editBookingRequests");
-                      }}
-                    >
-                      Bookings Edit Requests
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div
-                style={{ backgroundColor: "#f2f2f2" , overflow:'scroll', height:'70vh' }}
-                className="maincontent row"
-              >
-                {dataType === "Manual" &&
-                  RequestData.length !== 0 &&
-                  RequestData.map((company) => (
-                    <NewCard
-                      name={company.ename}
-                      year={company.year}
-                      ctype={company.ctype}
-                      damount={company.dAmount}
-                      id={company._id}
-                      assignStatus={company.assigned}
-                      cTime={company.cTime}
-                      cDate={company.cDate}
-                    />
-                  ))}
-
-                {RequestGData.length !== 0 &&
-                  dataType === "General" &&
-                  RequestGData.map((company) => (
-                    <NewGCard
-                      name={company.ename}
-                      damount={company.dAmount}
-                      id={company._id}
-                      assignStatus={company.assigned}
-                      cTime={company.cTime}
-                      cDate={company.cDate}
-                    />
-                  ))}
-                {dataType === "deleteBookingRequests" &&
-                  deleteData.length !== 0 &&
-                  deleteData.map((company) => (
-                    <DeleteBookingsCard
-                      request={company.request}
-                      Id={company.companyID}
-                      name={company.ename}
-                      companyName={company.companyName}
-                      date={company.date}
-                      bookingIndex={company.bookingIndex}
-                      time={company.time}
-                    />
-                  ))}
-                {dataType === "editBookingRequests" &&
-                  editData.length !== 0 && !currentBooking && !compareBooking &&
-                  editData.map((company) => (
-                    <EditBookingsCard                   
-                      setCurrentCompany={setCurrentCompany}
-                      date={company.date}
-                      time={company.time}
-                      name={company.ename}
-                      setBookingIndex = {setBookingIndex}
-                      moreBookingCase={setMoreBookingCase}
-                      bookingIndex={company.bookingIndex}
-                      companyName={company.companyName}
-                    />
-                  ))}
-                  {dataType === "editBookingRequests" &&
-                  editData.length !== 0 && currentBooking && compareBooking &&
-                    <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
+             {/* <!-- Page pre-title --> */}
+             <h2 className="page-title">Notifications </h2>
+          </div>
+        </div>
+        <div className="container-xl">
+          <div class="card-header mt-2">
+            <ul class="nav nav-tabs card-header-tabs nav-fill noti-nav"  data-bs-toggle="tabs"  >
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "General"
+                      ? "nav-link item-act4-noti"
+                      : "nav-link"
                   }
-                {mapArray.length !== 0 &&
-                  dataType === "AddRequest" &&
-                  mapArray.map((company) => (
-                    <ApproveCard
-                      name={company.ename}
-                      date={company.date}
-                      time={company.time}
-                    />
-                  ))}
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("General");
+                  }}
+                >
+                  General Data
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "Manual"
+                      ? "nav-link item-act3-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("Manual");
+                  }}
+                >
+                  Manual Data
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "AddRequest"
+                      ? "nav-link item-act2-noti"
+                      : "nav-link"
+                  }
+                  style={dataType === "AddRequest" ? {
+                    color: "yellow",
+                    fontWeight: "bold",
+                    border: "1px solid yellow",
+                    backgroundColor: "yellow"
+                  } : {}}
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("AddRequest");
+                  }}
+                >
+                  Approve Requests
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "deleteBookingRequests"
+                      ? "nav-link item-act-noti"
+                      : "nav-link"
+                  }
+                  style={dataType === "deleteBookingRequests" ? {
+                    color: "#ff8080",
+                    fontWeight: "bold",
+                    border: "1px solid #ffb0b0",
+                    backgroundColor: "#fff4f4"
+                  } : {}}
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("deleteBookingRequests");
+                  }}
+                >
+                  Delete Booking Requests
+                </a>
+              </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "editBookingRequests"
+                      ? "nav-link item-act5-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("editBookingRequests");
+                  }}
+                >
+                  Bookings Edit Requests
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="maincontent"  >
+            {dataType === "Manual" &&
+              RequestData.length !== 0 &&
+              RequestData.map((company) => (
+                <NewCard
+                  name={company.ename}
+                  year={company.year}
+                  ctype={company.ctype}
+                  damount={company.dAmount}
+                  id={company._id}
+                  assignStatus={company.assigned}
+                  cTime={company.cTime}
+                  cDate={company.cDate}
+                />
+              ))}
 
-                {RequestData.length === 0 && dataType === "Manual" && (
+            {RequestGData.length !== 0 &&
+              dataType === "General" &&
+              RequestGData.map((company) => (
+                <NewGCard
+                  name={company.ename}
+                  damount={company.dAmount}
+                  id={company._id}
+                  assignStatus={company.assigned}
+                  cTime={company.cTime}
+                  cDate={company.cDate}
+                />
+              ))}
+            {/* {dataType === "deleteBookingRequests" &&
+              deleteData.length !== 0 &&
+              deleteData.map((company) => (
+                <DeleteBookingsCard
+                  request={company.request}
+                  Id={company.companyID}
+                  name={company.ename}
+                  companyName={company.companyName}
+                  date={company.date}
+                  bookingIndex={company.bookingIndex}
+                  time={company.time}
+                />
+              ))} */}
+              {dataType === "deleteBookingRequests" && deleteData.length!==0 && <DeleteBookingComponent deletedData = {deleteData} setNowToFetch={setfetchBookingRequests}/>}
+            {dataType === "editBookingRequests" &&
+              editData.length !== 0 && !currentBooking && !compareBooking &&
+              editData.map((company) => (
+                <EditBookingsCard                   
+                  setCurrentCompany={setCurrentCompany}
+                  date={company.date}
+                  time={company.time}
+                  name={company.ename}
+                  setBookingIndex = {setBookingIndex}
+                  moreBookingCase={setMoreBookingCase}
+                  bookingIndex={company.bookingIndex}
+                  companyName={company.companyName}
+                />
+              ))}
+              {dataType === "editBookingRequests" &&
+              editData.length !== 0 && currentBooking && compareBooking &&
+                <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
+              }
+            {mapArray.length !== 0 &&
+              dataType === "AddRequest" &&
+              mapArray.map((company) => (
+                <ApproveCard
+                  name={company.ename}
+                  date={company.date}
+                  time={company.time}
+                />
+              ))}
+
+            {RequestData.length === 0 && dataType === "Manual" && (
+              <Nodata />
+            )}
+            {RequestGData.length === 0 && dataType === "General" && (
+              <span
+                style={{
+                  textAlign: "center",
+                  fontSize: "25px",
+                  fontWeight: "bold",
+                }}
+              >
+                <Nodata />
+              </span>
+            )}
+            {mapArray.length === 0 && dataType === "AddRequest" && (
+              <span
+                style={{
+                  textAlign: "center",
+                  fontSize: "25px",
+                  fontWeight: "bold",
+                }}
+              >
+                <Nodata />
+              </span>
+            )}
+            {deleteData.length === 0 &&
+              dataType === "deleteBookingRequests" && (
+                <span
+                  style={{
+                    textAlign: "center",
+                    fontSize: "25px",
+                    fontWeight: "bold",
+                  }}
+                >
                   <Nodata />
-                )}
-                {RequestGData.length === 0 && dataType === "General" && (
-                  <span
-                    style={{
-                      textAlign: "center",
-                      fontSize: "25px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <Nodata />
-                  </span>
-                )}
-                {mapArray.length === 0 && dataType === "AddRequest" && (
-                  <span
-                    style={{
-                      textAlign: "center",
-                      fontSize: "25px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <Nodata />
-                  </span>
-                )}
-                {deleteData.length === 0 &&
-                  dataType === "deleteBookingRequests" && (
-                    <span
-                      style={{
-                        textAlign: "center",
-                        fontSize: "25px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <Nodata />
-                    </span>
-                  )}
-                {editData.length === 0 &&
-                  dataType === "editBookingRequests" && (
-                    <span
-                      style={{
-                        textAlign: "center",
-                        fontSize: "25px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <Nodata />
-                    </span>
-                  )}
-              </div>
-            </div>
+                </span>
+              )}
+            {editData.length === 0 &&
+              dataType === "editBookingRequests" && (
+                <span
+                  style={{
+                    textAlign: "center",
+                    fontSize: "25px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <Nodata />
+                </span>
+              )}
           </div>
         </div>
       </div>

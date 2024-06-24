@@ -88,7 +88,10 @@ app.use("/api/admin-leads", AdminLeadsAPI);
 app.use("/api/remarks", RemarksAPI);
 app.use("/api/bookings", bookingsAPI)
 app.use('/api/company-data', companyAPI)
-app.use('/api/requests', RequestAPI)
+app.use('/api/requests', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, RequestAPI);
 app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
@@ -2377,10 +2380,41 @@ app.get('/api/generate-pdf-client', async (req, res) => {
 
 /**************************************HR Login Portal API********************************************************************/
 
-app.post("/api/hrlogin", async (req,res) => {
-  const { email , password } = req.body;
+app.post("/api/hrlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "HR") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ hrToken , userId: user._id , ename:user.ename });
+    //socketIO.emit("Employee-login");
+  }
+});
 
-})
+
+// app.get("/api/hrlogin", async (req, res) => {
+//   try {
+//     const employeeData = await adminModel.find();
+//     res.json(employeeData);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 
