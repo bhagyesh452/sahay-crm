@@ -228,7 +228,7 @@ function App() {
 
           {/**********************************************  HR-Login-Portal   *******************************************************/}
           <Route path="/hr/login-hr" element={<HrLogin setHrToken={setHrToken} />} />
-          <Route path="/hrDashboard/:userId/" element={<HrDashboard.jsx />} />
+          <Route path="/hrdashboard/:userId/" element={<HrDashboard />}></Route>
 
         </Routes>
 

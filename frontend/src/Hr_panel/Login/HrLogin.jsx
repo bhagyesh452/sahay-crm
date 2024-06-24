@@ -26,6 +26,7 @@ function HrLogin({ setHrToken }){
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/hrlogin`);
+            setData(response.data);
             console.log(response.data);
         } catch (error) {
             console.log(error);
@@ -46,6 +47,7 @@ function HrLogin({ setHrToken }){
         console.log(user);
         if(user){
             setDesignation(user.designation)
+            setEname(user.ename)
             setUserId(user._id);
         } else {
             setUserId(null);
@@ -54,7 +56,7 @@ function HrLogin({ setHrToken }){
 
     useEffect(() => {
         findUserId();
-    }, [email , password])
+    }, [email , password , data])
 
 
     console.log(email , password , designation);
@@ -67,14 +69,15 @@ function HrLogin({ setHrToken }){
                 email,
                 password,
                 designation
-            })
+            });
             console.log(response.data);
-            const { hrToken } = response.data
+            const { hrToken , userId , ename } = response.data
             setHrToken(hrToken);
             localStorage.setItem("hrName", ename)
             localStorage.setItem("hrToken", hrToken)
             localStorage.setItem("hrUserId", userId)
-            Window.location.replace(`/hrDashboard/${userId}`)
+            console.log(userId);
+            window.location.replace(`/hrDashboard/${userId}`)
         } catch (error) {
             console.error("Login Failed", error);
             if (error.response === 401) {

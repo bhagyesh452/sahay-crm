@@ -88,7 +88,10 @@ app.use("/api/admin-leads", AdminLeadsAPI);
 app.use("/api/remarks", RemarksAPI);
 app.use("/api/bookings", bookingsAPI)
 app.use('/api/company-data', companyAPI)
-app.use('/api/requests', RequestAPI)
+app.use('/api/requests', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, RequestAPI);
 app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
@@ -1663,7 +1666,7 @@ app.post("/api/users",
                   padding: 5px 10px;
                 "
               >
-                Director AdharCard Number
+                Director AadhaarCard Number
               </div>
             </div>
             <div style="width: 75%">
@@ -2397,17 +2400,10 @@ app.post("/api/hrlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ hrToken });
+    res.status(200).json({ hrToken , userId: user._id , ename:user.ename });
     //socketIO.emit("Employee-login");
   }
 });
-
-
-
-
-
-
-
 
 
 
