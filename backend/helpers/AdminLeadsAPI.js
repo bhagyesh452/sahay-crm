@@ -297,7 +297,7 @@ router.post('/exportLeads', async (req, res) => {
     });
     console.log("leads" , leads)
     // Convert leads to CSV and send as response
-    const csv = convertToCSV(leads);
+    // const csv = convertToCSV(leads);
     console.log("csv" , csv)
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=${dataStatus === 'Assigned' ? 'AssignedLeads_Admin.csv' : 'UnAssignedLeads_Admin.csv'}`);

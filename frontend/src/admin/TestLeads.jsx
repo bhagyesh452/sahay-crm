@@ -923,6 +923,7 @@ function TestLeads() {
         try {
             let response;
             if (id === "all") {
+                setOpenBacdrop(true)
                 response = await axios.get(`${secretKey}/admin-leads/getIds`, {
                     params: {
                         dataStatus,
@@ -950,7 +951,6 @@ function TestLeads() {
                 });
                 return;
             }
-    
             // Process response
             const { data } = response;
             // Handle response data as needed
@@ -961,6 +961,8 @@ function TestLeads() {
         } catch (error) {
             // Handle errors
             console.error('Error:', error);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
     
