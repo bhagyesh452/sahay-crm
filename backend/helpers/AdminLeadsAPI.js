@@ -303,10 +303,26 @@ router.post('/exportLeads', async (req, res) => {
         lead.AssignDate = formatDateFinal(lead.AssignDate);
         lead["Company Incorporation Date  "] = formatDateFinal(lead["Company Incorporation Date  "]);
       }
+      delete lead.Remarks;
+      delete lead.lastActionDate;
+      delete lead.bdmAcceptStatus;
+      delete lead.bdeForwardDate;
+      delete lead.bdeOldStatus;
+      delete lead.feedbackPoints;
+      delete lead.feedbackRemarks;
+      delete lead.bdeNextFollowUpDate;
+      delete lead.multiBdmName;
+      delete lead.bdmRemarks;
+      delete lead.bdmStatusChangeDate;
+      delete lead.bdmStatusChangeTime;
+      delete lead.RevertBackAcceptedCompanyRequest;
+      delete lead.isDeletedEmployeeCompany;
+      delete lead.__v;
+      delete lead._id;
       return lead;
     });
 
-    console.log("leads", tempLeads);
+    //console.log("leads", tempLeads);
 
     // Convert leads to CSV and send as response
     const csv = convertToCSV(tempLeads);
