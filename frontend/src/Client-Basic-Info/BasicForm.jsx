@@ -240,6 +240,58 @@ const BasicForm = () => {
   const [numberOfDirectors, setNumberOfDirectors] = useState(1);
 
 
+  const maxSizeMB = 24;
+  const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+
+
+  const handleFileChange = (e, fieldName, index = null) => {
+    const file = e.target.files[0];
+    if (file && file.size > maxSizeBytes) {
+      Swal.fire({
+        title: "Error!",
+        text: `File size should not exceed ${maxSizeMB}MB`,
+        icon: "error",
+      });
+      if (index !== null) {
+        setFormData((prevFormData) => {
+          const updatedDirectorDetails = prevFormData.DirectorDetails.map((director, i) => {
+            if (i === index) {
+              return { ...director, [fieldName]: "" };
+            }
+            return director;
+          });
+          return { ...prevFormData, DirectorDetails: updatedDirectorDetails };
+        });
+      } else {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          [fieldName]: "",
+        }));
+      }
+    } else {
+      if (index !== null) {
+        setFormData((prevFormData) => {
+          const updatedDirectorDetails = prevFormData.DirectorDetails.map((director, i) => {
+            if (i === index) {
+              return { ...director, [fieldName]: file };
+            }
+            return director;
+          });
+          return { ...prevFormData, DirectorDetails: updatedDirectorDetails };
+        });
+      } else {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          [fieldName]: file,
+        }));
+      }
+    }
+  };
+
+
+
+
 
   const handleInputChange = (e, fieldName, index) => {
     const value = e.target.value;
@@ -1268,9 +1320,10 @@ const BasicForm = () => {
                     type="file"
                     class="form-control mt-1"
                     id="Upload-MOA"
-                    onChange={(e) =>
-                      setFormData({ ...formData, UploadMOA: e.target.files[0] })
-                    }
+                    onChange={(e) => handleFileChange(e, "UploadMOA")}
+                    // onChange={(e) =>
+                    //   setFormData({ ...formData, UploadMOA: e.target.files[0] })
+                    // }
                   />
                   {/* {formSubmitted && !formData.UploadMOA && (
                     <div style={{ color: "red" }}>{"Upload MOA"}</div>
@@ -1284,9 +1337,10 @@ const BasicForm = () => {
                     type="file"
                     className="form-control mt-1"
                     id="Upload-AOA"
-                    onChange={(e) =>
-                      setFormData({ ...formData, UploadAOA: e.target.files[0] })
-                    }
+                    onChange={(e) => handleFileChange(e, "UploadAOA")}
+                    // onChange={(e) =>
+                    //   setFormData({ ...formData, UploadAOA: e.target.files[0] })
+                    // }
                   />
                   {/* {formSubmitted && !formData.UploadAOA && (
                     <div style={{ color: "red" }}>{"Upload AOA"}</div>
@@ -1580,12 +1634,13 @@ const BasicForm = () => {
                       type="file"
                       class="form-control mt-1"
                       id="Photos-logos"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          UploadPhotos: e.target.files[0],
-                        })
-                      }
+                      onChange={(e) => handleFileChange(e, "UploadPhotos")}
+                      // onChange={(e) =>
+                      //   setFormData({
+                      //     ...formData,
+                      //     UploadPhotos: e.target.files[0],
+                      //   })
+                      // }
                     />
                     {formSubmitted && !formData.UploadPhotos && (
                       <div style={{ color: "red" }}>{"Upload Photos"}</div>
@@ -1643,12 +1698,13 @@ const BasicForm = () => {
                       type="file"
                       className="form-control mt-1"
                       id="ip"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          RelevantDocument: e.target.files[0],
-                        })
-                      }
+                      onChange={(e) => handleFileChange(e, "UploadPhotos")}
+                      // onChange={(e) =>
+                      //   setFormData({
+                      //     ...formData,
+                      //     RelevantDocument: e.target.files[0],
+                      //   })
+                      // }
                     />
                     {formSubmitted && !formData.RelevantDocument && (
                       <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>

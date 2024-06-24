@@ -53,7 +53,6 @@ const DirectorSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   CompanyName: {
     type: String,
-    unique: true,
     required: true
   },
   CompanyEmail: {
