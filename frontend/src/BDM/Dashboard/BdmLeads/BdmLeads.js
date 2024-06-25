@@ -185,7 +185,12 @@ function BdmLeads() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io("/socket.io/"); // Connects to the same host and port as the client
+    const socket = io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, // Enable reconnections
+      transports: ['websocket'], // Use only WebSocket transport
+    }); // Connects to the same host and port as the client
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
     });

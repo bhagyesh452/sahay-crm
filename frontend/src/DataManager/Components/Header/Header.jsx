@@ -23,7 +23,12 @@ function Header({ name }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   useEffect(() => {
-    const socket = io('/socket.io/');
+    const socket = io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, // Enable reconnections
+      transports: ['websocket'], // Use only WebSocket transport
+    });
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
