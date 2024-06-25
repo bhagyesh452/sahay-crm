@@ -12,6 +12,37 @@ const deletedEmployeeModel = require("../models/DeletedEmployee.js")
 
 const upload = multer({ storage: storage });
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      // Determine the destination path based on the fieldname and company name
+      const companyName = req.params.CompanyName;
+      let destinationPath = "";
+  
+      if (file.fieldname === "otherDocs") {
+        destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+      } else if (file.fieldname === "paymentReceipt") {
+        destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+      }
+      else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
+        destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
+      } else {
+        destinationPath = `ClientDocuments/${companyName}/OtherDocs`
+      }
+  
+      // Create the directory if it doesn't exist
+      if (!fs.existsSync(destinationPath)) {
+        fs.mkdirSync(destinationPath, { recursive: true });
+      }
+  
+      cb(null, destinationPath);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now();
+      cb(null, uniqueSuffix + "-" + file.originalname);
+    },
+  });
+  
+
 router.post("basicinfo-form/:CompanyName", 
     
     upload.fields([
