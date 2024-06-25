@@ -234,7 +234,7 @@ function EmployeePanel() {
 
 
   useEffect(() => {
-    const socket = io("http://localhost:3001"); // Connects to the same host and port as the client
+    const socket = io("/socket.io/"); // Connects to the same host and port as the client
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);

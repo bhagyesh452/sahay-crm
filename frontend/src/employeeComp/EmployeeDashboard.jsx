@@ -361,7 +361,7 @@ function EmployeeDashboard() {
   };
   // -------------------------------------------- socket.io section ------------------------------------------------
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("/socket.io/");
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);

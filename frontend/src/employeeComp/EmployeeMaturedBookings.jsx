@@ -123,7 +123,7 @@ function EmployeeMaturedBookings() {
   }, [formData]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("/socket.io/");
 
 
     socket.on("delete-request-done", (res) => {

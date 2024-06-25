@@ -48,7 +48,7 @@ function DeleteBookingComponent() {
     fetchDataDelete()
   }, [])
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("/socket.io/");
 
 
     socket.on("delete-booking-requested", () => {

@@ -185,7 +185,7 @@ function BdmLeads() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io("/api/socket.io"); // Connects to the same host and port as the client
+    const socket = io("/socket.io/"); // Connects to the same host and port as the client
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
     });
