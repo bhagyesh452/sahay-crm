@@ -62,12 +62,14 @@ const EmployeeAPI = require("./helpers/EmployeeAPI.js");
 const ProjectionAPI = require("./helpers/ProjectionAPI.js");
 const RequestAPI = require("./helpers/RequestAPI.js");
 const companyAPI = require("./helpers/Company_dataAPI.js");
+const ClientAPI = require("./helpers/ClientAPI.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
 const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
+
 
 // const { Cashfree } = require('cashfree-pg');
 
@@ -99,6 +101,7 @@ app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
+app.use('/api/clientform', ClientAPI)
 
 
 // app.use(session({
@@ -1179,7 +1182,7 @@ app.post("/api/undo", (req, res) => {
 
 /*****************************************************CompanyBusinessInput *****************************************************************/
 
-app.post("/api/users/:CompanyName",
+app.post("/api/clientform/basicinfo-form/:CompanyName",
   upload.fields([
     { name: "DirectorPassportPhoto", maxCount: 10 },
     { name: "DirectorAdharCard", maxCount: 10 },

@@ -188,7 +188,7 @@ const BasicForm = () => {
         console.log(`${key}: ${value}`);
       }
 
-      const response = await fetch(`${secretKey}/users/${formData.CompanyName}`, {
+      const response = await fetch(`${secretKey}/clientform/basicinfo-form/${formData.CompanyName}`, {
         method: "POST",
         body: data,
       });
@@ -357,13 +357,13 @@ const BasicForm = () => {
     if (!formData.ValueProposition && formData.ValueProposition !== "") {
       newErrors.ValueProposition = "Enter Your Company Value Proposition";
     }
-    if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
-      newErrors.TechnologyInvolved = "Enter Your Technology";
+    if (!formData.TechnologyInvolved) {
+      newErrors.TechnologyInvolved = "Enter Your Technology Details";
     }
-    if (!formData.UploadPhotos && formData.UploadPhotos !== "") {
-      newErrors.UploadPhotos = "Upload Company Photos";
+    if (!formData.UploadPhotos) {
+      newErrors.UploadPhotos = "Upload Photos of Logo or Product/Prototype";
     }
-    if (!formData.RelevantDocument && formData.RelevantDocument !== "") {
+    if (!formData.RelevantDocument) {
       newErrors.RelevantDocument = "Upload Relevant Documents";
     }
     if (!formData.DirectInDirectMarket) {
@@ -371,6 +371,9 @@ const BasicForm = () => {
     }
     if (!formData.BusinessModel) {
       newErrors.BusinessModel = "Please Select Business Model";
+    }
+    if (!formData.Finance) {
+      newErrors.Finance = "Enter The Details of Grant";
     }
     if (!formData.DirectorDetails.some((obj) => obj.IsMainDirector === true)) {
       newErrors.IsMainDirector = "Please Select Authorised person";
