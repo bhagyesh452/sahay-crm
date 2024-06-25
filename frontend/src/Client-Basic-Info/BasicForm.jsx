@@ -518,409 +518,413 @@ const BasicForm = () => {
 
   const renderDirectorFields = () => {
     return Array.from({ length: numberOfDirectors }, (_, index) => (
-      <div className="directors-details-box p-3" key={index}>
-        <div className="row">
-          <div className="col-lg-12 d-flex align-items-center justify-content-between">
-            <h5>{index + 1}</h5>
-            <div>
-              <label className="Director">Authorized Person</label>
-              <input type="radio" name="maindirector_radio" checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
-                setFormData((prevState) => ({
-                  ...prevState,
-                  DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                    i === index
-                      ? { ...director, IsMainDirector: true }
-                      : { ...director, IsMainDirector: false }
-                  ),
-                }));
-              }} />
-              {formSubmitted && errors.IsMainDirector && (
-                <div style={{ color: "red" }}>{errors.IsMainDirector}</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorName${index}`}>
-                Enter Director's Name <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director's Name "
-                id={`DirectorName${index}`}
-                value={formData.DirectorDetails[index]?.DirectorName || ""}
-                onChange={(e) => {
-                  const value = e.target.value
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? { ...DirectorDetails, DirectorName: value }
-                          : DirectorDetails
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorName && (
-                <div style={{ color: "red" }}>Enter Director Name</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorEmail${index}`}>
-                Enter Director's Email <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="email"
-                className="form-control mt-1"
-                placeholder="Enter Director's Email"
-                id={`DirectorEmail${index}`}
-                value={formData.DirectorDetails[index]?.DirectorEmail || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorEmail: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorEmail && (
-                <div style={{ color: "red" }}>Enter Director Email</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorMobileNo${index}`}>
-                Enter Director's Mobile No{" "}
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director's Mobile No "
-                id={`DirectorMobileNo${index}`}
-                value={formData.DirectorDetails[index]?.DirectorMobileNo || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorMobileNo: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorMobileNo && (
-                <div style={{ color: "red" }}>Enter Director Mobile No</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorQualification${index}`}>
-                Enter Director's Qualification{" "}
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director's Qualification"
-                id={`DirectorQualification${index}`}
-                value={formData.DirectorDetails[index]?.DirectorQualification || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorQualification: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorQualification && (
-                <div style={{ color: "red" }}>Enter Director Qualification</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`Directorexp${index}`}>
-                Director's Work Experience (In Detail){" "}
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director's Work Experience (In Detail)"
-                id={`Directorexp${index}`}
-                value={formData.DirectorDetails[index]?.DirectorWorkExperience || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorWorkExperience: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorWorkExperience && (
-                <div style={{ color: "red" }}>Enter Director Work Experience</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`Directorincome${index}`}>
-                Annual Income Of Director's Family (Approx):{" "}
-              </label>
-              <input
-                required
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Annual Income Of Director's Family (Approx):"
-                id={`Directorincome${index}`}
-                value={formData.DirectorDetails[index]?.DirectorAnnualIncome || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorAnnualIncome: value } : director
-                    ),
-                  }));
-                }}
-              />
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorPassportPhoto${index}`}>
-                Director's Passport Size Photo{" "}
-              </label>
-              <input
-                required
-                type="file"
-                className="form-control mt-1"
-                id={`DirectorPassportPhoto${index}`}
-                // value={formData.DirectorDetails[index]?.DirectorPassportPhoto || ""}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (functionShowSizeLimit(file)) {
+      <div className="my-card mt-2">
+        <div className="my-card-body p-3">
+          <div className="directors-details-box p-3" key={index}>
+            <div className="row">
+              <div className="col-lg-12 d-flex align-items-center justify-content-between">
+                <h5>{index + 1}</h5>
+                <div>
+                  <label className="Director">Authorized Person</label>
+                  <input type="radio" name="maindirector_radio" checked={formData.DirectorDetails[index.IsMainDirector]} onChange={() => {
                     setFormData((prevState) => ({
                       ...prevState,
                       DirectorDetails: prevState.DirectorDetails.map((director, i) =>
                         i === index
-                          ? {
-                            ...director,
-                            DirectorPassportPhoto: file,
-                          }
-                          : director
+                          ? { ...director, IsMainDirector: true }
+                          : { ...director, IsMainDirector: false }
                       ),
                     }));
-                  } else {
-                    e.target.value = null; // Clear the input value to prevent invalid file selection
-                  }
-                }}
-              />
-              <div className="input-note">
-                (Files size should be less than 500KB)
+                  }} />
+                  {formSubmitted && errors.IsMainDirector && (
+                    <div style={{ color: "red" }}>{errors.IsMainDirector}</div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorAdharCard${index}`}>
-                Director's Aadhaar Card <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                required
-                type="file"
-                className="form-control mt-1"
-                id={`DirectorAdharCard${index}`}
-                // value={formData.DirectorDetails[index]?.DirectorAdharCard || ""}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (functionShowSizeLimit(file)) {
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                        i === index
-                          ? {
-                            ...director,
-                            DirectorAdharCard: file,
-                          }
-                          : director
-                      ),
-                    }));
-                  } else {
-                    e.target.value = null; // Clear the input value to prevent invalid file selection
-                  }
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorAdharCard && (
-                <div style={{ color: "red" }}>Upload Director AdharCard</div>
-              )}
-            </div>
-          </div>
-
-
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorAdharCardNumber${index}`}>
-                Director's Aadhaar Number
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director AdharCard Number"
-                id={`DirectorAdharCardNumber${index}`}
-                value={formData.DirectorDetails[index]?.DirectorAdharCardNumber || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorAdharCardNumber: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && (
-                !formData.DirectorDetails[index]?.DirectorAdharCardNumber ||
-                !isValidAadhaarNumber(formData.DirectorDetails[index])) && (
-                  <div style={{ color: "red", marginTop: "0.5rem" }}>
-                    {!formData.DirectorDetails[index]?.DirectorAdharCardNumber
-                      ? "Enter Director AdharCard Number"
-                      : !isValidAadhaarNumber(formData.DirectorDetails[index]?.DirectorAdharCardNumber)
-                        ? "Enter a valid 12-digit Aadhaar Card Number"
-                        : null
-                    }
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorName${index}`}>
+                    Enter Director's Name <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director's Name "
+                    id={`DirectorName${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorName || ""}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map(
+                          (DirectorDetails, i) =>
+                            i === index
+                              ? { ...DirectorDetails, DirectorName: value }
+                              : DirectorDetails
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorName && (
+                    <div style={{ color: "red" }}>Enter Director Name</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorEmail${index}`}>
+                    Enter Director's Email <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    className="form-control mt-1"
+                    placeholder="Enter Director's Email"
+                    id={`DirectorEmail${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorEmail || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorEmail: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorEmail && (
+                    <div style={{ color: "red" }}>Enter Director Email</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorMobileNo${index}`}>
+                    Enter Director's Mobile No{" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director's Mobile No "
+                    id={`DirectorMobileNo${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorMobileNo || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorMobileNo: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorMobileNo && (
+                    <div style={{ color: "red" }}>Enter Director Mobile No</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorQualification${index}`}>
+                    Enter Director's Qualification{" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director's Qualification"
+                    id={`DirectorQualification${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorQualification || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorQualification: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorQualification && (
+                    <div style={{ color: "red" }}>Enter Director Qualification</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`Directorexp${index}`}>
+                    Director's Work Experience (In Detail){" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director's Work Experience (In Detail)"
+                    id={`Directorexp${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorWorkExperience || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorWorkExperience: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorWorkExperience && (
+                    <div style={{ color: "red" }}>Enter Director Work Experience</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`Directorincome${index}`}>
+                    Annual Income Of Director's Family (Approx):{" "}
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Annual Income Of Director's Family (Approx):"
+                    id={`Directorincome${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorAnnualIncome || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorAnnualIncome: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorPassportPhoto${index}`}>
+                    Director's Passport Size Photo{" "}
+                  </label>
+                  <input
+                    required
+                    type="file"
+                    className="form-control mt-1"
+                    id={`DirectorPassportPhoto${index}`}
+                    // value={formData.DirectorDetails[index]?.DirectorPassportPhoto || ""}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (functionShowSizeLimit(file)) {
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                            i === index
+                              ? {
+                                ...director,
+                                DirectorPassportPhoto: file,
+                              }
+                              : director
+                          ),
+                        }));
+                      } else {
+                        e.target.value = null; // Clear the input value to prevent invalid file selection
+                      }
+                    }}
+                  />
+                  <div className="input-note">
+                    (Files size should be less than 500KB)
                   </div>
-                )
-              }
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorDesignation${index}`}>
-                Director's Designation
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter Director Designation"
-                id={`DirectorDesignation${index}`}
-                value={formData.DirectorDetails[index]?.DirectorDesignation || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
-                      i === index ? { ...director, DirectorDesignation: value } : director
-                    ),
-                  }));
-                }}
-              />
-              {formSubmitted && !formData.DirectorDetails[index]?.DirectorDesignation && (
-                <div style={{ color: "red" }}>Enter Director Designation</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2 gender">
-              <label htmlFor={`DirectorGender${index}`}>
-                Choose  Director's Gender
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <div className="d-flex align-items-center">
-                <label className="form-check form-check-inline m-0 me-2">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name={`DirectorGender${index}`}
-                    value="Male"
-                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Male'}
-                    onChange={(e) => {
-                      setFormData((prevState) => ({
-                        ...prevState,
-                        DirectorDetails: prevState.DirectorDetails.map(
-                          (DirectorDetails, i) =>
-                            i === index
-                              ? { ...DirectorDetails, DirectorGender: e.target.value }
-                              : DirectorDetails
-                        ),
-                      }));
-                    }}
-                  />
-                  <span className="form-check-label">Male</span>
-                </label>
-                <label className="form-check form-check-inline m-0">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name={`DirectorGender${index}`}
-                    value="Female"
-                    checked={formData.DirectorDetails[index]?.DirectorGender === 'Female'}
-                    onChange={(e) => {
-                      setFormData((prevState) => ({
-                        ...prevState,
-                        DirectorDetails: prevState.DirectorDetails.map(
-                          (DirectorDetails, i) =>
-                            i === index
-                              ? { ...DirectorDetails, DirectorGender: e.target.value }
-                              : DirectorDetails
-                        ),
-                      }));
-                    }}
-                  />
-                  <span className="form-check-label">Female</span>
-                </label>
+                </div>
               </div>
-              {formSubmitted && !formData.DirectorDetails[index.DirectorGender] && (
-                <div style={{ color: "red" }}>Select the Director Gender</div>
-              )}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <div className="form-group mt-2 mb-2">
-              <label htmlFor={`DirectorLinkedIn${index}`}>
-                LinkedIn Profile Link
-              </label>
-              <input
-                type="text"
-                className="form-control mt-1"
-                placeholder="Enter LinkedIn Profile Link"
-                id={`DirectorLinkedIn${index}`}
-                value={formData.DirectorDetails[index]?.LinkedInProfileLink || ""}
-                onChange={(e) => {
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            LinkedInProfileLink: e.target.value,
-                          }
-                          : DirectorDetails
-                    ),
-                  }));
-                }}
-              />
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorAdharCard${index}`}>
+                    Director's Aadhaar Card <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    required
+                    type="file"
+                    className="form-control mt-1"
+                    id={`DirectorAdharCard${index}`}
+                    // value={formData.DirectorDetails[index]?.DirectorAdharCard || ""}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (functionShowSizeLimit(file)) {
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                            i === index
+                              ? {
+                                ...director,
+                                DirectorAdharCard: file,
+                              }
+                              : director
+                          ),
+                        }));
+                      } else {
+                        e.target.value = null; // Clear the input value to prevent invalid file selection
+                      }
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorAdharCard && (
+                    <div style={{ color: "red" }}>Upload Director AdharCard</div>
+                  )}
+                </div>
+              </div>
+
+
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorAdharCardNumber${index}`}>
+                    Director's Aadhaar Number
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director AdharCard Number"
+                    id={`DirectorAdharCardNumber${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorAdharCardNumber || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorAdharCardNumber: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && (
+                    !formData.DirectorDetails[index]?.DirectorAdharCardNumber ||
+                    !isValidAadhaarNumber(formData.DirectorDetails[index])) && (
+                      <div style={{ color: "red", marginTop: "0.5rem" }}>
+                        {!formData.DirectorDetails[index]?.DirectorAdharCardNumber
+                          ? "Enter Director AdharCard Number"
+                          : !isValidAadhaarNumber(formData.DirectorDetails[index]?.DirectorAdharCardNumber)
+                            ? "Enter a valid 12-digit Aadhaar Card Number"
+                            : null
+                        }
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorDesignation${index}`}>
+                    Director's Designation
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter Director Designation"
+                    id={`DirectorDesignation${index}`}
+                    value={formData.DirectorDetails[index]?.DirectorDesignation || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                          i === index ? { ...director, DirectorDesignation: value } : director
+                        ),
+                      }));
+                    }}
+                  />
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorDesignation && (
+                    <div style={{ color: "red" }}>Enter Director Designation</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2 gender">
+                  <label htmlFor={`DirectorGender${index}`}>
+                    Choose  Director's Gender
+                    <span style={{ color: "red" }}>*</span>
+                  </label>
+                  <div className="d-flex align-items-center">
+                    <label className="form-check form-check-inline m-0 me-2">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`DirectorGender${index}`}
+                        value="Male"
+                        checked={formData.DirectorDetails[index]?.DirectorGender === 'Male'}
+                        onChange={(e) => {
+                          setFormData((prevState) => ({
+                            ...prevState,
+                            DirectorDetails: prevState.DirectorDetails.map(
+                              (DirectorDetails, i) =>
+                                i === index
+                                  ? { ...DirectorDetails, DirectorGender: e.target.value }
+                                  : DirectorDetails
+                            ),
+                          }));
+                        }}
+                      />
+                      <span className="form-check-label">Male</span>
+                    </label>
+                    <label className="form-check form-check-inline m-0">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`DirectorGender${index}`}
+                        value="Female"
+                        checked={formData.DirectorDetails[index]?.DirectorGender === 'Female'}
+                        onChange={(e) => {
+                          setFormData((prevState) => ({
+                            ...prevState,
+                            DirectorDetails: prevState.DirectorDetails.map(
+                              (DirectorDetails, i) =>
+                                i === index
+                                  ? { ...DirectorDetails, DirectorGender: e.target.value }
+                                  : DirectorDetails
+                            ),
+                          }));
+                        }}
+                      />
+                      <span className="form-check-label">Female</span>
+                    </label>
+                  </div>
+                  {formSubmitted && !formData.DirectorDetails[index.DirectorGender] && (
+                    <div style={{ color: "red" }}>Select the Director Gender</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="form-group mt-2 mb-2">
+                  <label htmlFor={`DirectorLinkedIn${index}`}>
+                    LinkedIn Profile Link
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control mt-1"
+                    placeholder="Enter LinkedIn Profile Link"
+                    id={`DirectorLinkedIn${index}`}
+                    value={formData.DirectorDetails[index]?.LinkedInProfileLink || ""}
+                    onChange={(e) => {
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        DirectorDetails: prevState.DirectorDetails.map(
+                          (DirectorDetails, i) =>
+                            i === index
+                              ? {
+                                ...DirectorDetails,
+                                LinkedInProfileLink: e.target.value,
+                              }
+                              : DirectorDetails
+                        ),
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -951,705 +955,712 @@ const BasicForm = () => {
       <div className="basic-info-page-body">
         <div className="basic-info-head">
           <div className="container-xl">
-            <h2 className="m-0">Basic Information form</h2>
+            <h1 className="m-0">Basic Information form</h1>
           </div>
         </div>
         <form className="basic-info-form" onSubmit={handleSubmit}>
           <div className="container-xl">
             <div className="basic-info-form-head mt-4 mb-2">
-              <h3>Basic Information</h3>
+              <h2 className="m-0">Basic Information</h2>
             </div>
-            <div className="row">
-              <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Company">
-                    Company Name: <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Enter Company Name"
-                    id="Company"
-                    value={formData.CompanyName}
-                    onChange={(e) => handleInputChange(e, "CompanyName")}
-                  />
-                  {formSubmitted && errors.CompanyName && (
-                    <div style={{ color: "red" }}>{errors.CompanyName}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="CompanyEmail">
-                    Email Address: <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <input
-                    required
-                    type="email"
-                    className="form-control mt-1"
-                    placeholder="Enter Company Email"
-                    id="CompanyEmail"
-                    value={formData.CompanyEmail}
-                    onChange={e => handleInputChange(e, 'CompanyEmail')}
-                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                    title="Enter a valid email address"
-                  />
-                  {formSubmitted && formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail) && (
-                    <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
-                  )}
-                </div>
-              </div>
+            <div className="my-card mt-2">
+              <div className="my-card-body p-3">
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Company">
+                        Company Name: <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control mt-1"
+                        placeholder="Enter Company Name"
+                        id="Company"
+                        value={formData.CompanyName}
+                        onChange={(e) => handleInputChange(e, "CompanyName")}
+                      />
+                      {formSubmitted && errors.CompanyName && (
+                        <div style={{ color: "red" }}>{errors.CompanyName}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="CompanyEmail">
+                        Email Address: <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="email"
+                        className="form-control mt-1"
+                        placeholder="Enter Company Email"
+                        id="CompanyEmail"
+                        value={formData.CompanyEmail}
+                        onChange={e => handleInputChange(e, 'CompanyEmail')}
+                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                        title="Enter a valid email address"
+                      />
+                      {formSubmitted && formData.CompanyEmail !== "" && !isValidEmail(formData.CompanyEmail) && (
+                        <div style={{ color: "red" }}>{errors.CompanyEmail}</div>
+                      )}
+                    </div>
+                  </div>
 
-              <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="CompanyNo">
-                    Phone No: <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <input
-                    required
-                    type="tel"
-                    className="form-control mt-1"
-                    placeholder="Enter Company Phone No."
-                    id="CompanyNo"
-                    value={formData.CompanyNo}
-                    onChange={e => handleInputChange(e, 'CompanyNo')}
-                  />
-                  {formSubmitted && !formData.CompanyNo && (
-                    <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
-                  )}
-                  {formSubmitted && formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo) && (
-                    <div style={{ color: "red" }}>{errors.CompanyNo}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Brand-Name">Brand Name (If any):</label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Enter Brand Name"
-                    id="Brand-Name"
-                    value={formData.BrandName}
-                    onChange={e => handleInputChange(e, 'BrandName')}
-                  />
-                  {formSubmitted && !formData.BrandName && (
-                    <div style={{ color: "red" }}>{"Enter Brand Name"}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="WebsiteLink">Website's Link (If any):</label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Enter Website's Link"
-                    id="WebsiteLink"
-                    value={formData.WebsiteLink}
-                    onChange={(e) => handleInputChange(e, "WebsiteLink")}
-                  />
-                  {formSubmitted && !formData.WebsiteLink && (
-                    <div style={{ color: "red" }}>{"Mention Website Link"}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="WebsiteLink">Company Address: </label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Enter Company Address"
-                    id="CompanyAddress"
-                    value={formData.CompanyAddress}
-                    onChange={(e) => handleInputChange(e, "CompanyAddress")}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="WebsiteLink">Company Pan Number: <span style={{ color: "red" }}>*</span></label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control mt-1"
-                    placeholder="Enter Pan Number"
-                    id="CompanyPanNumber"
-                    value={formData.CompanyPanNumber}
-                    onChange={(e) => handleInputChange(e, "CompanyPanNumber")}
-                  />
-                  {formSubmitted && !formData.CompanyPanNumber && (
-                    <div style={{ color: "red" }}>{"Enter Pan Number"}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="mt-2 mb-2">
-                  <label htmlFor="Services">
-                    Select Your Services <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <Select
-                    className="mt-1"
-                    isMulti
-                    options={options1}
-                    id="Services"
-                    value={options1.filter(option => formData.SelectServices.includes(option.value))}
-                    placeholder="SelectServices"
-                    onChange={handleChange}>
-                    {options1.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
-                  {formSubmitted && !formData.SelectServices.length && (
-                    <div style={{ color: "red" }}>{"Select Your Services"}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Upload-MOA">Upload MOA:</label>
-                  <input
-                    type="file"
-                    class="form-control mt-1"
-                    id="Upload-MOA"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (functionShowSizeLimit(file)) {
-                        setFormData((prevState) => ({
-                          ...prevState,
-                          UploadMOA: file,
-                        }));
-                      } else {
-                        e.target.value = null; // Clear the input value to prevent invalid file selection
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Upload-AOA">Upload AOA:</label>
-                  <input
-                    type="file"
-                    className="form-control mt-1"
-                    id="Upload-AOA"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (functionShowSizeLimit(file)) {
-                        setFormData((prevState) => ({
-                          ...prevState,
-                          UploadAOA: file,
-                        }));
-                      } else {
-                        e.target.value = null; // Clear the input value to prevent invalid file selection
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-12">
-                <div className="form-group d-flex align-items-center mt-2 mb-2">
-                  <label className="m-0" htmlFor="SocialMediaLink">
-                    Do You have Social Media Link?
-                  </label>
-                  <div className="d-flex ms-2">
-                    <label className="form-check form-check-inline m-0 me-2">
+                  <div className="col-lg-4">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="CompanyNo">
+                        Phone No: <span style={{ color: "red" }}>*</span>
+                      </label>
                       <input
-                        className="form-check-input"
-                        type="radio"
-                        name="socialMediaLink"
-                        value="yes"
-                        onChange={handleRadioChange}
+                        required
+                        type="tel"
+                        className="form-control mt-1"
+                        placeholder="Enter Company Phone No."
+                        id="CompanyNo"
+                        value={formData.CompanyNo}
+                        onChange={e => handleInputChange(e, 'CompanyNo')}
                       />
-                      <span className="form-check-label">Yes</span>
-                    </label>
-                    <label className="form-check form-check-inline m-0">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="socialMediaLink"
-                        value="no"
-                        onChange={handleRadioChange}
-                      />
-                      <span className="form-check-label">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              {showLinks && (
-                <div className="col-lg-12">
-                  <div className="row">
-                    <div className="col-lg-3">
-                      <div className="form-group mt-2 mb-2">
-                        <label htmlFor="Facebook_link">Facebook link:</label>
-                        <input
-                          type="text"
-                          className="form-control mt-1"
-                          placeholder="Enter Facebook link"
-                          id="Facebook_link"
-                          onChange={(e) => handleInputChange(e, "FacebookLink")}
-                        />
-                      </div>
+                      {formSubmitted && !formData.CompanyNo && (
+                        <div style={{ color: "red" }}>{"Enter Mobile Number"}</div>
+                      )}
+                      {formSubmitted && formData.CompanyNo !== "" && !isValidMobileNo(formData.CompanyNo) && (
+                        <div style={{ color: "red" }}>{errors.CompanyNo}</div>
+                      )}
                     </div>
-                    <div className="col-lg-3">
-                      <div className="form-group mt-2 mb-2">
-                        <label htmlFor="Instagram_link">Instagram link:</label>
-                        <input
-                          type="text"
-                          className="form-control mt-1"
-                          placeholder="Enter Instagram link"
-                          id="Instagram_link"
-                          onChange={(e) =>
-                            handleInputChange(e, "InstagramLink")
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Brand-Name">Brand Name (If any):</label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control mt-1"
+                        placeholder="Enter Brand Name"
+                        id="Brand-Name"
+                        value={formData.BrandName}
+                        onChange={e => handleInputChange(e, 'BrandName')}
+                      />
+                      {formSubmitted && !formData.BrandName && (
+                        <div style={{ color: "red" }}>{"Enter Brand Name"}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="WebsiteLink">Website's Link (If any):</label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control mt-1"
+                        placeholder="Enter Website's Link"
+                        id="WebsiteLink"
+                        value={formData.WebsiteLink}
+                        onChange={(e) => handleInputChange(e, "WebsiteLink")}
+                      />
+                      {formSubmitted && !formData.WebsiteLink && (
+                        <div style={{ color: "red" }}>{"Mention Website Link"}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="WebsiteLink">Company Address: </label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control mt-1"
+                        placeholder="Enter Company Address"
+                        id="CompanyAddress"
+                        value={formData.CompanyAddress}
+                        onChange={(e) => handleInputChange(e, "CompanyAddress")}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="WebsiteLink">Company Pan Number: <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control mt-1"
+                        placeholder="Enter Pan Number"
+                        id="CompanyPanNumber"
+                        value={formData.CompanyPanNumber}
+                        onChange={(e) => handleInputChange(e, "CompanyPanNumber")}
+                      />
+                      {formSubmitted && !formData.CompanyPanNumber && (
+                        <div style={{ color: "red" }}>{"Enter Pan Number"}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="mt-2 mb-2">
+                      <label htmlFor="Services">
+                        Select Your Services <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <Select
+                        className="mt-1"
+                        isMulti
+                        options={options1}
+                        id="Services"
+                        value={options1.filter(option => formData.SelectServices.includes(option.value))}
+                        placeholder="SelectServices"
+                        onChange={handleChange}>
+                        {options1.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                      {formSubmitted && !formData.SelectServices.length && (
+                        <div style={{ color: "red" }}>{"Select Your Services"}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Upload-MOA">Upload MOA:</label>
+                      <input
+                        type="file"
+                        class="form-control mt-1"
+                        id="Upload-MOA"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (functionShowSizeLimit(file)) {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              UploadMOA: file,
+                            }));
+                          } else {
+                            e.target.value = null; // Clear the input value to prevent invalid file selection
                           }
-                        />
-                      </div>
+                        }}
+                      />
                     </div>
-                    <div className="col-lg-3">
-                      <div className="form-group mt-2 mb-2">
-                        <label htmlFor="LinkedIn_link">LinkedIn link:</label>
-                        <input
-                          type="text"
-                          className="form-control mt-1"
-                          placeholder="Enter LinkedIn link"
-                          id="LinkedIn_link"
-                          onChange={(e) => handleInputChange(e, "LinkedInLink")}
-                        />
-                      </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Upload-AOA">Upload AOA:</label>
+                      <input
+                        type="file"
+                        className="form-control mt-1"
+                        id="Upload-AOA"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (functionShowSizeLimit(file)) {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              UploadAOA: file,
+                            }));
+                          } else {
+                            e.target.value = null; // Clear the input value to prevent invalid file selection
+                          }
+                        }}
+                      />
                     </div>
-                    <div className="col-lg-3">
-                      <div className="form-group mt-2 mb-2">
-                        <label htmlFor="YouTube_link">YouTube link:</label>
-                        <input
-                          type="text"
-                          className="form-control mt-1"
-                          placeholder="Enter YouTube link"
-                          id="YouTube_link"
-                          onChange={(e) => handleInputChange(e, "YoutubeLink")}
-                        />
+                  </div>
+                  <div className="col-lg-12">
+                    <div className="form-group d-flex align-items-center mt-2 mb-2">
+                      <label className="m-0" htmlFor="SocialMediaLink">
+                        Do You have Social Media Link?
+                      </label>
+                      <div className="d-flex ms-2">
+                        <label className="form-check form-check-inline m-0 me-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="socialMediaLink"
+                            value="yes"
+                            onChange={handleRadioChange}
+                          />
+                          <span className="form-check-label">Yes</span>
+                        </label>
+                        <label className="form-check form-check-inline m-0">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="socialMediaLink"
+                            value="no"
+                            onChange={handleRadioChange}
+                          />
+                          <span className="form-check-label">No</span>
+                        </label>
                       </div>
                     </div>
                   </div>
+                  {showLinks && (
+                    <div className="col-lg-12">
+                      <div className="row">
+                        <div className="col-lg-3">
+                          <div className="form-group mt-2 mb-2">
+                            <label htmlFor="Facebook_link">Facebook link:</label>
+                            <input
+                              type="text"
+                              className="form-control mt-1"
+                              placeholder="Enter Facebook link"
+                              id="Facebook_link"
+                              onChange={(e) => handleInputChange(e, "FacebookLink")}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-3">
+                          <div className="form-group mt-2 mb-2">
+                            <label htmlFor="Instagram_link">Instagram link:</label>
+                            <input
+                              type="text"
+                              className="form-control mt-1"
+                              placeholder="Enter Instagram link"
+                              id="Instagram_link"
+                              onChange={(e) =>
+                                handleInputChange(e, "InstagramLink")
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-3">
+                          <div className="form-group mt-2 mb-2">
+                            <label htmlFor="LinkedIn_link">LinkedIn link:</label>
+                            <input
+                              type="text"
+                              className="form-control mt-1"
+                              placeholder="Enter LinkedIn link"
+                              id="LinkedIn_link"
+                              onChange={(e) => handleInputChange(e, "LinkedInLink")}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-3">
+                          <div className="form-group mt-2 mb-2">
+                            <label htmlFor="YouTube_link">YouTube link:</label>
+                            <input
+                              type="text"
+                              className="form-control mt-1"
+                              placeholder="Enter YouTube link"
+                              id="YouTube_link"
+                              onChange={(e) => handleInputChange(e, "YoutubeLink")}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <div className="basic-info-form-head mt-4 mb-2">
-              <h3>Brief About Your Business</h3>
+              <h2 className="m-0">Brief About Your Business</h2>
             </div>
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Brief">
-                    Brief Of Your Business/Product/Service (Company's
-                    Activities): <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <textarea
-                    required
-                    className="form-control mt-1"
-                    placeholder="Brief Of Your Business"
-                    id="Brief"
-                    onChange={(e) => handleInputChange(e, "CompanyActivities")}
-                  ></textarea>
-                  {formSubmitted && !formData.CompanyActivities && (
-                    <div style={{ color: "red" }}>
-                      {"Enter Company Activities"}
+            <div className="my-card mt-2">
+              <div className="my-card-body p-3">
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Brief">
+                        Brief Of Your Business/Product/Service (Company's
+                        Activities): <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <textarea
+                        required
+                        className="form-control mt-1"
+                        placeholder="Brief Of Your Business"
+                        id="Brief"
+                        onChange={(e) => handleInputChange(e, "CompanyActivities")}
+                      ></textarea>
+                      {formSubmitted && !formData.CompanyActivities && (
+                        <div style={{ color: "red" }}>
+                          {"Enter Company Activities"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Problems">
+                        What Are The Problems That Your Product Or Service Proposes
+                        To Solve And How? <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <textarea
+                        required
+                        className="form-control mt-1"
+                        placeholder="Brief Of Problems and Solutions"
+                        id="Problems"
+                        onChange={(e) => handleInputChange(e, "ProductService")}
+                      ></textarea>
+                      {formSubmitted && !formData.ProductService && (
+                        <div style={{ color: "red" }}>
+                          {"Enter Problems And Solutions"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="USP">
+                        Core Strength Of Your Business Which Differs Your Company
+                        From Other Business In The <br />
+                        Industry (USP) <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <textarea
+                        required
+                        className="form-control mt-1"
+                        placeholder="USP"
+                        id="USP"
+                        onChange={(e) => handleInputChange(e, "CompanyUSP")}
+                      ></textarea>
+                      {formSubmitted && !formData.CompanyUSP && (
+                        <div style={{ color: "red" }}>{"Enter Company USP"}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="ValueProposition">
+                        Value Proposition Of <br /> Your Project{" "}
+                        <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <textarea
+                        required
+                        className="form-control mt-1"
+                        placeholder="Value Proposition"
+                        id="ValueProposition"
+                        onChange={(e) => handleInputChange(e, "ValueProposition")}
+                      ></textarea>
+                      {formSubmitted && !formData.ValueProposition && (
+                        <div style={{ color: "red" }}>
+                          {"Enter Company Value Proposition Of Your Project"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-lg-12">
+                    <hr className="mt-1 mb-1" />
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label className="m-0">
+                        Any Kind Of Technology Is Involved In Your Product Or
+                        Service?
+                      </label>
+                      <div className="d-flex align-items-center">
+                        <label className="form-check form-check-inline m-0 me-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="technologyInvolved"
+                            value="yes"
+                            onChange={handleRadioChanges}
+                          />
+                          <span className="form-check-label">Yes</span>
+                        </label>
+                        <label className="form-check form-check-inline m-0">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="technologyInvolved"
+                            value="no"
+                            onChange={handleRadioChanges}
+                          />
+                          <span className="form-check-label">No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  {showTechnologyDetails && (
+                    <div className="col-lg-6">
+                      <div className="form-group mt-2 mb-2">
+                        <label className="m-0">
+                          Add Details About Technology Involved
+                          <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <textarea
+                          className="form-control mt-1"
+                          placeholder="Technology details"
+                          id="TechnologyDetails"
+                          onChange={(e) =>
+                            handleInputChange(e, "TechnologyInvolved")
+                          }
+                        ></textarea>
+                        {formSubmitted && !formData.TechnologyInvolved && (
+                          <div style={{ color: "red" }}>{"Enter Technology"}</div>
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="Problems">
-                    What Are The Problems That Your Product Or Service Proposes
-                    To Solve And How? <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <textarea
-                    required
-                    className="form-control mt-1"
-                    placeholder="Brief Of Problems and Solutions"
-                    id="Problems"
-                    onChange={(e) => handleInputChange(e, "ProductService")}
-                  ></textarea>
-                  {formSubmitted && !formData.ProductService && (
-                    <div style={{ color: "red" }}>
-                      {"Enter Problems And Solutions"}
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group mt-2 mb-2">
+                      <label class="m-0">
+                        {" "}
+                        Do You Have Photos Of Product/Prototype Or LOGO?
+                      </label>
+                      <div class="d-flex align-items-center">
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="Photos"
+                            value="Yes"
+                            onChange={handlePhotos}
+                          />
+                          <span class="form-check-label">Yes</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="Photos"
+                            value="No"
+                            onChange={handlePhotos}
+                          />
+                          <span class="form-check-label">No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  {showPhotos && (
+                    <div class="col-lg-6">
+                      <div class="form-group mt-2 mb-2">
+                        <label for="Technologyinvolve">
+                          Upload Photos of LOGO Or Product/Prototype{" "}
+                          <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <input
+                          type="file"
+                          class="form-control mt-1"
+                          id="Photos-logos"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (functionShowSizeLimit(file)) {
+                              setFormData((prevState) => ({
+                                ...prevState,
+                                UploadPhotos: file,
+                              }));
+                            } else {
+                              e.target.value = null; // Clear the input value to prevent invalid file selection
+                            }
+                          }}
+                        />
+                        {formSubmitted && !formData.UploadPhotos && (
+                          <div style={{ color: "red" }}>{"Upload Photos"}</div>
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="USP">
-                    Core Strength Of Your Business Which Differs Your Company
-                    From Other Business In The <br />
-                    Industry (USP) <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <textarea
-                    required
-                    className="form-control mt-1"
-                    placeholder="USP"
-                    id="USP"
-                    onChange={(e) => handleInputChange(e, "CompanyUSP")}
-                  ></textarea>
-                  {formSubmitted && !formData.CompanyUSP && (
-                    <div style={{ color: "red" }}>{"Enter Company USP"}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label htmlFor="ValueProposition">
-                    Value Proposition Of <br /> Your Project{" "}
-                    <span style={{ color: "red" }}>*</span>
-                  </label>
-                  <textarea
-                    required
-                    className="form-control mt-1"
-                    placeholder="Value Proposition"
-                    id="ValueProposition"
-                    onChange={(e) => handleInputChange(e, "ValueProposition")}
-                  ></textarea>
-                  {formSubmitted && !formData.ValueProposition && (
-                    <div style={{ color: "red" }}>
-                      {"Enter Company Value Proposition Of Your Project"}
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group mt-2 mb-2">
+                      <label class="m-0">
+                        {" "}
+                        Any IP (Trademark/Copyright/Patent/Geographical
+                        Identification) Filed?
+                      </label>
+                      <div class="d-flex align-items-center">
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="ip"
+                            value="Yes"
+                            onChange={handleIp}
+                          />
+                          <span class="form-check-label">Yes</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="ip"
+                            value="No"
+                            onChange={handleIp}
+                          />
+                          <span class="form-check-label">No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  {showIp && (
+                    <div className="col-lg-6">
+                      <div className="form-group mt-2 mb-2">
+                        <label htmlFor="Technologyinvolve">
+                          Provide The Option to Upload the Relevant Document:
+                          <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <textarea
+                          className="form-control mt-1"
+                          placeholder="Any Comment"
+                          id="Technologyinvolve"
+                        ></textarea>
+                        <input
+                          type="file"
+                          className="form-control mt-1"
+                          id="ip"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (functionShowSizeLimit(file)) {
+                              setFormData((prevState) => ({
+                                ...prevState,
+                                RelevantDocument: file,
+                              }));
+                            } else {
+                              e.target.value = null; // Clear the input value to prevent invalid file selection
+                            }
+                          }}
+                        />
+                        {formSubmitted && !formData.RelevantDocument && (
+                          <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="col-lg-12">
-                <hr className="mt-1 mb-1" />
-              </div>
-              <div className="col-lg-6">
-                <div className="form-group mt-2 mb-2">
-                  <label className="m-0">
-                    Any Kind Of Technology Is Involved In Your Product Or
-                    Service?
-                  </label>
-                  <div className="d-flex align-items-center">
-                    <label className="form-check form-check-inline m-0 me-2">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="technologyInvolved"
-                        value="yes"
-                        onChange={handleRadioChanges}
-                      />
-                      <span className="form-check-label">Yes</span>
-                    </label>
-                    <label className="form-check form-check-inline m-0">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="technologyInvolved"
-                        value="no"
-                        onChange={handleRadioChanges}
-                      />
-                      <span className="form-check-label">No</span>
-                    </label>
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
                   </div>
-                </div>
-              </div>
-              {showTechnologyDetails && (
-                <div className="col-lg-6">
-                  <div className="form-group mt-2 mb-2">
-                    <label className="m-0">
-                      Add Details About Technology Involved
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <textarea
-                      className="form-control mt-1"
-                      placeholder="Technology details"
-                      id="TechnologyDetails"
-                      onChange={(e) =>
-                        handleInputChange(e, "TechnologyInvolved")
-                      }
-                    ></textarea>
-                    {formSubmitted && !formData.TechnologyInvolved && (
-                      <div style={{ color: "red" }}>{"Enter Technology"}</div>
-                    )}
-                  </div>
-                </div>
-              )}
-              <div class="col-lg-12">
-                <hr class="mt-1 mb-1" />
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group mt-2 mb-2">
-                  <label class="m-0">
-                    {" "}
-                    Do You Have Photos Of Product/Prototype Or LOGO?
-                  </label>
-                  <div class="d-flex align-items-center">
-                    <label class="form-check form-check-inline m-0 me-2">
+                  <div class="col-lg-6">
+                    <div class="form-group mt-2 mb-2">
+                      <label for="Competitor">
+                        {" "}
+                        Name Closest Direct/Indirect Competitor In The Market
+                      </label>
                       <input
-                        class="form-check-input"
-                        type="radio"
-                        name="Photos"
-                        value="Yes"
-                        onChange={handlePhotos}
-                      />
-                      <span class="form-check-label">Yes</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        name="Photos"
-                        value="No"
-                        onChange={handlePhotos}
-                      />
-                      <span class="form-check-label">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              {showPhotos && (
-                <div class="col-lg-6">
-                  <div class="form-group mt-2 mb-2">
-                    <label for="Technologyinvolve">
-                      Upload Photos of LOGO Or Product/Prototype{" "}
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="file"
-                      class="form-control mt-1"
-                      id="Photos-logos"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (functionShowSizeLimit(file)) {
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            UploadPhotos: file,
-                          }));
-                        } else {
-                          e.target.value = null; // Clear the input value to prevent invalid file selection
+                        type="text"
+                        class="form-control mt-1"
+                        placeholder="Closest Direct/Indirect Competitor In The Market"
+                        id="Competitor"
+                        onChange={(e) =>
+                          handleInputChange(e, "DirectInDirectMarket")
                         }
-                      }}
-                    />
-                    {formSubmitted && !formData.UploadPhotos && (
-                      <div style={{ color: "red" }}>{"Upload Photos"}</div>
-                    )}
-                  </div>
-                </div>
-              )}
-              <div class="col-lg-12">
-                <hr class="mt-1 mb-1" />
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group mt-2 mb-2">
-                  <label class="m-0">
-                    {" "}
-                    Any IP (Trademark/Copyright/Patent/Geographical
-                    Identification) Filed?
-                  </label>
-                  <div class="d-flex align-items-center">
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="ip"
-                        value="Yes"
-                        onChange={handleIp}
                       />
-                      <span class="form-check-label">Yes</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="ip"
-                        value="No"
-                        onChange={handleIp}
-                      />
-                      <span class="form-check-label">No</span>
-                    </label>
+                      {formSubmitted && errors.DirectInDirectMarket && (
+                        <div style={{ color: "red" }}>{errors.DirectInDirectMarket}</div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-              {showIp && (
-                <div className="col-lg-6">
-                  <div className="form-group mt-2 mb-2">
-                    <label htmlFor="Technologyinvolve">
-                      Provide The Option to Upload the Relevant Document:
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <textarea
-                      className="form-control mt-1"
-                      placeholder="Any Comment"
-                      id="Technologyinvolve"
-                    ></textarea>
-                    <input
-                      type="file"
-                      className="form-control mt-1"
-                      id="ip"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (functionShowSizeLimit(file)) {
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            RelevantDocument: file,
-                          }));
-                        } else {
-                          e.target.value = null; // Clear the input value to prevent invalid file selection
-                        }
-                      }}
-                    />
-                    {formSubmitted && !formData.RelevantDocument && (
-                      <div style={{ color: "red" }}>{"Upload Relevant Document"}</div>
-                    )}
+                  <div class="col-lg-6">
+                    <div class="form-group mt-2 mb-2">
+                      <label class="m-0"> Select Your Business Model</label>
+                      <div class="d-flex align-items-center mt-2">
+                        <label
+                          class="form-check form-check-inline m-0 me-2"
+                          onChange={(e) => handleInputChange(e, "BusinessModel")}
+                        >
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="ip"
+                            value="B2B"
+                            onChange={(e) => handleInputChange(e, "BusinessModel")}
+                          />
+                          <span class="form-check-label">B2B</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="ip"
+                            value="B2C"
+                            onChange={(e) => handleInputChange(e, "BusinessModel")}
+                          />
+                          <span class="form-check-label">B2C</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="ip"
+                            value="B2G"
+                            onChange={(e) => handleInputChange(e, "BusinessModel")}
+                          />
+                          <span class="form-check-label">B2G</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="ip"
+                            value="D2C"
+                            onChange={(e) => handleInputChange(e, "BusinessModel")}
+                          />
+                          <span class="form-check-label">D2C</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="ip"
+                            value="C2C"
+                            onChange={(e) => handleInputChange(e, "BusinessModel")}
+                          />
+                          <span class="form-check-label">C2C</span>
+                        </label>
+                        {formSubmitted && !formData.BusinessModel && (
+                          <div style={{ color: "red" }}></div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
-              <div class="col-lg-12">
-                <hr class="mt-1 mb-1" />
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group mt-2 mb-2">
-                  <label for="Competitor">
-                    {" "}
-                    Name Closest Direct/Indirect Competitor In The Market
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control mt-1"
-                    placeholder="Closest Direct/Indirect Competitor In The Market"
-                    id="Competitor"
-                    onChange={(e) =>
-                      handleInputChange(e, "DirectInDirectMarket")
-                    }
-                  />
-                  {formSubmitted && errors.DirectInDirectMarket && (
-                    <div style={{ color: "red" }}>{errors.DirectInDirectMarket}</div>
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group mt-2 mb-2">
+                      <label class="m-0">
+                        Have You Raised Any Financing Thus Far <br />
+                        (Grants, Loans, Investments, Friends And Family, Etc.)
+                      </label>
+                      <div class="d-flex align-items-center">
+                        <label class="form-check form-check-inline m-0 me-2">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="Raised"
+                            value="yes"
+                            onChange={handleFinance}
+                          />
+                          <span class="form-check-label">Yes</span>
+                        </label>
+                        <label class="form-check form-check-inline m-0">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="Raised"
+                            value="No"
+                            onChange={handleFinance}
+                          />
+                          <span class="form-check-label">No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  {showFinance && (
+                    <div class="col-lg-6">
+                      <div class="form-group mt-2 mb-2">
+                        <label for="grants">
+                          Provide The Option to Mentioned The Same and Explain
+                          <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <textarea
+                          class="form-control mt-1"
+                          placeholder="grants, loans, investments, friends and family, etc"
+                          id="grants"
+                          onChange={(e) => handleInputChange(e, "Finance")}
+                        ></textarea>
+                        {formSubmitted && !formData.Finance && (
+                          <div style={{ color: "red" }}>{"Enter details about Finance"}</div>
+                        )}
+                      </div>
+                    </div>
                   )}
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group mt-2 mb-2">
-                  <label class="m-0"> Select Your Business Model</label>
-                  <div class="d-flex align-items-center mt-2">
-                    <label
-                      class="form-check form-check-inline m-0 me-2"
-                      onChange={(e) => handleInputChange(e, "BusinessModel")}
-                    >
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="ip"
-                        value="B2B"
-                        onChange={(e) => handleInputChange(e, "BusinessModel")}
-                      />
-                      <span class="form-check-label">B2B</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="ip"
-                        value="B2C"
-                        onChange={(e) => handleInputChange(e, "BusinessModel")}
-                      />
-                      <span class="form-check-label">B2C</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="ip"
-                        value="B2G"
-                        onChange={(e) => handleInputChange(e, "BusinessModel")}
-                      />
-                      <span class="form-check-label">B2G</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="ip"
-                        value="D2C"
-                        onChange={(e) => handleInputChange(e, "BusinessModel")}
-                      />
-                      <span class="form-check-label">D2C</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="ip"
-                        value="C2C"
-                        onChange={(e) => handleInputChange(e, "BusinessModel")}
-                      />
-                      <span class="form-check-label">C2C</span>
-                    </label>
-                    {formSubmitted && !formData.BusinessModel && (
-                      <div style={{ color: "red" }}></div>
-                    )}
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
                   </div>
                 </div>
-              </div>
-              <div class="col-lg-12">
-                <hr class="mt-1 mb-1" />
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group mt-2 mb-2">
-                  <label class="m-0">
-                    Have You Raised Any Financing Thus Far <br />
-                    (Grants, Loans, Investments, Friends And Family, Etc.)
-                  </label>
-                  <div class="d-flex align-items-center">
-                    <label class="form-check form-check-inline m-0 me-2">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        name="Raised"
-                        value="yes"
-                        onChange={handleFinance}
-                      />
-                      <span class="form-check-label">Yes</span>
-                    </label>
-                    <label class="form-check form-check-inline m-0">
-                      <input
-                        class="form-check-input"
-                        type="radio"
-                        name="Raised"
-                        value="No"
-                        onChange={handleFinance}
-                      />
-                      <span class="form-check-label">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              {showFinance && (
-                <div class="col-lg-6">
-                  <div class="form-group mt-2 mb-2">
-                    <label for="grants">
-                      Provide The Option to Mentioned The Same and Explain
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <textarea
-                      class="form-control mt-1"
-                      placeholder="grants, loans, investments, friends and family, etc"
-                      id="grants"
-                      onChange={(e) => handleInputChange(e, "Finance")}
-                    ></textarea>
-                    {formSubmitted && !formData.Finance && (
-                      <div style={{ color: "red" }}>{"Enter details about Finance"}</div>
-                    )}
-                  </div>
-                </div>
-              )}
-              <div class="col-lg-12">
-                <hr class="mt-1 mb-1" />
               </div>
             </div>
-
             <div class="basic-info-form-head mt-4 mb-2">
               {/* <h3>Directors And Team Details</h3> */}
             </div>
@@ -1657,9 +1668,9 @@ const BasicForm = () => {
             <div className="row">
               <div className="col-lg-12">
                 <div className="form-group d-flex align-items-center mt-2 mb-2">
-                  <label className="m-0" htmlFor="DirectorsNO">
+                  <h2 className="m-0" htmlFor="DirectorsNO">
                     How Many Directors/Partners Are There?
-                  </label>
+                  </h2>
                   <select
                     className="form-select mt-1 ms-2"
                     id="DirectorsNO"
@@ -1677,15 +1688,20 @@ const BasicForm = () => {
               </div>
               {renderDirectorFields()}
             </div>
-            <div className="d-flex justify-content-end">
-              <button
-                type="submit"
-                onClick={handleSubmit}
-                className="btn btn-md btn-primary mt-4"
-              >
-                Submit
-              </button>
+            <div className="row">
+              <div className="col-lg-12 text-center">
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="btn btn-primary btn-lg mt-4 mb-4"
+                  style={{width:'200px'}}
+                >
+                  Submit
+                </button>
+              </div>
             </div>
+
+
           </div>
         </form>
         {formSubmitted && formData.BusinessModel && (
