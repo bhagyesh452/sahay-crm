@@ -518,8 +518,8 @@ const BasicForm = () => {
 
   const renderDirectorFields = () => {
     return Array.from({ length: numberOfDirectors }, (_, index) => (
-      <div className="my-card mt-2">
-        <div className="my-card-body p-3">
+      <div className="card mt-2">
+        <div className="card-body p-3">
           <div className="directors-details-box p-3" key={index}>
             <div className="row">
               <div className="col-lg-12 d-flex align-items-center justify-content-between">
@@ -963,8 +963,8 @@ const BasicForm = () => {
             <div className="basic-info-form-head mt-4 mb-2">
               <h2 className="m-0">Basic Information</h2>
             </div>
-            <div className="my-card mt-2">
-              <div className="my-card-body p-3">
+            <div className="card mt-2">
+              <div className="card-body p-3">
                 <div className="row">
                   <div className="col-lg-4">
                     <div className="form-group mt-2 mb-2">
@@ -1251,8 +1251,8 @@ const BasicForm = () => {
             <div className="basic-info-form-head mt-4 mb-2">
               <h2 className="m-0">Brief About Your Business</h2>
             </div>
-            <div className="my-card mt-2">
-              <div className="my-card-body p-3">
+            <div className="card mt-2">
+              <div className="card-body p-3">
                 <div className="row">
                   <div className="col-lg-6">
                     <div className="form-group mt-2 mb-2">
