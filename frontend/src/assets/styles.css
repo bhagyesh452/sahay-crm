@@ -2339,9 +2339,24 @@ td input {
 {
   padding: 4px 10px !important;
 }
-
-
-
+.emply-p-table table thead tr
+{
+  background: #eee !important;
+  border: none !important;
+}
+.emply-p-table table thead tr td
+{
+  border: none !important;
+}
+.emply-p-table table tbody tr
+{
+  background: #fff;
+}
+.emply-p-table table tbody tr td
+{
+  border: none !important;
+  padding: 5px 2px 5px 2px !important;
+}
 
 
 
