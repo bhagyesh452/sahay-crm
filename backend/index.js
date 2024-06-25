@@ -108,13 +108,15 @@ app.use('/api/employee', EmployeeAPI)
 // }));
 // app.use(passport.initialize())
 // app.use(passport.session());
-
-var http = require("http").createServer(app);
+const http = process.env.GOOGLE_SPREADSHEET_ID === '1oPKUHyJr1BN1E_v5eQBJpr4JQiHx1MVkMyCEL-OrLxI' ? require('http').createServer(app)  : require('https').createServer({
+  cert: fs.readFileSync('/etc/letsencrypt/live/startupsahay.in/fullchain.pem'), 
+  key: fs.readFileSync('/etc/letsencrypt/live/startupsahay.in/privkey.pem'), 
+}, app);
 var socketIO = require("socket.io")(http, {
   cors: {
     origin: " * ",
   },
-});
+}); 
 // const server = http.createServer(app);
 // const io = socketIo(server);
 

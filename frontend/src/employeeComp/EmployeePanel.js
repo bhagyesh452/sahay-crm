@@ -234,9 +234,14 @@ function EmployeePanel() {
 
 
   useEffect(() => {
-    const socket = io("/socket.io/"); // Connects to the same host and port as the client
+    const socket = io("/socket.io/", {
+      secure: true, // Use HTTPS
+      reconnection: true, // Enable reconnections
+      transports: ['websocket'], // Use only WebSocket transport
+    });
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
+      console.log('Connection Successful to socket io')
       setSocketID(socket.id);
     });
 
