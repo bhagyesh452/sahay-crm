@@ -57,6 +57,18 @@ const BasicForm = () => {
   console.log(formData);
 
 
+  const [errors, setErrors] = useState({});
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState('');
+
+  const [showLinks, setShowLinks] = useState(false);
+  const [showTechnologyDetails, setShowTechnologyDetails] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(false);
+  const [showIp, setShowIp] = useState(false);
+  const [showFinance, setShowFinance] = useState(false);
+  const [numberOfDirectors, setNumberOfDirectors] = useState(1);
+
+
   // Select Your Services
   const options1 = [
     { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
@@ -219,16 +231,7 @@ const BasicForm = () => {
     });
   };
 
-  const [errors, setErrors] = useState({});
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [emailError, setEmailError] = useState('');
 
-  const [showLinks, setShowLinks] = useState(false);
-  const [showTechnologyDetails, setShowTechnologyDetails] = useState(false);
-  const [showPhotos, setShowPhotos] = useState(false);
-  const [showIp, setShowIp] = useState(false);
-  const [showFinance, setShowFinance] = useState(false);
-  const [numberOfDirectors, setNumberOfDirectors] = useState(1);
 
 
   const maxSizeMB = 24;
@@ -547,20 +550,21 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director's Name "
                 id={`DirectorName${index}`}
-                value={formData.DirectorDetails[index.DirectorName]}
+                value={formData.DirectorDetails[index]?.DirectorName || ""}
                 onChange={(e) => {
+                  const value = e.target.value
                   setFormData((prevState) => ({
                     ...prevState,
                     DirectorDetails: prevState.DirectorDetails.map(
                       (DirectorDetails, i) =>
                         i === index
-                          ? { ...DirectorDetails, DirectorName: e.target.value }
+                          ? { ...DirectorDetails, DirectorName: value }
                           : DirectorDetails
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorName && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorName && (
                 <div style={{ color: "red" }}>Enter Director Name</div>
               )}
             </div>
@@ -574,25 +578,20 @@ const BasicForm = () => {
                 required
                 type="email"
                 className="form-control mt-1"
-                placeholder="Enter Director's Email "
+                placeholder="Enter Director's Email"
                 id={`DirectorEmail${index}`}
-                value={formData.DirectorDetails[index.DirectorEmail]}
+                value={formData.DirectorDetails[index]?.DirectorEmail || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorEmail: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorEmail: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorEmail && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorEmail && (
                 <div style={{ color: "red" }}>Enter Director Email</div>
               )}
             </div>
@@ -609,23 +608,18 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director's Mobile No "
                 id={`DirectorMobileNo${index}`}
-                value={formData.DirectorDetails[index.DirectorMobileNo]}
+                value={formData.DirectorDetails[index]?.DirectorMobileNo || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorMobileNo: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorMobileNo: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorMobileNo && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorMobileNo && (
                 <div style={{ color: "red" }}>Enter Director Mobile No</div>
               )}
             </div>
@@ -642,23 +636,18 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director's Qualification"
                 id={`DirectorQualification${index}`}
-                value={formData.DirectorDetails[index.DirectorQualification]}
+                value={formData.DirectorDetails[index]?.DirectorQualification || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorQualification: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorQualification: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorQualification && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorQualification && (
                 <div style={{ color: "red" }}>Enter Director Qualification</div>
               )}
             </div>
@@ -675,23 +664,18 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director's Work Experience (In Detail)"
                 id={`Directorexp${index}`}
-                value={formData.DirectorDetails[index.DirectorWorkExperience]}
+                value={formData.DirectorDetails[index]?.DirectorWorkExperience || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorWorkExperience: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorWorkExperience: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorWorkExperience && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorWorkExperience && (
                 <div style={{ color: "red" }}>Enter Director Work Experience</div>
               )}
             </div>
@@ -707,18 +691,13 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Annual Income Of Director's Family (Approx):"
                 id={`Directorincome${index}`}
-                value={formData.DirectorDetails[index.DirectorAnnualIncome]}
+                value={formData.DirectorDetails[index]?.DirectorAnnualIncome || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorAnnualIncome: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorAnnualIncome: value } : director
                     ),
                   }));
                 }}
@@ -735,7 +714,7 @@ const BasicForm = () => {
                 type="file"
                 className="form-control mt-1"
                 id={`DirectorPassportPhoto${index}`}
-                value={formData.DirectorDetails[index.DirectorPassportPhoto]}
+                // value={formData.DirectorDetails[index]?.DirectorPassportPhoto || ""}
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (functionShowSizeLimit(file)) {
@@ -770,7 +749,7 @@ const BasicForm = () => {
                 type="file"
                 className="form-control mt-1"
                 id={`DirectorAdharCard${index}`}
-                value={formData.DirectorDetails[index.DirectorAdharCard]}
+                // value={formData.DirectorDetails[index]?.DirectorAdharCard || ""}
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (functionShowSizeLimit(file)) {
@@ -790,11 +769,13 @@ const BasicForm = () => {
                   }
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCard && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorAdharCard && (
                 <div style={{ color: "red" }}>Upload Director AdharCard</div>
               )}
             </div>
           </div>
+
+
           <div className="col-lg-4">
             <div className="form-group mt-2 mb-2">
               <label htmlFor={`DirectorAdharCardNumber${index}`}>
@@ -806,30 +787,30 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director AdharCard Number"
                 id={`DirectorAdharCardNumber${index}`}
-                value={formData.DirectorDetails[index.DirectorAdharCardNumber]}
+                value={formData.DirectorDetails[index]?.DirectorAdharCardNumber || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorAdharCardNumber: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorAdharCardNumber: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorAdharCardNumber && (
-                <div style={{ color: "red" }}>Enter Director AdharCard Number</div>
-              )}
-              {formSubmitted &&
-                formData.DirectorDetails[index].DirectorAdharCardNumber !== "" &&
-                !isValidAadhaarNumber(formData.DirectorDetails[index].DirectorAdharCardNumber) && (
-                  <div style={{ color: "red" }}>Enter a valid 12-digit Aadhaar Card Number</div>
-                )}
+              {formSubmitted && (
+                !formData.DirectorDetails[index]?.DirectorAdharCardNumber ||
+                !isValidAadhaarNumber(formData.DirectorDetails[index])) && (
+                  <div style={{ color: "red", marginTop: "0.5rem" }}>
+                    {!formData.DirectorDetails[index]?.DirectorAdharCardNumber
+                      ? "Enter Director AdharCard Number"
+                      : !isValidAadhaarNumber(formData.DirectorDetails[index]?.DirectorAdharCardNumber)
+                        ? "Enter a valid 12-digit Aadhaar Card Number"
+                        : null
+                    }
+                  </div>
+                )
+              }
             </div>
           </div>
           <div className="col-lg-4">
@@ -843,23 +824,18 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter Director Designation"
                 id={`DirectorDesignation${index}`}
-                value={formData.DirectorDetails[index.DirectorDesignation]}
+                value={formData.DirectorDetails[index]?.DirectorDesignation || ""}
                 onChange={(e) => {
+                  const value = e.target.value;
                   setFormData((prevState) => ({
                     ...prevState,
-                    DirectorDetails: prevState.DirectorDetails.map(
-                      (DirectorDetails, i) =>
-                        i === index
-                          ? {
-                            ...DirectorDetails,
-                            DirectorDesignation: e.target.value,
-                          }
-                          : DirectorDetails
+                    DirectorDetails: prevState.DirectorDetails.map((director, i) =>
+                      i === index ? { ...director, DirectorDesignation: value } : director
                     ),
                   }));
                 }}
               />
-              {formSubmitted && !formData.DirectorDetails[index].DirectorDesignation && (
+              {formSubmitted && !formData.DirectorDetails[index]?.DirectorDesignation && (
                 <div style={{ color: "red" }}>Enter Director Designation</div>
               )}
             </div>
@@ -914,7 +890,7 @@ const BasicForm = () => {
                   <span className="form-check-label">Female</span>
                 </label>
               </div>
-              {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
+              {formSubmitted && !formData.DirectorDetails[index.DirectorGender] && (
                 <div style={{ color: "red" }}>Select the Director Gender</div>
               )}
             </div>
@@ -929,7 +905,7 @@ const BasicForm = () => {
                 className="form-control mt-1"
                 placeholder="Enter LinkedIn Profile Link"
                 id={`DirectorLinkedIn${index}`}
-                value={formData.DirectorDetails[index.LinkedInProfileLink]}
+                value={formData.DirectorDetails[index]?.LinkedInProfileLink || ""}
                 onChange={(e) => {
                   setFormData((prevState) => ({
                     ...prevState,
