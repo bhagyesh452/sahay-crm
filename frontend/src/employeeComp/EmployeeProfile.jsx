@@ -314,6 +314,57 @@ function EmployeeProfile() {
                                 Unpaid
                             </td>
                           </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
                         </tbody>
                       </table>  
                     </div>
