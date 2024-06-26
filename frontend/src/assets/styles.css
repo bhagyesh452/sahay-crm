@@ -257,12 +257,11 @@ input[type=number] {
   background-color: var(--tblr-bg-forms);
   border-color: #d66c6c !important;
   outline: 0;
-  box-shadow: 0 0 transparent, 0 0 7px -2px #ffb6b6 !important;
+  box-shadow: 0 0 transparent, 0 0 7px -2px #595959 !important;
 }
 
 .error-border {
   color: inherit;
-
   border-color: #d66c6c !important;
   outline: 0;
   box-shadow: 0 0 transparent, 0 0 7px -2px #ffb6b6 !important;
