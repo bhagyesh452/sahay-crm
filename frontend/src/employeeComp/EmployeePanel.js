@@ -234,11 +234,11 @@ function EmployeePanel() {
 
 
   useEffect(() => {
-    const socket = io("wss://startupsahay.in", {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path:'/socket.io',
-      reconnection: true, // Enable reconnections
-      transports: ['websocket'], // Use only WebSocket transport
+      reconnection: true, 
+      transports: ['websocket'],
     });
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
@@ -720,29 +720,29 @@ function EmployeePanel() {
   }, [data.ename, revertedData.length]);
 
  
-  useEffect(() => {
-    const checkAndRunActiveStatus = () => {
-      if (data._id) {
-        activeStatus();
-      } else {
-        const intervalId = setInterval(() => {
-          if (data._id) {
-            activeStatus();
-            clearInterval(intervalId);
-          }
-        }, 1000);
-        return () => clearInterval(intervalId); // Cleanup interval on unmount
-      }
-    };
+  // useEffect(() => {
+  //   const checkAndRunActiveStatus = () => {
+  //     if (data._id) {
+  //       activeStatus();
+  //     } else {
+  //       const intervalId = setInterval(() => {
+  //         if (data._id) {
+  //           activeStatus();
+  //           clearInterval(intervalId);
+  //         }
+  //       }, 1000);
+  //       return () => clearInterval(intervalId); 
+  //     }
+  //   };
 
-    const timerId = setTimeout(() => {
-      checkAndRunActiveStatus();
-    }, 2000);
+  //   const timerId = setTimeout(() => {
+  //     checkAndRunActiveStatus();
+  //   }, 2000);
 
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [socketID, data._id]);
+  //   return () => {
+  //     clearTimeout(timerId);
+  //   };
+  // }, [socketID, data._id]);
 
   const fetchRequestDetails = async () => {
     try {
