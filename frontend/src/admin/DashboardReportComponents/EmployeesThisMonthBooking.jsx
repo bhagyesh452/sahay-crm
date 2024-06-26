@@ -1985,7 +1985,7 @@ function EmployeesThisMonthBooking() {
             // console.log("Descending remaining total :", descendingSort);
         }
         else if(type === "none") {
-            // console.log("None is :", remainingRecievedObject);
+            console.log("None is :", remainingRecievedObject);
             setRemainingPaymentObject(remainingRecievedObject);
             return;
         }
@@ -2154,7 +2154,7 @@ function EmployeesThisMonthBooking() {
             // console.log("Descending total amount :", descendingSort);
         }
         else if (type === "none") {
-            // console.log("None is :", totalPaymentObject);
+            console.log("None is :", totalPaymentObject);
             setAdvancePaymentObject(totalPaymentObject);
             return;
         }
@@ -2754,13 +2754,13 @@ function EmployeesThisMonthBooking() {
                                         Export CSV
                                     </button>
                                 </div> */}
-                                <div className="filter-title">
+                                {/* <div className="filter-title">
                                     <h2 className="m-0 mr-2">
                                         {" "}
                                         Filter Branch : {"  "}
                                     </h2>
-                                </div>
-                                <div className="filter-main ml-2">
+                                </div> */}
+                                {/* <div className="filter-main ml-2">
                                     <select
                                         className="form-select"
                                         id={`branch-filter`}
@@ -2776,7 +2776,7 @@ function EmployeesThisMonthBooking() {
                                         </option>
                                         <option value={"none"}>None</option>
                                     </select>
-                                </div>
+                                </div> */}
                             </div>
                             {/* <div class='input-icon mr-1'>
                                 <span class="input-icon-addon">
@@ -3039,13 +3039,13 @@ function EmployeesThisMonthBooking() {
                                         Export CSV
                                     </button>
                                 </div> */}
-                                <div className="filter-title">
+                                {/* <div className="filter-title">
                                     <h2 className="m-0 mr-2">
                                         {" "}
                                         Filter Branch : {"  "}
                                     </h2>
-                                </div>
-                                <div className="filter-main ml-2">
+                                </div> */}
+                                {/* <div className="filter-main ml-2">
                                     <select
                                         className="form-select"
                                         id={`branch-filter`}
@@ -3061,7 +3061,7 @@ function EmployeesThisMonthBooking() {
                                         </option>
                                         <option value={"none"}>None</option>
                                     </select>
-                                </div>
+                                </div> */}
                             </div>
                             {/* <div class='input-icon mr-1'>
                                 <span class="input-icon-addon">
