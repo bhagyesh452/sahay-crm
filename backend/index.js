@@ -2358,36 +2358,36 @@ app.post("/api/undo", (req, res) => {
 // );
 
 // // API endpoint
-app.get('/api/generate-pdf-client', async (req, res) => {
-  try {
-    let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+// app.get('/api/generate-pdf-client', async (req, res) => {
+//   try {
+//     let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
   
 
-    // Ensure the directory exists
+//     // Ensure the directory exists
    
-    const pdfFilePath = `./TestDocs/test.pdf`;
-    const options = {
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: './dev/null',
-        },
-      },
-    };
+//     const pdfFilePath = `./TestDocs/test.pdf`;
+//     const options = {
+//       childProcessOptions: {
+//         env: {
+//           OPENSSL_CONF: './dev/null',
+//         },
+//       },
+//     };
 
-    pdf.create(htmlNewTemplate, options).toFile(pdfFilePath, async (err, response) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        return res.status(500).send('Error generating PDF');
-      }else {
-        console.log('Docx file created successfully');
-        return res.status(200).send('Generated DOCX Successfully');
-      }
-    });
-  } catch (error) {
-    console.error('Error in endpoint:', error);
-    res.status(500).send('Server error');
-  }
-});
+//     pdf.create(htmlNewTemplate, options).toFile(pdfFilePath, async (err, response) => {
+//       if (err) {
+//         console.error('Error generating PDF:', err);
+//         return res.status(500).send('Error generating PDF');
+//       }else {
+//         console.log('Docx file created successfully');
+//         return res.status(200).send('Generated DOCX Successfully');
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error in endpoint:', error);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 
 /**************************************HR Login Portal API********************************************************************/
