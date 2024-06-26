@@ -19,102 +19,102 @@ const userModel = require("../models/CompanyBusinessInput.js");
 
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      // Determine the destination path based on the fieldname and company name
-      const companyName = req.params.CompanyName;
-      let destinationPath = "";
-  
-      if (file.fieldname === "otherDocs") {
-        destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
-      } else if (file.fieldname === "paymentReceipt") {
-        destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
-      }
-      else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
-        destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
-      } else {
-        destinationPath = `ClientDocuments/${companyName}/OtherDocs`
-      }
-  
-      // Create the directory if it doesn't exist
-      if (!fs.existsSync(destinationPath)) {
-        fs.mkdirSync(destinationPath, { recursive: true });
-      }
-  
-      cb(null, destinationPath);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now();
-      cb(null, uniqueSuffix + "-" + file.originalname);
-    },
-  });
+  destination: function (req, file, cb) {
+    // Determine the destination path based on the fieldname and company name
+    const companyName = req.params.CompanyName;
+    let destinationPath = "";
 
-  const upload = multer({ storage: storage });
-  
+    if (file.fieldname === "otherDocs") {
+      destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+    }
+    else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
+      destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
+    } else {
+      destinationPath = `ClientDocuments/${companyName}/OtherDocs`
+    }
 
-router.post("/basicinfo-form/:CompanyName", 
-    
-    upload.fields([
-        { name: "DirectorPassportPhoto", maxCount: 10 },
-        { name: "DirectorAdharCard", maxCount: 10 },
-        { name: "UploadMOA", maxCount: 1 },
-        { name: "UploadAOA", maxCount: 1 },
-        { name: "UploadPhotos", maxCount: 1 },
-        { name: "RelevantDocument", maxCount: 1 },
-      ]),
-      async (req, res) => {
-    
-        try {
-          const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
-          const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
-          const UploadMOA = req.files["UploadMOA"] || [];
-          const UploadAOA = req.files["UploadAOA"] || [];
-          const UploadPhotos = req.files["UploadPhotos"] || [];
-          const RelevantDocument = req.files["RelevantDocument"] || [];
-    
-    
-    
-    
-    
-    
-          // Get user details from the request body
-          const {
-            CompanyName,
-            CompanyEmail,
-            CompanyNo,
-            BrandName,
-            WebsiteLink,
-            CompanyAddress,
-            CompanyPanNumber,
-            SelectServices,
-            FacebookLink,
-            InstagramLink,
-            LinkedInLink,
-            YoutubeLink,
-            CompanyActivities,
-            ProductService,
-            CompanyUSP,
-            ValueProposition,
-            TechnologyInvolved,
-            DirectInDirectMarket,
-            Finance,
-            BusinessModel,
-            DirectorDetails,
-          } = req.body;
-    
-    
-    
-          //console.log("select services" , SelectServices)
-          // const services = SelectServices.map(service => service);
-    
-          // Now join the mapped array to create a comma-separated string
-          // const commaSeparatedValues = services.join(", ");
-          // console.log("comma" , commaSeparatedValues);
-    
-    
-          // Construct the HTML content conditionally
-          let facebookHtml = "";
-          if (FacebookLink && FacebookLink !== "No Facebook Id") {
-            facebookHtml = `
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+router.post("/basicinfo-form/:CompanyName",
+
+  upload.fields([
+    { name: "DirectorPassportPhoto", maxCount: 10 },
+    { name: "DirectorAdharCard", maxCount: 10 },
+    { name: "UploadMOA", maxCount: 1 },
+    { name: "UploadAOA", maxCount: 1 },
+    { name: "UploadPhotos", maxCount: 1 },
+    { name: "RelevantDocument", maxCount: 1 },
+  ]),
+  async (req, res) => {
+
+    try {
+      const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
+      const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
+      const UploadMOA = req.files["UploadMOA"] || [];
+      const UploadAOA = req.files["UploadAOA"] || [];
+      const UploadPhotos = req.files["UploadPhotos"] || [];
+      const RelevantDocument = req.files["RelevantDocument"] || [];
+
+
+
+
+
+
+      // Get user details from the request body
+      const {
+        CompanyName,
+        CompanyEmail,
+        CompanyNo,
+        BrandName,
+        WebsiteLink,
+        CompanyAddress,
+        CompanyPanNumber,
+        SelectServices,
+        FacebookLink,
+        InstagramLink,
+        LinkedInLink,
+        YoutubeLink,
+        CompanyActivities,
+        ProductService,
+        CompanyUSP,
+        ValueProposition,
+        TechnologyInvolved,
+        DirectInDirectMarket,
+        Finance,
+        BusinessModel,
+        DirectorDetails,
+      } = req.body;
+
+
+
+      //console.log("select services" , SelectServices)
+      // const services = SelectServices.map(service => service);
+
+      // Now join the mapped array to create a comma-separated string
+      // const commaSeparatedValues = services.join(", ");
+      // console.log("comma" , commaSeparatedValues);
+
+
+      // Construct the HTML content conditionally
+      let facebookHtml = "";
+      if (FacebookLink && FacebookLink !== "No Facebook Id") {
+        facebookHtml = `
          <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -128,11 +128,11 @@ router.post("/basicinfo-form/:CompanyName",
             </div>
           </div>
         `;
-          }
-    
-          let instagramHtml = "";
-          if (InstagramLink && InstagramLink !== "No Instagram Id") {
-            instagramHtml = `
+      }
+
+      let instagramHtml = "";
+      if (InstagramLink && InstagramLink !== "No Instagram Id") {
+        instagramHtml = `
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -146,11 +146,11 @@ router.post("/basicinfo-form/:CompanyName",
               </div>
             </div>
           `;
-          }
-    
-          let linkedInHtml = "";
-          if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
-            linkedInHtml = `
+      }
+
+      let linkedInHtml = "";
+      if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
+        linkedInHtml = `
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -164,11 +164,11 @@ router.post("/basicinfo-form/:CompanyName",
               </div>
             </div>
           `;
-          }
-    
-          let youtubeHtml = "";
-          if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
-            youtubeHtml = `
+      }
+
+      let youtubeHtml = "";
+      if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
+        youtubeHtml = `
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -182,13 +182,13 @@ router.post("/basicinfo-form/:CompanyName",
               </div>
             </div>
           `;
-          }
-          let TechnologyInvolvedHtml = "";
-          if (
-            TechnologyInvolved &&
-            TechnologyInvolved !== "No Technology Invloved"
-          ) {
-            TechnologyInvolvedHtml = `
+      }
+      let TechnologyInvolvedHtml = "";
+      if (
+        TechnologyInvolved &&
+        TechnologyInvolved !== "No Technology Invloved"
+      ) {
+        TechnologyInvolvedHtml = `
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -202,11 +202,11 @@ router.post("/basicinfo-form/:CompanyName",
               </div>
             </div>
           `;
-          }
-    
-          let uploadPhotosHtml = "";
-          if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
-            uploadPhotosHtml = `
+      }
+
+      let uploadPhotosHtml = "";
+      if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
+        uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -220,11 +220,11 @@ router.post("/basicinfo-form/:CompanyName",
             </div>
           </div>
         `;
-          }
-    
-          let relevantDocumentsHtml = "";
-          if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
-            relevantDocumentsHtml = `
+      }
+
+      let relevantDocumentsHtml = "";
+      if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
+        relevantDocumentsHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -238,11 +238,11 @@ router.post("/basicinfo-form/:CompanyName",
             </div>
           </div>
         `;
-          }
-    
-          let businessModelHtml = "";
-          if (BusinessModel && BusinessModel !== "No Business Model") {
-            businessModelHtml = `
+      }
+
+      let businessModelHtml = "";
+      if (BusinessModel && BusinessModel !== "No Business Model") {
+        businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -256,11 +256,11 @@ router.post("/basicinfo-form/:CompanyName",
             </div>
           </div>
         `;
-          }
-    
-          let financeDetailsHtml = "";
-          if (Finance && Finance !== "No Finance Details") {
-            financeDetailsHtml = `
+      }
+
+      let financeDetailsHtml = "";
+      if (Finance && Finance !== "No Finance Details") {
+        financeDetailsHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
@@ -274,333 +274,305 @@ router.post("/basicinfo-form/:CompanyName",
             </div>
           </div>
         `;
-          }
-    
-          const tempHtml = () => {
-            let team = "";
-            let isFirstMainDirectorSet = false;
-            for (let index = 0; index < DirectorDetails.length; index++) {
-              const {
-                DirectorName,
-                DirectorEmail,
-                DirectorMobileNo,
-                DirectorQualification,
-                DirectorWorkExperience,
-                DirectorAnnualIncome,
-                LinkedInProfileLink,
-                DirectorDesignation,
-                DirectorAdharCardNumber,
-                DirectorGender,
-                IsMainDirector,
-              } = DirectorDetails[index];
-    
-              // Check if this is the first director and they are marked as the main director
-    
-              if (DirectorDetails[index].IsMainDirector === "true") {
-                team += `
-               <div 
-               style="width: 50%;
-                      margin-bottom: 4px;
-                      font-weight: bold;
-                      color: blue;
-                      margin-left: 57px;
-                      margin-bottom: -34px;">
-                  This is the authorised person
-                </div>
-          `;
-                isFirstMainDirectorSet = true;
-              }
-    
-              team += `
-          <div style="width: 95%; margin: 10px auto">
-            <div>
-              <div
-                style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  text-align: center;
-                  font-weight: bold;
-                  color: black;
-                "
-              >
-                ${index + 1} 
-                <div
-                style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  text-align: center;
-                  font-weight: bold;
-                  color: black;
-                "
-              >
-                
+      }
+      let directorLinkedInHtml = "";
+      if (LinkedInProfileLink && LinkedInProfileLink !== "No LinkedIn Link") {
+        directorLinkedInHtml = `
+          <div style="display: flex; flex-wrap: wrap">
+            <div style="width: 25%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                LinkedIn Profile Link
               </div>
             </div>
-            <div
-              style="
-                background: #f7f7f7;
-                padding: 15px;
-                border-radius: 10px;
-                position: relative;
-                margin-top: 15px;
-              "
-            >
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    DirectorName
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorName}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    DirectorEmail
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorEmail}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    DirectorMobileNo
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorMobileNo}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director Qualification
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorQualification}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director Work Experience
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorWorkExperience}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director Annual Income
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorAnnualIncome}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    LinkedIn Profile
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${LinkedInProfileLink}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director Designation
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorDesignation}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director AadhaarCard Number
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorAdharCardNumber}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    Director Gender
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    "
-                  >
-                    ${DirectorGender}
-                  </div>
-                </div>
+            <div style="width: 75%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                ${LinkedInProfileLink}
               </div>
             </div>
           </div>
+        `;
+      }
+
+      const tempHtml = () => {
+        let team = "";
+        let isFirstMainDirectorSet = false;
+        for (let index = 0; index < DirectorDetails.length; index++) {
+          const {
+            DirectorName,
+            DirectorEmail,
+            DirectorMobileNo,
+            DirectorQualification,
+            DirectorWorkExperience,
+            DirectorAnnualIncome,
+            LinkedInProfileLink,
+            DirectorDesignation,
+            DirectorAdharCardNumber,
+            DirectorGender,
+            IsMainDirector,
+          } = DirectorDetails[index];
+
+          // Check if this is the first director and they are marked as the main director
+
+          if (DirectorDetails[index].IsMainDirector === "true") {
+            team += `
+               <div 
+                style="width: 50%;
+                margin-bottom: -22px;
+                font-weight: bold;
+                color: blue;
+                margin-left: 20px;">
+                  This is the authorised person
+                </div>
           `;
-            }
-            return team;
-          };
-          const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
-    
-    
-          // Send Basic-details Admin email-id of  for sendEmail-3.js
-          const email = ["nimesh@incscale.in"];
-          const subject = CompanyName + " Business Inputs and Basic Information";
-          const text = "";
-          const html = ` 
+            isFirstMainDirectorSet = true;
+          }
+
+          team += `
+          <div style="width: 95%; margin: 10px auto">
+        <div>
+            <div style="
+              width: 25px;
+              height: 30px;
+              line-height: 30px;
+              text-align: center;
+              font-weight: bold;
+              color: black;
+            ">
+                ${index + 1} 
+                <div style="
+              width: 30px;
+              height: 30px;
+              line-height: 30px;
+              text-align: center;
+              font-weight: bold;
+              color: black;
+            ">
+
+                </div>
+            </div>
+            <div style="
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 10px;
+            position: relative;
+            margin-top: 15px;
+          ">
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                  height: auto;
+                ">
+                            DirectorName
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorName}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            DirectorEmail
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorEmail}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            DirectorMobileNo
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorMobileNo}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director Qualification
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorQualification}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director Work Experience
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorWorkExperience}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director Annual Income
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorAnnualIncome}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            LinkedIn Profile Link
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${directorLinkedInHtml}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director Designation
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorDesignation}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director AadhaarCard Number
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorAdharCardNumber}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            Director Gender
+                        </div>
+                    </div>
+                    <div style="width: 75%">
+                        <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                            ${DirectorGender}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+          `;
+        }
+        return team;
+      };
+      const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
+
+
+      // Send Basic-details Admin email-id of  for sendEmail-3.js
+      const email = ["nimesh@incscale.in"];
+      const subject = CompanyName + " Business Inputs and Basic Information";
+      const text = "";
+      const html = ` 
          <body>
        <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
          <h3 style="text-align: center">Basic Details Form</h3>
@@ -1036,7 +1008,7 @@ router.post("/basicinfo-form/:CompanyName",
                  style="
                    width: 30px;
                    height: 30px;
-                   line-height: 30px;
+                   line-height: 22px;
                    text-align: center;
                    font-weight: bold;
                    color: black;
@@ -1061,39 +1033,39 @@ router.post("/basicinfo-form/:CompanyName",
         </div>
       </body>
        `;
-    
-          await sendMail3(
-            email,
-            subject,
-            text,
-            html,
-            DirectorPassportPhoto,
-            DirectorAdharCard,
-            UploadMOA,
-            UploadAOA,
-            UploadPhotos,
-            RelevantDocument
-          )
-            .then((info) => {
-              console.log("Email Sent:");
-            })
-            .catch((error) => {
-              console.error("Error sending email:", error);
-              res.status(500).send("Error sending email");
-            });
-    
-    
-          const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
-          const DirectorEmail = details.DirectorEmail
-    
-    
-          // Send Thank You Message with pdf Draft sendMaiel4.js 
-    
-          const recipients = [CompanyEmail];
-          const ccEmail = [DirectorEmail];
-          const subject1 = "Thank you for submitting the form!";
-          const text1 = "";
-          const html1 = `
+
+      await sendMail3(
+        email,
+        subject,
+        text,
+        html,
+        DirectorPassportPhoto,
+        DirectorAdharCard,
+        UploadMOA,
+        UploadAOA,
+        UploadPhotos,
+        RelevantDocument
+      )
+        .then((info) => {
+          console.log("Email Sent:");
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error);
+          res.status(500).send("Error sending email");
+        });
+
+
+      const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
+      const DirectorEmail = details.DirectorEmail
+
+
+      // Send Thank You Message with pdf Draft sendMaiel4.js 
+
+      const recipients = [CompanyEmail];
+      const ccEmail = [DirectorEmail];
+      const subject1 = "Thank you for submitting the form!";
+      const text1 = "";
+      const html1 = `
            <p>Dear Client,</p>
     
     <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
@@ -1111,119 +1083,119 @@ router.post("/basicinfo-form/:CompanyName",
     <p>+91-9998992601</p>
     <p>Start-Up Sahay Private Limited</p>
           `;
-    
-    
-          let MainDirectorName;
-          let MainDirectorDesignation;
-          if (DirectorDetails.length > 1) {
-            if (DirectorDetails[0].IsMainDirector === "true") {
-              MainDirectorName = DirectorDetails[1].DirectorName
-              MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
-            } else if (DirectorDetails[1].IsMainDirector === "true") {
-              MainDirectorName = DirectorDetails[0].DirectorName
-              MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-            } else {
-              MainDirectorName = DirectorDetails[0].DirectorName
-              MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-            }
-          } else {
-            MainDirectorName = DirectorDetails[0].DirectorName
-            MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-          }
-    
-    
-    
-          // Sending email for CompanyEmail 
-          let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-          //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
-          let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
-          const filedHtml = htmlNewTemplate
-            .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-            .replace("{{DirectorName}}", forGender.DirectorName)
-            .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
-            .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
-            .replace("{{CompanyName}}", CompanyName)
-            .replace("{{CompanyAddress}}", CompanyAddress)
-            .replace("{{CompanyPanNumber}}", CompanyPanNumber)
-            .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-            .replace("{{DirectorName}}", forGender.DirectorName)
-            .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-            .replace("{{DirectorName}}", forGender.DirectorName)
-            .replace("{{DirectorName}}", MainDirectorName)
-            .replace("{{DirectorDesignation}}", MainDirectorDesignation)
-    
-          const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
-          const options = {
-            childProcessOptions: {
-              env: {
-                OPENSSL_CONF: './dev/null',
-              },
-            },
-          };
-    
-          pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
-            if (err) {
-              console.error('Error generating PDF:', err);
-              return res.status(500).send('Error generating PDF');
-            } else {
-              try {
-                setTimeout(() => {
-                  const servicesArray = Object.values(SelectServices);
-    
-                  const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
-                  //const mainBuffer = fs.readFileSync(pdfFilePath);
-                  const pdfAttachment = {
-                    filename: 'MITC.pdf', // Replace with actual file name
-                    path: path.join(__dirname, 'src', 'MITC.pdf') // Adjust the path accordingly
-                  };
-    
-                  const mainBuffer = {
-                    filename: 'LOA.pdf', // Replace with actual file name
-                    path: path.join(__dirname, '../GeneratedDocs/LOA.pdf') // Adjust the path accordingly
-                  };
-    
-                  let clientDocument;
-                  if (selectedService) {
-                    clientDocument = [mainBuffer, pdfAttachment]
-    
-                  } else {
-                    clientDocument = [pdfAttachment]
-                    console.log("Service 'Seed Funding Support' not found.");
-                  }
-                  sendMail4(
-                    recipients,
-                    ccEmail,
-                    "Letter of Authorization for filing in SISFS Application",
-                    ``,
-                    html1,
-                    clientDocument
-                  );
-                }, 4000);
-                //res.status(200).send('Generated Pdf Successfully');
-              } catch (error) {
-                console.error("Error sending email:", error);
-                // No need to send another response here because one was already sent
-              }
-            }
-          });
-    
-          const newUser = new userModel({
-            ...req.body,
-            DirectorPassportPhoto,
-            DirectorAdharCard,
-            UploadMOA,
-            UploadAOA,
-            UploadPhotos,
-            RelevantDocument,
-          });
-    
-          await newUser.save();
-          res.status(201).send(newUser);
-        } catch (error) {
-          console.log(error);
-          res.status(400).send(error);
+
+
+      let MainDirectorName;
+      let MainDirectorDesignation;
+      if (DirectorDetails.length > 1) {
+        if (DirectorDetails[0].IsMainDirector === "true") {
+          MainDirectorName = DirectorDetails[1].DirectorName
+          MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
+        } else if (DirectorDetails[1].IsMainDirector === "true") {
+          MainDirectorName = DirectorDetails[0].DirectorName
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+        } else {
+          MainDirectorName = DirectorDetails[0].DirectorName
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
         }
+      } else {
+        MainDirectorName = DirectorDetails[0].DirectorName
+        MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
       }
+
+
+
+      // Sending email for CompanyEmail 
+      let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+      //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
+      let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
+      const filedHtml = htmlNewTemplate
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
+        .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
+        .replace("{{CompanyName}}", CompanyName)
+        .replace("{{CompanyAddress}}", CompanyAddress)
+        .replace("{{CompanyPanNumber}}", CompanyPanNumber)
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace("{{DirectorName}}", forGender.DirectorName)
+        .replace("{{DirectorName}}", MainDirectorName)
+        .replace("{{DirectorDesignation}}", MainDirectorDesignation)
+
+      const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
+      const options = {
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: './dev/null',
+          },
+        },
+      };
+
+      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
+        if (err) {
+          console.error('Error generating PDF:', err);
+          return res.status(500).send('Error generating PDF');
+        } else {
+          try {
+            setTimeout(() => {
+              const servicesArray = Object.values(SelectServices);
+
+              const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
+              //const mainBuffer = fs.readFileSync(pdfFilePath);
+              const pdfAttachment = {
+                filename: 'MITC.pdf', // Replace with actual file name
+                path: path.join(__dirname, 'src', 'MITC.pdf') // Adjust the path accordingly
+              };
+
+              const mainBuffer = {
+                filename: 'LOA.pdf', // Replace with actual file name
+                path: path.join(__dirname, '../GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+              };
+
+              let clientDocument;
+              if (selectedService) {
+                clientDocument = [mainBuffer, pdfAttachment]
+
+              } else {
+                clientDocument = [pdfAttachment]
+                console.log("Service 'Seed Funding Support' not found.");
+              }
+              sendMail4(
+                recipients,
+                ccEmail,
+                "Letter of Authorization for filing in SISFS Application",
+                ``,
+                html1,
+                clientDocument
+              );
+            }, 4000);
+            //res.status(200).send('Generated Pdf Successfully');
+          } catch (error) {
+            console.error("Error sending email:", error);
+            // No need to send another response here because one was already sent
+          }
+        }
+      });
+
+      const newUser = new userModel({
+        ...req.body,
+        DirectorPassportPhoto,
+        DirectorAdharCard,
+        UploadMOA,
+        UploadAOA,
+        UploadPhotos,
+        RelevantDocument,
+      });
+
+      await newUser.save();
+      res.status(201).send(newUser);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
 )
 
 module.exports = router;
