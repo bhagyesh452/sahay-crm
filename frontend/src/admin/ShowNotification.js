@@ -9,8 +9,9 @@ import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
 import EditBookingsCard from "./EditBookingsCard";
 import EditBookingPreview from "./EditBookingPreview";
-import DeleteBookingComponent from "./DeleteBookingComponent";
+import DeleteBookingComponent from "./NotiComponents/DeleteBookingComponent";
 import io from "socket.io-client";
+import General_dataComponent from "./NotiComponents/General_dataComponent";
 
 
 function ShowNotification() {
@@ -70,9 +71,6 @@ function ShowNotification() {
     fetchCompareBooking();
    setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
   }, [currentCompany]);
-
-  console.log("Current Booking",currentBooking);
-  console.log("Compare Booking", compareBooking)
   
   const fetchRequestGDetails = async () => {
     try {
@@ -105,8 +103,6 @@ function ShowNotification() {
       console.error("Error fetching data:", error); 
     }
   };
-
-  console.log(currentBooking)
 
   const fetchApproveRequests = async () => {
     try {
@@ -284,7 +280,7 @@ function ShowNotification() {
                 />
               ))}
 
-            {RequestGData.length !== 0 &&
+            {/* {RequestGData.length !== 0 &&
               dataType === "General" &&
               RequestGData.map((company) => (
                 <NewGCard
@@ -295,7 +291,8 @@ function ShowNotification() {
                   cTime={company.cTime}
                   cDate={company.cDate}
                 />
-              ))}
+              ))} */}
+              {dataType === "General" && <General_dataComponent/>}
             {/* {dataType === "deleteBookingRequests" &&
               deleteData.length !== 0 &&
               deleteData.map((company) => (
@@ -341,7 +338,7 @@ function ShowNotification() {
             {RequestData.length === 0 && dataType === "Manual" && (
               <Nodata />
             )}
-            {RequestGData.length === 0 && dataType === "General" && (
+            {/* {RequestGData.length === 0 && dataType === "General" && (
               <span
                 style={{
                   textAlign: "center",
@@ -351,7 +348,7 @@ function ShowNotification() {
               >
                 <Nodata />
               </span>
-            )}
+            )} */}
             {mapArray.length === 0 && dataType === "AddRequest" && (
               <span
                 style={{

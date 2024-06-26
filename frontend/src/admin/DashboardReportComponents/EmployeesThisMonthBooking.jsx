@@ -50,7 +50,10 @@ function EmployeesThisMonthBooking() {
         achievedamount: "none",
         targetratio: "none",
         lastbookingdate: "none",
+        totalAmount: "none",
         totalAdvanceAchieved: "none",
+        remainingTotal: "none",
+        remainingRecieved: "none"
     });
 
 
@@ -1911,40 +1914,26 @@ function EmployeesThisMonthBooking() {
 
 
     //  ---------------------------------------------- For Creating Remaining Payments Array   ------------------------------------------------
-    const remainingMainObject = [];
+    const [remainingPaymentObject, setRemainingPaymentObject] = useState([]);
+    const [remainingRecievedObject, setRemainingRecievedObject] = useState([]);
+    const [remainingPaymentObjectFilter, setRemainingPaymentObjectFilter] = useState([]);
+
     const today = new Date();
     const thisYear = today.getFullYear();
     const thisMonth = today.getMonth();
 
 
-    redesignedData.forEach((mainObj) => {
-        if (mainObj.remainingPayments.length !== 0) {
-            mainObj.remainingPayments.forEach((payment) => {
-                const paymentDate = new Date(payment.paymentDate);
-                if (paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth) {
-                    remainingMainObject.push({
-                        "Company Name": mainObj["Company Name"],
-                        bdeName: mainObj.bdeName,
-                        bdmName: mainObj.bdmName,
-                        totalPayment: payment.totalPayment,
-                        receivedPayment: payment.receivedPayment,
-                        pendingPayment: payment.pendingPayment,
-                        paymentDate: payment.paymentDate,
-                        serviceName: payment.serviceName
-                    });
-                }
-            });
-        }
-
-        mainObj.moreBookings.length !== 0 && mainObj.moreBookings.map((moreObject) => {
-            if (moreObject.remainingPayments.length !== 0) {
-                moreObject.remainingPayments.forEach((payment) => {
+    useEffect(() => {
+        const remainingMainObject = [];
+        redesignedData.forEach((mainObj) => {
+            if (mainObj.remainingPayments.length !== 0) {
+                mainObj.remainingPayments.forEach((payment) => {
                     const paymentDate = new Date(payment.paymentDate);
                     if (paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth) {
                         remainingMainObject.push({
                             "Company Name": mainObj["Company Name"],
-                            bdeName: moreObject.bdeName,
-                            bdmName: moreObject.bdmName,
+                            bdeName: mainObj.bdeName,
+                            bdmName: mainObj.bdmName,
                             totalPayment: payment.totalPayment,
                             receivedPayment: payment.receivedPayment,
                             pendingPayment: payment.pendingPayment,
@@ -1954,9 +1943,89 @@ function EmployeesThisMonthBooking() {
                     }
                 });
             }
-        })
-    });
 
+            mainObj.moreBookings.length !== 0 && mainObj.moreBookings.map((moreObject) => {
+                if (moreObject.remainingPayments.length !== 0) {
+                    moreObject.remainingPayments.forEach((payment) => {
+                        const paymentDate = new Date(payment.paymentDate);
+                        if (paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth) {
+                            remainingMainObject.push({
+                                "Company Name": mainObj["Company Name"],
+                                bdeName: moreObject.bdeName,
+                                bdmName: moreObject.bdmName,
+                                totalPayment: payment.totalPayment,
+                                receivedPayment: payment.receivedPayment,
+                                pendingPayment: payment.pendingPayment,
+                                paymentDate: payment.paymentDate,
+                                serviceName: payment.serviceName
+                            });
+                        }
+                    });
+                }
+            })
+        });
+        setRemainingPaymentObject(remainingMainObject);
+        setRemainingRecievedObject(remainingMainObject);
+        setRemainingPaymentObjectFilter(remainingMainObject)
+        // console.log("Remaining payments :", remainingMainObject);
+    }, [redesignedData]);
+
+    // console.log('Employee data :', employeeData);
+
+    // Sorting Remaining Total
+    const handleSortRemainingTotal = (type) => {
+        let sortedData = [...remainingPaymentObject];
+
+        if (type === "ascending") {
+            const ascendingSort = sortedData.sort((a, b) => a.totalPayment - b.totalPayment);
+            // console.log("Ascending remaining total :", ascendingSort);
+        }
+        else if (type === "descending") {
+            const descendingSort = sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
+            // console.log("Descending remaining total :", descendingSort);
+        }
+        else if(type === "none") {
+            console.log("None is :", remainingRecievedObject);
+            setRemainingPaymentObject(remainingRecievedObject);
+            return;
+        }
+        setRemainingPaymentObject(sortedData);
+    };
+
+    // Sorting Remaining Recieved
+    const handleSortRemainingReceived = (type) => {
+        let sortedData = [...remainingRecievedObject];
+        // console.log("Sorted data :", sortedData);
+        if (type === "ascending") {
+            const ascendingSort = sortedData.sort((a, b) => a.receivedPayment - b.receivedPayment);
+            // console.log("Ascending remaining received :", ascendingSort);
+        }
+        else if (type === "descending") {
+            const descendingSort = sortedData.sort((a, b) => b.receivedPayment - a.receivedPayment);
+            // console.log("Descending remaining received :", descendingSort);
+        }
+        else if(type === "none") {
+            // console.log("None is :", remainingRecievedObject);
+            setRemainingPaymentObject(remainingRecievedObject);
+            return;
+        }
+        setRemainingPaymentObject(sortedData);
+    };
+
+    // Filter using branch in Remaining Payments
+    const handleBranchFilterInRemainingPayments = (branchName) => {
+        console.log("Branch name is:", branchName);
+
+        // Filter employees by branch name
+        let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
+        console.log("BDE names:", bdeNames);
+
+        // Filter remaining payments by matching names
+        let filterRemainingPaymentObject = remainingPaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
+        console.log("Filtered object is:", filterRemainingPaymentObject);
+
+        setRemainingPaymentObject(filterRemainingPaymentObject);
+    };
 
     //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
 
@@ -2000,14 +2069,16 @@ function EmployeesThisMonthBooking() {
         link.click();
     }
 
-   
+
     //-----------------------------function for advance payment table-------------------------------
     const [advancePaymentObject, setAdvancePaymentObject] = useState([]);
+    const [totalPaymentObject, setTotalPaymentObject] = useState([]);
+    const [advancePaymentObjectFilter, setAdvancePaymentObjectFilter] = useState([]);
 
     useEffect(() => {
         // Your logic to populate advancePaymentObject
         const newAdvancePaymentObject = [];
-    
+
         redesignedData.forEach((mainObj) => {
             const bookingDate = new Date(mainObj.bookingDate);
             if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
@@ -2034,7 +2105,6 @@ function EmployeesThisMonthBooking() {
                         });
                     }
                 });
-    
                 mainObj.moreBookings.forEach((moreObject) => {
                     const bookingDate = new Date(moreObject.bookingDate);
                     if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
@@ -2065,27 +2135,67 @@ function EmployeesThisMonthBooking() {
                 });
             }
         });
-    
+
         setAdvancePaymentObject(newAdvancePaymentObject);
+        setTotalPaymentObject(newAdvancePaymentObject);
+        setAdvancePaymentObjectFilter(newAdvancePaymentObject);
+        // console.log("Advance Payment :", newAdvancePaymentObject);
     }, [redesignedData]);
 
-    const handleSortTotalAdvanceAchieved = (type) => {
-        let sortedData = [...advancePaymentObject];
-    
+    // Sorting Total Amount
+    const handleSortTotalAmount = (type) => {
+        let sortedData = [...totalPaymentObject];
         if (type === "ascending") {
-            
-            sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved);
-            console.log("ascending" , sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved))
+            const ascendingSort = sortedData.sort((a, b) => a.totalPayment - b.totalPayment);
+            // console.log("Ascending total amount :", ascendingSort);
         } else if (type === "descending") {
-            sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved);
-            console.log("descending" , sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved))
+            const descendingSort = sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
+            // console.log("Descending total amount :", descendingSort);
+        }
+        else if (type === "none") {
+            console.log("None is :", totalPaymentObject);
+            setAdvancePaymentObject(totalPaymentObject);
+            return;
         }
         setAdvancePaymentObject(sortedData);
     };
+
    
-    console.log(redesignedData)
 
+    // Sorting Total Advanced Achieved
+    const handleSortTotalAdvanceAchieved = (type) => {
+        let sortedData = [...advancePaymentObject];
 
+        if (type === "ascending") {
+            const ascendingSort = sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved);
+            // console.log("Ascending total advanced achieved :" , ascendingSort);
+
+        } else if (type === "descending") {
+            const descendingSort = sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved);
+            // console.log("Descending total advanced achieved :" , descendingSort);
+
+        } else if (type === "none") {
+            // console.log("None is :", totalPaymentObject);
+            setAdvancePaymentObject(totalPaymentObject);
+            return;
+        }
+        setAdvancePaymentObject(sortedData);
+    };
+
+    // Filter using brach in Advance Payments
+    const handleBranchFilterInAdvancePayments = (branchName) => {
+        console.log("Branch name is:", branchName);
+
+        // Filter employees by branch name
+        let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
+        console.log("BDE names:", bdeNames);
+
+        // Filter remaining payments by matching names
+        let filterAdvancePaymentObject = advancePaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
+        console.log("Filtered object is:", filterAdvancePaymentObject);
+
+        setAdvancePaymentObject(filterAdvancePaymentObject);
+    };
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -2636,6 +2746,119 @@ function EmployeesThisMonthBooking() {
                                 Remaining Payments
                             </h2>
                         </div>
+                        <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center" >
+                                {/* <div className="export-data">
+                                    <button className="btn btn-link" onClick={handleExportBookings}>
+                                        Export CSV
+                                    </button>
+                                </div> */}
+                                {/* <div className="filter-title">
+                                    <h2 className="m-0 mr-2">
+                                        {" "}
+                                        Filter Branch : {"  "}
+                                    </h2>
+                                </div> */}
+                                {/* <div className="filter-main ml-2">
+                                    <select
+                                        className="form-select"
+                                        id={`branch-filter`}
+                                        onChange={(e) => handleBranchFilterInRemainingPayments(e.target.value)}
+                                    >
+                                        <option value="" disabled selected>
+                                            Select Branch
+                                        </option>
+
+                                        <option value={"Gota"}>Gota</option>
+                                        <option value={"Sindhu Bhawan"}>
+                                            Sindhu Bhawan
+                                        </option>
+                                        <option value={"none"}>None</option>
+                                    </select>
+                                </div> */}
+                            </div>
+                            {/* <div class='input-icon mr-1'>
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchBookingBde}
+                                    onChange={(e) => {
+                                        setSearchBookingBde(e.target.value)
+                                        debouncedFilterSearchThisMonthBookingBde(e.target.value)
+                                    }}
+                                    className="form-control"
+                                    placeholder="Enter BDE Name..."
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div> */}
+                            {/* <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(values) => {
+                                                const startDateEmp = moment(values[0]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                const endDateEmp = moment(values[1]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
+                                            }}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div> */}
+                            {/* <div>
+                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                                    <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                                    <Select
+                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        multiple
+                                        value={monthBookingPerson}
+                                        onChange={(event) => {
+                                            setMonthBookingPerson(event.target.value)
+                                            handleSelectThisMonthBookingEmployees(event.target.value)
+                                        }}
+                                        input={<OutlinedInput label="Name" />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {options.map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                                style={getStyles(name, monthBookingPerson, theme)}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </div> */}
+                        </div>
 
                     </div>
                     <div className="card-body">
@@ -2649,11 +2872,81 @@ function EmployeesThisMonthBooking() {
 
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
-                                        <th>
-                                            <div>REMAINING TOTAL</div>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.remainingTotal === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.remainingTotal === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    remainingTotal: updatedSortType,
+                                                }));
+                                                handleSortRemainingTotal(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>REMAINING TOTAL</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingTotal === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingTotal === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
-                                            <div>REMAINING RECEIVED</div>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.remainingRecieved === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.remainingRecieved === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    remainingRecieved: updatedSortType,
+                                                }));
+                                                handleSortRemainingReceived(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>REMAINING RECEIVED</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingRecieved === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingRecieved === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             PAYMENT DATE
@@ -2677,10 +2970,10 @@ function EmployeesThisMonthBooking() {
                                         </tr>
                                     </tbody>
                                 ) : (
-                                    remainingMainObject.length !== 0 ? (
+                                    remainingPaymentObject.length !== 0 ? (
                                         <>
                                             <tbody>
-                                                {remainingMainObject.map((obj, index) => (
+                                                {remainingPaymentObject.map((obj, index) => (
                                                     <>
                                                         <tr  >
                                                             <th>{index + 1}</th>
@@ -2707,10 +3000,10 @@ function EmployeesThisMonthBooking() {
                                                     <td colSpan={2}>Total:</td>
                                                     <td>-</td>
                                                     <td>-</td>
-                                                    <td>{remainingMainObject.length}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
-                                                    <td>₹ {remainingMainObject.length !== 0 ? (Math.round(remainingMainObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
-                                                    {/* <td>₹ {remainingMainObject.length !== 0 ? (remainingMainObject.reduce((total, curr) => total + curr.pendingPayment, 0)).toLocaleString() : 0}</td> */}
+                                                    <td>{remainingPaymentObject.length}</td>
+                                                    <td>₹ {remainingPaymentObject.length !== 0 ? (Math.round(remainingPaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>₹ {remainingPaymentObject.length !== 0 ? (Math.round(remainingPaymentObject.reduce((total, curr) => total + curr.receivedPayment, 0))).toLocaleString() : 0}</td>
+                                                    {/* <td>₹ {remainingPaymentObject.length !== 0 ? (remainingPaymentObject.reduce((total, curr) => total + curr.pendingPayment, 0)).toLocaleString() : 0}</td> */}
                                                     <td>-</td>
                                                 </tr>
                                             </tfoot>
@@ -2738,6 +3031,119 @@ function EmployeesThisMonthBooking() {
                                 Advance Payments
                             </h2>
                         </div>
+                        <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center" >
+                                {/* <div className="export-data">
+                                    <button className="btn btn-link" onClick={handleExportBookings}>
+                                        Export CSV
+                                    </button>
+                                </div> */}
+                                {/* <div className="filter-title">
+                                    <h2 className="m-0 mr-2">
+                                        {" "}
+                                        Filter Branch : {"  "}
+                                    </h2>
+                                </div> */}
+                                {/* <div className="filter-main ml-2">
+                                    <select
+                                        className="form-select"
+                                        id={`branch-filter`}
+                                        onChange={(e) => handleBranchFilterInAdvancePayments(e.target.value)}
+                                    >
+                                        <option value="" disabled selected>
+                                            Select Branch
+                                        </option>
+
+                                        <option value={"Gota"}>Gota</option>
+                                        <option value={"Sindhu Bhawan"}>
+                                            Sindhu Bhawan
+                                        </option>
+                                        <option value={"none"}>None</option>
+                                    </select>
+                                </div> */}
+                            </div>
+                            {/* <div class='input-icon mr-1'>
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchBookingBde}
+                                    onChange={(e) => {
+                                        setSearchBookingBde(e.target.value)
+                                        debouncedFilterSearchThisMonthBookingBde(e.target.value)
+                                    }}
+                                    className="form-control"
+                                    placeholder="Enter BDE Name..."
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div> */}
+                            {/* <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(values) => {
+                                                const startDateEmp = moment(values[0]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                const endDateEmp = moment(values[1]).format(
+                                                    "DD/MM/YYYY"
+                                                );
+                                                handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
+                                            }}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div> */}
+                            {/* <div>
+                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                                    <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                                    <Select
+                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        multiple
+                                        value={monthBookingPerson}
+                                        onChange={(event) => {
+                                            setMonthBookingPerson(event.target.value)
+                                            handleSelectThisMonthBookingEmployees(event.target.value)
+                                        }}
+                                        input={<OutlinedInput label="Name" />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {options.map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                                style={getStyles(name, monthBookingPerson, theme)}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </div> */}
+                        </div>
 
                     </div>
                     <div className="card-body">
@@ -2751,8 +3157,43 @@ function EmployeesThisMonthBooking() {
 
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
-                                        <th>
-                                            <div>TOTAL AMOUNT</div>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.totalAmount === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.totalAmount === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    totalAmount: updatedSortType,
+                                                }));
+                                                handleSortTotalAmount(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>TOTAL AMOUNT</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAmount === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAmount === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </th>
                                         <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
@@ -2836,6 +3277,7 @@ function EmployeesThisMonthBooking() {
                                                         </tr>
                                                     </>
                                                 ))}
+
                                             </tbody>
                                             <tfoot className="admin-dash-tbl-tfoot">
                                                 <tr>

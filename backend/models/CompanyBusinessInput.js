@@ -73,7 +73,6 @@ const userSchema = new mongoose.Schema({
   },
   CompanyAddress: {
     type: String,
-    required: true
   },
   CompanyPanNumber: {
     type: String,

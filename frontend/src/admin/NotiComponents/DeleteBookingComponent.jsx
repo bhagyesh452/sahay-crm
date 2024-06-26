@@ -7,7 +7,7 @@ import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
-import Nodata from "../components/Nodata";
+import Nodata from "../../components/Nodata";
 
 
 function DeleteBookingComponent() {
@@ -48,7 +48,12 @@ function DeleteBookingComponent() {
     fetchDataDelete()
   }, [])
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
 
 
     socket.on("delete-booking-requested", () => {

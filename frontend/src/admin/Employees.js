@@ -93,7 +93,12 @@ function Employees({ onEyeButtonClick }) {
     }
   };
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
@@ -891,7 +896,7 @@ function Employees({ onEyeButtonClick }) {
                         Branch Office
                       </button>
                     </th>
-                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi") && <> <th>
+                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
                       <button
                         onClick={sortDateByAddedOn}
                         className="table-sort"
@@ -942,7 +947,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi")
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
 
                           <>
