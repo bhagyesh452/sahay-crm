@@ -2488,6 +2488,7 @@ router.post(
             const io = req.io;
             const ename = newData.bdeName;
             io.emit('booking-submitted',ename);
+            console.log('io emmited')
 
           // Send success response
           res.status(201).send("Data sent");
@@ -4365,6 +4366,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const io = req.io;
     const ename = newData.bdeName;
     io.emit('booking-submitted',ename);
+    console.log('booking emmited');
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {
