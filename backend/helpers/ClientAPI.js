@@ -1149,6 +1149,7 @@ router.post("/basicinfo-form/:CompanyName",
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
         .replace("{{today-date}}", todayDate)
+        .replace("{{today-date}}", todayDate)
         .replace("{{client-address}}", client_address)
 
       const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
@@ -1178,7 +1179,7 @@ router.post("/basicinfo-form/:CompanyName",
 
               const mainBuffer = {
                 filename: 'LOA.pdf', // Replace with actual file name
-                path: path.join(__dirname, `./Client-GeneratedDocs/${CompanyName}.pdf`) // Adjust the path accordingly
+                path: `./Client-GeneratedDocs/${CompanyName}.pdf` // Adjust the path accordingly
               };
 
               let clientDocument;
