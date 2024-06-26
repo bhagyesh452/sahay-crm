@@ -1152,7 +1152,7 @@ router.post("/basicinfo-form/:CompanyName",
             .replace("{{DirectorName}}", MainDirectorName)
             .replace("{{DirectorDesignation}}", MainDirectorDesignation)
     
-          const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}`;
+          const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
           const options = {
             childProcessOptions: {
               env: {
