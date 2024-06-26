@@ -54,7 +54,6 @@ const BasicForm = () => {
     DirectorDetails: [DirectorForm],
   });
 
-  console.log(formData);
 
   
   const [errors, setErrors] = useState({});
@@ -160,7 +159,7 @@ const BasicForm = () => {
     try {
       const data = new FormData();
 
-      console.log("data", data)
+      
       Object.keys(formData).forEach((key) => {
         if (!["DirectorDetails", "SelectServices"].includes(key)) {
           data.append(key, formData[key]);
@@ -184,9 +183,6 @@ const BasicForm = () => {
         }
       });
 
-      for (const [key, value] of data.entries()) {
-        console.log(`${key}: ${value}`);
-      }
 
       const response = await fetch(`${secretKey}/clientform/basicinfo-form/${formData.CompanyName}`, {
         method: "POST",
@@ -427,7 +423,7 @@ const BasicForm = () => {
       return;
     }
 
-    console.log(newErrors);
+    // console.log(newErrors);
 
     setFormSubmitted(true);
     await sendDataToBackend();
