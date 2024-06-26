@@ -284,23 +284,7 @@ router.post("/basicinfo-form/:CompanyName",
           </div>
         `;
       }
-      let directorLinkedInHtml = "";
-      if (LinkedInProfileLink && LinkedInProfileLink !== "No LinkedIn Link") {
-        directorLinkedInHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                LinkedIn Profile Link
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${LinkedInProfileLink}
-              </div>
-            </div>
-          </div>
-        `;
-      }
+
 
       const tempHtml = () => {
         let team = "";
@@ -487,26 +471,7 @@ router.post("/basicinfo-form/:CompanyName",
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            LinkedIn Profile Link
-                        </div>
-                    </div>
-                    <div style="width: 75%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${directorLinkedInHtml}
-                        </div>
-                    </div>
-                </div>
+             
                 <div style="display: flex; flex-wrap: wrap">
                     <div style="width: 25%">
                         <div style="
@@ -566,6 +531,27 @@ router.post("/basicinfo-form/:CompanyName",
                             ${DirectorGender}
                         </div>
                     </div>
+                </div>
+                
+                <div style="display: ${(!LinkedInProfileLink || LinkedInProfileLink == "") ? "none" :'flex'}; flex-wrap: wrap">
+                    <div style="width: 25%">
+                        <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                            ">
+                            Director Gender
+                        </div>
+                    </div>
+                  <div style="width: 75%">
+                        <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                          ">
+                            ${LinkedInProfileLink}
+                        </div>
+                  </div>
                 </div>
             </div>
         </div>
@@ -1134,8 +1120,8 @@ router.post("/basicinfo-form/:CompanyName",
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
-        .replace("{{today-date}}",todayDate)
-        .replace("{{client-address}}",client_address)
+        .replace("{{today-date}}", todayDate)
+        .replace("{{client-address}}", client_address)
 
       const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
       const options = {
