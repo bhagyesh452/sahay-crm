@@ -62,7 +62,7 @@
     <div class="container">
         <div class="businnes-input-loa-main">
             <div class="header">
-                <p>Date:</p>
+                <p>Date:{{today-date}}</p>
             </div>
             <div class="content">
                 <p>To,<br>
@@ -80,9 +80,7 @@
                     Society/Trust/Company/Statutory Body <span class="variable_span"> {{CompanyName}},</span> 
                     having registered office at 
                     <span>
-                        <span class="variable_span" style="width: 350px !important; display: inline-block;border-bottom: 1px solid #656565;">
-
-                        </span>
+                       {{client-address}}
                     </span>
                     and PAN <span class="variable_span">{{CompanyPanNumber}}.</span>
                 </p>
@@ -108,7 +106,7 @@
                     
                     <p>Name: <span class="variable_span">{{DirectorName}}</span><br>
                     Designation: <span class="variable_span">{{DirectorDesignation}}</span><br>
-                    Date: ____________________________</p>
+                    Date: {{today-date}}</p>
                     
                     <p>Seal of the Signing Authority</p>
                 </div>

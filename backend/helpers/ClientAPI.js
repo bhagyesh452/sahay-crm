@@ -50,6 +50,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// ******************************************************   Format Dates  ************************************************************************
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 
 router.post("/basicinfo-form/:CompanyName",
 
@@ -1107,8 +1116,10 @@ router.post("/basicinfo-form/:CompanyName",
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px !important; display: inline-block;border-bottom: 1px solid #656565;"></span>` : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
+      const todayDate = formatDate(new Date());
       const filedHtml = htmlNewTemplate
         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
         .replace("{{DirectorName}}", forGender.DirectorName)
@@ -1123,6 +1134,8 @@ router.post("/basicinfo-form/:CompanyName",
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
+        .replace("{{today-date}}",todayDate)
+        .replace("{{client-address}}",client_address)
 
       const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
       const options = {
