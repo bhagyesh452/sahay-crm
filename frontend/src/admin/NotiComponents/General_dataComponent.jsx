@@ -15,12 +15,21 @@ function General_dataComponent() {
     const [filterBy, setFilterBy] = useState("Pending");
     const [data, setData] = useState([])
     const [acceptedData, setAcceptedData] = useState([]);
+    const [searchText, setSearchText] = useState("")
+    const [filteredData, setFilteredData] = useState([]);
+    const [search_filteredData, setSearch_FilteredData] = useState([]);
+    const [dataOpen, setDataOpen] = useState(false)
+
+
     const [open, openchange] = useState(false);
 
     const fetchRequestGDetails = async () => {
         try {
             const response = await axios.get(`${secretKey}/requests/requestgData`);
-            setData(response.data.reverse());
+            const tempData = response.data.reverse()
+            setData(tempData);
+            setFilteredData(tempData.filter(obj => obj.assigned === false));
+            setSearch_FilteredData(tempData.filter(obj => obj.assigned === false));
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -40,11 +49,38 @@ function General_dataComponent() {
       };
     
     useEffect(() => {
-        fetchData();
         fetchRequestGDetails();
     }, [])
 
-    console.log(acceptedData)
+    const functionViewFolder = async()=>{
+       await fetchData();
+    }
+
+    useEffect(() => {
+    if(dataOpen){
+        fetchData()
+    }else {
+        setAcceptedData([])
+    }
+    }, [dataOpen])
+    
+
+    // ----------------------------------------------------   Filtering and Searching ---------------------------------------
+
+    useEffect(() => {
+        setFilteredData(filterBy === "Pending" ? data.filter(obj => obj.assigned === false) : data.filter(obj => obj.assigned === true));
+        setSearch_FilteredData(filterBy === "Pending" ? data.filter(obj => obj.assigned === false) : data.filter(obj => obj.assigned === true));
+      }, [filterBy])
+    
+      useEffect(() => {
+        if (searchText !== "") {
+          setSearch_FilteredData(filteredData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
+        } else {
+          setSearch_FilteredData(filteredData)
+        }
+      }, [searchText])
+
+    console.log( "This is the accepted data", acceptedData)
 
 
     function formatDate(timestamp) {
@@ -63,7 +99,7 @@ function General_dataComponent() {
                             <label htmlFor="search_bde ">BDE : </label>
                         </div>
                         <div className='GeneralNoti-Filter'>
-                            <input type="text" name="search_bde" id="search_bde" className='form-control col-sm-8' placeholder='Please Enter BDE name' />
+                            <input value={searchText} onChange={(e)=>setSearchText(e.target.value)} type="text" name="search_bde" id="search_bde" className='form-control col-sm-8' placeholder='Please Enter BDE name' />
                         </div>
                     </div>
                     <div className="filter-by-date d-flex align-items-center">
@@ -93,8 +129,8 @@ function General_dataComponent() {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.length !== 0 ?
-                                data.map((obj, index) => (
+                            {search_filteredData.length !== 0 ?
+                                search_filteredData.map((obj, index) => (
                                     <tr>
                                         <td>{index + 1}</td>
                                         <td>
@@ -128,7 +164,7 @@ function General_dataComponent() {
                                             </div>
                                         </div></td>
                                         <td> {filterBy === "Pending" && <div>
-                                            <div className="Notification-folder-open">
+                                            <div className="Notification-folder-open" onClick={functionViewFolder}>
                                                 <FcOpenedFolder />
                                             </div>
                                         </div>}
@@ -156,6 +192,7 @@ function General_dataComponent() {
                     </table>
                 </div>
             </div>
+
 
         </div>
     )
