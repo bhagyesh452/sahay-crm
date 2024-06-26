@@ -68,7 +68,7 @@ const processAttachments = require("./helpers/sendMail3.js");
 const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
-
+const RMServicesAPI = require("./helpers/RMServicesApi.js")
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -99,6 +99,7 @@ app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
+app.use('/api/rm-services', RMServicesAPI)
 
 
 // app.use(session({

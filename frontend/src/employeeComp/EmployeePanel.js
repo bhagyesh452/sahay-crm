@@ -4184,13 +4184,13 @@ function EmployeePanel() {
                                             </>) : (<>
                                               <TiArrowForward
                                                 onClick={() => {
-                                                  handleConfirmAssign(
-                                                    company._id,
-                                                    company["Company Name"],
-                                                    company.Status, // Corrected parameter name
-                                                    company.ename,
-                                                    company.bdmAcceptStatus
-                                                  );
+                                                  // handleConfirmAssign(
+                                                  //   company._id,
+                                                  //   company["Company Name"],
+                                                  //   company.Status, // Corrected parameter name
+                                                  //   company.ename,
+                                                  //   company.bdmAcceptStatus
+                                                  // );
                                                 }}
                                                 style={{
                                                   cursor: "pointer",

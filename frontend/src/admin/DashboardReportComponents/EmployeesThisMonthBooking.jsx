@@ -49,7 +49,8 @@ function EmployeesThisMonthBooking() {
         targetamount: "none",
         achievedamount: "none",
         targetratio: "none",
-        lastbookingdate: "none"
+        lastbookingdate: "none",
+        totalAdvanceAchieved: "none",
     });
 
 
@@ -1999,42 +2000,20 @@ function EmployeesThisMonthBooking() {
         link.click();
     }
 
+   
     //-----------------------------function for advance payment table-------------------------------
-    const advancePaymentObject = [];
+    const [advancePaymentObject, setAdvancePaymentObject] = useState([]);
 
-    redesignedData.forEach((mainObj) => {
-        const bookingDate = new Date(mainObj.bookingDate)
-        if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
-            mainObj.services.forEach((service) => {
-                if (service.paymentTerms === 'Full Advanced') {
-                    advancePaymentObject.push({
-                        "Company Name": mainObj["Company Name"],
-                        serviceName: service.serviceName,
-                        bdeName: mainObj.bdeName,
-                        bdmName: mainObj.bdmName,
-                        totalPayment: service.totalPaymentWGST,
-                        totalAdvanceRecieved: service.totalPaymentWGST,
-                        paymentDate: mainObj.bookingDate
-                    })
-                } else if (service.paymentTerms === "two-part") {
-                    advancePaymentObject.push({
-                        "Company Name": mainObj["Company Name"],
-                        serviceName: service.serviceName,
-                        bdeName: mainObj.bdeName,
-                        bdmName: mainObj.bdmName,
-                        totalPayment: service.totalPaymentWGST,
-                        totalAdvanceRecieved: service.firstPayment,
-                        paymentDate: mainObj.bookingDate
-                    })
-                }
-            })
-        }
-        mainObj.moreBookings.length !==0 && mainObj.moreBookings.map((moreObject)=>{
-            const bookingDate = new Date(moreObject.bookingDate)
+    useEffect(() => {
+        // Your logic to populate advancePaymentObject
+        const newAdvancePaymentObject = [];
+    
+        redesignedData.forEach((mainObj) => {
+            const bookingDate = new Date(mainObj.bookingDate);
             if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
-                moreObject.services.forEach((service) => {
+                mainObj.services.forEach((service) => {
                     if (service.paymentTerms === 'Full Advanced') {
-                        advancePaymentObject.push({
+                        newAdvancePaymentObject.push({
                             "Company Name": mainObj["Company Name"],
                             serviceName: service.serviceName,
                             bdeName: mainObj.bdeName,
@@ -2042,9 +2021,9 @@ function EmployeesThisMonthBooking() {
                             totalPayment: service.totalPaymentWGST,
                             totalAdvanceRecieved: service.totalPaymentWGST,
                             paymentDate: mainObj.bookingDate
-                        })
+                        });
                     } else if (service.paymentTerms === "two-part") {
-                        advancePaymentObject.push({
+                        newAdvancePaymentObject.push({
                             "Company Name": mainObj["Company Name"],
                             serviceName: service.serviceName,
                             bdeName: mainObj.bdeName,
@@ -2052,15 +2031,60 @@ function EmployeesThisMonthBooking() {
                             totalPayment: service.totalPaymentWGST,
                             totalAdvanceRecieved: service.firstPayment,
                             paymentDate: mainObj.bookingDate
-                        })
+                        });
                     }
-                })
-            }
-        })
-    })
-
-   console.log(redesignedData)
+                });
     
+                mainObj.moreBookings.forEach((moreObject) => {
+                    const bookingDate = new Date(moreObject.bookingDate);
+                    if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
+                        moreObject.services.forEach((service) => {
+                            if (service.paymentTerms === 'Full Advanced') {
+                                newAdvancePaymentObject.push({
+                                    "Company Name": mainObj["Company Name"],
+                                    serviceName: service.serviceName,
+                                    bdeName: mainObj.bdeName,
+                                    bdmName: mainObj.bdmName,
+                                    totalPayment: service.totalPaymentWGST,
+                                    totalAdvanceRecieved: service.totalPaymentWGST,
+                                    paymentDate: mainObj.bookingDate
+                                });
+                            } else if (service.paymentTerms === "two-part") {
+                                newAdvancePaymentObject.push({
+                                    "Company Name": mainObj["Company Name"],
+                                    serviceName: service.serviceName,
+                                    bdeName: mainObj.bdeName,
+                                    bdmName: mainObj.bdmName,
+                                    totalPayment: service.totalPaymentWGST,
+                                    totalAdvanceRecieved: service.firstPayment,
+                                    paymentDate: mainObj.bookingDate
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    
+        setAdvancePaymentObject(newAdvancePaymentObject);
+    }, [redesignedData]);
+
+    const handleSortTotalAdvanceAchieved = (type) => {
+        let sortedData = [...advancePaymentObject];
+    
+        if (type === "ascending") {
+            
+            sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved);
+            console.log("ascending" , sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved))
+        } else if (type === "descending") {
+            sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved);
+            console.log("descending" , sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved))
+        }
+        setAdvancePaymentObject(sortedData);
+    };
+   
+    console.log(redesignedData)
+
 
 
     return (
@@ -2422,7 +2446,7 @@ function EmployeesThisMonthBooking() {
                                                 if (newSortType.achievedamount === "ascending") {
                                                     updatedSortType = "descending";
                                                 } else if (newSortType.achievedamount === "descending") {
-                                                    updatedSortType
+                                                updatedSortType
                                                         = "none";
                                                 } else {
                                                     updatedSortType = "ascending";
@@ -2730,9 +2754,43 @@ function EmployeesThisMonthBooking() {
                                         <th>
                                             <div>TOTAL AMOUNT</div>
                                         </th>
-                                        <th>
-                                            <div>TOTAL ADVANCE RECIEVED</div>
-                                        </th>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.totalAdvanceAchieved === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.totalAdvanceAchieved === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    totalAdvanceAchieved: updatedSortType,
+                                                }));
+                                                handleSortTotalAdvanceAchieved(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>TOTAL ADVANCE ACHIEVED</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAdvanceAchieved === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAdvanceAchieved === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                         <th>
                                             PAYMENT DATE
                                         </th>
@@ -2758,9 +2816,9 @@ function EmployeesThisMonthBooking() {
                                     advancePaymentObject.length !== 0 ? (
                                         <>
                                             <tbody>
-                                                {advancePaymentObject.sort((a , b)=>new Date(b.paymentDate) - new Date(a.paymentDate)).map((obj, index) => (
+                                                {advancePaymentObject.map((obj, index) => (
                                                     <>
-                                                        <tr  >
+                                                        <tr key={index} >
                                                             <th>{index + 1}</th>
                                                             <th>{obj["Company Name"]}</th>
                                                             <th>{obj.serviceName}</th>

@@ -251,11 +251,6 @@ export default function AdminBookingForm({
               : "On Particular Date",
           };
         });
-
-
-
-
-
         setLeadData((prevState) => ({
           ...prevState,
           services:
@@ -951,8 +946,6 @@ export default function AdminBookingForm({
       console.error("Error resetting draft:", error.message);
     }
   };
-
-  console.log(isoType, "boom");
 
   const renderServices = () => {
     const services = [];
@@ -1946,6 +1939,7 @@ export default function AdminBookingForm({
   }, [foundCompany]);
 
   console.log("Found Company", foundCompany);
+
   const handleInputCompanyName = (value) => {
     setCompanyNewName(value);
   };

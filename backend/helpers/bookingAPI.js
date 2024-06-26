@@ -16,7 +16,7 @@ const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
-const { appendDataToSheet , appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
+const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -754,7 +754,7 @@ router.post(
       const newTempDate = new Date();
       const newData = req.body;
 
-  
+
       const Step = req.params.step;
       if (Step === "step2") {
         const existingData = await RedesignedDraftModel.findOne({
@@ -902,9 +902,9 @@ router.post(
           });
         }
         const boomDate = new Date();
-        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+        const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
         appendDataToSheet(sheetData);
-       
+
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
@@ -2740,7 +2740,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const newData = req.body;
     const boomDate = new Date();
 
-    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+    const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
     console.log("Admin :-", isAdmin)
@@ -2753,7 +2753,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
-   
+
     const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
@@ -4438,7 +4438,7 @@ router.delete(
             }
           );
           companyName = deletedBooking["Company Name"]
-          socketIO.emit('delete-request-done' , companyName);
+          socketIO.emit('delete-request-done', companyName);
         } else {
           return res.status(404).send("Booking not found");
         }
@@ -4465,7 +4465,7 @@ router.delete(
           }
         );
         const companyName = moreObject["Company Name"];
-        socketIO.emit('delete-request-done' , companyName);
+        socketIO.emit('delete-request-done', companyName);
         console.log("Delete request emitted")
 
         return res.status(200).send("booking Deleted Successfuly");
@@ -4559,14 +4559,14 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: publishDate
       };
-      
+
       const sheetObject = {
-        "Company Name" : companyName,
-        serviceName : objectData.serviceName,
-        "Remaining Payment" : objectData.receivedAmount,
-        "Payment Method":objectData.paymentMethod,
-        "Payment Date":formatDate(objectData.paymentDate),
-        "Payment Remarks" : objectData.extraRemarks
+        "Company Name": companyName,
+        serviceName: objectData.serviceName,
+        "Remaining Payment": objectData.receivedAmount,
+        "Payment Method": objectData.paymentMethod,
+        "Payment Date": formatDate(objectData.paymentDate),
+        "Payment Remarks": objectData.extraRemarks
       }
       await appendRemainingDataToSheet(sheetObject);
 
