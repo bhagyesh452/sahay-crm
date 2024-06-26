@@ -46,8 +46,8 @@ const BasicForm = () => {
     CompanyUSP: "",
     ValueProposition: "",
     TechnologyInvolved: "",
-    UploadPhotos: "",
-    RelevantDocument: "",
+    UploadPhotos: null,
+    RelevantDocument: null,
     DirectInDirectMarket: "",
     BusinessModel: "",
     Finance: "",
@@ -56,7 +56,7 @@ const BasicForm = () => {
 
   console.log(formData);
 
-
+  
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [emailError, setEmailError] = useState('');
@@ -357,13 +357,13 @@ const BasicForm = () => {
     if (!formData.ValueProposition && formData.ValueProposition !== "") {
       newErrors.ValueProposition = "Enter Your Company Value Proposition";
     }
-    if (!formData.TechnologyInvolved) {
+    if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
       newErrors.TechnologyInvolved = "Enter Your Technology Details";
     }
-    if (!formData.UploadPhotos) {
+    if (showPhotos &&!formData.UploadPhotos) {
       newErrors.UploadPhotos = "Upload Photos of Logo or Product/Prototype";
     }
-    if (!formData.RelevantDocument) {
+    if (showIp && !formData.RelevantDocument) {
       newErrors.RelevantDocument = "Upload Relevant Documents";
     }
     if (!formData.DirectInDirectMarket) {
@@ -372,7 +372,7 @@ const BasicForm = () => {
     if (!formData.BusinessModel) {
       newErrors.BusinessModel = "Please Select Business Model";
     }
-    if (!formData.Finance) {
+    if (!formData.Finance && formData.Finance !== "") {
       newErrors.Finance = "Enter The Details of Grant";
     }
     if (!formData.DirectorDetails.some((obj) => obj.IsMainDirector === true)) {
@@ -462,17 +462,47 @@ const BasicForm = () => {
     setShowTechnologyDetails(event.target.value === "yes");
   };
 
+  
+
+  // const handlePhotos = (event) => {
+  //   setShowPhotos(event.target.value === "Yes");
+  // };
+
   const handlePhotos = (event) => {
-    setShowPhotos(event.target.value === "Yes");
+    const isYesSelected = event.target.value === "Yes";
+    setShowPhotos(isYesSelected);
+    if (!isYesSelected) {
+      setFormData((prevState) => ({
+        ...prevState,
+        UploadPhotos: null,
+      }));
+    }
   };
 
+  // const handleIp = (event) => {
+  //   setShowIp(event.target.value === "Yes");
+  // };
+
   const handleIp = (event) => {
-    setShowIp(event.target.value === "Yes");
+    const isYesSelected = event.target.value === "Yes";
+    setShowIp(isYesSelected);
+    if (!isYesSelected) {
+      setFormData((prevState) => ({
+        ...prevState,
+        RelevantDocument: null,
+      }));
+    }
   };
+
+
 
   const handleFinance = (event) => {
     setShowFinance(event.target.value === "yes");
   };
+
+  
+
+
 
   // Email content based on selected Business Model
   const getEmailContent = () => {
@@ -893,7 +923,7 @@ const BasicForm = () => {
                       <span className="form-check-label">Female</span>
                     </label>
                   </div>
-                  {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
+                  {formSubmitted && !formData.DirectorDetails[index]?.DirectorGender && (
                     <div style={{ color: "red" }}>Select the Director Gender</div>
                   )}
                 </div>
