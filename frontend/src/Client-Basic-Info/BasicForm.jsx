@@ -740,7 +740,7 @@ const BasicForm = () => {
                     }}
                   />
                   <div className="input-note">
-                    (Files size should be less than 500KB)
+                    (Files size should be less than 24MB)
                   </div>
                 </div>
               </div>
@@ -895,7 +895,7 @@ const BasicForm = () => {
                       <span className="form-check-label">Female</span>
                     </label>
                   </div>
-                  {formSubmitted && !formData.DirectorDetails[index.DirectorGender] && (
+                  {formSubmitted && !formData.DirectorDetails[index].DirectorGender && (
                     <div style={{ color: "red" }}>Select the Director Gender</div>
                   )}
                 </div>

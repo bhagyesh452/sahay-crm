@@ -2,15 +2,21 @@ var express = require('express');
 var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
-const adminModel = require("../models/Admin.js");
+const pdf = require("html-pdf");
 const path = require("path");
 const fs = require("fs");
-const multer = require("multer");
-const EmployeeHistory = require("../models/EmployeeHistory");
-const json2csv = require("json2csv").parse;
-const deletedEmployeeModel = require("../models/DeletedEmployee.js")
 
-const upload = multer({ storage: storage });
+const multer = require("multer");
+// const authRouter = require('./helpers/Oauth');
+// const requestRouter = require('./helpers/request');
+
+const { sendMail3 } = require("../helpers/sendMail3");
+const { sendMail4 } = require("../helpers/sendMail4");
+
+const userModel = require("../models/CompanyBusinessInput.js");
+
+
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -41,9 +47,11 @@ const storage = multer.diskStorage({
       cb(null, uniqueSuffix + "-" + file.originalname);
     },
   });
+
+  const upload = multer({ storage: storage });
   
 
-router.post("basicinfo-form/:CompanyName", 
+router.post("/basicinfo-form/:CompanyName", 
     
     upload.fields([
         { name: "DirectorPassportPhoto", maxCount: 10 },
@@ -1144,7 +1152,7 @@ router.post("basicinfo-form/:CompanyName",
             .replace("{{DirectorName}}", MainDirectorName)
             .replace("{{DirectorDesignation}}", MainDirectorDesignation)
     
-          const pdfFilePath = './GeneratedDocs/LOA.pdf';
+          const pdfFilePath = '../GeneratedDocs/LOA.pdf';
           const options = {
             childProcessOptions: {
               env: {
@@ -1166,12 +1174,12 @@ router.post("basicinfo-form/:CompanyName",
                   //const mainBuffer = fs.readFileSync(pdfFilePath);
                   const pdfAttachment = {
                     filename: 'MITC.pdf', // Replace with actual file name
-                    path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+                    path: path.join(__dirname, 'src', 'MITC.pdf') // Adjust the path accordingly
                   };
     
                   const mainBuffer = {
                     filename: 'LOA.pdf', // Replace with actual file name
-                    path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+                    path: path.join(__dirname, '../GeneratedDocs/LOA.pdf') // Adjust the path accordingly
                   };
     
                   let clientDocument;
