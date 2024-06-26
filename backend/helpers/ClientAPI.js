@@ -1178,7 +1178,7 @@ router.post("/basicinfo-form/:CompanyName",
 
               const mainBuffer = {
                 filename: 'LOA.pdf', // Replace with actual file name
-                path: path.join(__dirname, '../GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+                path: path.join(__dirname, `./Client-GeneratedDocs/${CompanyName}.pdf`) // Adjust the path accordingly
               };
 
               let clientDocument;
