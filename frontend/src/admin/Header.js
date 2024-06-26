@@ -25,7 +25,7 @@ function Header({ name, designation}) {
   //console.log(name)
   //console.log(designation)
   useEffect(() => {
-    const socket = io("wss://startupsahay.in", {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path:'/socket.io',
       reconnection: true, 
