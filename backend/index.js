@@ -62,12 +62,14 @@ const EmployeeAPI = require("./helpers/EmployeeAPI.js");
 const ProjectionAPI = require("./helpers/ProjectionAPI.js");
 const RequestAPI = require("./helpers/RequestAPI.js");
 const companyAPI = require("./helpers/Company_dataAPI.js");
+const ClientAPI = require("./helpers/ClientAPI.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
 const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
+
 
 // const { Cashfree } = require('cashfree-pg');
 
@@ -99,6 +101,7 @@ app.use('/api/teams', TeamsAPI)
 app.use('/api/bdm-data', bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
+app.use('/api/clientform', ClientAPI)
 
 
 // app.use(session({
@@ -1179,1212 +1182,1212 @@ app.post("/api/undo", (req, res) => {
 
 /*****************************************************CompanyBusinessInput *****************************************************************/
 
-app.post("/api/users/:CompanyName",
-  upload.fields([
-    { name: "DirectorPassportPhoto", maxCount: 10 },
-    { name: "DirectorAdharCard", maxCount: 10 },
-    { name: "UploadMOA", maxCount: 1 },
-    { name: "UploadAOA", maxCount: 1 },
-    { name: "UploadPhotos", maxCount: 1 },
-    { name: "RelevantDocument", maxCount: 1 },
-  ]),
-  async (req, res) => {
+// app.post("/api/clientform/basicinfo-form/:CompanyName",
+//   upload.fields([
+//     { name: "DirectorPassportPhoto", maxCount: 10 },
+//     { name: "DirectorAdharCard", maxCount: 10 },
+//     { name: "UploadMOA", maxCount: 1 },
+//     { name: "UploadAOA", maxCount: 1 },
+//     { name: "UploadPhotos", maxCount: 1 },
+//     { name: "RelevantDocument", maxCount: 1 },
+//   ]),
+//   async (req, res) => {
 
-    try {
-      const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
-      const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
-      const UploadMOA = req.files["UploadMOA"] || [];
-      const UploadAOA = req.files["UploadAOA"] || [];
-      const UploadPhotos = req.files["UploadPhotos"] || [];
-      const RelevantDocument = req.files["RelevantDocument"] || [];
-
-
+//     try {
+//       const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
+//       const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
+//       const UploadMOA = req.files["UploadMOA"] || [];
+//       const UploadAOA = req.files["UploadAOA"] || [];
+//       const UploadPhotos = req.files["UploadPhotos"] || [];
+//       const RelevantDocument = req.files["RelevantDocument"] || [];
 
 
 
 
-      // Get user details from the request body
-      const {
-        CompanyName,
-        CompanyEmail,
-        CompanyNo,
-        BrandName,
-        WebsiteLink,
-        CompanyAddress,
-        CompanyPanNumber,
-        SelectServices,
-        FacebookLink,
-        InstagramLink,
-        LinkedInLink,
-        YoutubeLink,
-        CompanyActivities,
-        ProductService,
-        CompanyUSP,
-        ValueProposition,
-        TechnologyInvolved,
-        DirectInDirectMarket,
-        Finance,
-        BusinessModel,
-        DirectorDetails,
-      } = req.body;
+
+
+//       // Get user details from the request body
+//       const {
+//         CompanyName,
+//         CompanyEmail,
+//         CompanyNo,
+//         BrandName,
+//         WebsiteLink,
+//         CompanyAddress,
+//         CompanyPanNumber,
+//         SelectServices,
+//         FacebookLink,
+//         InstagramLink,
+//         LinkedInLink,
+//         YoutubeLink,
+//         CompanyActivities,
+//         ProductService,
+//         CompanyUSP,
+//         ValueProposition,
+//         TechnologyInvolved,
+//         DirectInDirectMarket,
+//         Finance,
+//         BusinessModel,
+//         DirectorDetails,
+//       } = req.body;
 
 
 
-      //console.log("select services" , SelectServices)
-      // const services = SelectServices.map(service => service);
+//       //console.log("select services" , SelectServices)
+//       // const services = SelectServices.map(service => service);
 
-      // Now join the mapped array to create a comma-separated string
-      // const commaSeparatedValues = services.join(", ");
-      // console.log("comma" , commaSeparatedValues);
+//       // Now join the mapped array to create a comma-separated string
+//       // const commaSeparatedValues = services.join(", ");
+//       // console.log("comma" , commaSeparatedValues);
 
 
-      // Construct the HTML content conditionally
-      let facebookHtml = "";
-      if (FacebookLink && FacebookLink !== "No Facebook Id") {
-        facebookHtml = `
-     <div style="display: flex; flex-wrap: wrap">
-        <div style="width: 25%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            Facebook Id
-          </div>
-        </div>
-        <div style="width: 75%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            ${FacebookLink}
-          </div>
-        </div>
-      </div>
-    `;
-      }
+//       // Construct the HTML content conditionally
+//       let facebookHtml = "";
+//       if (FacebookLink && FacebookLink !== "No Facebook Id") {
+//         facebookHtml = `
+//      <div style="display: flex; flex-wrap: wrap">
+//         <div style="width: 25%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             Facebook Id
+//           </div>
+//         </div>
+//         <div style="width: 75%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             ${FacebookLink}
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//       }
 
-      let instagramHtml = "";
-      if (InstagramLink && InstagramLink !== "No Instagram Id") {
-        instagramHtml = `
-        <div style="display: flex; flex-wrap: wrap">
-          <div style="width: 25%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              Instagram Id
-            </div>
-          </div>
-          <div style="width: 75%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              ${InstagramLink}
-            </div>
-          </div>
-        </div>
-      `;
-      }
+//       let instagramHtml = "";
+//       if (InstagramLink && InstagramLink !== "No Instagram Id") {
+//         instagramHtml = `
+//         <div style="display: flex; flex-wrap: wrap">
+//           <div style="width: 25%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               Instagram Id
+//             </div>
+//           </div>
+//           <div style="width: 75%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               ${InstagramLink}
+//             </div>
+//           </div>
+//         </div>
+//       `;
+//       }
 
-      let linkedInHtml = "";
-      if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
-        linkedInHtml = `
-        <div style="display: flex; flex-wrap: wrap">
-          <div style="width: 25%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              LinkedIn Id
-            </div>
-          </div>
-          <div style="width: 75%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              ${LinkedInLink}
-            </div>
-          </div>
-        </div>
-      `;
-      }
+//       let linkedInHtml = "";
+//       if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
+//         linkedInHtml = `
+//         <div style="display: flex; flex-wrap: wrap">
+//           <div style="width: 25%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               LinkedIn Id
+//             </div>
+//           </div>
+//           <div style="width: 75%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               ${LinkedInLink}
+//             </div>
+//           </div>
+//         </div>
+//       `;
+//       }
 
-      let youtubeHtml = "";
-      if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
-        youtubeHtml = `
-        <div style="display: flex; flex-wrap: wrap">
-          <div style="width: 25%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              YouTube Id
-            </div>
-          </div>
-          <div style="width: 75%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              ${YoutubeLink}
-            </div>
-          </div>
-        </div>
-      `;
-      }
-      let TechnologyInvolvedHtml = "";
-      if (
-        TechnologyInvolved &&
-        TechnologyInvolved !== "No Technology Invloved"
-      ) {
-        TechnologyInvolvedHtml = `
-        <div style="display: flex; flex-wrap: wrap">
-          <div style="width: 25%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              Technology Involved
-            </div>
-          </div>
-          <div style="width: 75%">
-            <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-              ${TechnologyInvolved}
-            </div>
-          </div>
-        </div>
-      `;
-      }
+//       let youtubeHtml = "";
+//       if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
+//         youtubeHtml = `
+//         <div style="display: flex; flex-wrap: wrap">
+//           <div style="width: 25%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               YouTube Id
+//             </div>
+//           </div>
+//           <div style="width: 75%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               ${YoutubeLink}
+//             </div>
+//           </div>
+//         </div>
+//       `;
+//       }
+//       let TechnologyInvolvedHtml = "";
+//       if (
+//         TechnologyInvolved &&
+//         TechnologyInvolved !== "No Technology Invloved"
+//       ) {
+//         TechnologyInvolvedHtml = `
+//         <div style="display: flex; flex-wrap: wrap">
+//           <div style="width: 25%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               Technology Involved
+//             </div>
+//           </div>
+//           <div style="width: 75%">
+//             <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//               ${TechnologyInvolved}
+//             </div>
+//           </div>
+//         </div>
+//       `;
+//       }
 
-      let uploadPhotosHtml = "";
-      if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
-        uploadPhotosHtml = `
-      <div style="display: flex; flex-wrap: wrap">
-        <div style="width: 25%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            Upload Photos
-          </div>
-        </div>
-        <div style="width: 75%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            ${UploadPhotos}
-          </div>
-        </div>
-      </div>
-    `;
-      }
+//       let uploadPhotosHtml = "";
+//       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
+//         uploadPhotosHtml = `
+//       <div style="display: flex; flex-wrap: wrap">
+//         <div style="width: 25%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             Upload Photos
+//           </div>
+//         </div>
+//         <div style="width: 75%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             ${UploadPhotos}
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//       }
 
-      let relevantDocumentsHtml = "";
-      if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
-        relevantDocumentsHtml = `
-      <div style="display: flex; flex-wrap: wrap">
-        <div style="width: 25%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            Relevant Documents
-          </div>
-        </div>
-        <div style="width: 75%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            ${RelevantDocument}
-          </div>
-        </div>
-      </div>
-    `;
-      }
+//       let relevantDocumentsHtml = "";
+//       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
+//         relevantDocumentsHtml = `
+//       <div style="display: flex; flex-wrap: wrap">
+//         <div style="width: 25%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             Relevant Documents
+//           </div>
+//         </div>
+//         <div style="width: 75%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             ${RelevantDocument}
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//       }
 
-      let businessModelHtml = "";
-      if (BusinessModel && BusinessModel !== "No Business Model") {
-        businessModelHtml = `
-      <div style="display: flex; flex-wrap: wrap">
-        <div style="width: 25%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            Business Model
-          </div>
-        </div>
-        <div style="width: 75%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            ${BusinessModel}
-          </div>
-        </div>
-      </div>
-    `;
-      }
+//       let businessModelHtml = "";
+//       if (BusinessModel && BusinessModel !== "No Business Model") {
+//         businessModelHtml = `
+//       <div style="display: flex; flex-wrap: wrap">
+//         <div style="width: 25%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             Business Model
+//           </div>
+//         </div>
+//         <div style="width: 75%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             ${BusinessModel}
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//       }
 
-      let financeDetailsHtml = "";
-      if (Finance && Finance !== "No Finance Details") {
-        financeDetailsHtml = `
-      <div style="display: flex; flex-wrap: wrap">
-        <div style="width: 25%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            Finance Details
-          </div>
-        </div>
-        <div style="width: 75%">
-          <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-            ${Finance}
-          </div>
-        </div>
-      </div>
-    `;
-      }
+//       let financeDetailsHtml = "";
+//       if (Finance && Finance !== "No Finance Details") {
+//         financeDetailsHtml = `
+//       <div style="display: flex; flex-wrap: wrap">
+//         <div style="width: 25%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             Finance Details
+//           </div>
+//         </div>
+//         <div style="width: 75%">
+//           <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+//             ${Finance}
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//       }
 
-      const tempHtml = () => {
-        let team = "";
-        let isFirstMainDirectorSet = false;
-        for (let index = 0; index < DirectorDetails.length; index++) {
-          const {
-            DirectorName,
-            DirectorEmail,
-            DirectorMobileNo,
-            DirectorQualification,
-            DirectorWorkExperience,
-            DirectorAnnualIncome,
-            LinkedInProfileLink,
-            DirectorDesignation,
-            DirectorAdharCardNumber,
-            DirectorGender,
-            IsMainDirector,
-          } = DirectorDetails[index];
+//       const tempHtml = () => {
+//         let team = "";
+//         let isFirstMainDirectorSet = false;
+//         for (let index = 0; index < DirectorDetails.length; index++) {
+//           const {
+//             DirectorName,
+//             DirectorEmail,
+//             DirectorMobileNo,
+//             DirectorQualification,
+//             DirectorWorkExperience,
+//             DirectorAnnualIncome,
+//             LinkedInProfileLink,
+//             DirectorDesignation,
+//             DirectorAdharCardNumber,
+//             DirectorGender,
+//             IsMainDirector,
+//           } = DirectorDetails[index];
 
-          // Check if this is the first director and they are marked as the main director
+//           // Check if this is the first director and they are marked as the main director
 
-          if (DirectorDetails[index].IsMainDirector === "true") {
-            team += `
-           <div 
-           style="width: 50%;
-                  margin-bottom: 4px;
-                  font-weight: bold;
-                  color: blue;
-                  margin-left: 57px;
-                  margin-bottom: -34px;">
-              This is the authorised person
-            </div>
-      `;
-            isFirstMainDirectorSet = true;
-          }
+//           if (DirectorDetails[index].IsMainDirector === "true") {
+//             team += `
+//            <div 
+//            style="width: 50%;
+//                   margin-bottom: 4px;
+//                   font-weight: bold;
+//                   color: blue;
+//                   margin-left: 57px;
+//                   margin-bottom: -34px;">
+//               This is the authorised person
+//             </div>
+//       `;
+//             isFirstMainDirectorSet = true;
+//           }
 
-          team += `
-      <div style="width: 95%; margin: 10px auto">
-        <div>
-          <div
-            style="
-              width: 30px;
-              height: 30px;
-              line-height: 30px;
-              text-align: center;
-              font-weight: bold;
-              color: black;
-            "
-          >
-            ${index + 1} 
-            <div
-            style="
-              width: 30px;
-              height: 30px;
-              line-height: 30px;
-              text-align: center;
-              font-weight: bold;
-              color: black;
-            "
-          >
+//           team += `
+//       <div style="width: 95%; margin: 10px auto">
+//         <div>
+//           <div
+//             style="
+//               width: 30px;
+//               height: 30px;
+//               line-height: 30px;
+//               text-align: center;
+//               font-weight: bold;
+//               color: black;
+//             "
+//           >
+//             ${index + 1} 
+//             <div
+//             style="
+//               width: 30px;
+//               height: 30px;
+//               line-height: 30px;
+//               text-align: center;
+//               font-weight: bold;
+//               color: black;
+//             "
+//           >
             
-          </div>
-        </div>
-        <div
-          style="
-            background: #f7f7f7;
-            padding: 15px;
-            border-radius: 10px;
-            position: relative;
-            margin-top: 15px;
-          "
-        >
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                DirectorName
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorName}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                DirectorEmail
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorEmail}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                DirectorMobileNo
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorMobileNo}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director Qualification
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorQualification}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director Work Experience
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorWorkExperience}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director Annual Income
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorAnnualIncome}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                LinkedIn Profile
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${LinkedInProfileLink}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director Designation
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorDesignation}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director AadhaarCard Number
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorAdharCardNumber}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                Director Gender
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div
-                style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                "
-              >
-                ${DirectorGender}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      `;
-        }
-        return team;
-      };
-      const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
+//           </div>
+//         </div>
+//         <div
+//           style="
+//             background: #f7f7f7;
+//             padding: 15px;
+//             border-radius: 10px;
+//             position: relative;
+//             margin-top: 15px;
+//           "
+//         >
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 DirectorName
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorName}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 DirectorEmail
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorEmail}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 DirectorMobileNo
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorMobileNo}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director Qualification
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorQualification}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director Work Experience
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorWorkExperience}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director Annual Income
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorAnnualIncome}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 LinkedIn Profile
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${LinkedInProfileLink}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director Designation
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorDesignation}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director AadhaarCard Number
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorAdharCardNumber}
+//               </div>
+//             </div>
+//           </div>
+//           <div style="display: flex; flex-wrap: wrap">
+//             <div style="width: 25%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 Director Gender
+//               </div>
+//             </div>
+//             <div style="width: 75%">
+//               <div
+//                 style="
+//                   border: 1px solid #ccc;
+//                   font-size: 12px;
+//                   padding: 5px 10px;
+//                 "
+//               >
+//                 ${DirectorGender}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//       `;
+//         }
+//         return team;
+//       };
+//       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
 
 
-      // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nimesh@incscale.in"];
-      const subject = CompanyName + " Business Inputs and Basic Information";
-      const text = "";
-      const html = ` 
-     <body>
-   <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
-     <h3 style="text-align: center">Basic Details Form</h3>
-     <div
-       style="
-         width: 95%;
-         margin: 0 auto;
-         padding: 20px 20px;
-         background: #fff;
-         border-radius: 10px;
-       "
-     >
-       <div style="width: 95%; margin: 10px auto">
-         <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-           <div
-             style="
-               width: 30px;
-               height: 30px;
-               line-height: 30px;
-               text-align: center;
-               font-weight: bold;
-               color: black;
-             "
-           >
-             1
-           </div>
-           <div style="margin-left: 10px">Basic Information</div>
-         </div>
-         <div
-           style="
-             background: #f7f7f7;
-             padding: 15px;
-             border-radius: 10px;
-             position: relative;
-             margin-top: 15px;
-           "
-         >
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Company Name
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyName}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Company Email
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyEmail}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Company No
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyNo}
-               </div>
-             </div>
-           </div>
+//       // Send Basic-details Admin email-id of  for sendEmail-3.js
+//       const email = ["nimesh@incscale.in"];
+//       const subject = CompanyName + " Business Inputs and Basic Information";
+//       const text = "";
+//       const html = ` 
+//      <body>
+//    <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
+//      <h3 style="text-align: center">Basic Details Form</h3>
+//      <div
+//        style="
+//          width: 95%;
+//          margin: 0 auto;
+//          padding: 20px 20px;
+//          background: #fff;
+//          border-radius: 10px;
+//        "
+//      >
+//        <div style="width: 95%; margin: 10px auto">
+//          <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
+//            <div
+//              style="
+//                width: 30px;
+//                height: 30px;
+//                line-height: 30px;
+//                text-align: center;
+//                font-weight: bold;
+//                color: black;
+//              "
+//            >
+//              1
+//            </div>
+//            <div style="margin-left: 10px">Basic Information</div>
+//          </div>
+//          <div
+//            style="
+//              background: #f7f7f7;
+//              padding: 15px;
+//              border-radius: 10px;
+//              position: relative;
+//              margin-top: 15px;
+//            "
+//          >
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Company Name
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyName}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Company Email
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyEmail}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Company No
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyNo}
+//                </div>
+//              </div>
+//            </div>
 
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Brand Name
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${BrandName}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Website Link
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${WebsiteLink}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                Company Address
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyAddress}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Company Pan Number
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyPanNumber}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Select Your Services
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${SelectServices}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 100%">
-               <div>
-               ${facebookHtml}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width:100%">
-               <div>
-                ${instagramHtml}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width:100%">
-               <div>
-               ${linkedInHtml}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width:100%">
-               <div>
-               ${youtubeHtml} 
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Brand Name
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${BrandName}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Website Link
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${WebsiteLink}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                 Company Address
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyAddress}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Company Pan Number
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyPanNumber}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Select Your Services
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${SelectServices}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 100%">
+//                <div>
+//                ${facebookHtml}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width:100%">
+//                <div>
+//                 ${instagramHtml}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width:100%">
+//                <div>
+//                ${linkedInHtml}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width:100%">
+//                <div>
+//                ${youtubeHtml} 
+//                </div>
+//              </div>
+//            </div>
+//          </div>
+//        </div>
 
-       <div style="width: 95%; margin: 10px auto">
-         <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-           <div
-             style="
-               width: 30px;
-               height: 30px;
-               line-height: 30px;
-               text-align: center;
-               font-weight: bold;
-               color: black;
-             "
-           >
-             2
-           </div>
-           <div style="margin-left: 10px">Brief About Your Business</div>
-         </div>
-         <div
-           style="
-             background: #f7f7f7;
-             padding: 15px;
-             border-radius: 10px;
-             position: relative;
-             margin-top: 15px;
-           "
-         >
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Company Activities
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyActivities}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Problems and Solution
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${ProductService}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 USP
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${CompanyUSP}
-               </div>
-             </div>
-           </div>
+//        <div style="width: 95%; margin: 10px auto">
+//          <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
+//            <div
+//              style="
+//                width: 30px;
+//                height: 30px;
+//                line-height: 30px;
+//                text-align: center;
+//                font-weight: bold;
+//                color: black;
+//              "
+//            >
+//              2
+//            </div>
+//            <div style="margin-left: 10px">Brief About Your Business</div>
+//          </div>
+//          <div
+//            style="
+//              background: #f7f7f7;
+//              padding: 15px;
+//              border-radius: 10px;
+//              position: relative;
+//              margin-top: 15px;
+//            "
+//          >
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Company Activities
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyActivities}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Problems and Solution
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${ProductService}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  USP
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${CompanyUSP}
+//                </div>
+//              </div>
+//            </div>
 
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Value Proposition
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${ValueProposition}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 100%">
-               <div>
-                 ${TechnologyInvolvedHtml}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 25%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 Direct/Indirect Competitor
-               </div>
-             </div>
-             <div style="width: 75%">
-               <div
-                 style="
-                   border: 1px solid #ccc;
-                   font-size: 12px;
-                   padding: 5px 10px;
-                 "
-               >
-                 ${DirectInDirectMarket}
-               </div>
-             </div>
-           </div>
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 100%">
-               <div>
-                 ${businessModelHtml}
-               </div>
-             </div>
-           </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Value Proposition
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${ValueProposition}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 100%">
+//                <div>
+//                  ${TechnologyInvolvedHtml}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 25%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  Direct/Indirect Competitor
+//                </div>
+//              </div>
+//              <div style="width: 75%">
+//                <div
+//                  style="
+//                    border: 1px solid #ccc;
+//                    font-size: 12px;
+//                    padding: 5px 10px;
+//                  "
+//                >
+//                  ${DirectInDirectMarket}
+//                </div>
+//              </div>
+//            </div>
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 100%">
+//                <div>
+//                  ${businessModelHtml}
+//                </div>
+//              </div>
+//            </div>
            
-           <div style="display: flex; flex-wrap: wrap">
-             <div style="width: 100%">
-               <div>
-               ${financeDetailsHtml}
-              </div>
-            </div>
-            </div>
-            </div>
-          <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-           <div
-             style="
-               width: 30px;
-               height: 30px;
-               line-height: 30px;
-               text-align: center;
-               font-weight: bold;
-               color: black;
-               margin-top:5px;
-             "
-           >
-             3
-           </div>
-           <div style="margin-left: 10px">Directors And Team Details</div>
-         </div>
-         <div
-           style="
-             background: #f7f7f7;
-             padding: 15px;
-             border-radius: 10px;
-             position: relative;
-             margin-top: 15px;
-           "
-         >
-         ${generatedHtml}
-      </div>
-    </div>
-  </body>
-   `;
+//            <div style="display: flex; flex-wrap: wrap">
+//              <div style="width: 100%">
+//                <div>
+//                ${financeDetailsHtml}
+//               </div>
+//             </div>
+//             </div>
+//             </div>
+//           <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
+//            <div
+//              style="
+//                width: 30px;
+//                height: 30px;
+//                line-height: 30px;
+//                text-align: center;
+//                font-weight: bold;
+//                color: black;
+//                margin-top:5px;
+//              "
+//            >
+//              3
+//            </div>
+//            <div style="margin-left: 10px">Directors And Team Details</div>
+//          </div>
+//          <div
+//            style="
+//              background: #f7f7f7;
+//              padding: 15px;
+//              border-radius: 10px;
+//              position: relative;
+//              margin-top: 15px;
+//            "
+//          >
+//          ${generatedHtml}
+//       </div>
+//     </div>
+//   </body>
+//    `;
 
-      await sendMail3(
-        email,
-        subject,
-        text,
-        html,
-        DirectorPassportPhoto,
-        DirectorAdharCard,
-        UploadMOA,
-        UploadAOA,
-        UploadPhotos,
-        RelevantDocument
-      )
-        .then((info) => {
-          console.log("Email Sent:");
-        })
-        .catch((error) => {
-          console.error("Error sending email:", error);
-          res.status(500).send("Error sending email");
-        });
-
-
-      const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
-      const DirectorEmail = details.DirectorEmail
+//       await sendMail3(
+//         email,
+//         subject,
+//         text,
+//         html,
+//         DirectorPassportPhoto,
+//         DirectorAdharCard,
+//         UploadMOA,
+//         UploadAOA,
+//         UploadPhotos,
+//         RelevantDocument
+//       )
+//         .then((info) => {
+//           console.log("Email Sent:");
+//         })
+//         .catch((error) => {
+//           console.error("Error sending email:", error);
+//           res.status(500).send("Error sending email");
+//         });
 
 
-      // Send Thank You Message with pdf Draft sendMaiel4.js 
-
-      const recipients = [CompanyEmail];
-      const ccEmail = [DirectorEmail];
-      const subject1 = "Thank you for submitting the form!";
-      const text1 = "";
-      const html1 = `
-       <p>Dear Client,</p>
-
-<p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
-
-<p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
-
-<p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
-
-<p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
-
-<p>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</p>
-<p>Best regards,</p>
-
-<p>Operation Team </p>
-<p>+91-9998992601</p>
-<p>Start-Up Sahay Private Limited</p>
-      `;
+//       const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
+//       const DirectorEmail = details.DirectorEmail
 
 
-      let MainDirectorName;
-      let MainDirectorDesignation;
-      if (DirectorDetails.length > 1) {
-        if (DirectorDetails[0].IsMainDirector === "true") {
-          MainDirectorName = DirectorDetails[1].DirectorName
-          MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
-        } else if (DirectorDetails[1].IsMainDirector === "true") {
-          MainDirectorName = DirectorDetails[0].DirectorName
-          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-        } else {
-          MainDirectorName = DirectorDetails[0].DirectorName
-          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-        }
-      } else {
-        MainDirectorName = DirectorDetails[0].DirectorName
-        MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
-      }
+//       // Send Thank You Message with pdf Draft sendMaiel4.js 
+
+//       const recipients = [CompanyEmail];
+//       const ccEmail = [DirectorEmail];
+//       const subject1 = "Thank you for submitting the form!";
+//       const text1 = "";
+//       const html1 = `
+//        <p>Dear Client,</p>
+
+// <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
+
+// <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
+
+// <p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
+
+// <p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
+
+// <p>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</p>
+// <p>Best regards,</p>
+
+// <p>Operation Team </p>
+// <p>+91-9998992601</p>
+// <p>Start-Up Sahay Private Limited</p>
+//       `;
+
+
+//       let MainDirectorName;
+//       let MainDirectorDesignation;
+//       if (DirectorDetails.length > 1) {
+//         if (DirectorDetails[0].IsMainDirector === "true") {
+//           MainDirectorName = DirectorDetails[1].DirectorName
+//           MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
+//         } else if (DirectorDetails[1].IsMainDirector === "true") {
+//           MainDirectorName = DirectorDetails[0].DirectorName
+//           MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+//         } else {
+//           MainDirectorName = DirectorDetails[0].DirectorName
+//           MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+//         }
+//       } else {
+//         MainDirectorName = DirectorDetails[0].DirectorName
+//         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+//       }
 
 
 
-      // Sending email for CompanyEmail 
-      let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
-      let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
-      const filedHtml = htmlNewTemplate
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-        .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
-        .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
-        .replace("{{CompanyName}}", CompanyName)
-        .replace("{{CompanyAddress}}", CompanyAddress)
-        .replace("{{CompanyPanNumber}}", CompanyPanNumber)
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-        .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
-        .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{DirectorName}}", MainDirectorName)
-        .replace("{{DirectorDesignation}}", MainDirectorDesignation)
+//       // Sending email for CompanyEmail 
+//       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+//       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
+//       let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
+//       const filedHtml = htmlNewTemplate
+//         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+//         .replace("{{DirectorName}}", forGender.DirectorName)
+//         .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
+//         .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
+//         .replace("{{CompanyName}}", CompanyName)
+//         .replace("{{CompanyAddress}}", CompanyAddress)
+//         .replace("{{CompanyPanNumber}}", CompanyPanNumber)
+//         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+//         .replace("{{DirectorName}}", forGender.DirectorName)
+//         .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+//         .replace("{{DirectorName}}", forGender.DirectorName)
+//         .replace("{{DirectorName}}", MainDirectorName)
+//         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
 
-      const pdfFilePath = './GeneratedDocs/LOA.pdf';
-      const options = {
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: './dev/null',
-          },
-        },
-      };
+//       const pdfFilePath = './GeneratedDocs/LOA.pdf';
+//       const options = {
+//         childProcessOptions: {
+//           env: {
+//             OPENSSL_CONF: './dev/null',
+//           },
+//         },
+//       };
 
-      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
-        if (err) {
-          console.error('Error generating PDF:', err);
-          return res.status(500).send('Error generating PDF');
-        } else {
-          try {
-            setTimeout(() => {
-              const servicesArray = Object.values(SelectServices);
+//       pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
+//         if (err) {
+//           console.error('Error generating PDF:', err);
+//           return res.status(500).send('Error generating PDF');
+//         } else {
+//           try {
+//             setTimeout(() => {
+//               const servicesArray = Object.values(SelectServices);
 
-              const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
-              //const mainBuffer = fs.readFileSync(pdfFilePath);
-              const pdfAttachment = {
-                filename: 'MITC.pdf', // Replace with actual file name
-                path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
-              };
+//               const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
+//               //const mainBuffer = fs.readFileSync(pdfFilePath);
+//               const pdfAttachment = {
+//                 filename: 'MITC.pdf', // Replace with actual file name
+//                 path: path.join(__dirname, 'helpers', 'src', 'MITC.pdf') // Adjust the path accordingly
+//               };
 
-              const mainBuffer = {
-                filename: 'LOA.pdf', // Replace with actual file name
-                path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
-              };
+//               const mainBuffer = {
+//                 filename: 'LOA.pdf', // Replace with actual file name
+//                 path: path.join(__dirname, './GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+//               };
 
-              let clientDocument;
-              if (selectedService) {
-                clientDocument = [mainBuffer, pdfAttachment]
+//               let clientDocument;
+//               if (selectedService) {
+//                 clientDocument = [mainBuffer, pdfAttachment]
 
-              } else {
-                clientDocument = [pdfAttachment]
-                console.log("Service 'Seed Funding Support' not found.");
-              }
-              sendMail4(
-                recipients,
-                ccEmail,
-                "Letter of Authorization for filing in SISFS Application",
-                ``,
-                html1,
-                clientDocument
-              );
-            }, 4000);
-            //res.status(200).send('Generated Pdf Successfully');
-          } catch (error) {
-            console.error("Error sending email:", error);
-            // No need to send another response here because one was already sent
-          }
-        }
-      });
+//               } else {
+//                 clientDocument = [pdfAttachment]
+//                 console.log("Service 'Seed Funding Support' not found.");
+//               }
+//               sendMail4(
+//                 recipients,
+//                 ccEmail,
+//                 "Letter of Authorization for filing in SISFS Application",
+//                 ``,
+//                 html1,
+//                 clientDocument
+//               );
+//             }, 4000);
+//             //res.status(200).send('Generated Pdf Successfully');
+//           } catch (error) {
+//             console.error("Error sending email:", error);
+//             // No need to send another response here because one was already sent
+//           }
+//         }
+//       });
 
-      const newUser = new userModel({
-        ...req.body,
-        DirectorPassportPhoto,
-        DirectorAdharCard,
-        UploadMOA,
-        UploadAOA,
-        UploadPhotos,
-        RelevantDocument,
-      });
+//       const newUser = new userModel({
+//         ...req.body,
+//         DirectorPassportPhoto,
+//         DirectorAdharCard,
+//         UploadMOA,
+//         UploadAOA,
+//         UploadPhotos,
+//         RelevantDocument,
+//       });
 
-      await newUser.save();
-      res.status(201).send(newUser);
-    } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
-    }
-  }
-);
+//       await newUser.save();
+//       res.status(201).send(newUser);
+//     } catch (error) {
+//       console.log(error);
+//       res.status(400).send(error);
+//     }
+//   }
+// );
 
-// API endpoint
-app.get('/api/generate-pdf-client', async (req, res) => {
-  try {
-    const htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-    const filePath = path.join(__dirname, './GeneratedDocs/LOA.docx');
+// // API endpoint
+// app.get('/api/generate-pdf-client', async (req, res) => {
+//   try {
+//     const htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
+//     const filePath = path.join(__dirname, './GeneratedDocs/LOA.docx');
 
-    // Ensure the directory exists
-    const outputDir = path.join(__dirname, './GeneratedDocs');
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
+//     // Ensure the directory exists
+//     const outputDir = path.join(__dirname, './GeneratedDocs');
+//     if (!fs.existsSync(outputDir)) {
+//       fs.mkdirSync(outputDir, { recursive: true });
+//     }
 
-    const fileBuffer = await HTMLtoDOCX(htmlNewTemplate, null, {
-      table: { row: { cantSplit: true } },
-      footer: true,
-      pageNumber: true,
-    });
+//     const fileBuffer = await HTMLtoDOCX(htmlNewTemplate, null, {
+//       table: { row: { cantSplit: true } },
+//       footer: true,
+//       pageNumber: true,
+//     });
 
-    // Write the DOCX file
-    fs.writeFile(filePath, fileBuffer, (error) => {
-      if (error) {
-        console.error('Docx file creation failed:', error);
-        return res.status(500).send('Error generating DOCX file');
-      }
-      console.log('Docx file created successfully');
-      return res.status(200).send('Generated DOCX Successfully');
-    });
-  } catch (error) {
-    console.error('Error in endpoint:', error);
-    res.status(500).send('Server error');
-  }
-});
+//     // Write the DOCX file
+//     fs.writeFile(filePath, fileBuffer, (error) => {
+//       if (error) {
+//         console.error('Docx file creation failed:', error);
+//         return res.status(500).send('Error generating DOCX file');
+//       }
+//       console.log('Docx file created successfully');
+//       return res.status(200).send('Generated DOCX Successfully');
+//     });
+//   } catch (error) {
+//     console.error('Error in endpoint:', error);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 
 /**************************************HR Login Portal API********************************************************************/
