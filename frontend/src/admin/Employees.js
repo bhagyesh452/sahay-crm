@@ -93,7 +93,12 @@ function Employees({ onEyeButtonClick }) {
     }
   };
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {

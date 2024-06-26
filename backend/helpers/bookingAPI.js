@@ -928,6 +928,10 @@ router.post(
             },
             { new: true }
           );
+          const io = req.io;
+          const ename = newData.bdeName;
+          io.emit('booking-submitted',ename);
+          console.log('io emmited')
           const totalAmount = newData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
@@ -2485,9 +2489,11 @@ router.post(
                 }
               }
             });
+        
 
           // Send success response
           res.status(201).send("Data sent");
+     
         } else {
           res.status(404).json("Company Not found");
           return true;
@@ -2739,6 +2745,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
     const boomDate = new Date();
+    const io = req.io;
+    const ename = newData.bdeName;
+   
 
     const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
     appendDataToSheet(sheetData);
@@ -2783,6 +2792,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         date: date,
       });
     }
+
+    io.emit('booking-submitted',ename);
+    console.log('booking emmited');
 
     const totalAmount = newData.services.reduce(
       (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
@@ -4358,6 +4370,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
       });
 
+   
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {

@@ -25,7 +25,12 @@ function Header({ name, designation}) {
   //console.log(name)
   //console.log(designation)
   useEffect(() => {
-    const socket = io('http://localhost:3001');
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
@@ -46,6 +51,14 @@ function Header({ name, designation}) {
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
         variant: 'info'
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("booking-submitted", (res) => {
+      enqueueSnackbar(`One new booking from ${res}`, {
+        variant: 'success'
       });
     
       const audioplayer = new Audio(notification_audio);

@@ -30,14 +30,14 @@
         }
         .content {
             margin-bottom: 40px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         .signature-section {
             
         }
         .signature-line {
-            margin-bottom: 40px;
-            margin-top: 40px;
+            margin-bottom: 30px;
+            margin-top: 30px;
         }
         .note {
             margin-top: 40px;
@@ -45,11 +45,11 @@
         }
         .businnes-input-loa-main
         {
-            margin-top: 80px;
+            margin-top: 40px;
         }
         p{
-            letter-spacing: 1px;
             color: #333333;
+            font-size: 9px !important;
         }
         .variable_span
         {
@@ -62,7 +62,7 @@
     <div class="container">
         <div class="businnes-input-loa-main">
             <div class="header">
-                <p>Date:</p>
+                <p>Date:{{today-date}}</p>
             </div>
             <div class="content">
                 <p>To,<br>
@@ -73,19 +73,27 @@
                 
                 <p>Sub: Letter of Authorization for filing in SISFS Application</p>
                 
-                <p>We hereby authorize <span class="variable_span">{{Gender}} {{DirectorName}}, {{DirectorDesignation}}</span> holding Aadhaar <span class="variable_span">{{AadhaarNumber}} (COPY TO BE ATTACHED)</span> to submit the application for Startup India Seed Fund Scheme (“SISFS”) on behalf of our Society/Trust/ Company/ Statutory Body 
-                    <span class="variable_span">{{CompanyName}},</span> having registered office at 
-                    <span class="variable_span" style="width: 400px;"><u>    </u></span> and PAN <span class="variable_span">{{CompanyPanNumber}}.</span></p>
+                <p>We hereby authorize 
+                    <span class="variable_span">{{Gender}} {{DirectorName}}, {{DirectorDesignation}}</span> 
+                    holding Aadhaar <span class="variable_span">{{AadhaarNumber}} (COPY TO BE ATTACHED)</span> 
+                    to submit the application for Startup India Seed Fund Scheme (“SISFS”) on behalf of our 
+                    Society/Trust/Company/Statutory Body <span class="variable_span"> {{CompanyName}},</span> 
+                    having registered office at 
+                    <span>
+                       {{client-address}}
+                    </span>
+                    and PAN <span class="variable_span">{{CompanyPanNumber}}.</span>
+                </p>
                 
-                <p>We also authorize <span class="variable_span">{{Gender}} {{DirectorName}}</span> to make declarations and to submit documents, wherever required, on our behalf. These declarations and submissions are made towards the requirement of the SISFS application.</p>
+                <p>We also authorize <span class="variable_span"> {{Gender}} {{DirectorName}}</span> to make declarations and to submit documents, wherever required, on our behalf. These declarations and submissions are made towards the requirement of the SISFS application.</p>
                 
                 <p>We further confirm that we are liable for and bound by all acts of commission and omission by the authorized representative. All acts committed by the above authorized representatives shall be treated as if these acts were committed by the Incubator.</p>
                 
-                <p>The Specimen signature of<span class="variable_span">{{Gender}} {{DirectorName}}</span> is attested below:</p>
+                <p>The Specimen signature of <span class="variable_span"> {{Gender}} {{DirectorName}}</span> is attested below:</p>
                 
                 <div class="signature-section">
                     <div class="signature-line">
-                        <p>____________________<br>
+                        <p>___________________________<br>
                         (Specimen Signature of authorized representative – Name mentioned in 1st Paragraph)</p>
                     </div>
                     
@@ -98,7 +106,7 @@
                     
                     <p>Name: <span class="variable_span">{{DirectorName}}</span><br>
                     Designation: <span class="variable_span">{{DirectorDesignation}}</span><br>
-                    Date:______________________________</p>
+                    Date: {{today-date}}</p>
                     
                     <p>Seal of the Signing Authority</p>
                 </div>

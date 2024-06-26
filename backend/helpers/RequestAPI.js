@@ -124,9 +124,10 @@ router.post("/setMarktrue/:id", async (req, res) => {
 });
 
 router.post("/requestgData", async (req, res) => {
-  const { numberOfData, name, cTime, cDate } = req.body;
-
+  
   try {
+    const { numberOfData, name, cTime, cDate } = req.body;
+    const socketIO = req.io;
     // Create a new RequestModel instance
     const newRequest = new RequestGModel({
       dAmount: numberOfData,
@@ -137,6 +138,8 @@ router.post("/requestgData", async (req, res) => {
 
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
+
+    
     socketIO.emit("newRequest", savedRequest);
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
