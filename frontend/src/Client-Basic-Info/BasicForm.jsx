@@ -544,7 +544,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorName${index}`}>
                     Enter Director's Name <span style={{ color: "red" }}>*</span>
@@ -574,7 +574,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorEmail${index}`}>
                     Enter Director's Email <span style={{ color: "red" }}>*</span>
@@ -601,7 +601,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorMobileNo${index}`}>
                     Enter Director's Mobile No{" "}
@@ -629,7 +629,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorQualification${index}`}>
                     Enter Director's Qualification{" "}
@@ -657,7 +657,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`Directorexp${index}`}>
                     Director's Work Experience (In Detail){" "}
@@ -685,7 +685,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`Directorincome${index}`}>
                     Annual Income Of Director's Family (Approx):{" "}
@@ -709,7 +709,7 @@ const BasicForm = () => {
                   />
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorPassportPhoto${index}`}>
                     Director's Passport Size Photo{" "}
@@ -744,7 +744,7 @@ const BasicForm = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorAdharCard${index}`}>
                     Director's Aadhaar Card <span style={{ color: "red" }}>*</span>
@@ -779,9 +779,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-
-
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorAdharCardNumber${index}`}>
                     Director's Aadhaar Number
@@ -818,7 +816,7 @@ const BasicForm = () => {
                   }
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorDesignation${index}`}>
                     Director's Designation
@@ -845,13 +843,13 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2 gender">
                   <label htmlFor={`DirectorGender${index}`}>
                     Choose  Director's Gender
                     <span style={{ color: "red" }}>*</span>
                   </label>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center mt-2">
                     <label className="form-check form-check-inline m-0 me-2">
                       <input
                         className="form-check-input"
@@ -900,7 +898,7 @@ const BasicForm = () => {
                   )}
                 </div>
               </div>
-              <div className="col-lg-4">
+              <div className="col-lg-3">
                 <div className="form-group mt-2 mb-2">
                   <label htmlFor={`DirectorLinkedIn${index}`}>
                     LinkedIn Profile Link
@@ -1032,7 +1030,7 @@ const BasicForm = () => {
                       )}
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-3">
                     <div className="form-group mt-2 mb-2">
                       <label htmlFor="Brand-Name">Brand Name (If any):</label>
                       <input
@@ -1049,7 +1047,7 @@ const BasicForm = () => {
                       )}
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-3">
                     <div className="form-group mt-2 mb-2">
                       <label htmlFor="WebsiteLink">Website's Link (If any):</label>
                       <input
@@ -1066,7 +1064,7 @@ const BasicForm = () => {
                       )}
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-3">
                     <div className="form-group mt-2 mb-2">
                       <label htmlFor="WebsiteLink">Company Address: </label>
                       <input
@@ -1080,7 +1078,7 @@ const BasicForm = () => {
                       />
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-3">
                     <div className="form-group mt-2 mb-2">
                       <label htmlFor="WebsiteLink">Company Pan Number: <span style={{ color: "red" }}>*</span></label>
                       <input
