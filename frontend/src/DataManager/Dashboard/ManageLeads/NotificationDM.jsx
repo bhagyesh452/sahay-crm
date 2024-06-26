@@ -10,7 +10,7 @@ import ApproveCard from "../../../admin/ApproveCard";
 import Nodata from "../../Components/Nodata/Nodata";
 import EditBookingsCard from "../../../admin/EditBookingsCard";
 import EditBookingPreview from "../../../admin/EditBookingPreview";
-import DeleteBookingComponent from "../../../admin/DeleteBookingComponent";
+import DeleteBookingComponent from "../../../admin/NotiComponents/DeleteBookingComponent";
 
 function NotificationDM() {
   const [RequestData, setRequestData] = useState([]);

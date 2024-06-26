@@ -2485,9 +2485,13 @@ router.post(
                 }
               }
             });
+            const io = req.io;
+            const ename = newData.bdeName;
+            io.emit('booking-submitted',ename);
 
           // Send success response
           res.status(201).send("Data sent");
+     
         } else {
           res.status(404).json("Company Not found");
           return true;
@@ -4358,6 +4362,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
       });
 
+    const io = req.io;
+    const ename = newData.bdeName;
+    io.emit('booking-submitted',ename);
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {

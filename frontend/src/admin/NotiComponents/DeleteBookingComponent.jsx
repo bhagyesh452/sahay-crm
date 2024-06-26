@@ -7,7 +7,7 @@ import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
-import Nodata from "../components/Nodata";
+import Nodata from "../../components/Nodata";
 
 
 function DeleteBookingComponent() {

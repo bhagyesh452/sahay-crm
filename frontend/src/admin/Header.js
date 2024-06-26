@@ -28,8 +28,8 @@ function Header({ name, designation}) {
     const socket = io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path:'/socket.io',
-      reconnection: true, // Enable reconnections
-      transports: ['websocket'], // Use only WebSocket transport
+      reconnection: true, 
+      transports: ['websocket'],
     });
 
     // Listen for the 'welcome' event from the server
@@ -51,6 +51,14 @@ function Header({ name, designation}) {
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
         variant: 'info'
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("booking-submitted", (res) => {
+      enqueueSnackbar(`One new booking from ${res}`, {
+        variant: 'success'
       });
     
       const audioplayer = new Audio(notification_audio);
