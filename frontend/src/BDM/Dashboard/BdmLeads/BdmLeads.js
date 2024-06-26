@@ -185,12 +185,12 @@ function BdmLeads() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io("wss://startupsahay.in", {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path:'/socket.io',
-      reconnection: true, // Enable reconnections
-      transports: ['websocket'], // Use only WebSocket transport
-    }); // Connects to the same host and port as the client
+      reconnection: true, 
+      transports: ['websocket'],
+    });
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
     });
