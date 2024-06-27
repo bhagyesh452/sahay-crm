@@ -125,12 +125,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (FacebookLink && FacebookLink !== "No Facebook Id") {
         facebookHtml = `
          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Facebook Id
               </div>
             </div>
-            <div style="width: 75%">
+            <div style="width: 75%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${FacebookLink}
               </div>
@@ -143,12 +143,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (InstagramLink && InstagramLink !== "No Instagram Id") {
         instagramHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   Instagram Id
                 </div>
               </div>
-              <div style="width: 75%">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${InstagramLink}
                 </div>
@@ -161,12 +161,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
         linkedInHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   LinkedIn Id
                 </div>
               </div>
-              <div style="width: 75%">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${LinkedInLink}
                 </div>
@@ -179,12 +179,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
         youtubeHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   YouTube Id
                 </div>
               </div>
-              <div style="width: 75%">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${YoutubeLink}
                 </div>
@@ -199,12 +199,12 @@ router.post("/basicinfo-form/:CompanyName",
       ) {
         TechnologyInvolvedHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   Technology Involved
                 </div>
               </div>
-              <div style="width: 75%">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${TechnologyInvolved}
                 </div>
@@ -217,12 +217,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Upload Photos
               </div>
             </div>
-            <div style="width: 75%">
+            <div style="width: 75%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadPhotos}
               </div>
@@ -235,12 +235,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
         relevantDocumentsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Relevant Documents
               </div>
             </div>
-            <div style="width: 75%">
+            <div style="width: 75%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${RelevantDocument}
               </div>
@@ -253,12 +253,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Business Model
               </div>
             </div>
-            <div style="width: 75%">
+            <div style="width: 75%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${BusinessModel}
               </div>
@@ -271,12 +271,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (Finance && Finance !== "No Finance Details") {
         financeDetailsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Finance Details
               </div>
             </div>
-            <div style="width: 75%">
+            <div style="width: 75%;align-self: stretch !important;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${Finance}
               </div>
@@ -350,7 +350,7 @@ router.post("/basicinfo-form/:CompanyName",
             margin-top: 15px;
           ">
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -360,7 +360,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorName
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -371,7 +371,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -380,7 +380,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorEmail
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -391,7 +391,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -400,7 +400,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorMobileNo
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -411,7 +411,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -420,7 +420,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Qualification
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -431,7 +431,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -440,7 +440,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Work Experience
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -451,7 +451,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -460,7 +460,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Annual Income
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -470,28 +470,9 @@ router.post("/basicinfo-form/:CompanyName",
                         </div>
                     </div>
                 </div>
+             
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            LinkedIn Profile Link
-                        </div>
-                    </div>
-                    <div style="width: 75%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${LinkedInProfileLink}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -500,7 +481,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Designation
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -511,7 +492,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -520,7 +501,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director AadhaarCard Number
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -531,7 +512,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -540,7 +521,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Gender
                         </div>
                     </div>
-                    <div style="width: 75%">
+                    <div style="width: 75%;align-self: stretch !important;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -549,6 +530,27 @@ router.post("/basicinfo-form/:CompanyName",
                             ${DirectorGender}
                         </div>
                     </div>
+                </div>
+                
+                <div style="display: ${(!LinkedInProfileLink || LinkedInProfileLink == "") ? "none" :'flex'}; flex-wrap: wrap">
+                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                        <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                            ">
+                            Director Gender
+                        </div>
+                    </div>
+                  <div style="width: 75%;align-self: stretch !important;height:100%">
+                        <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                          ">
+                            ${LinkedInProfileLink}
+                        </div>
+                  </div>
                 </div>
             </div>
         </div>
@@ -603,23 +605,27 @@ router.post("/basicinfo-form/:CompanyName",
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
+                       height:100%
                      "
                    >
                      Company Name
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
+                       height:100%
                      "
                    >
                      ${CompanyName}
@@ -627,23 +633,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Company Email
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyEmail}
@@ -651,23 +659,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Company No
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyNo}
@@ -676,23 +686,25 @@ router.post("/basicinfo-form/:CompanyName",
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Brand Name
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${BrandName}
@@ -700,23 +712,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Website Link
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${WebsiteLink}
@@ -724,23 +738,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                     Company Address
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyAddress}
@@ -748,23 +764,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Company Pan Number
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyPanNumber}
@@ -772,23 +790,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Select Your Services
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${SelectServices}
@@ -852,23 +872,25 @@ router.post("/basicinfo-form/:CompanyName",
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Company Activities
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyActivities}
@@ -876,23 +898,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Problems and Solution
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${ProductService}
@@ -900,23 +924,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      USP
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${CompanyUSP}
@@ -925,23 +951,25 @@ router.post("/basicinfo-form/:CompanyName",
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Value Proposition
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${ValueProposition}
@@ -956,23 +984,25 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      Direct/Indirect Competitor
                    </div>
                  </div>
-                 <div style="width: 75%">
+                 <div style="width: 75%;align-self: stretch !important;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
                        font-size: 12px;
                        padding: 5px 10px;
+                       height:100%;
                      "
                    >
                      ${DirectInDirectMarket}

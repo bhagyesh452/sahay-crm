@@ -16,7 +16,7 @@ const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
-const { appendDataToSheet , appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
+const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -754,7 +754,7 @@ router.post(
       const newTempDate = new Date();
       const newData = req.body;
 
-  
+
       const Step = req.params.step;
       if (Step === "step2") {
         const existingData = await RedesignedDraftModel.findOne({
@@ -902,9 +902,9 @@ router.post(
           });
         }
         const boomDate = new Date();
-        const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+        const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
         appendDataToSheet(sheetData);
-       
+
         const tempNewData = { ...newData, bookingPublishDate: boomDate, lastActionDate: boomDate }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
@@ -1216,101 +1216,111 @@ router.post(
                   margin-top: 15px;
                 ">
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Company Name
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%; align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%;
                       ">
                     ${newData["Company Name"]}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Email Address:
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData["Company Email"]}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Phone No:
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData["Company Number"]}
                   </div>
                 </div>
               </div>
     
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+              <div style="display: flex; flex-wrap: wrap;">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Incorporation date:
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${formatDate(newData["incoDate"])}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Company's PAN/GST Number:
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.panNumber}
                   </div>
@@ -1349,80 +1359,88 @@ router.post(
                   margin-top: 15px;
                 ">
                 <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                    Booking Date
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bookingDate}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     BDE Name:
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bdeName}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     BDE Email
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bdeEmail}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     BDM Name
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bdmName} 
                   </div>
@@ -1430,40 +1448,44 @@ router.post(
               </div>
     
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     BDM Email
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bdmEmail}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     BDM Type
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                        ${newData.bdmType === "Close-by"
               ? "Closed-by"
@@ -1475,40 +1497,44 @@ router.post(
 
               
               <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Lead Source
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.bookingSource}
                   </div>
                 </div>
               </div>
               <div style="display: flex; flex-wrap: wrap; display: ${visibility}">
-                <div style="width: 25%">
+                <div style="width: 25%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                     Other Lead Source
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 75%;align-self: stretch !important;height:100%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
+                        height:100%
                       ">
                       ${newData.otherBookingSource}
                   </div>
@@ -1546,20 +1572,22 @@ router.post(
                 margin-top: 15px;
               ">
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="
                       border: 1px solid #ccc;
                       font-size: 12px;
                       padding: 5px 10px;
+                      height:100%
                     ">
                   Total Selected Services
                 </div>
               </div>
-              <div style="width: 75%">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="
                       border: 1px solid #ccc;
                       font-size: 12px;
                       padding: 5px 10px;
+                      height:100%
                     ">
                     ${newData.services.length}
                 </div>
@@ -2749,7 +2777,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const ename = newData.bdeName;
    
 
-    const sheetData = {...newData , bookingPublishDate : formatDate(boomDate) , bookingDate : formatDate(newData.bookingDate)}
+    const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
     console.log("Admin :-", isAdmin)
@@ -2762,7 +2790,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     if (companyData) {
       newData.company = companyData._id;
     }
-   
+
     const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
@@ -4451,7 +4479,7 @@ router.delete(
             }
           );
           companyName = deletedBooking["Company Name"]
-          socketIO.emit('delete-request-done' , companyName);
+          socketIO.emit('delete-request-done', companyName);
         } else {
           return res.status(404).send("Booking not found");
         }
@@ -4478,7 +4506,7 @@ router.delete(
           }
         );
         const companyName = moreObject["Company Name"];
-        socketIO.emit('delete-request-done' , companyName);
+        socketIO.emit('delete-request-done', companyName);
         console.log("Delete request emitted")
 
         return res.status(200).send("booking Deleted Successfuly");
@@ -4572,14 +4600,14 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: publishDate
       };
-      
+
       const sheetObject = {
-        "Company Name" : companyName,
-        serviceName : objectData.serviceName,
-        "Remaining Payment" : objectData.receivedAmount,
-        "Payment Method":objectData.paymentMethod,
-        "Payment Date":formatDate(objectData.paymentDate),
-        "Payment Remarks" : objectData.extraRemarks
+        "Company Name": companyName,
+        serviceName: objectData.serviceName,
+        "Remaining Payment": objectData.receivedAmount,
+        "Payment Method": objectData.paymentMethod,
+        "Payment Date": formatDate(objectData.paymentDate),
+        "Payment Remarks": objectData.extraRemarks
       }
       await appendRemainingDataToSheet(sheetObject);
 
