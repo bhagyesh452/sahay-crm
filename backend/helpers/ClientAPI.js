@@ -30,9 +30,9 @@ const storage = multer.diskStorage({
       destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
     }
     else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
-      destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
+      destinationPath = `Client/ClientDocuments/${companyName}/DirectorDocs`;
     } else {
-      destinationPath = `ClientDocuments/${companyName}/OtherDocs`
+      destinationPath = `Client/ClientDocuments/${companyName}/OtherDocs`
     }
 
     // Create the directory if it doesn't exist
@@ -284,23 +284,6 @@ router.post("/basicinfo-form/:CompanyName",
           </div>
         `;
       }
-      let directorLinkedInHtml = "";
-      if (LinkedInProfileLink && LinkedInProfileLink !== "No LinkedIn Link") {
-        directorLinkedInHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                LinkedIn Profile Link
-              </div>
-            </div>
-            <div style="width: 75%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${LinkedInProfileLink}
-              </div>
-            </div>
-          </div>
-        `;
-      }
 
       const tempHtml = () => {
         let team = "";
@@ -503,7 +486,7 @@ router.post("/basicinfo-form/:CompanyName",
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                            ${directorLinkedInHtml}
+                            ${LinkedInProfileLink}
                         </div>
                     </div>
                 </div>
@@ -1134,10 +1117,10 @@ router.post("/basicinfo-form/:CompanyName",
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
-        .replace("{{today-date}}",todayDate)
-        .replace("{{client-address}}",client_address)
+        .replace("{{today-date}}", todayDate)
+        .replace("{{client-address}}", client_address)
 
-      const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
+      const pdfFilePath = `Client/GeneratedLOA/${CompanyName}.pdf`;
       const options = {
         childProcessOptions: {
           env: {
@@ -1162,9 +1145,10 @@ router.post("/basicinfo-form/:CompanyName",
                 path: path.join(__dirname, 'src', 'MITC.pdf') // Adjust the path accordingly
               };
 
+
               const mainBuffer = {
                 filename: 'LOA.pdf', // Replace with actual file name
-                path: path.join(__dirname, '../GeneratedDocs/LOA.pdf') // Adjust the path accordingly
+                path: path.join(__dirname, `../Client/GeneratedLOA/${CompanyName}.pdf`) // Adjust the path accordingly
               };
 
               let clientDocument;
