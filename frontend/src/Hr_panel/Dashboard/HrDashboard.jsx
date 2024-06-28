@@ -1,11 +1,14 @@
 import React from "react";
 import { useParams } from 'react-router-dom';
+import Header from "../Components/Header/Header";
+import Navbar from "../Components/Navbar/Navbar";
 
 function Dashboard(){
 
     return(
         <div>
-            <h1>HR Dashboard</h1>
+            <Header />
+            <Navbar />
         </div>
     )
 }
