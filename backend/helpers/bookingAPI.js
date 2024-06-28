@@ -4580,17 +4580,17 @@ router.post(
   async (req, res) => {
     try {
       const objectData = req.body;
-      console.log("Object Data:", objectData);
+     
 
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
       const publishDate = new Date();
-      const companyMainObject =  RedesignedLeadformModel.findOne({
+      const companyMainObject = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-      console.log(companyMainObject)
-      const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject[bookingIndex - 1].bookingDate);
+      
+      const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject.moreBookings[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
