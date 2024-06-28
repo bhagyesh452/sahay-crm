@@ -587,7 +587,13 @@ router.get('/filter-employee-leads', async (req, res) => {
     let baseQuery = {};
 
     // Ensure the query is filtered by employeeName
-    if (employeeName) baseQuery.ename = employeeName;
+    if (employeeName){
+      baseQuery.$or = [
+        {ename : employeeName},
+        {multiBdmName : {$in:[employeeName]}},
+        {maturedBdmName : employeeName}
+      ]
+    }
 
     // Add other filters only if employeeName is present
     if (selectedStatus) baseQuery.Status = selectedStatus;

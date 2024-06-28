@@ -711,15 +711,11 @@ function RmofCertificationBookings() {
     } else {
       console.log("No data to send.");
     }
-
     // Assuming setDataToSend updates state to store dataToSend array
     setDataToSend(dataToSend);
-
     // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
   }
-  console.log("leadFormData", leadFormData)
-  // console.log("services", leadFormData.map((service) => service.services))
-
+ 
   const handleViewTable = () => {
     setOpenTableView(true)
     setOpenListView(false)
@@ -789,7 +785,7 @@ function RmofCertificationBookings() {
                         </label>
                       </div>
                       <div className="custom_radio">
-                        <input type="radio" name="rGroup" value="2" id="r2" checked={openTableView} />
+                        <input type="radio" name="rGroup" value="2" id="r2" checked={openListView} />
                         <label class="custom_radio-alias" for="r2">
                           <FaList onClick={() => handleViewList()} />
                         </label>
