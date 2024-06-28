@@ -151,7 +151,7 @@ function Manual_dataComponent() {
             const response = await axios.post(`${secretKey}/company-data/postData`, {
                 selectedObjects , employeeSelection
             });
-            await axios.put(`${secretKey}/requests/requestgData/${id}`, {
+            await axios.put(`${secretKey}/requests/requestData/${id}`, {
                 read: true,
                 assigned: true,
             });
@@ -210,7 +210,7 @@ function Manual_dataComponent() {
             </div>
             <div className='my-card-body p-2'>
                 <div className='Notification-table-main table-resposive'>
-                    <table className="table General-table m-0">
+                    <table className="table Manual-table m-0">
                         <thead>
                             <tr>
                                 <th>Sr. No</th>
