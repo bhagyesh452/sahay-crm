@@ -139,19 +139,20 @@ router.post("/leads", async (req, res) => {
           "Company Name": employeeData["Company Name"].toUpperCase(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
-        //console.log("newemployee" , employee)
+        console.log("newemployee" , employee)
         const savedEmployee = await employee.save();
-        //console.log("saved" , savedEmployee)
+        console.log("saved" , savedEmployee)
         successCounter++;
+        
       } catch (error) {
         duplicateEntries.push(employeeData);
-        //console.log("kuch h ye" , duplicateEntries);
+        console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
       }
     }
     if (duplicateEntries.length > 0) {
-      //console.log("yahan chala csv pr")
+      console.log("yahan chala csv pr")
       //console.log(duplicateEntries , "duplicate")
       const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV

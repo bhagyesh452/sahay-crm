@@ -2000,7 +2000,7 @@ function EmployeesThisMonthBooking() {
     // };
 
     const handleSortRemainingTotal = (type) => {
-        const data = isDateSelectedInRemainingPayment || isSearchedInRemainingPayment ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
+        const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? remainingPaymentObject : completeRemainingPaymentObject;
         let sortedData = [...data];
         // console.log("Sorted data :", sortedData);
 
@@ -2011,7 +2011,7 @@ function EmployeesThisMonthBooking() {
             const descendingSort = sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
             // console.log("Descending remaining total :", descendingSort);
         } else if (type === "none") {
-            const data = isDateSelectedInRemainingPayment || isSearchedInRemainingPayment ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
+            const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
             setRemainingPaymentObject(data);
             // console.log("None is :", data);
             return;
@@ -2273,7 +2273,6 @@ function EmployeesThisMonthBooking() {
                         });
                     }
                 });
-
                 mainObj.moreBookings.forEach((moreObject) => {
                     const bookingDate = new Date(moreObject.bookingDate);
                     if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
@@ -2332,6 +2331,8 @@ function EmployeesThisMonthBooking() {
         }
         setAdvancePaymentObject(sortedData);
     };
+
+    // console.log(redesignedData);
 
     // Sorting Total Advanced Achieved
     const handleSortTotalAdvanceAchieved = (type) => {
@@ -2808,7 +2809,7 @@ function EmployeesThisMonthBooking() {
                                                 if (newSortType.achievedamount === "ascending") {
                                                     updatedSortType = "descending";
                                                 } else if (newSortType.achievedamount === "descending") {
-                                                    updatedSortType
+                                                updatedSortType
                                                         = "none";
                                                 } else {
                                                     updatedSortType = "ascending";

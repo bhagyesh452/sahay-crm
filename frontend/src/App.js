@@ -67,6 +67,7 @@ import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx
 import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
+import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 
 
 
@@ -129,7 +130,8 @@ function App() {
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
           <Route path='/rmofcertification/login-rmofcertification' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
           <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
-          <Route path='/rmofcertification/rmofcertification-bookings' element={<RmofCertificationBookings />} />
+          <Route path='/rmofcertification/rmofcertification-bookings/:userId/' element={<RmofCertificationBookings />} />
+          <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings/>} />
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
           <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken}/>} />
