@@ -12,7 +12,7 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
-    DialogActions, 
+    DialogActions,
     IconButton,
     Select,
     MenuItem,
@@ -79,6 +79,22 @@ function TestLeads() {
     const [searchTerm, setSearchTerm] = useState("")
 
     //--------------------function to fetch Total Leads ------------------------------
+    // const setAuthToken = (token) => {
+    //     if (token) {
+    //       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    //     } else {
+    //       delete axios.defaults.headers.common['Authorization'];
+    //     }
+    //   };
+      
+
+    //     const token = localStorage.getItem('token');
+      
+    //     useEffect(() => {
+    //       // Set the token in the headers
+    //       setAuthToken(token);
+    //     }, [token]);
+    
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
@@ -126,7 +142,7 @@ function TestLeads() {
         }
     }
     //--------------------function to fetch remarks history ------------------------------
-    
+
     const fetchRemarksHistory = async () => {
         try {
             const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -141,8 +157,8 @@ function TestLeads() {
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
-   
-    useEffect(() => {   
+
+    useEffect(() => {
         if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
             fetchTotalLeads()
@@ -167,12 +183,12 @@ function TestLeads() {
     const handleNextPage = () => {
         const nextPage = currentPage + 1;
         setCurrentPage(nextPage);
-        if (isFilter ) {
+        if (isFilter) {
             handleFilterData(nextPage, itemsPerPage);
-        
-        } else if(isSearching) {
-            handleFilterSearch(nextPage , itemsPerPage)
-        }else{
+
+        } else if (isSearching) {
+            handleFilterSearch(nextPage, itemsPerPage)
+        } else {
             fetchData(nextPage, latestSortCount);
         }
     };
@@ -182,9 +198,9 @@ function TestLeads() {
         setCurrentPage(prevPage);
         if (isFilter) {
             handleFilterData(prevPage, itemsPerPage);
-        } else if(isSearching) {
-            handleFilterSearch(prevPage , itemsPerPage);      
-        }else{
+        } else if (isSearching) {
+            handleFilterSearch(prevPage, itemsPerPage);
+        } else {
             fetchData(prevPage, latestSortCount);
         }
     };
@@ -195,7 +211,7 @@ function TestLeads() {
                 const page = 1;
                 const limit = 500;
                 let response;
-    
+
                 if (isFilter) {
                     response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                         params: {
@@ -207,9 +223,9 @@ function TestLeads() {
                             selectedUploadedDate,
                             selectedAdminName,
                             selectedYear,
-                            monthIndex ,
+                            monthIndex,
                             selectedCompanyIncoDate,
-                            page,  
+                            page,
                             limit
                         }
                     });
@@ -217,34 +233,34 @@ function TestLeads() {
                     response = await axios.get(`${secretKey}/company-data/search-leads`, {
                         params: {
                             searchQuery: searchText,
-                            page,  
+                            page,
                             limit,
                         }
                     });
                 }
-    
+
                 if (response) {
                     setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                     setTotalCompaniesAssigned(response.data.totalAssigned)
                     if (dataStatus === "Unassigned") {
                         setunAssignedData(response.data.unassigned);
-                        
+
                     } else {
                         setAssignedData(response.data.assigned);
-                        
+
                     }
                 }
             } catch (error) {
                 console.error("Error fetching leads:", error);
             }
         };
-    
+
         if (isFilter || isSearching) {
             fetchLeads();
         }
     }, [dataStatus]);
-    
-    
+
+
     //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
@@ -288,31 +304,32 @@ function TestLeads() {
     //     }
     // };
 
-    const handleFilterSearch = async(searchQuery , page = 1 , limit = itemsPerPage)=>{
-      
-        try{
+    const handleFilterSearch = async (searchQuery, page = 1, limit = itemsPerPage) => {
+
+        try {
             setCurrentDataLoading(true);
             setIsSearching(true);
             setIsFilter(false);
             handleClearFilter()
-            const response = await axios.get(`${secretKey}/company-data/search-leads` , {
-                params : { 
+            const response = await axios.get(`${secretKey}/company-data/search-leads`, {
+                params: {
                     searchQuery,
-                    page, 
-                    limit  }
+                    page,
+                    limit
+                }
             });
-            if(!searchQuery.trim()){
+            if (!searchQuery.trim()) {
                 setIsSearching(false);
-                fetchData(1 , latestSortCount)
-            }else{
-               
+                fetchData(1, latestSortCount)
+            } else {
+
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setTotalCount(response.data.totalPages)
                 setCurrentPage(1)
-                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
+                if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
                     if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
                         setDataStatus('Unassigned');
                     } else {
@@ -320,14 +337,14 @@ function TestLeads() {
                     }
                 }
             }
-        }catch(error){
-            console.error('Error searching leads' , error.message)
-        }finally{
+        } catch (error) {
+            console.error('Error searching leads', error.message)
+        } finally {
             setCurrentDataLoading(false)
         }
     }
-    
-    
+
+
 
 
     //--------------------function to add leads-------------------------------------
@@ -541,7 +558,7 @@ function TestLeads() {
         }
     };
 
-     const handleOptionChange = (event) => {
+    const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
     //console.log("selectedOption" , selectedOption)
@@ -551,7 +568,7 @@ function TestLeads() {
         const parsedData = Papa.parse(data, { header: true });
         return parsedData.data;
     };
-    
+
     function formatDateFromExcel(serialNumber) {
         // Excel uses a different date origin (January 1, 1900)
         const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
@@ -750,30 +767,30 @@ function TestLeads() {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const properDate = new Date();
-    
+
         if (!csvdata.length) {
             Swal.fire("Please upload data");
             return;
         }
-    
+
         const updatedCsvdata = csvdata.map(data => ({
             ...data,
             ename: newemployeeSelection,
             AssignDate: properDate,
             UploadedBy: adminName
         }));
-    
+
         const newArray = updatedCsvdata.map(data => ({
             date: currentDate,
             time: currentTime,
             ename: newemployeeSelection,
             companyName: data["Company Name"]
         }));
-    
+
         setLoading(true);
         setOpenBacdrop(true);
         closeBulkLeadsCSVPopup();
-    
+
         try {
             if (selectedOption === "someoneElse") {
                 await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
@@ -781,7 +798,7 @@ function TestLeads() {
             } else {
                 await axios.post(`${secretKey}/company-data/leads`, csvdata);
             }
-    
+
             const response = await axios.post(`${secretKey}/company-data/leads`, selectedOption === "someoneElse" ? updatedCsvdata : csvdata);
             handleResponse(response, newArray);
             fetchData(1, latestSortCount);
@@ -794,11 +811,11 @@ function TestLeads() {
             setCsvData([]);
         }
     };
-    
+
     const handleResponse = (response, newArray) => {
         const counter = response.data.counter;
         const successCounter = response.data.sucessCounter;
-    
+
         if (counter === 0) {
             Swal.fire({
                 title: selectedOption === "someoneElse" ? "Data Send!" : "Data Added!",
@@ -809,7 +826,7 @@ function TestLeads() {
             const lines = response.data.split('\n');
             const numberOfDuplicateEntries = lines.length - 1;
             const noofSuccessEntries = newArray.length - numberOfDuplicateEntries;
-    
+
             Swal.fire({
                 title: 'Do you want to download the duplicate entries report?',
                 html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download the report.`,
@@ -829,7 +846,7 @@ function TestLeads() {
             });
         }
     };
-    
+
     const handleError = (error) => {
         if (error.response && error.response.status !== 500) {
             setErrorMessage(error.response.data.error);
@@ -840,12 +857,12 @@ function TestLeads() {
         }
         console.error("Error:", error);
     };
-    
+
     const resetForm = () => {
         closeBulkLeadsCSVPopup();
         setnewEmployeeSelection("Not Alloted");
     };
-    
+
 
 
     //----------------------function for export leads data-------------------------------------
@@ -961,13 +978,11 @@ function TestLeads() {
         } catch (error) {
             // Handle errors
             console.error('Error:', error);
-        }finally{
+        } finally {
             setOpenBacdrop(false)
         }
     };
-    
-    
-    
+
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
@@ -1078,11 +1093,11 @@ function TestLeads() {
             //setSelectedRows([])
         } catch (error) {
             console.error("Error downloading CSV:", error);
-        }finally{
+        } finally {
             setOpenBacdrop(false)
         }
     };
-    
+
     //console.log(selectedRows)
 
     //--------------------function to assign leads to employees---------------------
@@ -1188,11 +1203,11 @@ function TestLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus
-        
+
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData
-        const tempFilter =( !isFilter && !isSearching) ? data : tempStatusData;
+        const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
         const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
-    
+
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
@@ -1201,15 +1216,15 @@ function TestLeads() {
                 date,
                 time
             });
-    
+
             if (isFilter) {
                 handleFilterData(1, itemsPerPage);
-            } else if(isSearching) {
-                handleFilterSearch(1 , itemsPerPage)
-            }else{
-                fetchData(1 , latestSortCount)
+            } else if (isSearching) {
+                handleFilterSearch(1, itemsPerPage)
+            } else {
+                fetchData(1, latestSortCount)
             }
-    
+
             Swal.fire("Data Assigned");
             setOpenAssignLeadsDialog(false);
             setSelectedRows([]);
@@ -1220,7 +1235,7 @@ function TestLeads() {
             Swal.fire("Error Assigning Data");
         }
     };
-    
+
 
     //-------------------------function to delete leads-------------------------
 
@@ -1355,22 +1370,22 @@ function TestLeads() {
         setIsUpdateMode(true);
         // setCompanyData(cdata.filter((item) => item.ename === echangename));
 
-         // Find the selected data object
+        // Find the selected data object
 
         const dataToFilter = dataStatus === "Unassigned" ? unAssignedData : assignedData
-        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter 
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter
         const selectedData = finalFiltering.find((item) => item._id === id);
-        
-        console.log("id" , id)
-        console.log("finalfiletering" , finalFiltering)
-        console.log("assigned" , assignedData)
-        console.log("unassigned" , unAssignedData)
-        console.log("selectedData" , selectedData)
-       
+
+        console.log("id", id)
+        console.log("finalfiletering", finalFiltering)
+        console.log("assigned", assignedData)
+        console.log("unassigned", unAssignedData)
+        console.log("selectedData", selectedData)
+
         //console.log(selectedData["Company Incorporation Date  "])
         //console.log(selectedData)
         // console.log(echangename);
-       
+
         // Update the form data with the selected data values
         setCompanyEmail(selectedData["Company Email"]);
         setCompanyName(selectedData["Company Name"]);
@@ -1552,7 +1567,7 @@ function TestLeads() {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
-           setMonthIndex(monthIndex+1)
+            setMonthIndex(monthIndex + 1)
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {
@@ -1560,7 +1575,7 @@ function TestLeads() {
         }
     }, [selectedYear, selectedMonth]);
 
-    
+
 
     useEffect(() => {
         if (selectedYear && selectedMonth && selectedDate) {
@@ -1608,7 +1623,7 @@ function TestLeads() {
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
-              
+
                 setOpenBacdrop(false)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
@@ -1860,7 +1875,7 @@ function TestLeads() {
                                                 <th>City</th>
                                                 <th>State</th>
                                                 <th>Company Email</th>
-                                               {dataStatus !== "Unassigned" && <th>Status</th>}
+                                                {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
 
                                                 <th>Uploaded By</th>
@@ -1965,7 +1980,7 @@ function TestLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        
+
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -2151,7 +2166,7 @@ function TestLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                       {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
+                                                        {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
                                                         {dataStatus !== "Unassigned" && <td >
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                 <p className="rematkText text-wrap m-0">
@@ -2226,7 +2241,7 @@ function TestLeads() {
                                     </table>
                                 </div>
                             </div>
-                            {(!isFilter || !isSearching)  && data.length === 0  && !currentDataLoading && (
+                            {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2237,7 +2252,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
-                            {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
+                            {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2248,7 +2263,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
-                             {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
+                            {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
                                         <tr>
@@ -2293,7 +2308,7 @@ function TestLeads() {
             </div>
 
             {/* -------------------- dialog to add leads---------------------------- */}
-            <Dialog className='My_Mat_Dialog'  open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
+            <Dialog className='My_Mat_Dialog' open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAddLeadsDialog} >
@@ -2641,7 +2656,7 @@ function TestLeads() {
                         </div>
                     </div>
                 </DialogContent>
-                <button className="btn btn-primary bdr-radius-none" 
+                <button className="btn btn-primary bdr-radius-none"
                     onClick={handleSubmitData}
                 >
                     Submit
@@ -2649,7 +2664,7 @@ function TestLeads() {
             </Dialog>
 
             {/* ------------------------ dialog to add bulk leads as csv---------------- */}
-            <Dialog className='My_Mat_Dialog'  open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
+            <Dialog className='My_Mat_Dialog' open={openBulkLeadsCSVPopup} onClose={closeBulkLeadsCSVPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Import CSV DATA{" "}
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeBulkLeadsCSVPopup}>
@@ -3004,7 +3019,7 @@ function TestLeads() {
                         </div>
                     </div>}
                 </DialogContent>
-            
+
                 <div className="btn-list">
                     <button
                         style={{ width: "100vw", borderRadius: "0px" }}

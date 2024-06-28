@@ -14,37 +14,71 @@ const InformBDEModel = require("../models/InformBDE.js");
 const FollowUpModel = require('../models/FollowUp.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
+//   router.post('/post-rmservicesdata', async (req, res) => {
+//   const { dataToSend } = req.body;
+//   const publishDate = new Date();
+//   //console.log("Received data:", dataToSend); // Log received data to inspect
 
-// router.post('/post-rmservicesdata', async (req, res) => {
-//     const { dataToSend } = req.body;
-//     const publishDate = new Date();
-//     console.log("data" , dataToSend)
-//     try {
-//       const sheetData = { ...dataToSend, bookingPublishDate: publishDate };
-//       const createData = await RMCertificationModel.create(sheetData);
-//       console.log("created" , createData)
-//       res.status(200).json({ message: "Details added to RM services", data: createData });
-//     } catch (error) {
-//       console.error("Error creating/updating data:", error);
-//       res.status(500).send("Error creating/updating data");
-//     }
-//   });
+//   try {
+//     const sheetData = dataToSend.map(item=>({
+//         ...item,
+//         bookingPublishDate:publishDate,
+//     }))
+//     const createData = await RMCertificationModel.insertMany(sheetData)
+//     //console.log("Created:", createData);
 
-  router.post('/post-rmservicesdata', async (req, res) => {
+//     // Respond with success message and created data
+//     res.status(200).json({ message: "Details added to RM services", data: createData });
+//   } catch (error) {
+//     console.error("Error creating/updating data:", error);
+//     res.status(500).send("Error creating/updating data");
+//   }
+// });
+
+router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
-  //console.log("Received data:", dataToSend); // Log received data to inspect
 
   try {
-    const sheetData = dataToSend.map(item=>({
-        ...item,
-        bookingPublishDate:publishDate,
-    }))
-    const createData = await RMCertificationModel.insertMany(sheetData)
-    //console.log("Created:", createData);
+    let createData = [];
+    let existingRecords = [];
+    let successEntries = 0;
+    let failedEntries = 0;
+
+    for (const item of dataToSend) {
+      try {
+        // Check if the record already exists
+        const existingRecord = await RMCertificationModel.findOne({
+          "Company Name": item["Company Name"],
+          serviceName: item.serviceName
+        });
+
+        if (!existingRecord) {
+          const data = {
+            ...item,
+            bookingPublishDate: publishDate
+          };
+          const newRecord = await RMCertificationModel.create(data);
+          createData.push(newRecord);
+          successEntries++;
+        } else {
+          existingRecords.push(existingRecord);
+          failedEntries++;
+        }
+      } catch (error) {
+        console.error("Error saving record:", error.message);
+        failedEntries++;
+      }
+    }
 
     // Respond with success message and created data
-    res.status(200).json({ message: "Details added to RM services", data: createData });
+    res.status(200).json({
+      message: "Details added to RM services",
+      data: createData,
+      successEntries: successEntries,
+      failedEntries: failedEntries,
+      existingRecords: existingRecords
+    });
   } catch (error) {
     console.error("Error creating/updating data:", error);
     res.status(500).send("Error creating/updating data");
@@ -60,6 +94,26 @@ router.get(`/rm-sevicesgetrequest` , async(req , res)=>{
         console.log("Error creating data" , error)
         res.status(500).send({message : "Internal Server Error"})
     }
+})
+
+router.delete(`/delete-rm-services` , async(req,res)=>{
+  const { companyName , serviceName } = req.body;
+  try{
+    const response = await RMCertificationModel.findOneAndDelete(
+      {
+        "Company Name" : companyName,
+        serviceName : serviceName
+      }
+    )
+    if(response){
+      res.status(200).json({message : "Record Deleted Succesfully" , deletedData : response})
+    }else{
+      res.status(400).json({message : "Record Not Found"})
+    }
+
+  }catch(error){
+    res.status(500).json({message : "Internal Server Error"})
+  }
 })
 
 

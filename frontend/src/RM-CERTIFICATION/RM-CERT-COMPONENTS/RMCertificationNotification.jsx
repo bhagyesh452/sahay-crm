@@ -66,7 +66,7 @@ React.useEffect(()=>{
     
       localStorage.removeItem("rmofcertificationToken");
       
-      navigate("/rmofcertification/login-rmofcertification");
+      navigate("/rmofcertification/login");
     
   };
   return (
