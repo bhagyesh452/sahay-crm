@@ -148,6 +148,8 @@ const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachment
       attachments: processedAttachments
     });
 
+    console.log(attachments)
+
     return info;
   } catch (error) {
     console.error("Error sending email:", error);

@@ -777,8 +777,7 @@ function HrEmployees({ onEyeButtonClick }) {
                   data-bs-toggle="modal"
                   data-bs-target="#modal-report"
                   aria-label="Create new report"
-                >
-                </a>
+                ></a>
               </div>
             </div>
           </div>
