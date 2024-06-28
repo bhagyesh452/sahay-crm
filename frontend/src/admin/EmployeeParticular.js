@@ -2511,8 +2511,6 @@ function EmployeeParticular() {
                       Bdm Forwarded{" "}
                       <span className="no_badge">
                         {" "}
-
-
                         {
                           ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
@@ -3737,7 +3735,7 @@ function EmployeeParticular() {
           </div>
         </div>
       </Drawer>
-
+{/* //----------------leads filter drawer------------------------------- */}
       <Drawer
         style={{ top: "50px" }}
         anchor="left"
