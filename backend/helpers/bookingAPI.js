@@ -4827,6 +4827,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
   const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
   const mainObject = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
   const serviceID = data.serviceID
+  const socketIO = req.io;
 
 
   if (!mainObject) {
@@ -4882,6 +4883,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { new: true } // Return the updated document
     );
 
+    
     res.status(200).json(updatedMainObject);
   } else {
     const moreObject = mainObject.moreBookings[bookingIndex - 1];
