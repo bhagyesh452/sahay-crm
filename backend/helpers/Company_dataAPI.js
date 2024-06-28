@@ -10,6 +10,45 @@ const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
 const adminModel = require("../models/Admin");
+const jwt = require('jsonwebtoken');
+
+
+const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
+
+// const authenticateToken = (req, res, next) => {
+//   console.log('Headers:', req.headers);
+//   const authHeader = req.headers['Authorization'];
+//   const token = authHeader && authHeader.split(' ')[1];
+
+//   console.log('Token:', token);
+
+//   if (!token) {
+//     console.log('No token provided');
+//     return res.status(401).json({ message: "Access Denied" });
+//   }
+
+//   jwt.verify(token, secretKey, (err, user) => {
+//     if (err) {
+//       console.log('Token verification failed:', err.message);
+//       return res.status(403).json({ message: "Invalid Token" });
+//     }
+//     req.user = user;
+//     next();
+//   });
+// };
+
+// 7. Read Muultiple Companies 
+router.get("/leads", async (req, res) => {
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -139,9 +178,9 @@ router.post("/leads", async (req, res) => {
           "Company Name": employeeData["Company Name"].toUpperCase(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
-        console.log("newemployee" , employee)
+        //console.log("newemployee" , employee)
         const savedEmployee = await employee.save();
-        console.log("saved" , savedEmployee)
+        //console.log("saved" , savedEmployee)
         successCounter++;
         
       } catch (error) {
@@ -214,7 +253,6 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
         },
       }
     );
-
     // Delete documents from TeamLeadsModel where the employee's name matches
     await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
 
@@ -267,19 +305,6 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
     res.status(500).json({ error: "Internal Server Error" });
   }
 })
-
-// 7. Read Muultiple Companies 
-router.get("/leads", async (req, res) => {
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.find().lean();
-
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 //8. Read Multiple companies New
 router.get('/new-leads', async (req, res) => {

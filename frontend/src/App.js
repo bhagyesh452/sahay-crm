@@ -128,7 +128,7 @@ function App() {
 
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
-          <Route path='/rmofcertification/login-rmofcertification' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
+          <Route path='/rmofcertification/login' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
           <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
           <Route path='/rmofcertification/rmofcertification-bookings/:userId/' element={<RmofCertificationBookings />} />
           <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings/>} />

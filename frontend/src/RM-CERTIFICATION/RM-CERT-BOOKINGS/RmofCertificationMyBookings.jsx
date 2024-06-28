@@ -4,6 +4,8 @@ import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import axios from 'axios';
 import { IoFilterOutline } from "react-icons/io5";
 import ClipLoader from "react-spinners/ClipLoader";
+import { MdDelete } from "react-icons/md";
+import Swal from "sweetalert2";
 
 
 
@@ -32,30 +34,65 @@ function RmofCertificationMyBookings() {
         }
     };
 
-const fetchRMServicesData=async()=>{
-    try{
-        setCurrentDataLoading(true)
-        const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-        setRmServicesData(response.data)
-        //console.log(response.data)
-    }catch(error){
-        console.error("Error fetching data" , error.message)
-    }finally{
-        setCurrentDataLoading(false)
+    const fetchRMServicesData = async () => {
+        try {
+            setCurrentDataLoading(true)
+            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
+            setRmServicesData(response.data)
+            //console.log(response.data)
+        } catch (error) {
+            console.error("Error fetching data", error.message)
+        } finally {
+            setCurrentDataLoading(false)
+        }
     }
-}
 
-useEffect(() => {
-    fetchData();
-}, []);
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-useEffect(()=>{
-    fetchRMServicesData()
+    useEffect(() => {
+        fetchRMServicesData()
 
-},[employeeData])
+    }, [employeeData])
+
+    const handleDeleteRmBooking = async (companyName, serviceName) => {
+        // Display confirmation dialog using SweetAlert
+        const confirmDelete = await Swal.fire({
+          title: 'Are you sure?',
+          text: `Do you want to delete ${serviceName} for ${companyName}?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+        });
+      
+        // Proceed with deletion if user confirms
+        if (confirmDelete.isConfirmed) {
+          try {
+            // Send delete request to backend
+            const response = await axios.delete(`${secretKey}/rm-services/delete-rm-services`, {
+              data: { companyName, serviceName }
+            });
+      
+            console.log(response.data);
+            Swal.fire('Deleted!', 'The record has been deleted.', 'success');
+            fetchData();
+            // Handle UI updates or further actions after deletion
+          } catch (error) {
+            console.error("Error Deleting Company", error.message);
+            Swal.fire('Error!', 'Failed to delete the record.', 'error');
+            // Handle error scenario, e.g., show an error message or handle error state
+          }
+        } else {
+          // Handle cancel or dismiss scenario if needed
+          Swal.fire('Cancelled', 'Delete operation cancelled.', 'info');
+        }
+      };
 
 
-console.log(rmServicesData)
+    console.log(rmServicesData)
 
 
 
@@ -69,8 +106,8 @@ console.log(rmServicesData)
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center">
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" 
-                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'} 
+                                    <button type="button"
+                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                     //onClick={() => setOpenFilterDrawer(true)}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter
@@ -141,28 +178,29 @@ console.log(rmServicesData)
                                                 <th>Sr.No</th>
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
-                                               <th>Company Email</th>
-                                               <th>PAN NUMBER</th>
-                                               <th>BDE NAME</th>
-                                               <th>BDE EMAIL</th>
-                                               <th>BDM NAME</th>
-                                               <th>BDM TYPE</th>
-                                               <th>BOOKING DATE</th>
-                                               <th>PAYMENT METHOD</th>
-                                               <th>CA CASE</th>
-                                               <th>CA NUMBER</th>
-                                               <th>CA EMAIL</th>
-                                               <th>SERVICE NAME</th>
-                                               <th>TOTAL PAYMENT WITHOUT GST</th>
-                                               <th>TOTAL PAYMENT WITH GST</th>                              
-                                               <th>WITH GST</th>
-                                               <th>FIRST PAYMENT</th>
-                                               <th>SECOND PAYMENT</th>
-                                               <th>THIRD PAYMENT</th>
-                                               <th>FOURTH PAYMENT</th>
-                                               <th>SECOND PAYMENT REMARKS</th>
-                                               <th>THIRD PAYMENT REMARKS</th>
-                                               <th>FOURTH PAYMENT REMARKS</th>
+                                                <th>Company Email</th>
+                                                <th>PAN NUMBER</th>
+                                                <th>BDE NAME</th>
+                                                <th>BDE EMAIL</th>
+                                                <th>BDM NAME</th>
+                                                <th>BDM TYPE</th>
+                                                <th>BOOKING DATE</th>
+                                                <th>PAYMENT METHOD</th>
+                                                <th>CA CASE</th>
+                                                <th>CA NUMBER</th>
+                                                <th>CA EMAIL</th>
+                                                <th>SERVICE NAME</th>
+                                                <th>TOTAL PAYMENT WITHOUT GST</th>
+                                                <th>TOTAL PAYMENT WITH GST</th>
+                                                <th>WITH GST</th>
+                                                <th>FIRST PAYMENT</th>
+                                                <th>SECOND PAYMENT</th>
+                                                <th>THIRD PAYMENT</th>
+                                                <th>FOURTH PAYMENT</th>
+                                                <th>SECOND PAYMENT REMARKS</th>
+                                                <th>THIRD PAYMENT REMARKS</th>
+                                                <th>FOURTH PAYMENT REMARKS</th>
+                                                <th>Delete Service</th>
                                             </tr>
                                         </thead>
                                         {currentDataLoading ? (
@@ -183,318 +221,51 @@ console.log(rmServicesData)
                                             </tbody>
                                         ) : (
                                             <tbody>
-                                                {/* {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                {rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
                                                     <tr
                                                         key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}
+                                                        //className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd", lineHeight: "20px" }}
                                                     >
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                        
-                                                        {dataStatus !== "Unassigned" && <td >
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"]}{" "}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
-                                                        <td>{formatDateFinal(company["AssignDate"])}</td>
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
+                                                        <td style={{ lineHeight: "30px" }}>{index + 1}</td>
+                                                        <td>{obj["Company Name"]}</td>
+                                                        <td>{obj["Company Number"]}</td>
+                                                        <td>{obj["Company Email"]}</td>
+                                                        <td>{obj.panNumber}</td>
+                                                        <td>{obj.bdeName}</td>
+                                                        <td>{obj.bdeEmail}</td>
+                                                        <td>{obj.bdmName}</td>
+                                                        <td>{obj.bdmType}</td>
+                                                        <td>{obj.bookingDate}</td>
+                                                        <td>{obj.paymentMethod}</td>
+                                                        <td>{obj.caCase}</td>
+                                                        <td>{obj.caNumber}</td>
+                                                        <td>{obj.caEmail}</td>
+                                                        <td>{obj.serviceName}</td>
+                                                        <td>{obj.totalPaymentWOGST}</td>
+                                                        <td>{obj.totalPaymentWGST}</td>
+                                                        <td>{obj.withGST ? 'Yes' : 'No'}</td>
+                                                        <td>{obj.firstPayment}</td>
+                                                        <td>{obj.secondPayment}</td>
+                                                        <td>{obj.thirdPayment}</td>
+                                                        <td>{obj.fourthPayment}</td>
+                                                        <td>{obj.secondRemarks}</td>
+                                                        <td>{obj.thirdRemarks}</td>
+                                                        <td>{obj.fourthRemarks}</td>
+                                                        <div
+                                                            onClick={() =>
+                                                                handleDeleteRmBooking(
+                                                                    obj["Company Name"],
+                                                                    obj.serviceName
+                                                                )
+                                                            }
+                                                            style={{marginLeft:"30px"}}
+                                                            className="Services_Preview_action_delete mt-1"
+                                                        >
+                                                            <MdDelete />
+                                                        </div>
                                                     </tr>
-                                                ))} */}
-                                                {/* {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}
-                                                    >
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                        <td>{company["Status"]}</td>
-                                                        {dataStatus !== "Unassigned" && <td >
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"]}{" "}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
-                                                        <td>{formatDateFinal(company["AssignDate"])}</td>
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))} */}
-                                                {/* {data.length !==0 && data.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}
-                                                    >
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                       {dataStatus !== "Unassigned" && <td>{company["Status"]}</td>}
-                                                        {dataStatus !== "Unassigned" && <td >
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"]}{" "}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
-                                                        <td>{formatDateFinal(company["AssignDate"])}</td>
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))} */}
-                                               {rmServicesData.length !==0 && rmServicesData.map((obj , index)=>(
-                                                <tr
-                                                key={index}
-                                                //className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                style={{ border: "1px solid #ddd" ,lineHeight:"20px"}}
-                                            >
-                                                <td style={{lineHeight:"30px"}}>{index + 1}</td>
-                                                <td>{obj["Company Name"]}</td>
-                                                <td>{obj["Company Number"]}</td>
-                                                <td>{obj["Company Email"]}</td>
-                                                <td>{obj.panNumber}</td>
-                                                <td>{obj.bdeName}</td>
-                                                <td>{obj.bdeEmail}</td>
-                                                <td>{obj.bdmName}</td>
-                                                <td>{obj.bdmType}</td>
-                                                <td>{obj.bookingDate}</td>
-                                                <td>{obj.paymentMethod}</td>
-                                                <td>{obj.caCase}</td>
-                                                <td>{obj.caNumber}</td>
-                                                <td>{obj.caEmail}</td>
-                                                <td>{obj.serviceName}</td>
-                                                <td>{obj.totalPaymentWOGST}</td>
-                                                <td>{obj.totalPaymentWGST}</td>
-                                                <td>{obj.withGST ? 'Yes' : 'No'}</td>
-                                                <td>{obj.firstPayment}</td>
-                                                <td>{obj.secondPayment}</td>
-                                                <td>{obj.thirdPayment}</td>
-                                                <td>{obj.fourthPayment}</td>
-                                                <td>{obj.secondRemarks}</td>
-                                                <td>{obj.thirdRemarks}</td>
-                                                <td>{obj.fourthRemarks}</td>
-                                            </tr>
-                                               ))}
+                                                ))}
                                             </tbody>
                                         )}
                                     </table>

@@ -41,6 +41,7 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import ListItemText from '@mui/material/ListItemText';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import RMofCertificationListViewBookings from "./RMofCertificationListViewBookings.jsx";
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -64,6 +65,9 @@ function RmofCertificationBookings() {
   const [mainDataSwap, setMainDataSwap] = useState([])
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
+  const [openTableView, setOpenTableView] = useState(true)
+  const [openListView, setOpenListView] = useState(false)
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
 
@@ -93,24 +97,6 @@ function RmofCertificationBookings() {
     thirdPaymentRemarks: "",
     fourthPaymentRemarks: "",
   };
-
-  const defaultService = {
-    serviceName: "",
-    withDSC: true,
-    totalPaymentWOGST: "",
-    totalPaymentWGST: "",
-    withGST: true,
-    paymentTerms: "Full Advanced",
-    firstPayment: 0,
-    secondPayment: 0,
-    secondPaymentRemarks: "",
-    thirdPayment: 0,
-    thirdPaymentRemarks: "",
-    fourthPayment: 0,
-    fourthPaymentRemarks: "",
-    paymentRemarks: "",
-    paymentCount: 2,
-  }
 
   const fetchDatadebounce = async () => {
     try {
@@ -613,8 +599,6 @@ function RmofCertificationBookings() {
         ? prevSelected.filter(item => item !== service)
         : [...prevSelected, service]
     );
-
-
   };
 
   // const handleSubmitServicesToSwap = () => {
@@ -652,15 +636,20 @@ function RmofCertificationBookings() {
       console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
       return;
     }
-  
+    const combinedServices = [
+      ...(selectedCompanyData.services || []),
+      ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
+    ];
+
+    console.log("combined" , combinedServices)
     // Initialize an array to store objects for each selected service
     const dataToSend = [];
-  
+
     // Iterate through selectedServices (which contain only service names)
     selectedServices.forEach(serviceName => {
       // Find the detailed service object in selectedCompanyData.services
-      const serviceData = selectedCompanyData.services.find(service => service.serviceName === serviceName);
-  
+      const serviceData = combinedServices.find(service => service.serviceName === serviceName);
+      
       // Check if serviceData is found
       if (serviceData) {
         // Create an object with the required fields from selectedCompanyData and serviceData
@@ -691,73 +680,65 @@ function RmofCertificationBookings() {
           fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "", // Default to 0 if not provided
           bookingPublishDate: serviceData.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
         };
-  
+
         // Push the created object to dataToSend array
         dataToSend.push(serviceToSend);
       } else {
         console.error(`Service with name '${serviceName}' not found in selected company data.`);
       }
     });
-  
+
     if (dataToSend.length !== 0) {
       try {
         const response = await axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
           dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
         });
         console.log(response.data);
-        Swal.fire("Success", "Bookings Uploaded Successfully", "success");
+        if (response.data.successEntries === 0) {
+          Swal.fire("Please Select Unique Services")
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
+          });
+        }
         handleCloseServicesPopup()
       } catch (error) {
-        console.error("Error sending data:", error);
-        Swal.fire("Error", "Failed to upload bookings", "error");
+        console.error("Error sending data:", error.message);
+        Swal.fire("Error", "Failed to upload bookings", error.message);
       }
     } else {
       console.log("No data to send.");
     }
-  
+
     // Assuming setDataToSend updates state to store dataToSend array
     setDataToSend(dataToSend);
-    //handleSendDataToMyBookings()
+
     // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
   }
-  
-  
-
-  // const handleSendDataToMyBookings = async () => {
-  //   try {
-  //     if (dataToSend.length !== 0) {
-  //       const response = await axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
-  //         dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
-  //       });
-  //       console.log(response.data);
-  //       Swal.fire("Success", "Bookings Uploaded Successfully", "success");
-  //       handleCloseServicesPopup()
-  //     } else {
-  //       console.log("No data to send.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending data:", error);
-  //     Swal.fire("Error", "Failed to upload bookings", "error");
-  //   }
-  // };
-
-
-
-
-  // console.log("dataToSend", dataToSend)
-  // console.log("company", selectedCompanyData)
-  // console.log("company name", selectedCompanyName)
-  // console.log("selected", selectedServices)
-  // console.log("leadFormData", leadFormData)
+  console.log("leadFormData", leadFormData)
   // console.log("services", leadFormData.map((service) => service.services))
 
+  const handleViewTable = () => {
+    setOpenTableView(true)
+    setOpenListView(false)
+  }
+
+  const handleViewList = () => {
+    setOpenListView(true)
+    setOpenTableView(false)
+  }
+
+  console.log("listView" , openListView)
+  console.log("tableView" , openTableView)
 
   return (
     <div>
       <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
       <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
 
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openListView && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -798,65 +779,24 @@ function RmofCertificationBookings() {
                     </div>
                   </div>
                 </div>
-                {/* <div className="col-6">
-                  <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} >
-                      Import CSV
-                    </button>
-                    <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
-                      <DialogTitle>
-                        Import CSV DATA{" "}
-                        <IconButton onClick={closepopup} style={{ float: "right" }}>
-                          <CloseIcon color="primary"></CloseIcon>
-                        </IconButton>{" "}
-                      </DialogTitle>
-                      <DialogContent>
-                        <div className="maincon">
-                          <div
-                            style={{ justifyContent: "space-between" }}
-                            className="con1 d-flex"
-                          >
-                            <div style={{ paddingTop: "9px" }} className="uploadcsv">
-                              <label
-                                style={{ margin: "0px 0px 6px 0px" }}
-                                htmlFor="upload"
-                              >
-                                Upload CSV File
-                              </label>
-                            </div>
-                            <a href={frontendKey + "/BookingExample.xlsx"} download>
-                              Download Sample
-                            </a>
-                          </div>
-                          <div
-                            style={{ margin: "5px 0px 0px 0px" }}
-                            className="form-control"
-                          >
-                            <input
-                              type="file"
-                              name="csvfile
-                          "
-                              id="csvfile"
-                              onChange={handleFileInputChange}
-                            />
-                          </div>
-                        </div>
-                      </DialogContent>
-                      <button onClick={handleSubmitImport} className="btn btn-primary">
-                        Submit
-                      </button>
-                    </Dialog>
-                    <button className="btn btn-primary mr-1" disabled>
-                      Export CSV
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => functionOpenBookingForm()}
-                    >
-                      Add Booking
-                    </button>
+                <div className="col-6 d-flex">
+                  <div className="list-gird-main ms-auto">
+                    <div className={openTableView ? "listgrridradio_main d-flex align-items-center" : "d-flex align-items-center"}>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView}/>
+                        <label class="custom_radio-alias" for="r1">
+                          <FaTableCellsLarge onClick={() => { handleViewTable() }} />
+                        </label>
+                      </div>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="2" id="r2" checked={openTableView} />
+                        <label class="custom_radio-alias" for="r2">
+                          <FaList onClick={() => handleViewList()} />
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>
@@ -906,8 +846,7 @@ function RmofCertificationBookings() {
                                       obj["Company Name"],
                                     )
 
-                                  )
-                                  } />
+                                  )}/>
                                 </div>
                                 <div className="b_cmpny_time">
                                   {
@@ -3298,6 +3237,12 @@ function RmofCertificationBookings() {
           />
         </>
       )}
+
+      {openListView && <>
+      <RMofCertificationListViewBookings
+      bookingsData = {leadFormData}
+      />
+      </>}
 
       {/* -----------------------------------------------dialog box for adding services ------------------------------------------------------ */}
 
