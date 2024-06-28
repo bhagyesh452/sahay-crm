@@ -163,6 +163,7 @@ router.delete("/leads/:id", async (req, res) => {
 // 6. ADD Multiple Companies(Pata nai kyu he)
 router.post("/leads", async (req, res) => {
   const csvData = req.body;
+  const socketIO = req.originalUrl;
   //console.log("csvdata" , csvData)
   let counter = 0;
   let successCounter = 0;
@@ -190,6 +191,7 @@ router.post("/leads", async (req, res) => {
         counter++;
       }
     }
+    
     if (duplicateEntries.length > 0) {
       console.log("yahan chala csv pr")
       //console.log(duplicateEntries , "duplicate")
@@ -496,7 +498,7 @@ router.get('/filter-leads', async (req, res) => {
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
     }
-    
+
     // if (selectedYear) {
     //   const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
     //   const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
@@ -505,7 +507,7 @@ router.get('/filter-leads', async (req, res) => {
     //     $lt: yearEndDate
     //   };
     // }
-    
+
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
@@ -525,7 +527,7 @@ router.get('/filter-leads', async (req, res) => {
         };
       }
     }
-    
+
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),
@@ -906,7 +908,40 @@ router.get("/employees/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+router.post("/postData", async (req, res) => {
+  const { selectedObjects, employeeSelection } = req.body
+  const bulkOperations = selectedObjects.map((employeeData) => ({
+    updateOne: {
+      filter: { "Company Name": employeeData["Company Name"] },
+      update: {
+        $set: {
+          ename: employeeSelection,
+          AssignDate: new Date()
+        }
+      },
+    },
+  }));
+  await CompanyModel.bulkWrite(bulkOperations);
 
+  // If not assigned, post data to MongoDB or perform any desired action
+  // const updatePromises = selectedObjects.map((obj) => {
+  //   // Add AssignData property with the current date
+  //   const updatedObj = {
+  //     ...obj,
+  //     ename: employeeSelection,
+  //     AssignDate: new Date(),
+  //   };
+  //   return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+  // });
+
+  // Add the recent update to the RecentUpdatesModel
+
+
+  // Execute all update promises
+  // await Promise.all(updatePromises);
+
+  res.json({ message: "Data posted successfully" });
+});
 
 router.put("/newcompanyname/:id", async (req, res) => {
   try {

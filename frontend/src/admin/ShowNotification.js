@@ -12,6 +12,8 @@ import EditBookingPreview from "./EditBookingPreview";
 import DeleteBookingComponent from "./NotiComponents/DeleteBookingComponent";
 import io from "socket.io-client";
 import General_dataComponent from "./NotiComponents/General_dataComponent";
+import Manual_dataComponent from "./NotiComponents/Manual_dataComponent";
+import Approve_dataComponents from "./NotiComponents/Approve_dataComponents";
 
 
 function ShowNotification() {
@@ -265,9 +267,10 @@ function ShowNotification() {
             </ul>
           </div>
           <div className="maincontent"  >
-            {dataType === "Manual" &&
+            {dataType === "Manual" &&  <Manual_dataComponent/>}
+            {/* {dataType === "Manual" &&
               RequestData.length !== 0 &&
-              RequestData.map((company) => (
+              RequestData.map((company) => (s
                 <NewCard
                   name={company.ename}
                   year={company.year}
@@ -278,7 +281,7 @@ function ShowNotification() {
                   cTime={company.cTime}
                   cDate={company.cDate}
                 />
-              ))}
+              ))} */}
 
             {/* {RequestGData.length !== 0 &&
               dataType === "General" &&
@@ -314,7 +317,7 @@ function ShowNotification() {
                   setCurrentCompany={setCurrentCompany}
                   date={company.date}
                   time={company.time}
-                  name={company.ename}
+                  name={company.ename} 
                   setBookingIndex = {setBookingIndex}
                   moreBookingCase={setMoreBookingCase}
                   bookingIndex={company.bookingIndex}
@@ -325,19 +328,20 @@ function ShowNotification() {
               editData.length !== 0 && currentBooking && compareBooking &&
                 <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
               }
-            {mapArray.length !== 0 &&
+            {/* {mapArray.length !== 0 &&
               dataType === "AddRequest" &&
               mapArray.map((company) => (
                 <ApproveCard
                   name={company.ename}
                   date={company.date}
                   time={company.time}
-                />
-              ))}
+                /> 
+              ))} */}
+              {dataType === "AddRequest" &&  <Approve_dataComponents/>}
 
-            {RequestData.length === 0 && dataType === "Manual" && (
+            {/* {RequestData.length === 0 && dataType === "Manual" && (
               <Nodata />
-            )}
+            )} */}
             {/* {RequestGData.length === 0 && dataType === "General" && (
               <span
                 style={{
@@ -349,17 +353,7 @@ function ShowNotification() {
                 <Nodata />
               </span>
             )} */}
-            {mapArray.length === 0 && dataType === "AddRequest" && (
-              <span
-                style={{
-                  textAlign: "center",
-                  fontSize: "25px",
-                  fontWeight: "bold",
-                }}
-              >
-                <Nodata />
-              </span>
-            )}
+            
             {/* {deleteData.length === 0 &&
               dataType === "deleteBookingRequests" && (
                 <span
