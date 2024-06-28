@@ -75,6 +75,8 @@ const sendMail3 = async (
   attachment6
 ) => {
   try {
+    const newRecepients = recipients;
+    newRecepients.push("support@startupsahay.com")
     const transporter = await createTransporter();
     const paymentReceiptAttachments = processAttachments(attachment1);
     const paymentReceiptAttachments2 = processAttachments(attachment2);
@@ -91,7 +93,7 @@ const sendMail3 = async (
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
       to: recipients.join(", "),
-      replyTo: "nimesh@incscale.in",
+      replyTo: "support@startupsahay.com",
       subject,
       text,
       html,
