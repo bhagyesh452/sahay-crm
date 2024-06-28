@@ -31,8 +31,6 @@ export default function RMCertificationNotification({name , designation}) {
     setAnchorEl(null);
   };
 
-console.log(name)
-
 const navigate = useNavigate();
 const [data, setdata] = useState([])
 const [employeeData, setEmployeeData] = useState([])
@@ -68,7 +66,7 @@ React.useEffect(()=>{
     
       localStorage.removeItem("rmofcertificationToken");
       
-      navigate("/rmofcertification/login-rmofcertification");
+      navigate("/rmofcertification/login");
     
   };
   return (

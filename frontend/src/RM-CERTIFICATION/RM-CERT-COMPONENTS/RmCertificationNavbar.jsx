@@ -25,20 +25,20 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
   //   window.location.replace(`/employee-team-leads/${userId}`);
   // };
   const handleDashboardClick = () => {
-    window.location.replace(`/rmoffunding/dashboard-rmoffunding/${rmCertificationUserId}`)
+    window.location.replace(`/rmofcertification/dashboard-rmofcertification/${rmCertificationUserId}`)
   }
   // const handleConvertedLeadsClicksame = () => {
   //   // Navigate to the /employee-data/:userId/converted-leads route
   //   window.location.replace(`/employee-data/${userId}`);
   // };
 
-  const handleClickMyBookings = () => {
-    window.location.replace(`/rmofcertification/rmofcertification-bookings`)
+  const handleClickBookings = () => {
+    window.location.replace(`/rmofcertification/rmofcertification-bookings/${rmCertificationUserId}`)
   }
 
-  // const handleClickReports=()=>{
-  //   window.location.replace(`/employee-reports/${userId}`)
-  // }
+  const handleClickMyBookings = () => {
+    window.location.replace(`/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}`)
+  }
 
   return (
     <div>
@@ -48,10 +48,9 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
             <div className="container-xl">
               <ul className="navbar-nav">
                 <li className={
-                  location.pathname === `/rmoffunding/dashboard-rmoffunding/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
-                } 
-                onClick={handleDashboardClick}
-                >
+                  location.pathname === `/rmofcertification/dashboard-rmofcertification/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
+                }
+                  onClick={handleDashboardClick}>
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -77,44 +76,11 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                     <span className="nav-link-title">Dashboard</span>
                   </a>
                 </li>
-                {/* <li 
-                onClick={handleConvertedLeadsClicksame}
-                  className={
-                    location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                >
-                  <a className="nav-link" href="#">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
-                    </span>
-                    <span className="nav-link-title">My Leads</span>
-                  </a>
-                  
-                </li> */}
-
-
-                {/* {bdmWork && (
-                  <li className={
-                    location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                    onClick={handleConvertedLeadsClick}
-                    >
-
-                    <a className="nav-link" href="#">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
-
-                        <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                      </span>
-                      <span className="nav-link-title">Team Leads</span>
-                    </a>
-
-                  </li>
-                )} */}
                 <li
                   className={
-                    location.pathname === `/rmofcertification/rmofcertification-bookings` ? "nav-item active" : "nav-item"
+                    location.pathname === `/rmofcertification/rmofcertification-bookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                   }
-                  onClick={handleClickMyBookings}
+                  onClick={handleClickBookings}
                 >
 
                   <a className="nav-link" href="#">
@@ -127,7 +93,7 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                 </li>
                 <li
                   className={
-                    location.pathname === `/rmofcertification/rmofcertification-bookings` ? "nav-item active" : "nav-item"
+                    location.pathname === `/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                   }
                   onClick={handleClickMyBookings}
                 >
@@ -140,20 +106,6 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                   </a>
 
                 </li>
-                {/* <li
-                  className={
-                    location.pathname === `/employee-reports/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                  onClick={handleClickReports}
-                >
-                  <a className="nav-link" href="#">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <VscGraph style={{ height: "24px", width: "19px" }} />
-                    </span>
-                    <span className="nav-link-title">Reports</span>
-                  </a>
-
-                </li> */}
               </ul>
 
             </div>

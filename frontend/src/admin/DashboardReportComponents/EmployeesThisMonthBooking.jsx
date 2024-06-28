@@ -39,6 +39,8 @@ function EmployeesThisMonthBooking() {
     const [generalStartDate, setGeneralStartDate] = useState(new Date());
     const [generalEndDate, setGeneralEndDate] = useState(new Date());
     const [searchBookingBde, setSearchBookingBde] = useState("")
+    const [searchCompanyServiceNameInAdvancePayments, setSearchCompanyServiceNameInAdvancePayments] = useState("");
+    const [searchCompanyServiceNameInRemainingPayments, setSearchCompanyServiceNameInRemainingPayments] = useState("");
     const [bdeResegnedData, setBdeRedesignedData] = useState([])
     const [initialDate, setInitialDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
@@ -52,8 +54,10 @@ function EmployeesThisMonthBooking() {
         lastbookingdate: "none",
         totalAmount: "none",
         totalAdvanceAchieved: "none",
+        advancePaymentDate: "none",
         remainingTotal: "none",
-        remainingRecieved: "none"
+        remainingRecieved: "none",
+        remainingPaymentDate: "none"
     });
 
 
@@ -1916,7 +1920,13 @@ function EmployeesThisMonthBooking() {
     //  ---------------------------------------------- For Creating Remaining Payments Array   ------------------------------------------------
     const [remainingPaymentObject, setRemainingPaymentObject] = useState([]);
     const [remainingRecievedObject, setRemainingRecievedObject] = useState([]);
+    const [completeRemainingPaymentObject, setCompleteRemainingPaymentObject] = useState([]);
+    const [isDateSelectedInRemainingPayment, setIsDateSelectedInRemainingPayment] = useState(false);
+    const [filteredDataFromDateInRemainingPayment, setFilteredDataFromDateInRemainingPayment] = useState([]);
+    const [isSearchedInRemainingPayment, setIsSearchedInRemainingPayment] = useState(false);
+    const [filteredDataFromSearchInRemainingPayment, setFilteredDataFromSearchInRemainingPayment] = useState([]);
     const [remainingPaymentObjectFilter, setRemainingPaymentObjectFilter] = useState([]);
+    const [selectedDateRangeInRemainingPayment, setSelectedDateRangeInRemainingPayment] = useState([null, null]);
 
     const today = new Date();
     const thisYear = today.getFullYear();
@@ -1966,7 +1976,8 @@ function EmployeesThisMonthBooking() {
         });
         setRemainingPaymentObject(remainingMainObject);
         setRemainingRecievedObject(remainingMainObject);
-        setRemainingPaymentObjectFilter(remainingMainObject)
+        setCompleteRemainingPaymentObject(remainingMainObject);
+        // setRemainingPaymentObjectFilter(remainingMainObject)
         // console.log("Remaining payments :", remainingMainObject);
     }, [redesignedData]);
 
@@ -1974,19 +1985,20 @@ function EmployeesThisMonthBooking() {
 
     // Sorting Remaining Total
     const handleSortRemainingTotal = (type) => {
-        let sortedData = [...remainingPaymentObject];
+        const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? remainingPaymentObject : completeRemainingPaymentObject;
+        let sortedData = [...data];
+        // console.log("Sorted data :", sortedData);
 
         if (type === "ascending") {
             const ascendingSort = sortedData.sort((a, b) => a.totalPayment - b.totalPayment);
             // console.log("Ascending remaining total :", ascendingSort);
-        }
-        else if (type === "descending") {
+        } else if (type === "descending") {
             const descendingSort = sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
             // console.log("Descending remaining total :", descendingSort);
-        }
-        else if(type === "none") {
-            console.log("None is :", remainingRecievedObject);
-            setRemainingPaymentObject(remainingRecievedObject);
+        } else if (type === "none") {
+            const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
+            setRemainingPaymentObject(data);
+            // console.log("None is :", data);
             return;
         }
         setRemainingPaymentObject(sortedData);
@@ -1994,38 +2006,115 @@ function EmployeesThisMonthBooking() {
 
     // Sorting Remaining Recieved
     const handleSortRemainingReceived = (type) => {
-        let sortedData = [...remainingRecievedObject];
+        const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? remainingPaymentObject : completeRemainingPaymentObject;
+        let sortedData = [...data];
         // console.log("Sorted data :", sortedData);
+
         if (type === "ascending") {
             const ascendingSort = sortedData.sort((a, b) => a.receivedPayment - b.receivedPayment);
             // console.log("Ascending remaining received :", ascendingSort);
-        }
-        else if (type === "descending") {
+        } else if (type === "descending") {
             const descendingSort = sortedData.sort((a, b) => b.receivedPayment - a.receivedPayment);
             // console.log("Descending remaining received :", descendingSort);
+        } else if (type === "none") {
+            const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
+            setRemainingPaymentObject(data);
+            // console.log("None is :", data);
+            return;
         }
-        else if(type === "none") {
-            // console.log("None is :", remainingRecievedObject);
-            setRemainingPaymentObject(remainingRecievedObject);
+        setRemainingPaymentObject(sortedData);
+    };
+
+    // Sorting Advance Payment Date
+    const handleSortPaymentDateInRemainingPayments = (type) => {
+        const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? remainingPaymentObject : completeRemainingPaymentObject;
+        let sortedData = [...data];
+        // console.log("Sorted data :", sortedData);
+
+        if (type === "ascending") {
+            const ascendingSort = sortedData.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate));
+            // console.log("Ascending payment date :", ascendingSort);
+        } else if (type === "descending") {
+            const descendingSort = sortedData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+            // console.log("Descending payment date :", descendingSort);
+        } else if (type === "none") {
+            const data = (isDateSelectedInRemainingPayment || isSearchedInRemainingPayment) ? filteredDataFromSearchInRemainingPayment : completeRemainingPaymentObject;
+            setRemainingPaymentObject(data);
+            // console.log("None is :", data);
             return;
         }
         setRemainingPaymentObject(sortedData);
     };
 
     // Filter using branch in Remaining Payments
-    const handleBranchFilterInRemainingPayments = (branchName) => {
-        console.log("Branch name is:", branchName);
+    // const handleBranchFilterInRemainingPayments = (branchName) => {
+    //     console.log("Branch name is:", branchName);
 
-        // Filter employees by branch name
-        let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
-        console.log("BDE names:", bdeNames);
+    //     // Filter employees by branch name
+    //     let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
+    //     console.log("BDE names:", bdeNames);
 
-        // Filter remaining payments by matching names
-        let filterRemainingPaymentObject = remainingPaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
-        console.log("Filtered object is:", filterRemainingPaymentObject);
+    //     // Filter remaining payments by matching names
+    //     let filterRemainingPaymentObject = remainingPaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
+    //     console.log("Filtered object is:", filterRemainingPaymentObject);
 
-        setRemainingPaymentObject(filterRemainingPaymentObject);
+    //     setRemainingPaymentObject(filterRemainingPaymentObject);
+    // };
+
+    // Searching Service and Company name in Remaining Payments
+    const searchInRemainingPayments = (searchValue) => {
+        setSearchCompanyServiceNameInRemainingPayments(searchValue);
+        
+        const data = isDateSelectedInRemainingPayment ? filteredDataFromDateInRemainingPayment : completeRemainingPaymentObject;
+        let searchResult = data.filter(item => item['Company Name'].toLowerCase().includes(searchValue.toLowerCase()) || item.serviceName.toLowerCase().includes(searchValue.toLowerCase()));
+    
+        if (searchValue.length === 0) {
+            searchResult = isDateSelectedInRemainingPayment ? filteredDataFromDateInRemainingPayment : completeRemainingPaymentObject;
+        }
+
+        setIsSearchedInRemainingPayment(searchValue.length > 0);
+        setFilteredDataFromSearchInRemainingPayment(searchResult);
+        setRemainingPaymentObject(searchResult);    
     };
+    
+    // Filtering data from seleted date range in Remaining Payments
+    const handleDateRangeInRemainingPayments = (values) => {
+        const [start, end] = values;
+    
+        if (!start || !end) {
+            console.log("One of the dates is null or undefined.");
+            setRemainingPaymentObject(completeRemainingPaymentObject);
+            setIsDateSelectedInRemainingPayment(false);
+            setFilteredDataFromDateInRemainingPayment([]);
+            return;
+        }
+    
+        const startDate = new Date(start);
+        // console.log("Start Date is :", startDate);
+
+        const endDate = new Date(end);
+        // console.log("End Date is :", endDate);
+        endDate.setHours(23, 59, 59, 999);
+    
+        setSelectedDateRangeInRemainingPayment([startDate, endDate]);
+    
+        const filteredData = completeRemainingPaymentObject.filter(item => {
+            const paymentDate = new Date(item.paymentDate);
+            return paymentDate >= startDate && paymentDate <= endDate;
+        });
+    
+        setIsDateSelectedInRemainingPayment(true);
+        setFilteredDataFromDateInRemainingPayment(filteredData);
+        
+        const searchResult = isSearchedInRemainingPayment ? filteredData.filter(item => 
+                item['Company Name'].toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase()) || 
+                item.serviceName.toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase())
+              ) : filteredData;
+    
+        setFilteredDataFromSearchInRemainingPayment(searchResult);
+        setRemainingPaymentObject(searchResult);
+    };
+    
 
     //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
 
@@ -2073,7 +2162,13 @@ function EmployeesThisMonthBooking() {
     //-----------------------------function for advance payment table-------------------------------
     const [advancePaymentObject, setAdvancePaymentObject] = useState([]);
     const [totalPaymentObject, setTotalPaymentObject] = useState([]);
+    const [completeAdvancePaymentObject, setCompleteAdvancePaymentObject] = useState([]);
+    const [isDateSelectedInAdvancePayment, setIsDateSelectedInAdvancePayment] = useState(false);
+    const [filteredDataFromDateInAdvancePayment, setFilteredDataFromDateInAdvancePayment] = useState([]);
+    const [isSearchedInAdvancePayment, setIsSearchedInAdvancePayment] = useState(false);
+    const [filteredDataFromSearchInAdvancePayment, setFilteredDataFromSearchInAdvancePayment] = useState([]);
     const [advancePaymentObjectFilter, setAdvancePaymentObjectFilter] = useState([]);
+    const [selectedDateRangeInAdvancePayment, setSelectedDateRangeInAdvancePayment] = useState([null, null]);
 
     useEffect(() => {
         // Your logic to populate advancePaymentObject
@@ -2105,7 +2200,6 @@ function EmployeesThisMonthBooking() {
                         });
                     }
                 });
-
                 mainObj.moreBookings.forEach((moreObject) => {
                     const bookingDate = new Date(moreObject.bookingDate);
                     if (bookingDate.getFullYear() === thisYear && bookingDate.getMonth() === thisMonth) {
@@ -2139,23 +2233,27 @@ function EmployeesThisMonthBooking() {
 
         setAdvancePaymentObject(newAdvancePaymentObject);
         setTotalPaymentObject(newAdvancePaymentObject);
-        setAdvancePaymentObjectFilter(newAdvancePaymentObject);
+        setCompleteAdvancePaymentObject(newAdvancePaymentObject);
+        // setAdvancePaymentObjectFilter(newAdvancePaymentObject);
         // console.log("Advance Payment :", newAdvancePaymentObject);
     }, [redesignedData]);
 
     // Sorting Total Amount
     const handleSortTotalAmount = (type) => {
-        let sortedData = [...totalPaymentObject];
+        const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? advancePaymentObject : completeAdvancePaymentObject;
+        let sortedData = [...data];
+        // console.log("Sorted data :", sortedData);
+
         if (type === "ascending") {
             const ascendingSort = sortedData.sort((a, b) => a.totalPayment - b.totalPayment);
             // console.log("Ascending total amount :", ascendingSort);
         } else if (type === "descending") {
-            const descendingSort = sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
+            sortedData.sort((a, b) => b.totalPayment - a.totalPayment);
             // console.log("Descending total amount :", descendingSort);
-        }
-        else if (type === "none") {
-            console.log("None is :", totalPaymentObject);
-            setAdvancePaymentObject(totalPaymentObject);
+        } else if (type === "none") {
+            const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? filteredDataFromSearchInAdvancePayment : completeAdvancePaymentObject;
+            setAdvancePaymentObject(data);
+            // console.log("None is :", data);
             return;
         }
         setAdvancePaymentObject(sortedData);
@@ -2165,38 +2263,119 @@ function EmployeesThisMonthBooking() {
 
     // Sorting Total Advanced Achieved
     const handleSortTotalAdvanceAchieved = (type) => {
-        let sortedData = [...advancePaymentObject];
+        const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? advancePaymentObject : completeAdvancePaymentObject;
+        let sortedData = [...data];
+        // console.log("Sorted data :", sortedData);
 
         if (type === "ascending") {
             const ascendingSort = sortedData.sort((a, b) => a.totalAdvanceRecieved - b.totalAdvanceRecieved);
             // console.log("Ascending total advanced achieved :" , ascendingSort);
-
         } else if (type === "descending") {
             const descendingSort = sortedData.sort((a, b) => b.totalAdvanceRecieved - a.totalAdvanceRecieved);
             // console.log("Descending total advanced achieved :" , descendingSort);
-
         } else if (type === "none") {
-            // console.log("None is :", totalPaymentObject);
-            setAdvancePaymentObject(totalPaymentObject);
+            const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? filteredDataFromSearchInAdvancePayment : completeAdvancePaymentObject;
+            setAdvancePaymentObject(data);
+            // console.log("None is :", data);
+            return;
+        }
+        setAdvancePaymentObject(sortedData);
+    };
+
+    // Sorting Advance Payment Date
+    const handleSortPaymentDateInAdvancePayments = (type) => {
+        const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? advancePaymentObject : completeAdvancePaymentObject;
+        let sortedData = [...data];
+        // console.log("Sorted data :", sortedData);
+
+        if (type === "ascending") {
+            const ascendingSort = sortedData.sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate));
+            // console.log("Ascending payment date :", ascendingSort);
+        } else if (type === "descending") {
+            const descendingSort = sortedData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+            // console.log("Descending payment date :", descendingSort);
+        } else if (type === "none") {
+            const data = (isDateSelectedInAdvancePayment || isSearchedInAdvancePayment) ? filteredDataFromSearchInAdvancePayment : completeAdvancePaymentObject;
+            setAdvancePaymentObject(data);
+            // console.log("None is :", data);
             return;
         }
         setAdvancePaymentObject(sortedData);
     };
 
     // Filter using brach in Advance Payments
-    const handleBranchFilterInAdvancePayments = (branchName) => {
-        console.log("Branch name is:", branchName);
+    // const handleBranchFilterInAdvancePayments = (branchName) => {
+    //     console.log("Branch name is:", branchName);
 
-        // Filter employees by branch name
-        let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
-        console.log("BDE names:", bdeNames);
+    // Filter employees by branch name
+    //     let bdeNames = employeeData.filter((employee) => employee.branchOffice === branchName).map(employee => employee.ename);
+    //     console.log("BDE names:", bdeNames);
 
-        // Filter remaining payments by matching names
-        let filterAdvancePaymentObject = advancePaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
-        console.log("Filtered object is:", filterAdvancePaymentObject);
+    // Filter remaining payments by matching names
+    //     let filterAdvancePaymentObject = advancePaymentObjectFilter.filter(payment => bdeNames.includes(payment.bdeName));
+    //     console.log("Filtered object is:", filterAdvancePaymentObject);
 
-        setAdvancePaymentObject(filterAdvancePaymentObject);
+    //     setAdvancePaymentObject(filterAdvancePaymentObject);
+    // };
+
+    // Searching Service and Company name in Advance Payments
+    const searchInAdvancePayments = (searchValue) => {
+        setSearchCompanyServiceNameInAdvancePayments(searchValue);
+
+        const data = isDateSelectedInAdvancePayment ? filteredDataFromDateInAdvancePayment : completeAdvancePaymentObject;
+        let searchResult = data.filter(item =>
+            item['Company Name'].toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.serviceName.toLowerCase().includes(searchValue.toLowerCase())
+        );
+
+        if (searchValue.length === 0) {
+            searchResult = isDateSelectedInAdvancePayment ? filteredDataFromDateInAdvancePayment : completeAdvancePaymentObject;
+        }
+
+        setIsSearchedInAdvancePayment(searchValue.length > 0);
+        setFilteredDataFromSearchInAdvancePayment(searchResult);
+        setAdvancePaymentObject(searchResult);
     };
+
+    // Filtering data from seleted date range in Advance Payments
+    const handleDateRangeInAdvancePayments = (values) => {
+        const [start, end] = values;
+
+        if (!start || !end) {
+            console.log("One of the dates is null or undefined.");
+            setAdvancePaymentObject(completeAdvancePaymentObject);
+            setIsDateSelectedInAdvancePayment(false);
+            setFilteredDataFromDateInAdvancePayment([]);
+            return;
+        }
+
+        const startDate = new Date(start);
+        // console.log("Start Date is :", startDate);
+
+        const endDate = new Date(end);
+        // console.log("End Date is :", endDate);
+        endDate.setHours(23, 59, 59, 999);
+        
+        setSelectedDateRangeInAdvancePayment([startDate, endDate]);
+
+        const filteredData = completeAdvancePaymentObject.filter(item => {
+            const paymentDate = new Date(item.paymentDate);
+            return paymentDate >= startDate && paymentDate <= endDate;
+        });
+
+        setIsDateSelectedInAdvancePayment(true);
+        setFilteredDataFromDateInAdvancePayment(filteredData);
+
+        const searchResult = isSearchedInAdvancePayment ? filteredData.filter(item =>
+            item['Company Name'].toLowerCase().includes(searchCompanyServiceNameInAdvancePayments.toLowerCase()) ||
+            item.serviceName.toLowerCase().includes(searchCompanyServiceNameInAdvancePayments.toLowerCase())
+        ) : filteredData;
+
+        setFilteredDataFromSearchInAdvancePayment(searchResult);
+        setAdvancePaymentObject(searchResult);
+    };
+
+    // console.log("Is date selected :", isDateSelectedInAdvancePayment);
 
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -2557,7 +2736,7 @@ function EmployeesThisMonthBooking() {
                                                 if (newSortType.achievedamount === "ascending") {
                                                     updatedSortType = "descending";
                                                 } else if (newSortType.achievedamount === "descending") {
-                                                    updatedSortType
+                                                updatedSortType
                                                         = "none";
                                                 } else {
                                                     updatedSortType = "ascending";
@@ -2731,6 +2910,314 @@ function EmployeesThisMonthBooking() {
                                         </tbody>
                                     )
                                 )}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
+                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" >
+                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+                        <div className="dashboard-title">
+                            <h2 className="m-0 pl-1">
+                                Advance Payments
+                            </h2>
+                        </div>
+                        <div className="filter-booking d-flex align-items-center">
+                            <div className="filter-booking mr-1 d-flex align-items-center" >
+                                {/* <div className="export-data">
+                                    <button className="btn btn-link" onClick={handleExportBookings}>
+                                        Export CSV
+                                    </button>
+                                </div> */}
+                                {/* <div className="filter-title">
+                                    <h2 className="m-0 mr-2">
+                                        {" "}
+                                        Filter Branch : {"  "}
+                                    </h2>
+                                </div> */}
+                                {/* <div className="filter-main ml-2">
+                                    <select
+                                        className="form-select"
+                                        id={`branch-filter`}
+                                        onChange={(e) => handleBranchFilterInAdvancePayments(e.target.value)}
+                                    >
+                                        <option value="" disabled selected>
+                                            Select Branch
+                                        </option>
+
+                                        <option value={"Gota"}>Gota</option>
+                                        <option value={"Sindhu Bhawan"}>
+                                            Sindhu Bhawan
+                                        </option>
+                                        <option value={"none"}>None</option>
+                                    </select>
+                                </div> */}
+                            </div>
+                            <div class='input-icon mr-1'>
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchCompanyServiceNameInAdvancePayments}
+                                    onChange={(e) => searchInAdvancePayments(e.target.value)}
+                                    className="form-control"
+                                    placeholder="Search..."
+                                    type="text"
+                                    name="advancePaymentCompany/Service-search"
+                                    id="advancePaymentCompany/Service-search" />
+                            </div>
+                            <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={handleDateRangeInAdvancePayments}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                            {/* <div>
+                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                                    <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                                    <Select
+                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        multiple
+                                        value={monthBookingPerson}
+                                        onChange={(event) => {
+                                            setMonthBookingPerson(event.target.value)
+                                            handleSelectThisMonthBookingEmployees(event.target.value)
+                                        }}
+                                        input={<OutlinedInput label="Name" />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {options.map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                                style={getStyles(name, monthBookingPerson, theme)}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </div> */}
+                        </div>
+
+                    </div>
+                    <div className="card-body">
+                        <div className="row tbl-scroll">
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
+                                <thead className="admin-dash-tbl-thead">
+                                    <tr  >
+                                        <th>SR.NO</th>
+                                        <th>COMPANY NAME</th>
+                                        <th>SERVICE NAME</th>
+
+                                        <th>BDE NAME</th>
+                                        <th>BDM NAME</th>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.totalAmount === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.totalAmount === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    totalAmount: updatedSortType,
+                                                }));
+                                                handleSortTotalAmount(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>TOTAL AMOUNT</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAmount === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAmount === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.totalAdvanceAchieved === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.totalAdvanceAchieved === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    totalAdvanceAchieved: updatedSortType,
+                                                }));
+                                                handleSortTotalAdvanceAchieved(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>TOTAL ADVANCE ACHIEVED</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAdvanceAchieved === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.totalAdvanceAchieved === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.advancePaymentDate === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.advancePaymentDate === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    advancePaymentDate: updatedSortType,
+                                                }));
+                                                handleSortPaymentDateInAdvancePayments(updatedSortType);
+                                            }}>
+                                            <div className="d-flex align-items-center justify-content-between">
+                                                <div>PAYMENT DATE</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.advancePaymentDate === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.advancePaymentDate === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
+                                    </tr>
+                                </thead>
+                                {loading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="12">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    advancePaymentObject.length !== 0 ? (
+                                        <>
+                                            <tbody>
+                                                {advancePaymentObject.map((obj, index) => (
+                                                    <>
+                                                        <tr key={index} >
+                                                            <th>{index + 1}</th>
+                                                            <th>{obj["Company Name"]}</th>
+                                                            <th>{obj.serviceName}</th>
+                                                            <th>{obj.bdeName}</th>
+                                                            <th>{obj.bdmName}</th>
+                                                            <th>
+                                                                <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
+                                                            </th>
+                                                            <th>
+                                                                <div>₹ {Math.round(obj.totalAdvanceRecieved).toLocaleString()}</div>
+                                                            </th>
+                                                            <th>
+                                                                {formatDateFinal(obj.paymentDate)}
+                                                            </th>
+                                                        </tr>
+                                                    </>
+                                                ))}
+
+                                            </tbody>
+                                            <tfoot className="admin-dash-tbl-tfoot">
+                                                <tr>
+                                                    <td colSpan={2}>Total:</td>
+                                                    <td>{advancePaymentObject.length}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
+                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalAdvanceRecieved, 0))).toLocaleString() : 0}</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            </tfoot>
+                                        </>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td className="particular" colSpan={9}>
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    )
+                                )}
 
                             </table>
                         </div>
@@ -2778,7 +3265,7 @@ function EmployeesThisMonthBooking() {
                                     </select>
                                 </div> */}
                             </div>
-                            {/* <div class='input-icon mr-1'>
+                            <div class='input-icon mr-1'>
                                 <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -2787,18 +3274,15 @@ function EmployeesThisMonthBooking() {
                                     </svg>
                                 </span>
                                 <input
-                                    value={searchBookingBde}
-                                    onChange={(e) => {
-                                        setSearchBookingBde(e.target.value)
-                                        debouncedFilterSearchThisMonthBookingBde(e.target.value)
-                                    }}
+                                    value={searchCompanyServiceNameInRemainingPayments}
+                                    onChange={(e) => searchInRemainingPayments(e.target.value)}
                                     className="form-control"
-                                    placeholder="Enter BDE Name..."
+                                    placeholder="Search..."
                                     type="text"
-                                    name="bdeName-search"
-                                    id="bdeName-search" />
-                            </div> */}
-                            {/* <div className="data-filter">
+                                    name="remainingPaymentCompany/Service-search"
+                                    id="remainingPaymentCompany/Service-search" />
+                            </div>
+                            <div className="data-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
                                     <DemoContainer
@@ -2806,16 +3290,9 @@ function EmployeesThisMonthBooking() {
                                             padding: '0px',
                                             with: '220px'
                                         }}  >
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                            onChange={(values) => {
-                                                const startDateEmp = moment(values[0]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                const endDateEmp = moment(values[1]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
-                                            }}
+                                        <DateRangePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={handleDateRangeInRemainingPayments}
                                             slots={{ field: SingleInputDateRangeField }}
                                             slotProps={{
                                                 shortcuts: {
@@ -2830,7 +3307,7 @@ function EmployeesThisMonthBooking() {
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
-                            </div> */}
+                            </div>
                             {/* <div>
                                 <FormControl sx={{ ml: 1, minWidth: 200 }}>
                                     <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
@@ -2949,9 +3426,44 @@ function EmployeesThisMonthBooking() {
                                                 </div>
                                             </div>
                                         </th>
-                                        <th>
-                                            PAYMENT DATE
-                                        </th>
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.remainingPaymentDate === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.remainingPaymentDate === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    remainingPaymentDate: updatedSortType,
+                                                }));
+                                                handleSortPaymentDateInRemainingPayments(updatedSortType);
+                                            }}>
+                                            <div className="d-flex align-items-center justify-content-between">
+                                                <div>PAYMENT DATE</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingPaymentDate === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.remainingPaymentDate === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div></th>
                                     </tr>
                                 </thead>
                                 {loading ? (
@@ -3019,297 +3531,12 @@ function EmployeesThisMonthBooking() {
                                         </tbody>
                                     )
                                 )}
-
                             </table>
                         </div>
                     </div>
                 </div>
-                {/* ---------------------------------  Advanced Collected Bookings --------------------------------------- */}
-                <div className="card todays-booking mt-2 totalbooking" id="remaining-booking" >
-                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
-                        <div className="dashboard-title">
-                            <h2 className="m-0 pl-1">
-                                Advance Payments
-                            </h2>
-                        </div>
-                        <div className="filter-booking d-flex align-items-center">
-                            <div className="filter-booking mr-1 d-flex align-items-center" >
-                                {/* <div className="export-data">
-                                    <button className="btn btn-link" onClick={handleExportBookings}>
-                                        Export CSV
-                                    </button>
-                                </div> */}
-                                {/* <div className="filter-title">
-                                    <h2 className="m-0 mr-2">
-                                        {" "}
-                                        Filter Branch : {"  "}
-                                    </h2>
-                                </div> */}
-                                {/* <div className="filter-main ml-2">
-                                    <select
-                                        className="form-select"
-                                        id={`branch-filter`}
-                                        onChange={(e) => handleBranchFilterInAdvancePayments(e.target.value)}
-                                    >
-                                        <option value="" disabled selected>
-                                            Select Branch
-                                        </option>
-
-                                        <option value={"Gota"}>Gota</option>
-                                        <option value={"Sindhu Bhawan"}>
-                                            Sindhu Bhawan
-                                        </option>
-                                        <option value={"none"}>None</option>
-                                    </select>
-                                </div> */}
-                            </div>
-                            {/* <div class='input-icon mr-1'>
-                                <span class="input-icon-addon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                        <path d="M21 21l-6 -6"></path>
-                                    </svg>
-                                </span>
-                                <input
-                                    value={searchBookingBde}
-                                    onChange={(e) => {
-                                        setSearchBookingBde(e.target.value)
-                                        debouncedFilterSearchThisMonthBookingBde(e.target.value)
-                                    }}
-                                    className="form-control"
-                                    placeholder="Enter BDE Name..."
-                                    type="text"
-                                    name="bdeName-search"
-                                    id="bdeName-search" />
-                            </div> */}
-                            {/* <div className="data-filter">
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs} >
-                                    <DemoContainer
-                                        components={["SingleInputDateRangeField"]} sx={{
-                                            padding: '0px',
-                                            with: '220px'
-                                        }}  >
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                            onChange={(values) => {
-                                                const startDateEmp = moment(values[0]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                const endDateEmp = moment(values[1]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                handleThisMonthBookingDateRange(values); // Call handleSelect with the selected values
-                                            }}
-                                            slots={{ field: SingleInputDateRangeField }}
-                                            slotProps={{
-                                                shortcuts: {
-                                                    items: shortcutsItems,
-                                                },
-                                                actionBar: { actions: [] },
-                                                textField: {
-                                                    InputProps: { endAdornment: <Calendar /> },
-                                                },
-                                            }}
-                                            calendars={1}
-                                        />
-                                    </DemoContainer>
-                                </LocalizationProvider>
-                            </div> */}
-                            {/* <div>
-                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
-                                    <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
-                                    <Select
-                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
-                                        labelId="demo-multiple-name-label"
-                                        id="demo-multiple-name"
-                                        multiple
-                                        value={monthBookingPerson}
-                                        onChange={(event) => {
-                                            setMonthBookingPerson(event.target.value)
-                                            handleSelectThisMonthBookingEmployees(event.target.value)
-                                        }}
-                                        input={<OutlinedInput label="Name" />}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {options.map((name) => (
-                                            <MenuItem
-                                                key={name}
-                                                value={name}
-                                                style={getStyles(name, monthBookingPerson, theme)}
-                                            >
-                                                {name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </div> */}
-                        </div>
-
-                    </div>
-                    <div className="card-body">
-                        <div className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
-                                <thead className="admin-dash-tbl-thead">
-                                    <tr  >
-                                        <th>SR.NO</th>
-                                        <th>COMPANY NAME</th>
-                                        <th>SERVICE NAME</th>
-
-                                        <th>BDE NAME</th>
-                                        <th>BDM NAME</th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.totalAmount === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.totalAmount === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    totalAmount: updatedSortType,
-                                                }));
-                                                handleSortTotalAmount(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>TOTAL AMOUNT</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.totalAmount === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.totalAmount === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.totalAdvanceAchieved === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.totalAdvanceAchieved === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    totalAdvanceAchieved: updatedSortType,
-                                                }));
-                                                handleSortTotalAdvanceAchieved(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>TOTAL ADVANCE ACHIEVED</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.totalAdvanceAchieved === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.totalAdvanceAchieved === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div></th>
-                                        <th>
-                                            PAYMENT DATE
-                                        </th>
-                                    </tr>
-                                </thead>
-                                {loading ? (
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="12">
-                                                <div className="LoaderTDSatyle">
-                                                    <ClipLoader
-                                                        color="lightgrey"
-                                                        loading
-                                                        size={30}
-                                                        aria-label="Loading Spinner"
-                                                        data-testid="loader"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                ) : (
-                                    advancePaymentObject.length !== 0 ? (
-                                        <>
-                                            <tbody>
-                                                {advancePaymentObject.map((obj, index) => (
-                                                    <>
-                                                        <tr key={index} >
-                                                            <th>{index + 1}</th>
-                                                            <th>{obj["Company Name"]}</th>
-                                                            <th>{obj.serviceName}</th>
-                                                            <th>{obj.bdeName}</th>
-                                                            <th>{obj.bdmName}</th>
-                                                            <th>
-                                                                <div>₹ {Math.round(obj.totalPayment).toLocaleString()}</div>
-                                                            </th>
-                                                            <th>
-                                                                <div>₹ {Math.round(obj.totalAdvanceRecieved).toLocaleString()}</div>
-                                                            </th>
-                                                            <th>
-                                                                {formatDateFinal(obj.paymentDate)}
-                                                            </th>
-                                                        </tr>
-                                                    </>
-                                                ))}
-
-                                            </tbody>
-                                            <tfoot className="admin-dash-tbl-tfoot">
-                                                <tr>
-                                                    <td colSpan={2}>Total:</td>
-                                                    <td>{advancePaymentObject.length}</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalPayment, 0))).toLocaleString() : 0}</td>
-                                                    <td>₹ {advancePaymentObject.length !== 0 ? (Math.round(advancePaymentObject.reduce((total, curr) => total + curr.totalAdvanceRecieved, 0))).toLocaleString() : 0}</td>
-                                                    <td>-</td>
-                                                </tr>
-                                            </tfoot>
-                                        </>
-                                    ) : (
-                                        <tbody>
-                                            <tr>
-                                                <td className="particular" colSpan={9}>
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    )
-                                )}
-
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div></div>
+            </div>
+        </div>
     )
 }
 

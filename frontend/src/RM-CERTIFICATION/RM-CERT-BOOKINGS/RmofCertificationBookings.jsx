@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import AdminBookingForm from "../../admin/AdminBookingForm";
@@ -41,6 +41,7 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import ListItemText from '@mui/material/ListItemText';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import RMofCertificationListViewBookings from "./RMofCertificationListViewBookings.jsx";
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -64,27 +65,48 @@ function RmofCertificationBookings() {
   const [mainDataSwap, setMainDataSwap] = useState([])
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
+  const [openTableView, setOpenTableView] = useState(true)
+  const [openListView, setOpenListView] = useState(false)
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
 
+  const defaultLeadData = {
+    "Company Name": "",
+    "Company Number": 0,
+    "Company Email": "",
+    panNumber: "",
+    bdeName: "",
+    bdeEmail: "",
+    bdmName: "",
+    bdmType: "Close-by",
+    bookingDate: "",
+    paymentMethod: "",
+    caCase: false,
+    caNumber: 0,
+    caEmail: "",
+    serviceName: "",
+    totalPaymentWOGST: 0,
+    totalPaymentWGST: 0,
+    withGST: "",
+    firstPayment: 0,
+    secondPayment: 0,
+    thirdPayment: 0,
+    fourthPayment: 0,
+    secondPaymentRemarks: "",
+    thirdPaymentRemarks: "",
+    fourthPaymentRemarks: "",
+  };
+
   const fetchDatadebounce = async () => {
     try {
-      // Set isLoading to true while fetching data
-      //setIsLoading(true);
-      //setCurrentDataLoading(true)
-
       const response = await axios.get(`${secretKey}/company-data/leads`);
-
       // Set the retrieved data in the state
       setData(response.data);
-      //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
 
-      // Set isLoading back to false after data is fetched
-      //setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error.message);
-      // Set isLoading back to false if an error occurs
-      //setIsLoading(false);
+
     } finally {
       setCurrentDataLoading(false);
     }
@@ -98,7 +120,7 @@ function RmofCertificationBookings() {
   }, [leadFormData]);
 
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
-  console.log(rmCertificationUserId)
+
 
   const [employeeData, setEmployeeData] = useState([])
   const fetchData = async () => {
@@ -433,6 +455,7 @@ function RmofCertificationBookings() {
       console.error("Please upload a valid XLSX file.");
     }
   };
+
   const handleSubmitImport = async () => {
     if (excelData.length !== 0) {
       try {
@@ -535,74 +558,187 @@ function RmofCertificationBookings() {
   const [selectServices, setSelectServices] = useState([]);
   const [serviceNames, setServiceNames] = useState([])
   const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedCompanyName, setSelectedCompanyName] = useState("")
+  const [dataToSend, setDataToSend] = useState(defaultLeadData)
+  const [selectedCompanyData, setSelectedCompanyData] = useState([])
 
   const handleCloseServicesPopup = () => {
     setOpenServicesPopup(false)
     setSelectedServices([])
+    setSelectedCompanyName("")
+    setSelectedCompanyData([])
+    setDataToSend(defaultLeadData)
   }
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
-  const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-  ];
-
-  const handleChange = (event) => {
-    setSelectServices(
-      // On autofill we get a stringified value.
-      typeof event === 'string' ? event.split(',') : event,
-    );
-  };
 
   const handleOpenServices = (companyName) => {
     // Filter the mainDataSwap array to get the companies that match the provided companyName
+    setSelectedCompanyName(companyName)
     const selectedServices = mainDataSwap
       .filter((company) => company["Company Name"] === companyName)
-      .flatMap((company) => company.services); // Flatten the array of services
-
+      .flatMap((company) => {
+        if (company.moreBookings.length !== 0) {
+          return [
+            ...company.services,
+            ...company.moreBookings.flatMap((item) => item.services),
+          ];
+        } else {
+          return company.services || [];
+        }
+      });
+    //console.log("new slecetd", selectedServices)
     // Map through the selected services to get the service names
     const servicesNames = selectedServices.map((service) => service.serviceName);
-
     // Log the selected services and service names
     setServiceNames(servicesNames)
   };
+
+
   const handleCheckboxChange = (service) => {
     setSelectedServices(prevSelected =>
       prevSelected.includes(service)
-        ? prevSelected.filter(s => s !== service)
+        ? prevSelected.filter(item => item !== service)
         : [...prevSelected, service]
     );
   };
 
-  console.log("selected", selectedServices)
-  console.log("leadFormData", leadFormData)
-  console.log("services", leadFormData.map((service) => service.services))
+  // const handleSubmitServicesToSwap = () => {
+  //   setDataToSend((prevData) => ({
+  //     ...prevData,
+  //     "Company Name": selectedCompanyData["Company Name"],
+  //     "Company Number": selectedCompanyData["Company Number"],
+  //     "Company Email": selectedCompanyData["Company Email"],
+  //     panNumber : selectedCompanyData.panNumber,
+  //     bdeName:selectedCompanyData.bdeName,
+  //     bdeEmail:selectedCompanyData.bdeEmail,
+  //     bdmName:selectedCompanyData.bdmName,
+  //     bdmType:selectedCompanyData.bdmType,
+  //     bookingDate:selectedCompanyData.bookingDate,
+  //     bookingSource:selectedCompanyData.bookingSource,
+  //     paymentMethod:selectedCompanyData.paymentMethod,
+  //     caCase:selectedCompanyData.caCase,
+  //     caNumber:selectedCompanyData.caNumber,
+  //     caEmail:selectedCompanyData.caEmail,
+  //     serviceName:selectedCompanyData.services.serviceName,
+  //     totalPaymentWOGST:0,
+  //     totalPaymentWGST:0,
+  //     firstPayment:0,
+  //     secondPayment:0,
+  //     thirdPayment:0,
+  //     fourthPayment:0,
+  //   }))
 
+  //   handleSendDataToMyBookings()
+  // }
+
+  const handleSubmitServicesToSwap = async () => {
+    // Check if selectedCompanyData is defined
+    if (!selectedCompanyData) {
+      console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
+      return;
+    }
+    const combinedServices = [
+      ...(selectedCompanyData.services || []),
+      ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
+    ];
+
+    console.log("combined" , combinedServices)
+    // Initialize an array to store objects for each selected service
+    const dataToSend = [];
+
+    // Iterate through selectedServices (which contain only service names)
+    selectedServices.forEach(serviceName => {
+      // Find the detailed service object in selectedCompanyData.services
+      const serviceData = combinedServices.find(service => service.serviceName === serviceName);
+      
+      // Check if serviceData is found
+      if (serviceData) {
+        // Create an object with the required fields from selectedCompanyData and serviceData
+        const serviceToSend = {
+          "Company Name": selectedCompanyData["Company Name"],
+          "Company Number": selectedCompanyData["Company Number"],
+          "Company Email": selectedCompanyData["Company Email"],
+          panNumber: selectedCompanyData.panNumber,
+          bdeName: selectedCompanyData.bdeName,
+          bdeEmail: selectedCompanyData.bdeEmail || '', // Make sure to handle optional fields if they are not always provided
+          bdmName: selectedCompanyData.bdmName,
+          bdmType: selectedCompanyData.bdmType || 'Close-by', // Default value if not provided
+          bookingDate: selectedCompanyData.bookingDate,
+          paymentMethod: selectedCompanyData.paymentMethod || '', // Make sure to handle optional fields if they are not always provided
+          caCase: selectedCompanyData.caCase || false, // Default to false if not provided
+          caNumber: selectedCompanyData.caNumber || 0, // Default to 0 if not provided
+          caEmail: selectedCompanyData.caEmail || '', // Make sure to handle optional fields if they are not always provided
+          serviceName: serviceData.serviceName,
+          totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
+          totalPaymentWGST: serviceData.totalPaymentWGST || 0,
+          withGST: serviceData.withGST, // Default to 0 if not provided
+          firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
+          secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
+          thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
+          fourthPayment: serviceData.fourthPayment || 0,
+          secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
+          thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
+          fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "", // Default to 0 if not provided
+          bookingPublishDate: serviceData.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
+        };
+
+        // Push the created object to dataToSend array
+        dataToSend.push(serviceToSend);
+      } else {
+        console.error(`Service with name '${serviceName}' not found in selected company data.`);
+      }
+    });
+
+    if (dataToSend.length !== 0) {
+      try {
+        const response = await axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
+          dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
+        });
+        console.log(response.data);
+        if (response.data.successEntries === 0) {
+          Swal.fire("Please Select Unique Services")
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
+          });
+        }
+        handleCloseServicesPopup()
+      } catch (error) {
+        console.error("Error sending data:", error.message);
+        Swal.fire("Error", "Failed to upload bookings", error.message);
+      }
+    } else {
+      console.log("No data to send.");
+    }
+
+    // Assuming setDataToSend updates state to store dataToSend array
+    setDataToSend(dataToSend);
+
+    // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
+  }
+  console.log("leadFormData", leadFormData)
+  // console.log("services", leadFormData.map((service) => service.services))
+
+  const handleViewTable = () => {
+    setOpenTableView(true)
+    setOpenListView(false)
+  }
+
+  const handleViewList = () => {
+    setOpenListView(true)
+    setOpenTableView(false)
+  }
+
+  console.log("listView" , openListView)
+  console.log("tableView" , openTableView)
 
   return (
     <div>
       <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
       <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
 
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openListView && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -643,65 +779,24 @@ function RmofCertificationBookings() {
                     </div>
                   </div>
                 </div>
-                {/* <div className="col-6">
-                  <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} >
-                      Import CSV
-                    </button>
-                    <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
-                      <DialogTitle>
-                        Import CSV DATA{" "}
-                        <IconButton onClick={closepopup} style={{ float: "right" }}>
-                          <CloseIcon color="primary"></CloseIcon>
-                        </IconButton>{" "}
-                      </DialogTitle>
-                      <DialogContent>
-                        <div className="maincon">
-                          <div
-                            style={{ justifyContent: "space-between" }}
-                            className="con1 d-flex"
-                          >
-                            <div style={{ paddingTop: "9px" }} className="uploadcsv">
-                              <label
-                                style={{ margin: "0px 0px 6px 0px" }}
-                                htmlFor="upload"
-                              >
-                                Upload CSV File
-                              </label>
-                            </div>
-                            <a href={frontendKey + "/BookingExample.xlsx"} download>
-                              Download Sample
-                            </a>
-                          </div>
-                          <div
-                            style={{ margin: "5px 0px 0px 0px" }}
-                            className="form-control"
-                          >
-                            <input
-                              type="file"
-                              name="csvfile
-                          "
-                              id="csvfile"
-                              onChange={handleFileInputChange}
-                            />
-                          </div>
-                        </div>
-                      </DialogContent>
-                      <button onClick={handleSubmitImport} className="btn btn-primary">
-                        Submit
-                      </button>
-                    </Dialog>
-                    <button className="btn btn-primary mr-1" disabled>
-                      Export CSV
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => functionOpenBookingForm()}
-                    >
-                      Add Booking
-                    </button>
+                <div className="col-6 d-flex">
+                  <div className="list-gird-main ms-auto">
+                    <div className={openTableView ? "listgrridradio_main d-flex align-items-center" : "d-flex align-items-center"}>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView}/>
+                        <label class="custom_radio-alias" for="r1">
+                          <FaTableCellsLarge onClick={() => { handleViewTable() }} />
+                        </label>
+                      </div>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="2" id="r2" checked={openTableView} />
+                        <label class="custom_radio-alias" for="r2">
+                          <FaList onClick={() => handleViewList()} />
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>
@@ -746,10 +841,12 @@ function RmofCertificationBookings() {
                                   title="Swap Services">
                                   <MdOutlineSwapHoriz onClick={() => (
                                     setOpenServicesPopup(true),
-                                    handleOpenServices(obj["Company Name"])
+                                    setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
+                                    handleOpenServices(
+                                      obj["Company Name"],
+                                    )
 
-                                  )
-                                  } />
+                                  )}/>
                                 </div>
                                 <div className="b_cmpny_time">
                                   {
@@ -3141,10 +3238,16 @@ function RmofCertificationBookings() {
         </>
       )}
 
-      {/* -----------------------------------------------dialog box for adding teams ------------------------------------------------------ */}
+      {openListView && <>
+      <RMofCertificationListViewBookings
+      bookingsData = {leadFormData}
+      />
+      </>}
+
+      {/* -----------------------------------------------dialog box for adding services ------------------------------------------------------ */}
 
 
-      <Dialog open={openServicesPopup} onClose={handleCloseServicesPopup} fullWidth maxWidth="s">
+      <Dialog open={openServicesPopup} onClose={handleCloseServicesPopup} fullWidth maxWidth="xs">
         <DialogTitle>
           Select Services To Swap
           <IconButton onClick={handleCloseServicesPopup} style={{ float: "right" }}>
@@ -3170,142 +3273,16 @@ function RmofCertificationBookings() {
                       <label htmlFor={`service-${index}`}>{service}</label>
                     </div>
                   ))}
-                  {/* <FormControl  sx={{ ml: 1, minWidth: 200 }}>
-                  <InputLabel id="demo-select-small-label">Select Service</InputLabel>
-                    <Select
-                    className="form-control my-date-picker my-mul-select form-control-sm p-0"
-                      labelId="demo-multiple-checkbox-label"
-                      id="demo-multiple-checkbox"
-                      multiple
-                      value={selectServices ? selectServices : "Select Services"}
-                      onChange={(e)=>handleChange(e.target.value)}
-                      input={<OutlinedInput label="Tag" />}
-                      renderValue={(selected) => selected.join(', ')}
-                      MenuProps={MenuProps}
-                    >
-                      {serviceNames.map((name) => (
-                        <MenuItem key={name} value={name}>
-                          <Checkbox checked={selectServices.indexOf(name) > -1} />
-                          <ListItemText primary={name} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl> */}
-                  {/* <label className="form-label">Select Services</label>
-                                    <div className="form-control">
-                                        <select
-                                            style={{
-                                                border: "none",
-                                                outline: "none",
-                                                width: "100%",
-                                            }}
-                                            value={designation}
-                                            required
-                                            onChange={(e) => {
-                                                setDesignation(e.target.value);
-                                            }}
-                                            >
-                                            <option value="" disabled selected>
-                                                Select Services
-                                            </option>
-                                            {
-                                                employeeData && Array.isArray(employeeData) && employeeData
-                                                    .filter((employee) => employee.designation === "Sales Manager")
-                                                    .map((employee) => (
-                                                        <option key={employee._id} value={employee.ename}>{employee.ename}</option>
-                                                    ))
-                                            }
-                                        </select>
-                                    </div> */}
                 </div>
-                {/* {bdmNameSelected && (
-                                    <div key={0} className="mb-3">
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <label className="form-label">BDE Selection</label>
-                                            {
-                                                bdeFields.length > 1 && (
-                                                    <IconButton>
-                                                        <MdDelete
-                                                            color="#bf2020"
-                                                            style={{ width: "14px", height: "14px" }}
-                                                            onClick={() => handleRemoveBdeField(0)}
-                                                        />
-                                                    </IconButton>
-
-                                                )
-                                            }
-                                        </div>
-                                        <div className="form-control">
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "100%",
-                                                }}
-                                                value={selectedBdes.length > 0 ? selectedBdes[0] : ""}
-                                                onChange={(event) => handleBdeSelect(0, event.target.value)}
-                                                required
-                                            >
-                                                <option value="" disabled>Select BDE Name</option>
-                                                {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice) 
-                                                    .map(employee => (
-                                                        <option key={employee._id} value={employee.ename} disabled={allEnames.includes(employee.ename)} >
-                                                            {employee.ename}
-                                                        </option>
-                                                    ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                )} */}
-                {/* {bdeFields.slice(1).map((bdeField, index) => (
-                                    <div key={index + 1} className="mb-3">
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <label className="form-label">BDE Selection</label>
-                                            <IconButton>
-                                                <MdDelete
-                                                    color="#bf2020"
-                                                    style={{ width: "14px", height: "14px" }}
-                                                    onClick={() => handleRemoveBdeField(index + 1)}
-                                                />
-                                            </IconButton>
-                                        </div>
-                                        <div className="form-control">
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "100%",
-                                                }}
-                                                value={selectedBdes[index + 1] || ''}
-                                                onChange={(event) => handleBdeSelect(index + 1, event.target.value)}
-                                                required
-                                            >
-                                                <option value="" disabled>Select BDE Name</option>
-                                                {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
-                                                    .map(employee => (
-                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename) || allEnames.includes(employee.ename)}>
-                                                            {employee.ename}
-                                                        </option>
-                                                    ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                ))} */}
               </div>
             </div>
           </div>
         </DialogContent>
-        <Button variant="contained" style={{ backgroundColor: "#fbb900" }}>
+        <Button variant="contained" style={{ backgroundColor: "#fbb900" }}
+          onClick={handleSubmitServicesToSwap}>
           Submit
         </Button>
       </Dialog>
-
-
-
-
-
 
     </div>
   );

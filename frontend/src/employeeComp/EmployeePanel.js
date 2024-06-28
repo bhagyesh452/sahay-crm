@@ -14,6 +14,7 @@ import FontDownloadIcon from "@mui/icons-material/FontDownload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import ImageIcon from "@mui/icons-material/Image";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { IoIosClose } from "react-icons/io";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -61,6 +62,14 @@ import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+import { IoFilterOutline } from "react-icons/io5";
+import { TbFileImport } from "react-icons/tb";
+import { TbFileExport } from "react-icons/tb";
+import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
+import { Country, State, City } from 'country-state-city';
 
 
 // import DrawerComponent from "../components/Drawer.js";
@@ -115,6 +124,9 @@ function EmployeePanel() {
   const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+  const [isFilter, setIsFilter] = useState(false)
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
+  const [employeeName, setEmployeeName] = useState("");
 
 
   const handleTogglePopup = () => {
@@ -203,6 +215,9 @@ function EmployeePanel() {
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
+  const [filteredData, setFilteredData] = useState([]);
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("")
   //console.log(userId);
 
   const playNotificationSound = () => {
@@ -236,8 +251,8 @@ function EmployeePanel() {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
     socket.on("connect", () => {
@@ -473,6 +488,7 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
+      setEmployeeName(userData.ename)
       //console.log(userData);
       setData(userData);
       setmoreFilteredData(userData);
@@ -556,6 +572,7 @@ function EmployeePanel() {
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
+      setExtraData(sortedData)
       setmoreEmpData(sortedData);
       setTempData(tempData);
       setEmployeeData(
@@ -702,8 +719,8 @@ function EmployeePanel() {
         console.error("Error:", error);
         throw error; // Throw error for handling in the caller function
       }
-    }else{
-      console.log(data._id , socketID , "This is it")
+    } else {
+      console.log(data._id, socketID, "This is it")
     }
   };
 
@@ -719,7 +736,7 @@ function EmployeePanel() {
     }
   }, [data.ename, revertedData.length]);
 
- 
+
   // useEffect(() => {
   //   const checkAndRunActiveStatus = () => {
   //     if (data._id) {
@@ -834,54 +851,190 @@ function EmployeePanel() {
 
   // console.log(employeeData);
 
-  const filteredData = employeeData.filter((company) => {
-    const fieldValue = company[selectedField];
+  // const filteredData = employeeData.filter((company) => {
+  //   const fieldValue = company[selectedField];
 
-    if (selectedField === "State" && citySearch) {
-      // Handle filtering by both State and City
-      const stateMatches = fieldValue
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const cityMatches = company.City.toLowerCase().includes(
-        citySearch.toLowerCase()
-      );
-      return stateMatches && cityMatches;
-    } else if (selectedField === "Company Incorporation Date  ") {
-      // Assuming you have the month value in a variable named `month`
-      if (month == 0) {
-        return fieldValue.includes(searchText);
-      } else if (year == 0) {
-        return fieldValue.includes(searchText);
+  //   if (selectedField === "State" && citySearch) {
+  //     // Handle filtering by both State and City
+  //     const stateMatches = fieldValue
+  //       .toLowerCase()
+  //       .includes(searchText.toLowerCase());
+  //     const cityMatches = company.City.toLowerCase().includes(
+  //       citySearch.toLowerCase()
+  //     );
+  //     return stateMatches && cityMatches;
+  //   } else if (selectedField === "Company Incorporation Date  ") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     if (month == 0) {
+  //       return fieldValue.includes(searchText);
+  //     } else if (year == 0) {
+  //       return fieldValue.includes(searchText);
+  //     }
+  //     const selectedDate = new Date(fieldValue);
+  //     const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+  //     const selectedYear = selectedDate.getFullYear();
+
+  //     // Use the provided month variable in the comparison
+  //     return (
+  //       selectedMonth.toString().includes(month) &&
+  //       selectedYear.toString().includes(year)
+  //     );
+  //   } else if (selectedField === "AssignDate") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     return fieldValue.includes(searchText);
+  //   } else if (selectedField === "Status" && searchText === "All") {
+  //     // Display all data when Status is "All"
+  //     return true;
+  //   } else {
+  //     // Your existing filtering logic for other fields
+  //     if (typeof fieldValue === "string") {
+  //       return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+  //     } else if (typeof fieldValue === "number") {
+  //       return fieldValue.toString().includes(searchText);
+  //     } else if (fieldValue instanceof Date) {
+  //       // Handle date fields
+  //       return fieldValue.includes(searchText);
+  //     }
+
+  //     return false;
+  //   }
+  // });
+
+  const handleSearch = (searchQuery) => {
+    const searchQueryLower = searchQuery.toLowerCase();
+
+    // Check if searchQuery is empty or null
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      setIsSearch(false);
+      setFilteredData(extraData); // Assuming extraData is your full dataset
+      return;
+    }
+
+    setIsSearch(true);
+
+    const filtered = extraData.filter((company) => {
+      const companyName = company["Company Name"];
+      const companyNumber = company["Company Number"];
+      const companyEmail = company["Company Email"];
+      const companyState = company.State;
+      const companyCity = company.City;
+
+      // Check each field for a match
+      if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
       }
-      const selectedDate = new Date(fieldValue);
-      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-      const selectedYear = selectedDate.getFullYear();
-
-      // Use the provided month variable in the comparison
-      return (
-        selectedMonth.toString().includes(month) &&
-        selectedYear.toString().includes(year)
-      );
-    } else if (selectedField === "AssignDate") {
-      // Assuming you have the month value in a variable named `month`
-      return fieldValue.includes(searchText);
-    } else if (selectedField === "Status" && searchText === "All") {
-      // Display all data when Status is "All"
-      return true;
-    } else {
-      // Your existing filtering logic for other fields
-      if (typeof fieldValue === "string") {
-        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-      } else if (typeof fieldValue === "number") {
-        return fieldValue.toString().includes(searchText);
-      } else if (fieldValue instanceof Date) {
-        // Handle date fields
-        return fieldValue.includes(searchText);
+      if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
       }
 
       return false;
+    });
+
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    if (filteredData.length !== 0) {
+      //setEmployeeData(filteredData)
+      if (dataStatus === 'All') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched"
+          )
+        );
+      } else if (dataStatus === 'Interested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Interested" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" &&
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        );
+      } else if (dataStatus === 'FollowUp') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "FollowUp" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" &&
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        )
+      } else if (dataStatus === 'Matured') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                obj.Status === "Matured" &&
+                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+            )
+        );
+      } else if (dataStatus === 'Forwarded') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
+                obj.bdmAcceptStatus !== "NotForwarded" &&
+                obj.Status !== "Not Interested" &&
+                obj.Status !== "Busy" &&
+                obj.Status !== "Junk" &&
+                obj.Status !== "Not Picked Up" &&
+                obj.Status !== "Matured"
+            )
+            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+        );
+      } else if (dataStatus === 'NotInterested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              (obj.Status === "Not Interested" ||
+                obj.Status === "Junk") &&
+              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+          )
+        );
+      }
+      if (filteredData.length === 1) {
+        const currentStatus = filteredData[0].Status; // Access Status directly
+        if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+          setdataStatus('All')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'Interested') {
+          setdataStatus('Interested')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'FollowUp') {
+          setdataStatus('FollowUp')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+          setdataStatus('Matured')
+        } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+          currentStatus !== "Not Interested" &&
+          currentStatus !== "Busy" &&
+          currentStatus !== 'Junk' &&
+          currentStatus !== 'Not Picked Up' &&
+          currentStatus !== 'Matured') {
+          setdataStatus('Forwarded')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+          setdataStatus('NotInterested')
+        }
+      }
     }
-  });
+
+  }, [filteredData])
 
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -893,10 +1046,11 @@ function EmployeePanel() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [extraData, setExtraData] = useState([])
 
   //console.log(companyName, companyInco);
 
-  const currentData = filteredData.slice(startIndex, endIndex);
+  const currentData = employeeData.slice(startIndex, endIndex);
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
   const [newBdeName, setNewBdeName] = useState("")
 
@@ -1187,13 +1341,13 @@ function EmployeePanel() {
 
   // Request form for Employees
 
-  const [selectedYear, setSelectedYear] = useState("");
+  //const [selectedYear, setSelectedYear] = useState("");
   const [companyType, setCompanyType] = useState("");
   const [numberOfData, setNumberOfData] = useState("");
 
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
+  // const handleYearChange = (event) => {
+  //   setSelectedYear(event.target.value);
+  // };
 
   const handleCompanyTypeChange = (event) => {
     setCompanyType(event.target.value);
@@ -2515,6 +2669,115 @@ function EmployeePanel() {
     return bookingObj ? formatDate(bookingObj.bookingPublishDate) : "N/A"
   }
 
+ //----------------filter for employee section-----------------------------
+ const stateList = State.getStatesOfCountry("IN")
+ const cityList = City.getCitiesOfCountry("IN")
+ const [selectedStateCode, setSelectedStateCode] = useState("")
+ const [selectedState, setSelectedState] = useState("")
+ const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+ const [selectedNewCity, setSelectedNewCity] = useState("")
+ const [selectedYear, setSelectedYear] = useState("")
+ const [selectedMonth, setSelectedMonth] = useState("")
+ const [selectedStatus, setSelectedStatus] = useState("")
+ const [selectedBDEName, setSelectedBDEName] = useState("")
+ const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+ const [selectedAdminName, setSelectedAdminName] = useState("")
+ const [daysInMonth, setDaysInMonth] = useState([]);
+ const [selectedDate, setSelectedDate] = useState(0)
+ const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
+ const [openBacdrop, setOpenBacdrop] = useState(false)
+ const [companyIncoDate, setCompanyIncoDate] = useState(null);
+
+ const functionCloseFilterDrawer = () => {
+   setOpenFilterDrawer(false)
+ }
+
+ const currentYear = new Date().getFullYear();
+ const months = [
+   "January", "February", "March", "April", "May", "June",
+   "July", "August", "September", "October", "November", "December"
+ ];
+ //Create an array of years from 2018 to the current year
+ const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+ useEffect(() => {
+   let monthIndex;
+   if (selectedYear && selectedMonth) {
+     monthIndex = months.indexOf(selectedMonth);
+     //console.log(monthIndex)
+     const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+     setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+   } else {
+     setDaysInMonth([]);
+   }
+ }, [selectedYear, selectedMonth]);
+
+ useEffect(() => {
+   if (selectedYear && selectedMonth && selectedDate) {
+     const monthIndex = months.indexOf(selectedMonth) + 1;
+     const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+     const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+     const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+     setSelectedCompanyIncoDate(companyIncoDate);
+   }
+ }, [selectedYear, selectedMonth, selectedDate]);
+
+ const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+   try {
+     setIsFilter(true);
+     setOpenBacdrop(true);
+
+     const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
+       params: {
+         employeeName,
+         selectedStatus,
+         selectedState,
+         selectedNewCity,
+         selectedYear,
+         selectedAssignDate,
+         selectedCompanyIncoDate,
+         page,
+         limit
+       }
+     });
+
+     if (
+       !selectedStatus &&
+       !selectedState &&
+       !selectedNewCity &&
+       !selectedYear &&
+       !selectedCompanyIncoDate
+     ) {
+       // If no filters are applied, reset the filter state and stop the backdrop
+       setIsFilter(false);
+
+     } else {
+       // Update the employee data with the filtered results
+       console.log(response.data)
+       setFilteredData(response.data)
+     }
+   } catch (error) {
+     console.log('Error applying filter', error.message);
+   } finally {
+     setOpenBacdrop(false);
+     setOpenFilterDrawer(false);
+   }
+ };
+
+ const handleClearFilter = () => {
+   setIsFilter(false)
+   setSelectedStatus('')
+   setSelectedState('')
+   setSelectedNewCity('')
+   setSelectedYear('')
+   setSelectedMonth('')
+   setSelectedDate(0)
+   setSelectedAssignDate(null)
+   setCompanyIncoDate(null)
+   setSelectedCompanyIncoDate(null)
+   fetchNewData()
+   //fetchData(1, latestSortCount)
+ }
 
   return (
     <div>
@@ -2588,9 +2851,85 @@ function EmployeePanel() {
                 </DialogContent>
               </Dialog>
             ))}
-
             <div className="page-header d-print-none">
               <div className="container-xl">
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center">
+                    <div className="btn-group mr-2">
+                      <button type="button" className="btn mybtn"
+                        onClick={functionopenpopupNew}
+                      >
+                        <TiUserAddOutline className='mr-1' /> Add Leads
+                      </button>
+                    </div>
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                      <button type="button"
+                      className={isFilter ? 'btn mybtn active' : 'btn mybtn'} 
+                      onClick={() => setOpenFilterDrawer(true)}
+                      >
+                        <IoFilterOutline className='mr-1' /> Filter
+                      </button>
+                      <button type="button" className="btn mybtn"
+                        onClick={functionopenpopupCSV}
+
+                      >
+                        <TbFileImport className='mr-1' /> Import Leads
+                      </button>
+                      <button type="button" className="btn mybtn"
+                        onClick={functionopenpopup}
+                      >
+                        <MdOutlinePostAdd className='mr-1' /> Request Data
+                      </button>
+                    </div>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                    <div class="input-icon ml-1">
+                      <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                          <path d="M21 21l-6 -6"></path>
+                        </svg>
+                      </span>
+                      <input
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          handleSearch(e.target.value)
+                          //handleFilterSearch(e.target.value)
+                          //setCurrentPage(0);
+                        }}
+                        className="form-control search-cantrol mybtn"
+                        placeholder="Search…"
+                        type="text"
+                        name="bdeName-search"
+                        id="bdeName-search" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="page-header d-print-none">
+              <div className="container-xl">
+                {requestData !== null && requestData !== undefined && (
+                  <div className="notification-bar">
+                    <div className="noti-text">
+                      <h1>
+                        You have just received {requestData.dAmount} data!
+                      </h1>
+                    </div>
+                    <div className="close-icon">
+                      <IconButton onClick={handleMarktrue}>
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  </div>
+                )}
                 <div className="row g-2 align-items-center">
                   <div
                     style={{
@@ -2615,7 +2954,7 @@ function EmployeePanel() {
                                </div>
                       </DialogContent>
 
-                    </Dialog> */}
+                    </Dialog> 
 
                       <div
                         className="form-control"
@@ -2668,7 +3007,6 @@ function EmployeePanel() {
                           className="input-icon"
                         >
                           <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="icon"
@@ -2907,7 +3245,7 @@ function EmployeePanel() {
                       {selectedField === "State" && (
                         <div style={{ width: "15vw" }} className="input-icon">
                           <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="icon"
@@ -2982,17 +3320,6 @@ function EmployeePanel() {
                             className="input-icon  form-control"
                             style={{ margin: "0px 10px", width: "110px" }}
                           >
-                            {/* <input
-                            type="number"
-                            value={year}
-                            defaultValue="Select Year"
-                            className="form-control"
-                            placeholder="Select Year.."
-                            onChange={(e) => {
-                              setYear(e.target.value);
-                            }}
-                            aria-label="Search in website"
-                          /> */}
                             <select
                               select
                               style={{ border: "none", outline: "none" }}
@@ -3031,7 +3358,7 @@ function EmployeePanel() {
                             data-bs-target="#modal-report"
                             aria-label="Create new report"
                           >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                        
                           </a>
                         </div>
                       </div>
@@ -3050,7 +3377,7 @@ function EmployeePanel() {
                             data-bs-target="#modal-report"
                             aria-label="Create new report"
                           >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            
                           </a>
                         </div>
                       </div>
@@ -3060,7 +3387,7 @@ function EmployeePanel() {
                             className="btn btn-primary d-none d-sm-inline-block"
                             onClick={functionopenpopupCSV}
                           >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            
                             <svg
                               style={{
                                 verticalAlign: "middle",
@@ -3092,18 +3419,15 @@ function EmployeePanel() {
                             data-bs-toggle="modal"
                             data-bs-target="#modal-report"
                             aria-label="Create new report"
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          > 
                           </a>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  {/* <!-- Page title actions --> */}
                 </div>
               </div>
-            </div>
+            </div> */}
             <div
               onCopy={(e) => {
                 e.preventDefault();
@@ -3122,12 +3446,17 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("All");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData.filter(
+                            mappedData.filter(
                               (obj) =>
                                 obj.Status === "Busy" ||
                                 obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
+                            ).sort(
+                              (a, b) =>
+                                new Date(b.lastActionDate) -
+                                new Date(a.lastActionDate)
                             )
                           );
                         }}
@@ -3140,14 +3469,14 @@ function EmployeePanel() {
                       >
                         General{" "}
                         <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched"
-                            ).length
-                          }
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
+                              obj.Status === "Untouched"
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -3157,8 +3486,9 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("Interested");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData.filter(
+                            mappedData.filter(
                               (obj) =>
                                 obj.Status === "Interested" &&
                                 obj.bdmAcceptStatus === "NotForwarded"
@@ -3174,13 +3504,13 @@ function EmployeePanel() {
                       >
                         Interested
                         <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Interested" &&
-                                obj.bdmAcceptStatus === "NotForwarded"
-                            ).length
-                          }
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              obj.Status === "Interested" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -3190,8 +3520,9 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("FollowUp");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData.filter(
+                            mappedData.filter(
                               (obj) =>
                                 obj.Status === "FollowUp" &&
                                 obj.bdmAcceptStatus === "NotForwarded"
@@ -3207,13 +3538,13 @@ function EmployeePanel() {
                       >
                         Follow Up{" "}
                         <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "FollowUp" &&
-                                obj.bdmAcceptStatus === "NotForwarded"
-                            ).length
-                          }
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              obj.Status === "FollowUp" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -3224,8 +3555,9 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("Matured");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData
+                            mappedData
                               .filter(
                                 (obj) =>
                                   obj.Status === "Matured" &&
@@ -3247,14 +3579,16 @@ function EmployeePanel() {
                       >
                         Matured{" "}
                         <span className="no_badge">
-                          {" "}
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Matured" &&
-                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                            ).length
-                          }
+                        {" "}
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              obj.Status === "Matured" &&
+                              (obj.bdmAcceptStatus === "NotForwarded" ||
+                                obj.bdmAcceptStatus === "Pending" ||
+                                obj.bdmAcceptStatus === "Accept")
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -3264,12 +3598,16 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("Forwarded");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData
+                            mappedData
                               .filter(
                                 (obj) =>
                                   obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                  obj.Status !== "Not Interested" &&
+                                  obj.Status !== "Busy" &&
+                                  obj.Status !== "Junk" &&
+                                  obj.Status !== "Not Picked Up" &&
                                   obj.Status !== "Matured"
                               )
                               .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
@@ -3285,15 +3623,15 @@ function EmployeePanel() {
                       >
                         Bdm Forwarded{" "}
                         <span className="no_badge">
-                          {" "}
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                obj.Status !== "Matured"
-                            ).length
-                          }
+                        {" "}
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              obj.bdmAcceptStatus !== "NotForwarded" &&
+                              obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                              obj.Status !== "Matured"
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -3303,8 +3641,9 @@ function EmployeePanel() {
                         onClick={() => {
                           setdataStatus("NotInterested");
                           setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                           setEmployeeData(
-                            moreEmpData.filter(
+                            mappedData.filter(
                               (obj) =>
                                 (obj.Status === "Not Interested" ||
                                   obj.Status === "Junk") &&
@@ -3321,14 +3660,14 @@ function EmployeePanel() {
                       >
                         Not-Interested{" "}
                         <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                (obj.Status === "Not Interested" ||
-                                  obj.Status === "Junk") &&
-                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                            ).length
-                          }
+                        {
+                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                            (obj) =>
+                              (obj.Status === "Not Interested" ||
+                                obj.Status === "Junk") &&
+                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                          ).length
+                        }
                         </span>
                       </a>
                     </li>
@@ -4176,13 +4515,13 @@ function EmployeePanel() {
                                             </>) : (<>
                                               <TiArrowForward
                                                 onClick={() => {
-                                                  handleConfirmAssign(
-                                                    company._id,
-                                                    company["Company Name"],
-                                                    company.Status, // Corrected parameter name
-                                                    company.ename,
-                                                    company.bdmAcceptStatus
-                                                  );
+                                                  // handleConfirmAssign(
+                                                  //   company._id,
+                                                  //   company["Company Name"],
+                                                  //   company.Status, // Corrected parameter name
+                                                  //   company.ename,
+                                                  //   company.bdmAcceptStatus
+                                                  // );
                                                 }}
                                                 style={{
                                                   cursor: "pointer",
@@ -4370,7 +4709,7 @@ function EmployeePanel() {
                         </IconButton>
                         <span>
                           Page {currentPage + 1} of{" "}
-                          {Math.ceil(filteredData.length / itemsPerPage)}
+                          {Math.ceil(employeeData.length / itemsPerPage)}
                         </span>
 
                         <IconButton
@@ -4378,14 +4717,14 @@ function EmployeePanel() {
                             setCurrentPage((prevPage) =>
                               Math.min(
                                 prevPage + 1,
-                                Math.ceil(filteredData.length / itemsPerPage) -
+                                Math.ceil(employeeData.length / itemsPerPage) -
                                 1
                               )
                             )
                           }
                           disabled={
                             currentPage ===
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
+                            Math.ceil(employeeData.length / itemsPerPage) - 1
                           }
                         >
                           <IconChevronRight />
@@ -4612,7 +4951,7 @@ function EmployeePanel() {
                     id="selectYear"
                     name="selectYear"
                     value={selectedYear}
-                    onChange={handleYearChange}
+                    //onChange={handleYearChange}
                     className="col form-select"
                   >
                     {[...Array(2025 - 1970).keys()].map((year) => (
@@ -5900,6 +6239,156 @@ function EmployeePanel() {
             </div>
           </div>
         </Drawer>
+
+        {/* //----------------leads filter drawer------------------------------- */}
+      <Drawer
+        style={{ top: "50px" }}
+        anchor="left"
+        open={openFilterDrawer}
+        onClose={functionCloseFilterDrawer}>
+        <div style={{ width: "31em" }}>
+          <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+            <h2 className="title m-0">
+              Filters
+            </h2>
+            <div>
+              <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                <IoIosClose style={{
+                  height: "36px",
+                  width: "32px",
+                  color: "grey"
+                }} />
+              </button>
+            </div>
+          </div>
+          <hr style={{ margin: "0px" }} />
+          <div className="body-Drawer">
+            <div className='container-xl mt-2 mb-2'>
+              <div className='row'>
+                <div className='col-sm-12 mt-3'>
+                  <div className='form-group'>
+                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                    <select class="form-select form-select-md" aria-label="Default select example"
+                      value={selectedStatus}
+                      onChange={(e) => {
+                        setSelectedStatus(e.target.value)
+                      }}
+                    >
+                      <option selected value='Select Status'>Select Status</option>
+                      <option value='Not Picked Up'>Not Picked Up</option>
+                      <option value="Busy">Busy</option>
+                      <option value="Junk">Junk</option>
+                      <option value="Not Interested">Not Interested</option>
+                      <option value="Untouched">Untouched</option>
+                      <option value="Interested">Interested</option>
+                      <option value="Matured">Matured</option>
+                      <option value="FollowUp">Followup</option>
+                    </select>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='d-flex align-items-center justify-content-between'>
+                    <div className='form-group w-50 mr-1'>
+                      <label for="exampleFormControlInput1" class="form-label">State</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedState}
+                        onChange={(e) => {
+                          setSelectedState(e.target.value)
+                          setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                          setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                          //handleSelectState(e.target.value)
+                        }}
+                      >
+                        <option value=''>State</option>
+                        {stateList.length !== 0 && stateList.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='form-group w-50'>
+                      <label for="exampleFormControlInput1" class="form-label">City</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedNewCity}
+                        onChange={(e) => {
+                          setSelectedNewCity(e.target.value)
+                        }}
+                      >
+                        <option value="">City</option>
+                        {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="assignon" class="form-label">Assign On</label>
+                    <input type="date" class="form-control" id="assignon"
+                      value={selectedAssignDate}
+                      placeholder="dd-mm-yyyy"
+                      defaultValue={null}
+                      onChange={(e) => setSelectedAssignDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <label class="form-label">Incorporation Date</label>
+                  <div className='row align-items-center justify-content-between'>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedYear}
+                        onChange={(e) => {
+                          setSelectedYear(e.target.value)
+                        }}
+                      >
+                        <option value=''>Year</option>
+                        {years.length !== 0 && years.map((item) => (
+                          <option>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedMonth}
+                        disabled={selectedYear === ""}
+                        onChange={(e) => {
+                          setSelectedMonth(e.target.value)
+                        }}
+                      >
+                        <option value=''>Month</option>
+                        {months && months.map((item) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        disabled={selectedMonth === ''}
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                      >
+                        <option value=''>Date</option>
+                        {daysInMonth.map((day) => (
+                          <option key={day} value={day}>{day}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="footer-Drawer d-flex justify-content-between align-items-center">
+            <button className='filter-footer-btn btn-clear'
+              onClick={handleClearFilter}
+            >Clear Filter</button>
+            <button className='filter-footer-btn btn-yellow'
+              onClick={handleFilterData}
+            >Apply Filter</button>
+          </div>
+        </div>
+      </Drawer>
         <div className="compose-email">
           {isOpen && (
             <div className="compose-popup">
