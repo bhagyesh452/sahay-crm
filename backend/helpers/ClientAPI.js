@@ -120,12 +120,12 @@ router.post(
       if (FacebookLink && FacebookLink !== "No Facebook Id") {
         facebookHtml = `
          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Facebook Id
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${FacebookLink}
               </div>
@@ -138,12 +138,12 @@ router.post(
       if (InstagramLink && InstagramLink !== "No Instagram Id") {
         instagramHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   Instagram Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${InstagramLink}
                 </div>
@@ -156,12 +156,12 @@ router.post(
       if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
         linkedInHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   LinkedIn Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${LinkedInLink}
                 </div>
@@ -174,12 +174,12 @@ router.post(
       if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
         youtubeHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   YouTube Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${YoutubeLink}
                 </div>
@@ -193,6 +193,7 @@ router.post(
         TechnologyInvolved !== "No Technology Invloved"
       ) {
         TechnologyInvolvedHtml = `
+<<<<<<< HEAD
             <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
               <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="padding: 5px 10px;">
@@ -201,6 +202,16 @@ router.post(
               </div>
               <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; padding: 5px 10px;">
+=======
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%;align-self: stretch;height:100%">
+                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                  Technology Involved
+                </div>
+              </div>
+              <div style="width: 75%;align-self: stretch;height:100%">
+                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+>>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                   ${TechnologyInvolved}
                 </div>
               </div>
@@ -212,12 +223,12 @@ router.post(
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Upload Photos
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadPhotos}
               </div>
@@ -264,12 +275,12 @@ router.post(
       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
         relevantDocumentsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Relevant Documents
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${RelevantDocument}
               </div>
@@ -282,12 +293,12 @@ router.post(
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Business Model
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${BusinessModel}
               </div>
@@ -300,12 +311,12 @@ router.post(
       if (Finance && Finance !== "No Finance Details") {
         financeDetailsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Finance Details
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${Finance}
               </div>
@@ -379,7 +390,7 @@ router.post(
             margin-top: 15px;
           ">
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -389,7 +400,7 @@ router.post(
                             DirectorName
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -400,7 +411,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -409,7 +420,7 @@ router.post(
                             DirectorEmail
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -420,7 +431,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -429,7 +440,7 @@ router.post(
                             DirectorMobileNo
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -440,7 +451,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -449,7 +460,7 @@ router.post(
                             Director Qualification
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -460,7 +471,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -469,7 +480,7 @@ router.post(
                             Director Work Experience
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -480,7 +491,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -489,7 +500,7 @@ router.post(
                             Director Annual Income
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -501,7 +512,7 @@ router.post(
                 </div>
              
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -510,7 +521,7 @@ router.post(
                             Director Designation
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -521,7 +532,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -530,7 +541,7 @@ router.post(
                             Director AadhaarCard Number
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -541,7 +552,7 @@ router.post(
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -550,7 +561,7 @@ router.post(
                             Director Gender
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -566,7 +577,7 @@ router.post(
                     ? "none"
                     : "flex"
                 }; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                           border: 1px solid #ccc;
                           font-size: 12px;
@@ -575,7 +586,7 @@ router.post(
                             Director Gender
                         </div>
                     </div>
-                  <div style="width: 75%;align-self: stretch !important;height:100%">
+                  <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                           border: 1px solid #ccc;
                           font-size: 12px;
@@ -637,7 +648,7 @@ router.post(
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -650,7 +661,7 @@ router.post(
                      Company Name
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -665,7 +676,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -677,7 +688,7 @@ router.post(
                      Company Email
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -691,7 +702,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -703,7 +714,7 @@ router.post(
                      Company No
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -718,7 +729,7 @@ router.post(
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -730,7 +741,7 @@ router.post(
                      Brand Name
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -744,7 +755,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -756,7 +767,7 @@ router.post(
                      Website Link
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -770,7 +781,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -782,7 +793,7 @@ router.post(
                     Company Address
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -796,7 +807,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -808,7 +819,7 @@ router.post(
                      Company Pan Number
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -822,7 +833,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -834,7 +845,7 @@ router.post(
                      Select Your Services
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -903,8 +914,13 @@ router.post(
                  margin-top: 15px;
                "
              >
+<<<<<<< HEAD
                <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%;">
+=======
+               <div style="display: flex; flex-wrap: wrap">
+                 <div style="width: 25%;align-self: stretch;height:100%">
+>>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
@@ -912,7 +928,7 @@ router.post(
                      Brief Of Your Business/Product/Service (Company's Activities)
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -922,8 +938,13 @@ router.post(
                    </div>
                  </div>
                </div>
+<<<<<<< HEAD
                <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
+=======
+               <div style="display: flex; flex-wrap: wrap">
+                 <div style="width: 25%;align-self: stretch;height:100%">
+>>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
@@ -932,7 +953,7 @@ router.post(
                      Problems and Solution
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -943,8 +964,13 @@ router.post(
                    </div>
                  </div>
                </div>
+<<<<<<< HEAD
                <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
+=======
+               <div style="display: flex; flex-wrap: wrap">
+                 <div style="width: 25%;align-self: stretch;height:100%">
+>>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
@@ -953,7 +979,7 @@ router.post(
                      USP
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -965,8 +991,13 @@ router.post(
                  </div>
                </div>
     
+<<<<<<< HEAD
                <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
+=======
+               <div style="display: flex; flex-wrap: wrap">
+                 <div style="width: 25%;align-self: stretch;height:100%">
+>>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
@@ -975,7 +1006,7 @@ router.post(
                      Value Proposition
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -994,7 +1025,7 @@ router.post(
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -1006,7 +1037,7 @@ router.post(
                      Direct/Indirect Competitor
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -1140,7 +1171,7 @@ router.post(
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px !important; display: inline-block;border-bottom: 1px solid #656565;padding-bottom:8px"></span>` : CompanyAddress;
+      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>` : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find(
         (details) => details.IsMainDirector === "true"

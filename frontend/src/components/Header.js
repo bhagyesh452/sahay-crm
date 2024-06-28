@@ -46,7 +46,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("data-action-performed", (res) => {
-      enqueueSnackbar(`Action has been performed on your Data Request!`, {
+      enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
         variant: 'warning',
         autoHideDuration: 5000
       });
