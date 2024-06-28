@@ -68,6 +68,8 @@ import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingD
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
+import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
+import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx"; 
 
 
 
@@ -231,7 +233,8 @@ function App() {
           {/**********************************************  HR-Login-Portal   *******************************************************/}
           <Route path="/hr/login-hr" element={<HrLogin setHrToken={setHrToken} />} />
           <Route path="/hrdashboard/:userId/" element={<HrDashboard />}></Route>
-
+          <Route path="/hr/hr-navbar" element={<NewEmployees />} />
+          <Route path="/hr/employees" element={<HrEmployees />} />
         </Routes>
 
       </BrowserRouter>

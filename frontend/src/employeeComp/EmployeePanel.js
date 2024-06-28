@@ -268,7 +268,7 @@ function EmployeePanel() {
 
     socket.on("data-sent", () => {
       fetchRequestDetails();
-      playNotificationSound();
+      fetchNewData();
     });
 
     // Clean up the socket connection when the component unmounts
@@ -1392,11 +1392,11 @@ function EmployeePanel() {
         );
 
         //console.log("Data sent successfully:", response.data);
-        Swal.fire("Request sent!");
+        Swal.fire("Success!","Data Request Sent!","success");
         closepopup();
       } catch (error) {
         console.error("Error:", error.message);
-        Swal.fire("Please try again later!");
+        Swal.fire("Error!","Please try again later!","error");
       }
     } else {
       try {

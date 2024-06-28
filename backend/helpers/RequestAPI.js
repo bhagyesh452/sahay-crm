@@ -18,6 +18,8 @@ const InformBDEModel = require("../models/InformBDE.js");
 
 router.post("/requestCompanyData", async (req, res) => {
   const csvData = req.body;
+  
+  const socketIO = req.io;
   let dataArray = [];
   if (Array.isArray(csvData)) {
     dataArray = csvData;
@@ -27,6 +29,7 @@ router.post("/requestCompanyData", async (req, res) => {
     // Handle invalid input
     console.error("Invalid input: csvData must be an array or an object.");
   }
+  const ename = dataArray[0].ename
 
   try {
     for (const employeeData of dataArray) {
@@ -46,6 +49,7 @@ router.post("/requestCompanyData", async (req, res) => {
         // Handle the error for this specific entry, but continue with the next one
       }
     }
+    socketIO.emit('approve-request',ename);
 
     res.status(200).json({ message: "Data sent successfully" });
   } catch (error) {
@@ -76,7 +80,7 @@ router.post("/change-edit-request/:companyName", async (req, res) => {
 router.post("/requestData", async (req, res) => {
   const { selectedYear, companyType, numberOfData, name, cTime, cDate } =
     req.body;
-
+  const socketIO = req.io;
   try {
     // Create a new RequestModel instance
     const newRequest = new RequestModel({
@@ -104,6 +108,7 @@ router.post("/requestData", async (req, res) => {
 router.post("/setMarktrue/:id", async (req, res) => {
   try {
     const id = req.params.id;
+    const socketIO = req.io;
 
     // Find the object by ID and update the AssignRead property to true
     const updatedObject = await RequestGModel.findByIdAndUpdate(
@@ -138,9 +143,9 @@ router.post("/requestgData", async (req, res) => {
 
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
-
+   
     
-    socketIO.emit("newRequest", savedRequest);
+    socketIO.emit("newRequest", name);
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
 
@@ -200,6 +205,7 @@ router.put("/requestgData/:id", async (req, res) => {
   const { read, assigned } = req.body;
 
   try {
+    const socketIO = req.io;
     // Update the 'read' property in the MongoDB model
     const updatedNotification = await RequestGModel.findByIdAndUpdate(
       id,
@@ -303,10 +309,12 @@ router.delete("/deleterequestbybde/:id", async (req, res) => {
 
 router.delete("/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
+  const socketIO = req.io;
 
   try {
     // Delete all data objects with the given ename
     await CompanyRequestModel.deleteMany({ ename });
+    socketIO.emit('data-action-performed')
 
     // Send success response
     res.status(200).send("Data deleted successfully");

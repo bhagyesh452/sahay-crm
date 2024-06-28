@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router()
-const dotenv = require('dotenv')
+var express = require("express");
+var router = express.Router();
+const dotenv = require("dotenv");
 dotenv.config();
 const pdf = require("html-pdf");
 const path = require("path");
@@ -15,9 +15,6 @@ const { sendMail4 } = require("../helpers/sendMail4");
 
 const userModel = require("../models/CompanyBusinessInput.js");
 
-
-
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Determine the destination path based on the fieldname and company name
@@ -28,11 +25,13 @@ const storage = multer.diskStorage({
       destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
     } else if (file.fieldname === "paymentReceipt") {
       destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
-    }
-    else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
-      destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
+    } else if (
+      file.fieldname === "DirectorAdharCard" ||
+      file.fieldname === "DirectorPassportPhoto"
+    ) {
+      destinationPath = `Client/ClientDocuments/${companyName}/DirectorDocs`;
     } else {
-      destinationPath = `ClientDocuments/${companyName}/OtherDocs`
+      destinationPath = `Client/ClientDocuments/${companyName}/OtherDocs`;
     }
 
     // Create the directory if it doesn't exist
@@ -59,8 +58,8 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year}`;
 }
 
-
-router.post("/basicinfo-form/:CompanyName",
+router.post(
+  "/basicinfo-form/:CompanyName",
 
   upload.fields([
     { name: "DirectorPassportPhoto", maxCount: 10 },
@@ -71,7 +70,6 @@ router.post("/basicinfo-form/:CompanyName",
     { name: "RelevantDocument", maxCount: 1 },
   ]),
   async (req, res) => {
-
     try {
       const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
       const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
@@ -79,11 +77,6 @@ router.post("/basicinfo-form/:CompanyName",
       const UploadAOA = req.files["UploadAOA"] || [];
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
-
-
-
-
-
 
       // Get user details from the request body
       const {
@@ -110,8 +103,6 @@ router.post("/basicinfo-form/:CompanyName",
         DirectorDetails,
       } = req.body;
 
-
-
       //console.log("select services" , SelectServices)
       // const services = SelectServices.map(service => service);
 
@@ -119,18 +110,17 @@ router.post("/basicinfo-form/:CompanyName",
       // const commaSeparatedValues = services.join(", ");
       // console.log("comma" , commaSeparatedValues);
 
-
       // Construct the HTML content conditionally
       let facebookHtml = "";
       if (FacebookLink && FacebookLink !== "No Facebook Id") {
         facebookHtml = `
          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Facebook Id
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${FacebookLink}
               </div>
@@ -143,12 +133,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (InstagramLink && InstagramLink !== "No Instagram Id") {
         instagramHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   Instagram Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${InstagramLink}
                 </div>
@@ -161,12 +151,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
         linkedInHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   LinkedIn Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${LinkedInLink}
                 </div>
@@ -179,12 +169,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
         youtubeHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   YouTube Id
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${YoutubeLink}
                 </div>
@@ -199,12 +189,12 @@ router.post("/basicinfo-form/:CompanyName",
       ) {
         TechnologyInvolvedHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="width: 25%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   Technology Involved
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="width: 75%;align-self: stretch;height:100%">
                 <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   ${TechnologyInvolved}
                 </div>
@@ -217,12 +207,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Upload Photos
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadPhotos}
               </div>
@@ -235,12 +225,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
         relevantDocumentsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Relevant Documents
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${RelevantDocument}
               </div>
@@ -253,12 +243,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Business Model
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${BusinessModel}
               </div>
@@ -271,12 +261,12 @@ router.post("/basicinfo-form/:CompanyName",
       if (Finance && Finance !== "No Finance Details") {
         financeDetailsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
+            <div style="width: 25%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Finance Details
               </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
+            <div style="width: 75%;align-self: stretch;height:100%">
               <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${Finance}
               </div>
@@ -284,7 +274,6 @@ router.post("/basicinfo-form/:CompanyName",
           </div>
         `;
       }
-
 
       const tempHtml = () => {
         let team = "";
@@ -351,7 +340,7 @@ router.post("/basicinfo-form/:CompanyName",
             margin-top: 15px;
           ">
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -361,7 +350,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorName
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -372,7 +361,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -381,7 +370,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorEmail
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -392,7 +381,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -401,7 +390,7 @@ router.post("/basicinfo-form/:CompanyName",
                             DirectorMobileNo
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -412,7 +401,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -421,7 +410,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Qualification
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -432,7 +421,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -441,7 +430,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Work Experience
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -452,7 +441,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -461,7 +450,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Annual Income
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -473,7 +462,7 @@ router.post("/basicinfo-form/:CompanyName",
                 </div>
              
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -482,7 +471,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Designation
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -493,7 +482,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -502,7 +491,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director AadhaarCard Number
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -513,7 +502,7 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -522,7 +511,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Gender
                         </div>
                     </div>
-                    <div style="width: 75%;align-self: stretch !important;height:100%">
+                    <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                   border: 1px solid #ccc;
                   font-size: 12px;
@@ -533,8 +522,12 @@ router.post("/basicinfo-form/:CompanyName",
                     </div>
                 </div>
                 
-                <div style="display: ${(!LinkedInProfileLink || LinkedInProfileLink == "") ? "none" :'flex'}; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch !important;height:100%">
+                <div style="display: ${
+                  !LinkedInProfileLink || LinkedInProfileLink == ""
+                    ? "none"
+                    : "flex"
+                }; flex-wrap: wrap">
+                    <div style="width: 25%;align-self: stretch;height:100%">
                         <div style="
                           border: 1px solid #ccc;
                           font-size: 12px;
@@ -543,7 +536,7 @@ router.post("/basicinfo-form/:CompanyName",
                             Director Gender
                         </div>
                     </div>
-                  <div style="width: 75%;align-self: stretch !important;height:100%">
+                  <div style="width: 75%;align-self: stretch;height:100%">
                         <div style="
                           border: 1px solid #ccc;
                           font-size: 12px;
@@ -561,7 +554,6 @@ router.post("/basicinfo-form/:CompanyName",
         return team;
       };
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
-
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nimesh@incscale.in"];
@@ -606,7 +598,7 @@ router.post("/basicinfo-form/:CompanyName",
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -619,7 +611,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Company Name
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -634,7 +626,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -646,7 +638,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Company Email
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -660,7 +652,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -672,7 +664,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Company No
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -687,7 +679,7 @@ router.post("/basicinfo-form/:CompanyName",
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -699,7 +691,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Brand Name
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -713,7 +705,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -725,7 +717,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Website Link
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -739,7 +731,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -751,7 +743,7 @@ router.post("/basicinfo-form/:CompanyName",
                     Company Address
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -765,7 +757,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -777,7 +769,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Company Pan Number
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -791,7 +783,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -803,7 +795,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Select Your Services
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -873,7 +865,7 @@ router.post("/basicinfo-form/:CompanyName",
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -885,7 +877,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Company Activities
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -899,7 +891,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -911,7 +903,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Problems and Solution
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -925,7 +917,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -937,7 +929,7 @@ router.post("/basicinfo-form/:CompanyName",
                      USP
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -952,7 +944,7 @@ router.post("/basicinfo-form/:CompanyName",
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -964,7 +956,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Value Proposition
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -985,7 +977,7 @@ router.post("/basicinfo-form/:CompanyName",
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
+                 <div style="width: 25%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -997,7 +989,7 @@ router.post("/basicinfo-form/:CompanyName",
                      Direct/Indirect Competitor
                    </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch !important;height:100%">
+                 <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
@@ -1077,12 +1069,12 @@ router.post("/basicinfo-form/:CompanyName",
           res.status(500).send("Error sending email");
         });
 
+      const details = DirectorDetails.find(
+        (details) => details.IsMainDirector === "true"
+      );
+      const DirectorEmail = details.DirectorEmail;
 
-      const details = DirectorDetails.find((details) => details.IsMainDirector === "true");
-      const DirectorEmail = details.DirectorEmail
-
-
-      // Send Thank You Message with pdf Draft sendMaiel4.js 
+      // Send Thank You Message with pdf Draft sendMaiel4.js
 
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
@@ -1107,105 +1099,120 @@ router.post("/basicinfo-form/:CompanyName",
     <p>Start-Up Sahay Private Limited</p>
           `;
 
-
       let MainDirectorName;
       let MainDirectorDesignation;
       if (DirectorDetails.length > 1) {
         if (DirectorDetails[0].IsMainDirector === "true") {
-          MainDirectorName = DirectorDetails[1].DirectorName
-          MainDirectorDesignation = DirectorDetails[1].DirectorDesignation
+          MainDirectorName = DirectorDetails[1].DirectorName;
+          MainDirectorDesignation = DirectorDetails[1].DirectorDesignation;
         } else if (DirectorDetails[1].IsMainDirector === "true") {
-          MainDirectorName = DirectorDetails[0].DirectorName
-          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+          MainDirectorName = DirectorDetails[0].DirectorName;
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
         } else {
-          MainDirectorName = DirectorDetails[0].DirectorName
-          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+          MainDirectorName = DirectorDetails[0].DirectorName;
+          MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
         }
       } else {
-        MainDirectorName = DirectorDetails[0].DirectorName
-        MainDirectorDesignation = DirectorDetails[0].DirectorDesignation
+        MainDirectorName = DirectorDetails[0].DirectorName;
+        MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
       }
 
 
 
       // Sending email for CompanyEmail 
       let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px !important; display: inline-block;border-bottom: 1px solid #656565;"></span>` : CompanyAddress;
+      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>` : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
-      let forGender = DirectorDetails.find((details) => details.IsMainDirector === "true")
+      let forGender = DirectorDetails.find(
+        (details) => details.IsMainDirector === "true"
+      );
       const todayDate = formatDate(new Date());
       const filedHtml = htmlNewTemplate
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace(
+          "{{Gender}}",
+          forGender.DirectorGender === "Male" ? "Shri." : "Smt."
+        )
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorDesignation}}", forGender.DirectorDesignation)
         .replace("{{AadhaarNumber}}", forGender.DirectorAdharCardNumber)
         .replace("{{CompanyName}}", CompanyName)
         .replace("{{CompanyAddress}}", CompanyAddress)
         .replace("{{CompanyPanNumber}}", CompanyPanNumber)
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace(
+          "{{Gender}}",
+          forGender.DirectorGender === "Male" ? "Shri." : "Smt."
+        )
         .replace("{{DirectorName}}", forGender.DirectorName)
-        .replace("{{Gender}}", forGender.DirectorGender === "Male" ? "Shri." : "Smt.")
+        .replace(
+          "{{Gender}}",
+          forGender.DirectorGender === "Male" ? "Shri." : "Smt."
+        )
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
         .replace("{{today-date}}", todayDate)
-        .replace("{{today-date}}", todayDate)
-        .replace("{{client-address}}", client_address)
+        .replace("{{client-address}}", client_address);
 
-      const pdfFilePath = `./Client-GeneratedDocs/${CompanyName}.pdf`;
+      const pdfFilePath = `Client/GeneratedLOA/${CompanyName}.pdf`;
       const options = {
         childProcessOptions: {
           env: {
-            OPENSSL_CONF: './dev/null',
+            OPENSSL_CONF: "./dev/null",
           },
         },
       };
 
-      pdf.create(filedHtml, options).toFile(pdfFilePath, async (err, response) => {
-        if (err) {
-          console.error('Error generating PDF:', err);
-          return res.status(500).send('Error generating PDF');
-        } else {
-          try {
-            setTimeout(() => {
-              const servicesArray = Object.values(SelectServices);
+      pdf
+        .create(filedHtml, options)
+        .toFile(pdfFilePath, async (err, response) => {
+          if (err) {
+            console.error("Error generating PDF:", err);
+            return res.status(500).send("Error generating PDF");
+          } else {
+            try {
+              setTimeout(() => {
+                const servicesArray = Object.values(SelectServices);
 
-              const selectedService = servicesArray.find(service => service === 'Seed Funding Support');
-              //const mainBuffer = fs.readFileSync(pdfFilePath);
-              const pdfAttachment = {
-                filename: 'MITC.pdf', // Replace with actual file name
-                path: path.join(__dirname, 'src', 'MITC.pdf') // Adjust the path accordingly
-              };
+                const selectedService = servicesArray.find(
+                  (service) => service === "Seed Funding Support"
+                );
+                //const mainBuffer = fs.readFileSync(pdfFilePath);
+                const pdfAttachment = {
+                  filename: "MITC.pdf", // Replace with actual file name
+                  path: path.join(__dirname, "src", "MITC.pdf"), // Adjust the path accordingly
+                };
 
-              const mainBuffer = {
-                filename: 'LOA.pdf', // Replace with actual file name
-                path: `./Client-GeneratedDocs/${CompanyName}.pdf` // Adjust the path accordingly
-              };
+                const mainBuffer = {
+                  filename: "LOA.pdf", // Replace with actual file name
+                  path: path.join(
+                    __dirname,
+                    `../Client/GeneratedLOA/${CompanyName}.pdf`
+                  ), // Adjust the path accordingly
+                };
 
-              let clientDocument;
-              if (selectedService) {
-                clientDocument = [mainBuffer, pdfAttachment]
-
-              } else {
-                clientDocument = [pdfAttachment]
-                console.log("Service 'Seed Funding Support' not found.");
-              }
-              sendMail4(
-                recipients,
-                ccEmail,
-                "Letter of Authorization for filing in SISFS Application",
-                ``,
-                html1,
-                clientDocument
-              );
-            }, 4000);
-            //res.status(200).send('Generated Pdf Successfully');
-          } catch (error) {
-            console.error("Error sending email:", error);
-            // No need to send another response here because one was already sent
+                let clientDocument;
+                if (selectedService) {
+                  clientDocument = [mainBuffer, pdfAttachment];
+                } else {
+                  clientDocument = [pdfAttachment];
+                  console.log("Service 'Seed Funding Support' not found.");
+                }
+                sendMail4(
+                  recipients,
+                  ccEmail,
+                  "Letter of Authorization for filing in SISFS Application",
+                  ``,
+                  html1,
+                  clientDocument
+                );
+              }, 4000);
+              //res.status(200).send('Generated Pdf Successfully');
+            } catch (error) {
+              console.error("Error sending email:", error);
+              // No need to send another response here because one was already sent
+            }
           }
-        }
-      });
+        });
 
       const newUser = new userModel({
         ...req.body,
@@ -1224,6 +1231,6 @@ router.post("/basicinfo-form/:CompanyName",
       res.status(400).send(error);
     }
   }
-)
+);
 
 module.exports = router;

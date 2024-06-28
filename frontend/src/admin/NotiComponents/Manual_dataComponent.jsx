@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-function General_dataComponent() {
+function Manual_dataComponent() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [filterBy, setFilterBy] = useState("Pending");
     const [data, setData] = useState([])
@@ -33,7 +33,7 @@ function General_dataComponent() {
 
     const fetchRequestGDetails = async () => {
         try {
-            const response = await axios.get(`${secretKey}/requests/requestgData`);
+            const response = await axios.get(`${secretKey}/requests/requestData`);
             const tempData = response.data.reverse()
             setData(tempData);
             setFilteredData(tempData.filter(obj => obj.assigned === false));
@@ -151,7 +151,7 @@ function General_dataComponent() {
             const response = await axios.post(`${secretKey}/company-data/postData`, {
                 selectedObjects , employeeSelection
             });
-            await axios.put(`${secretKey}/requests/requestgData/${id}`, {
+            await axios.put(`${secretKey}/requests/requestData/${id}`, {
                 read: true,
                 assigned: true,
             });
@@ -190,7 +190,7 @@ function General_dataComponent() {
                         <div className='mr-2'>
                             <label htmlFor="search_bde ">BDE : </label>
                         </div>
-                        <div className='GeneralNoti-Filter'>
+                        <div className='ManualNoti-Filter'>
                             <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="text" name="search_bde" id="search_bde" className='form-control col-sm-8' placeholder='Please Enter BDE name' />
                         </div>
                     </div>
@@ -198,7 +198,7 @@ function General_dataComponent() {
                         <div className='mr-2'>
                             <label htmlFor="search_bde "> Filter By : </label>
                         </div>
-                        <div className='GeneralNoti-Filter'>
+                        <div className='ManualNoti-Filter'>
                             <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)} name="filter_requests" id="filter_requests" className="form-select">
                                 <option value="Pending" selected>Pending</option>
                                 <option value="Completed" >Completed</option>
@@ -210,7 +210,7 @@ function General_dataComponent() {
             </div>
             <div className='my-card-body p-2'>
                 <div className='Notification-table-main table-resposive'>
-                    <table className="table General-table m-0">
+                    <table className="table Manual-table m-0">
                         <thead>
                             <tr>
                                 <th>Sr. No</th>
@@ -431,4 +431,4 @@ function General_dataComponent() {
     )
 }
 
-export default General_dataComponent
+export default Manual_dataComponent

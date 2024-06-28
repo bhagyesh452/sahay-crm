@@ -11,7 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import BellEmp from "./BellEmp";
 import io from "socket.io-client";
 import axios from "axios";
-
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import notification_audio from "../assets/media/notification_tone.mp3"
 
 // import "./styles/header.css"
 
@@ -33,6 +34,25 @@ function Header({ name, designation}) {
       //console.log("Socket connected with ID:", socket.id);
       console.log('Connection Successful to socket io')
       setSocketID(socket.id);
+    });
+
+    socket.on("data-sent", (res) => {
+      enqueueSnackbar(`New Data Received!`, {
+        variant: 'info',
+        autoHideDuration: 5000
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("data-action-performed", (res) => {
+      enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
+        variant: 'warning',
+        autoHideDuration: 5000
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
     });
     // Clean up the socket connection when the component unmounts
     return () => {
@@ -160,6 +180,9 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
+      <SnackbarProvider maxSnack={3}>
+   
+    </SnackbarProvider>
     </div>
   );
 }
