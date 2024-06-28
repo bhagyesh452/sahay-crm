@@ -33,6 +33,7 @@ function transformData(jsonData) {
 
   jsonData.services.forEach((serviceObj, index) => {
     headers.push(`services[${index}].serviceName`);
+    headers.push(`services[${index}].withGST`);
     headers.push(`services[${index}].totalPaymentWOGST`);
     headers.push(`services[${index}].totalPaymentWGST`);
     headers.push(serviceObj.paymentTerms === "Full Advanced" ? `services[${index}].totalPaymentWGST` : `services[${index}].firstPayment`);
