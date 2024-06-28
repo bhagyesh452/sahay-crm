@@ -123,7 +123,10 @@ const processAttachments = (files) => {
 
 // Function to send email with attachments and CC
 const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachments) => {
+
   try {
+    const ccEmailNew = ccEmail;
+    ccEmailNew.push("admin@startupsahay.com")
     const transporter = await createTransporter();
 
     // Process attachments
@@ -137,8 +140,8 @@ const sendMail4 = async (recipients, ccEmail, subject1, text1, html1, attachment
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
       to: recipients.join(", "),
-      cc: ccEmail,
-      replyTo: "nimesh@incscale.in",
+      cc: ccEmailNew,
+      replyTo: "support@startupsahay.com",
       subject:subject1,
       text:text1,
       html:html1,
