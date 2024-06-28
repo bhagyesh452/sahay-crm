@@ -4586,9 +4586,10 @@ router.post(
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
       const publishDate = new Date();
-      const companyMainObject = await RedesignedLeadformModel.findOne({
+      const companyMainObject =  RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
+      console.log(companyMainObject)
       const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
@@ -4886,7 +4887,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { services: updatedServices },
       { new: true } // Return the updated document
     );
-
+    const bdeName = updatedMainObject.bdeName ;
+    socketIO.emit('expanse-added',bdeName);
 
     res.status(200).json(updatedMainObject);
   } else {
@@ -4939,6 +4941,9 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
         }
       }
     );
+
+    const bdeName = updatedMainObj[bookingIndex - 1].bdeName ;
+    socketIO.emit('expanse-added',bdeName);
 
     res.status(200).json(updatedMainObj);
   }
