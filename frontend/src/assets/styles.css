@@ -2521,6 +2521,14 @@ td input {
   color: #ffb900;
   font-weight: bold !important;
 }
+.Approve-table thead tr th
+{
+  background: #abff8d;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  color: #3eaa16;
+  font-weight: bold !important;
+}
 .Notification-table tbody tr td
 {
   vertical-align: middle;
@@ -2535,6 +2543,13 @@ td input {
   color: #a28500 !important;
   border: none !important;
 }
+.Approve-table tbody tr td
+{
+  vertical-align: middle;
+  padding: 6px 0px !important;
+  color: #228700 !important;
+  border: none !important;
+}
 .Notification-table tbody tr:nth-of-type(even)
 {
   background: #ffeeee !important;
@@ -2543,8 +2558,18 @@ td input {
 {
   background: #fffcea !important;
 }
+.Approve-table tbody tr:nth-of-type(even)
+{
+  background: #beffa8 !important;
+}
+.Approve-folder{
+  cursor: pointer;
+}
 .Notification_filter input, .Notification_filter select{
 border: 1px solid #ffd3d3 !important;
+}
+.Notification_Approve_filter input, .Notification_Approve_filter select{
+border: 1px solid #beffa8 !important;
 }
 .GeneralNoti-Filter input, .GeneralNoti-Filter select{
 border: 1px solid #ffefc6 !important;

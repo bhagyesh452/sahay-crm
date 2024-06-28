@@ -253,7 +253,7 @@ function EmployeePanel() {
 
     socket.on("data-sent", () => {
       fetchRequestDetails();
-      playNotificationSound();
+      fetchNewData();
     });
 
     // Clean up the socket connection when the component unmounts
@@ -1236,11 +1236,11 @@ function EmployeePanel() {
         );
 
         //console.log("Data sent successfully:", response.data);
-        Swal.fire("Request sent!");
+        Swal.fire("Success!","Data Request Sent!","success");
         closepopup();
       } catch (error) {
         console.error("Error:", error.message);
-        Swal.fire("Please try again later!");
+        Swal.fire("Error!","Please try again later!","error");
       }
     } else {
       try {
@@ -2591,20 +2591,6 @@ function EmployeePanel() {
 
             <div className="page-header d-print-none">
               <div className="container-xl">
-                {requestData !== null && requestData !== undefined && (
-                  <div className="notification-bar">
-                    <div className="noti-text">
-                      <h1>
-                        You have just received {requestData.dAmount} data!
-                      </h1>
-                    </div>
-                    <div className="close-icon">
-                      <IconButton onClick={handleMarktrue}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  </div>
-                )}
                 <div className="row g-2 align-items-center">
                   <div
                     style={{

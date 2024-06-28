@@ -92,7 +92,10 @@ app.use('/api/bookings', (req, res, next) => {
   req.io = socketIO;
   next();
 }, bookingsAPI);
-app.use('/api/company-data', companyAPI)
+app.use('/api/company-data', (req,res,next)=>{
+req.io = socketIO;
+next();
+},companyAPI);
 app.use('/api/requests', (req, res, next) => {
   req.io = socketIO;
   next();
