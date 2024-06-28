@@ -4586,7 +4586,11 @@ router.post(
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
       const publishDate = new Date();
-
+      const companyMainObject =  RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+      console.log(companyMainObject)
+      const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -4607,7 +4611,8 @@ router.post(
         "Remaining Payment": objectData.receivedAmount,
         "Payment Method": objectData.paymentMethod,
         "Payment Date": formatDate(objectData.paymentDate),
-        "Payment Remarks": objectData.extraRemarks
+        "Payment Remarks": objectData.extraRemarks,
+        "Booking Date":bookingDate
       }
       await appendRemainingDataToSheet(sheetObject);
 
@@ -4827,6 +4832,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
   const bookingIndex = data.bookingIndex; // Assuming the bookingIndex is in the request body
   const mainObject = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
   const serviceID = data.serviceID
+  const socketIO = req.io;
 
 
   if (!mainObject) {
@@ -4881,6 +4887,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { services: updatedServices },
       { new: true } // Return the updated document
     );
+    const bdeName = updatedMainObject.bdeName ;
+    socketIO.emit('expanse-added',bdeName);
 
     res.status(200).json(updatedMainObject);
   } else {
@@ -4933,6 +4941,9 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
         }
       }
     );
+
+    const bdeName = updatedMainObj[bookingIndex - 1].bdeName ;
+    socketIO.emit('expanse-added',bdeName);
 
     res.status(200).json(updatedMainObj);
   }

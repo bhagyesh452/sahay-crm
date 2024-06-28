@@ -206,19 +206,20 @@ router.put("/requestgData/:id", async (req, res) => {
 
   try {
     const socketIO = req.io;
+    
     // Update the 'read' property in the MongoDB model
     const updatedNotification = await RequestGModel.findByIdAndUpdate(
       id,
       { read, assigned },
       { new: true }
     );
-
+    const name = updatedNotification.ename;
     if (!updatedNotification) {
       return res.status(404).json({ error: "Notification not found" });
     }
 
     res.json(updatedNotification);
-    socketIO.emit("data-sent");
+    socketIO.emit("data-sent" , name);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -314,7 +315,7 @@ router.delete("/delete-data/:ename", async (req, res) => {
   try {
     // Delete all data objects with the given ename
     await CompanyRequestModel.deleteMany({ ename });
-    socketIO.emit('data-action-performed')
+    socketIO.emit('data-action-performed' , ename)
 
     // Send success response
     res.status(200).send("Data deleted successfully");
