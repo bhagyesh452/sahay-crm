@@ -4586,7 +4586,10 @@ router.post(
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
       const publishDate = new Date();
-
+      const companyMainObject = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+      const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -4607,7 +4610,8 @@ router.post(
         "Remaining Payment": objectData.receivedAmount,
         "Payment Method": objectData.paymentMethod,
         "Payment Date": formatDate(objectData.paymentDate),
-        "Payment Remarks": objectData.extraRemarks
+        "Payment Remarks": objectData.extraRemarks,
+        "Booking Date":bookingDate
       }
       await appendRemainingDataToSheet(sheetObject);
 
@@ -4883,7 +4887,7 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    
+
     res.status(200).json(updatedMainObject);
   } else {
     const moreObject = mainObject.moreBookings[bookingIndex - 1];

@@ -54,7 +54,7 @@ function transformData(jsonData) {
   return [data];
 }
 function transformRemainingData(jsonData) {
-  const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks"];
+  const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks","Booking Date"];
 
   const data = headers.map(header => {
   
