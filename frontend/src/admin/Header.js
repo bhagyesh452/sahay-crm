@@ -24,6 +24,8 @@ function Header({ name, designation}) {
 
   //console.log(name)
   //console.log(designation)
+
+  // ------------------------------------  Socket IO Requests ----------------------------------------------------------------
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
@@ -47,10 +49,12 @@ function Header({ name, designation}) {
       fetchRequestDetails();
     fetchRequestGDetails();
     });
+    
 
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
-        variant: 'info'
+        variant: 'info',
+        autoHideDuration: 7000
       });
     
       const audioplayer = new Audio(notification_audio);
@@ -58,7 +62,26 @@ function Header({ name, designation}) {
     });
     socket.on("booking-submitted", (res) => {
       enqueueSnackbar(`One new booking from ${res}`, {
-        variant: 'success'
+        variant: 'success',
+        autoHideDuration: 7000
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("newRequest", (res) => {
+      enqueueSnackbar(`New Data Request from ${res}`, {
+        variant: 'warning',
+        autoHideDuration: 7000
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("approve-request", (res) => {
+      enqueueSnackbar(`Data Approve Request from ${res}`, {
+        variant: 'info',
+        autoHideDuration: 7000
       });
     
       const audioplayer = new Audio(notification_audio);
@@ -200,7 +223,12 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider iconVariant={{
+    success: '✅',
+    error: '✖️',
+    warning: '⚠️',
+    info: 'ℹ️',
+  }} maxSnack={3}>
    
     </SnackbarProvider>
     </div>
