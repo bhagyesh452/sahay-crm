@@ -14,7 +14,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { AiOutlineTeam } from "react-icons/ai";
 import { GoPerson } from "react-icons/go";
 import { MdOutlinePersonPin } from "react-icons/md";
-// import Employee from './Employees.js'
+import HrEmployees from "./HrEmployees"; 
 // import Team from './Team.js'
 // import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
 import { AiOutlineUserDelete } from "react-icons/ai";
@@ -107,7 +107,7 @@ function NewEmployees() {
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0}>
-                            {/* <Employee /> */}
+                            <HrEmployees />
                         </CustomTabPanel>
                          <CustomTabPanel value={value} index={1}>
                             {/* <DeletedEmployeePanel/> */}
