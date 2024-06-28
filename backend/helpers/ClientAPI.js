@@ -70,7 +70,6 @@ router.post(
     { name: "RelevantDocument", maxCount: 1 },
     { name: "UploadAuditedStatement", maxCount: 1 },
     { name: "UploadProvisionalStatement", maxCount: 1 },
-
   ]),
   async (req, res) => {
     try {
@@ -81,7 +80,8 @@ router.post(
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
       const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
-      const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+      const UploadProvisionalStatement =
+        req.files["UploadProvisionalStatement"] || [];
 
       // Get user details from the request body
       const {
@@ -193,7 +193,6 @@ router.post(
         TechnologyInvolved !== "No Technology Invloved"
       ) {
         TechnologyInvolvedHtml = `
-<<<<<<< HEAD
             <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
               <div style="width: 25%;align-self: stretch !important;height:100%">
                 <div style="padding: 5px 10px;">
@@ -202,16 +201,6 @@ router.post(
               </div>
               <div style="width: 75%;align-self: stretch !important;height:100%">
                 <div style="border: 1px solid #ccc; padding: 5px 10px;">
-=======
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  Technology Involved
-                </div>
-              </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
->>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                   ${TechnologyInvolved}
                 </div>
               </div>
@@ -238,7 +227,10 @@ router.post(
       }
 
       let UploadAuditedStatementHtml = "";
-      if (UploadAuditedStatement && UploadAuditedStatement !== "No Audited statement") {
+      if (
+        UploadAuditedStatement &&
+        UploadAuditedStatement !== "No Audited statement"
+      ) {
         UploadAuditedStatementHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%;align-self: stretch !important;height:100%">
@@ -255,7 +247,10 @@ router.post(
         `;
       }
       let UploadProvisioanlHtml = "";
-      if (UploadProvisionalStatement && UploadProvisionalStatement !== "No Provisional Document") {
+      if (
+        UploadProvisionalStatement &&
+        UploadProvisionalStatement !== "No Provisional Document"
+      ) {
         UploadProvisioanlHtml = `
           <div style="display: flex; flex-wrap: wrap">
             <div style="width: 25%;align-self: stretch !important;height:100%">
@@ -914,13 +909,8 @@ router.post(
                  margin-top: 15px;
                "
              >
-<<<<<<< HEAD
-               <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%;">
-=======
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
->>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
@@ -938,19 +928,14 @@ router.post(
                    </div>
                  </div>
                </div>
-<<<<<<< HEAD
-               <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
-=======
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
->>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
                      "
                    >
-                     Problems and Solution
+                     What Are The Problems That Your Product Or Service Proposes To Solve And How? 
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
@@ -964,19 +949,14 @@ router.post(
                    </div>
                  </div>
                </div>
-<<<<<<< HEAD
-               <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
-=======
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
->>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
                      "
                    >
-                     USP
+                     Core Strength Of Your Business Which Differs Your Company From Other Business In The Industry (USP) 
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
@@ -991,19 +971,14 @@ router.post(
                  </div>
                </div>
     
-<<<<<<< HEAD
-               <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
                  <div style="width: 25%;align-self: stretch !important;height:100%">
-=======
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
->>>>>>> 4ad34b8cd19e37ff208c30694ffb1e2a05725a7a
                    <div
                      style="
                        padding: 5px 10px;
                      "
                    >
-                     Value Proposition
+                     Value Proposition Of Your Project
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
@@ -1167,11 +1142,15 @@ router.post(
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
       }
 
-
-
-      // Sending email for CompanyEmail 
-      let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>` : CompanyAddress;
+      // Sending email for CompanyEmail
+      let htmlNewTemplate = fs.readFileSync(
+        "./helpers/client_mail.html",
+        "utf-8"
+      );
+      const client_address =
+        !CompanyAddress || CompanyAddress == ""
+          ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>`
+          : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find(
         (details) => details.IsMainDirector === "true"
@@ -1245,7 +1224,7 @@ router.post(
                 if (selectedService) {
                   clientDocument = [mainBuffer, pdfAttachment];
                 } else {
-                  clientDocument = [pdfAttachment]; 
+                  clientDocument = [pdfAttachment];
                   console.log("Service 'Seed Funding Support' not found.");
                 }
                 sendMail4(
