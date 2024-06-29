@@ -76,17 +76,17 @@ function EmployeeMaturedBookings() {
 
   const [formData, setFormData] = useState([])
   const [openBooking, setOpenBooking] = useState(false);
-  const [infiniteBooking , setInfiniteBooking] = useState([]);
+  const [infiniteBooking, setInfiniteBooking] = useState([]);
 
 
   const fetchRedesignedFormData1 = async () => {
     try {
-     
+
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
-       const sortedData = redesignedData.sort((a, b) => {
+      const sortedData = redesignedData.sort((a, b) => {
         const dateA = new Date(a.lastActionDate);
         const dateB = new Date(b.lastActionDate);
         return dateB - dateA; // Sort in descending order
@@ -101,7 +101,7 @@ function EmployeeMaturedBookings() {
   useEffect(() => {
 
     fetchRedesignedFormData1();
-   
+
   }, [data.ename]);
   useEffect(() => {
     setFormData(
@@ -115,6 +115,15 @@ function EmployeeMaturedBookings() {
   const [isDeletedStatus, setisDeletedStatus] = useState(false);
   const [currentBdeName, setCurrentBdeName] = useState("")
 
+  const functionToGetBdeName = async (companyName) => {
+    try {
+      const response = await axios.get(`${secretKey}/company-data/get-bde-name-for-mybookings/${companyName}`);
+      setCurrentBdeName(response.data.bdeName); // Assuming the response contains the BDE name in this format
+    } catch (error) {
+      console.log("Error fetching employee", error.message);
+    }
+  };
+  
   useEffect(() => {
     console.log("Current Company Name:", currentCompanyName);
   
@@ -123,6 +132,7 @@ function EmployeeMaturedBookings() {
       if (formData.length !== 0) {
         setisDeletedStatus(formData[0].isDeletedEmployeeCompany);
         setCurrentBdeName(formData[0].bdeName);
+        functionToGetBdeName(formData[0]["Company Name"]);
       }
     } else {
       const foundLeadForm = formData.find(obj => obj["Company Name"] === currentCompanyName);
@@ -130,20 +140,22 @@ function EmployeeMaturedBookings() {
         setCurrentLeadform(foundLeadForm);
         setisDeletedStatus(foundLeadForm.isDeletedEmployeeCompany);
         setCurrentBdeName(foundLeadForm.bdeName);
+        functionToGetBdeName(foundLeadForm["Company Name"]);
       } else {
         console.log(`Company "${currentCompanyName}" not found in formData.`);
       }
     }
   }, [formData, currentCompanyName]);
   
-console.log(isDeletedStatus)
-console.log(currentBdeName)
+
+  console.log(isDeletedStatus)
+  console.log(currentBdeName)
 
 
   useEffect(() => {
     const socket = io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
+      path: '/socket.io',
       reconnection: true, // Enable reconnections
       transports: ['websocket'], // Use only WebSocket transport
     });
@@ -155,7 +167,7 @@ console.log(currentBdeName)
       enqueueSnackbar(`Delete Request Accepted`, {
         variant: 'success'
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
@@ -230,7 +242,7 @@ console.log(currentBdeName)
 
   console.log("currentLeadForm", currentLeadform)
 
-  const handleRequestDelete = async (Id, companyID, companyName , index) => {
+  const handleRequestDelete = async (Id, companyID, companyName, index) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You are about to send a delete request. Are you sure you want to proceed?",
@@ -252,9 +264,9 @@ console.log(currentBdeName)
           date: new Date().toLocaleDateString(),
           ename: data.ename,
 
-          bookingIndex : index // Replace 'Your Ename Value' with the actual value
+          bookingIndex: index // Replace 'Your Ename Value' with the actual value
         };
-          
+
         // const response = await fetch(`${secretKey}/deleterequestbybde`, {
         //   method: "POST",
         //   headers: {
@@ -262,13 +274,13 @@ console.log(currentBdeName)
         //   },
         //   body: JSON.stringify(sendingData),
         // });
-        const response = await axios.post(`${secretKey}/requests/deleterequestbybde` , sendingData);
-       
-       
+        const response = await axios.post(`${secretKey}/requests/deleterequestbybde`, sendingData);
+
+
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
         // Log the response message
       } catch (error) {
-      
+
         Swal.fire({ title: "Request Already Exists!", icon: "error" });
         console.error("Error creating delete request:", error);
         // Handle the error as per your application's requirements
@@ -282,7 +294,7 @@ console.log(currentBdeName)
   const [bookingIndex, setBookingIndex] = useState(0);
   const [editMoreOpen, setEditMoreOpen] = useState(false);
 
-  const handleEditClick = async (company , index) => {
+  const handleEditClick = async (company, index) => {
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
@@ -350,25 +362,25 @@ console.log(currentBdeName)
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(currentLeadform["Company Name"] , sendingIndex);
+      console.log(currentLeadform["Company Name"], sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
       const response = await axios.post(
         `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-       formData
+        formData
       );
-      
-        Swal.fire({
-          title: "Success!",
-          html: `<small> File Uploaded successfully </small>
+
+      Swal.fire({
+        title: "Success!",
+        html: `<small> File Uploaded successfully </small>
         `,
-          icon: "success",
-        });
-        setSelectedDocuments([]);
-        setOpenOtherDocs(false);
-        fetchRedesignedFormData1();
+        icon: "success",
+      });
+      setSelectedDocuments([]);
+      setOpenOtherDocs(false);
+      fetchRedesignedFormData1();
 
 
-      
+
     } catch (error) {
       Swal.fire({
         title: "Error uploading file",
@@ -425,7 +437,7 @@ console.log(currentBdeName)
 
   // console.log(isDeletedStatus)
 
-  
+
 
   return (
     <div>
@@ -433,7 +445,7 @@ console.log(currentBdeName)
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
-           <div className="booking_list_Filter">
+          <div className="booking_list_Filter">
             <div className="container-xl">
               <div className="row justify-content-between align-items-center">
                 <div className="col-2">
@@ -473,18 +485,18 @@ console.log(currentBdeName)
                   </div>
                 </div>
                 <div className="col-6 d-flex">
-                  <div className="list-gird-main ms-auto"> 
+                  <div className="list-gird-main ms-auto">
                     <div className="listgrridradio_main d-flex align-items-center">
-                      <div className="custom_radio"> 
-                        <input type="radio" name="rGroup" value="1" id="r1" checked/>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="1" id="r1" checked />
                         <label class="custom_radio-alias" for="r1">
-                        <FaTableCellsLarge />
+                          <FaTableCellsLarge />
                         </label>
                       </div>
-                      <div className="custom_radio"> 
-                        <input type="radio" name="rGroup" value="2" id="r2"/>
+                      <div className="custom_radio">
+                        <input type="radio" name="rGroup" value="2" id="r2" />
                         <label class="custom_radio-alias" for="r2">
-                        <FaList />
+                          <FaList />
                         </label>
                       </div>
                     </div>
@@ -524,16 +536,12 @@ console.log(currentBdeName)
                                 )
                               )
                               setisDeletedStatus((formData.find(
-                                  (data) =>
-                                    data["Company Name"] === obj["Company Name"]
-                                )).isDeletedEmployeeCompany)
-                                setCurrentBdeName((formData.find(
-                                  (data) =>
-                                    data["Company Name"] === obj["Company Name"]
-                                )).bdeName)
-                            
+                                (data) =>
+                                  data["Company Name"] === obj["Company Name"]
+                              )).isDeletedEmployeeCompany)
+                              functionToGetBdeName(obj["Company Name"])
+
                             }
-                            
                             }
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -596,10 +604,10 @@ console.log(currentBdeName)
                               </div>
 
                               <div className="d-flex align-items-center justify-content-between">
-                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
-                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
-                                  <img src={RemainingAmnt}></img>
-                                </div>}
+                                {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
+                                  <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                    <img src={RemainingAmnt}></img>
+                                  </div>}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
@@ -650,7 +658,7 @@ console.log(currentBdeName)
                               ? formData[0]["Company Name"]
                               : "-"}
                         </div>
-                        {!isDeletedStatus && currentBdeName === data.ename && (<div
+                        {(isDeletedStatus && (currentBdeName === data.ename)) && (<div
                           className="bookings_add_more"
                           title="Add More Booking"
                           onClick={() => setAddFormOpen(true)}
@@ -663,9 +671,9 @@ console.log(currentBdeName)
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
                         <div className="my-card-head">  <div className="d-flex align-items-center justify-content-between">
-                            <div>Basic Informations</div>
-                            <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
-                          </div></div>
+                          <div>Basic Informations</div>
+                          <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
+                        </div></div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
@@ -804,7 +812,7 @@ console.log(currentBdeName)
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                  ₹ {parseInt(calculateTotalAmount(currentLeadform)).toLocaleString()}
+                                    ₹ {parseInt(calculateTotalAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -818,7 +826,7 @@ console.log(currentBdeName)
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  ₹ {parseInt(calculateReceivedAmount(currentLeadform)).toLocaleString()}
+                                    ₹ {parseInt(calculateReceivedAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -832,7 +840,7 @@ console.log(currentBdeName)
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
                                   {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
+                                    ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
                                   </div>}
                                 </div>
                               </div>
@@ -863,14 +871,14 @@ console.log(currentBdeName)
                             <div
                               className="Services_Preview_action_edit mr-1"
                               onClick={() => {
-                                handleEditClick(currentLeadform._id , 0  )
+                                handleEditClick(currentLeadform._id, 0)
                               }}
                             >
                               <MdModeEdit />
                             </div>
                             <div
                               onClick={() =>
-                                handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , 0)
+                                handleRequestDelete(currentLeadform._id, currentLeadform.company, currentLeadform["Company Name"], 0)
                               }
                               className="Services_Preview_action_delete"
                             >
@@ -1079,12 +1087,12 @@ console.log(currentBdeName)
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                              ? obj.paymentRemarks
-                                              : "N/A"}>
-                                  
-                                            {obj.paymentRemarks
-                                              ? obj.paymentRemarks
-                                              : "N/A"}
+                                          ? obj.paymentRemarks
+                                          : "N/A"}>
+
+                                          {obj.paymentRemarks
+                                            ? obj.paymentRemarks
+                                            : "N/A"}
                                         </div>
                                       </div>
                                     </div>
@@ -1196,8 +1204,8 @@ console.log(currentBdeName)
                                   )}
                                 </div>
                               </div>
-                                 {/* Remaining Payment Viwe Sections */}
-                                 {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                              {/* Remaining Payment Viwe Sections */}
+                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
                                 <div
                                   className="my-card-body accordion"
                                   id={`accordionExample${index}`}
@@ -1241,7 +1249,7 @@ console.log(currentBdeName)
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                            
+
                                                               if (index === 0) return "Second ";
                                                               else if (index === 1) return "Third ";
                                                               else if (index === 2) return "Fourth ";
@@ -1289,14 +1297,14 @@ console.log(currentBdeName)
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
-                                                               
+
                                                                 const filteredLength = filteredPayments.length;
                                                                 if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
                                                                 else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
                                                                 else if (index === 2) return parseInt(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()} 
+                                                              })()}
                                                             {/* {index === 0
                                                               ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                               : index === 1
@@ -1588,7 +1596,7 @@ console.log(currentBdeName)
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.extraNotes}>
+                                      currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>
@@ -1827,14 +1835,14 @@ console.log(currentBdeName)
                                   <div
                                     className="Services_Preview_action_edit mr-2"
                                     onClick={() => {
-                                      handleEditClick(currentLeadform._id , index+1)
+                                      handleEditClick(currentLeadform._id, index + 1)
                                     }}
                                   >
                                     <MdModeEdit />
                                   </div>
                                   <div
                                     onClick={() =>
-                                      handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , index+1)
+                                      handleRequestDelete(currentLeadform._id, currentLeadform.company, currentLeadform["Company Name"], index + 1)
                                     }
                                     className="Services_Preview_action_delete"
                                   >
@@ -2034,8 +2042,8 @@ console.log(currentBdeName)
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                ? obj.paymentRemarks
-                                                : "N/A"}>
+                                              ? obj.paymentRemarks
+                                              : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2176,7 +2184,7 @@ console.log(currentBdeName)
                                             <div className="w-95 p-0">
                                               <div className="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
                                                 <div>Remaining Payment </div>
-                          
+
 
                                               </div>
                                             </div>
@@ -2214,12 +2222,12 @@ console.log(currentBdeName)
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
-                                                              {formatDatePro(
-                                                                paymentObj.paymentDate
-                                                              )}
+                                                                {formatDatePro(
+                                                                  paymentObj.paymentDate
+                                                                )}
                                                               </div>
-                                                              
-                                                               {/* {
+
+                                                              {/* {
                                                           objMain.remainingPayments.length - 1 === index && <IconButton onClick={()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
                                                             <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
                                                           </IconButton>
@@ -2302,8 +2310,8 @@ console.log(currentBdeName)
                                                             </div>
                                                             <div class="col-sm-6 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                  paymentObj.extraRemarks
-                                                                }>
+                                                                paymentObj.extraRemarks
+                                                              }>
                                                                 {
                                                                   paymentObj.extraRemarks
                                                                 }
@@ -2727,6 +2735,8 @@ console.log(currentBdeName)
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
+            employeeName = {data.ename}
+            employeeEmail = {data.email}
           />
         </>
       )}
@@ -2794,11 +2804,11 @@ console.log(currentBdeName)
       </Dialog>
 
 
-{/* ---------------------------------------------------------  Snackbar  -------------------------------------------- */}
+      {/* ---------------------------------------------------------  Snackbar  -------------------------------------------- */}
 
-<SnackbarProvider maxSnack={3}>
-   
-   </SnackbarProvider>
+      <SnackbarProvider maxSnack={3}>
+
+      </SnackbarProvider>
 
     </div>
   )

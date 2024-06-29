@@ -1105,5 +1105,27 @@ router.post('/post-bderevertbackacceptedcompanyrequest', async (req, res) => {
   }
 });
 
+router.get("/get-bde-name-for-mybookings/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+
+  try {
+    // Find the company by name
+    const company = await CompanyModel.findOne({ "Company Name": companyName });
+
+    // If the company is found, send the BDE name
+    if (company) {
+      res.status(200).json({ bdeName: company.ename }); // Assuming the BDE name is stored in the `bdeName` field
+    } else {
+      // If the company is not found, send a 404 response
+      res.status(404).json({ error: "Company not found" });
+    }
+  } catch (error) {
+    // Handle any errors that occur during the query
+    console.error("Error fetching company:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 module.exports = router;
