@@ -461,28 +461,30 @@ router.post(`/rejectedrequestdonebybdm` ,async(req , res)=>{
 })
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
-  const { data , name } = req.body;
-  try{
-    data.map( async (company) => {
+  const { data, name } = req.body;
+  try {
+    const updatePromises = data.map(async (company) => {
       await CompanyModel.findByIdAndUpdate(company._id, {
-        ...data,
-        bdmAcceptStatus : "Forwarded",
-        bdmName : name,
+        ...company,
+        bdmAcceptStatus: "Forwarded",
+        bdmName: name,
         bdmForwardDate: new Date(),
         bdeOldStatus: company.Status
       });
 
       await TeamLeadsModel.create({
-        ...data,
+        ...company,
         _id: company._id
       });
     });
-    res.status(200).json({message : "Data created and updated successfully"});
-  }catch(error){
-    console.log(error);
-    res.status(500).json({error: "Internal Server Error"});
-  }
 
+    await Promise.all(updatePromises);
+    
+    res.status(200).json({ message: "Data created and updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 module.exports = router;

@@ -722,19 +722,19 @@ function EmployeeParticular() {
   //         const lastSelectedIndex = employeeData.findIndex((row) =>
   //           prevSelectedRows.some((selectedRow) => selectedRow._id === row._id)
   //         );
-  
+
   //         if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
   //           const start = Math.min(selectedIndex, lastSelectedIndex);
   //           const end = Math.max(selectedIndex, lastSelectedIndex);
   //           const rowsToSelect = employeeData.slice(start, end + 1);
-  
+
   //           const idsToSelect = rowsToSelect.map((row) => row._id);
   //           return prevSelectedRows.some((selectedRow) => selectedRow._id === id)
   //             ? prevSelectedRows.filter((row) => !idsToSelect.includes(row._id))
   //             : [...prevSelectedRows, ...rowsToSelect];
   //         }
   //       }
-  
+
   //       const isAlreadySelected = prevSelectedRows.some((row) => row._id === id);
   //       return isAlreadySelected
   //         ? prevSelectedRows.filter((row) => row._id !== id)
@@ -1143,7 +1143,7 @@ function EmployeeParticular() {
         //Status: "Untouched",
         Remarks: "No Remarks Added",
       }));
-      console.log(csvdata)
+    console.log(csvdata)
 
     try {
       Swal.fire({
@@ -1761,25 +1761,24 @@ function EmployeeParticular() {
   }
 
   //------- function forward to bdm---------------------
-  
-  const handleCloseForwardBdmPopup=()=>{
+
+  const handleCloseForwardBdmPopup = () => {
     setOpenAssignToBdm(false);
   };
 
-  const handleUploadDataToBDM = async (bdmName) => {
-    const data = employeeData.filter((employee)=>selectedRows.includes(employee._id))
-    console.log("data is :", data);
-    try{
-      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`,{
-        data:data,
+  const handleForwardDataToBDM = async (bdmName) => {
+    const data = employeeData.filter((employee) => selectedRows.includes(employee._id));
+    console.log("data is:", data);
+    try {
+      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+        data: data,
         name: bdmName
       });
-      
       setBdmName("Not Alloted");
       handleCloseForwardBdmPopup();
-      console.log("response data is :", response);
-    }catch(error){
-      console.log("error fetching data" , error.message)
+      console.log("response data is:", response);
+    } catch (error) {
+      console.log("error fetching data", error.message);
     }
   };
   // console.log(openAssignToBdm)
@@ -2074,11 +2073,11 @@ function EmployeeParticular() {
                     {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
                       <MdOutlinePostAdd className='mr-1' />Assign Leads
                     </button>)}
-                    <button type="button" className="btn mybtn"
+                    {/* <button type="button" className="btn mybtn"
                       onClick={() => setOpenAssignToBdm(true)}
                     >
                       <RiShareForwardFill className='mr-1' /> Forward to BDM
-                    </button>
+                    </button> */}
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
@@ -3472,41 +3471,41 @@ function EmployeeParticular() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-            <div>
-              {newempData.length !== 0 ? (
-                <>
-                  <div className="dialogAssign">
-                      <label>Forward to BDM</label>
-                      <div className="form-control">
-                        <select
-                          style={{
-                            width: "inherit",
-                            border: "none",
-                            outline: "none",
-                          }}
-                          value={bdmName}
-                          onChange={(e) => setBdmName(e.target.value)}
-                        >
-                          <option value="Not Alloted" disabled>
-                            Select a BDM
-                          </option>
-                          {newempData.filter((item) =>
-                            (item._id !== id && item.bdmWork || item.designation === "Sales Manager") && item.branchOffice === branchName
-                          ).map((item) => (
-                            <option value={item.ename}>{item.ename}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                </>
-              ) : (
-                <div>
-                  <h1>No Employees Found</h1>
+          <div>
+            {newempData.length !== 0 ? (
+              <>
+                <div className="dialogAssign">
+                  <label>Forward to BDM</label>
+                  <div className="form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={bdmName}
+                      onChange={(e) => setBdmName(e.target.value)}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select a BDM
+                      </option>
+                      {newempData.filter((item) =>
+                        (item._id !== id && item.bdmWork || item.designation === "Sales Manager") && item.branchOffice === branchName
+                      ).map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div>
+                <h1>No Employees Found</h1>
+              </div>
+            )}
+          </div>
         </DialogContent>
-        <button onClick={()=>handleUploadDataToBDM(bdmName)} className="btn btn-primary">
+        <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
           Submit
         </button>
       </Dialog>
