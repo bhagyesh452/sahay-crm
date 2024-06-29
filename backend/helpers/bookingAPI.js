@@ -930,7 +930,7 @@ router.post(
           );
           const io = req.io;
           const ename = newData.bdeName;
-          io.emit('booking-submitted',ename);
+          io.emit('booking-submitted', ename);
           console.log('io emmited')
           const totalAmount = newData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
@@ -2411,15 +2411,23 @@ router.post(
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-          const seedConditionalPage = newData.services.some((service)=>{
+          const seedConditionalPage = newData.services.some((service) => {
 
             return service.serviceName === "Seed Fund Application"
           }) ? `<div class="PDF_main">
     <section>
-      <div class="pdf_heading">
-        <h3>Seed Funding Application Support Acknowledgement</h3>
-      </div>
-      <div class="Declaration_text">
+       <div class="date_div">
+              <p>Date : ${todaysDate}</p>
+            </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+  <div class="Declaration_text">
+   <p class="Declaration_text_head mt-2">
+          <b>
+          Seed Funding Application Support Acknowledgement:   
+          </b>
+        </p>
            
         <p class="Declaration_text_data">
           I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
@@ -2454,8 +2462,8 @@ router.post(
     </section>
   
   </div>` : '';
-         
-  
+
+
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -2565,11 +2573,11 @@ router.post(
                 }
               }
             });
-        
+
 
           // Send success response
           res.status(201).send("Data sent");
-     
+
         } else {
           res.status(404).json("Company Not found");
           return true;
@@ -2823,7 +2831,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const boomDate = new Date();
     const io = req.io;
     const ename = newData.bdeName;
-   
+
 
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
@@ -2869,7 +2877,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       });
     }
 
-    io.emit('booking-submitted',ename);
+    io.emit('booking-submitted', ename);
     console.log('booking emmited');
 
     const totalAmount = newData.services.reduce(
@@ -4334,15 +4342,23 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-      const seedConditionalPage = newData.services.some((service)=>{
+    const seedConditionalPage = newData.services.some((service) => {
 
-        return service.serviceName === "Seed Fund Application"
-      }) ? `<div class="PDF_main">
+      return service.serviceName === "Seed Fund Application"
+    }) ? `<div class="PDF_main">
 <section>
-  <div class="pdf_heading">
-    <h3>Seed Funding Application Support Acknowledgement</h3>
-  </div>
+ <div class="date_div">
+              <p>Date : ${todaysDate}</p>
+            </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
   <div class="Declaration_text">
+   <p class="Declaration_text_head mt-2">
+          <b>
+          Seed Funding Application Support Acknowledgement:   
+          </b>
+        </p>
        
     <p class="Declaration_text_data">
       I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
@@ -4492,7 +4508,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
       });
 
-   
+
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {
@@ -4674,7 +4690,7 @@ router.post(
   async (req, res) => {
     try {
       const objectData = req.body;
-     
+
 
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
@@ -4683,7 +4699,7 @@ router.post(
       const companyMainObject = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-      
+
       const bookingDate = bookingIndex === "0" ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject.moreBookings[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
@@ -4706,7 +4722,7 @@ router.post(
         "Payment Method": objectData.paymentMethod,
         "Payment Date": formatDate(objectData.paymentDate),
         "Payment Remarks": objectData.extraRemarks,
-        "Booking Date":bookingDate
+        "Booking Date": bookingDate
       }
       await appendRemainingDataToSheet(sheetObject);
 
@@ -4981,8 +4997,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { services: updatedServices },
       { new: true } // Return the updated document
     );
-    const bdeName = updatedMainObject.bdeName ;
-    socketIO.emit('expanse-added',bdeName);
+    const bdeName = updatedMainObject.bdeName;
+    socketIO.emit('expanse-added', bdeName);
 
     res.status(200).json(updatedMainObject);
   } else {
@@ -5036,11 +5052,11 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       }
     );
 
-    const bdeName = updatedMainObj[bookingIndex - 1].bdeName ;
+    const bdeName = updatedMainObj[bookingIndex - 1].bdeName;
     const data = {
-      bdeName : bdeName , companyName : companyName
+      bdeName: bdeName, companyName: companyName
     }
-    socketIO.emit('expanse-added',data);
+    socketIO.emit('expanse-added', data);
 
     res.status(200).json(updatedMainObj);
   }
