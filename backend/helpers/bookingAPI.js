@@ -2412,6 +2412,7 @@ router.post(
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
           const seedConditionalPage = newData.services.some((service)=>{
+
             return service.serviceName === "Seed Fund Application"
           }) ? `<div class="PDF_main">
     <section>
@@ -2453,6 +2454,8 @@ router.post(
     </section>
   
   </div>` : '';
+         
+  
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -4331,6 +4334,49 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+      const seedConditionalPage = newData.services.some((service)=>{
+
+        return service.serviceName === "Seed Fund Application"
+      }) ? `<div class="PDF_main">
+<section>
+  <div class="pdf_heading">
+    <h3>Seed Funding Application Support Acknowledgement</h3>
+  </div>
+  <div class="Declaration_text">
+       
+    <p class="Declaration_text_data">
+      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
+    </p>
+    <p class="Declaration_text_data">
+      I declare that all required documents for the seed funding application will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+    </p>
+    <p class="Declaration_text_data">
+      <b>Fees:</b>
+    </p>
+    <div class="Declaration_text_data">
+      <ul>
+        <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+        <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+      </ul>
+    </div>
+    <p class="Declaration_text_data">
+      <b>Acknowledgements:</b>
+    </p>
+    <div class="Declaration_text_data">
+      <ul>
+        <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+        <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+        <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+        <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+      </ul>
+    </div>
+ 
+  </div>
+
+  
+</section>
+
+</div>` : '';
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -4340,6 +4386,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Services}}", serviceList)
+      .replace("{{Services}}", serviceList)
+      .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
       .replace("{{page-display}}", newPageDisplay)
       .replace("{{pagination}}", pagination)
       .replace("{{Authorized-Person}}", mailName)
@@ -4381,9 +4429,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "footer": {
         "height": "100px",
         "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${seedConditionalPage === "" ? 3 : 4}</p></div>`, // Any page number is working. 1-based index
+          4: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 4/4</p></div>`, // Any page number is working. 1-based index
           default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
           last: '<span style="color: #444;">2</span>/<span>2</span>'
         }
