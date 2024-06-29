@@ -1150,7 +1150,7 @@ router.post(
       const client_address =
         !CompanyAddress || CompanyAddress == ""
           ? `<label class="variable_span" 
-                    style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
+                    style="width: 350px; display: inline;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
               "></label>`
           : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
