@@ -4808,6 +4808,7 @@ function EmployeePanel() {
             companysName={companyName}
             setNowToFetch={setNowToFetch}
             setDataStatus={setdataStatus}
+            employeeName={data.ename}
           />
         </>
       )}
