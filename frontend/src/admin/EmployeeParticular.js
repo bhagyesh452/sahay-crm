@@ -30,7 +30,7 @@ import { MdOutlineEditOff } from "react-icons/md";
 import { HiChevronDoubleLeft } from "react-icons/hi";
 import { HiChevronDoubleRight } from "react-icons/hi";
 import { TbChevronLeftPipe } from "react-icons/tb";
-import { FaLongArrowAltLeft } from "react-icons/fa";
+import { FaLongArrowAltLeft, FaSlack } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
@@ -64,12 +64,16 @@ import { MdOutlinePostAdd } from "react-icons/md";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
+import { RiShareForwardFill } from "react-icons/ri";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
+  // console.log("Id is :", id);
+
   const [openAssign, openchangeAssign] = useState(false);
+  const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
@@ -128,7 +132,9 @@ function EmployeeParticular() {
   const [selectedEmployee2, setSelectedEmployee2] = useState()
   const [isFilter, setIsFilter] = useState(false)
   const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
-  const [newData, setNewData] = useState([])
+  const [newData, setNewData] = useState([]);
+  const [branchName, setBranchName] = useState("");
+  const [bdmName, setBdmName] = useState("Not Alloted");
 
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
@@ -246,10 +252,12 @@ function EmployeeParticular() {
         //console.log("yahan nahi");
         setEmployeeName(selectedEmployee.ename);
         setBdmWorkOn(selectedEmployee.bdmWork);
+        setBranchName(selectedEmployee.branchOffice);
       } else if (selectedEmployee2 && selectedEmployee2._id) {
         //console.log("yahan chala");
         setEmployeeName(selectedEmployee2.ename);
         setBdmWorkOn(selectedEmployee2.bdmWork);
+        setBranchName(selectedEmployee2.branchOffice);
       } else {
         //console.log("yahan bhi");
         // Handle the case where no employee is found with the given id
@@ -259,6 +267,7 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
+
 
 
 
@@ -348,21 +357,33 @@ function EmployeeParticular() {
       });
       setExtraData(sortedData)
       setNewData(sortedData)
-      setmoreEmpData(sortedData);
+      setmoreEmpData(sortedData)
       setEmployeeData(
         sortedData.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
-            obj.Status === "Untouched"
-        )
-      );
+            (obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched") &&
+            (obj.bdmAcceptStatus !== "Forwarded" &&
+              obj.bdmAcceptStatus !== "Accept" &&
+              obj.bdmAcceptStatus !== "Pending")
+));
+      
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  console.log(moreEmpData.filter(
+    (obj) =>
+      (obj.Status === "Busy" ||
+        obj.Status === "Not Picked Up" ||
+        obj.Status === "Untouched") && 
+        (obj.bdmAcceptStatus !== "Forwarded" &&
+        obj.bdmAcceptStatus !== "Accept" &&
+        obj.bdmAcceptStatus !== "Pending")));
 
 
   useEffect(() => {
@@ -702,8 +723,6 @@ function EmployeeParticular() {
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
   const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
 
-
-
   const fetchnewData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -715,7 +734,7 @@ function EmployeeParticular() {
       console.error("Error fetching data:", error.message);
     }
   };
-  //console.log("empData" , newempData)
+  console.log("empData", newempData)
 
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
@@ -727,7 +746,6 @@ function EmployeeParticular() {
       fetchNewData();
     }
   }, [nowToFetch]);
-
 
   const handleSort = (sortType) => {
     switch (sortType) {
@@ -763,6 +781,7 @@ function EmployeeParticular() {
         break;
     }
   };
+
   const fetchProjections = async () => {
     try {
       const response = await axios.get(`${secretKey}/projection/projection-data`);
@@ -777,6 +796,12 @@ function EmployeeParticular() {
   const closepopupAssign = () => {
     openchangeAssign(false);
   };
+  const openExportDataToBDM = () => {
+    openchangeAssign(true);
+  }
+  const closeExportDataToBDM = () => {
+    openchangeAssign(false);
+  }
   const functionopenlocation = () => {
     openchangelocation(true);
   };
@@ -789,7 +814,6 @@ function EmployeeParticular() {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
-
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -1093,7 +1117,7 @@ function EmployeeParticular() {
         //Status: "Untouched",
         Remarks: "No Remarks Added",
       }));
-      console.log(csvdata)
+    console.log(csvdata)
 
     try {
       Swal.fire({
@@ -1132,6 +1156,9 @@ function EmployeeParticular() {
       });
     }
   };
+
+  // console.log("employeeData" , employeeData)
+
 
 
   const handleMouseDown = (id) => {
@@ -1593,6 +1620,10 @@ function EmployeeParticular() {
     }
   };
 
+  const handleExportDataToBDM = () => {
+    alert("Forwared to bdm");
+  }
+
   //----------------filter for employee section-----------------------------
   const stateList = State.getStatesOfCountry("IN")
   const cityList = City.getCitiesOfCountry("IN")
@@ -1703,6 +1734,37 @@ function EmployeeParticular() {
     //fetchData(1, latestSortCount)
   }
 
+  //------- function forward to bdm---------------------
+
+  const handleCloseForwardBdmPopup = () => {
+    setOpenAssignToBdm(false);
+  };
+
+  const handleForwardDataToBDM = async (bdmName) => {
+    const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+    console.log("data is:", data);
+    if(data.length === 0) {
+      Swal.fire("Can Not Forward Untouched Company", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
+    try {
+      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+        data: data,
+        name: bdmName
+      });
+      fetchNewData();
+      Swal.fire("Company Forwarded", "", "success");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      setdataStatus("All");
+      console.log("response data is:", response);
+    } catch (error) {
+      console.log("error fetching data", error.message);
+    }
+  };
+  // console.log(openAssignToBdm)
 
   return (
     <div>
@@ -1994,6 +2056,11 @@ function EmployeeParticular() {
                     {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
                       <MdOutlinePostAdd className='mr-1' />Assign Leads
                     </button>)}
+                    <button type="button" className="btn mybtn"
+                      onClick={() => setOpenAssignToBdm(true)}
+                    >
+                      <RiShareForwardFill className='mr-1' /> Forward to BDM
+                    </button>
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
@@ -2336,9 +2403,12 @@ function EmployeeParticular() {
                         setEmployeeData(
                           mappedData.filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
-                              obj.Status === "Untouched"
+                              (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") && (
+                                obj.bdmAcceptStatus !== "Forwarded" ||
+                                obj.bdmAcceptStatus !== "Accept" ||
+                                obj.bdmAcceptStatus !== "Pending")
                           ).sort(
                             (a, b) =>
                               new Date(b.lastActionDate) -
@@ -2358,9 +2428,12 @@ function EmployeeParticular() {
                         {
                           ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
-                              obj.Status === "Untouched"
+                              (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") && 
+                                (obj.bdmAcceptStatus !== "Forwarded" &&
+                                obj.bdmAcceptStatus !== "Accept" &&
+                                obj.bdmAcceptStatus !== "Pending")
                           ).length
                         }
                       </span>
@@ -2721,6 +2794,7 @@ function EmployeeParticular() {
                         </tbody>
                       ) : (
                         <>
+                          {console.log("Current Data :", currentData)}
                           {currentData.length !== 0 && (
                             <tbody>
                               {currentData.map((company, index) => (
@@ -3374,6 +3448,58 @@ function EmployeeParticular() {
         </button>
       </Dialog>
 
+      {/* ------------------------------- Forward to BDM -------------------------- */}
+      <Dialog
+        open={openAssignToBdm}
+        onClose={handleCloseForwardBdmPopup}
+        fullWidth
+        maxWidth="sm">
+        <DialogTitle>
+          Forward to BDM{" "}
+          <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            {newempData.length !== 0 ? (
+              <>
+                <div className="dialogAssign">
+                  <label>Forward to BDM</label>
+                  <div className="form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={bdmName}
+                      onChange={(e) => setBdmName(e.target.value)}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select a BDM
+                      </option>
+                      {newempData.filter((item) =>
+                        (item._id !== id && item.bdmWork || item.designation === "Sales Manager") && item.branchOffice === branchName
+                      ).map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <h1>No Employees Found</h1>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+        <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
+
       {/* Dialog for location details */}
       <Dialog
         open={openlocation}
@@ -3736,7 +3862,7 @@ function EmployeeParticular() {
           </div>
         </div>
       </Drawer>
-{/* //----------------leads filter drawer------------------------------- */}
+      {/* //----------------leads filter drawer------------------------------- */}
       <Drawer
         style={{ top: "50px" }}
         anchor="left"

@@ -69,7 +69,7 @@ const ReportComplete = forwardRef(({ id, ...props }, ref) => {
   const handleDismiss = useCallback(() => {
     closeSnackbar(id);
   }, [id, closeSnackbar]);
-  const messageOf = props.message.includes("One new booking from") ? "boookingNoti" : "other";
+  const messageOf = props.message.includes("Booking Received from") ? "boookingNoti" : "other";
   return (
     <SnackbarContent ref={ref} component={Root}>
       <StyledCard>

@@ -455,7 +455,7 @@ function EmployeeTeamLeads() {
         oldStatus,
         newBdmStatus
     ) => {
-
+       console.log(companyId)
         const DT = new Date();
         try {
             const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {

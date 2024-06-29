@@ -50,7 +50,6 @@ const defaultService = {
 };
 
 export default function AddLeadForm({
-  setDataStatus,
   setFormOpen,
   companysName,
   companysEmail,
@@ -96,6 +95,8 @@ export default function AddLeadForm({
     receivedAmount: 0,
     pendingAmount: 0,
   };
+
+  console.log(employeeName , employeeEmail)
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -157,8 +158,10 @@ export default function AddLeadForm({
         incoDate: data.incoDate,
         panNumber: data.panNumber,
         gstNumber: data.gstNumber,
-        bdeName: isDeletedEmployeeCompany ? newBdeName : data.bdeName,
-        bdeEmail: isDeletedEmployeeCompany ? employeeEmail : data.bdeEmail,
+        //bdeName: isDeletedEmployeeCompany ? newBdeName : data.bdeName,
+        bdeName : employeeName,
+        //bdeEmail: isDeletedEmployeeCompany ? employeeEmail : data.bdeEmail,
+        bdeEmail:employeeEmail,
         bookingDate: formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data

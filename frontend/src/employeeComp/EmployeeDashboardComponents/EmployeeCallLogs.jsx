@@ -17,8 +17,8 @@ import { SingleInputTimeRangeField } from '@mui/x-date-pickers-pro/SingleInputTi
 
 
 function EmployeeCallLogs({ employeeData }) {
-    const [startTimestamp, setStartTimestamp] = useState(null);
-    const [endTimestamp, setEndTimestamp] = useState(null);
+    //const [startTimestamp, setStartTimestamp] = useState(null);
+    //const [endTimestamp, setEndTimestamp] = useState(null);
     // const [value, setValue] = useState([
     //     dayjs(`${selectDate}T00:00:00`),
     //     dayjs(`${selectDate}T23:59:59`),
@@ -33,15 +33,15 @@ function EmployeeCallLogs({ employeeData }) {
     const [selectStartTime, setSelectStartTime] = useState('00:00'); // Initialize to only time part
     const [selectEndTime, setSelectEndTime] = useState('23:59'); // Initialize to only time part
 
-    // Set todayStartDate to the start of the day in UTC
-    //todayStartDate.setUTCHours(0, 0, 0, 0);
+    //Set todayStartDate to the start of the day in UTC
+    todayStartDate.setUTCHours(4, 0, 0, 0);
 
-    // Set todayEndDate to the end of the day in UTC
-    // todayEndDate.setUTCHours(23, 59, 59, 999);
+    //Set todayEndDate to the end of the day in UTC
+    todayEndDate.setUTCHours(13, 0, 0, 0);
 
     // Convert to Unix timestamps (seconds since epoch)
-    // const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
-    // const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
     //
 
@@ -71,21 +71,21 @@ function EmployeeCallLogs({ employeeData }) {
     //     }
     // }, [selectDate]);
 
-    useEffect(() => {
-        if (selectDate) {
+    // useEffect(() => {
+    //     if (selectDate) {
 
-            // Create start and end Date objects
-            const combinedDateTimeStart = new Date(`${selectDate}T${selectStartTime}:00`);
-            const combinedDateTimeEnd = new Date(`${selectDate}T${selectEndTime}:00`);
+    //         // Create start and end Date objects
+    //         const combinedDateTimeStart = new Date(`${selectDate}T${selectStartTime}:00`);
+    //         const combinedDateTimeEnd = new Date(`${selectDate}T${selectEndTime}:00`);
 
-            // Convert to Unix timestamps (seconds since epoch)
-            const startTimestamp = Math.floor(combinedDateTimeStart.getTime() / 1000);
-            const endTimestamp = Math.floor(combinedDateTimeEnd.getTime() / 1000);
+    //         // Convert to Unix timestamps (seconds since epoch)
+    //         const startTimestamp = Math.floor(combinedDateTimeStart.getTime() / 1000);
+    //         const endTimestamp = Math.floor(combinedDateTimeEnd.getTime() / 1000);
 
-            setStartTimestamp(startTimestamp);
-            setEndTimestamp(endTimestamp);
-        }
-    }, [selectDate, selectStartTime, selectEndTime]);
+    //         setStartTimestamp(startTimestamp);
+    //         setEndTimestamp(endTimestamp);
+    //     }
+    // }, [selectDate, selectStartTime, selectEndTime]);
 
 
     let employeeArray = []
@@ -165,7 +165,7 @@ function EmployeeCallLogs({ employeeData }) {
                     <h2 className="m-0">
                         Your Call Report
                     </h2>
-                    <div className="dash-select-filter d-flex align-items-center">
+                    {/* <div className="dash-select-filter d-flex align-items-center">
                         <input type="date" class="form-select-sm my-filter-select mr-1"
                             onChange={(e) => {
                                 setSelectDate(e.target.value)
@@ -174,28 +174,7 @@ function EmployeeCallLogs({ employeeData }) {
                             onChange={(e) => {setSelectStartTime(e.target.value) }} />
                         <input style={{width:"60px"}} type="time" class="form-select form-select-sm my-filter-select"
                             onChange={(e) => {setSelectEndTime(e.target.value) }} />
-
-                        {/* <LocalizationProvider class="form-select form-select-sm my-filter-select" dateAdapter={AdapterDayjs}>
-                            <DemoContainer
-                                components={['SingleInputTimeRangeField']}
-                            >
-                                <SingleInputTimeRangeField
-                                    label="Controlled field"
-                                    value={value}
-                                    onChange={(newValue) => setValue(newValue)}
-                                />
-                            </DemoContainer>
-                        </LocalizationProvider> */}
-
-
-                        {/* <select class="form-select form-select-sm my-filter-select"
-                            aria-label=".form-select-sm example"
-                        >
-                            <option value="Today">Today</option>
-                            <option value="This Month">This Month</option>
-                            <option value="Last Month">Last Month</option>
-                        </select> */}
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="dash-card-body">
