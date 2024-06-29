@@ -2417,16 +2417,16 @@ router.post(
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-            const extraServiceName = newData.services.map(service => {
-              let services = ""
-              if(service.serviceName.includes("Seed fund Application")){
-                services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
-              }else if(service.serviceName.includes("Income Tax Exemption Application")){
-                services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-              }
-              return services;
-            })
-      
+          const extraServiceName = newData.services.map(service => {
+            let services = ""
+            if (service.serviceName.includes("Seed fund Application")) {
+              services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+            } else if (service.serviceName.includes("Income Tax Exemption Application")) {
+              services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+            }
+            return services;
+          })
+
           const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
       <section>
        <div class="date_div">
@@ -2512,6 +2512,10 @@ router.post(
             return service.serviceName !== "Start-Up India Certificate"
           })) ? 2 : tempPageLength;
 
+
+          const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
+
+
           const options = {
             format: "A4", // Set the page format to A4 size
             orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
@@ -2524,9 +2528,9 @@ router.post(
             "footer": {
               "height": "100px",
               "contents": {
-                first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`,
-                2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`, // Any page number is working. 1-based index
-                3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${seedConditionalPage === "" ? 3 : 4}</p></div>`, // Any page number is working. 1-based index
+                first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${latestPageLength}</p></div>`,
+                2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${latestPageLength}</p></div>`, // Any page number is working. 1-based index
+                3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${latestPageLength}</p></div>`, // Any page number is working. 1-based index
                 4: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 4/4</p></div>`, // Any page number is working. 1-based index
                 default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
                 last: '<span style="color: #444;">2</span>/<span>2</span>'
@@ -4359,15 +4363,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-      const extraServiceName = newData.services.map(service => {
-        let services = ""
-        if(service.serviceName === "Seed fund Application"){
-          services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
-        }else if(service.serviceName === "Income Tax Exemption Application"){
-          services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-        }
-        return services;
-      })
+    const extraServiceName = newData.services.map(service => {
+      let services = ""
+      if (service.serviceName == "Seed Fund Application") {
+        services = services == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+      } else if (service.serviceName === "Income Tax Exemption Application") {
+        services = services == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+      }
+      return services;
+    })
 
     const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
 <section>
@@ -4454,7 +4458,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     })) ? 2 : tempPageLength;
 
 
-
+    const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
 
 
     const options = {
@@ -4469,9 +4473,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "footer": {
         "height": "100px",
         "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`,
-          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${seedConditionalPage === "" ? 3 : 4}</p></div>`, // Any page number is working. 1-based index
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${latestPageLength}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${latestPageLength}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${latestPageLength}</p></div>`, // Any page number is working. 1-based index
           4: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 4/4</p></div>`, // Any page number is working. 1-based index
           default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
           last: '<span style="color: #444;">2</span>/<span>2</span>'
@@ -4488,7 +4492,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
