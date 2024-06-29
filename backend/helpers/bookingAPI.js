@@ -2417,57 +2417,64 @@ router.post(
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-          const seedConditionalPage = newData.services.some((service) => {
-
-            return service.serviceName === "Seed Fund Application"
-          }) ? `<div class="PDF_main">
-    <section>
-       <div class="date_div">
-              <p>Date : ${todaysDate}</p>
-            </div>
-            <div class="pdf_heading">
-              <h3>Self Declaration</h3>
-            </div>
-  <div class="Declaration_text">
-   <p class="Declaration_text_head mt-2">
-          <b>
-          Seed Funding Application Support Acknowledgement:   
-          </b>
-        </p>
-           
-        <p class="Declaration_text_data">
-          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
-        </p>
-        <p class="Declaration_text_data">
-          I declare that all required documents for the seed funding application will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
-        </p>
-        <p class="Declaration_text_data">
-          <b>Fees:</b>
-        </p>
-        <div class="Declaration_text_data">
-          <ul>
-            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
-            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
-          </ul>
-        </div>
-        <p class="Declaration_text_data">
-          <b>Acknowledgements:</b>
-        </p>
-        <div class="Declaration_text_data">
-          <ul>
-            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
-            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
-            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
-            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
-          </ul>
-        </div>
-     
-      </div>
-   
+            const extraServiceName = newData.services.map(service => {
+              let services = ""
+              if(service.serviceName.includes("Seed fund Application")){
+                services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+              }else if(service.serviceName.includes("Income Tax Exemption Application")){
+                services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+              }
+              return services;
+            })
       
-    </section>
-  
-  </div>` : '';
+          const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
+      <section>
+       <div class="date_div">
+                    <p>Date : ${todaysDate}</p>
+                  </div>
+                  <div class="pdf_heading">
+                    <h3>Self Declaration</h3>
+                  </div>
+        <div class="Declaration_text">
+         <p class="Declaration_text_head mt-2">
+                <b>
+                ${extraServiceName} Acknowledgement:   
+                </b>
+              </p>
+             
+          <p class="Declaration_text_data">
+            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${extraServiceName} Support.
+          </p>
+          <p class="Declaration_text_data">
+            I declare that all required documents for the ${extraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+          </p>
+          <p class="Declaration_text_data">
+            <b>Fees:</b>
+          </p>
+          <div class="Declaration_text_data">
+            <ul>
+              <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+              <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+            </ul>
+          </div>
+          <p class="Declaration_text_data">
+            <b>Acknowledgements:</b>
+          </p>
+          <div class="Declaration_text_data">
+            <ul>
+              <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+              <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+              <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+              <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+            </ul>
+          </div>
+       
+        </div>
+      
+        
+      </section>
+      
+      </div>` : '';
 
 
 
@@ -4352,10 +4359,17 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    const seedConditionalPage = newData.services.some((service) => {
+      const extraServiceName = newData.services.map(service => {
+        let services = ""
+        if(service.serviceName === "Seed fund Application"){
+          services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+        }else if(service.serviceName === "Income Tax Exemption Application"){
+          services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+        }
+        return services;
+      })
 
-      return service.serviceName === "Seed Fund Application"
-    }) ? `<div class="PDF_main">
+    const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
 <section>
  <div class="date_div">
               <p>Date : ${todaysDate}</p>
@@ -4366,15 +4380,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   <div class="Declaration_text">
    <p class="Declaration_text_head mt-2">
           <b>
-          Seed Funding Application Support Acknowledgement:   
+          ${extraServiceName} Acknowledgement:   
           </b>
         </p>
        
     <p class="Declaration_text_data">
-      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
+      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${extraServiceName} Support.
     </p>
     <p class="Declaration_text_data">
-      I declare that all required documents for the seed funding application will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+      I declare that all required documents for the ${extraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
     </p>
     <p class="Declaration_text_data">
       <b>Fees:</b>
@@ -4474,7 +4488,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
