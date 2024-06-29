@@ -2398,11 +2398,17 @@ router.post(
             "Product Development",
             "Chunauti "
           ];
-          const mailName = newData.services.some((service) => {
+
+
+          const tempMailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
+          const mailName = newData.services.some((service) => {
+
+            return service.serviceName === "Seed Fund Application"
+          }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
 
           const AuthorizedEmail =
             mailName === "Dhruvi Gohel"
@@ -4326,12 +4332,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "E-Commerce Website",
       "Product Development"
     ];
-    const mailName = newData.services.some((service) => {
+
+    const tempMailName = newData.services.some((service) => {
       return servicesShubhi.includes(service.serviceName);
     })
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
+    const mailName = newData.services.some((service) => {
 
+      return service.serviceName === "Seed Fund Application"
+    }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
 
     const draftCondition = newData.services.some((service) => {
       return includedServices.includes(service.serviceName);
