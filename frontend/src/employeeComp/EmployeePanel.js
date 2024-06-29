@@ -578,11 +578,12 @@ function EmployeePanel() {
       setEmployeeData(
         tempData.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
-            obj.Status === "Untouched"
-        )
-      );
+            (obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched") && 
+              (obj.bdmAcceptStatus !== "Forwarded" &&
+              obj.bdmAcceptStatus !== "Accept" &&
+              obj.bdmAcceptStatus !== "Pending")));
       setdataStatus("All");
       if (sortStatus === "Untouched") {
         setEmployeeData(
@@ -3453,9 +3454,12 @@ function EmployeePanel() {
                           setEmployeeData(
                             mappedData.filter(
                               (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched"
+                                (obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched") && 
+                                  (obj.bdmAcceptStatus !== "Forwarded" &&
+                                  obj.bdmAcceptStatus !== "Accept" &&
+                                  obj.bdmAcceptStatus !== "Pending")
                             ).sort(
                               (a, b) =>
                                 new Date(b.lastActionDate) -
@@ -3475,9 +3479,12 @@ function EmployeePanel() {
                         {
                           ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
-                              obj.Status === "Untouched"
+                              (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") && 
+                                (obj.bdmAcceptStatus !== "Forwarded" &&
+                                obj.bdmAcceptStatus !== "Accept" &&
+                                obj.bdmAcceptStatus !== "Pending")
                           ).length
                         }
                         </span>
