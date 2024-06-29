@@ -8,6 +8,7 @@ const { exec } = require("child_process");
 const TeamLeadsModel = require('../models/TeamLeads.js');
 const FollowUpModel = require("../models/FollowUp");
 const { Parser } = require('json2csv');
+const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 
 
 function formatDateFinal(timestamp) {
@@ -632,7 +633,8 @@ router.post("/postAssignData", async (req, res) => {
           bdmAcceptStatus: "NotForwarded",
           feedbackPoints: [],
           multiBdmName: [],
-          Status: "Untouched"
+          Status: "Untouched",
+          isDeletedEmployeeCompany: obj.Status === "Matured",
         },
         $unset: {
           bdmName: "",
@@ -660,6 +662,17 @@ router.post("/postAssignData", async (req, res) => {
     }
   }))
 
+  const bulkOpertaionsRedesignedModel = selectedObjects.map((obj)=>({
+    updateOne:{
+      filter:{"Company Name" : obj["Company Name"]},
+      update:{
+        $set:{
+          isDeletedEmployeeCompany : true,
+        }
+      }
+    }
+  }))
+
   try {
     // Perform bulk update on CompanyModel
     await CompanyModel.bulkWrite(bulkOperationsCompany);
@@ -668,6 +681,8 @@ router.post("/postAssignData", async (req, res) => {
     await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
 
     await FollowUpModel.bulkWrite(bulkOperationsProjection)
+
+    await RedesignedLeadformModel.bulkWrite(bulkOpertaionsRedesignedModel)
 
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
