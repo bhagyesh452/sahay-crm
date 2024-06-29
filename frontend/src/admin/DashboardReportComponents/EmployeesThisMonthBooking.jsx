@@ -1974,7 +1974,7 @@ function EmployeesThisMonthBooking() {
                 }
             })
         });
-        setRemainingPaymentObject(remainingMainObject);
+        setRemainingPaymentObject(remainingMainObject.sort((a,b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setRemainingRecievedObject(remainingMainObject);
         setCompleteRemainingPaymentObject(remainingMainObject);
         // setRemainingPaymentObjectFilter(remainingMainObject)
@@ -2231,12 +2231,14 @@ function EmployeesThisMonthBooking() {
             }
         });
 
-        setAdvancePaymentObject(newAdvancePaymentObject);
+        setAdvancePaymentObject(newAdvancePaymentObject.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setTotalPaymentObject(newAdvancePaymentObject);
         setCompleteAdvancePaymentObject(newAdvancePaymentObject);
         // setAdvancePaymentObjectFilter(newAdvancePaymentObject);
         // console.log("Advance Payment :", newAdvancePaymentObject);
     }, [redesignedData]);
+
+    console.log(advancePaymentObject)
 
     // Sorting Total Amount
     const handleSortTotalAmount = (type) => {
