@@ -460,4 +460,26 @@ router.post(`/rejectedrequestdonebybdm` ,async(req , res)=>{
 
 })
 
+router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
+  const { data , name } = req.body;
+  try{
+    data.map( async (company) => {
+      await CompanyModel.findByIdAndUpdate(company._id, {
+        ...data,
+        bdmAcceptStatus : "Forwarded",
+        bdmName : name,
+        bdmForwardStatus: "",
+        bdeOldStatus: ""
+      })
+    });
+
+
+
+
+  }catch(error){
+
+  }
+
+});
+
 module.exports = router;
