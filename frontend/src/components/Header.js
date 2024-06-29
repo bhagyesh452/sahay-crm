@@ -60,6 +60,19 @@ function Header({ name, designation}) {
       }
       
     });
+    socket.on("expanse-added", (res) => {
+      console.log("Expanse Added" , res, name)
+      if(name === res){
+        enqueueSnackbar(`Expanse Added in Your Booking `, {
+          variant: 'info',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
