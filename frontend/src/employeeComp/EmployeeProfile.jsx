@@ -273,6 +273,9 @@ function EmployeeProfile() {
                     <div className="e-profile-tab-item">
                       salary slip
                     </div>
+                    <div className="e-profile-tab-item">
+                      Performance Management
+                    </div>
                   </div> 
                   <div className="table-resposive e-profile-tab-data mt-2">
                     <div className="d-flex justify-content-between aling-items-center">
