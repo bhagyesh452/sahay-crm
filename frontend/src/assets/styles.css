@@ -2302,13 +2302,14 @@ td input {
   overflow: hidden;
 }
 .e-profile-tab-item {
-  padding: 6px 16px 8px 16px;
+  padding: 6px 4px 8px 4px;
   width: 100%;
   text-align: center;
   border: 1px solid #eee;
   cursor: pointer;
   background: #fff;
   font-weight: 500;
+  font-size: 12px;
 }
 .e-profile-tab-item.active
 {
@@ -2360,6 +2361,10 @@ td input {
 .emply-p-table table tbody tr:nth-child(even)
 {
   background:#f6f8fb !important ;
+}
+.emply-p-table table tbody tr:nth-child(odd)
+{
+  background:#efefef !important ;
 }
 .emply-p-table table tbody tr td
 {
