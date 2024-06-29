@@ -930,7 +930,7 @@ router.post(
           );
           const io = req.io;
           const ename = newData.bdeName;
-          io.emit('booking-submitted',ename);
+          io.emit('booking-submitted', ename);
           console.log('io emmited')
           const totalAmount = newData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
@@ -2398,11 +2398,17 @@ router.post(
             "Product Development",
             "Chunauti "
           ];
-          const mailName = newData.services.some((service) => {
+
+
+          const tempMailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
           })
             ? "Shubhi Banthiya"
             : "Dhruvi Gohel";
+          const mailName = newData.services.some((service) => {
+
+            return service.serviceName === "Seed Fund Application"
+          }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
 
           const AuthorizedEmail =
             mailName === "Dhruvi Gohel"
@@ -2410,6 +2416,60 @@ router.post(
               : "rm@startupsahay.com";
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+
+          const seedConditionalPage = newData.services.some((service) => {
+
+            return service.serviceName === "Seed Fund Application"
+          }) ? `<div class="PDF_main">
+    <section>
+       <div class="date_div">
+              <p>Date : ${todaysDate}</p>
+            </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+  <div class="Declaration_text">
+   <p class="Declaration_text_head mt-2">
+          <b>
+          Seed Funding Application Support Acknowledgement:   
+          </b>
+        </p>
+           
+        <p class="Declaration_text_data">
+          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
+        </p>
+        <p class="Declaration_text_data">
+          I declare that all required documents for the seed funding application will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+        </p>
+        <p class="Declaration_text_data">
+          <b>Fees:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          </ul>
+        </div>
+        <p class="Declaration_text_data">
+          <b>Acknowledgements:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          </ul>
+        </div>
+     
+      </div>
+   
+      
+    </section>
+  
+  </div>` : '';
+
+
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -2419,6 +2479,7 @@ router.post(
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Services}}", serviceList)
+            .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
             .replace("{{page-display}}", newPageDisplay)
             .replace("{{pagination}}", pagination)
             .replace("{{Authorized-Person}}", mailName)
@@ -2456,9 +2517,10 @@ router.post(
             "footer": {
               "height": "100px",
               "contents": {
-                first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-                2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-                3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+                first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`,
+                2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`, // Any page number is working. 1-based index
+                3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${seedConditionalPage === "" ? 3 : 4}</p></div>`, // Any page number is working. 1-based index
+                4: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 4/4</p></div>`, // Any page number is working. 1-based index
                 default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
                 last: '<span style="color: #444;">2</span>/<span>2</span>'
               }
@@ -2517,11 +2579,11 @@ router.post(
                 }
               }
             });
-        
+
 
           // Send success response
           res.status(201).send("Data sent");
-     
+
         } else {
           res.status(404).json("Company Not found");
           return true;
@@ -2775,7 +2837,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const boomDate = new Date();
     const io = req.io;
     const ename = newData.bdeName;
-   
+
 
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
@@ -2821,7 +2883,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       });
     }
 
-    io.emit('booking-submitted',ename);
+    io.emit('booking-submitted', ename);
     console.log('booking emmited');
 
     const totalAmount = newData.services.reduce(
@@ -4270,12 +4332,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "E-Commerce Website",
       "Product Development"
     ];
-    const mailName = newData.services.some((service) => {
+
+    const tempMailName = newData.services.some((service) => {
       return servicesShubhi.includes(service.serviceName);
     })
       ? "Shubhi Banthiya"
       : "Dhruvi Gohel";
+    const mailName = newData.services.some((service) => {
 
+      return service.serviceName === "Seed Fund Application"
+    }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
 
     const draftCondition = newData.services.some((service) => {
       return includedServices.includes(service.serviceName);
@@ -4286,6 +4352,57 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+    const seedConditionalPage = newData.services.some((service) => {
+
+      return service.serviceName === "Seed Fund Application"
+    }) ? `<div class="PDF_main">
+<section>
+ <div class="date_div">
+              <p>Date : ${todaysDate}</p>
+            </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+  <div class="Declaration_text">
+   <p class="Declaration_text_head mt-2">
+          <b>
+          Seed Funding Application Support Acknowledgement:   
+          </b>
+        </p>
+       
+    <p class="Declaration_text_data">
+      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for Seed Funding Application Support.
+    </p>
+    <p class="Declaration_text_data">
+      I declare that all required documents for the seed funding application will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+    </p>
+    <p class="Declaration_text_data">
+      <b>Fees:</b>
+    </p>
+    <div class="Declaration_text_data">
+      <ul>
+        <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+        <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+      </ul>
+    </div>
+    <p class="Declaration_text_data">
+      <b>Acknowledgements:</b>
+    </p>
+    <div class="Declaration_text_data">
+      <ul>
+        <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+        <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+        <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+        <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+      </ul>
+    </div>
+ 
+  </div>
+
+  
+</section>
+
+</div>` : '';
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -4295,6 +4412,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Services}}", serviceList)
+      .replace("{{Services}}", serviceList)
+      .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
       .replace("{{page-display}}", newPageDisplay)
       .replace("{{pagination}}", pagination)
       .replace("{{Authorized-Person}}", mailName)
@@ -4336,9 +4455,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "footer": {
         "height": "100px",
         "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${pagelength}</p></div>`,
-          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${pagelength}</p></div>`, // Any page number is working. 1-based index
-          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/3</p></div>`, // Any page number is working. 1-based index
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`,
+          2: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 2/${seedConditionalPage === "" ? pagelength : pagelength + 1}</p></div>`, // Any page number is working. 1-based index
+          3: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 3/${seedConditionalPage === "" ? 3 : 4}</p></div>`, // Any page number is working. 1-based index
+          4: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 4/4</p></div>`, // Any page number is working. 1-based index
           default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
           last: '<span style="color: #444;">2</span>/<span>2</span>'
         }
@@ -4398,7 +4518,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         }
       });
 
-   
+
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {
@@ -4580,7 +4700,7 @@ router.post(
   async (req, res) => {
     try {
       const objectData = req.body;
-     
+
 
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
@@ -4589,8 +4709,8 @@ router.post(
       const companyMainObject = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-      
-      const bookingDate = bookingIndex === 0 ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject.moreBookings[bookingIndex - 1].bookingDate);
+
+      const bookingDate = bookingIndex === "0" ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject.moreBookings[bookingIndex - 1].bookingDate);
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -4612,7 +4732,7 @@ router.post(
         "Payment Method": objectData.paymentMethod,
         "Payment Date": formatDate(objectData.paymentDate),
         "Payment Remarks": objectData.extraRemarks,
-        "Booking Date":bookingDate
+        "Booking Date": bookingDate
       }
       await appendRemainingDataToSheet(sheetObject);
 
@@ -4887,8 +5007,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { services: updatedServices },
       { new: true } // Return the updated document
     );
-    const bdeName = updatedMainObject.bdeName ;
-    socketIO.emit('expanse-added',bdeName);
+    const bdeName = updatedMainObject.bdeName;
+    socketIO.emit('expanse-added', bdeName);
 
     res.status(200).json(updatedMainObject);
   } else {
@@ -4942,11 +5062,11 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       }
     );
 
-    const bdeName = updatedMainObj[bookingIndex - 1].bdeName ;
+    const bdeName = updatedMainObj[bookingIndex - 1].bdeName;
     const data = {
-      bdeName : bdeName , companyName : companyName
+      bdeName: bdeName, companyName: companyName
     }
-    socketIO.emit('expanse-added',data);
+    socketIO.emit('expanse-added', data);
 
     res.status(200).json(updatedMainObj);
   }
