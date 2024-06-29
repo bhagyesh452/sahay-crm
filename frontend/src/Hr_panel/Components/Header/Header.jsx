@@ -1,22 +1,17 @@
-import React from "react"
-import '../../../dist/css/tabler.min.css?1684106062';
+import React from "react";
+import "../../../dist/css/tabler.min.css?1684106062";
 import "../../../dist/css/tabler-flags.min.css?1684106062";
 import "../../../dist/css/tabler-payments.min.css?1684106062";
 import "../../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../../dist/css/demo.min.css?1684106062";
-import myImage from '../../../static/mainLogo.png'
-import Avatar from '@mui/material/Avatar';
-import HrNotification from '../../Components/Notification/HrNotification';
+import myImage from "../../../static/mainLogo.png";
+import Avatar from "@mui/material/Avatar";
+import HrNotification from "../../Components/Notification/HrNotification";
 
+function Header({ hrName }) {
+  const hname = localStorage.getItem("hrName");
 
-function Header({hrName}){
-
-    const hname = localStorage.getItem("hrName")
-    
-
-
-
-    return(
+  return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
@@ -42,17 +37,26 @@ function Header({hrName}){
               />
             </a>
           </h1>
-          <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
+          <div
+            style={{ display: "flex", alignItems: "center" }}
+            className="navbar-nav flex-row order-md-last"
+          >
             {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
             <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
                 data-bs-toggle="dropdown"
-                aria-label="Open user menu">
+                aria-label="Open user menu"
+              >
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>{hname ? hname : hrName}</div>
-                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
+                  <div style={{ textTransform: "capitalize" }}>
+                    {hname ? hname : hrName}
+                  </div>
+                  <div
+                    style={{ textAlign: "left" }}
+                    className="mt-1 small text-muted"
+                  >
                     HR - Manager
                   </div>
                 </div>
@@ -77,20 +81,16 @@ function Header({hrName}){
                 </a>
               </div>
             </div>
-            <HrNotification/>
+            <HrNotification />
             <div
               style={{ display: "flex", alignItems: "center" }}
-              className="item">
-            </div>
+              className="item"
+            ></div>
           </div>
         </div>
       </header>
     </div>
-    )
-
-
-    
-
+  );
 }
 
 export default Header;

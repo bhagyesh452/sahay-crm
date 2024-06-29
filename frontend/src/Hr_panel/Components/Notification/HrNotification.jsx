@@ -39,7 +39,7 @@ export default function HrNotification() {
         localStorage.removeItem("hrToken");
         localStorage.removeItem("hrName");
         localStorage.removeItem("hrUserId");
-        navigate("/hr/login-hr");
+        navigate("/hr/login");
     }
 
 
