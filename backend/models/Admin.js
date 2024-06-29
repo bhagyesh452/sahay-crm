@@ -44,6 +44,9 @@ const yourSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  employee_profile:{
+    type:Array,
+  },
 });
 
 

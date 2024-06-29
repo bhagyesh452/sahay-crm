@@ -10,6 +10,38 @@ const EmployeeHistory = require("../models/EmployeeHistory");
 const json2csv = require("json2csv").parse;
 const deletedEmployeeModel = require("../models/DeletedEmployee.js")
 
+
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Determine the destination path based on the fieldname and company name
+    const employeeName = req.params.employeeName;
+    let destinationPath = "";
+
+    if (file.fieldname === "file" && employeeName) {
+      destinationPath = `EmployeeImages/${employeeName}`;
+    } 
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+
+
+
 router.put("/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
@@ -261,6 +293,66 @@ router.get("/einfo/:email/:password", async (req, res) => {
     console.log("Error fetching employee data", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+
+router.post("/employeeimages/:employeeName", upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('No files were uploaded');
+    }
+
+    const employeeName = req.params.employeeName;
+
+
+    // Find the employee by name
+    const employee = await adminModel.findOne({ ename: employeeName });
+
+    if (!employee) {
+      return res.status(404).send('Employee Not Found');
+    }
+
+    // Construct the file details to store
+    const fileDetails = {
+      filename: req.file.filename,
+      path: `/uploads/${req.file.filename}`,
+      originalName: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      uploadedAt: new Date()
+    };
+
+    // Update the employee_profile array
+    employee.employee_profile.push(fileDetails);
+    await employee.save();
+
+
+    // Handle other logic like saving to database or processing
+    res.status(200).send({ message: 'File Uploaded Successfully', imageUrl: `/path/to/${req.file.filename}` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+router.get("/employeeImg/:employeeName/:filename", (req, res) => {
+  const empName = req.params.employeeName;
+  const fileName = req.params.filename;
+  const pdfPath = path.join(
+    __dirname,
+    `../EmployeeImages/${empName}/${fileName}`
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
 });
 
 module.exports = router;
