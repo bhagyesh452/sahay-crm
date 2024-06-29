@@ -15,6 +15,7 @@ import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
+import booking_audio from "../assets/media/Booking-received.mp3"
 import ReportComplete from "../components/ReportComplete";
 
 // import "./styles/header.css"
@@ -63,9 +64,9 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`One new booking from ${res}`, { variant: "reportComplete" });
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" });
     
-      const audioplayer = new Audio(notification_audio);
+      const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
     socket.on("newRequest", (res) => {
