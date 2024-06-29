@@ -909,9 +909,8 @@ function EmployeePanel() {
       setFilteredData(extraData); // Assuming extraData is your full dataset
       return;
     }
-
+    setIsFilter(false)
     setIsSearch(true);
-
     const filtered = extraData.filter((company) => {
       const companyName = company["Company Name"];
       const companyNumber = company["Company Number"];
