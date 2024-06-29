@@ -11,6 +11,8 @@ const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
 const adminModel = require("../models/Admin");
 const jwt = require('jsonwebtoken');
+const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
+const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
@@ -821,34 +823,106 @@ router.get("/specific-company/:companyId", async (req, res) => {
 //   }
 // });
 
+// router.post("/assign-new", async (req, res) => {
+//   const { data, ename } = req.body;
+
+//   try {
+//     const bulkOperations = data.map((employeeData) => ({
+//       updateOne: {
+//         filter: { "Company Name": employeeData["Company Name"] },
+//         update: {
+//           $set: {
+//             ename: ename,
+//             bdmAcceptStatus: "NotForwarded",
+//             feedbackPoints: [],
+//             multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
+//             Status: "Untouched",
+//             AssignDate: new Date()
+//           },
+//           $unset: {
+//             bdmName: "",
+//             bdeOldStatus: "",
+//             bdeForwardDate: "",
+//             bdmStatusChangeDate: "",
+//             bdmStatusChangeTime: "",
+//             bdmRemarks: "",
+//             RevertBackAcceptedCompanyRequest: ""
+//           },
+//         },
+//       },
+//     }));
+
+//     // Perform bulk write operation
+//     await CompanyModel.bulkWrite(bulkOperations);
+
+//     // Perform deletions in TeamLeadsModel and FollowUpModel
+//     const deletionPromises = data.map(async (employeeData) => {
+//       const companyName = employeeData["Company Name"];
+//       const employee = await CompanyModel.findOne({ "Company Name": companyName });
+
+//       if (employee) {
+//         await TeamLeadsModel.findByIdAndDelete(employee._id);
+//         await FollowUpModel.findOneAndDelete({ companyName: employee["Company Name"] });
+//         await RemarksHistory.deleteOne({ companyID: employee._id });
+//       }
+//     });
+
+
+
+//     // Execute all deletion promises
+//     await Promise.all(deletionPromises);
+
+//     res.status(200).json({ message: "Data updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating data:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
 router.post("/assign-new", async (req, res) => {
   const { data, ename } = req.body;
 
   try {
-    const bulkOperations = data.map((employeeData) => ({
-      updateOne: {
-        filter: { "Company Name": employeeData["Company Name"] },
-        update: {
-          $set: {
-            ename: ename,
-            bdmAcceptStatus: "NotForwarded",
-            feedbackPoints: [],
-            multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
-            Status: "Untouched",
-            AssignDate: new Date()
-          },
-          $unset: {
-            bdmName: "",
-            bdeOldStatus: "",
-            bdeForwardDate: "",
-            bdmStatusChangeDate: "",
-            bdmStatusChangeTime: "",
-            bdmRemarks: "",
-            RevertBackAcceptedCompanyRequest: ""
+    const bulkOperations = data.map((employeeData) => {
+      let updateFields;
+      if(employeeData.Status === 'Matured'){
+        updateFields = {
+          ename: ename,
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
+          Status: "Untouched",
+          AssignDate: new Date(),
+          isDeletedEmployeeCompany: true,
+        }
+      }else{
+        updateFields = {
+          ename: ename,
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
+          Status: "Untouched",
+          AssignDate: new Date(),
+        }
+      }
+      return {
+        updateOne: {
+          filter: { "Company Name": employeeData["Company Name"] },
+          update: {
+            $set: updateFields,
+            $unset: {
+              bdmName: "",
+              bdeOldStatus: "",
+              bdeForwardDate: "",
+              bdmStatusChangeDate: "",
+              bdmStatusChangeTime: "",
+              bdmRemarks: "",
+              RevertBackAcceptedCompanyRequest: "",
+            },
           },
         },
-      },
-    }));
+      };
+    });
 
     // Perform bulk write operation
     await CompanyModel.bulkWrite(bulkOperations);
@@ -862,10 +936,12 @@ router.post("/assign-new", async (req, res) => {
         await TeamLeadsModel.findByIdAndDelete(employee._id);
         await FollowUpModel.findOneAndDelete({ companyName: employee["Company Name"] });
         await RemarksHistory.deleteOne({ companyID: employee._id });
+        await RedesignedLeadformModel.findOneAndUpdate(
+          { "Company Name": employee["Company Name"] },  // Filter criteria
+          { $set: { isDeletedEmployeeCompany: true } }  // Update operation
+        );
       }
     });
-
-
 
     // Execute all deletion promises
     await Promise.all(deletionPromises);
@@ -914,6 +990,8 @@ router.get("/employees/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 router.post("/postData", async (req, res) => {
   const { selectedObjects, employeeSelection } = req.body
   const bulkOperations = selectedObjects.map((employeeData) => ({

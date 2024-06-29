@@ -18,6 +18,9 @@ import { MdOutlineCalendarMonth } from "react-icons/md";
 import { GrLocation } from "react-icons/gr";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import { Calendar } from '@fullcalendar/core';
+import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
+
 
 
 
@@ -258,17 +261,17 @@ function EmployeeProfile() {
                 </div>
                 <div className="my-card e-profile-tab-main mt-3 p-3">
                   <div className="e-profile-tab d-flex align-items-center justify-content-between">
+                    <div className="e-profile-tab-item active">
+                      Leave Calculation
+                    </div>
+                    <div className="e-profile-tab-item">
+                      National Holidays 
+                    </div>
                     <div className="e-profile-tab-item">
                       Salary Calculation
                     </div>
-                    <div className="e-profile-tab-item active">
-                      Leave
-                    </div>
                     <div className="e-profile-tab-item">
-                      Salary Slep
-                    </div>
-                    <div className="e-profile-tab-item">
-                      Holidays 
+                      salary slip
                     </div>
                   </div> 
                   <div className="table-resposive e-profile-tab-data mt-2">
@@ -285,8 +288,8 @@ function EmployeeProfile() {
                         <button className="btn btn-sm btn-primary">+ Leave Request</button>
                       </div>
                     </div>
-                    <div className="table-resposive emply-p-table">
-                      <table className="table table-nowrap mt-2">
+                    <div className="table-resposive emply-p-table mt-2">
+                      <table className="table table-nowrap">
                         <thead>
                           <tr class="tr-sticky">
                             <th>Sr.No</th>
@@ -365,6 +368,109 @@ function EmployeeProfile() {
                                 Unpaid
                             </td>
                           </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                1                          
+                            </td>
+                            <td>
+                              20 Jun 2023
+                            </td>
+                            <td>
+                              Out of City
+                            </td>
+                            <td>
+                                Full Day
+                            </td>
+                            <td>
+                                Unpaid
+                            </td>
+                          </tr>
                         </tbody>
                       </table>  
                     </div>
@@ -372,17 +478,9 @@ function EmployeeProfile() {
                 </div>
               </div>
               <div className="col-lg-5">
-                <div className="my-card d-none">
-                  <div className="my-card-body p-2">
-                    <FullCalendar
-                      plugins={[ dayGridPlugin ]}
-                      initialView="dayGridMonth"
-                      weekends={true}
-                      events={[
-                        { title: 'event 1', date: '2019-04-01' },
-                        { title: 'event 2', date: '2019-04-02' }
-                      ]}
-                    />
+                <div className="my-card ">
+                  <div className="my-card-body p-2" style={{minHeight: 'calc(100vh - 149px)'}}>
+
                   </div>
                 </div>
               </div>

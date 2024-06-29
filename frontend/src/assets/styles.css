@@ -2298,11 +2298,11 @@ td input {
 {
   background: #fff;
   border: 1px solid #eee;
-  border-radius: 100px;
+  border-radius: 12px;
   overflow: hidden;
 }
 .e-profile-tab-item {
-  padding:8px 16px 8px 16px;
+  padding: 6px 16px 8px 16px;
   width: 100%;
   text-align: center;
   border: 1px solid #eee;
@@ -2316,11 +2316,11 @@ td input {
 }
 .e-profile-tab-item:first-child
 {
-  border-radius: 100px 0 0 100px;
+  border-radius: 12px 0 0 12px;
 }
 .e-profile-tab-item:last-child
 {
-  border-radius: 0 100px 100px 0;
+  border-radius: 0 12px 12px 0;
 }
 .e-profile-tab-main
 {
@@ -2328,7 +2328,7 @@ td input {
 }
 .e-profile-tab-data
 {
-  padding: 6px 3px 6px 3px;
+
 }
 .e-profile-tab-data .form-control-sm
 {
@@ -2338,9 +2338,15 @@ td input {
 {
   padding: 4px 10px !important;
 }
-.emply-p-table table thead tr
+.emply-p-table table thead tr 
 {
   background: #eee !important;
+  border: none !important;
+}
+.emply-p-table table thead tr th
+{
+  background: #dadfe5 !important;
+  color: #000;
   border: none !important;
 }
 .emply-p-table table thead tr td
@@ -2351,16 +2357,22 @@ td input {
 {
   background: #fff;
 }
+.emply-p-table table tbody tr:nth-child(even)
+{
+  background:#f6f8fb !important ;
+}
 .emply-p-table table tbody tr td
 {
   border: none !important;
   padding: 5px 2px 5px 2px !important;
 }
-
-
-
-
-
+.emply-p-table
+{
+  max-height: 250px;
+  overflow: scroll;
+  border: 1px solid #dadfe5;
+  border-radius: 10px;
+}
 
 
 
