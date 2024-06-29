@@ -468,16 +468,19 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
         ...data,
         bdmAcceptStatus : "Forwarded",
         bdmName : name,
-        bdmForwardStatus: "",
-        bdeOldStatus: ""
-      })
+        bdmForwardDate: new Date(),
+        bdeOldStatus: company.Status
+      });
+
+      await TeamLeadsModel.create({
+        ...data,
+        _id: company._id
+      });
     });
-
-
-
-
+    res.status(200).json({message : "Data created and updated successfully"});
   }catch(error){
-
+    console.log(error);
+    res.status(500).json({error: "Internal Server Error"});
   }
 
 });
