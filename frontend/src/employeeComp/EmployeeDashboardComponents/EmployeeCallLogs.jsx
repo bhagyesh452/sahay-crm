@@ -17,12 +17,21 @@ import { SingleInputTimeRangeField } from '@mui/x-date-pickers-pro/SingleInputTi
 
 
 function EmployeeCallLogs({ employeeData }) {
+    const [startTimestamp, setStartTimestamp] = useState(null);
+    const [endTimestamp, setEndTimestamp] = useState(null);
+    // const [value, setValue] = useState([
+    //     dayjs(`${selectDate}T00:00:00`),
+    //     dayjs(`${selectDate}T23:59:59`),
+    //   ]);
     const [totalcalls, setTotalCalls] = useState(null);
     const [totalMissedCalls, setTotalMissedCalls] = useState(null);
     //const [selectDate, setSelectDate] = useState(new Date().setUTCHours(0, 0, 0, 0))
     const [selectTime, setselectTime] = useState()
     const todayStartDate = new Date();
     const todayEndDate = new Date();
+    const [selectDate, setSelectDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectStartTime, setSelectStartTime] = useState('00:00'); // Initialize to only time part
+    const [selectEndTime, setSelectEndTime] = useState('23:59'); // Initialize to only time part
 
     // Set todayStartDate to the start of the day in UTC
     //todayStartDate.setUTCHours(0, 0, 0, 0);
@@ -40,25 +49,34 @@ function EmployeeCallLogs({ employeeData }) {
     // ------------------------  Callizer API   -------------------------------------------
 
 
-    // Combine date and time strings
-    const [selectDate, setSelectDate] = useState(new Date().toISOString().split('T')[0]);
-    const [startTimestamp, setStartTimestamp] = useState(null);
-    const [endTimestamp, setEndTimestamp] = useState(null);
-    const [value, setValue] = useState([
-        dayjs(`${selectDate}T00:00:00`),
-        dayjs(`${selectDate}T23:59:59`),
-      ]);
+    // Combine date and time string
 
     const handleDateChange = (e) => {
         setSelectDate(e.target.value);
     };
 
+    // useEffect(() => {
+    //     if (selectDate) {
+    //         // Combine date and time for start of the day in UTC
+    //         const combinedDateTimeStart = new Date(`${selectDate}T00:00:00Z`);
+    //         // Combine date and time for end of the day in UTC
+    //         const combinedDateTimeEnd = new Date(`${selectDate}T23:59:59Z`);
+
+    //         // Convert to Unix timestamps (seconds since epoch)
+    //         const startTimestamp = Math.floor(combinedDateTimeStart.getTime() / 1000);
+    //         const endTimestamp = Math.floor(combinedDateTimeEnd.getTime() / 1000);
+
+    //         setStartTimestamp(startTimestamp);
+    //         setEndTimestamp(endTimestamp);
+    //     }
+    // }, [selectDate]);
+
     useEffect(() => {
         if (selectDate) {
-            // Combine date and time for start of the day in UTC
-            const combinedDateTimeStart = new Date(`${selectDate}T00:00:00Z`);
-            // Combine date and time for end of the day in UTC
-            const combinedDateTimeEnd = new Date(`${selectDate}T23:59:59Z`);
+
+            // Create start and end Date objects
+            const combinedDateTimeStart = new Date(`${selectDate}T${selectStartTime}:00`);
+            const combinedDateTimeEnd = new Date(`${selectDate}T${selectEndTime}:00`);
 
             // Convert to Unix timestamps (seconds since epoch)
             const startTimestamp = Math.floor(combinedDateTimeStart.getTime() / 1000);
@@ -67,23 +85,7 @@ function EmployeeCallLogs({ employeeData }) {
             setStartTimestamp(startTimestamp);
             setEndTimestamp(endTimestamp);
         }
-    }, [selectDate]);
-
-    // useEffect(() => {
-    //     if (selectDate) {
-    //       const [startTime, endTime] = value;
-    //       // Create start and end Date objects
-    //       const combinedDateTimeStart = new Date(`${selectDate}T${startTime.format('HH:mm')}:00Z`);
-    //       const combinedDateTimeEnd = new Date(`${selectDate}T${endTime.format('HH:mm')}:59Z`);
-    
-    //       // Convert to Unix timestamps (seconds since epoch)
-    //       const startTimestamp = Math.floor(combinedDateTimeStart.getTime() / 1000);
-    //       const endTimestamp = Math.floor(combinedDateTimeEnd.getTime() / 1000);
-    
-    //       setStartTimestamp(startTimestamp);
-    //       setEndTimestamp(endTimestamp);
-    //     }
-    //   }, [selectDate , value]);
+    }, [selectDate, selectStartTime, selectEndTime]);
 
 
     let employeeArray = []
@@ -133,13 +135,15 @@ function EmployeeCallLogs({ employeeData }) {
             }
         };
         fetchEmployeeData();
-    }, [employeeData, startTimestamp , endTimestamp]);
+    }, [employeeData, startTimestamp, endTimestamp]);
 
 
 
 
     console.log(selectDate)
-    console.log(value)
+    console.log("startTime", selectStartTime)
+    console.log("endTime", selectEndTime)
+    //console.log(value)
     console.log("totalcalls", totalcalls)
     console.log("Start Timestamp:", startTimestamp);
     console.log("End Timestamp:", endTimestamp);
@@ -149,10 +153,10 @@ function EmployeeCallLogs({ employeeData }) {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 3600 % 60;
-      
+
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      };
-    
+    };
+
 
     return (
         <div>
@@ -166,8 +170,10 @@ function EmployeeCallLogs({ employeeData }) {
                             onChange={(e) => {
                                 setSelectDate(e.target.value)
                             }} />
-                        {/* <input type="time" class="form-select form-select-sm my-filter-select" 
-                        onChange={(e)=>{setselectTime(e.target.value)}}/> */}
+                        <input style={{width:"60px"}} type="time" class="form-select form-select-sm my-filter-select"
+                            onChange={(e) => {setSelectStartTime(e.target.value) }} />
+                        <input style={{width:"60px"}} type="time" class="form-select form-select-sm my-filter-select"
+                            onChange={(e) => {setSelectEndTime(e.target.value) }} />
 
                         {/* <LocalizationProvider class="form-select form-select-sm my-filter-select" dateAdapter={AdapterDayjs}>
                             <DemoContainer

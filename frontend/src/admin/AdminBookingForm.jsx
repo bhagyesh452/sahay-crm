@@ -1105,6 +1105,7 @@ export default function AdminBookingForm({
                       <option value="SA 8000">SA 8000</option>
                       <option value="CCC">CCC</option>
                       <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                      <option value="CMMI LEVEL 5">CMMI LEVEL 5</option>
                       <option value="GO GREEN">GO GREEN</option>
                       <option value="PCMM 5">PCMM 5</option>
                       <option value="RIOS">RIOS</option>

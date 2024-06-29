@@ -1140,9 +1140,10 @@ function EmployeeParticular() {
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => ({
         ...employee,
-        Status: "Untouched",
+        //Status: "Untouched",
         Remarks: "No Remarks Added",
       }));
+      console.log(csvdata)
 
     try {
       Swal.fire({

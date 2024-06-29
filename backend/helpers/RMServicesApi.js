@@ -38,7 +38,6 @@ const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
-
   try {
     let createData = [];
     let existingRecords = [];
@@ -70,7 +69,6 @@ router.post('/post-rmservicesdata', async (req, res) => {
         failedEntries++;
       }
     }
-
     // Respond with success message and created data
     res.status(200).json({
       message: "Details added to RM services",
@@ -84,6 +82,32 @@ router.post('/post-rmservicesdata', async (req, res) => {
     res.status(500).send("Error creating/updating data");
   }
 });
+
+router.post('/post-rmservices-from-listview' , async(req,res)=>{
+  const { dataToSend } = req.body;
+  try{
+    const existingRecord = await RMCertificationModel.findOne({
+      "Company Name" : dataToSend["Company Name"],
+      serviceName : dataToSend.serviceName
+    })
+    if(existingRecord){
+         res.status(400).json({message : "Service has already been added"})
+    }else{
+      const createdRecord = await RMCertificationModel.create(dataToSend);
+      res.status(200).json({
+        message:"Details added successfully"
+      })
+    }
+  }catch(error){
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error', details: error.message });
+    }
+
+    // For all other errors, send a 500 status code
+    res.status(500).json({ message: "Error swapping services", details: error.message });
+  }
+
+})
 
 router.get(`/rm-sevicesgetrequest` , async(req , res)=>{
     try{

@@ -37,22 +37,28 @@ function Header({ name, designation}) {
     });
 
     socket.on("data-sent", (res) => {
-      enqueueSnackbar(`New Data Received!`, {
-        variant: 'info',
-        autoHideDuration: 5000
-      });
-    
-      const audioplayer = new Audio(notification_audio);
-      audioplayer.play();
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`, {
+          variant: 'info',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+     
     });
     socket.on("data-action-performed", (res) => {
-      enqueueSnackbar(`Action has been performed on your Data Request!`, {
-        variant: 'warning',
-        autoHideDuration: 5000
-      });
-    
-      const audioplayer = new Audio(notification_audio);
-      audioplayer.play();
+      if(name === res){
+        enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
+          variant: 'warning',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
     });
     // Clean up the socket connection when the component unmounts
     return () => {

@@ -6,13 +6,14 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
 import { MdOutlineSwapHoriz } from "react-icons/md";
+import axios from 'axios';
 
 function RMofCertificationListViewBookings({ bookingsData }) {
     const [openTableView, setOpenTableView] = useState(false)
     const [openListView, setOpenListView] = useState(true)
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
-
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const handleViewTable = () => {
         setOpenTableView(true)
@@ -77,7 +78,7 @@ function RMofCertificationListViewBookings({ bookingsData }) {
                     caCase: moreBooking.caCase || false, // Default to false if not provided
                     caNumber: moreBooking.caNumber || 0, // Default to 0 if not provided
                     caEmail: moreBooking.caEmail || '', // Make sure to handle optional fields if they are not always provided
-                    service: service.serviceName || '',
+                    serviceName: service.serviceName || '',
                     totalPaymentWOGST: service.totalPaymentWOGST || 0, // Default to 0 if not provided
                     totalPaymentWGST: service.totalPaymentWGST || 0,
                     withGST: service.withGST, // Default to 0 if not provided
@@ -94,9 +95,62 @@ function RMofCertificationListViewBookings({ bookingsData }) {
         });
     });
 
+    const handleOpenServices = async (dataToSend) => {
+        try {
+            const response = await axios.post(`${secretKey}/rm-services/post-rmservices-from-listview`, {
+                dataToSend: dataToSend
+            });
+            if (response.status === 200) {
+                // Success response
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    html: 'Bookings Uploaded Successfully.'
+                });
+            } else if (response.status === 400) {
+                // Bad request response
+                Swal.fire({
+                    icon: 'warning', // Exclamation icon
+                    title: 'Warning',
+                    html: response.data.message || 'Service has already been added'
+                });
+            }
+        } catch (error) {
+            // Check if error response is available
+            if (error.response) {
+                if (error.response.status === 500) {
+                    // Internal server error response
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        html: 'Error swapping services'
+                    });
+                } else {
+                    // Other errors
+                    Swal.fire({
+                        icon: 'warning', // Exclamation icon
+                        title: 'Warning',
+                        html: error.response.data.message || 'Failed to upload bookings'
+                    });
+                }
+            } else {
+                // Network or other errors
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    html: 'Failed to upload bookings'
+                });
+            }
+
+            console.log("Error sending data", error);
+        }
+    };
+
+
+
     console.log(allServicesWithDetails);
-    console.log("listView", openListView)
-    console.log("tableView", openTableView)
+    console.log(bookingsData)
+
 
 
     return (
@@ -145,7 +199,7 @@ function RMofCertificationListViewBookings({ bookingsData }) {
                                 <div className="list-gird-main ms-auto">
                                     <div className={openListView ? "listgrridradio_main d-flex align-items-center" : "d-flex align-items-center"}>
                                         <div className="custom_radio">
-                                            <input type="radio" name="rGroup" value="1" id="r1" checked={openListView} />
+                                            <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView} />
                                             <label class="custom_radio-alias" for="r1">
                                                 <FaTableCellsLarge onClick={() => { handleViewTable() }} />
                                             </label>
@@ -269,17 +323,15 @@ function RMofCertificationListViewBookings({ bookingsData }) {
                                                         <td>{obj.secondRemarks}</td>
                                                         <td>{obj.thirdRemarks}</td>
                                                         <td>{obj.fourthRemarks}</td>
-                                                        <td> <div className="b_Services_multipal_services mr-1"
-                                                            title="Swap Services">
-                                                            {/* <MdOutlineSwapHoriz onClick={() => (
-                                                                setOpenServicesPopup(true),
-                                                                setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
-                                                                handleOpenServices(
-                                                                    obj["Company Name"],
-                                                                )
-
-                                                            )} /> */}
-                                                        </div></td>
+                                                        <td>
+                                                            <button className='tbl-action-btn'
+                                                                title="Swap Services">
+                                                                <MdOutlineSwapHoriz onClick={() => (
+                                                                    //setOpenServicesPopup(true),
+                                                                    //setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
+                                                                    handleOpenServices(obj)
+                                                                )} />
+                                                            </button></td>
                                                     </tr>
                                                 ))}
                                             </tbody>

@@ -1032,6 +1032,8 @@ function EmployeePanel() {
           setdataStatus('NotInterested')
         }
       }
+    }else{
+      setEmployeeData(filteredData)
     }
 
   }, [filteredData])
@@ -2750,7 +2752,6 @@ function EmployeePanel() {
      ) {
        // If no filters are applied, reset the filter state and stop the backdrop
        setIsFilter(false);
-
      } else {
        // Update the employee data with the filtered results
        console.log(response.data)
@@ -2764,6 +2765,8 @@ function EmployeePanel() {
    }
  };
 
+ console.log("FILTEREDdATA" , filteredData)
+
  const handleClearFilter = () => {
    setIsFilter(false)
    setSelectedStatus('')
@@ -2775,6 +2778,7 @@ function EmployeePanel() {
    setSelectedAssignDate(null)
    setCompanyIncoDate(null)
    setSelectedCompanyIncoDate(null)
+   setFilteredData([])
    fetchNewData()
    //fetchData(1, latestSortCount)
  }
