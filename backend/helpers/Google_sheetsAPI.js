@@ -33,6 +33,7 @@ function transformData(jsonData) {
 
   jsonData.services.forEach((serviceObj, index) => {
     headers.push(`services[${index}].serviceName`);
+    headers.push(`services[${index}].withGST`);
     headers.push(`services[${index}].totalPaymentWOGST`);
     headers.push(`services[${index}].totalPaymentWGST`);
     headers.push(serviceObj.paymentTerms === "Full Advanced" ? `services[${index}].totalPaymentWGST` : `services[${index}].firstPayment`);
@@ -53,7 +54,7 @@ function transformData(jsonData) {
   return [data];
 }
 function transformRemainingData(jsonData) {
-  const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks"];
+  const headers = ["Company Name", "serviceName", "Remaining Payment", "Payment Method", "Payment Date", "Payment Remarks","Booking Date"];
 
   const data = headers.map(header => {
   

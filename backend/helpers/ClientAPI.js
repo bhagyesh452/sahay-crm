@@ -68,6 +68,8 @@ router.post(
     { name: "UploadAOA", maxCount: 1 },
     { name: "UploadPhotos", maxCount: 1 },
     { name: "RelevantDocument", maxCount: 1 },
+    { name: "UploadAuditedStatement", maxCount: 1 },
+    { name: "UploadProvisionalStatement", maxCount: 1 },
   ]),
   async (req, res) => {
     try {
@@ -77,6 +79,9 @@ router.post(
       const UploadAOA = req.files["UploadAOA"] || [];
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
+      const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
+      const UploadProvisionalStatement =
+        req.files["UploadProvisionalStatement"] || [];
 
       // Get user details from the request body
       const {
@@ -188,14 +193,14 @@ router.post(
         TechnologyInvolved !== "No Technology Invloved"
       ) {
         TechnologyInvolvedHtml = `
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
+              <div style="width: 25%;align-self: stretch !important;height:100%">
+                <div style="padding: 5px 10px;">
                   Technology Involved
                 </div>
               </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+              <div style="width: 75%;align-self: stretch !important;height:100%">
+                <div style="border: 1px solid #ccc; padding: 5px 10px;">
                   ${TechnologyInvolved}
                 </div>
               </div>
@@ -221,6 +226,46 @@ router.post(
         `;
       }
 
+      let UploadAuditedStatementHtml = "";
+      if (
+        UploadAuditedStatement &&
+        UploadAuditedStatement !== "No Audited statement"
+      ) {
+        UploadAuditedStatementHtml = `
+          <div style="display: flex; flex-wrap: wrap">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                Relevant Documents
+              </div>
+            </div>
+            <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                ${UploadAuditedStatement}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      let UploadProvisioanlHtml = "";
+      if (
+        UploadProvisionalStatement &&
+        UploadProvisionalStatement !== "No Provisional Document"
+      ) {
+        UploadProvisioanlHtml = `
+          <div style="display: flex; flex-wrap: wrap">
+            <div style="width: 25%;align-self: stretch !important;height:100%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                Relevant Documents
+              </div>
+            </div>
+            <div style="width: 75%;align-self: stretch !important;height:100%">
+              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+                ${UploadProvisionalStatement}
+              </div>
+            </div>
+          </div>
+        `;
+      }
       let relevantDocumentsHtml = "";
       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
         relevantDocumentsHtml = `
@@ -864,78 +909,61 @@ router.post(
                  margin-top: 15px;
                "
              >
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
+                 <div style="width: 25%;align-self: stretch !important;height:100%;">
                    <div
                      style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Company Activities
+                     ">
+                     Brief Of Your Business/Product/Service (Company's Activities)
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                     ">
                      ${CompanyActivities}
                    </div>
                  </div>
                </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
-                     Problems and Solution
+                     What Are The Problems That Your Product Or Service Proposes To Solve And How? 
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
                      ${ProductService}
                    </div>
                  </div>
                </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
-                     USP
+                     Core Strength Of Your Business Which Differs Your Company From Other Business In The Industry (USP) 
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
                      ${CompanyUSP}
@@ -943,26 +971,21 @@ router.post(
                  </div>
                </div>
     
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
+               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
+                 <div style="width: 25%;align-self: stretch !important;height:100%">
                    <div
                      style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
-                     Value Proposition
+                     Value Proposition Of Your Project
                    </div>
                  </div>
                  <div style="width: 75%;align-self: stretch;height:100%">
                    <div
                      style="
                        border: 1px solid #ccc;
-                       font-size: 12px;
                        padding: 5px 10px;
-                       height:100%;
                      "
                    >
                      ${ValueProposition}
@@ -1059,7 +1082,9 @@ router.post(
         UploadMOA,
         UploadAOA,
         UploadPhotos,
-        RelevantDocument
+        RelevantDocument,
+        UploadAuditedStatement,
+        UploadProvisionalStatement
       )
         .then((info) => {
           console.log("Email Sent:");
@@ -1078,7 +1103,7 @@ router.post(
 
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
-      const subject1 = "Thank you for submitting the form!";
+      const subject1 = `${CompanyName} | LOA & MITC`;
       const text1 = "";
       const html1 = `
            <p>Dear Client,</p>
@@ -1117,11 +1142,15 @@ router.post(
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
       }
 
-
-
-      // Sending email for CompanyEmail 
-      let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-      const client_address = (!CompanyAddress || CompanyAddress == "") ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>` : CompanyAddress;
+      // Sending email for CompanyEmail
+      let htmlNewTemplate = fs.readFileSync(
+        "./helpers/client_mail.html",
+        "utf-8"
+      );
+      const client_address =
+        !CompanyAddress || CompanyAddress == ""
+          ? `<span class="variable_span" style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding:4px 0"></span>`
+          : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find(
         (details) => details.IsMainDirector === "true"
@@ -1150,6 +1179,7 @@ router.post(
         .replace("{{DirectorName}}", forGender.DirectorName)
         .replace("{{DirectorName}}", MainDirectorName)
         .replace("{{DirectorDesignation}}", MainDirectorDesignation)
+        .replace("{{today-date}}", todayDate)
         .replace("{{today-date}}", todayDate)
         .replace("{{client-address}}", client_address);
 
@@ -1200,7 +1230,7 @@ router.post(
                 sendMail4(
                   recipients,
                   ccEmail,
-                  "Letter of Authorization for filing in SISFS Application",
+                  subject1,
                   ``,
                   html1,
                   clientDocument

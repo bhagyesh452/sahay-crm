@@ -13,8 +13,10 @@ import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
+import ReportComplete from "../components/ReportComplete";
+
 // import "./styles/header.css"
 
 
@@ -61,10 +63,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`One new booking from ${res}`, {
-        variant: 'success',
-        autoHideDuration: 7000
-      });
+      enqueueSnackbar(`One new booking from ${res}`, { variant: "reportComplete" });
     
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
@@ -148,6 +147,7 @@ function Header({ name, designation}) {
     }
   };
 
+  
 
 
 
@@ -223,7 +223,9 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider iconVariant={{
+      <SnackbarProvider  Components={{
+        reportComplete: ReportComplete
+      }} iconVariant={{
     success: '✅',
     error: '✖️',
     warning: '⚠️',
