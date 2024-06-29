@@ -112,15 +112,33 @@ function EmployeeMaturedBookings() {
   }, [searchText]);
 
   const [currentCompanyName, setCurrentCompanyName] = useState("");
+  const [isDeletedStatus, setisDeletedStatus] = useState(false);
+  const [currentBdeName, setCurrentBdeName] = useState("")
 
   useEffect(() => {
+    console.log("Current Company Name:", currentCompanyName);
+  
     if (currentCompanyName === "") {
       setCurrentLeadform(formData[0]);
+      if (formData.length !== 0) {
+        setisDeletedStatus(formData[0].isDeletedEmployeeCompany);
+        setCurrentBdeName(formData[0].bdeName);
+      }
     } else {
-      setCurrentLeadform(formData.find(obj => obj["Company Name"] === currentCompanyName));
+      const foundLeadForm = formData.find(obj => obj["Company Name"] === currentCompanyName);
+      if (foundLeadForm) {
+        setCurrentLeadform(foundLeadForm);
+        setisDeletedStatus(foundLeadForm.isDeletedEmployeeCompany);
+        setCurrentBdeName(foundLeadForm.bdeName);
+      } else {
+        console.log(`Company "${currentCompanyName}" not found in formData.`);
+      }
     }
+  }, [formData, currentCompanyName]);
+  
+console.log(isDeletedStatus)
+console.log(currentBdeName)
 
-  }, [formData]);
 
   useEffect(() => {
     const socket = io("wss://startupsahay.in", {
@@ -395,6 +413,20 @@ function EmployeeMaturedBookings() {
   //   };
   // }, [socketID]);
 
+  // const [isDeletedStatus, setIsDeletedStatus] = useState(false)
+  // useEffect(()=>{
+  //   if(currentCompanyName === ''){
+  //     setIsDeletedStatus(formData[0].isDeletedEmployeeCompany)
+  //   }else{
+  //     setIsDeletedStatus((formData.find(obj=>obj["Company Name"] === currentCompanyName)).isDeletedEmployeeCompany)
+  //   }
+
+  // },[formData])
+
+  // console.log(isDeletedStatus)
+
+  
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -491,7 +523,17 @@ function EmployeeMaturedBookings() {
                                     data["Company Name"] === obj["Company Name"]
                                 )
                               )
+                              setisDeletedStatus((formData.find(
+                                  (data) =>
+                                    data["Company Name"] === obj["Company Name"]
+                                )).isDeletedEmployeeCompany)
+                                setCurrentBdeName((formData.find(
+                                  (data) =>
+                                    data["Company Name"] === obj["Company Name"]
+                                )).bdeName)
+                            
                             }
+                            
                             }
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -608,13 +650,13 @@ function EmployeeMaturedBookings() {
                               ? formData[0]["Company Name"]
                               : "-"}
                         </div>
-                        <div
+                        {!isDeletedStatus && currentBdeName === data.ename && (<div
                           className="bookings_add_more"
                           title="Add More Booking"
                           onClick={() => setAddFormOpen(true)}
                         >
                           <FaPlus />
-                        </div>
+                        </div>)}
                       </div>
                     </div>
                     <div className="booking-deatils-body">
