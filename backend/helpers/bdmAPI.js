@@ -80,6 +80,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
 });
 router.post("/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
+  console.log(id)
   const {
     newBdmStatus,
     companyId,
@@ -89,6 +90,7 @@ router.post("/update-bdm-status/:id", async (req, res) => {
     bdmStatusChangeTime,
   } = req.body; // Destructure the required properties from req.body
 
+  console.log(req.body)
   try {
     // Update the status field in the database based on the employee id
     await TeamLeadsModel.findByIdAndUpdate(id, {
@@ -375,7 +377,7 @@ router.get("/matured-get-requests-byBDM/:bdmName", async (req, res) => {
 
 router.post('/deletebdm-updatebdedata', async (req, res) => {
   const { companyId, companyName } = req.query; // Changed from req.params to req.body
- 
+
   try {
     await CompanyModel.findOneAndUpdate(
       { _id: companyId }, // Corrected filter object
@@ -384,15 +386,15 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
           bdmAcceptStatus: "NotForwarded",
           feedbackPoints: [],
           multiBdmName: [],
-          
+
         },
         $unset: {
           bdmName: "",
           bdeForwardDate: "",
           bdmStatusChangeDate: "",
           bdmStatusChangeTime: "",
-          bdmRemarks:"",
-          RevertBackAcceptedCompanyRequest:"",
+          bdmRemarks: "",
+          RevertBackAcceptedCompanyRequest: "",
         }
       }
     );
@@ -410,52 +412,56 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
 
 //---------- request to reject revert back request -------------------------------------
 
-router.post(`/rejectrequestrevertbackcompany` , async(req , res)=>{
+router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
   const { companyId } = req.query;
-  try{
+  try {
     await CompanyModel.findOneAndUpdate(
-      {_id : companyId},
-      { $set :{
-        RevertBackAcceptedCompanyRequest: "Reject",
-      }}
-    ) 
+      { _id: companyId },
+      {
+        $set: {
+          RevertBackAcceptedCompanyRequest: "Reject",
+        }
+      }
+    )
     await TeamLeadsModel.findOneAndUpdate(
-      {_id : companyId},
-      { $set :{
-        RevertBackAcceptedCompanyRequest: "Reject",
-      }}
-    ) 
-    res.status(200).json({ message : "Company Not Reverted Back"})
-  }catch(error){
-    res.status(500).json({error : "Internal Server Error"})
+      { _id: companyId },
+      {
+        $set: {
+          RevertBackAcceptedCompanyRequest: "Reject",
+        }
+      }
+    )
+    res.status(200).json({ message: "Company Not Reverted Back" })
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" })
   }
 
 })
 
 //------------done request of reverted company--------------------------------
 
-router.post(`/rejectedrequestdonebybdm` ,async(req , res)=>{
+router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
   const { companyId } = req.query;
-  try{
+  try {
     await CompanyModel.findOneAndUpdate(
-      {_id : companyId},
+      { _id: companyId },
       {
-        $unset : {
-          RevertBackAcceptedCompanyRequest : ""
+        $unset: {
+          RevertBackAcceptedCompanyRequest: ""
         }
       }
     )
     await TeamLeadsModel.findOneAndUpdate(
-      {_id : companyId},
+      { _id: companyId },
       {
-        $unset : {
-          RevertBackAcceptedCompanyRequest : ""
+        $unset: {
+          RevertBackAcceptedCompanyRequest: ""
         }
       }
     )
 
-  }catch(error){
-    res.status(500).json({error : "Internal Server Error"})
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" })
   }
 
 })
@@ -468,18 +474,20 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
         ...company,
         bdmAcceptStatus: "Forwarded",
         bdmName: name,
-        bdmForwardDate: new Date(),
+        bdeForwardDate: new Date(),
         bdeOldStatus: company.Status
       });
 
       await TeamLeadsModel.create({
         ...company,
-        _id: company._id
+        _id: company._id,
+        bdmName: name,
+        bdeForwardDate: new Date()
       });
     });
 
     await Promise.all(updatePromises);
-    
+    console.log("Updated Data is :", updatePromises);
     res.status(200).json({ message: "Data created and updated successfully" });
   } catch (error) {
     console.log(error);
