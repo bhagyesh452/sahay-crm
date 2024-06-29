@@ -2015,9 +2015,11 @@ router.post(
               </tr>
               `;
               }
-              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
+              const conditionalServices = ["Seed Funding Application","Income Tax Exemption Application","Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
+                newData.services[i].serviceName === "Seed Funding Application" ? "Seed Funding Application Support" :
+                newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
                   newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                     newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
                       newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
@@ -2417,15 +2419,19 @@ router.post(
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-          const extraServiceName = newData.services.map(service => {
-            let services = ""
-            if (service.serviceName.includes("Seed fund Application")) {
-              services = services === "" ? "Seed fund Application" : "Seed Fund Application , Income Tax Exemption Application"
-            } else if (service.serviceName.includes("Income Tax Exemption Application")) {
-              services = services === "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-            }
-            return services;
-          })
+            const extraServiceName = newData.services.map(service => {
+              let services = "";
+              if (service.serviceName.includes("Seed fund Application")) {
+                services = services === "" ? "Seed fund Application" : `${services}, Seed Fund Application`;
+              }
+              if (service.serviceName.includes("Income Tax Exemption Application")) {
+                services = services === "" ? "Income Tax Exemption Application" : `${services}, Income Tax Exemption Application`;
+              }
+              return services;
+            }).join(', ');
+            
+
+            
 
           const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
       <section>
