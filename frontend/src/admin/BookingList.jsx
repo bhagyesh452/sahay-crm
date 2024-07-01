@@ -77,6 +77,7 @@ function BookingList() {
       setCurrentDataLoading(false);
     }
   };
+  
   useEffect(() => {
     if (currentCompanyName === "") {
       setCurrentLeadform(leadFormData[0]);
@@ -87,6 +88,41 @@ function BookingList() {
 
 
   }, [leadFormData]);
+
+  // const [isDeletedStatus, setisDeletedStatus] = useState(false);
+  // const [currentBdeName, setCurrentBdeName] = useState("")
+
+  // const functionToGetBdeName = async (companyName) => {
+  //   try {
+  //     const response = await axios.get(`${secretKey}/company-data/get-bde-name-for-mybookings/${companyName}`);
+  //     setCurrentBdeName(response.data.bdeName); // Assuming the response contains the BDE name in this format
+  //   } catch (error) {
+  //     console.log("Error fetching employee", error.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   console.log("Current Company Name:", currentCompanyName);
+
+  //   if (currentCompanyName === "") {
+  //     setCurrentLeadform(leadFormData[0]);
+  //     if (leadFormData.length !== 0) {
+  //       setisDeletedStatus(leadFormData[0].isDeletedEmployeeCompany);
+  //       setCurrentBdeName(leadFormData[0].bdeName);
+  //       functionToGetBdeName(leadFormData[0]["Company Name"]);
+  //     }
+  //   } else {
+  //     const foundLeadForm = leadFormData.find(obj => obj["Company Name"] === currentCompanyName);
+  //     if (foundLeadForm) {
+  //       setCurrentLeadform(foundLeadForm);
+  //       setisDeletedStatus(foundLeadForm.isDeletedEmployeeCompany);
+  //       setCurrentBdeName(foundLeadForm.bdeName);
+  //       functionToGetBdeName(foundLeadForm["Company Name"]);
+  //     } else {
+  //       console.log(`Company "${currentCompanyName}" not found in formData.`);
+  //     }
+  //   }
+  // }, [leadFormData, currentCompanyName]);
 
   useEffect(() => {
     setLeadFormData(
@@ -499,6 +535,7 @@ function BookingList() {
   };
 
   console.log(leadFormData)
+ 
 
   return (
     <div>
@@ -629,7 +666,7 @@ function BookingList() {
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
                             }
-                            onClick={() =>
+                            onClick={() =>{
 
                               setCurrentLeadform(
                                 leadFormData.find(
@@ -637,6 +674,8 @@ function BookingList() {
                                     data["Company Name"] === obj["Company Name"]
                                 )
                               )
+              
+                            }
                             }
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -3028,6 +3067,8 @@ function BookingList() {
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
             isAdmin={true}
+            employeeName = {currentLeadform.bdeName}
+            employeeEmail = {currentLeadform.bdeEmail}
           />
         </>
       )}
