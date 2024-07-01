@@ -123,10 +123,10 @@ function EmployeeMaturedBookings() {
       console.log("Error fetching employee", error.message);
     }
   };
-  
+
   useEffect(() => {
     console.log("Current Company Name:", currentCompanyName);
-  
+
     if (currentCompanyName === "") {
       setCurrentLeadform(formData[0]);
       if (formData.length !== 0) {
@@ -146,7 +146,7 @@ function EmployeeMaturedBookings() {
       }
     }
   }, [formData, currentCompanyName]);
-  
+
 
   console.log(isDeletedStatus)
   console.log(currentBdeName)
@@ -658,13 +658,16 @@ function EmployeeMaturedBookings() {
                               ? formData[0]["Company Name"]
                               : "-"}
                         </div>
-                        {(isDeletedStatus && (currentBdeName === data.ename)) && (<div
-                          className="bookings_add_more"
-                          title="Add More Booking"
-                          onClick={() => setAddFormOpen(true)}
-                        >
-                          <FaPlus />
-                        </div>)}
+                        {((isDeletedStatus === true && currentBdeName === data.ename) ||
+                          ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename)) && (
+                            <div
+                              className="bookings_add_more"
+                              title="Add More Booking"
+                              onClick={() => setAddFormOpen(true)}
+                            >
+                              <FaPlus />
+                            </div>
+                          )}
                       </div>
                     </div>
                     <div className="booking-deatils-body">
@@ -2735,8 +2738,8 @@ function EmployeeMaturedBookings() {
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
-            employeeName = {data.ename}
-            employeeEmail = {data.email}
+            employeeName={data.ename}
+            employeeEmail={data.email}
           />
         </>
       )}

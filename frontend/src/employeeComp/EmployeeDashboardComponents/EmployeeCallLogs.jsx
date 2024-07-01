@@ -135,7 +135,7 @@ function EmployeeCallLogs({ employeeData }) {
             }
         };
         fetchEmployeeData();
-    }, [employeeData, startTimestamp, endTimestamp]);
+    }, [employeeData]);
 
 
 

@@ -3430,6 +3430,8 @@ function ManagerBookings() {
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
+            employeeName = {currentLeadform.bdeName}
+            employeeEmail={currentLeadform.bdeEmail}
           />
         </>
       )}
