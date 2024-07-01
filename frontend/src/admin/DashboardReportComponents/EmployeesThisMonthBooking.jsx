@@ -154,6 +154,8 @@ function EmployeesThisMonthBooking() {
     let totalTargetAmount = 0;
     let totalAchievedAmount = 0;
     const currentYear = initialDate.getFullYear();
+    const filteredDate = new Date(bookingStartDate);
+    const filteredYear = filteredDate.getFullYear();
     const monthNames = [
         "January",
         "February",
@@ -169,6 +171,7 @@ function EmployeesThisMonthBooking() {
         "December",
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
+    const filteredMonth = monthNames[filteredDate.getMonth()]
 
 
 
@@ -1337,112 +1340,38 @@ function EmployeesThisMonthBooking() {
 
         })
 
-        console.log(achievedAmount, "of", data.ename)
+     
         return achievedAmount;
     };
-    const functionCalculatePendingRevenue = (data) => {
-        let remainingAmount = 0;
-        const today = new Date();
-
-        redesignedData.map((mainBooking) => {
-
-            if (mainBooking.remainingPayments.length !== 0) {
-                mainBooking.remainingPayments.map((remainingObj) => {
-
-
-                    let condition = false;
-                    switch (Filterby) {
-                        case 'Today':
-                            condition = ((new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-                            break;
-                        case 'Last Month':
-                            condition = ((new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-                            break;
-                        case 'This Month':
-                            condition = ((new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (condition) {
-
-                        const tempAmount = Math.floor(remainingObj.receivedPayment);
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingAmount += Math.floor(tempAmount);
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingAmount += Math.floor(tempAmount) / 2;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === data.ename) {
-                                remainingAmount += Math.floor(tempAmount);
-                            }
-                        }
-                    }
-                })
-            }
-            mainBooking.moreBookings.map((moreObject) => {
-                if (moreObject.remainingPayments.length !== 0) {
-                    moreObject.remainingPayments.map((remainingObj) => {
-                        let condition = false;
-                        switch (Filterby) {
-                            case 'Today':
-                                condition = ((new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-                                break;
-                            case 'Last Month':
-                                condition = ((new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-                                break;
-                            case 'This Month':
-                                condition = ((new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
-                                break;
-                            default:
-                                break;
-                        }
-
-                        if (condition) {
-
-                            const tempAmount = Math.floor(remainingObj.receivedPayment);
-                            if (moreObject.bdeName === moreObject.bdmName) {
-                                remainingAmount += Math.floor(tempAmount);
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-                                remainingAmount += Math.floor(tempAmount) / 2;
-                            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                                if (moreObject.bdeName === data.ename) {
-                                    remainingAmount += Math.floor(tempAmount);
-                                }
-                            }
-                        }
-                    })
-                }
-            })
-        })
-        console.log(remainingAmount, data.ename)
-        return remainingAmount
-
-    };
+  
     const functionGetAmount = (object) => {
+        const thisDate = new Date(bookingStartDate);
+        const thisYear = thisDate.getFullYear();
+        const thisMonth = monthNames[thisDate.getMonth()];
+       
         if (object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
                 (item) =>
-                    Math.floor(item.year) === currentYear && item.month === currentMonth
+                    Math.floor(item.year) === thisYear && item.month === thisMonth
             );
             totalTargetAmount =
                 foundObject &&
                 Math.floor(totalTargetAmount) + Math.floor(foundObject.amount);
-
+            
             return foundObject ? foundObject.amount : 0;
         } else {
             return 0;
         }
     };
     const functionGetOnlyAmount = (object) => {
+        const thisDate = new Date(bookingStartDate);
+        const thisYear = thisDate.getFullYear();
+        const thisMonth = monthNames[thisDate.getMonth()];
         if (object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
                 (item) =>
-                    Math.floor(item.year) === currentYear && item.month === currentMonth
+                    Math.floor(item.year) === thisYear && item.month === thisMonth
             );
-
-
             return foundObject ? foundObject.amount : 0;
         } else {
             return 0;
@@ -1477,20 +1406,106 @@ function EmployeesThisMonthBooking() {
     let generatedTotalRevenue = 0;
 
 
-    function functionCalculateGeneratedTotalRevenue(ename) {
-        const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
-        let generatedRevenue = 0;
-        const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
-        requiredObj.forEach((object) => {
-            const newObject = filterData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === ename);
-            if (newObject) {
-                generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
-            }
+ 
 
-        });
-        generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
-        return generatedRevenue;
-    }
+
+    //  Unused(Phike) Functions
+
+    // const functionCalculatePendingRevenue = (data) => {
+    //     let remainingAmount = 0;
+    //     const today = new Date();
+
+    //     redesignedData.map((mainBooking) => {
+
+    //         if (mainBooking.remainingPayments.length !== 0) {
+    //             mainBooking.remainingPayments.map((remainingObj) => {
+
+
+    //                 let condition = false;
+    //                 switch (Filterby) {
+    //                     case 'Today':
+    //                         condition = ((new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+    //                         break;
+    //                     case 'Last Month':
+    //                         condition = ((new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+    //                         break;
+    //                     case 'This Month':
+    //                         condition = ((new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+
+    //                         break;
+    //                     default:
+    //                         break;
+    //                 }
+
+    //                 if (condition) {
+
+    //                     const tempAmount = Math.floor(remainingObj.receivedPayment);
+    //                     if (mainBooking.bdeName === mainBooking.bdmName) {
+    //                         remainingAmount += Math.floor(tempAmount);
+    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+    //                         remainingAmount += Math.floor(tempAmount) / 2;
+    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+    //                         if (mainBooking.bdeName === data.ename) {
+    //                             remainingAmount += Math.floor(tempAmount);
+    //                         }
+    //                     }
+    //                 }
+    //             })
+    //         }
+    //         mainBooking.moreBookings.map((moreObject) => {
+    //             if (moreObject.remainingPayments.length !== 0) {
+    //                 moreObject.remainingPayments.map((remainingObj) => {
+    //                     let condition = false;
+    //                     switch (Filterby) {
+    //                         case 'Today':
+    //                             condition = ((new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+    //                             break;
+    //                         case 'Last Month':
+    //                             condition = ((new Date(remainingObj.paymentDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+    //                             break;
+    //                         case 'This Month':
+    //                             condition = ((new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) && (data.ename === mainBooking.bdeName || data.ename === mainBooking.bdmName))
+    //                             break;
+    //                         default:
+    //                             break;
+    //                     }
+
+    //                     if (condition) {
+
+    //                         const tempAmount = Math.floor(remainingObj.receivedPayment);
+    //                         if (moreObject.bdeName === moreObject.bdmName) {
+    //                             remainingAmount += Math.floor(tempAmount);
+    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+    //                             remainingAmount += Math.floor(tempAmount) / 2;
+    //                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
+    //                             if (moreObject.bdeName === data.ename) {
+    //                                 remainingAmount += Math.floor(tempAmount);
+    //                             }
+    //                         }
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     })
+    //     console.log(remainingAmount, data.ename)
+    //     return remainingAmount
+
+    // };
+
+    // function functionCalculateGeneratedTotalRevenue(ename) {
+    //     const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
+    //     let generatedRevenue = 0;
+    //     const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    //     requiredObj.forEach((object) => {
+    //         const newObject = filterData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === ename);
+    //         if (newObject) {
+    //             generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+    //         }
+
+    //     });
+    //     generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
+    //     return generatedRevenue;
+    // }
 
     //-------------------this months booking bde search filter---------------------------
 
@@ -2877,8 +2892,8 @@ function EmployeesThisMonthBooking() {
                                                                 item.targetDetails.length !== 0 &&
                                                                 item.targetDetails.find(
                                                                     (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
+                                                                        target.year === filteredYear.toString() &&
+                                                                        target.month === filteredMonth.toString()
                                                                 )
                                                         )
                                                         .map((obj, index) => (
