@@ -177,9 +177,9 @@ const storage = multer.diskStorage({
     }
     else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
       destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
-    } else {
+    }  else {
       destinationPath = `ClientDocuments/${companyName}/OtherDocs`
-    }
+    } 
 
     // Create the directory if it doesn't exist
     if (!fs.existsSync(destinationPath)) {

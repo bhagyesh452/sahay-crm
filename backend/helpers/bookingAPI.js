@@ -4566,7 +4566,11 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
-      { $unset: { maturedBdmName: "" } },
+      { $unset: { 
+        maturedBdmName: "" ,
+        multiBdmName:[]
+      } 
+    },
       { new: true }
     );
     if (updateMainBooking.bdmAcceptStatus === "Accept") {
@@ -5328,6 +5332,8 @@ router.get("/otherpdf/:CompanyName/:filename", (req, res) => {
     res.sendFile(pdfPath);
   });
 });
+
+
 
 
 // --------------------------------------------------  Export CSV API  -----------------------------------------------

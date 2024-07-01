@@ -357,21 +357,33 @@ function EmployeeParticular() {
       });
       setExtraData(sortedData)
       setNewData(sortedData)
-      setmoreEmpData(sortedData);
+      setmoreEmpData(sortedData)
       setEmployeeData(
         sortedData.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
-            obj.Status === "Untouched"
-        )
-      );
+            (obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched") &&
+            (obj.bdmAcceptStatus !== "Forwarded" &&
+              obj.bdmAcceptStatus !== "Accept" &&
+              obj.bdmAcceptStatus !== "Pending")
+));
+      
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  console.log(moreEmpData.filter(
+    (obj) =>
+      (obj.Status === "Busy" ||
+        obj.Status === "Not Picked Up" ||
+        obj.Status === "Untouched") && 
+        (obj.bdmAcceptStatus !== "Forwarded" &&
+        obj.bdmAcceptStatus !== "Accept" &&
+        obj.bdmAcceptStatus !== "Pending")));
 
 
   useEffect(() => {
@@ -708,45 +720,8 @@ function EmployeeParticular() {
     }
   };
 
-  // const handleCheckboxChange = (id, event) => {
-  //   if (id === "all") {
-  //     setSelectedRows((prevSelectedRows) =>
-  //       prevSelectedRows.length === employeeData.length
-  //         ? []
-  //         : [...employeeData]
-  //     );
-  //   } else {
-  //     setSelectedRows((prevSelectedRows) => {
-  //       if (event.ctrlKey) {
-  //         const selectedIndex = employeeData.findIndex((row) => row._id === id);
-  //         const lastSelectedIndex = employeeData.findIndex((row) =>
-  //           prevSelectedRows.some((selectedRow) => selectedRow._id === row._id)
-  //         );
-
-  //         if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
-  //           const start = Math.min(selectedIndex, lastSelectedIndex);
-  //           const end = Math.max(selectedIndex, lastSelectedIndex);
-  //           const rowsToSelect = employeeData.slice(start, end + 1);
-
-  //           const idsToSelect = rowsToSelect.map((row) => row._id);
-  //           return prevSelectedRows.some((selectedRow) => selectedRow._id === id)
-  //             ? prevSelectedRows.filter((row) => !idsToSelect.includes(row._id))
-  //             : [...prevSelectedRows, ...rowsToSelect];
-  //         }
-  //       }
-
-  //       const isAlreadySelected = prevSelectedRows.some((row) => row._id === id);
-  //       return isAlreadySelected
-  //         ? prevSelectedRows.filter((row) => row._id !== id)
-  //         : [...prevSelectedRows, employeeData.find((row) => row._id === id)];
-  //     });
-  //   }
-  // };
-
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
   const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
-
-
 
   const fetchnewData = async () => {
     try {
@@ -771,7 +746,6 @@ function EmployeeParticular() {
       fetchNewData();
     }
   }, [nowToFetch]);
-
 
   const handleSort = (sortType) => {
     switch (sortType) {
@@ -807,6 +781,7 @@ function EmployeeParticular() {
         break;
     }
   };
+
   const fetchProjections = async () => {
     try {
       const response = await axios.get(`${secretKey}/projection/projection-data`);
@@ -839,7 +814,6 @@ function EmployeeParticular() {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
-
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -1767,15 +1741,24 @@ function EmployeeParticular() {
   };
 
   const handleForwardDataToBDM = async (bdmName) => {
-    const data = employeeData.filter((employee) => selectedRows.includes(employee._id));
+    const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
     console.log("data is:", data);
+    if(data.length === 0) {
+      Swal.fire("Can Not Forward Untouched Company", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
     try {
       const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
         data: data,
         name: bdmName
       });
+      fetchNewData();
+      Swal.fire("Company Forwarded", "", "success");
       setBdmName("Not Alloted");
       handleCloseForwardBdmPopup();
+      setdataStatus("All");
       console.log("response data is:", response);
     } catch (error) {
       console.log("error fetching data", error.message);
@@ -2073,11 +2056,11 @@ function EmployeeParticular() {
                     {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
                       <MdOutlinePostAdd className='mr-1' />Assign Leads
                     </button>)}
-                    {/* <button type="button" className="btn mybtn"
+                    <button type="button" className="btn mybtn"
                       onClick={() => setOpenAssignToBdm(true)}
                     >
                       <RiShareForwardFill className='mr-1' /> Forward to BDM
-                    </button> */}
+                    </button>
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
@@ -2420,9 +2403,12 @@ function EmployeeParticular() {
                         setEmployeeData(
                           mappedData.filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
-                              obj.Status === "Untouched"
+                              (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") && (
+                                obj.bdmAcceptStatus !== "Forwarded" ||
+                                obj.bdmAcceptStatus !== "Accept" ||
+                                obj.bdmAcceptStatus !== "Pending")
                           ).sort(
                             (a, b) =>
                               new Date(b.lastActionDate) -
@@ -2442,9 +2428,12 @@ function EmployeeParticular() {
                         {
                           ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
-                              obj.Status === "Untouched"
+                              (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") && 
+                                (obj.bdmAcceptStatus !== "Forwarded" &&
+                                obj.bdmAcceptStatus !== "Accept" &&
+                                obj.bdmAcceptStatus !== "Pending")
                           ).length
                         }
                       </span>
@@ -2805,6 +2794,7 @@ function EmployeeParticular() {
                         </tbody>
                       ) : (
                         <>
+                          {console.log("Current Data :", currentData)}
                           {currentData.length !== 0 && (
                             <tbody>
                               {currentData.map((company, index) => (

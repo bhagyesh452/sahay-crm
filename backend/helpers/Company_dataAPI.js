@@ -584,19 +584,22 @@ router.get('/filter-employee-leads', async (req, res) => {
   } = req.query;
 
   const page = parseInt(req.query.page) || 1; // Page number
-  //const limit = parseInt(req.query.limit) || 500; // Items per page
-  //const skip = (page - 1) * limit; // Number of documents to skip
 
   try {
     let baseQuery = {};
 
     // Ensure the query is filtered by employeeName
-    if (employeeName){
+    if (employeeName) {
       baseQuery.$or = [
-        {ename : employeeName},
-        {multiBdmName : {$in:[employeeName]}},
-        {maturedBdmName : employeeName}
-      ]
+        { ename: employeeName }
+      ];
+
+      if (selectedStatus === 'Matured') {
+        baseQuery.$or.push(
+          { multiBdmName: { $in: [employeeName] } },
+          { maturedBdmName: employeeName }
+        );
+      }
     }
 
     // Add other filters only if employeeName is present

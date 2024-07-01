@@ -391,6 +391,7 @@ function BdmTeamLeads() {
   ) => {
     const DT = new Date();
     try {
+      console.log(companyId)
       const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
         newBdmStatus,
         companyId,
@@ -399,6 +400,7 @@ function BdmTeamLeads() {
         bdmStatusChangeDate: new Date(),
         bdmStatusChangeTime: DT.toLocaleTimeString()
       })
+      console.log(response)
       const filteredProjectionData = projectionDataNew.filter((company) => company.companyName === cName)
       //console.log(filteredProjectionData)
 
@@ -1051,7 +1053,7 @@ function BdmTeamLeads() {
           </Dialog>
         )}
         {revertBackRequestData.length !== 0 && revertBackRequestData.map((item) => (
-          <Dialog key={item._id} open={openRevertBackRequestDialog}  className='My_Mat_Dialog' maxWidth="sm">
+          <Dialog key={item._id} open={openRevertBackRequestDialog} className='My_Mat_Dialog' maxWidth="sm">
             <DialogContent>
               <div className="">
                 <div className="request-title m-2 d-flex justify-content-between">

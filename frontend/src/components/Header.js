@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
@@ -21,7 +21,9 @@ function Header({ name, designation}) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  
+
+
+
 
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -156,7 +158,7 @@ function Header({ name, designation}) {
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
          <BellEmp name={name}/>
-          <Avatar sx={{ width: 32, height: 32 }}/>
+          <Avatar  sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
