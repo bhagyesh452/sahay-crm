@@ -218,6 +218,9 @@ function EmployeePanel() {
   const [filteredData, setFilteredData] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("")
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+
   //console.log(userId);
 
   const playNotificationSound = () => {
@@ -365,6 +368,7 @@ function EmployeePanel() {
 
   const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
     openchangeRemarks(true);
+    console.log("yahan pr chala")
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
@@ -374,6 +378,8 @@ function EmployeePanel() {
     setCurrentCompanyName(companyName);
     setBdeName(ename)
   };
+
+  console.log("my remarks" , filteredRemarks)
   // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
@@ -389,6 +395,7 @@ function EmployeePanel() {
     companyName,
     ename
   ) => {
+    console.log("yahan chala")
     setOpenRemarksEdit(true);
     setFilteredRemarksBde(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -550,6 +557,22 @@ function EmployeePanel() {
       console.error("Error fetching Projection Data:", error.message);
     }
   };
+
+  
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
+      setRemarksHistory(response.data.reverse());
+      setFilteredRemarks(
+        response.data.filter((obj) => obj.companyID === cid).reverse()
+      );
+
+      //console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
@@ -782,23 +805,7 @@ function EmployeePanel() {
     fetchData();
   }, [userId]);
 
-  const [remarksHistory, setRemarksHistory] = useState([]);
-  const [filteredRemarks, setFilteredRemarks] = useState([]);
-
-  const fetchRemarksHistory = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-      setRemarksHistory(response.data.reverse());
-      setFilteredRemarks(
-        response.data.filter((obj) => obj.companyID === cid).reverse()
-      );
-
-      //console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching remarks history:", error);
-    }
-  };
-
+  
   //console.log(remarksHistory);
 
   // const [locationAccess, setLocationAccess] = useState(false);
@@ -4302,9 +4309,9 @@ function EmployeePanel() {
                                       className="rematkText text-wrap m-0"
                                       title={company.remarks}
                                     >
-                                      {!company.remarks
+                                      {!company.bdmRemarks
                                         ? "No Remarks"
-                                        : company.remarks}
+                                        : company.bdmRemarks}
                                     </p>
                                     <IconButton
                                       onClick={() => {
@@ -5259,10 +5266,11 @@ function EmployeePanel() {
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
+                  {console.log("History items :",historyItem)}
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
-                        <pre className="remark-text">{historyItem.remarks}</pre>
+                        <pre className="remark-text">{historyItem.bdmRemarks}</pre>
                         {/* {historyItem.bdmName !== undefined && (
                           <pre className="remark-text">By BDM</pre>
                         )} */}

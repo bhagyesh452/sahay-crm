@@ -283,9 +283,12 @@ function BdmTeamLeads() {
       return true;
     }
     try {
+      console.log(currentBdmName , Remarks)
       if (isDeleted) {
         const response = await axios.post(`${secretKey}/bdm-data/teamleads-rejectdata/${cid}`, {
           bdmAcceptStatus: "NotForwarded",
+          bdmName : currentBdmName,
+          remarks : Remarks
         })
         const response2 = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
           Remarks,
