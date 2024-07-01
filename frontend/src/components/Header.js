@@ -22,6 +22,7 @@ function Header({ name, designation}) {
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+  
 
 
 
@@ -62,10 +63,36 @@ function Header({ name, designation}) {
       }
       
     });
+    socket.on("Remaining_Payment_Added", (res) => {
+     
+      if(name === res.name){
+        enqueueSnackbar(`Remaining Amount Received from ${res.companyName}`, {
+          variant: 'warning',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
     socket.on("expanse-added", (res) => {
-      console.log("Expanse Added" , res, name)
+      console.log("Expanse Added" ,"response :" + res ,"Name" + name)
       if(name === res){
         enqueueSnackbar(`Expanse Added in Your Booking `, {
+          variant: 'info',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
+    socket.on("booking-updated", (res) => {
+     
+      if(name === res){
+        enqueueSnackbar(`Booking Edit Request Updated`, {
           variant: 'info',
           autoHideDuration: 5000
         });
@@ -79,7 +106,7 @@ function Header({ name, designation}) {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [name]);
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -105,7 +132,7 @@ function Header({ name, designation}) {
     };
   }, [socketID, userId]);
 
-  //console.log(name)
+  console.log("employeename" , name)
 
 
   // ----------------------------------   Functions  ----------------------------------------------

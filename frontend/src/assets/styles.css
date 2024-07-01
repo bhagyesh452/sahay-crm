@@ -2636,4 +2636,8 @@ border: 1px solid #ffefc6 !important;
   font-size: 18px !important;
   cursor: pointer;
 }
+.expand-btn:hover{
+  cursor: pointer;
+  font-size: 15px;
+}
 
