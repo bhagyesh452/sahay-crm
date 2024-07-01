@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import img from "../static/my-images/image.png";
 
-function EditBookingPreview({ requestedBooking, existingBooking , setCompareBooking , setCurrentBooking , setCurrentCompany }) {
+function EditBookingPreview({ requestedBooking, existingBooking , setCompareBooking , setCurrentBooking , setCurrentCompany , setNowToFetch }) {
     const [step4changed, setStep4Changed] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   function formatDate(inputDate) {
@@ -135,7 +135,8 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
       if(requestedBooking.bookingIndex === 0){
         try {
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${updatedBooking["Company Name"]}`, formData);
-         Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+         Swal.fire({title:"Data Updated" , icon:"success"})
+        setNowToFetch(true) // Display success message
         } catch (error) {
           console.log("Error updating data" ,error) ;
           Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
@@ -144,6 +145,8 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
         try {
           const response = await axios.put(`${secretKey}/bookings/update-more-booking/${updatedBooking["Company Name"]}/${updatedBooking.bookingIndex}`, formData);
          Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+         setCurrentBooking(null)
+         setCompareBooking(null)
         } catch (error) {
           console.log("Error updating data" ,error) ;
           Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message

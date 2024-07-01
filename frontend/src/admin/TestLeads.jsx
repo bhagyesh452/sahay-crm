@@ -952,6 +952,7 @@ function TestLeads() {
                         selectedUploadedDate,
                         selectedAdminName,
                         selectedYear,
+                        monthIndex,
                         selectedCompanyIncoDate,
                         isFilter,
                         isSearching,
@@ -984,6 +985,7 @@ function TestLeads() {
     };
 
 
+
     const handleMouseDown = (id) => {
         // Initiate drag selection
         let index;
@@ -1001,6 +1003,7 @@ function TestLeads() {
     };
 
     //console.log(data)
+    console.log(selectedRows.length)
 
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
@@ -1076,6 +1079,7 @@ function TestLeads() {
                     selectedUploadedDate,
                     selectedAdminName,
                     selectedYear,
+                    monthIndex,
                     selectedCompanyIncoDate,
                     isSearching,
                     searchText,
@@ -1110,47 +1114,90 @@ function TestLeads() {
         setEmployeeSelection("Not Alloted")
     }
 
+    // const handleconfirmAssign = async () => {
+    //     let selectedObjects = [];
+    //     if (isFilter || isSearching) {
+    //         if (dataStatus === 'Unassigned') {
+    //             selectedObjects = unAssignedData.filter((row) =>
+    //                 selectedRows.includes(row._id)
+    //             );
+    //         } else if (dataStatus === 'Assigned') {
+    //             selectedObjects = assignedData.filter((row) =>
+    //                 selectedRows.includes(row._id)
+    //             );
+                
+    //         }
+    //     } else {
+    //         selectedObjects = data.filter((row) =>
+    //             selectedRows.includes(row._id)
+    //         );
+    //         console.log("selectedObjects" , data)
+    //     }
+    //     //console.log("selectedObjecyt", selectedObjects)
+    //     // Check if no data is selected
+    //     if (selectedObjects.length === 0) {
+    //         Swal.fire("Empty Data!");
+    //         closeAssignLeadsDialog();
+    //         return; // Exit the function early if no data is selected
+    //     }
+    //     const alreadyAssignedData = selectedObjects.filter(
+    //         (obj) => obj.ename && obj.ename !== "Not Alloted"
+    //     );
+
+    //     // If all selected data is not already assigned, proceed with assignment
+    //     if (alreadyAssignedData.length === 0) {
+    //         handleAssignData();
+    //         return; // Exit the function after handling assignment
+    //     }
+
+    //     // If some selected data is already assigned, show confirmation dialog
+    //     const userConfirmed = window.confirm(
+    //         `Some data is already assigned. Do you want to continue?`
+    //     );
+
+    //     if (userConfirmed) {
+    //         handleAssignData();
+    //     }
+    // };
+
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
-        if (isFilter || isSearching) {
-            if (dataStatus === 'Unassigned') {
-                selectedObjects = unAssignedData.filter((row) =>
-                    selectedRows.includes(row._id)
-                );
-            } else if (dataStatus === 'Assigned') {
-                selectedObjects = assignedData.filter((row) =>
-                    selectedRows.includes(row._id)
-                );
-            }
-        } else {
-            selectedObjects = data.filter((row) =>
-                selectedRows.includes(row._id)
-            );
-        }
-        //console.log("selectedObjecyt", selectedObjects)
+    
         // Check if no data is selected
-        if (selectedObjects.length === 0) {
+        if (selectedRows.length === 0) {
             Swal.fire("Empty Data!");
             closeAssignLeadsDialog();
             return; // Exit the function early if no data is selected
         }
-        const alreadyAssignedData = selectedObjects.filter(
-            (obj) => obj.ename && obj.ename !== "Not Alloted"
-        );
-
-        // If all selected data is not already assigned, proceed with assignment
-        if (alreadyAssignedData.length === 0) {
-            handleAssignData();
-            return; // Exit the function after handling assignment
-        }
-
-        // If some selected data is already assigned, show confirmation dialog
-        const userConfirmed = window.confirm(
-            `Some data is already assigned. Do you want to continue?`
-        );
-
-        if (userConfirmed) {
-            handleAssignData();
+    
+        try {
+            // Fetch selected data directly from the server
+            const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
+            selectedObjects = response.data;
+    
+            console.log("selectedObjects", selectedObjects);
+    
+            const alreadyAssignedData = selectedObjects.filter(
+                (obj) => obj.ename && obj.ename !== "Not Alloted"
+            );
+    
+            // If all selected data is not already assigned, proceed with assignment
+            if (alreadyAssignedData.length === 0) {
+                handleAssignData();
+                return; // Exit the function after handling assignment
+            }
+    
+            // If some selected data is already assigned, show confirmation dialog
+            const userConfirmed = window.confirm(
+                `Some data is already assigned. Do you want to continue?`
+            );
+    
+            if (userConfirmed) {
+                handleAssignData();
+            }
+        } catch (error) {
+            console.error('Error fetching selected data:', error);
+            Swal.fire('Error fetching data. Please try again.');
         }
     };
 
@@ -1206,8 +1253,9 @@ function TestLeads() {
 
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData
         const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
-        const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
-
+        //const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
+        const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
+        const dataToSend = response.data;
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,

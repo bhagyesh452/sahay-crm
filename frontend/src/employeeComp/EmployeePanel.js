@@ -3951,7 +3951,6 @@ function EmployeePanel() {
                                     data-testid="loader"
                                   />
                                 </div>
-
                               </td>
                             </tr>
                           </tbody>

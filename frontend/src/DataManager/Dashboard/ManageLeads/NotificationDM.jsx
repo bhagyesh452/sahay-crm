@@ -13,6 +13,8 @@ import DeleteBookingComponent from "../../../admin/NotiComponents/DeleteBookingC
 import Manual_dataComponent from "../../../admin/NotiComponents/Manual_dataComponent";
 import General_dataComponent from "../../../admin/NotiComponents/General_dataComponent";
 import Approve_dataComponents from "../../../admin/NotiComponents/Approve_dataComponents";
+import Booking_editComponents from "../../../admin/NotiComponents/Booking_editComponents";
+
 
 
 function NotificationDM() {
@@ -309,7 +311,8 @@ function NotificationDM() {
                 />
               ))} */}
               {dataType === "deleteBookingRequests" && <DeleteBookingComponent/>}
-            {dataType === "editBookingRequests" &&
+              {dataType === "editBookingRequests" && <Booking_editComponents/>}
+            {/* {dataType === "editBookingRequests" &&
               editData.length !== 0 && !currentBooking && !compareBooking &&
               editData.map((company) => (
                 <EditBookingsCard                   
@@ -326,7 +329,7 @@ function NotificationDM() {
               {dataType === "editBookingRequests" &&
               editData.length !== 0 && currentBooking && compareBooking &&
                 <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
-              }
+              } */}
             {/* {mapArray.length !== 0 &&
               dataType === "AddRequest" &&
               mapArray.map((company) => (
@@ -365,18 +368,7 @@ function NotificationDM() {
                   <Nodata />
                 </span>
               )} */}
-            {editData.length === 0 &&
-              dataType === "editBookingRequests" && (
-                <span
-                  style={{
-                    textAlign: "center",
-                    fontSize: "25px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Nodata />
-                </span>
-              )}
+         
           </div>
         </div>
       </div>

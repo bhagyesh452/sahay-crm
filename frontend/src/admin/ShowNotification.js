@@ -368,18 +368,7 @@ function ShowNotification() {
                   <Nodata />
                 </span>
               )} */}
-            {editData.length === 0 &&
-              dataType === "editBookingRequests" && (
-                <span
-                  style={{
-                    textAlign: "center",
-                    fontSize: "25px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Nodata />
-                </span>
-              )}
+            
           </div>
         </div>
       </div>

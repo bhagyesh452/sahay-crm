@@ -209,6 +209,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
   async (req, res) => {
     // Assuming updatedBooking contains the updated data
     const companyName = req.params.CompanyName; // Get the _id from the request parameters
+    const socketIO = req.io;
     const {
       _id,
       moreBookings,
@@ -252,7 +253,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": companyName,
       });
-
+      socketIO.emit('booking-updated' ,{name : boom.bdeName , companyName : companyName})
       res
         .status(200)
         .json({ message: "Document updated successfully", updatedDocument });
@@ -269,6 +270,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
   ]),
   async (req, res) => {
     try {
+      const socketIO = req.io;
       const { CompanyName, bookingIndex } = req.params;
       const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
 
@@ -320,6 +322,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": CompanyName,
       });
+      socketIO.emit('booking-updated', moreDocument.bdeName )
 
       res.status(200).json(updatedDocument);
     } catch (error) {
@@ -4504,7 +4507,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bhagyesh@startupsahay.com"] : [clientMail, "admin@startupsahay.com"]
+    console.log(clientMail)
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -4735,7 +4739,7 @@ router.post(
   async (req, res) => {
     try {
       const objectData = req.body;
-
+      const socketIO = req.io;
 
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
@@ -4804,7 +4808,9 @@ router.post(
           { $push: { remainingPayments: sendingObject } },
           { new: true }
         );
-
+        const bdeName = companyMainObject.bdeName;
+        console.log("Remaining Payment added", bdeName , companyName)
+        socketIO.emit('Remaining_Payment_Added' , {name : bdeName , companyName : companyName} )
         return res.status(200).send("Successfully submitted more payments.");
       } else {
         const mainObject = await RedesignedLeadformModel.findOne({
@@ -4846,7 +4852,8 @@ router.post(
 
 
         );
-
+        const bdeName = findObject.bdeName;
+        socketIO.emit('Remaining_Payment_Added' , {name : bdeName , companyName : companyName} )
 
         return res.status(200).send("Successfully submitted more payments.");
       }
@@ -5043,7 +5050,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { new: true } // Return the updated document
     );
     const bdeName = updatedMainObject.bdeName;
-    socketIO.emit('expanse-added', bdeName);
+
+    socketIO.emit('expanse-added',{name : bdeName , companyName : companyName});
 
     res.status(200).json(updatedMainObject);
   } else {
