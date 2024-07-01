@@ -2433,7 +2433,7 @@ router.post(
 
             
 
-          const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
+            const seedConditionalPage = newData.services.some((obj)=>obj.serviceName === "Seed fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
       <section>
        <div class="date_div">
                     <p>Date : ${todaysDate}</p>
@@ -4379,7 +4379,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return services;
     })
 
-    const seedConditionalPage = extraServiceName !== "" ? `<div class="PDF_main">
+    const seedConditionalPage = newData.services.some((obj)=>obj.serviceName === "Seed fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
 <section>
  <div class="date_div">
               <p>Date : ${todaysDate}</p>
