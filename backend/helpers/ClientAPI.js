@@ -174,15 +174,11 @@ router.post(
       if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
         youtubeHtml = `
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+              <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                   YouTube Id
-                </div>
               </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+              <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;"
                   ${YoutubeLink}
-                </div>
               </div>
             </div>
           `;
@@ -193,16 +189,12 @@ router.post(
         TechnologyInvolved !== "No Technology Invloved"
       ) {
         TechnologyInvolvedHtml = `
-            <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
-                <div style="padding: 5px 10px;">
+            <div style="display: flex; flex-wrap: wrap;">
+              <div style="width: 25%;align-self: stretch !important;height:100%;border: 1px solid #ccc;padding: 5px 10px;">
                   Technology Involved
-                </div>
               </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
-                <div style="border: 1px solid #ccc; padding: 5px 10px;">
+              <div style="width: 75%;align-self: stretch !important;height:100%;border: 1px solid #ccc; padding: 5px 10px;">
                   ${TechnologyInvolved}
-                </div>
               </div>
             </div>
           `;
@@ -212,15 +204,11 @@ router.post(
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Upload Photos
-              </div>
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadPhotos}
-              </div>
             </div>
           </div>
         `;
@@ -233,15 +221,11 @@ router.post(
       ) {
         UploadAuditedStatementHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch !important;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Relevant Documents
-              </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch !important;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadAuditedStatement}
-              </div>
             </div>
           </div>
         `;
@@ -253,15 +237,11 @@ router.post(
       ) {
         UploadProvisioanlHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch !important;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Relevant Documents
-              </div>
             </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch !important;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadProvisionalStatement}
-              </div>
             </div>
           </div>
         `;
@@ -270,15 +250,15 @@ router.post(
       if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
         relevantDocumentsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+              
                 Relevant Documents
-              </div>
+              
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+              
                 ${RelevantDocument}
-              </div>
+              
             </div>
           </div>
         `;
@@ -288,15 +268,15 @@ router.post(
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            
                 Business Model
-              </div>
+              
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            
                 ${BusinessModel}
-              </div>
+              
             </div>
           </div>
         `;
@@ -306,15 +286,11 @@ router.post(
       if (Finance && Finance !== "No Finance Details") {
         financeDetailsHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Finance Details
-              </div>
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${Finance}
-              </div>
             </div>
           </div>
         `;
@@ -605,32 +581,7 @@ router.post(
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = ` 
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-          </head>
          <body>
-         <div class="container mt-5">
-  <div class="row">
-    <div class="col-sm-4">
-      <h3>Column 1</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Column 2</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Column 3</h3>        
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-  </div>
-</div>
        <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
          <h3 style="text-align: center">Basic Details Form</h3>
          <div
@@ -668,214 +619,105 @@ router.post(
                "
              >
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                       height:100%
-                     "
-                   >
+                       padding: 5px 10px;">
                      Company Name
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                       height:100%
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${CompanyName}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Company Email
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 75%;align-self: stretch;height:100%;  border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyEmail}
-                   </div>
+                       padding: 5px 10px;">
+                     ${CompanyEmail}  
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Company No
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyNo}
-                   </div>
+                       padding: 5px 10px;">
+                     ${CompanyNo}]
                  </div>
                </div>
     
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%; border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Brand Name
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${BrandName}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Website Link
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${WebsiteLink}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
+                 <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                     Company Address
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
+                 <div style="width: 75%;align-self: stretch;height:100%;
                        border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${CompanyAddress}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
+                 <div style="width: 25%;align-self: stretch;height:100%;
                        border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Company Pan Number
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
+                 <div style="width: 75%;align-self: stretch;height:100%;
                        border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${CompanyPanNumber}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
+                 <div style="width: 25%;align-self: stretch;height:100%;
                        border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      Select Your Services
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
+                 <div style="width: 75%;align-self: stretch;height:100%;
                        border: 1px solid #ccc;
                        font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
+                       padding: 5px 10px;">
                      ${SelectServices}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
@@ -918,9 +760,7 @@ router.post(
                    line-height: 30px;
                    text-align: center;
                    font-weight: bold;
-                   color: black;
-                 "
-               >
+                   color: black; " >
                  2
                </div>
                <div style="margin-left: 10px">Brief About Your Business</div>
@@ -934,87 +774,37 @@ router.post(
                  margin-top: 15px;
                "
              >
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%;">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     ">
+               <div style="display: flex; flex-wrap: wrap; ">
+                 <div style="width: 25%;align-self: stretch !important;height:100%;padding: 5px 10px;border:1px solid #ccc;">
                      Brief Of Your Business/Product/Service (Company's Activities)
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     ">
+                 <div style="width: 75%;align-self: stretch;height:100%; border: 1px solid #ccc; padding: 5px 10px;">
                      ${CompanyActivities}
-                   </div>
                  </div>
                </div>
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
+                <div style="display: flex; flex-wrap: wrap;">
+                  <div style="width: 25%;align-self: stretch !important;height:100%;padding: 5px 10px; border:1px solid #ccc;">
                      What Are The Problems That Your Product Or Service Proposes To Solve And How? 
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
-                     ${ProductService}
-                   </div>
-                 </div>
+                  </div>
+                  <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc;padding: 5px 10px;">
+                      ${ProductService}
+                  </div>
                </div>
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
+               <div style="display: flex; flex-wrap: wrap; ">
+                 <div style="width: 25%;align-self: stretch !important;height:100%;padding: 5px 10px;border:1px solid #ccc;">
                      Core Strength Of Your Business Which Differs Your Company From Other Business In The Industry (USP) 
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
+                 <div style="width: 75%;align-self: stretch;height:100%; border: 1px solid #ccc;padding: 5px 10px;">
                      ${CompanyUSP}
-                   </div>
                  </div>
                </div>
     
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
+               <div style="display: flex; flex-wrap: wrap;">
+                 <div style="width: 25%;align-self: stretch !important;height:100%;padding: 5px 10px; border:1px solid #ccc;">
                      Value Proposition Of Your Project
-                   </div>
                  </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
+                 <div style="width: 75%;align-self: stretch;height:100%;  border: 1px solid #ccc; padding: 5px 10px;">
                      ${ValueProposition}
-                   </div>
                  </div>
                </div>
                <div style="display: flex; flex-wrap: wrap">
