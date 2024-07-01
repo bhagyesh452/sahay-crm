@@ -422,7 +422,6 @@ function EmployeePanel() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
-
   };
 
   const closePopUpRemarksBdm = () => {
@@ -4301,11 +4300,11 @@ function EmployeePanel() {
                                     }}>
                                     <p
                                       className="rematkText text-wrap m-0"
-                                      title={company.bdmRemarks}
+                                      title={company.remarks}
                                     >
-                                      {!company.bdmRemarks
+                                      {!company.remarks
                                         ? "No Remarks"
-                                        : company.bdmRemarks}
+                                        : company.remarks}
                                     </p>
                                     <IconButton
                                       onClick={() => {
@@ -4478,7 +4477,7 @@ function EmployeePanel() {
                                           }}
                                           color="grey"
                                         />
-                                      </>) : company.bdmAcceptStatus === "Pending" ? (<>
+                                      </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
 
                                         <TiArrowBack
                                           onClick={() => {
@@ -5256,13 +5255,14 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
+            {console.log("Remarks are :", filteredRemarksBdm)}
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
-                        <pre className="remark-text">{historyItem.bdmRemarks}</pre>
+                        <pre className="remark-text">{historyItem.remarks}</pre>
                         {/* {historyItem.bdmName !== undefined && (
                           <pre className="remark-text">By BDM</pre>
                         )} */}
