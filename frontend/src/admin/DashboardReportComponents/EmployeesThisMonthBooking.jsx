@@ -154,6 +154,8 @@ function EmployeesThisMonthBooking() {
     let totalTargetAmount = 0;
     let totalAchievedAmount = 0;
     const currentYear = initialDate.getFullYear();
+    const filteredDate = new Date(bookingStartDate);
+    const filteredYear = filteredDate.getFullYear();
     const monthNames = [
         "January",
         "February",
@@ -169,6 +171,7 @@ function EmployeesThisMonthBooking() {
         "December",
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
+    const filteredMonth = monthNames[filteredDate.getMonth()]
 
 
 
@@ -1337,33 +1340,38 @@ function EmployeesThisMonthBooking() {
 
         })
 
-        console.log(achievedAmount, "of", data.ename)
+     
         return achievedAmount;
     };
   
     const functionGetAmount = (object) => {
+        const thisDate = new Date(bookingStartDate);
+        const thisYear = thisDate.getFullYear();
+        const thisMonth = monthNames[thisDate.getMonth()];
+       
         if (object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
                 (item) =>
-                    Math.floor(item.year) === currentYear && item.month === currentMonth
+                    Math.floor(item.year) === thisYear && item.month === thisMonth
             );
             totalTargetAmount =
                 foundObject &&
                 Math.floor(totalTargetAmount) + Math.floor(foundObject.amount);
-
+            
             return foundObject ? foundObject.amount : 0;
         } else {
             return 0;
         }
     };
     const functionGetOnlyAmount = (object) => {
+        const thisDate = new Date(bookingStartDate);
+        const thisYear = thisDate.getFullYear();
+        const thisMonth = monthNames[thisDate.getMonth()];
         if (object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
                 (item) =>
-                    Math.floor(item.year) === currentYear && item.month === currentMonth
+                    Math.floor(item.year) === thisYear && item.month === thisMonth
             );
-
-
             return foundObject ? foundObject.amount : 0;
         } else {
             return 0;
@@ -2880,8 +2888,8 @@ function EmployeesThisMonthBooking() {
                                                                 item.targetDetails.length !== 0 &&
                                                                 item.targetDetails.find(
                                                                     (target) =>
-                                                                        target.year === currentYear.toString() &&
-                                                                        target.month === currentMonth.toString()
+                                                                        target.year === filteredYear.toString() &&
+                                                                        target.month === filteredMonth.toString()
                                                                 )
                                                         )
                                                         .map((obj, index) => (
