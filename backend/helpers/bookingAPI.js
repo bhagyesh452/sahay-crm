@@ -5097,11 +5097,9 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       }
     );
 
-    const bdeName = updatedMainObj[bookingIndex - 1].bdeName;
-    const data = {
-      bdeName: bdeName, companyName: companyName
-    }
-    socketIO.emit('expanse-added', data);
+    const bdeName = moreObject.bdeName;
+   
+    socketIO.emit('expanse-added', bdeName);
 
     res.status(200).json(updatedMainObj);
   }
