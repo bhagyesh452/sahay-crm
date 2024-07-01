@@ -87,7 +87,7 @@ function Booking_editComponents() {
       </div>
       <div className='my-card-body p-2'>
         <div className='Notification-table-main table-resposive'>
-          <table className="table Notification-table m-0">
+          <table className="table EditRequest-table m-0">
             <thead>
               <tr>
                 <th>Sr. No</th>
