@@ -2530,6 +2530,14 @@ td input {
   color: #a77b7b;
   font-weight: bold !important;
 }
+.EditRequest-table thead tr th
+{
+  background: #d7fff4;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  color: #007891;
+  font-weight: bold !important;
+}
 .General-table thead tr th
 {
   background: #ffefc6;
@@ -2568,6 +2576,13 @@ td input {
   color: #a28500 !important;
   border: none !important;
 }
+.EditRequest-table tbody tr td
+{
+  vertical-align: middle;
+  padding: 6px 0px !important;
+  color: #0996a8 !important;
+  border: none !important;
+}
 .Manual-table tbody tr td
 {
   vertical-align: middle;
@@ -2589,6 +2604,10 @@ td input {
 .General-table tbody tr:nth-of-type(even)
 {
   background: #fffcea !important;
+}
+.EditRequest-table tbody tr:nth-of-type(even)
+{
+  background: #cbfcff !important;
 }
 .Manual-table tbody tr:nth-of-type(even)
 {
