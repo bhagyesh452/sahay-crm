@@ -1989,7 +1989,7 @@ function EmployeesThisMonthBooking() {
                 }
             })
         });
-        setRemainingPaymentObject(remainingMainObject.sort((a,b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
+        setRemainingPaymentObject(remainingMainObject.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setRemainingRecievedObject(remainingMainObject);
         setCompleteRemainingPaymentObject(remainingMainObject);
         // setRemainingPaymentObjectFilter(remainingMainObject)
@@ -2079,23 +2079,23 @@ function EmployeesThisMonthBooking() {
     // Searching Service and Company name in Remaining Payments
     const searchInRemainingPayments = (searchValue) => {
         setSearchCompanyServiceNameInRemainingPayments(searchValue);
-        
+
         const data = isDateSelectedInRemainingPayment ? filteredDataFromDateInRemainingPayment : completeRemainingPaymentObject;
         let searchResult = data.filter(item => item['Company Name'].toLowerCase().includes(searchValue.toLowerCase()) || item.serviceName.toLowerCase().includes(searchValue.toLowerCase()));
-    
+
         if (searchValue.length === 0) {
             searchResult = isDateSelectedInRemainingPayment ? filteredDataFromDateInRemainingPayment : completeRemainingPaymentObject;
         }
 
         setIsSearchedInRemainingPayment(searchValue.length > 0);
         setFilteredDataFromSearchInRemainingPayment(searchResult);
-        setRemainingPaymentObject(searchResult);    
+        setRemainingPaymentObject(searchResult);
     };
-    
+
     // Filtering data from seleted date range in Remaining Payments
     const handleDateRangeInRemainingPayments = (values) => {
         const [start, end] = values;
-    
+
         if (!start || !end) {
             console.log("One of the dates is null or undefined.");
             setRemainingPaymentObject(completeRemainingPaymentObject);
@@ -2103,33 +2103,33 @@ function EmployeesThisMonthBooking() {
             setFilteredDataFromDateInRemainingPayment([]);
             return;
         }
-    
+
         const startDate = new Date(start);
         // console.log("Start Date is :", startDate);
 
         const endDate = new Date(end);
         // console.log("End Date is :", endDate);
         endDate.setHours(23, 59, 59, 999);
-    
+
         setSelectedDateRangeInRemainingPayment([startDate, endDate]);
-    
+
         const filteredData = completeRemainingPaymentObject.filter(item => {
             const paymentDate = new Date(item.paymentDate);
             return paymentDate >= startDate && paymentDate <= endDate;
         });
-    
+
         setIsDateSelectedInRemainingPayment(true);
         setFilteredDataFromDateInRemainingPayment(filteredData);
-        
-        const searchResult = isSearchedInRemainingPayment ? filteredData.filter(item => 
-                item['Company Name'].toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase()) || 
-                item.serviceName.toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase())
-              ) : filteredData;
-    
+
+        const searchResult = isSearchedInRemainingPayment ? filteredData.filter(item =>
+            item['Company Name'].toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase()) ||
+            item.serviceName.toLowerCase().includes(searchCompanyServiceNameInRemainingPayments.toLowerCase())
+        ) : filteredData;
+
         setFilteredDataFromSearchInRemainingPayment(searchResult);
         setRemainingPaymentObject(searchResult);
     };
-    
+
 
     //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
 
@@ -2184,6 +2184,7 @@ function EmployeesThisMonthBooking() {
     const [filteredDataFromSearchInAdvancePayment, setFilteredDataFromSearchInAdvancePayment] = useState([]);
     const [advancePaymentObjectFilter, setAdvancePaymentObjectFilter] = useState([]);
     const [selectedDateRangeInAdvancePayment, setSelectedDateRangeInAdvancePayment] = useState([null, null]);
+    let fullAdvancePaymentObject = [];
 
     useEffect(() => {
         // Your logic to populate advancePaymentObject
@@ -2245,15 +2246,18 @@ function EmployeesThisMonthBooking() {
                 });
             }
         });
-
+        
+        console.log("Advance payment object data from useEffect :", redesignedData);
         setAdvancePaymentObject(newAdvancePaymentObject.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
+        fullAdvancePaymentObject = redesignedData;    // It will store all the data for advance payments.
         setTotalPaymentObject(newAdvancePaymentObject);
         setCompleteAdvancePaymentObject(newAdvancePaymentObject);
         // setAdvancePaymentObjectFilter(newAdvancePaymentObject);
         // console.log("Advance Payment :", newAdvancePaymentObject);
+        console.log("Full advance payment :", fullAdvancePaymentObject);
     }, [redesignedData]);
 
-    console.log(advancePaymentObject)
+    // console.log("Advance payment object data :",advancePaymentObject);
 
     // Sorting Total Amount
     const handleSortTotalAmount = (type) => {
@@ -2372,7 +2376,7 @@ function EmployeesThisMonthBooking() {
         const endDate = new Date(end);
         // console.log("End Date is :", endDate);
         endDate.setHours(23, 59, 59, 999);
-        
+
         setSelectedDateRangeInAdvancePayment([startDate, endDate]);
 
         const filteredData = completeAdvancePaymentObject.filter(item => {
@@ -2753,7 +2757,7 @@ function EmployeesThisMonthBooking() {
                                                 if (newSortType.achievedamount === "ascending") {
                                                     updatedSortType = "descending";
                                                 } else if (newSortType.achievedamount === "descending") {
-                                                updatedSortType
+                                                    updatedSortType
                                                         = "none";
                                                 } else {
                                                     updatedSortType = "ascending";

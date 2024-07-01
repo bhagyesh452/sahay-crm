@@ -1742,7 +1742,13 @@ function EmployeeParticular() {
 
   const handleForwardDataToBDM = async (bdmName) => {
     const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
-    console.log("data is:", data);
+    // console.log("data is:", data);
+    if(selectedRows.length === 0) {
+      Swal.fire("Please Select the Company to Forward", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
     if(data.length === 0) {
       Swal.fire("Can Not Forward Untouched Company", "", "Error");
       setBdmName("Not Alloted");
@@ -2794,7 +2800,7 @@ function EmployeeParticular() {
                         </tbody>
                       ) : (
                         <>
-                          {console.log("Current Data :", currentData)}
+                          {/* {console.log("Current Data :", currentData)} */}
                           {currentData.length !== 0 && (
                             <tbody>
                               {currentData.map((company, index) => (
