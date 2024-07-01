@@ -7,7 +7,9 @@ import { IoCheckmarkDoneCircle } from "react-icons/io5";
 import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
+import { TbViewportWide } from "react-icons/tb";
 import Nodata from "../../components/Nodata";
+import EditBookingPreview from '../EditBookingPreview';
 
 
 function Booking_editComponents() {
@@ -15,7 +17,13 @@ function Booking_editComponents() {
   const [deletedData, setDeletedData] = useState([]);
   const [filterBy, setFilterBy] = useState("Pending");
   const [searchText, setSearchText] = useState("");
- const [totalBookings, setTotalBookings] = useState([])
+ const [totalBookings, setTotalBookings] = useState([]);
+ const [currentBooking , setCurrentBooking] = useState(null);
+ const [bookingIndex, setBookingIndex] = useState(0);
+ const [compareBooking, setCompareBooking] = useState(null);
+ const [currentCompany, setCurrentCompany] = useState("");
+ const [moreBookingCase, setMoreBookingCase] = useState(false);
+ const [nowToFetch, setNowToFetch] = useState(false)
  const [editData, setEditData] = useState([])
 
 
@@ -29,7 +37,20 @@ function Booking_editComponents() {
 
 
   // ------------------------------------------   Fetching Functions --------------------------------------------------
-
+  const fetchCompareBooking = async()=>{
+    try{
+      const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+      if(moreBookingCase){
+        const bookingObject = response.data.find(obj=> obj["Company Name"] === currentCompany);
+        setCompareBooking(bookingObject.moreBooking[bookingIndex-1]);
+      }else{
+        setCompareBooking(response.data.find(obj=> obj["Company Name"] === currentCompany));
+      }
+     
+    }catch(error){
+      console.error("Error fetching Current Booking" , error.message);
+    }
+  }
 
   const fetchEditRequests = async () => {
     try {
@@ -54,6 +75,23 @@ function Booking_editComponents() {
     }
   };
 
+  //  ----------------------------------  Use Effect Conditions  ----------------------------------------
+
+  useEffect(() => {
+   if(nowToFetch){
+    setCurrentCompany("");
+    setCompareBooking(null);
+    setCurrentBooking(null);
+    fetchEditRequests()
+    setNowToFetch(false)
+   }
+  }, [nowToFetch])
+  
+  useEffect(() => {
+    fetchCompareBooking();
+   setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
+  }, [currentCompany]);
+
   useEffect(() => {
     fetchEditRequests()
   }, [])
@@ -73,6 +111,7 @@ function Booking_editComponents() {
 
   return (
     <div className="my-card mt-2">
+     {!currentBooking && !compareBooking && <>
       <div className="my-card-head p-2">
         <div className="filter-area d-flex justify-content-between w-100">
           <div className="filter-by-bde d-flex align-items-center">
@@ -134,11 +173,8 @@ function Booking_editComponents() {
                   </td>
                   <td>
                     {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
-                      <div className="Notification_acceptbtn" >
-                        <TiTick />
-                      </div>
-                      <div className="Notification_rejectbtn">
-                        <ImCross />
+                      <div className='expand-btn' onClick={()=>setCurrentCompany(obj.companyName)}>
+                      <TbViewportWide  />
                       </div>
                     </div>}
                     {filterBy === "Completed" && <div className='d-flex align-items-center justify-content-center'>
@@ -169,7 +205,10 @@ function Booking_editComponents() {
           </table>
         </div>
       </div>
-
+      </>}
+      {currentBooking && compareBooking && <div className="maincontent">
+      <EditBookingPreview setNowToFetch={setNowToFetch} requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
+      </div>}
     </div>
   )
 }
