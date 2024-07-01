@@ -130,7 +130,7 @@ router.put("/leads/:id", async (req, res) => {
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    console.log(updatedData);
+    //console.log(updatedData);
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
@@ -188,14 +188,14 @@ router.post("/leads", async (req, res) => {
         
       } catch (error) {
         duplicateEntries.push(employeeData);
-        console.log("kuch h ye" , duplicateEntries);
+        //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
       }
     }
     
     if (duplicateEntries.length > 0) {
-      console.log("yahan chala csv pr")
+      //console.log("yahan chala csv pr")
       //console.log(duplicateEntries , "duplicate")
       const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV
@@ -230,7 +230,7 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
   try {
     // Find the employee's data by id
     const employeeData = await adminModel.findById(id);
-    console.log("employee", employeeData)
+    //console.log("employee", employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }
@@ -276,7 +276,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
   try {
     const employeeData = await CompanyModel.findById(itemId)
 
-    console.log(employeeData)
+    //console.log(employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }

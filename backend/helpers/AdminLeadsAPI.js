@@ -809,8 +809,18 @@ router.post("/fetch-by-ids", async (req, res) => {
 //   res.json({ message: "Data posted successfully" });
 // });
 
+const mongoose = require('mongoose');
+
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+
+  // Helper function to perform bulk operations in parallel
+  const executeBulkOperations = async (model, operations, batchSize = 100) => {
+    for (let i = 0; i < operations.length; i += batchSize) {
+      const batch = operations.slice(i, i + batchSize);
+      await model.bulkWrite(batch);
+    }
+  };
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({
@@ -846,13 +856,15 @@ router.post("/postAssignData", async (req, res) => {
     }
   }));
 
+  // Bulk operations for FollowUpModel
   const bulkOperationsProjection = selectedObjects.map((obj) => ({
     deleteOne: {
       filter: { companyName: obj["Company Name"] }
     }
-  }))
+  }));
 
-  const bulkOpertaionsRedesignedModel = selectedObjects.map((obj) => ({
+  // Bulk operations for RedesignedLeadformModel
+  const bulkOperationsRedesignedModel = selectedObjects.map((obj) => ({
     updateOne: {
       filter: { "Company Name": obj["Company Name"] },
       update: {
@@ -861,18 +873,16 @@ router.post("/postAssignData", async (req, res) => {
         }
       }
     }
-  }))
+  }));
 
   try {
-    // Perform bulk update on CompanyModel
-    await CompanyModel.bulkWrite(bulkOperationsCompany);
-
-    // Perform bulk delete on TeamLeadsModel
-    await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
-
-    await FollowUpModel.bulkWrite(bulkOperationsProjection)
-
-    await RedesignedLeadformModel.bulkWrite(bulkOpertaionsRedesignedModel)
+    // Perform bulk operations in parallel
+    await Promise.all([
+      executeBulkOperations(CompanyModel, bulkOperationsCompany),
+      executeBulkOperations(TeamLeadsModel, bulkOperationsTeamLeads),
+      executeBulkOperations(FollowUpModel, bulkOperationsProjection),
+      executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
+    ]);
 
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
@@ -888,6 +898,7 @@ router.post("/postAssignData", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {
