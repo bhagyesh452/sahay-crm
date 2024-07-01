@@ -47,6 +47,19 @@ const yourSchema = new mongoose.Schema({
   employee_profile:{
     type:Array,
   },
+  personal_email:{
+    type:String,
+    unique: true
+  },
+  personal_number:{
+    type:String,
+  },
+  personal_contact_person:{
+    type:String,
+  },
+  personal_address:{
+    type: String,
+  }
 });
 
 

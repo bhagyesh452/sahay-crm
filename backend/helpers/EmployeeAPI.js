@@ -323,7 +323,10 @@ router.post("/employeeimages/:employeeName", upload.single('file'), async (req, 
     };
 
     // Update the employee_profile array
-    employee.employee_profile.push(fileDetails);
+    // employee.employee_profile(fileDetails);
+    // await employee.save();
+
+    employee.employee_profile = fileDetails;
     await employee.save();
 
 

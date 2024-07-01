@@ -84,20 +84,6 @@ function EmployeeProfile() {
   };
   
 
-  // const handleSubmit = async () => {
-  //   if (selectedFile) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       setEmpImg1(e.target.result);
-  //       localStorage.setItem("empImg1", e.target.result);
-  //     };
-  //     reader.readAsDataURL(selectedFile);
-  //     handleClose();
-  //   } else {
-  //     alert("No file selected.");
-  //   }
-  // };
-
   const handleCameraClick = () => {
     setOpen(true);
   };
@@ -123,9 +109,8 @@ function EmployeeProfile() {
   React.useEffect(() => {
     fetchEmployeeData();
   }, []);
-console.log(data.employee_profile)
 
-  // console.log(`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && encodeURIComponent(data.employee_profile[0].filename)}`)
+  
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -492,7 +477,20 @@ console.log(data.employee_profile)
                   <div
                     className="my-card-body p-2"
                     style={{ minHeight: "calc(100vh - 149px)" }}
-                  ></div>
+                  >
+                    <FullCalendar 
+                     plugins={[dayGridPlugin,interactionPlugin]}
+                     initialView="dayGridMonth"
+                     editable={true}
+                     selectable={true}
+                     event={[
+                      {
+                        "date":"01-07-2024",
+                        "status":"present"
+                      }
+                     ]}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
