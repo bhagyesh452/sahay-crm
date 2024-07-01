@@ -512,6 +512,7 @@ router.get('/filter-leads', async (req, res) => {
 
     if (selectedYear) {
       if (monthIndex !== '0') {
+        
         const year = parseInt(selectedYear);
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
@@ -537,7 +538,7 @@ router.get('/filter-leads', async (req, res) => {
       };
     }
 
-    console.log(baseQuery);
+    //console.log(baseQuery);
 
     // Fetch assigned data
     let assignedQuery = { ...baseQuery, ename: { $ne: 'Not Alloted' } };
@@ -599,11 +600,13 @@ router.get('/filter-employee-leads', async (req, res) => {
           { multiBdmName: { $in: [employeeName] } },
           { maturedBdmName: employeeName }
         );
+      }else{
+        baseQuery.Status === selectedStatus;
       }
     }
 
     // Add other filters only if employeeName is present
-    if (selectedStatus) baseQuery.Status = selectedStatus;
+    //if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     if (selectedAssignDate) {
@@ -628,6 +631,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     }
 
     console.log(baseQuery);
+    console.log("chal")
 
     const data = await CompanyModel.find(baseQuery).lean();
 
