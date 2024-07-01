@@ -44,8 +44,14 @@ function transformData(jsonData) {
 
   const data = headers.map(header => {
     if (header.startsWith("services")) {
-      const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
-      return jsonData.services[serviceIndex][serviceProp] ? jsonData.services[serviceIndex][serviceProp] : "-";
+      if(header.endsWith("withGST")){
+        const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
+        return jsonData.services[serviceIndex][serviceProp] ? "Yes" : "False";
+      }else {
+        
+        const [_, serviceIndex, serviceProp] = header.match(/services\[(\d+)\]\.(.*)/);
+        return jsonData.services[serviceIndex][serviceProp] ? jsonData.services[serviceIndex][serviceProp] : "-";
+      }
     }   
     else {
       return jsonData[header] ? jsonData[header] : "-";
