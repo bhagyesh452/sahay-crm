@@ -14,6 +14,7 @@ import io from "socket.io-client";
 import General_dataComponent from "./NotiComponents/General_dataComponent";
 import Manual_dataComponent from "./NotiComponents/Manual_dataComponent";
 import Approve_dataComponents from "./NotiComponents/Approve_dataComponents";
+import Booking_editComponents from "./NotiComponents/Booking_editComponents";
 
 
 function ShowNotification() {
@@ -310,7 +311,7 @@ function ShowNotification() {
                 />
               ))} */}
               {dataType === "deleteBookingRequests" && <DeleteBookingComponent/>}
-            {dataType === "editBookingRequests" &&
+            {/* {dataType === "editBookingRequests" &&
               editData.length !== 0 && !currentBooking && !compareBooking &&
               editData.map((company) => (
                 <EditBookingsCard                   
@@ -323,7 +324,8 @@ function ShowNotification() {
                   bookingIndex={company.bookingIndex}
                   companyName={company.companyName}
                 />
-              ))}
+              ))} */}
+              {dataType === "editBookingRequests" && <Booking_editComponents/>}
               {dataType === "editBookingRequests" &&
               editData.length !== 0 && currentBooking && compareBooking &&
                 <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
