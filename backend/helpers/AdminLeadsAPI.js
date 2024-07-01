@@ -588,6 +588,18 @@ router.get('/getIds', async (req, res) => {
   }
 });
 
+router.post("/fetch-by-ids" , async(req,res)=>{
+  const { ids } = req.body;
+  try{
+    const data = await CompanyModel.find({_id :{$in :ids}}).lean();
+    res.status(200).json(data);
+
+  }catch(error){
+    console.error('Error fetching data by IDs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
 
 
 // router.post("/postAssignData", async (req, res) => {
