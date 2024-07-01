@@ -253,7 +253,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": companyName,
       });
-      socketIO.emit('booking-updated' ,boom.bdeName)
+      socketIO.emit('booking-updated' ,{name : boom.bdeName , companyName : companyName})
       res
         .status(200)
         .json({ message: "Document updated successfully", updatedDocument });
@@ -5050,7 +5050,8 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
       { new: true } // Return the updated document
     );
     const bdeName = updatedMainObject.bdeName;
-    socketIO.emit('expanse-added', bdeName);
+
+    socketIO.emit('expanse-added',{name : bdeName , companyName : companyName});
 
     res.status(200).json(updatedMainObject);
   } else {

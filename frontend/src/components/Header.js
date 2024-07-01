@@ -77,9 +77,9 @@ function Header({ name, designation}) {
       
     });
     socket.on("expanse-added", (res) => {
-      console.log("Expanse Added" ,"response :" + res ,"Name" + name)
-      if(name === res){
-        enqueueSnackbar(`Expanse Added in Your Booking `, {
+      console.log("Expanse Added" ,"response :" + res.name ,"Name" + name)
+      if(name === res.name){
+        enqueueSnackbar(`Expanse Added in ${res.companyName} `, {
           variant: 'info',
           autoHideDuration: 5000
         });
@@ -91,8 +91,8 @@ function Header({ name, designation}) {
     });
     socket.on("booking-updated", (res) => {
      
-      if(name === res){
-        enqueueSnackbar(`Booking Edit Request Updated`, {
+      if(name === res.name){
+        enqueueSnackbar(`Booking for ${res.companyName} has been Updated!`, {
           variant: 'info',
           autoHideDuration: 5000
         });
