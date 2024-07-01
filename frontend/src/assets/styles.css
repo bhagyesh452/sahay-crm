@@ -2587,7 +2587,7 @@ td input {
 {
   vertical-align: middle;
   padding: 6px 0px !important;
-  color: #cce8ff  !important;
+  color: #1897fe  !important;
   border: none !important;
 }
 .Approve-table tbody tr td
@@ -2611,7 +2611,7 @@ td input {
 }
 .Manual-table tbody tr:nth-of-type(even)
 {
-  background: #cce8ff  !important;
+  background: #def0ff  !important;
 }
 .Approve-table tbody tr:nth-of-type(even)
 {
