@@ -166,6 +166,26 @@ th {
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
+.My-Avtar
+{
+  border: 1px solid #ccc;
+}
+.My-Avtar img
+{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  object-fit: cover;
+  color: transparent;
+  object-fit: contain;
+  object-position: center top;
+  position: relative;
+  transition: 0.5s;
+  transform-origin: center center;
+  text-indent: 10000px;
+  background: #ccc;
+  transform: scale(1.2);
+}
 
 .rupees-sym {
   background-color: #ffb900;
@@ -2530,6 +2550,14 @@ td input {
   color: #a77b7b;
   font-weight: bold !important;
 }
+.EditRequest-table thead tr th
+{
+  background: #d7fff4;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  color: #007891;
+  font-weight: bold !important;
+}
 .General-table thead tr th
 {
   background: #ffefc6;
@@ -2568,11 +2596,18 @@ td input {
   color: #a28500 !important;
   border: none !important;
 }
+.EditRequest-table tbody tr td
+{
+  vertical-align: middle;
+  padding: 6px 0px !important;
+  color: #0996a8 !important;
+  border: none !important;
+}
 .Manual-table tbody tr td
 {
   vertical-align: middle;
   padding: 6px 0px !important;
-  color: #cce8ff  !important;
+  color: #1897fe  !important;
   border: none !important;
 }
 .Approve-table tbody tr td
@@ -2590,9 +2625,13 @@ td input {
 {
   background: #fffcea !important;
 }
+.EditRequest-table tbody tr:nth-of-type(even)
+{
+  background: #cbfcff !important;
+}
 .Manual-table tbody tr:nth-of-type(even)
 {
-  background: #cce8ff  !important;
+  background: #def0ff  !important;
 }
 .Approve-table tbody tr:nth-of-type(even)
 {
@@ -2616,5 +2655,9 @@ border: 1px solid #ffefc6 !important;
 .Notification-folder-open svg:hover{
   font-size: 18px !important;
   cursor: pointer;
+}
+.expand-btn:hover{
+  cursor: pointer;
+  font-size: 15px;
 }
 

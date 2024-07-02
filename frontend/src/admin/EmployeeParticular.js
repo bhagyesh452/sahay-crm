@@ -358,17 +358,21 @@ function EmployeeParticular() {
       setExtraData(sortedData)
       setNewData(sortedData)
       setmoreEmpData(sortedData)
-      setEmployeeData(
-        sortedData.filter(
-          (obj) =>
-            (obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up" ||
-              obj.Status === "Untouched") &&
-            (obj.bdmAcceptStatus !== "Forwarded" &&
-              obj.bdmAcceptStatus !== "Accept" &&
-              obj.bdmAcceptStatus !== "Pending")
-));
-      
+      if (isFilter || isSearch) {
+        setEmployeeData(filteredData)
+      }else {
+          setEmployeeData(
+            sortedData.filter(
+              (obj) =>
+                (obj.Status === "Busy" ||
+                  obj.Status === "Not Picked Up" ||
+                  obj.Status === "Untouched") &&
+                (obj.bdmAcceptStatus !== "Forwarded" &&
+                  obj.bdmAcceptStatus !== "Accept" &&
+                  obj.bdmAcceptStatus !== "Pending")
+            ));
+        }
+
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
@@ -380,8 +384,8 @@ function EmployeeParticular() {
     (obj) =>
       (obj.Status === "Busy" ||
         obj.Status === "Not Picked Up" ||
-        obj.Status === "Untouched") && 
-        (obj.bdmAcceptStatus !== "Forwarded" &&
+        obj.Status === "Untouched") &&
+      (obj.bdmAcceptStatus !== "Forwarded" &&
         obj.bdmAcceptStatus !== "Accept" &&
         obj.bdmAcceptStatus !== "Pending")));
 
@@ -1146,6 +1150,8 @@ function EmployeeParticular() {
       setnewEmployeeSelection("Not Alloted");
       closepopupAssign();
       setSelectedRows([])
+      setIsFilter(false)
+      setIsSearch(false)
     } catch (error) {
       console.error("Error updating employee data:", error);
       Swal.close();
@@ -1157,7 +1163,7 @@ function EmployeeParticular() {
     }
   };
 
-  // console.log("employeeData" , employeeData)
+  console.log("employeeData" , employeeData)
 
 
 
@@ -1642,6 +1648,8 @@ function EmployeeParticular() {
   const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
   const [openBacdrop, setOpenBacdrop] = useState(false)
   const [companyIncoDate, setCompanyIncoDate] = useState(null);
+  const [monthIndex, setMonthIndex] = useState(0)
+
 
   const functionCloseFilterDrawer = () => {
     setOpenFilterDrawer(false)
@@ -1658,14 +1666,14 @@ function EmployeeParticular() {
   useEffect(() => {
     let monthIndex;
     if (selectedYear && selectedMonth) {
-      monthIndex = months.indexOf(selectedMonth);
-      //console.log(monthIndex)
-      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
-      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+        monthIndex = months.indexOf(selectedMonth);
+        setMonthIndex(monthIndex + 1)
+        const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+        setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
     } else {
-      setDaysInMonth([]);
+        setDaysInMonth([]);
     }
-  }, [selectedYear, selectedMonth]);
+}, [selectedYear, selectedMonth]);
 
   useEffect(() => {
     if (selectedYear && selectedMonth && selectedDate) {
@@ -1689,6 +1697,7 @@ function EmployeeParticular() {
           selectedState,
           selectedNewCity,
           selectedYear,
+          monthIndex,
           selectedAssignDate,
           selectedCompanyIncoDate,
           page,
@@ -1742,8 +1751,14 @@ function EmployeeParticular() {
 
   const handleForwardDataToBDM = async (bdmName) => {
     const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
-    console.log("data is:", data);
-    if(data.length === 0) {
+    // console.log("data is:", data);
+    if (selectedRows.length === 0) {
+      Swal.fire("Please Select the Company to Forward", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
+    if (data.length === 0) {
       Swal.fire("Can Not Forward Untouched Company", "", "Error");
       setBdmName("Not Alloted");
       handleCloseForwardBdmPopup();
@@ -2430,8 +2445,8 @@ function EmployeeParticular() {
                             (obj) =>
                               (obj.Status === "Busy" ||
                                 obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched") && 
-                                (obj.bdmAcceptStatus !== "Forwarded" &&
+                                obj.Status === "Untouched") &&
+                              (obj.bdmAcceptStatus !== "Forwarded" &&
                                 obj.bdmAcceptStatus !== "Accept" &&
                                 obj.bdmAcceptStatus !== "Pending")
                           ).length
@@ -2794,7 +2809,7 @@ function EmployeeParticular() {
                         </tbody>
                       ) : (
                         <>
-                          {console.log("Current Data :", currentData)}
+                          {/* {console.log("Current Data :", currentData)} */}
                           {currentData.length !== 0 && (
                             <tbody>
                               {currentData.map((company, index) => (

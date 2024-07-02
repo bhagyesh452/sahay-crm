@@ -378,6 +378,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
   async (req, res) => {
     try {
       const { companyName, bookingIndex } = req.params;
+      const socketIO = req.io;
       const newData = req.body;
       const requestDate = new Date();
       const createdData = await EditableDraftModel.create({
@@ -386,6 +387,8 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         requestDate,
         ...newData,
       });
+
+      socketIO.emit('editBooking_requested',companyName);
 
       res.status(201).json(createdData);
     } catch (error) {

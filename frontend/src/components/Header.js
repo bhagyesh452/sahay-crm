@@ -13,15 +13,16 @@ import io from "socket.io-client";
 import axios from "axios";
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
-
+import ReportComplete from "./ReportComplete";
 // import "./styles/header.css"
 
 
-function Header({ name, designation}) {
+function Header({ name, designation , empProfile}) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+  
 
 
 
@@ -40,10 +41,16 @@ function Header({ name, designation}) {
 
     socket.on("data-sent", (res) => {
       if(res === name){
-        enqueueSnackbar(`New Data Received!`, {
-          variant: 'info',
-          autoHideDuration: 5000
-        });
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+     
+    });
+    socket.on("data-assigned", (res) => {
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
       
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
@@ -53,6 +60,19 @@ function Header({ name, designation}) {
     socket.on("data-action-performed", (res) => {
       if(name === res){
         enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
+          variant: 'reportComplete',
+          persist:true
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
+    socket.on("Remaining_Payment_Added", (res) => {
+     
+      if(name === res.name){
+        enqueueSnackbar(`Remaining Amount Received from ${res.companyName}`, {
           variant: 'warning',
           autoHideDuration: 5000
         });
@@ -63,9 +83,22 @@ function Header({ name, designation}) {
       
     });
     socket.on("expanse-added", (res) => {
-      console.log("Expanse Added" , res, name)
-      if(name === res){
-        enqueueSnackbar(`Expanse Added in Your Booking `, {
+      console.log("Expanse Added" ,"response :" + res.name ,"Name" + name)
+      if(name === res.name){
+        enqueueSnackbar(`Expanse Added in ${res.companyName} `, {
+          variant: 'info',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
+    socket.on("booking-updated", (res) => {
+     
+      if(name === res.name){
+        enqueueSnackbar(`Booking for ${res.companyName} has been Updated!`, {
           variant: 'info',
           autoHideDuration: 5000
         });
@@ -79,7 +112,7 @@ function Header({ name, designation}) {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [name]);
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -105,7 +138,7 @@ function Header({ name, designation}) {
     };
   }, [socketID, userId]);
 
-  //console.log(name)
+  console.log("employeename" , name)
 
 
   // ----------------------------------   Functions  ----------------------------------------------
@@ -158,7 +191,9 @@ function Header({ name, designation}) {
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
          <BellEmp name={name}/>
-          <Avatar  sx={{ width: 32, height: 32 }}/>
+          <Avatar src={`${secretKey}/employee/employeeImg/${name}/${encodeURIComponent(
+                empProfile 
+              )}`}  className="My-Avtar" sx={{ width: 36, height: 36 }}/>
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -201,7 +236,9 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} maxSnack={3}>
    
     </SnackbarProvider>
     </div>

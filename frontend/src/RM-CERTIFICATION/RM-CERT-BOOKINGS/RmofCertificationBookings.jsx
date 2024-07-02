@@ -42,6 +42,10 @@ import ListItemText from '@mui/material/ListItemText';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import RMofCertificationListViewBookings from "./RMofCertificationListViewBookings.jsx";
+import '../../assets/table.css';
+import '../../assets/styles.css';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -67,6 +71,11 @@ function RmofCertificationBookings() {
   const [companyName, setCompanyName] = "";
   const [openTableView, setOpenTableView] = useState(true)
   const [openListView, setOpenListView] = useState(false)
+  const itemsPerPage = 10;
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
@@ -149,37 +158,38 @@ function RmofCertificationBookings() {
     );
   }, [searchText]);
 
-  const fetchRedesignedFormData = async () => {
+  const fetchRedesignedFormData = async (page) => {
     try {
       const response = await axios.get(
-        `${secretKey}/bookings/redesigned-final-leadData`
+        `${secretKey}/bookings/redesigned-final-leadData-test?page=${page}&limit=${itemsPerPage}`
       );
-      const sortedData = response.data.sort((a, b) => {
-        const dateA = new Date(a.lastActionDate);
-        const dateB = new Date(b.lastActionDate);
-        return dateB - dateA; // Sort in descending order
-      });
-      setInfiniteBooking(sortedData);
-      setLeadFormData(sortedData);
-      setMainDataSwap(sortedData)// Set both states with the sorted data
+      // const sortedData = response.data.sort((a, b) => {
+      //   const dateA = new Date(a.lastActionDate);
+      //   const dateB = new Date(b.lastActionDate);
+      //   return dateB - dateA; // Sort in descending order
+      // });
+      setInfiniteBooking(response.data.data);
+      setLeadFormData(response.data.data);
+      setMainDataSwap(response.data.data)
+      setTotalCount(response.data.totalCount);
+      setTotalPages(response.data.totalPages);// Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
 
   useEffect(() => {
-    fetchRedesignedFormData();
+    fetchRedesignedFormData(1);
   }, [nowToFetch]);
 
   useEffect(() => {
-    // if (data.companyName) {
-    //   console.log("Company Found");
     fetchDatadebounce();
-    fetchRedesignedFormData();
-    // } else {
-    //   console.log("No Company Found");
-    // }
-  }, []);
+    fetchRedesignedFormData(currentPage);
+  }, [currentPage]);
+
+  const handleFetchBookingsDataForPagination = (event, value) => {
+    setCurrentPage(value);
+  };
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
@@ -297,7 +307,7 @@ function RmofCertificationBookings() {
           .then((response) => {
             if (response.ok) {
               Swal.fire("Success!", "Booking Deleted", "success");
-              fetchRedesignedFormData();
+              fetchRedesignedFormData(1);
             } else {
               Swal.fire("Error!", "Failed to Delete Company", "error");
             }
@@ -461,7 +471,7 @@ function RmofCertificationBookings() {
       try {
         const response = await axios.post(`${secretKey}/bookings/redesigned-importData`, excelData);
         Swal.fire("Success", "Bookings Uploaded Successfully", "success");
-        fetchRedesignedFormData();
+        fetchRedesignedFormData(1);
         closepopup();
 
       } catch (error) {
@@ -533,7 +543,7 @@ function RmofCertificationBookings() {
         });
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
-        fetchRedesignedFormData();
+        fetchRedesignedFormData(1);
 
 
       } else {
@@ -641,7 +651,7 @@ function RmofCertificationBookings() {
       ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
     ];
 
-    console.log("combined" , combinedServices)
+    console.log("combined", combinedServices)
     // Initialize an array to store objects for each selected service
     const dataToSend = [];
 
@@ -649,7 +659,7 @@ function RmofCertificationBookings() {
     selectedServices.forEach(serviceName => {
       // Find the detailed service object in selectedCompanyData.services
       const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-      
+
       // Check if serviceData is found
       if (serviceData) {
         // Create an object with the required fields from selectedCompanyData and serviceData
@@ -715,7 +725,7 @@ function RmofCertificationBookings() {
     setDataToSend(dataToSend);
     // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
   }
- 
+
   const handleViewTable = () => {
     setOpenTableView(true)
     setOpenListView(false)
@@ -726,15 +736,22 @@ function RmofCertificationBookings() {
     setOpenTableView(false)
   }
 
-  console.log("listView" , openListView)
-  console.log("tableView" , openTableView)
+  // const handleFetchBookingsDataForPagination = () => {
+  //   console.log("thodi der se chalyenge")
+
+  // }
+
+  // console.log("listView", openListView)
+  // console.log("tableView", openTableView)
+
+
 
   return (
     <div>
       <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
       <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
 
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openListView && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -777,9 +794,9 @@ function RmofCertificationBookings() {
                 </div>
                 <div className="col-6 d-flex">
                   <div className="list-gird-main ms-auto">
-                    <div className={openTableView ? "listgrridradio_main d-flex align-items-center" : "d-flex align-items-center"}>
+                    <div className="listgrridradio_main d-flex align-items-center">
                       <div className="custom_radio">
-                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView}/>
+                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView} />
                         <label class="custom_radio-alias" for="r1">
                           <FaTableCellsLarge onClick={() => { handleViewTable() }} />
                         </label>
@@ -796,7 +813,7 @@ function RmofCertificationBookings() {
               </div>
             </div>
           </div>
-          <div className="container-xl">
+          {openTableView && <div className="container-xl">
             <div className="booking_list_Dtl_box">
               <div className="row m-0">
                 {/* --------booking list left Part---------*/}
@@ -842,7 +859,7 @@ function RmofCertificationBookings() {
                                       obj["Company Name"],
                                     )
 
-                                  )}/>
+                                  )} />
                                 </div>
                                 <div className="b_cmpny_time">
                                   {
@@ -930,6 +947,32 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         ))}
+                      {/* <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center mt-1">
+                          <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li class="page-item"><a class="page-link" href="#">1</a></li>
+                          <li class="page-item"><a class="page-link" href="#">2</a></li>
+                          <li class="page-item"><a class="page-link" href="#">3</a></li>
+                          <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav> */}
+                      <div className="d-flex align-items-center justify-content-center">
+                        <Stack spacing={2}>
+                          <Pagination
+                            count={totalPages}
+                            size="small"
+                            defaultPage={1}
+                            onChange={handleFetchBookingsDataForPagination} />
+                        </Stack>
+                      </div>
                       {leadFormData.length === 0 && (
                         <div
                           className="d-flex align-items-center justify-content-center"
@@ -941,6 +984,7 @@ function RmofCertificationBookings() {
                     </div>
                   </div>
                 </div>
+
                 {/* --------booking Details Right Part---------*/}
                 <div className="col-8 p-0">
                   <div className="booking-deatils-card">
@@ -3184,7 +3228,7 @@ function RmofCertificationBookings() {
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
       )}
 
@@ -3235,9 +3279,9 @@ function RmofCertificationBookings() {
       )}
 
       {openListView && <>
-      <RMofCertificationListViewBookings
-      bookingsData = {leadFormData}
-      />
+        <RMofCertificationListViewBookings
+          bookingsData={leadFormData}
+        />
       </>}
 
       {/* -----------------------------------------------dialog box for adding services ------------------------------------------------------ */}

@@ -12,11 +12,15 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 //import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-import Bellicon from "../../../admin/Bellicon.js";
 import io from 'socket.io-client';
+import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
+import notification_audio from "../../../assets/media/notification_tone.mp3"
+import booking_audio from "../../../assets/media/Booking-received.mp3"
 import { AiOutlineLogout } from "react-icons/ai";
 // import "./styles/header.css"
 import Notification from "../../Components/Notification/Notification.jsx";
+import ReportComplete from "../../../components/ReportComplete.jsx";
+import Bellicon from "../Bellicon/Bellicon.jsx";
 
 
 function Header({ name }) {
@@ -25,8 +29,8 @@ function Header({ name }) {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
 
@@ -39,12 +43,55 @@ function Header({ name }) {
     fetchApproveRequests();
     socket.on("newRequest", (newRequest) => {
       // Handle the new request, e.g., update your state
-      console.log("New request received:", newRequest);
-
+      //console.log("New request received:", newRequest)
       // Fetch updated data when a new request is received
       fetchRequestDetails();
       fetchRequestGDetails();
     });
+
+    socket.on("delete-booking-requested", (res) => {
+      enqueueSnackbar(`${res} sent a Booking Delete Request`, {
+        variant: 'reportComplete',
+        persist:true
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("booking-submitted", (res) => {
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true });
+    
+      const audioplayer = new Audio(booking_audio);
+      audioplayer.play();
+    });
+    socket.on("newRequest", (res) => {
+      enqueueSnackbar(`New Data Request from ${res}`, {
+        variant: 'reportComplete',
+        persist:true
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("editBooking_requested", (res) => {
+      enqueueSnackbar(`Booking Edit Request for ${res}`, {
+        variant: 'reportComplete',
+        persist:true
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("approve-request", (res) => {
+      enqueueSnackbar(`Data Approve Request from ${res}`, {
+        variant: 'reportComplete',
+        persist:true
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
@@ -103,8 +150,8 @@ function Header({ name }) {
     }
   };
 
- const dataManagerName = localStorage.getItem("dataManagerName")
- 
+  const dataManagerName = localStorage.getItem("dataManagerName")
+
 
   return (
     <div>
@@ -133,7 +180,7 @@ function Header({ name }) {
             </a>
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
-            <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/>
+            <Bellicon data={requestData} gdata={requestGData} adata={mapArray} />
             <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
@@ -141,7 +188,7 @@ function Header({ name }) {
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" , textAlign:"left" }}>{dataManagerName ? dataManagerName : "Name"}</div>
+                  <div style={{ textTransform: "capitalize", textAlign: "left" }}>{dataManagerName ? dataManagerName : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     Data Manager
                   </div>
@@ -167,7 +214,7 @@ function Header({ name }) {
                 </a>
               </div>
             </div>
-            <Notification/>
+            <Notification />
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item">
@@ -175,6 +222,18 @@ function Header({ name }) {
           </div>
         </div>
       </header>
+
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} iconVariant={{
+        success: '✅',
+        error: '✖️',
+        warning: '⚠️',
+        info: 'ℹ️',
+      }} maxSnack={3}>
+
+      </SnackbarProvider>
+
     </div>
   );
 }

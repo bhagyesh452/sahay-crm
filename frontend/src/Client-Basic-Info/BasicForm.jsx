@@ -37,6 +37,7 @@ const BasicForm = () => {
     SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
+    SocialMedia:"",
     FacebookLink: "",
     InstagramLink: "",
     LinkedInLink: "",
@@ -48,11 +49,13 @@ const BasicForm = () => {
     TechnologyInvolved: "",
     UploadPhotos: null,
     RelevantDocument: null,
-    UploadAuditedStatement: "",
-    UploadProvisionalStatement: "",
+    UploadAuditedStatement: null,
+    UploadProvisionalStatement: null,
+    RelevantDocumentComment:"",
     DirectInDirectMarket: "",
     BusinessModel: "",
     Finance: "",
+    FinanceCondition: "No",
     DirectorDetails: [DirectorForm],
   });
 
@@ -130,7 +133,7 @@ const BasicForm = () => {
       SelectServices: selectedOptions.map((option) => option.value),
     }));
   };
-  console.log(formData.SelectServices);
+  console.log(formData);
 
   const [directorLength, setDirectorLength] = useState(1);
 
@@ -492,9 +495,11 @@ const BasicForm = () => {
   };
 
   const handleRadioChange = (e, index) => {
-    setShowLinks(e.target.value === "yes");
+    setShowLinks(e.target.value === "Yes");
+
     setFormData((prevState) => ({
       ...prevState,
+      SocialMedia:e.target.value,
       DirectorDetails: prevState.DirectorDetails.map((director, i) => ({
         ...director,
         IsMainDirector: i === index,
@@ -573,9 +578,12 @@ const BasicForm = () => {
   // };
 
   const handleFinance = (event) => {
-    setShowFinance(event.target.value === "yes");
+    setShowFinance(event.target.value === "Yes");
+    setFormData({
+      ...formData,
+      FinanceCondition: event.target.value
+    })
   };
-
   // Email content based on selected Business Model
   const getEmailContent = () => {
     switch (formData.BusinessModel) {
@@ -1385,7 +1393,7 @@ const BasicForm = () => {
                             className="form-check-input"
                             type="radio"
                             name="socialMediaLink"
-                            value="yes"
+                            value="Yes"
                             onChange={handleRadioChange}
                           />
                           <span className="form-check-label">Yes</span>
@@ -1395,7 +1403,7 @@ const BasicForm = () => {
                             className="form-check-input"
                             type="radio"
                             name="socialMediaLink"
-                            value="no"
+                            value="No"
                             onChange={handleRadioChange}
                           />
                           <span className="form-check-label">No</span>
@@ -1729,6 +1737,13 @@ const BasicForm = () => {
                           className="form-control mt-1"
                           placeholder="Any Comment"
                           id="Technologyinvolve"
+                          value={formData.RelevantDocumentComment}
+                          onChange={(e)=>{
+                            setFormData({
+                              ...formData,
+                              RelevantDocumentComment:e.target.value
+                            })
+                          }}
                         ></textarea>
                         <input
                           type="file"
@@ -1978,8 +1993,9 @@ const BasicForm = () => {
                             class="form-check-input"
                             type="radio"
                             name="Raised"
-                            value="yes"
+                            value="Yes"
                             onChange={handleFinance}
+                            checked={formData.FinanceCondition === "Yes"}
                           />
                           <span class="form-check-label">Yes</span>
                         </label>
@@ -1990,6 +2006,7 @@ const BasicForm = () => {
                             name="Raised"
                             value="No"
                             onChange={handleFinance}
+                            checked={formData.FinanceCondition === "No"}
                           />
                           <span class="form-check-label">No</span>
                         </label>

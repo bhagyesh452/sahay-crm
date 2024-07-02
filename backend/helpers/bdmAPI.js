@@ -169,6 +169,7 @@ router.post(`/teamleads-reversedata/:id`, async (req, res) => {
 router.post(`/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { bdmAcceptStatus, bdmName, remarks } = req.body;
+  console.log(bdmName , remarks)
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
@@ -176,6 +177,7 @@ router.post(`/teamleads-rejectdata/:id`, async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
       bdmName: bdmName,
+      Remarks : remarks
     });
 
     await RemarksHistory.findByIdAndUpdate(id, {

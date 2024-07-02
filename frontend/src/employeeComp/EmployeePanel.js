@@ -218,6 +218,9 @@ function EmployeePanel() {
   const [filteredData, setFilteredData] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("")
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+
   //console.log(userId);
 
   const playNotificationSound = () => {
@@ -268,7 +271,6 @@ function EmployeePanel() {
 
     socket.on("data-sent", () => {
       fetchRequestDetails();
-      fetchNewData();
     });
 
     // Clean up the socket connection when the component unmounts
@@ -365,6 +367,7 @@ function EmployeePanel() {
 
   const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
     openchangeRemarks(true);
+    console.log("yahan pr chala")
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
@@ -374,6 +377,7 @@ function EmployeePanel() {
     setCurrentCompanyName(companyName);
     setBdeName(ename)
   };
+
   // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
@@ -389,6 +393,7 @@ function EmployeePanel() {
     companyName,
     ename
   ) => {
+    console.log("yahan chala")
     setOpenRemarksEdit(true);
     setFilteredRemarksBde(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -422,7 +427,6 @@ function EmployeePanel() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
-
   };
 
   const closePopUpRemarksBdm = () => {
@@ -551,6 +555,22 @@ function EmployeePanel() {
       console.error("Error fetching Projection Data:", error.message);
     }
   };
+
+  
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
+      setRemarksHistory(response.data.reverse());
+      setFilteredRemarks(
+        response.data.filter((obj) => obj.companyID === cid).reverse()
+      );
+
+      //console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
@@ -783,23 +803,7 @@ function EmployeePanel() {
     fetchData();
   }, [userId]);
 
-  const [remarksHistory, setRemarksHistory] = useState([]);
-  const [filteredRemarks, setFilteredRemarks] = useState([]);
-
-  const fetchRemarksHistory = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-      setRemarksHistory(response.data.reverse());
-      setFilteredRemarks(
-        response.data.filter((obj) => obj.companyID === cid).reverse()
-      );
-
-      //console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching remarks history:", error);
-    }
-  };
-
+  
   //console.log(remarksHistory);
 
   // const [locationAccess, setLocationAccess] = useState(false);
@@ -2689,6 +2693,7 @@ function EmployeePanel() {
  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
  const [openBacdrop, setOpenBacdrop] = useState(false)
  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+ const [monthIndex, setMonthIndex] = useState(0)
 
  const functionCloseFilterDrawer = () => {
    setOpenFilterDrawer(false)
@@ -2703,16 +2708,16 @@ function EmployeePanel() {
  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
  useEffect(() => {
-   let monthIndex;
-   if (selectedYear && selectedMonth) {
-     monthIndex = months.indexOf(selectedMonth);
-     //console.log(monthIndex)
-     const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
-     setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
-   } else {
-     setDaysInMonth([]);
-   }
- }, [selectedYear, selectedMonth]);
+  let monthIndex;
+  if (selectedYear && selectedMonth) {
+      monthIndex = months.indexOf(selectedMonth);
+      setMonthIndex(monthIndex + 1)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+  } else {
+      setDaysInMonth([]);
+  }
+}, [selectedYear, selectedMonth]);
 
  useEffect(() => {
    if (selectedYear && selectedMonth && selectedDate) {
@@ -2736,6 +2741,7 @@ function EmployeePanel() {
          selectedState,
          selectedNewCity,
          selectedYear,
+         monthIndex,
          selectedAssignDate,
          selectedCompanyIncoDate,
          page,
@@ -3945,7 +3951,6 @@ function EmployeePanel() {
                                     data-testid="loader"
                                   />
                                 </div>
-
                               </td>
                             </tr>
                           </tbody>
@@ -4301,7 +4306,7 @@ function EmployeePanel() {
                                     }}>
                                     <p
                                       className="rematkText text-wrap m-0"
-                                      title={company.bdmRemarks}
+                                      title={company.remarks}
                                     >
                                       {!company.bdmRemarks
                                         ? "No Remarks"
@@ -4478,7 +4483,7 @@ function EmployeePanel() {
                                           }}
                                           color="grey"
                                         />
-                                      </>) : company.bdmAcceptStatus === "Pending" ? (<>
+                                      </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
 
                                         <TiArrowBack
                                           onClick={() => {
@@ -5256,9 +5261,11 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
+            {console.log("Remarks are :", filteredRemarksBdm)}
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
+                  {console.log("History items :",historyItem)}
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">

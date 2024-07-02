@@ -46,8 +46,7 @@ function Header({ name, designation}) {
     fetchApproveRequests();
     socket.on("newRequest", (newRequest) => {
       // Handle the new request, e.g., update your state
-      //console.log("New request received:", newRequest);
-
+      //console.log("New request received:", newRequest)
       // Fetch updated data when a new request is received
       fetchRequestDetails();
     fetchRequestGDetails();
@@ -56,23 +55,32 @@ function Header({ name, designation}) {
 
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
-        variant: 'info',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
       });
     
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" });
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true });
     
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
     socket.on("newRequest", (res) => {
       enqueueSnackbar(`New Data Request from ${res}`, {
-        variant: 'warning',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
+      });
+    
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    });
+    socket.on("editBooking_requested", (res) => {
+      enqueueSnackbar(`Booking Edit Request for ${res}`, {
+        variant: 'reportComplete',
+        persist:true
       });
     
       const audioplayer = new Audio(notification_audio);
@@ -80,8 +88,8 @@ function Header({ name, designation}) {
     });
     socket.on("approve-request", (res) => {
       enqueueSnackbar(`Data Approve Request from ${res}`, {
-        variant: 'info',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
       });
     
       const audioplayer = new Audio(notification_audio);
