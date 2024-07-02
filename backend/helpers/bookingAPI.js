@@ -2426,10 +2426,10 @@ router.post(
 
           const extraServiceName = newData.services.map(service => {
             let services = "";
-            if (service.serviceName.includes("Seed Fund Application")) {
+            if (service.serviceName == "Seed Fund Application") {
               services = services === "" ? "Seed Fund Application" : `${services}, Seed Fund Application`;
             }
-            if (service.serviceName.includes("Income Tax Exemption Application")) {
+            if (service.serviceName == "Income Tax Exemption Application") {
               services = services === "" ? "Income Tax Exemption Application" : `${services}, Income Tax Exemption Application`;
             }
             return services;
