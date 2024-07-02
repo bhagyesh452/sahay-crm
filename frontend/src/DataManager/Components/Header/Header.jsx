@@ -12,7 +12,6 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 //import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-import Bellicon from "../../../admin/Bellicon.js";
 import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
 import notification_audio from "../../../assets/media/notification_tone.mp3"
@@ -21,6 +20,7 @@ import { AiOutlineLogout } from "react-icons/ai";
 // import "./styles/header.css"
 import Notification from "../../Components/Notification/Notification.jsx";
 import ReportComplete from "../../../components/ReportComplete.jsx";
+import Bellicon from "../Bellicon/Bellicon.jsx";
 
 
 function Header({ name }) {
@@ -60,7 +60,7 @@ function Header({ name }) {
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" });
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true});
 
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
