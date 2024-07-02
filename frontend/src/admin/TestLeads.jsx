@@ -322,7 +322,6 @@ function TestLeads() {
                 setIsSearching(false);
                 fetchData(1, latestSortCount)
             } else {
-
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCompaniesAssigned(response.data.totalAssigned)

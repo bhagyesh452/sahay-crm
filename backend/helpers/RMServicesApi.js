@@ -14,6 +14,7 @@ const InformBDEModel = require("../models/InformBDE.js");
 const FollowUpModel = require('../models/FollowUp.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
+const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 //   router.post('/post-rmservicesdata', async (req, res) => {
 //   const { dataToSend } = req.body;
 //   const publishDate = new Date();
@@ -83,22 +84,22 @@ router.post('/post-rmservicesdata', async (req, res) => {
   }
 });
 
-router.post('/post-rmservices-from-listview' , async(req,res)=>{
+router.post('/post-rmservices-from-listview', async (req, res) => {
   const { dataToSend } = req.body;
-  try{
+  try {
     const existingRecord = await RMCertificationModel.findOne({
-      "Company Name" : dataToSend["Company Name"],
-      serviceName : dataToSend.serviceName
+      "Company Name": dataToSend["Company Name"],
+      serviceName: dataToSend.serviceName
     })
-    if(existingRecord){
-         res.status(400).json({message : "Service has already been added"})
-    }else{
+    if (existingRecord) {
+      res.status(400).json({ message: "Service has already been added" })
+    } else {
       const createdRecord = await RMCertificationModel.create(dataToSend);
       res.status(200).json({
-        message:"Details added successfully"
+        message: "Details added successfully"
       })
     }
-  }catch(error){
+  } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: 'Validation error', details: error.message });
     }
@@ -109,36 +110,125 @@ router.post('/post-rmservices-from-listview' , async(req,res)=>{
 
 })
 
-router.get(`/rm-sevicesgetrequest` , async(req , res)=>{
-    try{
-        const response = await RMCertificationModel.find()
-        res.status(200).json(response)
+router.get(`/rm-sevicesgetrequest`, async (req, res) => {
+  try {
+    const response = await RMCertificationModel.find()
+    res.status(200).json(response)
 
-    }catch(error){
-        console.log("Error creating data" , error)
-        res.status(500).send({message : "Internal Server Error"})
-    }
-})
-
-router.delete(`/delete-rm-services` , async(req,res)=>{
-  const { companyName , serviceName } = req.body;
-  try{
-    const response = await RMCertificationModel.findOneAndDelete(
-      {
-        "Company Name" : companyName,
-        serviceName : serviceName
-      }
-    )
-    if(response){
-      res.status(200).json({message : "Record Deleted Succesfully" , deletedData : response})
-    }else{
-      res.status(400).json({message : "Record Not Found"})
-    }
-
-  }catch(error){
-    res.status(500).json({message : "Internal Server Error"})
+  } catch (error) {
+    console.log("Error creating data", error)
+    res.status(500).send({ message: "Internal Server Error" })
   }
 })
 
+router.delete(`/delete-rm-services`, async (req, res) => {
+  const { companyName, serviceName } = req.body;
+  try {
+    const response = await RMCertificationModel.findOneAndDelete(
+      {
+        "Company Name": companyName,
+        serviceName: serviceName
+      }
+    )
+    if (response) {
+      res.status(200).json({ message: "Record Deleted Succesfully", deletedData: response })
+    } else {
+      res.status(400).json({ message: "Record Not Found" })
+    }
 
-  module.exports = router;
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" })
+  }
+})
+
+// Redeisgned api for testing pagination
+router.get("/redesigned-final-leadData-test", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const allData = await RedesignedLeadformModel.aggregate([
+      {
+        $addFields: {
+          lastActionDateAsDate: {
+            $dateFromString: {
+              dateString: "$lastActionDate",
+              onError: new Date(0),  // Default to epoch if conversion fails
+              onNull: new Date(0)    // Default to epoch if null
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          lastActionDateAsDate: -1
+        }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      }
+    ]);
+    const totalCount = await RedesignedLeadformModel.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+    res.status(200).json({
+      data: allData,
+      currentPage: page,
+      totalPages: totalPages,
+      totalCount: totalCount
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
+
+//api to search data
+function escapeRegex(string) {
+  return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+router.get("/search-booking-data", async (req, res) => {
+  const { searchText, currentPage, itemsPerPage } = req.query;
+  console.log(searchText, currentPage, itemsPerPage);
+  const page = parseInt(currentPage) || 1; // Page number
+  const limit = parseInt(itemsPerPage) || 500; // Items per page
+  const skip = (page - 1) * limit; // Number of documents to skip
+
+  try {
+    const searchTerm = searchText.trim();
+    let query = {};
+    if (searchTerm !== '') {
+      if (!isNaN(searchTerm)) {
+        query = { 'Company Number': searchTerm };
+      } else {
+        const escapedSearchTerm = escapeRegex(searchTerm);
+        query = {
+          $or: [
+            { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+            // Add other fields you want to search with the query here
+            // For example: { anotherField: { $regex: new RegExp(escapedSearchTerm, 'i') } }
+          ]
+        };
+      }
+    }
+    const data = await RedesignedLeadformModel.find(query).skip(skip).limit(limit);
+    console.log("query", query);
+    // console.log("data", data);
+    res.status(200).json({
+      data,
+      totalCount: await RedesignedLeadformModel.countDocuments(query)
+    });
+
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+module.exports = router;
