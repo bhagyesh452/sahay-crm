@@ -4399,7 +4399,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   <div class="Declaration_text">
    <p class="Declaration_text_head mt-2">
           <b>
-           ${extraServiceName.includes("Seed Fund Application") ? extraServiceName.replace("Seed Fund Application", "Seed Fund Application Support") : extraServiceName}   
+           ${extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"}   
           </b>
         </p>
        
