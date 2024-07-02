@@ -271,7 +271,6 @@ function EmployeePanel() {
 
     socket.on("data-sent", () => {
       fetchRequestDetails();
-      fetchNewData();
     });
 
     // Clean up the socket connection when the component unmounts
@@ -379,7 +378,6 @@ function EmployeePanel() {
     setBdeName(ename)
   };
 
-  console.log("my remarks" , filteredRemarks)
   // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);

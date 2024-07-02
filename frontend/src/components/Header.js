@@ -13,7 +13,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
-
+import ReportComplete from "./ReportComplete";
 // import "./styles/header.css"
 
 
@@ -41,10 +41,16 @@ function Header({ name, designation}) {
 
     socket.on("data-sent", (res) => {
       if(res === name){
-        enqueueSnackbar(`New Data Received!`, {
-          variant: 'info',
-          autoHideDuration: 5000
-        });
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+     
+    });
+    socket.on("data-assigned", (res) => {
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
       
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
@@ -228,7 +234,9 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} maxSnack={3}>
    
     </SnackbarProvider>
     </div>
