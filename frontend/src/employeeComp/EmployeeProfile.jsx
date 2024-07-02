@@ -30,16 +30,23 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 function EmployeeProfile() {
+
   const { userId } = useParams();
   const { newtoken } = useParams();
   const [data, setdata] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
+
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+
   const [empImg1, setEmpImg1] = useState(
     localStorage.getItem("empImg1") || "initial_image_url"
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);
+
+
 
   useEffect(() => {
     const savedImage = localStorage.getItem("empImg1");
@@ -47,6 +54,8 @@ function EmployeeProfile() {
       setEmpImg1(savedImage);
     }
   }, []);
+
+
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -56,6 +65,9 @@ function EmployeeProfile() {
       alert("Please select a valid image file (JPG, JPEG, PNG).");
     }
   };
+
+
+
 
   const handleSubmit = async () => {
     if (selectedFile) {
@@ -82,21 +94,14 @@ function EmployeeProfile() {
       alert("No file selected.");
     }
   };
+  function formatDateNew(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
   
-
-  // const handleSubmit = async () => {
-  //   if (selectedFile) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       setEmpImg1(e.target.result);
-  //       localStorage.setItem("empImg1", e.target.result);
-  //     };
-  //     reader.readAsDataURL(selectedFile);
-  //     handleClose();
-  //   } else {
-  //     alert("No file selected.");
-  //   }
-  // };
 
   const handleCameraClick = () => {
     setOpen(true);
@@ -105,6 +110,9 @@ function EmployeeProfile() {
   const handleClose = () => {
     setOpen(false);
   };
+
+
+
 
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
@@ -120,15 +128,21 @@ function EmployeeProfile() {
       console.error("Error fetching employee data", error);
     }
   };
+
+
+
   React.useEffect(() => {
     fetchEmployeeData();
   }, []);
-console.log(data.employee_profile)
 
-  // console.log(`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && encodeURIComponent(data.employee_profile[0].filename)}`)
+
+
+  
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />
+
+      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
@@ -277,7 +291,7 @@ console.log(data.employee_profile)
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">{data.jdate}</div>
+                                    <div className="ep_info_t">{formatDateNew(data.jdate)}</div>
                                   </div>
                                 </div>
                               </div>
@@ -492,7 +506,20 @@ console.log(data.employee_profile)
                   <div
                     className="my-card-body p-2"
                     style={{ minHeight: "calc(100vh - 149px)" }}
-                  ></div>
+                  >
+                    <FullCalendar 
+                     plugins={[dayGridPlugin,interactionPlugin]}
+                     initialView="dayGridMonth"
+                     editable={true}
+                     selectable={true}
+                     event={[
+                      {
+                        "date":"01-07-2024",
+                        "status":"present"
+                      }
+                     ]}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

@@ -71,6 +71,8 @@ router.post(
     { name: "UploadAuditedStatement", maxCount: 1 },
     { name: "UploadProvisionalStatement", maxCount: 1 },
   ]),
+
+
   async (req, res) => {
     try {
       const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
@@ -80,8 +82,9 @@ router.post(
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
       const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
-      const UploadProvisionalStatement =
-        req.files["UploadProvisionalStatement"] || [];
+      const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+
+
 
       // Get user details from the request body
       const {
@@ -93,6 +96,7 @@ router.post(
         CompanyAddress,
         CompanyPanNumber,
         SelectServices,
+        SocialMedia,
         FacebookLink,
         InstagramLink,
         LinkedInLink,
@@ -102,110 +106,125 @@ router.post(
         CompanyUSP,
         ValueProposition,
         TechnologyInvolved,
+        RelevantDocumentComment,
         DirectInDirectMarket,
         Finance,
+        FinanceCondition,
         BusinessModel,
         DirectorDetails,
       } = req.body;
 
-      //console.log("select services" , SelectServices)
-      // const services = SelectServices.map(service => service);
+  // Social Media 
+      let SocialMediaResponse = SocialMedia  
+      let SocialMediaHTML = "";
+      if(SocialMedia === "Yes"){
+        SocialMediaHTML = `
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Facebook</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">${FacebookLink}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Instagram</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">${InstagramLink}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">LinkedIn</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">${LinkedInLink}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Youtube</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">${YoutubeLink}</div>
+                        </div>
+                    </div> 
+        `
+      }
 
-      // Now join the mapped array to create a comma-separated string
-      // const commaSeparatedValues = services.join(", ");
-      // console.log("comma" , commaSeparatedValues);
 
-      // Construct the HTML content conditionally
-      let facebookHtml = "";
-      if (FacebookLink && FacebookLink !== "No Facebook Id") {
-        facebookHtml = `
-         <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                Facebook Id
-              </div>
+      let TechInvolvedResponse = TechnologyInvolved  ? "Yes" : "No";
+      let TechnologyInvolvedHtml = "";
+      if (TechInvolvedResponse === "Yes") {
+        TechnologyInvolvedHtml = `
+          <div style="display: flex; margin-top: 8px;">
+            <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">Add Details About Technology Involved</div>
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${FacebookLink}
-              </div>
+            <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">${TechnologyInvolved}</div>
             </div>
           </div>
         `;
       }
 
-      let instagramHtml = "";
-      if (InstagramLink && InstagramLink !== "No Instagram Id") {
-        instagramHtml = `
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  Instagram Id
-                </div>
-              </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  ${InstagramLink}
-                </div>
-              </div>
+
+      let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
+      let RelevantDocumentHtml = "";
+      if (AnyIpFiledResponse === "Yes") {
+        RelevantDocumentHtml = `
+          <div style="display: flex; margin-top: 8px;">
+            <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">Provide The Option to Upload the Relevant Document</div>
             </div>
-          `;
+            <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">${RelevantDocumentComment}</div>
+            </div>
+          </div>
+        `;
       }
 
-      let linkedInHtml = "";
-      if (LinkedInLink && LinkedInLink !== "No LinkedIn Id") {
-        linkedInHtml = `
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  LinkedIn Id
-                </div>
-              </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  ${LinkedInLink}
-                </div>
-              </div>
-            </div>
-          `;
+      
+      const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
+      let ITR_condition = '';
+      let ITR_Document_Link = "";  
+      if(UploadAuditedStatement && UploadAuditedStatement.length!==0){
+        ITR_condition = ` <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;"> Upload Audited Profit & Loss and Balance Sheet Statement </div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <!-- file link -->
+                            <div style="height: 100%;font-size:12px;">${UploadAuditedStatement[0].originalname}</div>
+                        </div>
+                    </div>`
+      }else if(UploadProvisionalStatement && UploadProvisionalStatement.length!==0) {
+        ITR_condition = ` <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;"> Upload Provisional Statement or Accounts report till date for Projection</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <!-- file link -->
+                            <div style="height: 100%;font-size:12px;">${UploadProvisionalStatement[0].originalname}</div>
+                        </div>
+                    </div>`
       }
+      
 
-      let youtubeHtml = "";
-      if (YoutubeLink && YoutubeLink !== "No YouTube Id") {
-        youtubeHtml = `
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  YouTube Id
-                </div>
-              </div>
-              <div style="width: 75%;align-self: stretch;height:100%">
-                <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                  ${YoutubeLink}
-                </div>
-              </div>
+      let FinanceHtml = "";
+      if (FinanceCondition === "Yes") {
+        FinanceHtml = `
+          <div style="display: flex; margin-top: 8px;">
+            <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">Provide The Option to Mentioned The Same and Explain</div>
             </div>
-          `;
-      }
-      let TechnologyInvolvedHtml = "";
-      if (
-        TechnologyInvolved &&
-        TechnologyInvolved !== "No Technology Invloved"
-      ) {
-        TechnologyInvolvedHtml = `
-            <div style="display: flex; flex-wrap: wrap; border:"1px solid #ccc;">
-              <div style="width: 25%;align-self: stretch !important;height:100%">
-                <div style="padding: 5px 10px;">
-                  Technology Involved
-                </div>
-              </div>
-              <div style="width: 75%;align-self: stretch !important;height:100%">
-                <div style="border: 1px solid #ccc; padding: 5px 10px;">
-                  ${TechnologyInvolved}
-                </div>
-              </div>
+            <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+              <div style="height: 100%; font-size: 12px;">${Finance}</div>
             </div>
-          `;
+          </div>
+        `;
       }
 
       let uploadPhotosHtml = "";
@@ -226,63 +245,7 @@ router.post(
         `;
       }
 
-      let UploadAuditedStatementHtml = "";
-      if (
-        UploadAuditedStatement &&
-        UploadAuditedStatement !== "No Audited statement"
-      ) {
-        UploadAuditedStatementHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                Relevant Documents
-              </div>
-            </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${UploadAuditedStatement}
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      let UploadProvisioanlHtml = "";
-      if (
-        UploadProvisionalStatement &&
-        UploadProvisionalStatement !== "No Provisional Document"
-      ) {
-        UploadProvisioanlHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                Relevant Documents
-              </div>
-            </div>
-            <div style="width: 75%;align-self: stretch !important;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${UploadProvisionalStatement}
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      let relevantDocumentsHtml = "";
-      if (RelevantDocument && RelevantDocument !== "No Relevant Documents") {
-        relevantDocumentsHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                Relevant Documents
-              </div>
-            </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${RelevantDocument}
-              </div>
-            </div>
-          </div>
-        `;
-      }
+      
 
       let businessModelHtml = "";
       if (BusinessModel && BusinessModel !== "No Business Model") {
@@ -302,24 +265,9 @@ router.post(
         `;
       }
 
-      let financeDetailsHtml = "";
-      if (Finance && Finance !== "No Finance Details") {
-        financeDetailsHtml = `
-          <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                Finance Details
-              </div>
-            </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
-                ${Finance}
-              </div>
-            </div>
-          </div>
-        `;
-      }
+      
 
+      // DirectorDetails code start
       const tempHtml = () => {
         let team = "";
         let isFirstMainDirectorSet = false;
@@ -341,761 +289,156 @@ router.post(
           // Check if this is the first director and they are marked as the main director
 
           if (DirectorDetails[index].IsMainDirector === "true") {
-            team += `
-               <div 
-                style="width: 50%;
-                margin-bottom: -22px;
-                font-weight: bold;
-                color: blue;
-                margin-left: 20px;">
-                  This is the authorised person
-                </div>
-          `;
+            
             isFirstMainDirectorSet = true;
           }
 
           team += `
-          <div style="width: 95%; margin: 10px auto">
-        <div>
-            <div style="
-              width: 25px;
-              height: 30px;
-              line-height: 30px;
-              text-align: center;
-              font-weight: bold;
-              color: black;
-            ">
-                ${index + 1} 
-                <div style="
-              width: 30px;
-              height: 30px;
-              line-height: 30px;
-              text-align: center;
-              font-weight: bold;
-              color: black;
-            ">
-
-                </div>
-            </div>
-            <div style="
-            background: #f7f7f7;
-            padding: 15px;
-            border-radius: 10px;
-            position: relative;
-            margin-top: 15px;
-          ">
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                  height: auto;
-                ">
-                            DirectorName
+          <!--Card For Brief About Your Business-->
+           <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                    <div>
+                        <h3 style="margin: 0px;">Directors Details</h3>
+                    </div> 
+                    <div>
+                        <div style="display: flex;justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
+                            <div>Director ${index + 1}</div>
+                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Main Director" : ""} </div>
                         </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorName}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            DirectorEmail
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorEmail}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            DirectorMobileNo
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorMobileNo}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director Qualification
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorQualification}
+                        <div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Name *</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorName}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Email </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorEmail}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Mobile No </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorMobileNo}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Qualification </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorQualification}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Work Experience (In Detail) </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorWorkExperience}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Annual Income Of Director's Family (Approx) </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorAnnualIncome}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Aadhaar Number </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCardNumber}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Designation</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorDesignation}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Choose Director's Gender</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorGender}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">LinkedIn Profile Link</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${LinkedInProfileLink}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director Work Experience
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorWorkExperience}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director Annual Income
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorAnnualIncome}
-                        </div>
-                    </div>
-                </div>
-             
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director Designation
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorDesignation}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director AadhaarCard Number
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorAdharCardNumber}
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            Director Gender
-                        </div>
-                    </div>
-                    <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                  border: 1px solid #ccc;
-                  font-size: 12px;
-                  padding: 5px 10px;
-                ">
-                            ${DirectorGender}
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="display: ${
-                  !LinkedInProfileLink || LinkedInProfileLink == ""
-                    ? "none"
-                    : "flex"
-                }; flex-wrap: wrap">
-                    <div style="width: 25%;align-self: stretch;height:100%">
-                        <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                            ">
-                            Director Gender
-                        </div>
-                    </div>
-                  <div style="width: 75%;align-self: stretch;height:100%">
-                        <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                          ">
-                            ${LinkedInProfileLink}
-                        </div>
-                  </div>
-                </div>
-            </div>
-        </div>
-    </div>
-          `;
+          
+          `
         }
         return team;
       };
+
+
+
+
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
+      let sendMain3HTML = fs.readFileSync(
+        "./helpers/input-responce.html",
+        "utf-8"
+      );
+
+      const logoCondition = UploadPhotos.length !== 0 ? "Yes" : 'No';
+
+      let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
       const email = ["nimesh@incscale.in"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
-      const html = ` 
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-          </head>
-         <body>
-         <div class="container mt-5">
-  <div class="row">
-    <div class="col-sm-4">
-      <h3>Column 1</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Column 2</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>Column 3</h3>        
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-    </div>
-  </div>
-</div>
-       <div style="width: 100%; padding: 20px 20px; background: #f6f8fb">
-         <h3 style="text-align: center">Basic Details Form</h3>
-         <div
-           style="
-             width: 95%;
-             margin: 0 auto;
-             padding: 20px 20px;
-             background: #fff;
-             border-radius: 10px;
-           "
-         >
-           <div style="width: 95%; margin: 10px auto">
-             <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-               <div
-                 style="
-                   width: 30px;
-                   height: 30px;
-                   line-height: 30px;
-                   text-align: center;
-                   font-weight: bold;
-                   color: black;
-                 "
-               >
-                 1
-               </div>
-               <div style="margin-left: 10px">Basic Information</div>
-             </div>
-             <div
-               style="
-                 background: #f7f7f7;
-                 padding: 15px;
-                 border-radius: 10px;
-                 position: relative;
-                 margin-top: 15px;
-               "
-             >
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                       height:100%
-                     "
-                   >
-                     Company Name
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                       height:100%
-                     "
-                   >
-                     ${CompanyName}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Company Email
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyEmail}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Company No
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyNo}
-                   </div>
-                 </div>
-               </div>
-    
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Brand Name
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${BrandName}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Website Link
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${WebsiteLink}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                    Company Address
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyAddress}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Company Pan Number
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${CompanyPanNumber}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Select Your Services
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${SelectServices}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 100%">
-                   <div>
-                   ${facebookHtml}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width:100%">
-                   <div>
-                    ${instagramHtml}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width:100%">
-                   <div>
-                   ${linkedInHtml}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width:100%">
-                   <div>
-                   ${youtubeHtml} 
-                   </div>
-                 </div>
-               </div>
-             </div>
-           </div>
-    
-           <div style="width: 95%; margin: 10px auto">
-             <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-               <div
-                 style="
-                   width: 30px;
-                   height: 30px;
-                   line-height: 30px;
-                   text-align: center;
-                   font-weight: bold;
-                   color: black;
-                 "
-               >
-                 2
-               </div>
-               <div style="margin-left: 10px">Brief About Your Business</div>
-             </div>
-             <div
-               style="
-                 background: #f7f7f7;
-                 padding: 15px;
-                 border-radius: 10px;
-                 position: relative;
-                 margin-top: 15px;
-               "
-             >
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%;">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     ">
-                     Brief Of Your Business/Product/Service (Company's Activities)
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     ">
-                     ${CompanyActivities}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
-                     What Are The Problems That Your Product Or Service Proposes To Solve And How? 
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
-                     ${ProductService}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
-                     Core Strength Of Your Business Which Differs Your Company From Other Business In The Industry (USP) 
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
-                     ${CompanyUSP}
-                   </div>
-                 </div>
-               </div>
-    
-               <div style="display: flex; flex-wrap: wrap; border:1px solid #ccc;">
-                 <div style="width: 25%;align-self: stretch !important;height:100%">
-                   <div
-                     style="
-                       padding: 5px 10px;
-                     "
-                   >
-                     Value Proposition Of Your Project
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       padding: 5px 10px;
-                     "
-                   >
-                     ${ValueProposition}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 100%">
-                   <div>
-                     ${TechnologyInvolvedHtml}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 25%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     Direct/Indirect Competitor
-                   </div>
-                 </div>
-                 <div style="width: 75%;align-self: stretch;height:100%">
-                   <div
-                     style="
-                       border: 1px solid #ccc;
-                       font-size: 12px;
-                       padding: 5px 10px;
-                       height:100%;
-                     "
-                   >
-                     ${DirectInDirectMarket}
-                   </div>
-                 </div>
-               </div>
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 100%">
-                   <div>
-                     ${businessModelHtml}
-                   </div>
-                 </div>
-               </div>
-               
-               <div style="display: flex; flex-wrap: wrap">
-                 <div style="width: 100%">
-                   <div>
-                   ${financeDetailsHtml}
-                  </div>
-                </div>
-                </div>
-                </div>
-              <div style="display: flex; align-items: center; margin-top: 20px; font-size:19px;">
-               <div
-                 style="
-                   width: 30px;
-                   height: 30px;
-                   line-height: 22px;
-                   text-align: center;
-                   font-weight: bold;
-                   color: black;
-                   margin-top:5px;
-                 "
-               >
-                 3
-               </div>
-               <div style="margin-left: 10px">Directors And Team Details</div>
-             </div>
-             <div
-               style="
-                 background: #f7f7f7;
-                 padding: 15px;
-                 border-radius: 10px;
-                 position: relative;
-                 margin-top: 15px;
-               "
-             >
-             ${generatedHtml}
-          </div>
-        </div>
-      </body>
-       `;
+      const html = finalHTML
+      .replace("{{CompanyName}}", CompanyName)
+      .replace("{{CompanyEmail}}", CompanyEmail)
+      .replace("{{CompanyNo}}", CompanyNo)
+      .replace("{{BrandName}}", BrandName)
+      .replace("{{WebsiteLink}}", WebsiteLink)
+      .replace("{{CompanyAddress}}", CompanyAddress)
+      .replace("{{CompanyPanNumber}}", CompanyPanNumber)
+      .replace("{{SelectServices}}", SelectServices)
+      .replace("{{SocialMediaResponse}}", SocialMediaResponse)
+      .replace("{{SocialMedia_Conditional}}", SocialMediaHTML)
+      .replace("{{CompanyActivities}}", CompanyActivities)
+      .replace("{{ProductService}}", ProductService)
+      .replace("{{CompanyUSP}}", CompanyUSP)
+      .replace("{{ValueProposition}}", ValueProposition)
+      .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
+      .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
+      .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
+      .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
+      .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
+      .replace("{{ITR_Condition}}", ITR_response)
+      .replace("{{ITR_Document_Link}}", ITR_condition)
+      .replace("{{BusinessModel}}", BusinessModel)
+      .replace("{{FinanceResponse}}", FinanceCondition)
+      .replace("{{FinanceHtml}}", FinanceHtml)
+      .replace("{{Logo_Condition}}", logoCondition)
+      .replace("{{generatedHtml}}", generatedHtml)
+      
 
       await sendMail3(
         email,
@@ -1118,6 +461,8 @@ router.post(
           console.error("Error sending email:", error);
           res.status(500).send("Error sending email");
         });
+
+        
 
       const details = DirectorDetails.find(
         (details) => details.IsMainDirector === "true"
@@ -1273,12 +618,17 @@ router.post(
 
       const newUser = new userModel({
         ...req.body,
-        DirectorPassportPhoto,
-        DirectorAdharCard,
+        DirectorDetails: req.body.DirectorDetails.map((director, index) => ({
+          ...director,
+          DirectorPassportPhoto: DirectorPassportPhoto[index],
+          DirectorAdharCard: DirectorAdharCard[index],
+        })),
         UploadMOA,
         UploadAOA,
         UploadPhotos,
         RelevantDocument,
+        UploadAuditedStatement,
+        UploadProvisionalStatement
       });
 
       await newUser.save();
