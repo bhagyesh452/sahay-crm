@@ -169,8 +169,9 @@ router.post(
           </div>
         `;
       }
-      let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
 
+
+      let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
       let RelevantDocumentHtml = "";
       if (AnyIpFiledResponse === "Yes") {
         RelevantDocumentHtml = `
@@ -184,6 +185,8 @@ router.post(
           </div>
         `;
       }
+
+      
       const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
       let ITR_condition = '';
       let ITR_Document_Link = "";  

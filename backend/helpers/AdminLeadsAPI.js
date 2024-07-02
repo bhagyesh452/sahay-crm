@@ -222,6 +222,7 @@ router.post('/exportLeads', async (req, res) => {
       selectedUploadedDate,
       selectedAdminName,
       selectedYear,
+      monthIndex,
       selectedCompanyIncoDate,
       isSearching,
       searchText,
@@ -255,12 +256,23 @@ router.post('/exportLeads', async (req, res) => {
         };
       }
       if (selectedYear) {
-        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-        query["Company Incorporation Date  "] = {
-          $gte: yearStartDate,
-          $lt: yearEndDate
-        };
+        if (monthIndex !== '0') {
+          const year = parseInt(selectedYear);
+          const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+          const monthStartDate = new Date(year, month, 1);
+          const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+          query["Company Incorporation Date  "] = {
+            $gte: monthStartDate,
+            $lt: monthEndDate
+          };
+        } else {
+          const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+          const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+          query["Company Incorporation Date  "] = {
+            $gte: yearStartDate,
+            $lt: yearEndDate
+          };
+        }
       }
       if (selectedCompanyIncoDate) {
         query["Company Incorporation Date  "] = {
@@ -296,7 +308,10 @@ router.post('/exportLeads', async (req, res) => {
         ];
       }
     }
-
+    // Add selectedBDEName filter
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
     // Query to get the leads to be exported
     const leads = await CompanyModel.find(query).lean();
     const tempLeads = leads.map(lead => {
@@ -473,6 +488,7 @@ router.get('/getIds', async (req, res) => {
       selectedUploadedDate,
       selectedAdminName,
       selectedYear,
+      monthIndex,
       selectedCompanyIncoDate,
       isFilter,
       isSearching,
@@ -501,19 +517,31 @@ router.get('/getIds', async (req, res) => {
       };
     }
     if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      query["Company Incorporation Date"] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        query["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        query["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate
+        };
+      }
     }
     if (selectedCompanyIncoDate) {
-      query["Company Incorporation Date"] = {
+      query["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),
         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
       };
     }
+
     // Apply data status filters based on isFilter and isSearching
     if (isFilter && dataStatus) {
       if (dataStatus === 'Unassigned') {
@@ -543,8 +571,14 @@ router.get('/getIds', async (req, res) => {
       }
     }
 
+    // Add selectedBDEName filter
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
+
     // Query the collection to get only the _id fields
     const getId = await CompanyModel.find(query, '_id');
+    //console.log("getId", getId)
 
     // Extract the _id values into an array
     const allIds = getId.map(doc => doc._id);
@@ -569,10 +603,15 @@ router.get('/getIds', async (req, res) => {
       assignedData = await CompanyModel.find(assignedQuery).lean();
 
       // Fetch unassigned data
-      let unassignedQuery = { ...query, ename: 'Not Alloted' };
-      unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-      unassignedData = await CompanyModel.find(unassignedQuery).lean();
+      if (!selectedBDEName || selectedBDEName.trim() === '') {
+        let unassignedQuery = { ...query, ename: 'Not Alloted' };
+        unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+        unassignedData = await CompanyModel.find(unassignedQuery).lean();
+      }
     }
+
+    // console.log("query", query)
+    // console.log(allIds)
 
     res.status(200).json({
       allIds,
@@ -587,6 +626,158 @@ router.get('/getIds', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// router.get('/getIds', async (req, res) => {
+//   try {
+//     const {
+//       dataStatus,
+//       selectedStatus,
+//       selectedState,
+//       selectedNewCity,
+//       selectedBDEName,
+//       selectedAssignDate,
+//       selectedUploadedDate,
+//       selectedAdminName,
+//       selectedYear,
+//       selectedCompanyIncoDate,
+//       isFilter,
+//       isSearching,
+//       searchText
+//     } = req.query;
+
+//     let query = {};
+
+//     // Construct query object based on filters
+//     if (selectedStatus) query.Status = selectedStatus;
+//     if (selectedState) query.State = selectedState;
+//     if (selectedNewCity) query.City = selectedNewCity;
+//     if (selectedAssignDate) {
+//       query.AssignDate = {
+//         $gte: new Date(selectedAssignDate).toISOString(),
+//         $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//       };
+//     }
+//     if (selectedAdminName && selectedAdminName.trim() !== '') {
+//       query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+//     }
+//     if (selectedUploadedDate) {
+//       query.UploadedDate = {
+//         $gte: new Date(selectedUploadedDate).toISOString(),
+//         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//       };
+//     }
+//     if (selectedYear) {
+//       if (monthIndex !== '0') {
+//         const year = parseInt(selectedYear);
+//         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+//         const monthStartDate = new Date(year, month, 1);
+//         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: monthStartDate,
+//           $lt: monthEndDate
+//         };
+//       } else {
+//         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: yearStartDate,
+//           $lt: yearEndDate
+//         };
+//       }
+//     }
+
+//     if (selectedCompanyIncoDate) {
+//       query["Company Incorporation Date"] = {
+//         $gte: new Date(selectedCompanyIncoDate).toISOString(),
+//         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+//       };
+//     }
+//     // Apply data status filters based on isFilter and isSearching
+//     if (isFilter && dataStatus) {
+//       if (dataStatus === 'Unassigned') {
+//         query.ename = 'Not Alloted';
+//       } else if (dataStatus === 'Assigned') {
+//         query.ename = { $ne: 'Not Alloted' };
+//       }
+//     }
+
+//     // Apply search query if isSearching is true
+//     if (isSearching && searchText) {
+//       const searchTerm = searchText.trim();
+//       if (!isNaN(searchTerm)) {
+//         // Search by companyNumber if the query is a number
+//         query['Company Number'] = searchTerm;
+//       } else {
+//         // Escape special characters for regex search
+//         const escapedSearchTerm = escapeRegex(searchTerm);
+
+//         // Otherwise, perform a regex search on specified fields
+//         query.$or = [
+//           { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+//           { 'Company Email': { $regex: new RegExp(escapedSearchTerm, 'i') } }
+//           // Add other fields you want to search with the query here
+//           // For example: { anotherField: { $regex: new RegExp(escapedSearchTerm, 'i') } }
+//         ];
+//       }
+//     }
+
+//     // Query the collection to get only the _id fields
+//     const getId = await CompanyModel.find(query, '_id');
+
+//     // Extract the _id values into an array
+//     const allIds = getId.map(doc => doc._id);
+
+//     // If there's no search or filter query, send all IDs
+//     if (!isFilter && !isSearching) {
+//       res.status(200).json(allIds);
+//       return;
+//     }
+
+//     // Fetch assigned and unassigned data if search or filter query exists
+//     let assignedData = [];
+//     let assignedCount = 0;
+//     let unassignedData = [];
+//     let unassignedCount = 0;
+//     const limit = 500;
+
+//     if (isFilter || isSearching) {
+//       // Fetch assigned data
+//       let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
+//       assignedCount = await CompanyModel.countDocuments(assignedQuery);
+//       assignedData = await CompanyModel.find(assignedQuery).lean();
+
+//       // Fetch unassigned data
+//       let unassignedQuery = { ...query, ename: 'Not Alloted' };
+//       unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+//       unassignedData = await CompanyModel.find(unassignedQuery).lean();
+//     }
+
+//     res.status(200).json({
+//       allIds,
+//       assigned: assignedData,
+//       unassigned: unassignedData,
+//       totalAssigned: assignedCount,
+//       totalUnassigned: unassignedCount,
+//       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
+//     });
+//   } catch (error) {
+//     console.error('Error fetching IDs:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+router.post("/fetch-by-ids", async (req, res) => {
+  const { ids } = req.body;
+  try {
+    const data = await CompanyModel.find({ _id: { $in: ids } }).lean();
+    res.status(200).json(data);
+
+  } catch (error) {
+    console.error('Error fetching data by IDs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
 
 
 
@@ -619,8 +810,20 @@ router.get('/getIds', async (req, res) => {
 //   res.json({ message: "Data posted successfully" });
 // });
 
+const mongoose = require('mongoose');
+
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+  const socketIO = req.io;
+  const dataSize = selectedObjects.length;
+
+  // Helper function to perform bulk operations in parallel
+  const executeBulkOperations = async (model, operations, batchSize = 100) => {
+    for (let i = 0; i < operations.length; i += batchSize) {
+      const batch = operations.slice(i, i + batchSize);
+      await model.bulkWrite(batch);
+    }
+  };
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({
@@ -656,34 +859,34 @@ router.post("/postAssignData", async (req, res) => {
     }
   }));
 
+  // Bulk operations for FollowUpModel
   const bulkOperationsProjection = selectedObjects.map((obj) => ({
     deleteOne: {
       filter: { companyName: obj["Company Name"] }
     }
-  }))
+  }));
 
-  const bulkOpertaionsRedesignedModel = selectedObjects.map((obj)=>({
-    updateOne:{
-      filter:{"Company Name" : obj["Company Name"]},
-      update:{
-        $set:{
-          isDeletedEmployeeCompany : true,
+  // Bulk operations for RedesignedLeadformModel
+  const bulkOperationsRedesignedModel = selectedObjects.map((obj) => ({
+    updateOne: {
+      filter: { "Company Name": obj["Company Name"] },
+      update: {
+        $set: {
+          isDeletedEmployeeCompany: true,
         }
       }
     }
-  }))
+  }));
 
   try {
-    // Perform bulk update on CompanyModel
-    await CompanyModel.bulkWrite(bulkOperationsCompany);
-
-    // Perform bulk delete on TeamLeadsModel
-    await TeamLeadsModel.bulkWrite(bulkOperationsTeamLeads);
-
-    await FollowUpModel.bulkWrite(bulkOperationsProjection)
-
-    await RedesignedLeadformModel.bulkWrite(bulkOpertaionsRedesignedModel)
-
+    // Perform bulk operations in parallel
+    await Promise.all([
+      executeBulkOperations(CompanyModel, bulkOperationsCompany),
+      executeBulkOperations(TeamLeadsModel, bulkOperationsTeamLeads),
+      executeBulkOperations(FollowUpModel, bulkOperationsProjection),
+      executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
+    ]);
+    socketIO.emit('data-assigned' , {name : employeeSelection , length : dataSize});
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
       title,
@@ -698,6 +901,7 @@ router.post("/postAssignData", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {

@@ -69,7 +69,8 @@ const ReportComplete = forwardRef(({ id, ...props }, ref) => {
   const handleDismiss = useCallback(() => {
     closeSnackbar(id);
   }, [id, closeSnackbar]);
-  const messageOf = props.message.includes("Booking Received from") ? "boookingNoti" : "other";
+  console.log(props , "This is the props")
+  const messageOf = props.message.includes("Booking Received from") ? "boookingNoti" : props.message === "New Data Received!" ? "EmployeeNoti" : "other"
   return (
     <SnackbarContent ref={ref} component={Root}>
       <StyledCard>
@@ -78,7 +79,7 @@ const ReportComplete = forwardRef(({ id, ...props }, ref) => {
             {props.message}
           </TypographyStyled>
           <IconsDiv>
-            {messageOf !== "boookingNoti" && <ExpandIconButton
+            {messageOf === "EmployeeNoti" && <ExpandIconButton
               aria-label="Show more"
               size="small"
               expanded={expanded}
@@ -97,11 +98,11 @@ const ReportComplete = forwardRef(({ id, ...props }, ref) => {
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <PaperStyled>
             <Typography gutterBottom variant="caption" style={{ color: '#000', display: 'block' }}>
-              PDF ready
+              Data Added
             </Typography>
-            <CustomButton size="small" color="primary">
+            <CustomButton size="small" color="primary" onClick={()=>window.location.reload()}>
               <CheckIcon />
-              Download now
+              Refresh now
             </CustomButton>
           </PaperStyled>
         </Collapse>

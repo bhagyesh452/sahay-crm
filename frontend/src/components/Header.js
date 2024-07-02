@@ -11,15 +11,19 @@ import Avatar from "@mui/material/Avatar";
 import BellEmp from "./BellEmp";
 import io from "socket.io-client";
 import axios from "axios";
-import { SnackbarProvider, enqueueSnackbar } from "notistack";
-import notification_audio from "../assets/media/notification_tone.mp3";
-
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import notification_audio from "../assets/media/notification_tone.mp3"
+import ReportComplete from "./ReportComplete";
 // import "./styles/header.css"
 
 function Header({ name, designation, empProfile }) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  
+
+
 
   useEffect(() => {
     const socket =
@@ -38,12 +42,18 @@ function Header({ name, designation, empProfile }) {
     });
 
     socket.on("data-sent", (res) => {
-      if (res === name) {
-        enqueueSnackbar(`New Data Received!`, {
-          variant: "info",
-          autoHideDuration: 5000,
-        });
-
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+     
+    });
+    socket.on("data-assigned", (res) => {
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
+      
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
@@ -59,12 +69,38 @@ function Header({ name, designation, empProfile }) {
         audioplayer.play();
       }
     });
+    socket.on("Remaining_Payment_Added", (res) => {
+     
+      if(name === res.name){
+        enqueueSnackbar(`Remaining Amount Received from ${res.companyName}`, {
+          variant: 'warning',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
     socket.on("expanse-added", (res) => {
-      console.log("Expanse Added", res, name);
-      if (name === res) {
-        enqueueSnackbar(`Expanse Added in Your Booking `, {
-          variant: "info",
-          autoHideDuration: 5000,
+      console.log("Expanse Added" ,"response :" + res.name ,"Name" + name)
+      if(name === res.name){
+        enqueueSnackbar(`Expanse Added in ${res.companyName} `, {
+          variant: 'info',
+          autoHideDuration: 5000
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
+    socket.on("booking-updated", (res) => {
+     
+      if(name === res.name){
+        enqueueSnackbar(`Booking for ${res.companyName} has been Updated!`, {
+          variant: 'info',
+          autoHideDuration: 5000
         });
 
         const audioplayer = new Audio(notification_audio);
@@ -75,7 +111,7 @@ function Header({ name, designation, empProfile }) {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [name]);
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -101,7 +137,7 @@ function Header({ name, designation, empProfile }) {
     };
   }, [socketID, userId]);
 
-  //console.log(name)
+  console.log("employeename" , name)
 
   // ----------------------------------   Functions  ----------------------------------------------
 
@@ -205,7 +241,11 @@ function Header({ name, designation, empProfile }) {
           </div>
         </div>
       </header>
-      <SnackbarProvider maxSnack={3}></SnackbarProvider>
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} maxSnack={3}>
+   
+    </SnackbarProvider>
     </div>
   );
 }
