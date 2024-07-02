@@ -13,11 +13,11 @@ import io from "socket.io-client";
 import axios from "axios";
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
-
+import ReportComplete from "./ReportComplete";
 // import "./styles/header.css"
 
 
-function Header({ name, designation}) {
+function Header({ name, designation , empProfile}) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -41,10 +41,16 @@ function Header({ name, designation}) {
 
     socket.on("data-sent", (res) => {
       if(res === name){
-        enqueueSnackbar(`New Data Received!`, {
-          variant: 'info',
-          autoHideDuration: 5000
-        });
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+     
+    });
+    socket.on("data-assigned", (res) => {
+      if(res === name){
+        enqueueSnackbar(`New Data Received!`,  { variant: "reportComplete" , persist:true});
       
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
@@ -54,8 +60,8 @@ function Header({ name, designation}) {
     socket.on("data-action-performed", (res) => {
       if(name === res){
         enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
-          variant: 'warning',
-          autoHideDuration: 5000
+          variant: 'reportComplete',
+          persist:true
         });
       
         const audioplayer = new Audio(notification_audio);
@@ -185,7 +191,9 @@ function Header({ name, designation}) {
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
          <BellEmp name={name}/>
-          <Avatar  sx={{ width: 32, height: 32 }}/>
+          <Avatar src={`${secretKey}/employee/employeeImg/${name}/${encodeURIComponent(
+                empProfile 
+              )}`}  className="My-Avtar" sx={{ width: 36, height: 36 }}/>
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -228,7 +236,9 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} maxSnack={3}>
    
     </SnackbarProvider>
     </div>

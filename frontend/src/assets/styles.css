@@ -166,6 +166,26 @@ th {
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
+.My-Avtar
+{
+  border: 1px solid #ccc;
+}
+.My-Avtar img
+{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  object-fit: cover;
+  color: transparent;
+  object-fit: contain;
+  object-position: center top;
+  position: relative;
+  transition: 0.5s;
+  transform-origin: center center;
+  text-indent: 10000px;
+  background: #ccc;
+  transform: scale(1.2);
+}
 
 .rupees-sym {
   background-color: #ffb900;

@@ -85,7 +85,10 @@ app.use(
     extended: true,
   })
 );
-app.use("/api/admin-leads", AdminLeadsAPI);
+app.use("/api/admin-leads",(req,res,next) =>{
+  req.io = socketIO;
+  next();
+}, AdminLeadsAPI);
 app.use("/api/remarks", RemarksAPI);
 app.use('/api/bookings', (req, res, next) => {
   req.io = socketIO;

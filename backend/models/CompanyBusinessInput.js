@@ -102,6 +102,9 @@ const userSchema = new mongoose.Schema({
   UploadAOA: {
     type: Array,
   },
+  SocialMedia:{
+    type:String,
+  },
   FacebookLink: {
     type: String,
   },
@@ -126,13 +129,28 @@ const userSchema = new mongoose.Schema({
   ValueProposition: {
     type: String,
   },
+  TechInvolvedResponse:{
+    type:Boolean,
+  },
   TechnologyInvolved: {
     type: String,
   },
   UploadPhotos: {
     type: Array,
   },
+  AnyIpFiledResponse:{
+    type:Boolean,
+  },
   RelevantDocument: {
+    type: Array,
+  },
+  RelevantDocumentComment: {
+    type: String,
+  },
+  UploadAuditedStatement: {
+    type: Array,
+  },
+  UploadProvisionalStatement: {
     type: Array,
   },
   DirectInDirectMarket: {
@@ -149,6 +167,9 @@ const userSchema = new mongoose.Schema({
   },
   BusinessModel: {
     type: String,
+  },
+  FinanceCondition:{
+    type:String,
   },
   Financing: {
     type: String,

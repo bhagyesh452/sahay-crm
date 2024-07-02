@@ -72,11 +72,13 @@ const sendMail3 = async (
   attachment3,
   attachment4,
   attachment5,
-  attachment6
+  attachment6,
+  attachment7,
+  attachment8
 ) => {
   try {
     const newRecepients = recipients;
-    newRecepients.push("support@startupsahay.com")
+    newRecepients.push("nisargpatel@startupsahay.com")
     const transporter = await createTransporter();
     const paymentReceiptAttachments = processAttachments(attachment1);
     const paymentReceiptAttachments2 = processAttachments(attachment2);
@@ -84,12 +86,16 @@ const sendMail3 = async (
     const paymentReceiptAttachments4 = processAttachments(attachment4);
     const paymentReceiptAttachments5 = processAttachments(attachment5);
     const paymentReceiptAttachments6 = processAttachments(attachment6);
+    const paymentReceiptAttachments7 = processAttachments(attachment7);
+    const paymentReceiptAttachments8 = processAttachments(attachment8);
     console.log(paymentReceiptAttachments);
     console.log(paymentReceiptAttachments2);
     console.log(paymentReceiptAttachments3);
     console.log(paymentReceiptAttachments4);
     console.log(paymentReceiptAttachments5);
     console.log(paymentReceiptAttachments6);
+    console.log(paymentReceiptAttachments7);
+    console.log(paymentReceiptAttachments8);
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
       to: recipients.join(", "),
@@ -104,6 +110,8 @@ const sendMail3 = async (
         ...paymentReceiptAttachments4,
         ...paymentReceiptAttachments5,
         ...paymentReceiptAttachments6,
+        ...paymentReceiptAttachments7,
+        ...paymentReceiptAttachments8
       ],
     });
 
