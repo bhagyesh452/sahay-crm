@@ -175,12 +175,13 @@ th {
   object-fit: cover;
   color: transparent;
   object-fit: contain;
-  object-position: center center;
+  object-position: 0px 6px;
   position: relative;
   transition: 0.5s;
   transform-origin: center center;
   text-indent: 10000px;
   background: #ccc;
+  transform: scale(1.2);
 }
 
 .rupees-sym {

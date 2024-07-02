@@ -17,7 +17,7 @@ import ReportComplete from "./ReportComplete";
 // import "./styles/header.css"
 
 
-function Header({ name, designation}) {
+function Header({ name, designation , empProfile}) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -191,7 +191,9 @@ function Header({ name, designation}) {
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
          <BellEmp name={name}/>
-          <Avatar  sx={{ width: 32, height: 32 }}/>
+          <Avatar src={`${secretKey}/employee/employeeImg/${name}/${encodeURIComponent(
+                empProfile 
+              )}`}  className="My-Avtar" sx={{ width: 36, height: 36 }}/>
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
