@@ -1,0 +1,325 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <div style="width: 100%; padding: 0;margin: 0px;position: relative;font-family: Arial, sans-serif;">
+            <div style="width: 85%;margin: 10px auto;padding: 15px;background: #eee;border-radius: 10px;"> 
+                <!--Card For Basic Information-->
+                <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;">
+                    <div>
+                        <h3 style="margin: 0px;">Basic Information</h3>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Compnay name</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyName}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Email Address</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyEmail}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Phone No</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyNo}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Brand Name (If any)</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{BrandName}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Website's Link (If any)</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{WebsiteLink}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Company Address</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyAddress}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Company Pan Number</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyPanNumber}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Your Services</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{SelectServices}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Do You have Social Media Link?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{SocialMediaResponse}}</div>
+                        </div>
+                    </div> 
+                   {{SocialMedia_Conditional}}
+                </div>
+                <!--Card For Brief About Your Business-->
+                <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                    <div>
+                        <h3 style="margin: 0px;">Brief About Your Business</h3>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Brief Of Your Business/Product/Service (Company's Activities)</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyActivities}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">What Are The Problems That Your Product Or Service Proposes To Solve And How?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{ProductService}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Core Strength Of Your Business Which Differs Your Company From Other Business In The
+                                Industry (USP)</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{CompanyUSP}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Value Proposition Of Your Project </div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{ValueProposition}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Any Kind Of Technology Is Involved In Your Product Or Service?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{TechInvolvedResponse}}</div>
+                        </div>
+                    </div>
+                    <!-- Based On Yes/No -->
+                     <!-- <div style="display: flex; margin-top: 8px;">
+                        <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%; font-size: 12px;">Any Kind Of Technology Is Involved In Your Product Or Service?</div>
+                        </div>
+                        <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%; font-size: 12px;"></div>
+                        </div>
+                    </div> -->
+                    <!-- Based On Yes/No -->
+                    {{TechnologyInvolvedHtml}}
+
+                    <!-- <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Add Details About Technology Involved</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{TechnologyInvolvedHtml}}</div>
+                        </div>
+                    </div>-->
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Do You Have Photos Of Product/Prototype Or LOGO?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{Logo_Condition}}</div>
+                        </div>
+                    </div> 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Any IP Filed?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{AnyIpFiledResponse}}</div>
+                        </div>
+                    </div>
+                    <!-- Based On Yes/No -->
+                    {{RelevantDocumentHtml}}
+                    <!-- <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Provide The Option to Upload the Relevant Document:*</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;"></div>
+                        </div>
+                    </div> -->
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Do You have ITR Filled for Previous Year ?</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{ITR_Condition}}</div>
+                        </div>
+                    </div>
+                    <!-- Based On Yes/No -->
+                   {{ITR_Document_Link}}
+                    <!-- Based On Yes/No -->
+                 
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Name Closest Direct/Indirect Competitor In The Market</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{DirectInDirectMarket}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Select Your Business Model</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{BusinessModel}}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Have You Raised Any Financing Thus Far (Grants, Loans, Investments, Friends And Family, Etc.)
+                            </div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;">{{FinanceResponse}}</div>
+                        </div>
+                    </div>
+                    <!-- Based On Yes/No -->
+                    {{FinanceHtml}}
+                    <!-- <div style="display: flex;margin-top: 8px;">
+                        <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                            <div style="height: 100%;font-size:12px;">Provide The Option to Mentioned The Same and Explain</div>
+                        </div>
+                        <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                            <div style="height: 100%;font-size:12px;"></div>
+                        </div>
+                    </div> -->
+                </div>
+                <!--Card For Brief About Your Business-->
+                {{generatedHtml}}
+                <!-- <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                    <div>
+                        <h3 style="margin: 0px;">Directors Details</h3>
+                    </div> 
+                    <div>
+                        <div style="display: flex;justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
+                            <div>Director 1</div>
+                            <div>Authorized Person</div>
+                        </div>
+                        <div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Name *</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorName}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Email </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorEmail}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Mobile No </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorMobileNo}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Enter Director's Qualification </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorQualification}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Work Experience (In Detail) </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorWorkExperience}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Annual Income Of Director's Family (Approx) </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorAnnualIncome}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Aadhaar Number </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorAdharCardNumber}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Designation</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorDesignation}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Choose Director's Gender</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{DirectorGender}}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">LinkedIn Profile Linkr</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">{{LinkedInProfileLink}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </body>
+</html>

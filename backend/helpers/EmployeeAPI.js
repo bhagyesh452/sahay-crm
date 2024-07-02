@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router()
-const dotenv = require('dotenv')
+var express = require("express");
+var router = express.Router();
+const dotenv = require("dotenv");
 dotenv.config();
 const adminModel = require("../models/Admin.js");
 const path = require("path");
@@ -8,10 +8,7 @@ const fs = require("fs");
 const multer = require("multer");
 const EmployeeHistory = require("../models/EmployeeHistory");
 const json2csv = require("json2csv").parse;
-const deletedEmployeeModel = require("../models/DeletedEmployee.js")
-
-
-
+const deletedEmployeeModel = require("../models/DeletedEmployee.js");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -21,7 +18,7 @@ const storage = multer.diskStorage({
 
     if (file.fieldname === "file" && employeeName) {
       destinationPath = `EmployeeImages/${employeeName}`;
-    } 
+    }
 
     // Create the directory if it doesn't exist
     if (!fs.existsSync(destinationPath)) {
@@ -37,10 +34,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-
-
-
 
 router.put("/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
@@ -111,11 +104,10 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   }
 });
 
-
-
 router.post("/einfo", async (req, res) => {
   try {
-    adminModel.create(req.body).then((result) => { // Change res to result
+    adminModel.create(req.body).then((result) => {
+      // Change res to result
       res.json(result); // Change res.json(res) to res.json(result)
     });
   } catch (error) {
@@ -124,9 +116,8 @@ router.post("/einfo", async (req, res) => {
   }
 });
 
-router.put('/savedeletedemployee', async (req, res) => {
+router.put("/savedeletedemployee", async (req, res) => {
   const { dataToDelete } = req.body;
-
 
   if (!dataToDelete || dataToDelete.length === 0) {
     return res.status(400).json({ error: "No employee data to save" });
@@ -138,7 +129,7 @@ router.put('/savedeletedemployee', async (req, res) => {
         const newData = {
           ...data,
           _id: data._id,
-          deletedDate: new Date().toISOString()
+          deletedDate: new Date().toISOString(),
         };
 
         // Create a new document in the deletedEmployeeModel with the same _id
@@ -153,37 +144,40 @@ router.put('/savedeletedemployee', async (req, res) => {
   }
 });
 
-router.get('/deletedemployeeinfo', async (req, res) => {
+router.get("/deletedemployeeinfo", async (req, res) => {
   try {
-    const data = await deletedEmployeeModel.find()
-    res.status(200).json(data)
-
+    const data = await deletedEmployeeModel.find();
+    res.status(200).json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
-
-router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
-  const { id: itemId } = req.params; // Correct destructuring
-  console.log(itemId);
-  try {
-    const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
-
-    if (!data) {
-      return res.status(404).json({ error: "Data not found" });
-    } else {
-      return res.status(200).json({ message: "Data deleted successfully", data });
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
 });
+
+router.delete(
+  "/deleteemployeedromdeletedemployeedetails/:id",
+  async (req, res) => {
+    const { id: itemId } = req.params; // Correct destructuring
+    console.log(itemId);
+    try {
+      const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
+
+      if (!data) {
+        return res.status(404).json({ error: "Data not found" });
+      } else {
+        return res
+          .status(200)
+          .json({ message: "Data deleted successfully", data });
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
 
 router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
   const { dataToRevertBack } = req.body;
-
 
   if (!dataToRevertBack || dataToRevertBack.length === 0) {
     return res.status(400).json({ error: "No employee data to save" });
@@ -205,13 +199,14 @@ router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
     if (error.code === 11000) {
       // Duplicate key error
       console.error("Duplicate key error:", error.message);
-      return res.status(409).json({ error: "Duplicate key error. Document with this ID already exists." });
+      return res.status(409).json({
+        error: "Duplicate key error. Document with this ID already exists.",
+      });
     }
     console.error("Error reverting back employee:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // 2. Read the Employee
 router.get("/einfo", async (req, res) => {
@@ -243,8 +238,7 @@ router.put("/einfo/:id", async (req, res) => {
   }
 });
 
-
-// 4. Delete an Employee 
+// 4. Delete an Employee
 router.delete("/einfo/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -263,8 +257,8 @@ router.delete("/einfo/:id", async (req, res) => {
 });
 
 router.delete("/permanentDelete/:id", async (req, res) => {
-  const itemId = req.params.id
-  console.log(itemId)
+  const itemId = req.params.id;
+  console.log(itemId);
   try {
     const deletedData = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
@@ -276,14 +270,14 @@ router.delete("/permanentDelete/:id", async (req, res) => {
     console.error("Error deleting data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
 router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;
-  
+
   try {
     const data = await adminModel.findOne({ email: email, password: password });
-    
+
     if (data) {
       res.status(200).json(data);
     } else {
@@ -295,48 +289,84 @@ router.get("/einfo/:email/:password", async (req, res) => {
   }
 });
 
+router.post(
+  "/employeeimages/:employeeName",
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).send("No files were uploaded");
+      }
 
-router.post("/employeeimages/:employeeName", upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send('No files were uploaded');
+      const employeeName = req.params.employeeName;
+
+      // Find the employee by name
+      const employee = await adminModel.findOne({ ename: employeeName });
+
+      if (!employee) {
+        return res.status(404).send("Employee Not Found");
+      }
+
+      // Construct the file details to store
+      const fileDetails = {
+        filename: req.file.filename,
+        path: `/uploads/${req.file.filename}`,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        uploadedAt: new Date(),
+      };
+
+      // Update the employee_profile array
+      // employee.employee_profile(fileDetails);
+      // await employee.save();
+
+      employee.employee_profile = fileDetails;
+      await employee.save();
+
+      // Remove old employee images after uploading the new one
+      removeOldEmployeeImages(employeeName, req.file.filename);
+
+      // Handle other logic like saving to database or processing
+      res.status(200).send({
+        message: "File Uploaded Successfully",
+        imageUrl: `/path/to/${req.file.filename}`,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error.message);
     }
 
-    const employeeName = req.params.employeeName;
+    // This function is remove the old employee profile image then store the latest employee profile image
+    function removeOldEmployeeImages(employeeName, newFileName) {
+      const directoryPath = path.join(
+        __dirname,
+        `../EmployeeImages/${employeeName}`
+      );
 
+      fs.readdir(directoryPath, (err, files) => {
+        if (err) {
+          console.error("Error reading directory:", err);
+          return;
+        }
 
-    // Find the employee by name
-    const employee = await adminModel.findOne({ ename: employeeName });
+        files.forEach((file) => {
+          if (file !== newFileName) {
+            const filePath = path.join(directoryPath, file);
 
-    if (!employee) {
-      return res.status(404).send('Employee Not Found');
+            fs.unlink(filePath, (err) => {
+              if (err) {
+                console.error("Error deleting file:", err);
+              } else {
+                console.log("Deleted old file:", file);
+              }
+            });
+          }
+        });
+      });
     }
-
-    // Construct the file details to store
-    const fileDetails = {
-      filename: req.file.filename,
-      path: `/uploads/${req.file.filename}`,
-      originalName: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      uploadedAt: new Date()
-    };
-
-    // Update the employee_profile array
-    // employee.employee_profile(fileDetails);
-    // await employee.save();
-
-    employee.employee_profile = fileDetails;
-    await employee.save();
-
-
-    // Handle other logic like saving to database or processing
-    res.status(200).send({ message: 'File Uploaded Successfully', imageUrl: `/path/to/${req.file.filename}` });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
   }
-});
+);
 
 router.get("/employeeImg/:employeeName/:filename", (req, res) => {
   const empName = req.params.employeeName;
