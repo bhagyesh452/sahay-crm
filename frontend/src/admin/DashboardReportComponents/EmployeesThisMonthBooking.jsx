@@ -1550,14 +1550,6 @@ function EmployeesThisMonthBooking() {
                 return [today.startOf("month"), today.endOf("month")];
             },
         },
-        {
-            label: "Next Month",
-            getValue: () => {
-                const today = dayjs();
-                const startOfNextMonth = today.endOf("month").add(1, "day");
-                return [startOfNextMonth, startOfNextMonth.endOf("month")];
-            },
-        },
         { label: "Reset", getValue: () => [null, null] },
     ];
 
