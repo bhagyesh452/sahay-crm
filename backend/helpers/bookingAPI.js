@@ -1899,7 +1899,7 @@ router.post(
               const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-                  newData.services[i].serviceName === "Seed Funding Application" ? "Seed Funding Application Support" :
+                  newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
                       newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                         newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
@@ -2023,7 +2023,7 @@ router.post(
               const conditionalServices = ["Seed Funding Application", "Income Tax Exemption Application", "Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-                  newData.services[i].serviceName === "Seed Funding Application" ? "Seed Funding Application Support" :
+                  newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
                       newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                         newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
@@ -2437,7 +2437,7 @@ router.post(
 
 
 
-
+ const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"
           const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
       <section>
        <div class="date_div">
@@ -2449,15 +2449,15 @@ router.post(
         <div class="Declaration_text">
          <p class="Declaration_text_head mt-2">
                 <b>
-                ${extraServiceName.includes("Seed Fund Application") ? extraServiceName.replace("Seed Fund Application", "Seed Fund Application Support") : extraServiceName} 
+                ${renamedExtraServiceName} 
                 </b>
               </p>
              
           <p class="Declaration_text_data">
-            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${extraServiceName} Support.
+            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName} Support.
           </p>
           <p class="Declaration_text_data">
-            I declare that all required documents for the ${extraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+            I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
           </p>
           <p class="Declaration_text_data">
             <b>Fees:</b>
@@ -3848,7 +3848,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-            newData.services[i].serviceName === "Seed Funding Application" ? "Seed Funding Application Support" :
+            newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
                 newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                   newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
@@ -3974,7 +3974,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti "]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
-            newData.services[i].serviceName === "Seed Funding Application" ? "Seed Funding Application Support" :
+            newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
                 newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
                   newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
@@ -4387,7 +4387,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return services;
     })
-
+    const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"
     const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
 <section>
  <div class="date_div">
@@ -4399,15 +4399,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   <div class="Declaration_text">
    <p class="Declaration_text_head mt-2">
           <b>
-           ${extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"}   
+           ${renamedExtraServiceName}   
           </b>
         </p>
        
     <p class="Declaration_text_data">
-      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${extraServiceName} Support.
+      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName} Support.
     </p>
     <p class="Declaration_text_data">
-      I declare that all required documents for the ${extraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+      I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
     </p>
     <p class="Declaration_text_data">
       <b>Fees:</b>
