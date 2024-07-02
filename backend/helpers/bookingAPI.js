@@ -4395,7 +4395,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             </div>
             <div class="pdf_heading">
               <h3>Self Declaration</h3>
-            </div>y
+            </div>
   <div class="Declaration_text">
    <p class="Declaration_text_head mt-2">
           <b>
