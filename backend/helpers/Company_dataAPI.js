@@ -580,6 +580,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     selectedState,
     selectedNewCity,
     selectedYear,
+    monthIndex,
     selectedAssignDate,
     selectedCompanyIncoDate,
   } = req.query;
@@ -600,13 +601,11 @@ router.get('/filter-employee-leads', async (req, res) => {
           { multiBdmName: { $in: [employeeName] } },
           { maturedBdmName: employeeName }
         );
-      }else{
-        baseQuery.Status === selectedStatus;
       }
     }
 
     // Add other filters only if employeeName is present
-    //if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     if (selectedAssignDate) {
@@ -616,12 +615,24 @@ router.get('/filter-employee-leads', async (req, res) => {
       };
     }
     if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      baseQuery["Company Incorporation Date  "] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
+      if (monthIndex !== '0') {
+        
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate
+        };
+      }
     }
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {

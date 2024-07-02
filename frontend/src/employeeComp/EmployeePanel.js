@@ -2695,6 +2695,7 @@ function EmployeePanel() {
  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
  const [openBacdrop, setOpenBacdrop] = useState(false)
  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+ const [monthIndex, setMonthIndex] = useState(0)
 
  const functionCloseFilterDrawer = () => {
    setOpenFilterDrawer(false)
@@ -2709,16 +2710,16 @@ function EmployeePanel() {
  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
  useEffect(() => {
-   let monthIndex;
-   if (selectedYear && selectedMonth) {
-     monthIndex = months.indexOf(selectedMonth);
-     //console.log(monthIndex)
-     const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
-     setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
-   } else {
-     setDaysInMonth([]);
-   }
- }, [selectedYear, selectedMonth]);
+  let monthIndex;
+  if (selectedYear && selectedMonth) {
+      monthIndex = months.indexOf(selectedMonth);
+      setMonthIndex(monthIndex + 1)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+  } else {
+      setDaysInMonth([]);
+  }
+}, [selectedYear, selectedMonth]);
 
  useEffect(() => {
    if (selectedYear && selectedMonth && selectedDate) {
@@ -2742,6 +2743,7 @@ function EmployeePanel() {
          selectedState,
          selectedNewCity,
          selectedYear,
+         monthIndex,
          selectedAssignDate,
          selectedCompanyIncoDate,
          page,
