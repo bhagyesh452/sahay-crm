@@ -130,7 +130,7 @@ router.put("/leads/:id", async (req, res) => {
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    console.log(updatedData);
+    //console.log(updatedData);
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
@@ -188,14 +188,14 @@ router.post("/leads", async (req, res) => {
         
       } catch (error) {
         duplicateEntries.push(employeeData);
-        console.log("kuch h ye" , duplicateEntries);
+        //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
       }
     }
     
     if (duplicateEntries.length > 0) {
-      console.log("yahan chala csv pr")
+      //console.log("yahan chala csv pr")
       //console.log(duplicateEntries , "duplicate")
       const json2csvParser = new Parser();
       // If there are duplicate entries, create and send CSV
@@ -230,7 +230,7 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
   try {
     // Find the employee's data by id
     const employeeData = await adminModel.findById(id);
-    console.log("employee", employeeData)
+    //console.log("employee", employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }
@@ -276,7 +276,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
   try {
     const employeeData = await CompanyModel.findById(itemId)
 
-    console.log(employeeData)
+    //console.log(employeeData)
     if (!employeeData) {
       return res.status(404).json({ error: "Employee not found" });
     }
@@ -580,6 +580,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     selectedState,
     selectedNewCity,
     selectedYear,
+    monthIndex,
     selectedAssignDate,
     selectedCompanyIncoDate,
   } = req.query;
@@ -600,13 +601,11 @@ router.get('/filter-employee-leads', async (req, res) => {
           { multiBdmName: { $in: [employeeName] } },
           { maturedBdmName: employeeName }
         );
-      }else{
-        baseQuery.Status === selectedStatus;
       }
     }
 
     // Add other filters only if employeeName is present
-    //if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     if (selectedAssignDate) {
@@ -616,12 +615,24 @@ router.get('/filter-employee-leads', async (req, res) => {
       };
     }
     if (selectedYear) {
-      const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-      const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-      baseQuery["Company Incorporation Date  "] = {
-        $gte: yearStartDate,
-        $lt: yearEndDate
-      };
+      if (monthIndex !== '0') {
+        
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate
+        };
+      }
     }
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {

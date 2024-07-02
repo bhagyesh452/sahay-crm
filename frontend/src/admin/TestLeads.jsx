@@ -45,6 +45,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Country, State, City } from 'country-state-city';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { RiSendToBack } from 'react-icons/ri';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -1257,6 +1258,8 @@ function TestLeads() {
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         try {
+            setOpenBacdrop(true)
+            setOpenAssignLeadsDialog(false)
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: dataToSend,
@@ -1281,6 +1284,8 @@ function TestLeads() {
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire("Error Assigning Data");
+        }finally{
+            setOpenBacdrop(false)
         }
     };
 
