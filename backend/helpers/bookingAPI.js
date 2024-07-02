@@ -2437,7 +2437,7 @@ router.post(
 
 
 
- const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"
+ const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application Support" : "Seed Fund Application Support , Income Tax Exemption Application Support"
           const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
       <section>
        <div class="date_div">
@@ -2454,7 +2454,7 @@ router.post(
               </p>
              
           <p class="Declaration_text_data">
-            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName} Support.
+            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
           </p>
           <p class="Declaration_text_data">
             I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
@@ -4387,7 +4387,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return services;
     })
-    const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application"
+    const renamedExtraServiceName=  extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application Support" ? "Income Tax Exemption Application" : "Seed Fund Application Support , Income Tax Exemption Application Support"
     const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
 <section>
  <div class="date_div">
@@ -4404,7 +4404,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </p>
        
     <p class="Declaration_text_data">
-      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName} Support.
+      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
     </p>
     <p class="Declaration_text_data">
       I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
