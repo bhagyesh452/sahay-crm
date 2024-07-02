@@ -167,6 +167,22 @@ th {
   background-color: #f6df9f !important;
 }
 
+.My-Avtar img
+{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  object-fit: cover;
+  color: transparent;
+  object-fit: contain;
+  object-position: center center;
+  position: relative;
+  transition: 0.5s;
+  transform-origin: center center;
+  text-indent: 10000px;
+  background: #ccc;
+}
+
 .rupees-sym {
   background-color: #ffb900;
   display: flex;

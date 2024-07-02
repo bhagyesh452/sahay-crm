@@ -60,8 +60,8 @@ function Header({ name, designation}) {
     socket.on("data-action-performed", (res) => {
       if(name === res){
         enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
-          variant: 'warning',
-          autoHideDuration: 5000
+          variant: 'reportComplete',
+          persist:true
         });
       
         const audioplayer = new Audio(notification_audio);

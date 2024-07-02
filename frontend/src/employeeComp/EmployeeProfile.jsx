@@ -128,7 +128,7 @@ console.log(data.employee_profile)
   // console.log(`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && encodeURIComponent(data.employee_profile[0].filename)}`)
   return (
     <div>
-      <Header name={data.ename} designation={data.designation} />
+      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
