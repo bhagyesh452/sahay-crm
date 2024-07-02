@@ -105,7 +105,6 @@ function TestLeads() {
     const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
-
             //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
