@@ -36,19 +36,7 @@ function Header({ name }) {
     });
 
     // Listen for the 'welcome' event from the server
-    socket.on('welcome', (message) => {
-      console.log(message);
-    });
-    fetchRequestDetails();
-    fetchRequestGDetails();
-    fetchApproveRequests();
-    socket.on("newRequest", (newRequest) => {
-      // Handle the new request, e.g., update your state
-      //console.log("New request received:", newRequest)
-      // Fetch updated data when a new request is received
-      fetchRequestDetails();
-      fetchRequestGDetails();
-    });
+
 
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
@@ -98,58 +86,6 @@ function Header({ name }) {
       socket.disconnect();
     };
   }, []);
-
-  const [requestData, setRequestData] = useState([]);
-  const [requestGData, setRequestGData] = useState([]);
-  const [requestAppData, setRequestAppData] = useState([]);
-  const [mapArray, setMapArray] = useState([]);
-
-  const fetchApproveRequests = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
-      setRequestAppData(response.data);
-      const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.ename === curr.ename)) {
-          const [dateString, timeString] = formatDateAndTime(
-            curr.AssignDate
-          ).split(", ");
-          acc.push({ ename: curr.ename, date: dateString, time: timeString });
-        }
-        return acc;
-      }, []);
-      setMapArray(uniqueEnames);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-  const formatDateAndTime = (AssignDate) => {
-    // Convert AssignDate to a Date object
-    const date = new Date(AssignDate);
-
-    // Convert UTC date to Indian time zone
-    const options = { timeZone: "Asia/Kolkata" };
-    const indianDate = date.toLocaleString("en-IN", options);
-    return indianDate;
-  };
-
-  const fetchRequestDetails = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestData`);
-      setRequestData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-  const fetchRequestGDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/requests/requestgData`
-      );
-      setRequestGData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
 
   const dataManagerName = localStorage.getItem("dataManagerName")
 

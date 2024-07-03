@@ -382,6 +382,23 @@ router.put("/requestgData/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+router.delete("/requestgData/:id", async (req, res) => {
+  const { id } = req.params;
+
+
+  try {
+
+    // Update the 'read' property in the MongoDB model
+    const updatedNotification = await RequestGModel.findByIdAndDelete(
+      id
+    );
+
+    res.status(200).json({ error: "Request Deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/deleterequestbybde", async (req, res) => {
   try {

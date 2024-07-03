@@ -39,20 +39,7 @@ function Header({ name, designation}) {
       transports: ['websocket'],
     });
 
-    // Listen for the 'welcome' event from the server
-    socket.on('welcome', (message) => {
-      console.log(message); 
-    });
-    fetchRequestDetails();
-    fetchRequestGDetails();
-    fetchApproveRequests();
-    socket.on("newRequest", (newRequest) => {
-      // Handle the new request, e.g., update your state
-      //console.log("New request received:", newRequest)
-      // Fetch updated data when a new request is received
-      fetchRequestDetails();
-    fetchRequestGDetails();
-    });
+    
     
 
     socket.on("delete-booking-requested", (res) => {
@@ -105,29 +92,7 @@ function Header({ name, designation}) {
   }, []);
  
   const adminName = localStorage.getItem("adminName")
-  const [requestData, setRequestData] = useState([]);
-  const [requestGData, setRequestGData] = useState([]);
-  const [requestAppData, setRequestAppData] = useState([]);
-  const [mapArray, setMapArray] = useState([]);
 
-  const fetchApproveRequests = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
-      setRequestAppData(response.data);
-      const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.ename === curr.ename)) {
-          const [dateString, timeString] = formatDateAndTime(
-            curr.AssignDate
-          ).split(", ");
-          acc.push({ ename: curr.ename, date: dateString, time: timeString });
-        }
-        return acc;
-      }, []);
-      setMapArray(uniqueEnames);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -138,30 +103,7 @@ function Header({ name, designation}) {
     return indianDate;
   };
 
-  const fetchRequestDetails = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestData`);
-      setRequestData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
   
-  const fetchRequestGDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/requests/requestgData`
-      );
-      setRequestGData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-
-  
-
-
-
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
