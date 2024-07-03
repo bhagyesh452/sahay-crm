@@ -512,7 +512,6 @@ router.get('/filter-leads', async (req, res) => {
 
     if (selectedYear) {
       if (monthIndex !== '0') {
-        
         const year = parseInt(selectedYear);
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);

@@ -154,8 +154,12 @@ router.get("/redesigned-final-leadData-test", async (req, res) => {
           lastActionDateAsDate: {
             $dateFromString: {
               dateString: "$lastActionDate",
-              onError: new Date(0),  // Default to epoch if conversion fails
-              onNull: new Date(0)    // Default to epoch if null
+              onError: {
+                $ifNull: ["$bookingDate", new Date(0)] // Default to epoch if bookingDate is null
+              },
+              onNull: {
+                $ifNull: ["$bookingDate", new Date(0)] // Default to epoch if bookingDate is null
+              }
             }
           }
         }
@@ -228,6 +232,37 @@ router.get("/search-booking-data", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.get("/filter-rmofcertification-bookings", async (req, res) => {
+  const { selectedServiceName,
+    selectedBdeName,
+    selectedBdmName,
+    selectedYear,
+    monthIndex,
+    bookingDate,
+    bookingPublishDate
+  } = req.query;
+  const page = parseInt(req.query.page) || 1; // Page number
+  const limit = parseInt(req.query.limit) || 10; // Items per page
+  const skip = (page - 1) * limit; // Number of documents to skip
+  try {
+    let baseQuery = {} ;
+    if(selectedBdeName) baseQuery.bdeName =  selectedBdeName;
+    if(selectedBdmName) baseQuery.bdeName = selectedBdmName;
+    
+    
+    const data = await RedesignedLeadformModel.find(baseQuery).lean()
+    console.log(baseQuery)
+    console.log("data" , data.length)
+    res.status(200).json(data)
+
+  } catch (error) {
+    console.log("Internal Server Error", error)
+    res.status(500).json({ message : "Internal Server Error"})
+  }
+
+
+})
 
 
 
