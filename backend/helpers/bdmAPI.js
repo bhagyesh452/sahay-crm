@@ -171,7 +171,7 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
     selectedYear,
     monthIndex,
   } = req.query;
-
+console.log(selectedAssignDate)
   try {
     // Start with the required bdmName filter
     let baseQuery = { bdmName };
@@ -181,32 +181,39 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     if (selectedAssignDate) {
-      baseQuery.AssignDate = {
-        $gte: new Date(selectedAssignDate).toISOString(),
-        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      const startOfDay = new Date(selectedAssignDate);
+      startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
+  
+      const endOfDay = new Date(selectedAssignDate);
+      endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day local time
+  
+      baseQuery.bdeForwardDate = {
+          $gte: startOfDay,
+          $lt: endOfDay
       };
-    }
+  }
+  
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
-        baseQuery["Company Incorporation Date"] = {
+        baseQuery["Company Incorporation Date  "] = {
           $gte: monthStartDate,
           $lt: monthEndDate
         };
       } else {
         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-        baseQuery["Company Incorporation Date"] = {
+        baseQuery["Company Incorporation Date  "] = {
           $gte: yearStartDate,
           $lt: yearEndDate
         };
       }
     }
     if (selectedCompanyIncoDate) {
-      baseQuery["Company Incorporation Date"] = {
+      baseQuery["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),
         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
       };

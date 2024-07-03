@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useSyncExternalStore } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
@@ -136,6 +136,7 @@ function EmployeeTeamLeads() {
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
     const [selectedStatus, setSelectedStatus] = useState("");   // State for selecting status.
     const [filteredData, setFilteredData] = useState([]);
+    const [extraData, setExtraData] = useState([]);
 
     // States for selecting states and cities.
     const [selectedStateCode, setSelectedStateCode] = useState("");
@@ -238,7 +239,13 @@ function EmployeeTeamLeads() {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send")
             setRevertBackRequestData(revertBackRequestData)
-            setTeamData(response.data)
+            setTeamData(response.data);
+
+            const sortedData = response.data.sort((a, b) => {
+                return new Date(b["Company Incorporation Date  "]) - new Date(a["Company Incorporation Date  "]);
+            });
+            setExtraData(sortedData);
+
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -272,7 +279,7 @@ function EmployeeTeamLeads() {
     //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
-        fetchData()
+        fetchData();
     }, [])
 
     useEffect(() => {
@@ -285,6 +292,7 @@ function EmployeeTeamLeads() {
     }, [data.ename, revertBackRequestData.length]);
 
     console.log("teamLeads", teamleadsData)
+
 
 
     //console.log("ename" , data.ename)
@@ -1176,22 +1184,152 @@ function EmployeeTeamLeads() {
     }
 
 
-    // To clear filter data :
-    const handleClearFilter = () => {
-        setIsFilter(false);
-        functionCloseFilterDrawer();
-        setSelectedStatus("");
-        setSelectedState("");
-        setSelectedNewCity("");
-        setSelectedAssignDate(null);
-        setCompanyIncoDate(null);
-        setSelectedCompanyIncoDate(null);
-        setSelectedYear("");
-        setSelectedMonth("");
-        setSelectedDate(0);
-        setFilteredData([]);
-        fetchTeamLeadsData();
-    };
+    const [newFilteredData, setNewFilteredData] = useState([]);
+    const [activeTab, setActiveTab] = useState('All');
+
+
+
+    // useEffect(() => {
+    //     if (filteredData.length !== 0) {
+    //         if (bdmNewStatus === "All") {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Busy" ||
+    //                 obj.bdmStatus === "Not Picked Up" ||
+    //                 obj.bdmStatus === "Untouched"
+    //             ));
+    //         } else if (bdmNewStatus === "Interested") {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Interested"
+    //             ));
+    //         } else if (bdmNewStatus === 'FollowUp') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "FollowUp"
+    //             ));
+    //         } else if (bdmNewStatus === 'Matured') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Matured"
+    //             ));
+    //         } else if (bdmNewStatus === 'Forwarded') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //             (obj.bdmStatus !== "Not Interested" &&
+    //                 obj.bdmStatus !== "Busy" &&
+    //                 obj.bdmStatus !== "Junk" &&
+    //                 obj.bdmStatus !== "Not Picked Up" &&
+    //                 obj.bdmStatus !== "Matured")
+    //             ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+    //         } else if (bdmNewStatus === 'NotInterested') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //             (obj.bdmStatus === "Not Interested" ||
+    //                 obj.bdmStatus === "Junk")
+    //             ));
+    //         }
+    //     }
+    //     if (filteredData.length === 1) {
+    //         const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+    //         if ((currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+    //             setBdmNewStatus('All')
+    //         } else if (currentStatus === 'Interested') {
+    //             setBdmNewStatus('Interested')
+    //         } else if (currentStatus === 'FollowUp') {
+    //             setBdmNewStatus('FollowUp')
+    //         } else if (currentStatus === 'Matured') {
+    //             setBdmNewStatus('Matured')
+    //         } else if (currentStatus !== "Not Interested" &&
+    //             currentStatus !== "Busy" &&
+    //             currentStatus !== 'Junk' &&
+    //             currentStatus !== 'Not Picked Up' &&
+    //             currentStatus !== 'Matured') {
+    //             setBdmNewStatus('Forwarded')
+    //         } else if (currentStatus === 'Not Interested') {
+    //             setBdmNewStatus('NotInterested')
+    //         }
+    //     } else if(filteredData.length > 1) {
+    //         setTeamLeadsData(filteredData);
+    //         setFilteredData(newFilteredData)
+    //         if(selectedStatus){
+    //             setBdmNewStatus(selectedStatus)
+    //         }
+    //     }else{
+    //         setTeamLeadsData(filteredData)
+    //     }
+    // }, [filteredData]);
+
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            let filtered;
+            switch (activeTab) {
+                case "All":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Busy" ||
+                        obj.bdmStatus === "Not Picked Up" ||
+                        obj.bdmStatus === "Untouched"
+                    );
+                    break;
+                case "Interested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Interested"
+                    );
+                    break;
+                case "FollowUp":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "FollowUp"
+                    );
+                    break;
+                case "Matured":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Matured"
+                    );
+                    break;
+                case "Forwarded":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus !== "Not Interested" &&
+                        obj.bdmStatus !== "Busy" &&
+                        obj.bdmStatus !== "Junk" &&
+                        obj.bdmStatus !== "Not Picked Up" &&
+                        obj.bdmStatus !== "Matured"
+                    ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                    break;
+                case "NotInterested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Not Interested" ||
+                        obj.bdmStatus === "Junk"
+                    );
+                    break;
+                default:
+                    filtered = filteredData;
+            }
+            setTeamLeadsData(filtered);
+        }
+    
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+            if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
+                setActiveTab('All');
+            } else if (currentStatus === 'Interested') {
+                setActiveTab('Interested');
+            } else if (currentStatus === 'FollowUp') {
+                setActiveTab('FollowUp');
+            } else if (currentStatus === 'Matured') {
+                setActiveTab('Matured');
+            } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
+                setActiveTab('Forwarded');
+            } else if (currentStatus === 'Not Interested') {
+                setActiveTab('NotInterested');
+            }
+        } else if (filteredData.length > 1) {
+            setFilteredData(newFilteredData);
+            if (selectedStatus) {
+                console.log("yahan chal")
+                setBdmNewStatus(selectedStatus)
+                setActiveTab(selectedStatus);
+            }
+        }
+    }, [filteredData, activeTab, selectedAssignDate, selectedCompanyIncoDate, selectedNewCity, selectedState]);
+    
+    console.log("activetab" , activeTab);
+    console.log("selectedStatus" , selectedStatus);
+    console.log("bdmNewStatus" , bdmNewStatus);
+
 
     // To apply filter :
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
@@ -1200,7 +1338,7 @@ function EmployeeTeamLeads() {
         try {
             setIsFilter(true);
             setOpenBacdrop(true);
-
+    
             const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
                 params: {
                     selectedStatus,
@@ -1215,11 +1353,13 @@ function EmployeeTeamLeads() {
                 }
             });
 
+            
             if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
                 setIsFilter(false);
             } else {
                 // console.log("Filtered Data is :", response.data);
                 setFilteredData(response.data);
+                setNewFilteredData(response.data);
             }
         } catch (error) {
             console.log("Error to filtered data :", error);
@@ -1228,79 +1368,80 @@ function EmployeeTeamLeads() {
             setOpenFilterDrawer(false);
         }
     };
+    console.log("Assigned date :",selectedAssignDate);
 
-    console.log("Filtered Data is :", filteredData);
+    console.log("Team data :", teamData);
+    console.log("Filtered data :", filteredData);
+    console.log("Team lead data :", teamleadsData);
+    console.log("Is Filter :", isFilter);
+
+    // To clear filter data :
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus("");
+        setSelectedState("");
+        setSelectedNewCity("");
+        setSelectedAssignDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        setSelectedYear("");
+        setSelectedMonth("");
+        setSelectedDate(0);
+        setFilteredData([]);
+        fetchTeamLeadsData(bdmNewStatus);
+    };
+
+    const handleSearch = (searchQuery) => {
+        setIsSearch(true);
+        const searchValue = searchQuery.toLowerCase();
+
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            if (isFilter) {
+                setFilteredData(newFilteredData);
+            } else {
+                setFilteredData(extraData.filter(obj => obj.bdmStatus === bdmNewStatus || obj.bdmStatus === "Untouched"));  // Assuming extraData is your full dataset
+            }
+            return;
+        }
+        //setIsFilter(false); 
+
+
+        const dataToFilter = isFilter ? filteredData : extraData;
+
+        const filteredItems = dataToFilter.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            if (companyName && companyName.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyNumber && companyNumber.toString().includes(searchValue)) {
+                return true;
+            }
+            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyState && companyState.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyCity && companyCity.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+
+            return false;
+        });
+        setFilteredData(filteredItems);
+    };
 
     const currentData = teamleadsData.slice(startIndex, endIndex);
 
-    useEffect(() => {
-        if (filteredData.length !== 0) {
-            if (dataStatus === "All") {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                    obj.bdmStatus === "Busy" ||
-                    obj.bdmStatus === "Not Picked Up" ||
-                    obj.bdmStatus === "Untouched"
-                ));
-            } else if (dataStatus === "Interested") {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                    obj.bdmStatus === "Interested"
-                ));
-            } else if (dataStatus === 'FollowUp') {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                    obj.bdmStatus === "FollowUp"
-                ));
-            } else if (dataStatus === 'Matured') {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                    obj.bdmStatus === "Matured"
-                ));
-            } else if (dataStatus === 'Forwarded') {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                (obj.bdmStatus !== "Not Interested" &&
-                    obj.bdmStatus !== "Busy" &&
-                    obj.bdmStatus !== "Junk" &&
-                    obj.bdmStatus !== "Not Picked Up" &&
-                    obj.bdmStatus !== "Matured")
-                ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
-            } else if (dataStatus === 'NotInterested') {
-                setTeamLeadsData(filteredData.filter((obj) =>
-                (obj.bdmStatus === "Not Interested" ||
-                    obj.bdmStatus === "Junk")
-                ));
-            }
-        }
-        if (filteredData.length === 1) {
-            const currentStatus = filteredData[0].bdmStatus; // Access Status directly
-            if ((currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
-              setdataStatus('All')
-            } else if (currentStatus === 'Interested') {
-              setdataStatus('Interested')
-            } else if (currentStatus === 'FollowUp') {
-              setdataStatus('FollowUp')
-            } else if (currentStatus === 'Matured') {
-              setdataStatus('Matured')
-            } else if (currentStatus !== "Not Interested" &&
-              currentStatus !== "Busy" &&
-              currentStatus !== 'Junk' &&
-              currentStatus !== 'Not Picked Up' &&
-              currentStatus !== 'Matured') {
-              setdataStatus('Forwarded')
-            } else if (currentStatus === 'Not Interested') {
-              setdataStatus('NotInterested')
-            }
-          }else{
-          setTeamLeadsData(filteredData);
-        }
-    }, [filteredData]);
-
-    const handleSearch = (searchQuery) => {
-
-    };
-
-
-
     return (
         <div>
-
             <Header name={data.ename} designation={data.designation} />
             <EmpNav userId={userId} bdmWork={data.bdmWork} />
             {!formOpen && <div className="page-wrapper">
@@ -1372,13 +1513,13 @@ function EmployeeTeamLeads() {
 
                         {/*  ----------------------------------------- Filter Starts from here...  ----------------------------------------------- */}
                         <div className="row g-2 align-items-center mb-2">
-                            <div
+                            {/* <div
                                 style={{
                                     display: "flex",
                                     justifyContent: "space-between",
                                 }}
                                 className="features"
-                            >
+                            > */}
                                 {/* <div style={{ display: "flex" }} className="feature1">
                                     <div
                                         className="form-control"
@@ -1558,10 +1699,10 @@ function EmployeeTeamLeads() {
                                         </div>
                                     )} */}
                                 {/* </div> */}
-                                <div
+                                {/* <div
                                     style={{ display: "flex", alignItems: "center" }}
                                     className="feature2"
-                                >
+                                > */}
                                     {/* <div
                                         className="form-control mr-1 sort-by"
                                         style={{ width: "190px" }}
@@ -1666,11 +1807,11 @@ function EmployeeTeamLeads() {
                                         </select>
                                     </div> */}
 
-                                    {selectedField === "State" && (
+                                    {/* {selectedField === "State" && (
                                         <div style={{ width: "15vw" }} className="input-icon">
-                                            <span className="input-icon-addon">
+                                            <span className="input-icon-addon"> */}
                                                 {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                                                <svg
+                                                {/* <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
                                                     width="20"
@@ -1743,19 +1884,20 @@ function EmployeeTeamLeads() {
                                             <div
                                                 className="input-icon  form-control"
                                                 style={{ margin: "0px 10px", width: "110px" }}
-                                            >
+                                            > */}
                                                 {/* <input
-                            type="number"
-                            value={year}
-                            defaultValue="Select Year"
-                            className="form-control"
-                            placeholder="Select Year.."
-                            onChange={(e) => {
-                              setYear(e.target.value);
-                            }}
-                            aria-label="Search in website"
-                          /> */}
-                                                <select
+                                                    type="number"
+                                                    value={year}
+                                                    defaultValue="Select Year"
+                                                    className="form-control"
+                                                    placeholder="Select Year.."
+                                                    onChange={(e) => {
+                                                      setYear(e.target.value);
+                                                    }}
+                                                    aria-label="Search in website"
+                                                /> */}
+
+                                                {/* <select
                                                     select
                                                     style={{ border: "none", outline: "none" }}
                                                     value={year}
@@ -1776,11 +1918,11 @@ function EmployeeTeamLeads() {
                                                 </select>
                                             </div>
                                         </>
-                                    )}
+                                    )} */}
 
 
-                                </div>
-                            </div>
+                                {/* </div>
+                            </div> */}
 
 
 
@@ -1817,10 +1959,10 @@ function EmployeeTeamLeads() {
                                                 <input
                                                     value={searchQuery}
                                                     onChange={(e) => {
-                                                      setSearchQuery(e.target.value);
-                                                      handleSearch(e.target.value)
-                                                    //   handleFilterSearch(e.target.value)
-                                                    //   setCurrentPage(0);
+                                                        setSearchQuery(e.target.value);
+                                                        handleSearch(e.target.value)
+                                                        //   handleFilterSearch(e.target.value)
+                                                        //   setCurrentPage(0);
                                                     }}
                                                     className="form-control search-cantrol mybtn"
                                                     placeholder="Search…"
@@ -1921,11 +2063,10 @@ function EmployeeTeamLeads() {
                                             </div>
                                             <div className='col-sm-12 mt-2'>
                                                 <div className='form-group'>
-                                                    <label for="assignon" class="form-label">Assign On</label>
+                                                    <label for="assignon" class="form-label">BDE Forward Date</label>
                                                     <input type="date" class="form-control" id="assignon"
                                                         value={selectedAssignDate}
                                                         placeholder="dd-mm-yyyy"
-                                                        defaultValue={null}
                                                         onChange={(e) => setSelectedAssignDate(e.target.value)}
                                                     />
                                                 </div>
@@ -2019,7 +2160,7 @@ function EmployeeTeamLeads() {
                                         General{" "}
                                         <span className="no_badge">
                                             {
-                                                ((isSearch || isFilter) ? filteredData : teamData ).filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
                                                         // obj.bdmStatus === "Busy" ||
                                                         // obj.bdmStatus === "Not Picked Up" ||
@@ -2561,12 +2702,11 @@ function EmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                     </>)}
-
-
                                                 </tr>
                                             ))}
                                         </tbody>
-                                        {teamleadsData.length === 0 && (
+
+                                        {currentData.length === 0 && (
                                             <tbody>
                                                 <tr>
                                                     <td colSpan={bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" ? "15" : "11"} className="p-2 particular">
@@ -2576,47 +2716,53 @@ function EmployeeTeamLeads() {
                                             </tbody>
                                         )}
                                         {teamleadsData.length !== 0 && (
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                }}
-                                                className="pagination"
-                                            >
-                                                <IconButton
-                                                    onClick={() =>
-                                                        setCurrentPage((prevPage) =>
-                                                            Math.max(prevPage - 1, 0)
-                                                        )
-                                                    }
-                                                    disabled={currentPage === 0}
-                                                >
-                                                    {/* <IconChevronLeft /> */}
-                                                </IconButton>
-                                                {/* <span>
-                          Page {currentPage + 1} of{" "}
-                          {Math.ceil(filteredData.length / itemsPerPage)}
-                        </span> */}
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan={16}>
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                            }}
+                                                            className="pagination"
+                                                        >
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    setCurrentPage((prevPage) =>
+                                                                        Math.max(prevPage - 1, 0)
+                                                                    )
+                                                                }
+                                                                disabled={currentPage === 0}
+                                                            >
+                                                                <IconChevronLeft />
+                                                            </IconButton>
+                                                            <span>
+                                                                Page {currentPage + 1} of{" "}
+                                                                {Math.ceil(teamleadsData.length / itemsPerPage)}
+                                                            </span>
 
-                                                {/* <IconButton
-                          onClick={() =>
-                            setCurrentPage((prevPage) =>
-                              Math.min(
-                                prevPage + 1,
-                                Math.ceil(filteredData.length / itemsPerPage) -
-                                1
-                              )
-                            )
-                          }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                          }
-                        >
-                          <IconChevronRight />
-                        </IconButton> */}
-                                            </div>
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    setCurrentPage((prevPage) =>
+                                                                        Math.min(
+                                                                            prevPage + 1,
+                                                                            Math.ceil(teamleadsData.length / itemsPerPage) -
+                                                                            1
+                                                                        )
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    currentPage ===
+                                                                    Math.ceil(teamleadsData.length / itemsPerPage) - 1
+                                                                }
+                                                            >
+                                                                <IconChevronRight />
+                                                            </IconButton>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
                                         )}
                                     </table>
                                 </div>
