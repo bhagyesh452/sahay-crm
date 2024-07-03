@@ -44,7 +44,7 @@ router.post("/requestCompanyData", async (req, res) => {
         const employee = new CompanyRequestModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
         //console.log("savedemployee" , savedEmployee)
-        
+
 
       } catch (error) {
         console.error("Error saving employee:", error.message);
@@ -53,9 +53,24 @@ router.post("/requestCompanyData", async (req, res) => {
         // Handle the error for this specific entry, but continue with the next one
       }
     }
-    
+
     const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
-    const GetEmployeeProfile = GetEmployeeData && GetEmployeeData.employee_profile ? GetEmployeeData.employee_profile[0].filename : "no-image"
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+
     const requestCreate = {
       ename: ename,
       requestType: "Data Approve",
@@ -114,8 +129,21 @@ router.post("/requestData", async (req, res) => {
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
 
-    const GetEmployeeProfile = GetEmployeeData && GetEmployeeData.employee_profile ? GetEmployeeData.employee_profile[0].filename : "no-image"
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
     const requestCreate = {
       ename: name,
       requestType: "Data",
@@ -146,7 +174,7 @@ router.get("/get-notification", async (req, res) => {
     const topUnreadNotifications = await NotiModel.find({ status: "Unread" })
       .sort({ requestTime: -1 })
       .limit(5);
-    
+
     // Query to get the count of all unread notifications
     const totalUnreadCount = await NotiModel.countDocuments({ status: "Unread" });
 
@@ -221,8 +249,21 @@ router.post("/requestgData", async (req, res) => {
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
-    const GetEmployeeProfile = (GetEmployeeData && GetEmployeeData.employee_profile) ? GetEmployeeData.employee_profile[0].filename : "no-image"
-  
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
     const requestCreate = {
       ename: name,
       requestType: "Data",
@@ -310,7 +351,21 @@ router.put("/requestgData/:id", async (req, res) => {
 
     res.json(updatedNotification);
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
-    const GetEmployeeProfile = GetEmployeeData && GetEmployeeData.employee_profile ? GetEmployeeData.employee_profile[0].filename : "no-image"
+    let GetEmployeeProfile = "no-image"
+        if (GetEmployeeData) {
+          const EmployeeData = GetEmployeeData.employee_profile;
+          console.log("Employee Data:", EmployeeData);
+        
+          if (EmployeeData && EmployeeData.length > 0) {
+            GetEmployeeProfile = EmployeeData[0].filename;
+            
+          } else {
+            GetEmployeeProfile = "no-image";
+          }
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
+        
     const requestCreate = {
       ename: name,
       requestType: "Data",
@@ -367,7 +422,21 @@ router.post("/deleterequestbybde", async (req, res) => {
     // Save the delete request to the database
     await deleteRequest.save();
     const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
-    const GetEmployeeProfile = GetEmployeeData && GetEmployeeData.employee_profile ? GetEmployeeData.employee_profile[0].filename : "no-image"
+    let GetEmployeeProfile = "no-image"
+        if (GetEmployeeData) {
+          const EmployeeData = GetEmployeeData.employee_profile;
+          console.log("Employee Data:", EmployeeData);
+        
+          if (EmployeeData && EmployeeData.length > 0) {
+            GetEmployeeProfile = EmployeeData[0].filename;
+            
+          } else {
+            GetEmployeeProfile = "no-image";
+          }
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
+        
     const requestCreate = {
       ename: ename,
       requestType: "Data",
@@ -503,7 +572,21 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
       });
       const name = newData.bdeName;
       const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
-      const GetEmployeeProfile = GetEmployeeData && GetEmployeeData.employee_profile ? GetEmployeeData.employee_profile[0].filename : "no-image"
+let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+    
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+        
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+    
       const requestCreate = {
         ename: name,
         requestType: "Booking Edit",
