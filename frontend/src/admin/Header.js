@@ -16,7 +16,9 @@ import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
 import booking_audio from "../assets/media/Booking-received.mp3"
+import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
+import Bella_Chao from "./Bella_Chao";
 
 // import "./styles/header.css"
 
@@ -187,9 +189,11 @@ function Header({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+          {/* <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+           */}
+          <Bella_Chao/>
           
-          <Avatar sx={{ width: 32, height: 32 }}/>
+          <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} src={Admin_logo} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"

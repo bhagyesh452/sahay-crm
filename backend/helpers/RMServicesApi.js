@@ -154,17 +154,21 @@ router.get("/redesigned-final-leadData-test", async (req, res) => {
           lastActionDateAsDate: {
             $dateFromString: {
               dateString: "$lastActionDate",
-              onError: new Date(0),  // Default to epoch if conversion fails
-              onNull: new Date(0)    // Default to epoch if null
+              onError: {
+                $ifNull: ["$bookingDate", new Date(0)] // Default to epoch if bookingDate is null
+              },
+              onNull: {
+                $ifNull: ["$bookingDate", new Date(0)] // Default to epoch if bookingDate is null
+              }
             }
           }
         }
       },
-      {
-        $sort: {
-          lastActionDateAsDate: -1
-        }
-      },
+      // {
+      //   $sort: {
+      //     lastActionDateAsDate: -1
+      //   }
+      // },
       {
         $skip: skip
       },
