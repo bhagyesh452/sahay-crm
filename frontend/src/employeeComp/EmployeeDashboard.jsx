@@ -2407,7 +2407,7 @@ function EmployeeDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <Header name={data.ename} designation={data.designation} />
+     <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="page-wrapper display-none">
         {/* Lead Report Dashboard Numbers */}
