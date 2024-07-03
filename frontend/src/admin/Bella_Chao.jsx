@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState , useEffect , useRef } from 'react';
 import { CiBellOn } from "react-icons/ci";
 import axios from 'axios'
 import io from 'socket.io-client';
@@ -13,6 +13,17 @@ function Bella_Chao({isDM}) {
   const [total_notiCount, setTotal_notiCount] = useState(0);
   const navigate = useNavigate();
   const link = isDM ? "/datamanager/notification" : "/admin/notification"
+  const notificationRef = useRef(null);
+
+
+  //  ----------------------------------------  Functions -------------------------------------------
+
+  const handleClickOutside = (event) => {
+    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      setShowNotifications(false);
+    }
+  };
+
 
   const handleClick = async (state, index, id) => {
     
@@ -33,6 +44,9 @@ function Bella_Chao({isDM}) {
     }
   };
   
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -55,9 +69,7 @@ function Bella_Chao({isDM}) {
   
 // --------------------------------------  Fetch functions --------------------------------------------
 
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
-  };
+ 
 
   const fetchNotification = async() =>{
     try{
@@ -102,20 +114,26 @@ function Bella_Chao({isDM}) {
     fetchNotification();
   }, [])
   
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
  
 
 
 
   return (
     <div className='position-relative'>
-      <div onClick={toggleNotifications} className="notification-icon_final">
+      <div onClick={toggleNotifications} onBlur={()=>setShowNotifications(false)} className="notification-icon_final">
         <CiBellOn/>
       </div>
       {total_notiCount > 0 && <div className='noti-badge'> 
             {total_notiCount > 5 ? "5+" : total_notiCount}
       </div>}
       {showNotifications && (
-        <div className="notifications_final">
+        <div ref={notificationRef} className="notifications_final">
           <ul className='p-0'>
             <li className='noti-item-head'>
                 <h4 className='m-0'>Notification</h4>
