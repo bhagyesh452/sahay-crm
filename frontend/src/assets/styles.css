@@ -2391,6 +2391,7 @@ td input {
   border: none !important;
   padding: 5px 2px 5px 2px !important;
 }
+
 .emply-p-table
 {
   max-height: 216px;
@@ -2399,10 +2400,41 @@ td input {
   border-radius: 10px;
 }
 
+/*****************************RM panel******************************************/
 
 
-
-
+.table-style-2 table thead tr 
+{
+  background: #eee !important;
+  border: none !important;
+}
+.table-style-2 table thead tr th
+{
+  background: #dadfe5 !important;
+  color: #000;
+  border: none !important;
+}
+.table-style-2 table thead tr td
+{
+  border: none !important;
+}
+.table-style-2 table tbody tr
+{
+  background: #fff;
+}
+.table-style-2 table tbody tr:nth-child(even)
+{
+  background:#f6f8fb !important ;
+}
+.table-style-2 table tbody tr:nth-child(odd)
+{
+  background:#efefef !important ;
+}
+.table-style-2 table tbody tr td
+{
+  border: none !important;
+  padding: 5px 2px 5px 2px !important;
+}
 
 
 

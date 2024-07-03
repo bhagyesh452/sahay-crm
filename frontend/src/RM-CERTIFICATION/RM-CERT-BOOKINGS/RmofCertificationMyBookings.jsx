@@ -102,7 +102,7 @@ function RmofCertificationMyBookings() {
         <div>
             <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
-            <div className="page-wrapper">
+            <div className="page-wrapper d-none">
                 <div className="page-header d-print-none">
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
@@ -334,6 +334,75 @@ function RmofCertificationMyBookings() {
                                     </button>
                                 </div>
                             )} */}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="page-wrapper">
+                <div className="container-xl">
+                    <div className="page-header m-0">
+                        <div className="mt-3 d-flex">
+                            <div className="btn-group" role="group" aria-label="Basic example">
+                                <button type="button"  className="btn mybtn"  >
+                                    <IoFilterOutline className='mr-1' /> Filter
+                                </button>
+                            </div>
+                            <div className="d-flex align-items-center">
+                                {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                                <div class="input-icon ml-1">
+                                    <span class="input-icon-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                            <path d="M21 21l-6 -6"></path>
+                                        </svg>
+                                    </span>
+                                    <input
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Search…"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="container-xl mt-3">
+                    <div className="RM-my-booking-lists">
+                        <div className="table table-responsive table-style-2">
+                            <table className="table table-vcenter table-nowrap">
+                                <thead>
+                                    <tr className="tr-sticky">
+                                        <th className="th-sticky">Sr.No</th>
+                                        <th className="th-sticky1">Company Name</th>
+                                        <th>Company Number</th>
+                                        <th>BOOKING DATE</th>
+                                        <th>SERVICE NAME</th>
+                                        <th>BDE NAME</th>
+                                        <th>BDM NAME</th>
+                                        <th>BDM TYPE</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>Vishal Gohel</td>
+                                        <td>Vishnu Suthar</td>
+                                        <td>Close By</td>
+                                        <td><button className="btn btn-sm btn-success">View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
