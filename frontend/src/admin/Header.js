@@ -193,7 +193,7 @@ function Header({ name, designation}) {
            */}
           <Bella_Chao/>
           
-          <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} src={Admin_logo} />
+          <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
