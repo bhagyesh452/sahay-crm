@@ -20,6 +20,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { Calendar } from "@fullcalendar/core";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
+import listPlugin from '@fullcalendar/list';
+import timeGridPlugin from '@fullcalendar/timegrid'
 import {
   Dialog,
   DialogTitle,
@@ -137,12 +139,22 @@ function EmployeeProfile() {
 
 
 
-  
+  const today = new Date().toISOString().split('T')[0];
+
+  const events = [
+    {
+      title: 'Present',
+      start: today, 
+      end: new Date(today).setDate(new Date(today).getDate() + 1), 
+      allDay: true,
+    }
+  ]
+
+
+
   return (
     <div>
-
       <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
-
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
@@ -502,22 +514,22 @@ function EmployeeProfile() {
                 </div>
               </div>
               <div className="col-lg-5">
-                <div className="my-card ">
+                <div className="my-card">
                   <div
                     className="my-card-body p-2"
                     style={{ minHeight: "calc(100vh - 149px)" }}
                   >
                     <FullCalendar 
-                     plugins={[dayGridPlugin,interactionPlugin]}
-                     initialView="dayGridMonth"
-                     editable={true}
-                     selectable={true}
-                     event={[
-                      {
-                        "date":"01-07-2024",
-                        "status":"present"
-                      }
-                     ]}
+                      plugins={[dayGridPlugin,interactionPlugin,listPlugin, timeGridPlugin]}
+                      initialView="dayGridMonth"
+                      editable={true}
+                      selectable={true}
+                      headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,dayGridWeek,dayGridDay,listDay'
+                      }}
+                      events={events}
                     />
                   </div>
                 </div>

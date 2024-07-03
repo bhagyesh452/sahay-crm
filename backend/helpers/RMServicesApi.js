@@ -164,11 +164,11 @@ router.get("/redesigned-final-leadData-test", async (req, res) => {
           }
         }
       },
-      {
-        $sort: {
-          lastActionDateAsDate: -1
-        }
-      },
+      // {
+      //   $sort: {
+      //     lastActionDateAsDate: -1
+      //   }
+      // },
       {
         $skip: skip
       },
