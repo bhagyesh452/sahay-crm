@@ -2,7 +2,7 @@ import React, { useState , useEffect } from 'react';
 import { CiBellOn } from "react-icons/ci";
 import axios from 'axios'
 import io from 'socket.io-client';
-import dummyImg from "../assets/media/emp_dummy.jpg";
+import dummyImg from "../static/EmployeeImg/office-man.png";
 import { useNavigate } from 'react-router-dom';
 import No_noti_image from "../assets/media/no_noti_image.jpg"
 

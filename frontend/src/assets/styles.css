@@ -2800,8 +2800,8 @@ border: 1px solid #ffefc6 !important;
   color: #fff;
   font-weight: 500;
   position: absolute;
-  bottom: 2px;
-  right: -8px;
+  bottom: -3px;
+  right: -5px;
 }
 .noti-data
 {
