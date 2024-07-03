@@ -14,11 +14,13 @@ const EditableDraftModel = require("../models/EditableDraftModel");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
+const NotiModel = require('../models/Notifications.js');
+const adminModel = require('../models/Admin.js');
 
 
 router.post("/requestCompanyData", async (req, res) => {
   const csvData = req.body;
-  
+
   const socketIO = req.io;
   let dataArray = [];
   if (Array.isArray(csvData)) {
@@ -42,6 +44,8 @@ router.post("/requestCompanyData", async (req, res) => {
         const employee = new CompanyRequestModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
         //console.log("savedemployee" , savedEmployee)
+
+
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -49,7 +53,36 @@ router.post("/requestCompanyData", async (req, res) => {
         // Handle the error for this specific entry, but continue with the next one
       }
     }
-    socketIO.emit('approve-request',ename);
+
+    const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+
+    const requestCreate = {
+      ename: ename,
+      requestType: "Data Approve",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      img_url: GetEmployeeProfile
+    }
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+    socketIO.emit('approve-request', ename);
+
 
     res.status(200).json({ message: "Data sent successfully" });
   } catch (error) {
@@ -95,6 +128,32 @@ router.post("/requestData", async (req, res) => {
 
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
+    const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+    const requestCreate = {
+      ename: name,
+      requestType: "Data",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      img_url: GetEmployeeProfile
+    }
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
 
     // Emit a socket event to notify clients about the new request
     socketIO.emit("newRequest", savedRequest);
@@ -103,6 +162,50 @@ router.post("/requestData", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+//  ---------------------------------------------  Notification components ------------------------------------------
+
+router.get("/get-notification", async (req, res) => {
+  try {
+    // Query to get the top 5 unread notifications sorted by requestTime
+    const topUnreadNotifications = await NotiModel.find({ status: "Unread" })
+      .sort({ requestTime: -1 })
+      .limit(5);
+
+    // Query to get the count of all unread notifications
+    const totalUnreadCount = await NotiModel.countDocuments({ status: "Unread" });
+
+    // Respond with both the top unread notifications and the total count
+    res.status(200).json({
+      topUnreadNotifications,
+      totalUnreadCount
+    });
+  } catch (err) {
+    console.error("Error fetching notifications", err);
+    res.status(500).json({ message: "Error fetching notifications", error: err });
+  }
+});
+router.put('/update-notification/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedNotification = await NotiModel.findByIdAndUpdate(
+      id,
+      { status: 'read' },
+      { new: true } // Returns the updated document
+    );
+
+    if (!updatedNotification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+
+    res.status(200).json(updatedNotification);
+  } catch (err) {
+    console.error("Error updating notification status", err);
+    res.status(500).json({ message: "Error updating notification status", error: err });
   }
 });
 router.post("/setMarktrue/:id", async (req, res) => {
@@ -128,8 +231,10 @@ router.post("/setMarktrue/:id", async (req, res) => {
   }
 });
 
+
+
 router.post("/requestgData", async (req, res) => {
-  
+
   try {
     const { numberOfData, name, cTime, cDate } = req.body;
     const socketIO = req.io;
@@ -143,8 +248,34 @@ router.post("/requestgData", async (req, res) => {
 
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
-   
-    
+    const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+    const requestCreate = {
+      ename: name,
+      requestType: "Data",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      img_url: GetEmployeeProfile
+    }
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+
+
     socketIO.emit("newRequest", name);
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
@@ -206,7 +337,7 @@ router.put("/requestgData/:id", async (req, res) => {
 
   try {
     const socketIO = req.io;
-    
+
     // Update the 'read' property in the MongoDB model
     const updatedNotification = await RequestGModel.findByIdAndUpdate(
       id,
@@ -219,13 +350,39 @@ router.put("/requestgData/:id", async (req, res) => {
     }
 
     res.json(updatedNotification);
-    socketIO.emit("data-sent" , name);
+    const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+        if (GetEmployeeData) {
+          const EmployeeData = GetEmployeeData.employee_profile;
+          console.log("Employee Data:", EmployeeData);
+        
+          if (EmployeeData && EmployeeData.length > 0) {
+            GetEmployeeProfile = EmployeeData[0].filename;
+            
+          } else {
+            GetEmployeeProfile = "no-image";
+          }
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
+        
+    const requestCreate = {
+      ename: name,
+      requestType: "Data",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      img_url: GetEmployeeProfile
+    }
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+    socketIO.emit("data-sent", name);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-  
+
 router.post("/deleterequestbybde", async (req, res) => {
   try {
     const {
@@ -264,7 +421,33 @@ router.post("/deleterequestbybde", async (req, res) => {
 
     // Save the delete request to the database
     await deleteRequest.save();
-    socketIO.emit('delete-booking-requested' , ename);
+    const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
+    let GetEmployeeProfile = "no-image"
+        if (GetEmployeeData) {
+          const EmployeeData = GetEmployeeData.employee_profile;
+          console.log("Employee Data:", EmployeeData);
+        
+          if (EmployeeData && EmployeeData.length > 0) {
+            GetEmployeeProfile = EmployeeData[0].filename;
+            
+          } else {
+            GetEmployeeProfile = "no-image";
+          }
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
+        
+    const requestCreate = {
+      ename: ename,
+      requestType: "Data",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      img_url: GetEmployeeProfile
+    }
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+    socketIO.emit('delete-booking-requested', ename);
     res.status(200).json({ message: "Delete request created successfully" });
   } catch (error) {
     console.error("Error creating delete request:", error);
@@ -315,7 +498,7 @@ router.delete("/delete-data/:ename", async (req, res) => {
   try {
     // Delete all data objects with the given ename
     await CompanyRequestModel.deleteMany({ ename });
-    socketIO.emit('data-action-performed' , ename)
+    socketIO.emit('data-action-performed', ename)
 
     // Send success response
     res.status(200).send("Data deleted successfully");
@@ -387,8 +570,35 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         requestDate,
         ...newData,
       });
+      const name = newData.bdeName;
+      const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+    
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+        
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+    
+      const requestCreate = {
+        ename: name,
+        requestType: "Booking Edit",
+        requestTime: new Date(),
+        designation: "SE",
+        status: "Unread",
+        img_url: GetEmployeeProfile
+      }
+      const addRequest = new NotiModel(requestCreate);
+      const saveRequest = await addRequest.save();
 
-      socketIO.emit('editBooking_requested',companyName);
+      socketIO.emit('editBooking_requested', companyName);
 
       res.status(201).json(createdData);
     } catch (error) {
@@ -421,4 +631,4 @@ router.get("/requestCompanyData", async (req, res) => {
   }
 });
 
-  module.exports = router;
+module.exports = router;

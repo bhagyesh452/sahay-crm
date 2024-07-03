@@ -21,6 +21,7 @@ import { AiOutlineLogout } from "react-icons/ai";
 import Notification from "../../Components/Notification/Notification.jsx";
 import ReportComplete from "../../../components/ReportComplete.jsx";
 import Bellicon from "../Bellicon/Bellicon.jsx";
+import Bella_Chao from "../../../admin/Bella_Chao.jsx";
 
 
 function Header({ name }) {
@@ -180,7 +181,8 @@ function Header({ name }) {
             </a>
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
-            <Bellicon data={requestData} gdata={requestGData} adata={mapArray} />
+            {/* <Bellicon data={requestData} gdata={requestGData} adata={mapArray} /> */}
+            <Bella_Chao isDM={true}/>
             <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
