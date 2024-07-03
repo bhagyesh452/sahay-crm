@@ -6,15 +6,17 @@ import dummyImg from "../assets/media/emp_dummy.jpg";
 import { useNavigate } from 'react-router-dom';
 import No_noti_image from "../assets/media/no_noti_image.jpg"
 
-function Bella_Chao() {
+function Bella_Chao({isDM}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [showNotifications, setShowNotifications] = useState(false);
   const [total_notifications, setTotal_notifications] = useState([])
   const [total_notiCount, setTotal_notiCount] = useState(0);
   const navigate = useNavigate();
+  const link = isDM ? "/datamanager/notification" : "/admin/notification"
 
   const handleClick = async (state, index, id) => {
-    navigate('/admin/notification', { state: { dataStatus: state } });
+    
+    navigate(link, { state: { dataStatus: state } });
     
     // Ensure that DOM manipulation happens after navigation
     setTimeout(() => {
@@ -147,7 +149,7 @@ function Bella_Chao() {
             
             
             <li className='noti-item-footer' onClick={()=>{
-                 navigate('/admin/notification');
+                 navigate(link);
             }}>
                 See All
             </li>
