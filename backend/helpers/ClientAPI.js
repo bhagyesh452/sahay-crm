@@ -231,15 +231,11 @@ router.post(
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 Upload Photos
-              </div>
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
                 ${UploadPhotos}
-              </div>
             </div>
           </div>
         `;
@@ -251,15 +247,15 @@ router.post(
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
           <div style="display: flex; flex-wrap: wrap">
-            <div style="width: 25%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 25%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            
                 Business Model
-              </div>
+              
             </div>
-            <div style="width: 75%;align-self: stretch;height:100%">
-              <div style="border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            <div style="width: 75%;align-self: stretch;height:100%;border: 1px solid #ccc; font-size: 12px; padding: 5px 10px;">
+            
                 ${BusinessModel}
-              </div>
+              
             </div>
           </div>
         `;

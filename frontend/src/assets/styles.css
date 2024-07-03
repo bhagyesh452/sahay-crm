@@ -166,7 +166,10 @@ th {
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
-
+.My-Avtar
+{
+  border: 1px solid #ccc;
+}
 .My-Avtar img
 {
   width: 100%;
@@ -175,7 +178,7 @@ th {
   object-fit: cover;
   color: transparent;
   object-fit: contain;
-  object-position: 0px 6px;
+  object-position: center top;
   position: relative;
   transition: 0.5s;
   transform-origin: center center;
