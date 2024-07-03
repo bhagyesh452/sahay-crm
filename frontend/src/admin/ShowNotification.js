@@ -15,9 +15,12 @@ import General_dataComponent from "./NotiComponents/General_dataComponent";
 import Manual_dataComponent from "./NotiComponents/Manual_dataComponent";
 import Approve_dataComponents from "./NotiComponents/Approve_dataComponents";
 import Booking_editComponents from "./NotiComponents/Booking_editComponents";
+import { useLocation } from 'react-router-dom';
 
 
 function ShowNotification() {
+  const location = useLocation();
+  const { dataStatus } = location.state || {};
   const [RequestData, setRequestData] = useState([]);
   const [currentBooking , setCurrentBooking] = useState(null);
   const [compareBooking, setCompareBooking] = useState(null);
@@ -29,7 +32,7 @@ function ShowNotification() {
   const [openRequest, setOpenRequest] = useState(false);
   const [editData, setEditData] = useState([]);
   const [mapArray, setMapArray] = useState([]);
-  const [dataType, setDataType] = useState("General");
+  const [dataType, setDataType] = useState(dataStatus || "General");
   const [deleteData, setDeleteData] = useState([]);
   const [fetchBookingRequests, setfetchBookingRequests] = useState(false);
 

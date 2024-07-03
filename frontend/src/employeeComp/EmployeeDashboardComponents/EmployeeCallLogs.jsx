@@ -163,7 +163,7 @@ function EmployeeCallLogs({ employeeData }) {
             {totalcalls && <div className="dash-card" style={{ minHeight: '299px' }}>
                 <div className="dash-card-head d-flex align-items-center justify-content-between">
                     <h2 className="m-0">
-                        Your Call Report
+                        Today's Calling Report
                     </h2>
                     {/* <div className="dash-select-filter d-flex align-items-center">
                         <input type="date" class="form-select-sm my-filter-select mr-1"

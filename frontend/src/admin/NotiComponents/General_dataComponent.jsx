@@ -173,7 +173,27 @@ function General_dataComponent() {
         }
         
     };
-
+    const handleRejectRequest = async() =>{
+        try{
+            const employeeSelection = name;
+            await axios.delete(`${secretKey}/requests/requestgData/${id}`);
+            fetchRequestGDetails();
+            openchange(false);
+            Swal.fire({
+                title: "Request Rejected",
+                text: `${employeeSelection}'s Data Request Rejected`,
+                icon: "success",
+            });
+            
+        } catch (err) {
+            console.log("Internal server Error", err);
+            Swal.fire({
+                title: "Error!",
+                text: "There was an error rejecting Request",
+                icon: "error",
+            });
+        }
+    }
 
     function formatDate(timestamp) {
         const date = new Date(timestamp);
@@ -416,13 +436,20 @@ function General_dataComponent() {
                             )}
                         </table>
                     </div>
-                    <div className="btn-list">
+                    <div className="d-flex">
                         <button
                             style={{ width: "100vw", borderRadius: "0px" }}
                             onClick={handleConfirmAssign}
                             className="btn btn-primary ms-auto"
                         >
                             Assign Data
+                        </button>
+                        <button
+                            style={{ width: "100vw", borderRadius: "0px" }}
+                            onClick={handleRejectRequest}
+                            className="btn btn-danger ms-auto"
+                        >
+                            Reject
                         </button>
                     </div>
                 </DialogContent>
