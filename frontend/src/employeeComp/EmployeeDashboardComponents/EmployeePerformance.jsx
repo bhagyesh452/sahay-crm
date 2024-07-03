@@ -304,14 +304,22 @@ function EmployeePerformance({ data}) {
                 {sortedEmployeeData.length!==0 && <tbody>
                 <tr className={sortedEmployeeData[0].ename === data.ename ? "clr-bg-light-1cba19 myself " : "clr-bg-light-1cba19 " }  >
                     <td><div className="ranktd clr-fff clr-bg-1cba19">1</div></td>
-                    <td>{sortedEmployeeData[0].ename === data.ename ? "You" : sortedEmployeeData[0].ename }</td>
+                    <td>
+                        <div className='My_Text_Wrap'>
+                            {sortedEmployeeData[0].ename === data.ename ? "You" : sortedEmployeeData[0].ename }
+                        </div>
+                    </td>
                     <td>{sortedEmployeeData[0].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
                     <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[0].ename) / functionGetOnlyAmount(sortedEmployeeData[0])) * 100).toFixed(2)} %</td>
                 </tr>
                 <tr className={sortedEmployeeData[1].ename === data.ename ? "clr-bg-light-ffb900 myself " : "clr-bg-light-ffb900 " }  >
                 
                     <td><div className="ranktd clr-bg-ffb900 clr-fff">2</div></td>
-                    <td>{sortedEmployeeData[1].ename === data.ename ? "You" : sortedEmployeeData[1].ename}</td>
+                    <td>
+                        <div className='My_Text_Wrap'>    
+                            {sortedEmployeeData[1].ename === data.ename ? "You" : sortedEmployeeData[1].ename}
+                        </div>
+                    </td>
                     <td>{sortedEmployeeData[1].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
                     <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[1].ename) / functionGetOnlyAmount(sortedEmployeeData[1])) * 100).toFixed(2)} %</td>
                 </tr>
@@ -319,7 +327,11 @@ function EmployeePerformance({ data}) {
                 
             
                     <td><div className="ranktd  clr-bg-00d19d clr-fff">3</div></td>
-                    <td>{sortedEmployeeData[2].ename === data.ename ? "You" : sortedEmployeeData[2].ename}</td>
+                    <td>
+                        <div className='My_Text_Wrap'>
+                            {sortedEmployeeData[2].ename === data.ename ? "You" : sortedEmployeeData[2].ename}
+                        </div>
+                    </td>
                     <td>{sortedEmployeeData[2].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
                     <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[2].ename) / functionGetOnlyAmount(sortedEmployeeData[2])) * 100).toFixed(2)} %</td>
                 </tr>
@@ -327,7 +339,11 @@ function EmployeePerformance({ data}) {
                 
             
                     <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
-                    <td>{sortedEmployeeData[3].ename === data.ename ? "You" : sortedEmployeeData[3].ename}</td>
+                    <td>
+                        <div className='My_Text_Wrap'>
+                            {sortedEmployeeData[3].ename === data.ename ? "You" : sortedEmployeeData[3].ename}
+                        </div>
+                    </td>
                     <td>{sortedEmployeeData[3].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
                     <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[3].ename) / functionGetOnlyAmount(sortedEmployeeData[3])) * 100).toFixed(2)} %</td>
                 </tr>
@@ -335,7 +351,11 @@ function EmployeePerformance({ data}) {
                 
                 
                     <td  style={{  borderRadius:' 0 0 0 8px '}}><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
-                    <td>{sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}</td>
+                    <td>
+                        <div className='My_Text_Wrap'>    
+                            {sortedEmployeeData[4].ename === data.ename ? "You" : sortedEmployeeData[4].ename}
+                        </div>                    
+                    </td>
                     <td>{sortedEmployeeData[4].branchOffice === "Gota" ? "Gota" : "SBR"}</td>
                     <td  style={{  borderRadius:' 0 0  8px 0 '}}>{((functionCalculateOnlyAchieved(sortedEmployeeData[4].ename) / functionGetOnlyAmount(sortedEmployeeData[4])) * 100).toFixed(2)} %</td>
                 </tr>

@@ -171,50 +171,6 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
-// Redeisgned api for testing pagination
-router.get("/redesigned-final-leadData-test", async (req, res) => {
-  try {
-    const page = parseInt(req.query.page)||1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page-1)*limit;
-
-    const allData = await RedesignedLeadformModel.aggregate([
-      {
-        $addFields: {
-          lastActionDateAsDate: {
-            $dateFromString: {
-              dateString: "$lastActionDate",
-              onError: new Date(0),  // Default to epoch if conversion fails
-              onNull: new Date(0)    // Default to epoch if null
-            }
-          }
-        }
-      },
-      {
-        $sort: {
-          lastActionDateAsDate: -1
-        }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-      }
-    ]);
-    const totalCount = await RedesignedLeadformModel.countDocuments();
-    const totalPages = Math.ceil(totalCount/limit);
-    res.status(200).json({
-      data:allData,
-      currentPage:page,
-      totalPages:totalPages,
-      totalCount:totalCount
-    });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).send("Error fetching data");
-  }
-});
 // Get Request for fetching bookings Data for Particular Company
 router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
   try {
