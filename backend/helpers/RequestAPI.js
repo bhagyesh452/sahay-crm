@@ -221,7 +221,7 @@ router.post("/requestgData", async (req, res) => {
     // Save the data to MongoDB
     const savedRequest = await newRequest.save();
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
-    const GetEmployeeProfile = (GetEmployeeData && GetEmployeeData.employee_profile!==0) ? GetEmployeeData.employee_profile[0].filename : "no-image"
+    const GetEmployeeProfile = (GetEmployeeData && GetEmployeeData.employee_profile) ? GetEmployeeData.employee_profile[0].filename : "no-image"
   
     const requestCreate = {
       ename: name,
