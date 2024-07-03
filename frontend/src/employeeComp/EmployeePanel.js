@@ -2863,6 +2863,7 @@ function EmployeePanel() {
                 </DialogContent>
               </Dialog>
             ))}
+
             <div className="page-header d-print-none">
               <div className="container-xl">
                 <div className="d-flex align-items-center justify-content-between">
@@ -2926,6 +2927,7 @@ function EmployeePanel() {
                 </div>
               </div>
             </div>
+
             {/* <div className="page-header d-print-none">
               <div className="container-xl">
                 {requestData !== null && requestData !== undefined && (
@@ -6409,6 +6411,7 @@ function EmployeePanel() {
           </div>
         </div>
       </Drawer>
+
         <div className="compose-email">
           {isOpen && (
             <div className="compose-popup">
