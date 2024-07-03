@@ -16,7 +16,9 @@ import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
 import booking_audio from "../assets/media/Booking-received.mp3"
+import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
+import Bella_Chao from "./Bella_Chao";
 
 // import "./styles/header.css"
 
@@ -37,20 +39,7 @@ function Header({ name, designation}) {
       transports: ['websocket'],
     });
 
-    // Listen for the 'welcome' event from the server
-    socket.on('welcome', (message) => {
-      console.log(message); 
-    });
-    fetchRequestDetails();
-    fetchRequestGDetails();
-    fetchApproveRequests();
-    socket.on("newRequest", (newRequest) => {
-      // Handle the new request, e.g., update your state
-      //console.log("New request received:", newRequest)
-      // Fetch updated data when a new request is received
-      fetchRequestDetails();
-    fetchRequestGDetails();
-    });
+    
     
 
     socket.on("delete-booking-requested", (res) => {
@@ -103,29 +92,7 @@ function Header({ name, designation}) {
   }, []);
  
   const adminName = localStorage.getItem("adminName")
-  const [requestData, setRequestData] = useState([]);
-  const [requestGData, setRequestGData] = useState([]);
-  const [requestAppData, setRequestAppData] = useState([]);
-  const [mapArray, setMapArray] = useState([]);
 
-  const fetchApproveRequests = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
-      setRequestAppData(response.data);
-      const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.ename === curr.ename)) {
-          const [dateString, timeString] = formatDateAndTime(
-            curr.AssignDate
-          ).split(", ");
-          acc.push({ ename: curr.ename, date: dateString, time: timeString });
-        }
-        return acc;
-      }, []);
-      setMapArray(uniqueEnames);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -136,30 +103,7 @@ function Header({ name, designation}) {
     return indianDate;
   };
 
-  const fetchRequestDetails = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/requests/requestData`);
-      setRequestData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
   
-  const fetchRequestGDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/requests/requestgData`
-      );
-      setRequestGData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-
-  
-
-
-
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
@@ -187,9 +131,11 @@ function Header({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+          {/* <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+           */}
+          <Bella_Chao/>
           
-          <Avatar sx={{ width: 32, height: 32 }}/>
+          <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"

@@ -28,7 +28,7 @@ export default function Notification({name , designation}) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-console.log(name)
+
 const navigate = useNavigate();
 const [data, setdata] = useState([])
 const [employeeData, setEmployeeData] = useState([])
