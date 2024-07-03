@@ -2393,7 +2393,7 @@ td input {
 }
 .emply-p-table
 {
-  max-height: 250px;
+  max-height: 216px;
   overflow: scroll;
   border: 1px solid #dadfe5;
   border-radius: 10px;

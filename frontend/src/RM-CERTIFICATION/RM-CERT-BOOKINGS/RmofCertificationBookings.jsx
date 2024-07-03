@@ -251,7 +251,7 @@ function RmofCertificationBookings() {
       } else {
         console.log("response:-", response.data);
         if (response.data.length !== 0) {
-          setLeadFormData(response.data)
+          setLeadFormData(response.data.data)
         }
         setCurrentPage(1);
       }
@@ -264,6 +264,7 @@ function RmofCertificationBookings() {
 
 
   console.log("currentPage", currentPage)
+  console.log("leadFormData" , leadFormData)
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
