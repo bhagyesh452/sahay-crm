@@ -12,7 +12,6 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 //import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-import Bellicon from "../../../admin/Bellicon.js";
 import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
 import notification_audio from "../../../assets/media/notification_tone.mp3"
@@ -21,6 +20,7 @@ import { AiOutlineLogout } from "react-icons/ai";
 // import "./styles/header.css"
 import Notification from "../../Components/Notification/Notification.jsx";
 import ReportComplete from "../../../components/ReportComplete.jsx";
+import Bellicon from "../Bellicon/Bellicon.jsx";
 
 
 function Header({ name }) {
@@ -49,46 +49,45 @@ function Header({ name }) {
       fetchRequestGDetails();
     });
 
-
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`${res} sent a Booking Delete Request`, {
-        variant: 'info',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
       });
-
+    
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" });
-
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true });
+    
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
     socket.on("newRequest", (res) => {
       enqueueSnackbar(`New Data Request from ${res}`, {
-        variant: 'warning',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
       });
-
+    
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
       enqueueSnackbar(`Booking Edit Request for ${res}`, {
-        variant: 'info',
-        autoHideDuration: 5000
+        variant: 'reportComplete',
+        persist:true
       });
-
+    
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("approve-request", (res) => {
       enqueueSnackbar(`Data Approve Request from ${res}`, {
-        variant: 'info',
-        autoHideDuration: 7000
+        variant: 'reportComplete',
+        persist:true
       });
-
+    
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });

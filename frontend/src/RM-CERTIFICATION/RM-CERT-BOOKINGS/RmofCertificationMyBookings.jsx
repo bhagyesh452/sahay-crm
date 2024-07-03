@@ -6,6 +6,8 @@ import { IoFilterOutline } from "react-icons/io5";
 import ClipLoader from "react-spinners/ClipLoader";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
+import '../../assets/table.css';
+import '../../assets/styles.css';
 
 
 
@@ -175,31 +177,31 @@ function RmofCertificationMyBookings() {
                                                         defaultChecked={false}
                                                     />
                                                 </th> */}
-                                                <th>Sr.No</th>
-                                                <th>Company Name</th>
+                                                <th className="th-sticky">Sr.No</th>
+                                                <th className="th-sticky1">Company Name</th>
                                                 <th>Company Number</th>
-                                                <th>Company Email</th>
-                                                <th>PAN NUMBER</th>
+                                                <th>SERVICE NAME</th>
+                                                {/* <th>Company Email</th>
+                                                <th>PAN NUMBER</th> */}
                                                 <th>BDE NAME</th>
-                                                <th>BDE EMAIL</th>
+                                                {/* <th>BDE EMAIL</th> */}
                                                 <th>BDM NAME</th>
                                                 <th>BDM TYPE</th>
                                                 <th>BOOKING DATE</th>
-                                                <th>PAYMENT METHOD</th>
+                                                {/* <th>PAYMENT METHOD</th> */}
                                                 <th>CA CASE</th>
                                                 <th>CA NUMBER</th>
-                                                <th>CA EMAIL</th>
-                                                <th>SERVICE NAME</th>
+                                                {/* <th>CA EMAIL</th> */}
+                                                <th>WITH GST</th>
                                                 <th>TOTAL PAYMENT WITHOUT GST</th>
                                                 <th>TOTAL PAYMENT WITH GST</th>
-                                                <th>WITH GST</th>
-                                                <th>FIRST PAYMENT</th>
+                                                {/* <th>FIRST PAYMENT</th>
                                                 <th>SECOND PAYMENT</th>
                                                 <th>THIRD PAYMENT</th>
                                                 <th>FOURTH PAYMENT</th>
                                                 <th>SECOND PAYMENT REMARKS</th>
                                                 <th>THIRD PAYMENT REMARKS</th>
-                                                <th>FOURTH PAYMENT REMARKS</th>
+                                                <th>FOURTH PAYMENT REMARKS</th> */}
                                                 <th>Delete Service</th>
                                             </tr>
                                         </thead>
@@ -225,33 +227,33 @@ function RmofCertificationMyBookings() {
                                                     <tr
                                                         key={index}
                                                         //className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd", lineHeight: "20px" }}
+                                                        style={{ border: "1px solid #ddd" }}
                                                     >
-                                                        <td style={{ lineHeight: "30px" }}>{index + 1}</td>
-                                                        <td>{obj["Company Name"]}</td>
+                                                        <td className="td-sticky">{index + 1}</td>
+                                                        <td className="td-sticky1">{obj["Company Name"]}</td>
                                                         <td>{obj["Company Number"]}</td>
-                                                        <td>{obj["Company Email"]}</td>
-                                                        <td>{obj.panNumber}</td>
+                                                        <td>{obj.serviceName}</td>
+                                                        {/* <td>{obj["Company Email"]}</td>
+                                                        <td>{obj.panNumber}</td> */}
                                                         <td>{obj.bdeName}</td>
-                                                        <td>{obj.bdeEmail}</td>
+                                                        {/* <td>{obj.bdeEmail}</td> */}
                                                         <td>{obj.bdmName}</td>
                                                         <td>{obj.bdmType}</td>
                                                         <td>{obj.bookingDate}</td>
-                                                        <td>{obj.paymentMethod}</td>
+                                                        {/* <td>{obj.paymentMethod}</td> */}
                                                         <td>{obj.caCase}</td>
                                                         <td>{obj.caNumber}</td>
-                                                        <td>{obj.caEmail}</td>
-                                                        <td>{obj.serviceName}</td>
+                                                        {/* <td>{obj.caEmail}</td> */}
+                                                        <td>{obj.withGST ? 'Yes' : 'No'}</td>
                                                         <td>{obj.totalPaymentWOGST}</td>
                                                         <td>{obj.totalPaymentWGST}</td>
-                                                        <td>{obj.withGST ? 'Yes' : 'No'}</td>
-                                                        <td>{obj.firstPayment}</td>
+                                                        {/* <td>{obj.firstPayment}</td>
                                                         <td>{obj.secondPayment}</td>
                                                         <td>{obj.thirdPayment}</td>
                                                         <td>{obj.fourthPayment}</td>
                                                         <td>{obj.secondRemarks}</td>
                                                         <td>{obj.thirdRemarks}</td>
-                                                        <td>{obj.fourthRemarks}</td>
+                                                        <td>{obj.fourthRemarks}</td> */}
                                                         <div
                                                             onClick={() =>
                                                                 handleDeleteRmBooking(

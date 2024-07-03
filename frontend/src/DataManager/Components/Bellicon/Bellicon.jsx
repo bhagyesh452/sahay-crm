@@ -1,16 +1,27 @@
-import * as React from "react";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import { styled } from "@mui/material/styles";
+import axios from 'axios';
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { useState } from "react";
-
-const ITEM_HEIGHT = 48;
-
-export default function Bell({ data, gdata }) {
+import { useState, useEffect } from 'react';
+import socketIO from 'socket.io-client';
+export default function Bellicon({data , gdata,adata }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [backgroundColor, setBackgroundColor] = useState("grey");
+  const [count, setCount] = useState(0);
+  const totalCount = data.filter((item) => !item.read).length + gdata.filter((item) => !item.read).length + adata.length;
+  
+  
+ 
+
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -18,57 +29,69 @@ export default function Bell({ data, gdata }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  }));
+
   const handleNotificationClick = async (id, read) => {
-    // try {
-    //   // Update the notification in the backend (set 'read' to true)
-    //   if (read === false) {
-    //     await axios.put(`${secretKey}/requestData/${id}`, {
-    //       read: true,
-    //     });
+    try {
+      // Update the notification in the backend (set 'read' to true)
+      // if (read === false) {
+      //   await axios.put(`http://localhost:3001/api/requestData/${id}`, {
+      //     read: true,
+      //   });
+        window.location.replace("/datamanager/notification");
+        // Assuming that you have a 'read' property in your MongoDB model
+        // Adjust the URL and data structure based on your actual backend implementation
+      // }
 
-    //     // Assuming that you have a 'read' property in your MongoDB model
-    //     // Adjust the URL and data structure based on your actual backend implementation
-    //   }
-
-    //   // Close the menu
-    // } catch (error) {
-    //   console.error("Error updating notification:", error.message);
-    // }
+      // Close the menu
+    } catch (error) {
+      console.error("Error updating notification:", error.message);
+    }
   };
   const handleNotificationGClick = async (id, read) => {
-    // try {
-    //   // Update the notification in the backend (set 'read' to true)
-    //   if (read === false) {
-    //     await axios.put(`${secretKey}/requestgData/${id}`, {
-    //       read: true,
-    //     });
+    try {
+      // Update the notification in the backend (set 'read' to true)
+      // if (read === false) {
+      //   await axios.put(`http://localhost:3001/api/requestgData/${id}`, {
+      //     read: true,
+      //   });
+        window.location.replace("/datamanager/notification");
+        // Assuming that you have a 'read' property in your MongoDB model
+        // Adjust the URL and data structure based on your actual backend implementation
+      
 
-    //     // Assuming that you have a 'read' property in your MongoDB model
-    //     // Adjust the URL and data structure based on your actual backend implementation
-    //   }
+      // Close the menu
+    } catch (error) {
+      console.error("Error updating notificatioN:", error.message);
+    }
+  };
 
-    //   // Close the menu
-    // } catch (error) {
-    //   console.error("Error updating notification:", error.message);
-    // }
+  const indianOptions = {
+    timeZone: 'Asia/Kolkata',
   };
-  const handlecolorChange = () => {
-    setBackgroundColor("lightgrey");
-  };
+
 
   return (
-    <div>
-      <IconButton
-        style={{ alignItems: "normal" }}
-        aria-label="more"
-        id="long-button"
-        aria-controls={open ? "long-menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
-        {data && gdata && data.some((option) => !option.read) ? (
+    <React.Fragment>
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+       
+        <Tooltip title="Account settings">
+          <IconButton
+            onClick={handleClick}
+            size="small"
+            sx={{ ml: 2 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+           
+           {data && gdata && data.some((option) => !option.read) ? (
           <>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +109,10 @@ export default function Bell({ data, gdata }) {
               <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path>
               <path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
             </svg>
-            <span class="badge bg-red"></span>
+            <span style={{fontSize: "8px",
+    borderRadius: "10px",
+    marginBottom: "9px",
+    padding:"2px"}} className="badge bg-red">{totalCount> 5 ? "5+" : totalCount}</span>
           </>
         ) : (
             <>
@@ -127,7 +153,10 @@ export default function Bell({ data, gdata }) {
               <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path>
               <path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
             </svg>
-            <span class="badge bg-red"></span>
+            <span style={{fontSize: "8px",
+    borderRadius: "10px",
+    marginBottom: "9px",
+    padding:"2px"}} className="badge bg-red">{totalCount> 5 ? "5+" : totalCount}</span>
           </>
         ) : (
           <>
@@ -149,73 +178,98 @@ export default function Bell({ data, gdata }) {
             </svg>
           </>
         )}
-      </IconButton>
+          </IconButton>
+        </Tooltip>
+      </Box>
       <Menu
-        id="long-menu"
-        MenuListProps={{
-          "aria-labelledby": "long-button",
-        }}
         anchorEl={anchorEl}
+        id="account-menu"
         open={open}
         onClose={handleClose}
+        onClick={handleClose}
         PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: "50ch",
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&::before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
           },
         }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {data &&
-          data.map(
-            (option) =>
-              // Only render if 'read' is false
-              !option.read && (
+         <Stack spacing={2}>
+        
+        {(data || gdata) &&
+            [...(data || []), ...(gdata || [])] 
+              .filter((option) => !option.read) 
+              .reverse()
+              .slice(0, 5) 
+              .map((option) => (
                 <MenuItem
+                  style={{ marginTop: "0px" }}
                   key={option.ename}
                   onClick={() => {
-                    handleNotificationClick(option._id, option.read);
+                    if (option.hasOwnProperty("gdata")) {
+                      handleNotificationGClick(option._id, option.read);
+                    } else {
+                      handleNotificationClick(option._id, option.read);
+                    }
                     // Change the background color to lightgrey when clicked
                     option.read = true;
                   }}
                 >
-                  <div
-                    style={{ backgroundColor: backgroundColor }}
-                    onClick={handlecolorChange}
-                  >
-                    {option.ename} is requesting for data
-                  </div>
+                    <Item style={{alignItems:"center"}} className='d-flex' ><Avatar />
+                    <div className="cont-info">
+                    <h3 style={{margin:"0px"}}> {option.ename} </h3>
+                    <span>is requesting for data </span> </div> 
+                    <div className="timing">
+                    <span>{option.cDate}</span>
+                    <span style={{marginLeft: "10px", color: "#409d40"}}>{(option.cTime)}</span>
+                    </div>
+                     </Item>
                 </MenuItem>
-              )
-          )}
-        {gdata &&
-          gdata.map(
-            (option) =>
-              // Only render if 'read' is false
-              !option.read && (
+              ))}
+              {adata.map((option)=>(
                 <MenuItem
-                  key={option.ename}
-                  onClick={() => {
-                    handleNotificationGClick(option._id, option.read);
-                    // Change the background color to lightgrey when clicked
-                    option.read = true;
-                  }}
-                >
-                  <div
-                    style={{ backgroundColor: backgroundColor }}
-                    onClick={handlecolorChange}
-                  >
-                    {option.ename} is requesting for General data
+                style={{ marginTop: "0px" }}
+                key={option.ename}>
+                  <Item style={{alignItems:"center"}} className='d-flex' ><Avatar />
+                  <div className="cont-info">
+                  <h3 style={{margin:"0px"}}> {option.ename} </h3>
+                  <span>wants to add some data </span> </div> 
+                  <div className="timing">
+                  <span>{option.date}</span>
+                  <span style={{marginLeft: "10px", color: "#409d40"}}>{(option.time)}</span>
                   </div>
-                </MenuItem>
-              )
-          )}
-
-        <div style={{ borderTop: "1px solid black" }} className="foot">
-          <Link to={"/notification"}>
-            <h4 style={{ textAlign: "center" }}>See All</h4>
+                   </Item>
+              </MenuItem>
+              ))}
+              </Stack>
+              <div style={{ margin: "3px 0px" }} className="foot">
+          <Link to={"/dataManager/notification"}>
+            <div style={{ minWidth: "20vw", textAlign: "center" }}>See All</div>
           </Link>
         </div>
       </Menu>
-    </div>
+    </React.Fragment>
   );
 }

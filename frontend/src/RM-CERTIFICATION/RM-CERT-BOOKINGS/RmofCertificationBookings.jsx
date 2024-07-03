@@ -30,6 +30,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  useIsFocusVisible,
 } from "@mui/material";
 import { FaList } from "react-icons/fa6";
 import { FaTableCellsLarge } from "react-icons/fa6";
@@ -42,6 +43,13 @@ import ListItemText from '@mui/material/ListItemText';
 //import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import RMofCertificationListViewBookings from "./RMofCertificationListViewBookings.jsx";
+import '../../assets/table.css';
+import '../../assets/styles.css';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import { IoFilterOutline } from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
+import { Drawer, colors } from "@mui/material";
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -67,6 +75,14 @@ function RmofCertificationBookings() {
   const [companyName, setCompanyName] = "";
   const [openTableView, setOpenTableView] = useState(true)
   const [openListView, setOpenListView] = useState(false)
+  const itemsPerPage = 10;
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isSearching, setIsSearching] = useState(false)
+  const [isFilter, setIsFilter] = useState(false)
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
@@ -123,6 +139,7 @@ function RmofCertificationBookings() {
 
 
   const [employeeData, setEmployeeData] = useState([])
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -141,45 +158,113 @@ function RmofCertificationBookings() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    setLeadFormData(
-      infiniteBooking.filter((obj) =>
-        obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
-      )
-    );
-  }, [searchText]);
 
-  const fetchRedesignedFormData = async () => {
+
+
+  const fetchRedesignedFormData = async (page) => {
     try {
       const response = await axios.get(
-        `${secretKey}/bookings/redesigned-final-leadData`
+        `${secretKey}/rm-services/redesigned-final-leadData-test?page=${page}&limit=${itemsPerPage}`
       );
-      const sortedData = response.data.sort((a, b) => {
-        const dateA = new Date(a.lastActionDate);
-        const dateB = new Date(b.lastActionDate);
-        return dateB - dateA; // Sort in descending order
-      });
-      setInfiniteBooking(sortedData);
-      setLeadFormData(sortedData);
-      setMainDataSwap(sortedData)// Set both states with the sorted data
+      // const sortedData = response.data.sort((a, b) => {
+      //   const dateA = new Date(a.lastActionDate);
+      //   const dateB = new Date(b.lastActionDate);
+      //   return dateB - dateA; // Sort in descending order
+      // });
+      setInfiniteBooking(response.data.data);
+      setLeadFormData(response.data.data);
+      setMainDataSwap(response.data.data)
+      setTotalCount(response.data.totalCount);
+      setTotalPages(response.data.totalPages);// Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
 
+  console.log("leadformdata", leadFormData)
+
   useEffect(() => {
-    fetchRedesignedFormData();
+    if (!isSearching) {
+      fetchRedesignedFormData(1);
+    }
+
   }, [nowToFetch]);
 
   useEffect(() => {
-    // if (data.companyName) {
-    //   console.log("Company Found");
-    fetchDatadebounce();
-    fetchRedesignedFormData();
-    // } else {
-    //   console.log("No Company Found");
-    // }
-  }, []);
+    if (!isSearching) {
+      fetchDatadebounce();
+      fetchRedesignedFormData(currentPage);
+    }
+  }, [currentPage, isSearching]);
+
+  const handleFetchBookingsDataForPagination = (event, value) => {
+    console.log(value)
+    setCurrentPage(value);
+  };
+
+  // useEffect(() => {
+  //   // setLeadFormData(
+  //   //   infiniteBooking.filter((obj) =>
+  //   //     obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
+  //   //   )
+  //   // );
+  //   setCurrentDataLoading(true)
+  //   setIsSearching(true)
+  //   try{
+  //     const response = axios.get(`${secretKey}/rm-services/search-booking-data` , {
+  //       params:{
+  //         searchText,
+  //         currentPage,
+  //         itemsPerPage
+  //       }
+  //     });
+  //     if(!searchText.trim()){
+  //       setIsSearching(false);
+  //       fetchRedesignedFormData(currentPage);
+  //     }else{
+  //       console.log(response.data)
+  //       setLeadFormData(response.data)
+  //       setCurrentPage(1)
+  //     }
+  //   }catch(error){
+  //     console.log("Error fetching data" , error)
+  //   }finally{
+  //     setCurrentDataLoading(false)
+  //     setIsSearching(false)
+  //   }
+  // }, [searchText]);
+
+  const handleFilterSearch = async (searchText) => {
+    setCurrentDataLoading(true);
+    setIsSearching(true);
+    try {
+      const response = await axios.get(`${secretKey}/rm-services/search-booking-data`, {
+        params: {
+          searchText,
+          currentPage,
+          itemsPerPage
+        }
+      });
+      if (!searchText.trim()) {
+        setIsSearching(false);
+        fetchRedesignedFormData(currentPage);
+      } else {
+        console.log("response:-", response.data);
+        if (response.data.length !== 0) {
+          setLeadFormData(response.data.data)
+        }
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.log("Error fetching data", error);
+    } finally {
+      setCurrentDataLoading(false);
+    }
+  };
+
+
+  console.log("currentPage", currentPage)
+  console.log("leadFormData" , leadFormData)
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
@@ -297,7 +382,7 @@ function RmofCertificationBookings() {
           .then((response) => {
             if (response.ok) {
               Swal.fire("Success!", "Booking Deleted", "success");
-              fetchRedesignedFormData();
+              fetchRedesignedFormData(1);
             } else {
               Swal.fire("Error!", "Failed to Delete Company", "error");
             }
@@ -461,7 +546,7 @@ function RmofCertificationBookings() {
       try {
         const response = await axios.post(`${secretKey}/bookings/redesigned-importData`, excelData);
         Swal.fire("Success", "Bookings Uploaded Successfully", "success");
-        fetchRedesignedFormData();
+        fetchRedesignedFormData(1);
         closepopup();
 
       } catch (error) {
@@ -533,7 +618,7 @@ function RmofCertificationBookings() {
         });
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
-        fetchRedesignedFormData();
+        fetchRedesignedFormData(1);
 
 
       } else {
@@ -641,7 +726,7 @@ function RmofCertificationBookings() {
       ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
     ];
 
-    console.log("combined" , combinedServices)
+    console.log("combined", combinedServices)
     // Initialize an array to store objects for each selected service
     const dataToSend = [];
 
@@ -649,7 +734,7 @@ function RmofCertificationBookings() {
     selectedServices.forEach(serviceName => {
       // Find the detailed service object in selectedCompanyData.services
       const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-      
+
       // Check if serviceData is found
       if (serviceData) {
         // Create an object with the required fields from selectedCompanyData and serviceData
@@ -715,7 +800,7 @@ function RmofCertificationBookings() {
     setDataToSend(dataToSend);
     // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
   }
- 
+
   const handleViewTable = () => {
     setOpenTableView(true)
     setOpenListView(false)
@@ -726,21 +811,28 @@ function RmofCertificationBookings() {
     setOpenTableView(false)
   }
 
-  console.log("listView" , openListView)
-  console.log("tableView" , openTableView)
+  // const handleFetchBookingsDataForPagination = () => {
+  //   console.log("thodi der se chalyenge")
+
+  // }
+
+  // console.log("listView", openListView)
+  // console.log("tableView", openTableView)
+
+
 
   return (
     <div>
       <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
       <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
 
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openListView && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
               <div className="row justify-content-between">
                 <div className="col-2">
-                  <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+                  <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last d-flex">
                     <div class="input-icon">
                       <span class="input-icon-addon">
                         <svg
@@ -770,16 +862,24 @@ function RmofCertificationBookings() {
                         class="form-control"
                         placeholder="Search Company"
                         aria-label="Search in website"
-                        onChange={(e) => setSearchText(e.target.value)}
+                        onChange={(e) => {
+                          setSearchText(e.target.value)
+                          handleFilterSearch(e.target.value)
+                        }}
                       />
+                    </div>
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                      <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)} >
+                        <IoFilterOutline className='mr-1' /> Filter
+                      </button>
                     </div>
                   </div>
                 </div>
                 <div className="col-6 d-flex">
                   <div className="list-gird-main ms-auto">
-                    <div className={openTableView ? "listgrridradio_main d-flex align-items-center" : "d-flex align-items-center"}>
+                    <div className="listgrridradio_main d-flex align-items-center">
                       <div className="custom_radio">
-                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView}/>
+                        <input type="radio" name="rGroup" value="1" id="r1" checked={openTableView} />
                         <label class="custom_radio-alias" for="r1">
                           <FaTableCellsLarge onClick={() => { handleViewTable() }} />
                         </label>
@@ -796,7 +896,7 @@ function RmofCertificationBookings() {
               </div>
             </div>
           </div>
-          <div className="container-xl">
+          {openTableView && <div className="container-xl">
             <div className="booking_list_Dtl_box">
               <div className="row m-0">
                 {/* --------booking list left Part---------*/}
@@ -842,7 +942,7 @@ function RmofCertificationBookings() {
                                       obj["Company Name"],
                                     )
 
-                                  )}/>
+                                  )} />
                                 </div>
                                 <div className="b_cmpny_time">
                                   {
@@ -930,6 +1030,32 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         ))}
+                      {/* <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center mt-1">
+                          <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li class="page-item"><a class="page-link" href="#">1</a></li>
+                          <li class="page-item"><a class="page-link" href="#">2</a></li>
+                          <li class="page-item"><a class="page-link" href="#">3</a></li>
+                          <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav> */}
+                      <div className="d-flex align-items-center justify-content-center">
+                        <Stack spacing={2}>
+                          <Pagination
+                            count={totalPages}
+                            size="small"
+                            defaultPage={1}
+                            onChange={handleFetchBookingsDataForPagination} />
+                        </Stack>
+                      </div>
                       {leadFormData.length === 0 && (
                         <div
                           className="d-flex align-items-center justify-content-center"
@@ -941,6 +1067,7 @@ function RmofCertificationBookings() {
                     </div>
                   </div>
                 </div>
+
                 {/* --------booking Details Right Part---------*/}
                 <div className="col-8 p-0">
                   <div className="booking-deatils-card">
@@ -3184,7 +3311,7 @@ function RmofCertificationBookings() {
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
       )}
 
@@ -3235,9 +3362,9 @@ function RmofCertificationBookings() {
       )}
 
       {openListView && <>
-      <RMofCertificationListViewBookings
-      bookingsData = {leadFormData}
-      />
+        <RMofCertificationListViewBookings
+          bookingsData={leadFormData}
+        />
       </>}
 
       {/* -----------------------------------------------dialog box for adding services ------------------------------------------------------ */}
@@ -3279,6 +3406,186 @@ function RmofCertificationBookings() {
           Submit
         </Button>
       </Dialog>
+
+      {/* //------------------------------drawer for filter-------------------------------------- */}
+
+      <Drawer
+                style={{ top: "50px" }}
+                anchor="left"
+                //open={openFilterDrawer}
+                //</div>onClose={functionCloseFilterDrawer}
+                >
+                <div style={{ width: "31em" }}>
+                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                        <h2 className="title m-0">
+                            Filters
+                        </h2>
+                        <div>
+                            <button style={{ background: "none", border: "0px transparent" }} 
+                            //onClick={() => functionCloseFilterDrawer()}
+                            >
+                                <IoIosClose style={{
+                                    height: "36px",
+                                    width: "32px",
+                                    color: "grey"
+                                }} />
+                            </button>
+                        </div>
+                    </div>
+                    <hr style={{ margin: "0px" }} />
+                    <div className="body-Drawer">
+                        <div className='container-xl mt-2 mb-2'>
+                            <div className='row'>
+                                <div className='col-sm-12 mt-3'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            // value={selectedStatus}
+                                            // onChange={(e) => {
+                                            //     setSelectedStatus(e.target.value)
+                                            // }}
+                                            >
+                                            <option selected value='Select Status'>Select Status</option>
+                                            <option value='Not Picked Up'>Not Picked Up</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Matured">Matured</option>
+                                            <option value="FollowUp">Followup</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='d-flex align-items-center justify-content-between'>
+                                        <div className='form-group w-50 mr-1'>
+                                            <label for="exampleFormControlInput1" class="form-label">State</label>
+                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedState}
+                                                onChange={(e) => {
+                                                    setSelectedState(e.target.value)
+                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                                    //handleSelectState(e.target.value)
+                                                }}>
+                                                <option value=''>State</option>
+                                                {stateList.length !== 0 && stateList.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select> */}
+                                        </div>
+                                        <div className='form-group w-50'>
+                                            <label for="exampleFormControlInput1" class="form-label">City</label>
+                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedNewCity}
+                                                onChange={(e) => {
+                                                    setSelectedNewCity(e.target.value)
+                                                }}>
+                                                <option value="">City</option>
+                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select> */}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
+                                        {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedBDEName}
+                                            onChange={(e) => {
+                                                setSelectedBDEName(e.target.value)
+                                            }}>
+                                            <option value=''>Select BDE</option>
+                                            {newEmpData && newEmpData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>))}
+                                        </select> */}
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="assignon" class="form-label">Assign On</label>
+                                        {/* <input type="date" class="form-control" id="assignon"
+                                            value={selectedAssignDate}
+                                            placeholder="dd-mm-yyyy"
+                                            defaultValue={null}
+                                            onChange={(e) => setSelectedAssignDate(e.target.value)} /> */}
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <label class="form-label">Incorporation Date</label>
+                                    <div className='row align-items-center justify-content-between'>
+                                        <div className='col form-group mr-1'>
+                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedYear}
+                                                onChange={(e) => {
+                                                    setSelectedYear(e.target.value)
+                                                }}>
+                                                <option value=''>Year</option>
+                                                {years.length !== 0 && years.map((item) => (
+                                                    <option>{item}</option>
+                                                ))}
+                                            </select> */}
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedMonth}
+                                                disabled={selectedYear === ""}
+                                                onChange={(e) => {
+                                                    setSelectedMonth(e.target.value)
+                                                }}>
+                                                <option value=''>Month</option>
+                                                {months && months.map((item) => (
+                                                    <option value={item}>{item}</option>
+                                                ))}
+                                            </select> */}
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
+                                                disabled={selectedMonth === ''}
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.target.value)}>
+                                                <option value=''>Date</option>
+                                                {daysInMonth.map((day) => (
+                                                    <option key={day} value={day}>{day}</option>
+                                                ))}
+                                            </select> */}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadedby" class="form-label">Uploaded By</label>
+                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
+                                            //value={selectedAdminName}
+                                            // onChange={(e) => {
+                                            //     setSelectedAdminName(e.target.value)}} 
+                                                />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Uploaded On</label>
+                                        {/* <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedUploadedDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            //onChange={(e) => setSelectedUploadedDate(e.target.value)} 
+                                            /> */}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                        {/* <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+                        <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button> */}
+                    </div>
+                </div>
+            </Drawer>
+
 
     </div>
   );

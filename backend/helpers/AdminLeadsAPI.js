@@ -780,6 +780,7 @@ router.post("/fetch-by-ids", async (req, res) => {
 
 
 
+
 // router.post("/postAssignData", async (req, res) => {
 //   const { employeeSelection, selectedObjects, title, date, time } = req.body;
 
@@ -813,6 +814,8 @@ const mongoose = require('mongoose');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
+  const socketIO = req.io;
+  const dataSize = selectedObjects.length;
 
   // Helper function to perform bulk operations in parallel
   const executeBulkOperations = async (model, operations, batchSize = 100) => {
@@ -883,7 +886,7 @@ router.post("/postAssignData", async (req, res) => {
       executeBulkOperations(FollowUpModel, bulkOperationsProjection),
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
     ]);
-
+    socketIO.emit('data-assigned' , {name : employeeSelection , length : dataSize});
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
       title,

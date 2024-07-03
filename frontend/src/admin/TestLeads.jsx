@@ -105,7 +105,6 @@ function TestLeads() {
     const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
-
             //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
             //console.log("data", response.data.data)
@@ -155,6 +154,7 @@ function TestLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
+
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
@@ -323,7 +323,6 @@ function TestLeads() {
                 setIsSearching(false);
                 fetchData(1, latestSortCount)
             } else {
-
                 setAssignedData(response.data.assigned)
                 setunAssignedData(response.data.unassigned)
                 setTotalCompaniesAssigned(response.data.totalAssigned)
