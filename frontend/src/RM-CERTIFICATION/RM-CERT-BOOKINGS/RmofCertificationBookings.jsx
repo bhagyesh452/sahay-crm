@@ -197,13 +197,17 @@ function RmofCertificationBookings() {
   }, [nowToFetch]);
 
   useEffect(() => {
-    if (!isSearching || !isFilter) {
-      fetchDatadebounce();
-      fetchRedesignedFormData(currentPage);
-    }else{
-      handleFilterData(currentPage , itemsPerPage)
+    if (!isSearching) {
+      if (isFilter) {
+        handleFilterData(currentPage, itemsPerPage);
+      } else {
+        fetchDatadebounce();
+        fetchRedesignedFormData(currentPage);
+      }
+    } else {
+      handleFilterData(currentPage, itemsPerPage);
     }
-  }, [currentPage, isSearching , isFilter]);
+  }, [currentPage, isSearching, isFilter]);
 
   const handleFetchBookingsDataForPagination = (event, value) => {
     console.log(value)
@@ -694,34 +698,6 @@ function RmofCertificationBookings() {
     );
   };
 
-  // const handleSubmitServicesToSwap = () => {
-  //   setDataToSend((prevData) => ({
-  //     ...prevData,
-  //     "Company Name": selectedCompanyData["Company Name"],
-  //     "Company Number": selectedCompanyData["Company Number"],
-  //     "Company Email": selectedCompanyData["Company Email"],
-  //     panNumber : selectedCompanyData.panNumber,
-  //     bdeName:selectedCompanyData.bdeName,
-  //     bdeEmail:selectedCompanyData.bdeEmail,
-  //     bdmName:selectedCompanyData.bdmName,
-  //     bdmType:selectedCompanyData.bdmType,
-  //     bookingDate:selectedCompanyData.bookingDate,
-  //     bookingSource:selectedCompanyData.bookingSource,
-  //     paymentMethod:selectedCompanyData.paymentMethod,
-  //     caCase:selectedCompanyData.caCase,
-  //     caNumber:selectedCompanyData.caNumber,
-  //     caEmail:selectedCompanyData.caEmail,
-  //     serviceName:selectedCompanyData.services.serviceName,
-  //     totalPaymentWOGST:0,
-  //     totalPaymentWGST:0,
-  //     firstPayment:0,
-  //     secondPayment:0,
-  //     thirdPayment:0,
-  //     fourthPayment:0,
-  //   }))
-
-  //   handleSendDataToMyBookings()
-  // }
 
   const handleSubmitServicesToSwap = async () => {
     // Check if selectedCompanyData is defined
@@ -892,6 +868,7 @@ function RmofCertificationBookings() {
           limit,
         }
       });
+      console.log("response:-" , response.data)
       if (!selectedServiceName &&
         !selectedBdeName &&
         !selectedBdmName &&
@@ -904,9 +881,12 @@ function RmofCertificationBookings() {
         fetchRedesignedFormData(currentPage)
         setOpenBacdrop(false)
       } else {
+        
         setOpenBacdrop(false)
-        setFilteredData(response.data)
-        setLeadFormData(response.data)
+        setFilteredData(response.data.data)
+        setLeadFormData(response.data.data)
+        setTotalPages(response.data.totalPages)
+        setCurrentPage(response.data.currentPage)
         setOpenFilterDrawer(false)
       }
     } catch (error) {
@@ -1147,23 +1127,6 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         ))}
-                      {/* <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-center mt-1">
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav> */}
                       <div className="d-flex align-items-center justify-content-center">
                         <Stack spacing={2}>
                           <Pagination
@@ -2216,7 +2179,7 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         </div>
-                        {currentLeadform &&
+                        {/* {currentLeadform &&
                           (currentLeadform.paymentReceipt.length !== 0 ||
                             currentLeadform.otherDocs !== 0) && (
                             <>
@@ -2365,7 +2328,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   ))}
-                                {/* ---------- Upload Documents From Preview -----------*/}
+                          
                                 <div className="col-sm-2 mb-1">
                                   <div
                                     className="booking-docs-preview"
@@ -2400,7 +2363,7 @@ function RmofCertificationBookings() {
                                   </DialogTitle>
                                   <DialogContent>
                                     <div className="maincon">
-                                      {/* Single file input for multiple documents */}
+                                      
                                       <div
                                         style={{
                                           justifyContent: "space-between",
@@ -2473,7 +2436,7 @@ function RmofCertificationBookings() {
                                 </Dialog>
                               </div>
                             </>
-                          )}
+                          )} */}
                       </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
@@ -3247,7 +3210,7 @@ function RmofCertificationBookings() {
                                             )
                                           }
                                         >
-                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                          {/* {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -3265,7 +3228,7 @@ function RmofCertificationBookings() {
                                               src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                               alt={"MyImg"}
                                             ></img>
-                                          )}
+                                          )} */}
                                         </div>
                                         <div className="booking-docs-preview-text">
                                           <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -3275,7 +3238,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   )}
-                                {objMain.otherDocs.map((obj) => (
+                                {/* {objMain.otherDocs.map((obj) => (
                                   <div className="col-sm-2 mb-1">
                                     <div className="booking-docs-preview">
                                       <div
@@ -3312,7 +3275,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   </div>
-                                ))}
+                                ))} */}
 
                                 <div className="col-sm-2 mb-1">
                                   <div
@@ -3625,7 +3588,7 @@ function RmofCertificationBookings() {
                         setselectedBdmName(e.target.value)
                       }}
                     >
-                      <option value=''>Select BDE</option>
+                      <option value=''>Select BDM</option>
                       {bdmList && bdmList.map((item) => (
                         <option value={item.ename}>{item.ename}</option>))}
                     </select>
@@ -3672,7 +3635,7 @@ function RmofCertificationBookings() {
                     </div>
                   </div>
                 </div>
-                <div className='col-sm-12 mt-2'>
+                {/* <div className='col-sm-12 mt-2'>
                   <label class="form-label">Booking Publish Date</label>
                   <div className='row align-items-center justify-content-between'>
                     <div className='col form-group mr-1'>
@@ -3712,7 +3675,7 @@ function RmofCertificationBookings() {
                       </select>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* <div className='col-sm-12 mt-2'>
                   <div className='form-group'>
                     <label for="Uploadedby" class="form-label">Uploaded By</label>
