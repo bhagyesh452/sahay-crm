@@ -1305,16 +1305,22 @@ function EmployeeTeamLeads() {
             const currentStatus = filteredData[0].bdmStatus; // Access Status directly
             if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
                 setActiveTab('All');
+                setBdmNewStatus(currentStatus)
             } else if (currentStatus === 'Interested') {
                 setActiveTab('Interested');
+                setBdmNewStatus(currentStatus)
             } else if (currentStatus === 'FollowUp') {
                 setActiveTab('FollowUp');
+                setBdmNewStatus(currentStatus)
             } else if (currentStatus === 'Matured') {
                 setActiveTab('Matured');
+                setBdmNewStatus(currentStatus)
             } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
                 setActiveTab('Forwarded');
+                setBdmNewStatus(currentStatus)
             } else if (currentStatus === 'Not Interested') {
                 setActiveTab('NotInterested');
+                setBdmNewStatus(currentStatus)
             }
         } else if (filteredData.length > 1) {
             setFilteredData(newFilteredData);
@@ -1324,7 +1330,7 @@ function EmployeeTeamLeads() {
                 setActiveTab(selectedStatus);
             }
         }
-    }, [filteredData, activeTab, selectedAssignDate, selectedCompanyIncoDate, selectedNewCity, selectedState]);
+    }, [filteredData, activeTab]);
     
     console.log("activetab" , activeTab);
     console.log("selectedStatus" , selectedStatus);
