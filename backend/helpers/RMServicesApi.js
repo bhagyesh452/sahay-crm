@@ -233,6 +233,67 @@ router.get("/search-booking-data", async (req, res) => {
   }
 });
 
+router.get("/filter-rmofcertification-bookings", async (req, res) => {
+  const { selectedServiceName,
+    selectedBdeName,
+    selectedBdmName,
+    selectedYear,
+    monthIndex,
+    bookingDate,
+    bookingPublishDate
+  } = req.query;
+  const page = parseInt(req.query.page) || 1; // Page number
+  const limit = parseInt(req.query.limit) || 10; // Items per page
+  const skip = (page - 1) * limit; // Number of documents to skip
+  try {
+    let baseQuery = {} ;
+    if(selectedBdeName) baseQuery.bdeName =  selectedBdeName;
+    if(selectedBdmName) baseQuery.bdmName = selectedBdmName;
+    if (selectedYear) {
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery.bookingDate = {
+          $gte: monthStartDate.toISOString().split('T')[0],
+          $lt: new Date(monthEndDate.getTime() + 1).toISOString().split('T')[0]
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery.bookingDate = {
+          $gte: yearStartDate.toISOString().split('T')[0],
+          $lt: new Date(yearEndDate.getTime() + 1).toISOString().split('T')[0]
+        }
+      }
+    }
+
+    if (bookingDate) {
+      baseQuery.bookingDate = {
+        $gte: new Date(bookingDate).toISOString().split('T')[0],
+        $lt: new Date(new Date(bookingDate).setDate(new Date(bookingDate).getDate() + 1)).toISOString().split('T')[0]
+      };
+    }
+    
+    const data = await RedesignedLeadformModel.find(baseQuery).skip(skip).limit(limit).lean()
+    const dataCount = await RedesignedLeadformModel.countDocuments(baseQuery);
+    console.log(baseQuery)
+    console.log("data" , data.length,dataCount)
+    res.status(200).json({
+      data : data,
+      currentPage:page,
+      totalPages:Math.ceil((dataCount)/limit)
+    })
+
+  } catch (error) {
+    console.log("Internal Server Error", error)
+    res.status(500).json({ message : "Internal Server Error"})
+  }
+
+
+})
+
 
 
 module.exports = router;

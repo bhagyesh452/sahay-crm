@@ -14,6 +14,7 @@ import axios from "axios";
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
 import ReportComplete from "./ReportComplete";
+import Bella_Lagin from "./Bella_Lagin";
 // import "./styles/header.css"
 
 
@@ -190,7 +191,8 @@ function Header({ name, designation , empProfile}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-         <BellEmp name={name}/>
+         {/* <BellEmp name={name}/> */}
+         <Bella_Lagin name={name}/>
           <Avatar src={`${secretKey}/employee/employeeImg/${name}/${encodeURIComponent(
                 empProfile 
               )}`}  className="My-Avtar" sx={{ width: 36, height: 36 }}/>
