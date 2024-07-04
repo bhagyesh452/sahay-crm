@@ -149,7 +149,7 @@ function Bella_Chao({isDM}) {
                     <div className='noti-designation'>{obj.designation}</div>
                 </div>
                 <div className='noti-data'>
-                    <p className='m-0 My_Text_Wrap' title=''><b>{obj.ename}</b> Sent a <b>{obj.requestType} Request</b></p>
+                    <p className='m-0 My_Text_Wrap' title=''><b>{obj.requestType}</b> Request Received from <b>{obj.ename}</b></p>
                     <div className='noti-time mt-1'>
                         {formatDate(obj.requestTime)}
                     </div>

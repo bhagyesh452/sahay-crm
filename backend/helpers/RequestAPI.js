@@ -73,7 +73,7 @@ router.post("/requestCompanyData", async (req, res) => {
 
     const requestCreate = {
       ename: ename,
-      requestType: "Data Approve",
+      requestType: "Lead Upload",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -146,7 +146,7 @@ router.post("/requestData", async (req, res) => {
 
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -287,7 +287,7 @@ router.post("/requestgData", async (req, res) => {
 
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -389,7 +389,7 @@ router.put("/requestgData/:id", async (req, res) => {
         
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -477,7 +477,7 @@ router.post("/deleterequestbybde", async (req, res) => {
         
     const requestCreate = {
       ename: ename,
-      requestType: "Data",
+      requestType: "Booking Delete",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
