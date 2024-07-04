@@ -46,6 +46,7 @@ import { Country, State, City } from 'country-state-city';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { RiSendToBack } from 'react-icons/ri';
+import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -971,6 +972,7 @@ function TestLeads() {
             }
             // Process response
             const { data } = response;
+            console.log(data)
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
@@ -1614,7 +1616,7 @@ function TestLeads() {
         "July", "August", "September", "October", "November", "December"
     ];
     //Create an array of years from 2018 to the current year
-    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+    const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
     useEffect(() => {
         let monthIndex;
         if (selectedYear && selectedMonth) {
@@ -1627,6 +1629,7 @@ function TestLeads() {
         }
     }, [selectedYear, selectedMonth]);
 
+    console.log(selectedYear)
 
 
     useEffect(() => {
@@ -1638,7 +1641,8 @@ function TestLeads() {
             setSelectedCompanyIncoDate(companyIncoDate);
         }
     }, [selectedYear, selectedMonth, selectedDate]);
-
+ 
+    console.log("inco date" , selectedCompanyIncoDate)
 
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
@@ -1715,6 +1719,7 @@ function TestLeads() {
         setSelectedDate(0)
         setCompanyIncoDate(null)
         setSelectedCompanyIncoDate(null)
+        setSelectedRows([])
         fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {
@@ -1929,7 +1934,6 @@ function TestLeads() {
                                                 <th>Company Email</th>
                                                 {dataStatus !== "Unassigned" && <th>Status</th>}
                                                 {dataStatus !== "Unassigned" && <th>Remarks</th>}
-
                                                 <th>Uploaded By</th>
                                                 {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 

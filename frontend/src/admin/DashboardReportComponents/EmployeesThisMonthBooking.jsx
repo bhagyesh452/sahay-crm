@@ -759,9 +759,6 @@ function EmployeesThisMonthBooking() {
                     date1.getFullYear() === date2.getFullYear()
                 );
             };
-
-
-
             if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                 if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
@@ -772,7 +769,6 @@ function EmployeesThisMonthBooking() {
                             let expanseDate = null
                             if (serv.expanse) {
                                 expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
-
                                 expanseDate.setHours(0, 0, 0, 0);
                                 const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
                                 expanse = condition ? expanse + serv.expanse : expanse;
@@ -811,7 +807,6 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 }
-
             } else if (mainBooking.remainingPayments.length !== 0) {
                 if (mainBooking.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                     mainBooking.services.forEach(serv => {
@@ -844,13 +839,10 @@ function EmployeesThisMonthBooking() {
 
                 //     }
                 // });
+
                 mainBooking.remainingPayments.map((remainingObj) => {
                     const moreBookingDate = new Date(remainingObj.paymentDate);
-
                     moreBookingDate.setHours(0, 0, 0, 0);
-
-
-
                     if (((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                         const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
                         const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
@@ -1011,6 +1003,7 @@ function EmployeesThisMonthBooking() {
         expanse = expanse + remainingExpense + remainingMoreExpense;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     }
+    
     const functionCalculateTotalRevenue = (bdeName) => {
         let achievedAmount = 0;
         let remainingAmount = 0;
