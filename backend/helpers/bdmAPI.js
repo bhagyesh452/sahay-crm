@@ -159,6 +159,83 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
 //   }
 // });
 
+// router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
+//   const bdmName = req.params.bdmName;
+//   const {
+//     selectedStatus,
+//     selectedState,
+//     selectedNewCity,
+//     selectedBdeForwardDate,
+//     selectedCompanyIncoDate,
+//     selectedYear,
+//     monthIndex,
+//   } = req.query;
+// console.log(selectedBdeForwardDate)
+//   try {
+//     // Start with the required bdmName filter
+//     let baseQuery = { bdmName };
+
+//     // Add additional filters if they are present
+//     if (selectedStatus) baseQuery.bdmStatus = selectedStatus;
+    
+//     if (selectedState) baseQuery.State = selectedState;
+    
+//     if (selectedNewCity) baseQuery.City = selectedNewCity;
+    
+//     if (selectedBdeForwardDate) {
+//       const startOfDay = new Date(selectedBdeForwardDate);
+//       startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
+  
+//       const endOfDay = new Date(selectedBdeForwardDate);
+//       endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day local time
+  
+//       baseQuery.bdeForwardDate = {
+//           $gte: startOfDay,
+//           $lt: endOfDay
+//       };
+//   }
+  
+//     if (selectedYear) {
+//       if (monthIndex !== '0') {
+//         const year = parseInt(selectedYear);
+//         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+//         const monthStartDate = new Date(year, month, 1);
+//         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: monthStartDate,
+//           $lt: monthEndDate
+//         };
+//       } else {
+//         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: yearStartDate,
+//           $lt: yearEndDate
+//         };
+//       }
+//     }
+//     if (selectedCompanyIncoDate) {
+//       baseQuery["Company Incorporation Date  "] = {
+//         $gte: new Date(selectedCompanyIncoDate).toISOString(),
+//         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
+//       };
+//     }
+
+//     console.log("Base Query:", JSON.stringify(baseQuery, null, 2));
+
+//     const data = await TeamLeadsModel.find(baseQuery).lean();
+
+//     console.log("Data Retrieved:", data);
+
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+
 router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
   const {
@@ -170,31 +247,31 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
     selectedYear,
     monthIndex,
   } = req.query;
-console.log(selectedBdeForwardDate)
+
+  console.log(selectedBdeForwardDate);
+
   try {
     // Start with the required bdmName filter
     let baseQuery = { bdmName };
 
     // Add additional filters if they are present
     if (selectedStatus) baseQuery.bdmStatus = selectedStatus;
-    
     if (selectedState) baseQuery.State = selectedState;
-    
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     
     if (selectedBdeForwardDate) {
       const startOfDay = new Date(selectedBdeForwardDate);
       startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
-  
+
       const endOfDay = new Date(selectedBdeForwardDate);
       endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day local time
-  
+
       baseQuery.bdeForwardDate = {
-          $gte: startOfDay,
-          $lt: endOfDay
+        $gte: startOfDay,
+        $lt: endOfDay
       };
-  }
-  
+    }
+
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
@@ -214,6 +291,7 @@ console.log(selectedBdeForwardDate)
         };
       }
     }
+
     if (selectedCompanyIncoDate) {
       baseQuery["Company Incorporation Date  "] = {
         $gte: new Date(selectedCompanyIncoDate).toISOString(),
@@ -233,8 +311,6 @@ console.log(selectedBdeForwardDate)
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 
 router.post("/update-bdm-status/:id", async (req, res) => {

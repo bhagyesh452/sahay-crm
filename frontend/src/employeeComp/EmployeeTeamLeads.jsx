@@ -146,7 +146,7 @@ function EmployeeTeamLeads() {
 
     //  States for selecting assigned date.
     const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null);
-    
+
     //  States for selecting company incorporation date.
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
     const [companyIncoDate, setCompanyIncoDate] = useState(null);
@@ -190,7 +190,7 @@ function EmployeeTeamLeads() {
             setEmployeeName(userData.ename);
             //console.log(tempData);
             setData(userData);
-            //setmoreFilteredData(userData);
+            // setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -291,7 +291,7 @@ function EmployeeTeamLeads() {
         }
     }, [data.ename, revertBackRequestData.length]);
 
-    console.log("teamLeads", teamleadsData)
+    // console.log("teamLeads", teamleadsData);
 
 
 
@@ -1187,6 +1187,222 @@ function EmployeeTeamLeads() {
     const [newFilteredData, setNewFilteredData] = useState([]);
     const [activeTab, setActiveTab] = useState('All');
 
+    // const handleSearch = (searchQuery) => {
+    //     console.log(searchQuery);
+
+    //     // setIsSearch(true);
+    //     const searchValue = searchQuery.toLowerCase();
+
+    //     if (!searchQuery || searchQuery.trim().length === 0) {
+    //         setIsSearch(false);
+    //         setFilteredData(extraData); // Assuming extraData is your full dataset
+    //         return;
+    //     }
+    //     setIsFilter(false);
+    //     setIsSearch(true);
+
+    //     const filteredItems = extraData.filter((company) => {
+    //         const companyName = company["Company Name"];
+    //         const companyNumber = company["Company Number"];
+    //         const companyEmail = company["Company Email"];
+    //         const companyState = company.State;
+    //         const companyCity = company.City;
+
+    //         if (companyName && companyName.toString().toLowerCase().includes(searchValue)) {
+    //             return true;
+    //         }
+    //         if (companyNumber && companyNumber.toString().includes(searchValue)) {
+    //             return true;
+    //         }
+    //         if (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) {
+    //             return true;
+    //         }
+    //         if (companyState && companyState.toString().toLowerCase().includes(searchValue)) {
+    //             return true;
+    //         }
+    //         if (companyCity && companyCity.toString().toLowerCase().includes(searchValue)) {
+    //             return true;
+    //         }
+
+    //         return false;
+    //     });
+    //     setNewFilteredData(filteredItems);
+    //     setFilteredData(newFilteredData);
+    // };
+
+
+    // Currently running for searching the data :
+    const handleSearch = (searchQuery) => {
+        console.log(searchQuery);
+
+        setIsFilter(false);
+
+        const searchValue = searchQuery.trim().toLowerCase(); // Trim and convert search query to lowercase
+
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            setIsFilter(false);
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
+            return;
+        }
+
+        setIsSearch(true);
+
+        const filteredItems = extraData.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            return (
+                (companyName && companyName.toString().toLowerCase().includes(searchValue)) ||
+                (companyNumber && companyNumber.toString().includes(searchValue)) ||
+                (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) ||
+                (companyState && companyState.toString().toLowerCase().includes(searchValue)) ||
+                (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
+            );
+        });
+
+        setNewFilteredData(filteredItems);
+        setFilteredData(filteredItems);
+        filterByTab(filteredItems);
+    };
+
+    const filterByTab = (data) => {
+        let filtered;
+
+        switch (activeTab) {
+            case "All":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Busy" ||
+                    obj.bdmStatus === "Not Picked Up" ||
+                    obj.bdmStatus === "Untouched"
+                );
+                break;
+            case "Interested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Interested"
+                );
+                break;
+            case "FollowUp":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "FollowUp"
+                );
+                break;
+            case "Matured":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Matured"
+                );
+                break;
+            case "Forwarded":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus !== "Not Interested" &&
+                    obj.bdmStatus !== "Busy" &&
+                    obj.bdmStatus !== "Junk" &&
+                    obj.bdmStatus !== "Not Picked Up" &&
+                    obj.bdmStatus !== "Matured"
+                ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                break;
+            case "NotInterested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Not Interested" ||
+                    obj.bdmStatus === "Junk"
+                );
+                break;
+            default:
+                filtered = data;
+        }
+
+        setTeamLeadsData(filtered);
+    };
+
+    // useEffect for searching data :
+    useEffect(() => {
+        if (filteredData.length === 0 && isFilter) {
+            setTeamLeadsData(newFilteredData);
+            return;
+        }
+
+        if (filteredData.length === 0) {
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when no filtered data
+            return;
+        }
+
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus;
+            setBdmNewStatus(currentStatus);
+            filterByTab(filteredData);
+        } else if (filteredData.length > 1) {
+            if (selectedStatus) {
+                setBdmNewStatus(selectedStatus);
+                setActiveTab(selectedStatus);
+            }
+            setTeamLeadsData(filteredData);
+        }
+    }, [filteredData, activeTab, isFilter, newFilteredData, selectedStatus]);
+
+    console.log("Is Search :", isSearch);
+
+    // To clear filter data :
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus("");
+        setSelectedState("");
+        setSelectedNewCity("");
+        setSelectedBdeForwardDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        setSelectedYear("");
+        setSelectedMonth("");
+        setSelectedDate(0);
+        setFilteredData([]);
+        fetchTeamLeadsData(bdmNewStatus);
+    };
+
+    // To apply filter :
+    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+        const bdmName = data.ename;
+        console.log("BDM Name is :", bdmName);
+        try {
+            setIsFilter(true);
+            setOpenBacdrop(true);
+
+            const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
+                params: {
+                    selectedStatus,
+                    selectedState,
+                    selectedNewCity,
+                    selectedBdeForwardDate,
+                    selectedCompanyIncoDate,
+                    selectedYear,
+                    monthIndex,
+                    page,
+                    limit
+                }
+            });
+
+            if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
+                setIsFilter(false);
+            } else {
+                // console.log("Filtered Data is :", response.data);
+                setFilteredData(response.data);
+                setNewFilteredData(response.data);
+                setTeamLeadsData(response.data)
+            }
+        } catch (error) {
+            console.log("Error to filtered data :", error);
+        } finally {
+            setOpenBacdrop(false);
+            setOpenFilterDrawer(false);
+        }
+    };
+
+    // console.log("Team data :", teamData);
+    console.log("Filtered data :", filteredData);
+    // console.log("Team lead data :", teamleadsData);
+    // console.log("Is Filter :", isFilter);
 
     // useEffect for filtering data :
     useEffect(() => {
@@ -1234,16 +1450,16 @@ function EmployeeTeamLeads() {
                     filtered = filteredData;
             }
             //setTeamLeadsData(filtered);
-           
-        }else if(filteredData.length === 0 && isFilter){
+
+        } else if (filteredData.length === 0 && isFilter) {
             //setFilteredData(newFilteredData);
             setTeamLeadsData(newFilteredData)
         }
 
-        if(filteredData.length === 0) {
+        if (filteredData.length === 0) {
             setTeamLeadsData([]);
         }
-    
+
         if (filteredData.length === 1) {
             const currentStatus = filteredData[0].bdmStatus; // Access Status directly
             if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
@@ -1279,124 +1495,15 @@ function EmployeeTeamLeads() {
                 setActiveTab(selectedStatus);
             }
         }
-        
+
     }, [filteredData, activeTab]);
-    
-    console.log("activetab" , activeTab);
-    console.log("selectedStatus" , selectedStatus);
-    console.log("bdmNewStatus" , bdmNewStatus);
+
+    console.log("activetab", activeTab);
+    console.log("selectedStatus", selectedStatus);
+    console.log("bdmNewStatus", bdmNewStatus);
 
 
-    // To apply filter :
-    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
-        const bdmName = data.ename;
-        console.log("BDM Name is :", bdmName);
-        try {
-            setIsFilter(true);
-            setOpenBacdrop(true);
-    
-            const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
-                params: {
-                    selectedStatus,
-                    selectedState,
-                    selectedNewCity,
-                    selectedBdeForwardDate,
-                    selectedCompanyIncoDate,
-                    selectedYear,
-                    monthIndex,
-                    page,
-                    limit
-                }
-            });
 
-            
-            if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
-                setIsFilter(false);
-            } else {
-                // console.log("Filtered Data is :", response.data);
-                setFilteredData(response.data);
-                setNewFilteredData(response.data);
-                setTeamLeadsData(response.data)
-            }
-        } catch (error) {
-            console.log("Error to filtered data :", error);
-        } finally {
-            setOpenBacdrop(false);
-            setOpenFilterDrawer(false);
-        }
-    };
-    console.log("Assigned date :",selectedBdeForwardDate);
-
-    console.log("Team data :", teamData);
-    console.log("Filtered data :", filteredData);
-    console.log("Team lead data :", teamleadsData);
-    console.log("Is Filter :", isFilter);
-
-    // To clear filter data :
-    const handleClearFilter = () => {
-        setIsFilter(false);
-        functionCloseFilterDrawer();
-        setSelectedStatus("");
-        setSelectedState("");
-        setSelectedNewCity("");
-        setSelectedBdeForwardDate(null);
-        setCompanyIncoDate(null);
-        setSelectedCompanyIncoDate(null);
-        setSelectedYear("");
-        setSelectedMonth("");
-        setSelectedDate(0);
-        setFilteredData([]);
-        fetchTeamLeadsData(bdmNewStatus);
-    };
-
-    const handleSearch = (searchQuery) => {
-        // setIsSearch(true);
-        const searchValue = searchQuery.toLowerCase();
-
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            setIsSearch(false);
-
-            if (isFilter) {
-                setFilteredData(newFilteredData);
-            } else {
-                // setFilteredData(extraData.filter(obj => obj.bdmStatus === bdmNewStatus || obj.bdmStatus === "Untouched"));  // Assuming extraData is your full dataset
-                setFilteredData(teamleadsData);  // Assuming extraData is your full dataset
-            }
-            return;
-        }
-        //setIsFilter(false);
-
-
-        const dataToFilter = isFilter ? filteredData : extraData;
-
-        const filteredItems = dataToFilter.filter((company) => {
-            const companyName = company["Company Name"];
-            const companyNumber = company["Company Number"];
-            const companyEmail = company["Company Email"];
-            const companyState = company.State;
-            const companyCity = company.City;
-
-            if (companyName && companyName.toString().toLowerCase().includes(searchValue)) {
-                return true;
-            }
-            if (companyNumber && companyNumber.toString().includes(searchValue)) {
-                return true;
-            }
-            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) {
-                return true;
-            }
-            if (companyState && companyState.toString().toLowerCase().includes(searchValue)) {
-                return true;
-            }
-            if (companyCity && companyCity.toString().toLowerCase().includes(searchValue)) {
-                return true;
-            }
-
-            return false;
-        });
-        setFilteredData(filteredItems);
-    };
-    console.log("Searched data is :", filteredData);
 
     const currentData = teamleadsData.slice(startIndex, endIndex);
 
@@ -1480,7 +1587,7 @@ function EmployeeTeamLeads() {
                                 }}
                                 className="features"
                             > */}
-                                {/* <div style={{ display: "flex" }} className="feature1">
+                            {/* <div style={{ display: "flex" }} className="feature1">
                                     <div
                                         className="form-control"
                                         style={{ height: "fit-content", width: "auto" }}
@@ -1521,7 +1628,7 @@ function EmployeeTeamLeads() {
                                         </div>
                                     )} */}
 
-                                {/* {visibilityOther === "block" ? (
+                            {/* {visibilityOther === "block" ? (
                                         <div
                                             style={{
                                                 //width: "20vw",
@@ -1531,8 +1638,8 @@ function EmployeeTeamLeads() {
                                             className="input-icon"
                                         >
                                             <span className="input-icon-addon"> */}
-                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                                {/* <svg
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            {/* <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
                                                     width="20"
@@ -1569,7 +1676,7 @@ function EmployeeTeamLeads() {
                                     ) : (
                                         <div></div>
                                     )} */}
-                                {/* {visibilityOthernew === "block" ? (
+                            {/* {visibilityOthernew === "block" ? (
                                         <div
                                             style={{
                                                 //width: "20vw",
@@ -1643,7 +1750,7 @@ function EmployeeTeamLeads() {
                                     ) : (
                                         <div></div>
                                     )} */}
-                                {/* {searchText !== "" && (
+                            {/* {searchText !== "" && (
                                         <div
                                             style={{
                                                 display: "flex",
@@ -1658,12 +1765,12 @@ function EmployeeTeamLeads() {
                                             {filteredData.length} results found
                                         </div>
                                     )} */}
-                                {/* </div> */}
-                                {/* <div
+                            {/* </div> */}
+                            {/* <div
                                     style={{ display: "flex", alignItems: "center" }}
                                     className="feature2"
                                 > */}
-                                    {/* <div
+                            {/* <div
                                         className="form-control mr-1 sort-by"
                                         style={{ width: "190px" }}
                                     >
@@ -1767,11 +1874,11 @@ function EmployeeTeamLeads() {
                                         </select>
                                     </div> */}
 
-                                    {/* {selectedField === "State" && (
+                            {/* {selectedField === "State" && (
                                         <div style={{ width: "15vw" }} className="input-icon">
                                             <span className="input-icon-addon"> */}
-                                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                                                {/* <svg
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            {/* <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
                                                     width="20"
@@ -1845,7 +1952,7 @@ function EmployeeTeamLeads() {
                                                 className="input-icon  form-control"
                                                 style={{ margin: "0px 10px", width: "110px" }}
                                             > */}
-                                                {/* <input
+                            {/* <input
                                                     type="number"
                                                     value={year}
                                                     defaultValue="Select Year"
@@ -1857,7 +1964,7 @@ function EmployeeTeamLeads() {
                                                     aria-label="Search in website"
                                                 /> */}
 
-                                                {/* <select
+                            {/* <select
                                                     select
                                                     style={{ border: "none", outline: "none" }}
                                                     value={year}
@@ -1881,7 +1988,7 @@ function EmployeeTeamLeads() {
                                     )} */}
 
 
-                                {/* </div>
+                            {/* </div>
                             </div> */}
 
 
@@ -2225,7 +2332,7 @@ function EmployeeTeamLeads() {
                                     <a
                                         href="#tabs-activity-5"
                                         onClick={() => {
-                                            setBdmNewStatus("NotInterested");
+                                            setBdmNewStatus("Not Interested");
                                             setCurrentPage(0);
                                             const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
@@ -2239,7 +2346,7 @@ function EmployeeTeamLeads() {
                                             );
                                         }}
                                         className={
-                                            bdmNewStatus === "NotInterested"
+                                            bdmNewStatus === "Not Interested"
                                                 ? "nav-link active item-act"
                                                 : "nav-link"
                                         }
