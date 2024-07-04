@@ -55,6 +55,8 @@ const BasicForm = () => {
     DirectInDirectMarket: "",
     BusinessModel: "",
     Finance: "",
+    UploadDeclaration: "",
+    UploadRelevantDocs: "",
     FinanceCondition: "No",
     DirectorDetails: [DirectorForm],
   });
@@ -383,6 +385,9 @@ const BasicForm = () => {
     }
     if (!formData.Finance && formData.Finance !== "") {
       newErrors.Finance = "Enter The Details of Grant";
+    }
+    if (!formData.UploadDeclaration) {
+      newErrors.UploadDeclaration = "Please Upload Declaration";
     }
     if (!formData.DirectorDetails.some((obj) => obj.IsMainDirector === true)) {
       newErrors.IsMainDirector = "Please Select Authorised person";
@@ -2044,7 +2049,21 @@ const BasicForm = () => {
                         type="file"
                         class="form-control mt-1"
                         id="Declaration"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (functionShowSizeLimit(file)) {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              UploadDeclaration: file,
+                            }));
+                          } else {
+                            e.target.value = null; // Clear the input value to prevent invalid file selection
+                          }
+                        }}
                       />
+                      {formSubmitted && errors.UploadDeclaration && (
+                        <div style={{ color: "red" }}>{errors.UploadDeclaration}</div>
+                      )}
                     </div>
                   </div>
                   <div className="col-lg-6">
@@ -2054,6 +2073,17 @@ const BasicForm = () => {
                         type="file"
                         class="form-control mt-1"
                         id="Declaration"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (functionShowSizeLimit(file)) {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              UploadRelevantDocs: file,
+                            }));
+                          } else {
+                            e.target.value = null; // Clear the input value to prevent invalid file selection
+                          }
+                        }}
                       />
                     </div>
                   </div>
