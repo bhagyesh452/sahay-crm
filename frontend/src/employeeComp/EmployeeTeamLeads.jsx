@@ -145,11 +145,11 @@ function EmployeeTeamLeads() {
     const [selectedNewCity, setSelectedNewCity] = useState("");
 
     //  States for selecting assigned date.
-    const [selectedAssignDate, setSelectedAssignDate] = useState(null);
+    const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null);
+    
+    //  States for selecting company incorporation date.
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
     const [companyIncoDate, setCompanyIncoDate] = useState(null);
-
-    //  States for selecting incorporation date.
     const [selectedYear, setSelectedYear] = useState("");
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedDate, setSelectedDate] = useState(0);
@@ -1188,72 +1188,7 @@ function EmployeeTeamLeads() {
     const [activeTab, setActiveTab] = useState('All');
 
 
-
-    // useEffect(() => {
-    //     if (filteredData.length !== 0) {
-    //         if (bdmNewStatus === "All") {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //                 obj.bdmStatus === "Busy" ||
-    //                 obj.bdmStatus === "Not Picked Up" ||
-    //                 obj.bdmStatus === "Untouched"
-    //             ));
-    //         } else if (bdmNewStatus === "Interested") {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //                 obj.bdmStatus === "Interested"
-    //             ));
-    //         } else if (bdmNewStatus === 'FollowUp') {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //                 obj.bdmStatus === "FollowUp"
-    //             ));
-    //         } else if (bdmNewStatus === 'Matured') {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //                 obj.bdmStatus === "Matured"
-    //             ));
-    //         } else if (bdmNewStatus === 'Forwarded') {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //             (obj.bdmStatus !== "Not Interested" &&
-    //                 obj.bdmStatus !== "Busy" &&
-    //                 obj.bdmStatus !== "Junk" &&
-    //                 obj.bdmStatus !== "Not Picked Up" &&
-    //                 obj.bdmStatus !== "Matured")
-    //             ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
-    //         } else if (bdmNewStatus === 'NotInterested') {
-    //             setTeamLeadsData(filteredData.filter((obj) =>
-    //             (obj.bdmStatus === "Not Interested" ||
-    //                 obj.bdmStatus === "Junk")
-    //             ));
-    //         }
-    //     }
-    //     if (filteredData.length === 1) {
-    //         const currentStatus = filteredData[0].bdmStatus; // Access Status directly
-    //         if ((currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
-    //             setBdmNewStatus('All')
-    //         } else if (currentStatus === 'Interested') {
-    //             setBdmNewStatus('Interested')
-    //         } else if (currentStatus === 'FollowUp') {
-    //             setBdmNewStatus('FollowUp')
-    //         } else if (currentStatus === 'Matured') {
-    //             setBdmNewStatus('Matured')
-    //         } else if (currentStatus !== "Not Interested" &&
-    //             currentStatus !== "Busy" &&
-    //             currentStatus !== 'Junk' &&
-    //             currentStatus !== 'Not Picked Up' &&
-    //             currentStatus !== 'Matured') {
-    //             setBdmNewStatus('Forwarded')
-    //         } else if (currentStatus === 'Not Interested') {
-    //             setBdmNewStatus('NotInterested')
-    //         }
-    //     } else if(filteredData.length > 1) {
-    //         setTeamLeadsData(filteredData);
-    //         setFilteredData(newFilteredData)
-    //         if(selectedStatus){
-    //             setBdmNewStatus(selectedStatus)
-    //         }
-    //     }else{
-    //         setTeamLeadsData(filteredData)
-    //     }
-    // }, [filteredData]);
-
+    // useEffect for filtering data :
     useEffect(() => {
         if (filteredData.length !== 0) {
             let filtered;
@@ -1299,6 +1234,10 @@ function EmployeeTeamLeads() {
                     filtered = filteredData;
             }
             setTeamLeadsData(filtered);
+        }
+
+        if(filteredData.length === 0) {
+            setTeamLeadsData([]);
         }
     
         if (filteredData.length === 1) {
@@ -1350,7 +1289,7 @@ function EmployeeTeamLeads() {
                     selectedStatus,
                     selectedState,
                     selectedNewCity,
-                    selectedAssignDate,
+                    selectedBdeForwardDate,
                     selectedCompanyIncoDate,
                     selectedYear,
                     monthIndex,
@@ -1374,7 +1313,7 @@ function EmployeeTeamLeads() {
             setOpenFilterDrawer(false);
         }
     };
-    console.log("Assigned date :",selectedAssignDate);
+    console.log("Assigned date :",selectedBdeForwardDate);
 
     console.log("Team data :", teamData);
     console.log("Filtered data :", filteredData);
@@ -1388,7 +1327,7 @@ function EmployeeTeamLeads() {
         setSelectedStatus("");
         setSelectedState("");
         setSelectedNewCity("");
-        setSelectedAssignDate(null);
+        setSelectedBdeForwardDate(null);
         setCompanyIncoDate(null);
         setSelectedCompanyIncoDate(null);
         setSelectedYear("");
@@ -1399,19 +1338,21 @@ function EmployeeTeamLeads() {
     };
 
     const handleSearch = (searchQuery) => {
-        setIsSearch(true);
+        // setIsSearch(true);
         const searchValue = searchQuery.toLowerCase();
 
         if (!searchQuery || searchQuery.trim().length === 0) {
             setIsSearch(false);
+
             if (isFilter) {
                 setFilteredData(newFilteredData);
             } else {
-                setFilteredData(extraData.filter(obj => obj.bdmStatus === bdmNewStatus || obj.bdmStatus === "Untouched"));  // Assuming extraData is your full dataset
+                // setFilteredData(extraData.filter(obj => obj.bdmStatus === bdmNewStatus || obj.bdmStatus === "Untouched"));  // Assuming extraData is your full dataset
+                setFilteredData(teamleadsData);  // Assuming extraData is your full dataset
             }
             return;
         }
-        //setIsFilter(false); 
+        //setIsFilter(false);
 
 
         const dataToFilter = isFilter ? filteredData : extraData;
@@ -1443,6 +1384,7 @@ function EmployeeTeamLeads() {
         });
         setFilteredData(filteredItems);
     };
+    console.log("Searched data is :", filteredData);
 
     const currentData = teamleadsData.slice(startIndex, endIndex);
 
@@ -2071,9 +2013,9 @@ function EmployeeTeamLeads() {
                                                 <div className='form-group'>
                                                     <label for="assignon" class="form-label">BDE Forward Date</label>
                                                     <input type="date" class="form-control" id="assignon"
-                                                        value={selectedAssignDate}
+                                                        value={selectedBdeForwardDate}
                                                         placeholder="dd-mm-yyyy"
-                                                        onChange={(e) => setSelectedAssignDate(e.target.value)}
+                                                        onChange={(e) => setSelectedBdeForwardDate(e.target.value)}
                                                     />
                                                 </div>
                                             </div>

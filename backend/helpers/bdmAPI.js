@@ -159,32 +159,34 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
 //   }
 // });
 
-
 router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
   const {
     selectedStatus,
     selectedState,
     selectedNewCity,
-    selectedAssignDate,
+    selectedBdeForwardDate,
     selectedCompanyIncoDate,
     selectedYear,
     monthIndex,
   } = req.query;
-console.log(selectedAssignDate)
+console.log(selectedBdeForwardDate)
   try {
     // Start with the required bdmName filter
     let baseQuery = { bdmName };
 
     // Add additional filters if they are present
     if (selectedStatus) baseQuery.bdmStatus = selectedStatus;
+    
     if (selectedState) baseQuery.State = selectedState;
+    
     if (selectedNewCity) baseQuery.City = selectedNewCity;
-    if (selectedAssignDate) {
-      const startOfDay = new Date(selectedAssignDate);
+    
+    if (selectedBdeForwardDate) {
+      const startOfDay = new Date(selectedBdeForwardDate);
       startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
   
-      const endOfDay = new Date(selectedAssignDate);
+      const endOfDay = new Date(selectedBdeForwardDate);
       endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day local time
   
       baseQuery.bdeForwardDate = {
@@ -231,6 +233,7 @@ console.log(selectedAssignDate)
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 
