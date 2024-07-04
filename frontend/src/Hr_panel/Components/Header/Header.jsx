@@ -11,6 +11,7 @@ import HrNotification from "../../Components/Notification/HrNotification";
 function Header({ hrName }) {
   const hname = localStorage.getItem("hrName");
 
+
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">

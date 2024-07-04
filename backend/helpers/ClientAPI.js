@@ -70,6 +70,8 @@ router.post(
     { name: "RelevantDocument", maxCount: 1 },
     { name: "UploadAuditedStatement", maxCount: 1 },
     { name: "UploadProvisionalStatement", maxCount: 1 },
+    { name: "UploadDeclaration", maxCount: 1 },
+    { name: "UploadRelevantDocs", maxCount: 1 },
   ]),
 
 
@@ -83,6 +85,8 @@ router.post(
       const RelevantDocument = req.files["RelevantDocument"] || [];
       const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
       const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+      const UploadDeclaration = req.files["UploadDeclaration"] || [];
+      const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
 
 
@@ -296,7 +300,7 @@ router.post(
                             <h3 style="margin: 0px;">Directors Details</h3>
                         </div> 
                         <div>
-                        <div style="display: flex;justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
                             <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Authorized Person" : ""} </div>
                         </div>
@@ -404,7 +408,7 @@ router.post(
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nimesh@incscale.in"];
+      const email = ["support@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
@@ -624,7 +628,9 @@ router.post(
         UploadPhotos,
         RelevantDocument,
         UploadAuditedStatement,
-        UploadProvisionalStatement
+        UploadProvisionalStatement,
+        UploadDeclaration,
+        UploadRelevantDocs
       });
 
       await newUser.save();
