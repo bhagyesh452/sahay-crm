@@ -8,7 +8,7 @@ import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
 import '../../assets/table.css';
 import '../../assets/styles.css';
-
+import dummyImg from "../../static/EmployeeImg/office-man.png";
 
 
 function RmofCertificationMyBookings() {
@@ -386,6 +386,7 @@ function RmofCertificationMyBookings() {
                                         <th>BDE NAME</th>
                                         <th>BDM NAME</th>
                                         <th>BDM TYPE</th>
+                                        <th>Total Payment</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -396,10 +397,392 @@ function RmofCertificationMyBookings() {
                                         <td>9924283530</td>
                                         <td>20/02/2024</td>
                                         <td><b>STart-up India Certificate</b></td>
-                                        <td>Vishal Gohel</td>
-                                        <td>Vishnu Suthar</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
                                         <td>Close By</td>
-                                        <td><button className="btn btn-sm btn-success">View</button></td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td><button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>1</b></td>
+                                        <td><b>India Private Limited</b></td>
+                                        <td>9924283530</td>
+                                        <td>20/02/2024</td>
+                                        <td><b>STart-up India Certificate</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishal Gohel</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div className="tbl-pro-img">
+                                                    <img src={dummyImg}></img>
+                                                </div>
+                                                <div> Vishnu  Suthar</div>
+                                            </div>
+                                        </td>
+                                        <td>Close By</td>
+                                        <td>₹ 8,000/-</td>
+                                        <td>
+                                            <button className="btn btn-sm btn-success">View</button>
+                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
