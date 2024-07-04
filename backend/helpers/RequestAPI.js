@@ -188,6 +188,27 @@ router.get("/get-notification", async (req, res) => {
     res.status(500).json({ message: "Error fetching notifications", error: err });
   }
 });
+router.get("/get-notification/:ename", async (req, res) => {
+  try {
+    const { ename } = req.params;
+    // Query to get the top 5 unread notifications sorted by requestTime
+    const topUnreadNotifications = await NotiModel.find({ status: "Unread" , ename })
+      .sort({ requestTime: -1 })
+      .limit(5);
+
+    // Query to get the count of all unread notifications
+    const totalUnreadCount = await NotiModel.countDocuments({ status: "Unread" });
+
+    // Respond with both the top unread notifications and the total count
+    res.status(200).json({
+      topUnreadNotifications,
+      totalUnreadCount
+    });
+  } catch (err) {
+    console.error("Error fetching notifications", err);
+    res.status(500).json({ message: "Error fetching notifications", error: err });
+  }
+});
 router.put('/update-notification/:id', async (req, res) => {
   const { id } = req.params;
 
