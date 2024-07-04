@@ -2037,6 +2037,29 @@ const BasicForm = () => {
                   <div class="col-lg-12">
                     <hr class="mt-1 mb-1" />
                   </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Declaration">Upload Declaration<span style={{ color: "red" }}>*</span>:</label>
+                      <input
+                        type="file"
+                        class="form-control mt-1"
+                        id="Declaration"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="form-group mt-2 mb-2">
+                      <label htmlFor="Declaration">Upload Relevant Docs:</label>
+                      <input
+                        type="file"
+                        class="form-control mt-1"
+                        id="Declaration"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <hr class="mt-1 mb-1" />
+                  </div>
                 </div>
               </div>
             </div>

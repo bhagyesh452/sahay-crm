@@ -118,7 +118,7 @@ function App() {
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
 
           {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
-          <Route path='/hr/employee/employee-profile-details' element={<Employee />}></Route>
+          <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>
 
 
 
