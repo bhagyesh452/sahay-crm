@@ -1,15 +1,13 @@
 import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../components/Header";
-import EmpNav from "./EmpNav";
+import Header from "../Components/Header/Header.jsx";
 import axios from "axios";
-import { options } from "../components/Options.js";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from "react-date-range";
-import EmpImg1 from "../static/EmployeeImg/Emp1.jpeg";
-import EmpImg2 from "../static/EmployeeImg/Emp2.jpeg";
-import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
+import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import { FaCamera } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaRegCircleUser } from "react-icons/fa6";
@@ -30,6 +28,7 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import Navbar from "../Components/Navbar/Navbar.jsx";
 
 function EmployeeProfile() {
 
@@ -120,7 +119,7 @@ function EmployeeProfile() {
   const fetchEmployeeData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log(response.data);
+      console.log(response.data , userId);
       const tempData = response.data;
       const data = tempData.find((item) => item._id === userId);
       console.log(data);
@@ -170,9 +169,9 @@ function EmployeeProfile() {
 
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
-      <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      {data && <div className="page-wrapper">
+      {data && data.length!==0 &&  <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />}
+      {data && data.length!==0 && <Navbar/>}
+      {data && data.length!==0 && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
           <div className="container-xl">
             <div className="row">
@@ -546,12 +545,6 @@ function EmployeeProfile() {
                         right: 'dayGridMonth,dayGridWeek,dayGridDay,listDay'
                       }}
                       events={events}
-                      // eventAllow={(dropInfo , draggedEvent) => {
-                      //   if (draggedEvent.title === 'Present') {
-                      //     return false;
-                      //   }
-                      //   return true;
-                      // }}
                     />
                   </div>
                 </div>

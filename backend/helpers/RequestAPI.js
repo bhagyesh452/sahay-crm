@@ -73,7 +73,7 @@ router.post("/requestCompanyData", async (req, res) => {
 
     const requestCreate = {
       ename: ename,
-      requestType: "Data Approve",
+      requestType: "Lead Upload",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -146,7 +146,7 @@ router.post("/requestData", async (req, res) => {
 
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -172,6 +172,27 @@ router.get("/get-notification", async (req, res) => {
   try {
     // Query to get the top 5 unread notifications sorted by requestTime
     const topUnreadNotifications = await NotiModel.find({ status: "Unread" })
+      .sort({ requestTime: -1 })
+      .limit(5);
+
+    // Query to get the count of all unread notifications
+    const totalUnreadCount = await NotiModel.countDocuments({ status: "Unread" });
+
+    // Respond with both the top unread notifications and the total count
+    res.status(200).json({
+      topUnreadNotifications,
+      totalUnreadCount
+    });
+  } catch (err) {
+    console.error("Error fetching notifications", err);
+    res.status(500).json({ message: "Error fetching notifications", error: err });
+  }
+});
+router.get("/get-notification/:ename", async (req, res) => {
+  try {
+    const { ename } = req.params;
+    // Query to get the top 5 unread notifications sorted by requestTime
+    const topUnreadNotifications = await NotiModel.find({ status: "Unread" , ename })
       .sort({ requestTime: -1 })
       .limit(5);
 
@@ -266,7 +287,7 @@ router.post("/requestgData", async (req, res) => {
 
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -368,7 +389,7 @@ router.put("/requestgData/:id", async (req, res) => {
         
     const requestCreate = {
       ename: name,
-      requestType: "Data",
+      requestType: "Lead Data",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
@@ -456,7 +477,7 @@ router.post("/deleterequestbybde", async (req, res) => {
         
     const requestCreate = {
       ename: ename,
-      requestType: "Data",
+      requestType: "Booking Delete",
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",

@@ -463,6 +463,7 @@ function EmployeesThisMonthBooking() {
         let expanse = 0;
         let remainingExpense = 0;
         let remainingMoreExpense = 0;
+        let add_caCommision = 0;
 
 
         redesignedData.map((mainBooking) => {
@@ -501,6 +502,9 @@ function EmployeesThisMonthBooking() {
                             }
 
                         });
+                        if(mainBooking.caCase !== "No"){
+                            add_caCommision += parseInt(mainBooking.caCommission);
+                        }
 
                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
                         achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
@@ -516,6 +520,9 @@ function EmployeesThisMonthBooking() {
                             }
 
                         });
+                        if(mainBooking.caCase !== "No"){
+                            add_caCommision += parseInt(mainBooking.caCommission/2);
+                        }
                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
                         if (mainBooking.bdeName === bdeName) {
                             achievedAmount += Math.floor(mainBooking.generatedReceivedAmount);
@@ -530,6 +537,9 @@ function EmployeesThisMonthBooking() {
                                     expanse = condition ? expanse + serv.expanse : expanse;
                                 }
                             });
+                            if(mainBooking.caCase !== "No"){
+                                add_caCommision += parseInt(mainBooking.caCommission);
+                            }
                         }
                     }
                 }
@@ -630,6 +640,9 @@ function EmployeesThisMonthBooking() {
                                     expanse = condition ? expanse + serv.expanse : expanse;
 
                                 }
+                                if(moreObject.caCase !== "No"){
+                                    add_caCommision += parseInt(moreObject.caCommission);
+                                }
                             });
                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
                             achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount) / 2;
@@ -642,6 +655,9 @@ function EmployeesThisMonthBooking() {
                                     expanseDate.setHours(0, 0, 0, 0);
                                     const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
                                     expanse = condition ? expanse + serv.expanse / 2 : expanse;
+                                }
+                                if(moreObject.caCase !== "No"){
+                                    add_caCommision += parseInt(moreObject.caCommission/2);
                                 }
                             });
                         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
@@ -658,6 +674,9 @@ function EmployeesThisMonthBooking() {
                                         expanse = condition ? expanse + serv.expanse : expanse;
                                     }
                                 });
+                                if(moreObject.caCase !== "No"){
+                                    add_caCommision += parseInt(moreObject.caCommission);
+                                }
                             }
                         }
                     }
@@ -732,7 +751,7 @@ function EmployeesThisMonthBooking() {
 
 
         expanse = expanse + remainingExpense + remainingMoreExpense;
-        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
+        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse - add_caCommision;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     };
 
@@ -759,9 +778,6 @@ function EmployeesThisMonthBooking() {
                     date1.getFullYear() === date2.getFullYear()
                 );
             };
-
-
-
             if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                 if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
 
@@ -772,7 +788,6 @@ function EmployeesThisMonthBooking() {
                             let expanseDate = null
                             if (serv.expanse) {
                                 expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
-
                                 expanseDate.setHours(0, 0, 0, 0);
                                 const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
                                 expanse = condition ? expanse + serv.expanse : expanse;
@@ -811,7 +826,6 @@ function EmployeesThisMonthBooking() {
                         }
                     }
                 }
-
             } else if (mainBooking.remainingPayments.length !== 0) {
                 if (mainBooking.remainingPayments.some(item => new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                     mainBooking.services.forEach(serv => {
@@ -844,13 +858,10 @@ function EmployeesThisMonthBooking() {
 
                 //     }
                 // });
+
                 mainBooking.remainingPayments.map((remainingObj) => {
                     const moreBookingDate = new Date(remainingObj.paymentDate);
-
                     moreBookingDate.setHours(0, 0, 0, 0);
-
-
-
                     if (((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                         const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
                         const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
@@ -949,7 +960,7 @@ function EmployeesThisMonthBooking() {
                                     remainingMoreExpense += serv.expanse;
                                 } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === bdeName) {
                                     remainingMoreExpense += serv.expanse;
-                                }
+                                } 
                             }
 
                         });
@@ -1011,6 +1022,7 @@ function EmployeesThisMonthBooking() {
         expanse = expanse + remainingExpense + remainingMoreExpense;
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     }
+    
     const functionCalculateTotalRevenue = (bdeName) => {
         let achievedAmount = 0;
         let remainingAmount = 0;

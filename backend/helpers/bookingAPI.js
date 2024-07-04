@@ -2904,9 +2904,13 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         date: date,
       });
     }
+    
+    // After all the database operations, socket.io will work(Even if the mail fails, the booking will be matured and socket.io will hit!)
 
     io.emit('booking-submitted', ename);
     console.log('booking emmited');
+
+    // Calculate Amounts based on different services 
 
     const totalAmount = newData.services.reduce(
       (acc, curr) => acc + parseInt(curr.totalPaymentWGST),

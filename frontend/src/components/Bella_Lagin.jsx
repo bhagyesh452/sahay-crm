@@ -6,13 +6,12 @@ import dummyImg from "../static/EmployeeImg/office-man.png";
 import { useNavigate } from 'react-router-dom';
 import No_noti_image from "../assets/media/no_noti_image.jpg"
 
-function Bella_Chao({isDM}) {
+
+function Bella_Lagin({name}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [showNotifications, setShowNotifications] = useState(false);
   const [total_notifications, setTotal_notifications] = useState([])
   const [total_notiCount, setTotal_notiCount] = useState(0);
-  const navigate = useNavigate();
-  const link = isDM ? "/datamanager/notification" : "/admin/notification"
   const notificationRef = useRef(null);
 
 
@@ -25,24 +24,9 @@ function Bella_Chao({isDM}) {
   };
 
 
-  const handleClick = async (state, index, id) => {
     
-    navigate(link, { state: { dataStatus: state } });
+
     
-    // Ensure that DOM manipulation happens after navigation
-    setTimeout(() => {
-      const element = document.getElementById(`${index}_card`);
-      if (element) {
-        element.classList.remove('unread');
-      }
-    }, 0);
-  
-    try {
-      await axios.put(`${secretKey}/requests/update-notification/${id}`);
-    } catch (err) {
-      console.error("Error updating notification status", err);
-    }
-  };
   
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
@@ -73,7 +57,7 @@ function Bella_Chao({isDM}) {
 
   const fetchNotification = async() =>{
     try{
-        const response = await axios.get(`${secretKey}/requests/get-notification`);
+        const response = await axios.get(`${secretKey}/requests/get-notification/${name}`);
         setTotal_notifications(response.data.topUnreadNotifications);
         setTotal_notiCount(response.data.totalUnreadCount);
 
@@ -141,7 +125,7 @@ function Bella_Chao({isDM}) {
             </li>
             {
                 total_notifications.length!==0 ? total_notifications.map((obj , index)=>(
-<li id={`${index}_card`} onClick={()=>handleClick(obj.requestType === "Data" ? "General" : obj.requestType === "Data Approve" ? "AddRequest" : obj.requestType === "Booking Edit" ? "editBookingRequests" : obj.requestType === "Data Approve"  ? "AddRequest" : "deleteBookingRequests" , index , obj._id)} className={obj.status === "Unread" ? 'noti-item unread bdr-btm-eee'  : 'noti-item bdr-btm-eee'}>
+<li id={`${index}_card`} >
                 <div className='noti-User-profile'>
                     <img src={obj.img_url !== "no-image" ?  `${secretKey}/employee/employeeImg/${obj.ename}/${encodeURIComponent(
                 obj.img_url
@@ -149,7 +133,7 @@ function Bella_Chao({isDM}) {
                     <div className='noti-designation'>{obj.designation}</div>
                 </div>
                 <div className='noti-data'>
-                    <p className='m-0 My_Text_Wrap' title=''><b>{obj.requestType}</b> Request Received from <b>{obj.ename}</b></p>
+                    <p className='m-0 My_Text_Wrap' title=''><b>You</b> Sent a <b>{obj.requestType} Request</b></p>
                     <div className='noti-time mt-1'>
                         {formatDate(obj.requestTime)}
                     </div>
@@ -161,16 +145,7 @@ function Bella_Chao({isDM}) {
                 </div>
                 </>
             }
-           
 
-
-            
-            
-            <li className='noti-item-footer' onClick={()=>{
-                 navigate(link);
-            }}>
-                See All
-            </li>
           </ul>
         </div>
       )}
@@ -178,4 +153,4 @@ function Bella_Chao({isDM}) {
   );
 }
 
-export default Bella_Chao;
+export default Bella_Lagin;

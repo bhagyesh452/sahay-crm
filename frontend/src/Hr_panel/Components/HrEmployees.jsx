@@ -861,6 +861,11 @@ function HrEmployees({ onEyeButtonClick }) {
                         </button>
                       </th>
                     </>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Action
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 {filteredData.length == 0 ? (
@@ -887,6 +892,22 @@ function HrEmployees({ onEyeButtonClick }) {
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
                         <td>{item.AddedOn}</td>
+                        <div className="icons-btn">
+                          <Link
+                            style={{ color: "black" }}
+                            to={`/hr/employee/employee-profile-details/${item._id}`}
+                          >
+                            <IconButton>
+                              <IconEye
+                                style={{
+                                  width: "70px",
+                                  height: "14px",
+                                  color: "#d6a10c",
+                                }}
+                              />
+                            </IconButton>
+                          </Link>
+                        </div>
                       </tr>
                     ))}
                   </tbody>

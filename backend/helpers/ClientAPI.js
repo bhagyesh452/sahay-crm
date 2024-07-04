@@ -290,15 +290,15 @@ router.post(
           }
 
           team += `
-          <!--Card For Brief About Your Business-->
-           <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
-                    <div>
-                        <h3 style="margin: 0px;">Directors Details</h3>
-                    </div> 
-                    <div>
-                        <div style="display: flex;justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
+              <!--Card For Brief About Your Business-->
+              <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                        <div>
+                            <h3 style="margin: 0px;">Directors Details</h3>
+                        </div> 
+                        <div>
+                        <div style="display: flex; justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
-                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Main Director" : ""} </div>
+                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Authorized Person" : ""} </div>
                         </div>
                         <div>
                             <div style="display: flex;">
@@ -404,7 +404,7 @@ router.post(
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nimesh@incscale.in"];
+      const email = ["support@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
