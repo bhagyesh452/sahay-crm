@@ -290,15 +290,15 @@ router.post(
           }
 
           team += `
-          <!--Card For Brief About Your Business-->
-           <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
-                    <div>
-                        <h3 style="margin: 0px;">Directors Details</h3>
-                    </div> 
-                    <div>
+              <!--Card For Brief About Your Business-->
+              <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                        <div>
+                            <h3 style="margin: 0px;">Directors Details</h3>
+                        </div> 
+                        <div>
                         <div style="display: flex;justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
-                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Main Director" : ""} </div>
+                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Authorized Person" : ""} </div>
                         </div>
                         <div>
                             <div style="display: flex;">
