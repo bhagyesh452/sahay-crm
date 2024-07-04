@@ -250,7 +250,7 @@ router.post('/exportLeads', async (req, res) => {
         query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
       }
       if (selectedUploadedDate) {
-        query.UploadedDate = {
+        query.AssignDate = {
           $gte: new Date(selectedUploadedDate).toISOString(),
           $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
         };
@@ -274,11 +274,23 @@ router.post('/exportLeads', async (req, res) => {
           };
         }
       }
+      console.log("chala" , selectedCompanyIncoDate)
       if (selectedCompanyIncoDate) {
-        query["Company Incorporation Date  "] = {
-          $gte: new Date(selectedCompanyIncoDate).toISOString(),
-          $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-        };
+        console.log(selectedCompanyIncoDate , "yahan chala")
+        const selectedDate = new Date(selectedCompanyIncoDate);
+        const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+      
+        if (isEpochDate) {
+          console.log("good")
+          // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
+          query["Company Incorporation Date  "] = null;
+        } else {
+          // Otherwise, use the selected date to find documents within that day
+          query["Company Incorporation Date  "] = {
+            $gte: new Date(selectedDate).toISOString(),
+            $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
+          };
+        }
       }
 
       // Apply data status filters
@@ -511,7 +523,7 @@ router.get('/getIds', async (req, res) => {
       query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
     if (selectedUploadedDate) {
-      query.UploadedDate = {
+      query.AssignDate = {
         $gte: new Date(selectedUploadedDate).toISOString(),
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
@@ -536,10 +548,21 @@ router.get('/getIds', async (req, res) => {
       }
     }
     if (selectedCompanyIncoDate) {
-      query["Company Incorporation Date  "] = {
-        $gte: new Date(selectedCompanyIncoDate).toISOString(),
-        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-      };
+      console.log(selectedCompanyIncoDate , "yahan chala")
+      const selectedDate = new Date(selectedCompanyIncoDate);
+      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+    
+      if (isEpochDate) {
+        console.log("good")
+        // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
+        query["Company Incorporation Date  "] = null;
+      } else {
+        // Otherwise, use the selected date to find documents within that day
+        query["Company Incorporation Date  "] = {
+          $gte: new Date(selectedDate).toISOString(),
+          $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
+        };
+      }
     }
 
     // Apply data status filters based on isFilter and isSearching

@@ -174,6 +174,12 @@ const userSchema = new mongoose.Schema({
   Financing: {
     type: String,
   },
+  UploadDeclaration: {
+    type: Array,
+  },
+  UploadRelevantDocs: {
+    type: Array,
+  },
   DirectorDetails: [DirectorSchema]
 });
 

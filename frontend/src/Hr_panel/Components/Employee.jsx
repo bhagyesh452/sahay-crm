@@ -119,7 +119,7 @@ function EmployeeProfile() {
   const fetchEmployeeData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log(response.data);
+      console.log(response.data , userId);
       const tempData = response.data;
       const data = tempData.find((item) => item._id === userId);
       console.log(data);
@@ -169,9 +169,9 @@ function EmployeeProfile() {
 
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
-      <Navbar />
-      {data && <div className="page-wrapper">
+      {data && data.length!==0 &&  <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />}
+      {data && data.length!==0 && <Navbar/>}
+      {data && data.length!==0 && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
           <div className="container-xl">
             <div className="row">
