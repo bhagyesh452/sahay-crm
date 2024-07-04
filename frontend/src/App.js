@@ -70,6 +70,7 @@ import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx"; 
+import Employee from "./Hr_panel/Components/Employee.jsx"; 
 
 
 
@@ -115,6 +116,9 @@ function App() {
           </Route>
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
+
+          {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
+          <Route path='/hr/employee/employee-profile-details' element={<Employee />}></Route>
 
 
 
@@ -233,8 +237,8 @@ function App() {
           {/**********************************************  HR-Login-Portal   *******************************************************/}
           <Route path="/hr/login" element={<HrLogin setHrToken={setHrToken} />} />
           <Route path="/hrdashboard/:userId/" element={<HrDashboard />}></Route>
-          <Route path="/hr/hr-navbar" element={<NewEmployees />} />
-          <Route path="/hr/employees" element={<HrEmployees />} />
+          <Route path="/hr/hr-navbar/" element={<NewEmployees />} />
+          <Route path="/hr/employees/:userId" element={<HrEmployees />} />
         </Routes>
 
       </BrowserRouter>

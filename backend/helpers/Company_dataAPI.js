@@ -474,6 +474,8 @@ router.get('/filter-leads', async (req, res) => {
     selectedCompanyIncoDate,
   } = req.query;
 
+  console.log(selectedYear)
+
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
@@ -513,6 +515,7 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
+        console.log("year" , year)
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
@@ -530,14 +533,26 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
+    console.log("chala" , selectedCompanyIncoDate)
     if (selectedCompanyIncoDate) {
-      baseQuery["Company Incorporation Date  "] = {
-        $gte: new Date(selectedCompanyIncoDate).toISOString(),
-        $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-      };
+      console.log(selectedCompanyIncoDate , "yahan chala")
+      const selectedDate = new Date(selectedCompanyIncoDate);
+      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+    
+      if (isEpochDate) {
+        console.log("good")
+        // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
+        baseQuery["Company Incorporation Date  "] = null;
+      } else {
+        // Otherwise, use the selected date to find documents within that day
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: new Date(selectedDate).toISOString(),
+          $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
+        };
+      }
     }
 
-    //console.log(baseQuery);
+    console.log(baseQuery);
 
     // Fetch assigned data
     let assignedQuery = { ...baseQuery, ename: { $ne: 'Not Alloted' } };
@@ -712,7 +727,7 @@ router.get('/search-leads', async (req, res) => {
     const limit = parseInt(req.query.limit) || 500; // Items per page
     const skip = (page - 1) * limit; // Number of documents to skip
 
-    console.log(searchQuery)
+    
     let searchResults;
     let assignedData = [];
     let assignedCount = 0;

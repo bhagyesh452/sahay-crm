@@ -1298,33 +1298,50 @@ function EmployeeTeamLeads() {
                 default:
                     filtered = filteredData;
             }
-            setTeamLeadsData(filtered);
+            //setTeamLeadsData(filtered);
+           
+        }else if(filteredData.length === 0 && isFilter){
+            //setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData)
         }
     
         if (filteredData.length === 1) {
             const currentStatus = filteredData[0].bdmStatus; // Access Status directly
             if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
                 setActiveTab('All');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
             } else if (currentStatus === 'Interested') {
                 setActiveTab('Interested');
+                setBdmNewStatus(currentStatus)
             } else if (currentStatus === 'FollowUp') {
                 setActiveTab('FollowUp');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
             } else if (currentStatus === 'Matured') {
                 setActiveTab('Matured');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
             } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
                 setActiveTab('Forwarded');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
             } else if (currentStatus === 'Not Interested') {
                 setActiveTab('NotInterested');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
             }
         } else if (filteredData.length > 1) {
             setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData)
             if (selectedStatus) {
                 console.log("yahan chal")
                 setBdmNewStatus(selectedStatus)
                 setActiveTab(selectedStatus);
             }
         }
-    }, [filteredData, activeTab, selectedAssignDate, selectedCompanyIncoDate, selectedNewCity, selectedState]);
+        
+    }, [filteredData, activeTab]);
     
     console.log("activetab" , activeTab);
     console.log("selectedStatus" , selectedStatus);
@@ -1360,6 +1377,7 @@ function EmployeeTeamLeads() {
                 // console.log("Filtered Data is :", response.data);
                 setFilteredData(response.data);
                 setNewFilteredData(response.data);
+                setTeamLeadsData(response.data)
             }
         } catch (error) {
             console.log("Error to filtered data :", error);
