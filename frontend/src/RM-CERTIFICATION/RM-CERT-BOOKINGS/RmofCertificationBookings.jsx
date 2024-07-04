@@ -50,6 +50,7 @@ import Stack from '@mui/material/Stack';
 import { IoFilterOutline } from "react-icons/io5";
 import { IoIosClose } from "react-icons/io";
 import { Drawer, colors } from "@mui/material";
+import { options } from '../../components/Options.js'
 
 function RmofCertificationBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -82,6 +83,7 @@ function RmofCertificationBookings() {
   const [isSearching, setIsSearching] = useState(false)
   const [isFilter, setIsFilter] = useState(false)
   const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
+  const [newEmpData, setNewEmpData] = useState([])
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -139,6 +141,7 @@ function RmofCertificationBookings() {
 
 
   const [employeeData, setEmployeeData] = useState([])
+  const [bdmList, setBdmList] = useState([])
 
   const fetchData = async () => {
     try {
@@ -149,6 +152,8 @@ function RmofCertificationBookings() {
       const userData = tempData.find((item) => item._id === rmCertificationUserId);
       console.log(userData)
       setEmployeeData(userData);
+      setNewEmpData(tempData.filter(obj => obj.designation === "Sales Executive" && !obj.bdmWork))
+      setBdmList(tempData.filter(obj => obj.designation === 'Sales Manager' || obj.bdmWork))
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -181,10 +186,11 @@ function RmofCertificationBookings() {
     }
   };
 
-  console.log("leadformdata", leadFormData)
+  console.log("totalCount", totalCount)
+  console.log("totalPages", totalPages)
 
   useEffect(() => {
-    if (!isSearching) {
+    if (!isSearching || !isFilter) {
       fetchRedesignedFormData(1);
     }
 
@@ -192,10 +198,16 @@ function RmofCertificationBookings() {
 
   useEffect(() => {
     if (!isSearching) {
-      fetchDatadebounce();
-      fetchRedesignedFormData(currentPage);
+      if (isFilter) {
+        handleFilterData(currentPage, itemsPerPage);
+      } else {
+        fetchDatadebounce();
+        fetchRedesignedFormData(currentPage);
+      }
+    } else {
+      handleFilterData(currentPage, itemsPerPage);
     }
-  }, [currentPage, isSearching]);
+  }, [currentPage, isSearching, isFilter]);
 
   const handleFetchBookingsDataForPagination = (event, value) => {
     console.log(value)
@@ -263,8 +275,8 @@ function RmofCertificationBookings() {
   };
 
 
-  console.log("currentPage", currentPage)
-  console.log("leadFormData" , leadFormData)
+  // console.log("currentPage", currentPage)
+  // console.log("leadFormData", leadFormData)
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
@@ -686,34 +698,6 @@ function RmofCertificationBookings() {
     );
   };
 
-  // const handleSubmitServicesToSwap = () => {
-  //   setDataToSend((prevData) => ({
-  //     ...prevData,
-  //     "Company Name": selectedCompanyData["Company Name"],
-  //     "Company Number": selectedCompanyData["Company Number"],
-  //     "Company Email": selectedCompanyData["Company Email"],
-  //     panNumber : selectedCompanyData.panNumber,
-  //     bdeName:selectedCompanyData.bdeName,
-  //     bdeEmail:selectedCompanyData.bdeEmail,
-  //     bdmName:selectedCompanyData.bdmName,
-  //     bdmType:selectedCompanyData.bdmType,
-  //     bookingDate:selectedCompanyData.bookingDate,
-  //     bookingSource:selectedCompanyData.bookingSource,
-  //     paymentMethod:selectedCompanyData.paymentMethod,
-  //     caCase:selectedCompanyData.caCase,
-  //     caNumber:selectedCompanyData.caNumber,
-  //     caEmail:selectedCompanyData.caEmail,
-  //     serviceName:selectedCompanyData.services.serviceName,
-  //     totalPaymentWOGST:0,
-  //     totalPaymentWGST:0,
-  //     firstPayment:0,
-  //     secondPayment:0,
-  //     thirdPayment:0,
-  //     fourthPayment:0,
-  //   }))
-
-  //   handleSendDataToMyBookings()
-  // }
 
   const handleSubmitServicesToSwap = async () => {
     // Check if selectedCompanyData is defined
@@ -819,6 +803,119 @@ function RmofCertificationBookings() {
   // console.log("listView", openListView)
   // console.log("tableView", openTableView)
 
+  //-------------------filter functions-------------------------
+  const [selectedServiceName, setSelectedServiceName] = useState("")
+  const [selectedBdeName, setSelectedBdeName] = useState("")
+  const [selectedBdmName, setselectedBdmName] = useState("")
+  const [selectedYear, setSelectedYear] = useState("")
+  const [selectedMonth, setSelectedMonth] = useState("")
+  const [daysInMonth, setDaysInMonth] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(0)
+  const [bookingDate, setBookingDate] = useState(null)
+  const [openBacdrop, setOpenBacdrop] = useState(false)
+  const [monthIndex, setMonthIndex] = useState(0)
+  const [filteredData, setFilteredData] = useState([])
+  const [bookingPublishDate, setBookingPublishDate] = useState(null)
+  //const [selectedBdmName, setselectedBdmName] = useState(second)
+
+
+  const functionCloseFilterDrawer = () => {
+    setOpenFilterDrawer(false)
+  }
+
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+  useEffect(() => {
+    let monthIndex;
+    if (selectedYear && selectedMonth) {
+      monthIndex = months.indexOf(selectedMonth);
+      setMonthIndex(monthIndex + 1)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+    } else {
+      setDaysInMonth([]);
+    }
+  }, [selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth && selectedDate) {
+      const monthIndex = months.indexOf(selectedMonth) + 1;
+      const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+      const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+      const bookingDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+      setBookingDate(bookingDate);
+    }
+  }, [selectedYear, selectedMonth, selectedDate]);
+
+  const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+    try {
+      setIsFilter(true)
+      setOpenBacdrop(true)
+      const response = await axios.get(`${secretKey}/rm-services/filter-rmofcertification-bookings/`, {
+        params: {
+          selectedServiceName,
+          selectedBdeName,
+          selectedBdmName,
+          selectedYear,
+          monthIndex,
+          bookingDate,
+          bookingPublishDate,
+          page,
+          limit,
+        }
+      });
+      console.log("response:-" , response.data)
+      if (!selectedServiceName &&
+        !selectedBdeName &&
+        !selectedBdmName &&
+        !selectedYear &&
+        !monthIndex &&
+        !bookingDate &&
+        !bookingPublishDate) {
+        // If search query is empty, reset data to mainData
+        setIsFilter(false);
+        fetchRedesignedFormData(currentPage)
+        setOpenBacdrop(false)
+      } else {
+        
+        setOpenBacdrop(false)
+        setFilteredData(response.data.data)
+        setLeadFormData(response.data.data)
+        setTotalPages(response.data.totalPages)
+        setCurrentPage(response.data.currentPage)
+        setOpenFilterDrawer(false)
+      }
+    } catch (error) {
+      console.log("Error filterinf data", error)
+    }
+
+  }
+  
+
+  const handleClearFilter = () => {
+    setIsFilter(false);
+    setSelectedBdeName("")
+    setselectedBdmName("")
+    setBookingDate(null)
+    setBookingPublishDate(null)
+    setSelectedYear('')
+    setMonthIndex(0)
+    setSelectedMonth('')
+    setSelectedDate(0)
+    setFilteredData([])
+    fetchRedesignedFormData(currentPage)
+  }
+
+  console.log("leadFormdATAS" , leadFormData)
+  console.log("filteredData" , filteredData)
+  console.log(selectedYear, selectedMonth, selectedDate)
+  console.log(bookingDate)
+  console.log(selectedServiceName)
+  //console.log("options", options)
 
 
   return (
@@ -868,7 +965,7 @@ function RmofCertificationBookings() {
                         }}
                       />
                     </div>
-                    <div className="btn-group" role="group" aria-label="Basic example">
+                    <div className="btn-group ml-1" role="group" aria-label="Basic example">
                       <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)} >
                         <IoFilterOutline className='mr-1' /> Filter
                       </button>
@@ -1030,23 +1127,6 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         ))}
-                      {/* <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-center mt-1">
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav> */}
                       <div className="d-flex align-items-center justify-content-center">
                         <Stack spacing={2}>
                           <Pagination
@@ -2099,7 +2179,7 @@ function RmofCertificationBookings() {
                             </div>
                           </div>
                         </div>
-                        {currentLeadform &&
+                        {/* {currentLeadform &&
                           (currentLeadform.paymentReceipt.length !== 0 ||
                             currentLeadform.otherDocs !== 0) && (
                             <>
@@ -2248,7 +2328,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   ))}
-                                {/* ---------- Upload Documents From Preview -----------*/}
+                          
                                 <div className="col-sm-2 mb-1">
                                   <div
                                     className="booking-docs-preview"
@@ -2283,7 +2363,7 @@ function RmofCertificationBookings() {
                                   </DialogTitle>
                                   <DialogContent>
                                     <div className="maincon">
-                                      {/* Single file input for multiple documents */}
+                                      
                                       <div
                                         style={{
                                           justifyContent: "space-between",
@@ -2356,7 +2436,7 @@ function RmofCertificationBookings() {
                                 </Dialog>
                               </div>
                             </>
-                          )}
+                          )} */}
                       </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
@@ -3130,7 +3210,7 @@ function RmofCertificationBookings() {
                                             )
                                           }
                                         >
-                                          {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                          {/* {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                             ".pdf"
                                           ) ? (
                                             <PdfImageViewerAdmin
@@ -3148,7 +3228,7 @@ function RmofCertificationBookings() {
                                               src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                               alt={"MyImg"}
                                             ></img>
-                                          )}
+                                          )} */}
                                         </div>
                                         <div className="booking-docs-preview-text">
                                           <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -3158,7 +3238,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   )}
-                                {objMain.otherDocs.map((obj) => (
+                                {/* {objMain.otherDocs.map((obj) => (
                                   <div className="col-sm-2 mb-1">
                                     <div className="booking-docs-preview">
                                       <div
@@ -3195,7 +3275,7 @@ function RmofCertificationBookings() {
                                       </div>
                                     </div>
                                   </div>
-                                ))}
+                                ))} */}
 
                                 <div className="col-sm-2 mb-1">
                                   <div
@@ -3410,181 +3490,222 @@ function RmofCertificationBookings() {
       {/* //------------------------------drawer for filter-------------------------------------- */}
 
       <Drawer
-                style={{ top: "50px" }}
-                anchor="left"
-                //open={openFilterDrawer}
-                //</div>onClose={functionCloseFilterDrawer}
-                >
-                <div style={{ width: "31em" }}>
-                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
-                        <h2 className="title m-0">
-                            Filters
-                        </h2>
-                        <div>
-                            <button style={{ background: "none", border: "0px transparent" }} 
-                            //onClick={() => functionCloseFilterDrawer()}
-                            >
-                                <IoIosClose style={{
-                                    height: "36px",
-                                    width: "32px",
-                                    color: "grey"
-                                }} />
-                            </button>
-                        </div>
-                    </div>
-                    <hr style={{ margin: "0px" }} />
-                    <div className="body-Drawer">
-                        <div className='container-xl mt-2 mb-2'>
-                            <div className='row'>
-                                <div className='col-sm-12 mt-3'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example"
-                                            // value={selectedStatus}
-                                            // onChange={(e) => {
-                                            //     setSelectedStatus(e.target.value)
-                                            // }}
-                                            >
-                                            <option selected value='Select Status'>Select Status</option>
-                                            <option value='Not Picked Up'>Not Picked Up</option>
-                                            <option value="Busy">Busy</option>
-                                            <option value="Junk">Junk</option>
-                                            <option value="Not Interested">Not Interested</option>
-                                            <option value="Untouched">Untouched</option>
-                                            <option value="Interested">Interested</option>
-                                            <option value="Matured">Matured</option>
-                                            <option value="FollowUp">Followup</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='d-flex align-items-center justify-content-between'>
-                                        <div className='form-group w-50 mr-1'>
-                                            <label for="exampleFormControlInput1" class="form-label">State</label>
-                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedState}
-                                                onChange={(e) => {
-                                                    setSelectedState(e.target.value)
-                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
-                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
-                                                    //handleSelectState(e.target.value)
-                                                }}>
-                                                <option value=''>State</option>
-                                                {stateList.length !== 0 && stateList.map((item) => (
-                                                    <option value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select> */}
-                                        </div>
-                                        <div className='form-group w-50'>
-                                            <label for="exampleFormControlInput1" class="form-label">City</label>
-                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedNewCity}
-                                                onChange={(e) => {
-                                                    setSelectedNewCity(e.target.value)
-                                                }}>
-                                                <option value="">City</option>
-                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
-                                                    <option value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select> */}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
-                                        {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedBDEName}
-                                            onChange={(e) => {
-                                                setSelectedBDEName(e.target.value)
-                                            }}>
-                                            <option value=''>Select BDE</option>
-                                            {newEmpData && newEmpData.map((item) => (
-                                                <option value={item.ename}>{item.ename}</option>))}
-                                        </select> */}
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="assignon" class="form-label">Assign On</label>
-                                        {/* <input type="date" class="form-control" id="assignon"
-                                            value={selectedAssignDate}
-                                            placeholder="dd-mm-yyyy"
-                                            defaultValue={null}
-                                            onChange={(e) => setSelectedAssignDate(e.target.value)} /> */}
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <label class="form-label">Incorporation Date</label>
-                                    <div className='row align-items-center justify-content-between'>
-                                        <div className='col form-group mr-1'>
-                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedYear}
-                                                onChange={(e) => {
-                                                    setSelectedYear(e.target.value)
-                                                }}>
-                                                <option value=''>Year</option>
-                                                {years.length !== 0 && years.map((item) => (
-                                                    <option>{item}</option>
-                                                ))}
-                                            </select> */}
-                                        </div>
-                                        <div className='col form-group mr-1'>
-                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedMonth}
-                                                disabled={selectedYear === ""}
-                                                onChange={(e) => {
-                                                    setSelectedMonth(e.target.value)
-                                                }}>
-                                                <option value=''>Month</option>
-                                                {months && months.map((item) => (
-                                                    <option value={item}>{item}</option>
-                                                ))}
-                                            </select> */}
-                                        </div>
-                                        <div className='col form-group mr-1'>
-                                            {/* <select class="form-select form-select-md" aria-label="Default select example"
-                                                disabled={selectedMonth === ''}
-                                                value={selectedDate}
-                                                onChange={(e) => setSelectedDate(e.target.value)}>
-                                                <option value=''>Date</option>
-                                                {daysInMonth.map((day) => (
-                                                    <option key={day} value={day}>{day}</option>
-                                                ))}
-                                            </select> */}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadedby" class="form-label">Uploaded By</label>
-                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
-                                            //value={selectedAdminName}
-                                            // onChange={(e) => {
-                                            //     setSelectedAdminName(e.target.value)}} 
-                                                />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadon" class="form-label">Uploaded On</label>
-                                        {/* <input type="date" class="form-control" id="Uploadon"
-                                            value={selectedUploadedDate}
-                                            defaultValue={null}
-                                            placeholder="dd-mm-yyyy"
-                                            //onChange={(e) => setSelectedUploadedDate(e.target.value)} 
-                                            /> */}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                        {/* <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
-                        <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button> */}
-                    </div>
+        style={{ top: "50px" }}
+        anchor="left"
+        open={openFilterDrawer}
+        onClose={functionCloseFilterDrawer}
+      >
+        <div style={{ width: "31em" }}>
+          <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+            <h2 className="title m-0">
+              Filters
+            </h2>
+            <div>
+              <button style={{ background: "none", border: "0px transparent" }}
+                onClick={() => functionCloseFilterDrawer()}
+              >
+                <IoIosClose style={{
+                  height: "36px",
+                  width: "32px",
+                  color: "grey"
+                }} />
+              </button>
+            </div>
+          </div>
+          <hr style={{ margin: "0px" }} />
+          <div className="body-Drawer">
+            <div className='container-xl mt-2 mb-2'>
+              <div className='row'>
+                <div className='col-sm-12 mt-3'>
+                  <div className='form-group'>
+                    <label for="exampleFormControlInput1" class="form-label">Service Name</label>
+                    <select class="form-select form-select-md" aria-label="Default select example"
+                      value={selectedServiceName}
+                      onChange={(e) => {
+                        setSelectedServiceName(e.target.value)
+                      }}
+                    >
+                      <option selected value='Select Status'>Select Service</option>
+                      {options.map((option, index) =>
+                        <option key={index} value={option.value}>{option.label}</option>)}
+                    </select>
+                  </div>
                 </div>
-            </Drawer>
+                <div className='col-sm-12 mt-2'>
+                  <div className='d-flex align-items-center justify-content-between'>
+                    {/* <div className='form-group w-50 mr-1'>
+                      <label for="exampleFormControlInput1" class="form-label">State</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedState}
+                        onChange={(e) => {
+                          setSelectedState(e.target.value)
+                          setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                          setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                          //handleSelectState(e.target.value)
+                        }}>
+                        <option value=''>State</option>
+                        {stateList.length !== 0 && stateList.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div> */}
+                    {/* <div className='form-group w-50'>
+                      <label for="exampleFormControlInput1" class="form-label">City</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedNewCity}
+                        onChange={(e) => {
+                          setSelectedNewCity(e.target.value)
+                        }}>
+                        <option value="">City</option>
+                        {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div> */}
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="exampleFormControlInput1" class="form-label">Select BDE</label>
+                    <select class="form-select form-select-md" aria-label="Default select example"
+                      value={selectedBdeName}
+                      onChange={(e) => {
+                        setSelectedBdeName(e.target.value)
+                      }}
+                    >
+                      <option value=''>Select BDE</option>
+                      {newEmpData && newEmpData.map((item) => (
+                        <option value={item.ename}>{item.ename}</option>))}
+                    </select>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="exampleFormControlInput1" class="form-label">Select BDM</label>
+                    <select class="form-select form-select-md" aria-label="Default select example"
+                      value={selectedBdmName}
+                      onChange={(e) => {
+                        setselectedBdmName(e.target.value)
+                      }}
+                    >
+                      <option value=''>Select BDM</option>
+                      {bdmList && bdmList.map((item) => (
+                        <option value={item.ename}>{item.ename}</option>))}
+                    </select>
+                  </div>
+                </div>
+                <div className='col-sm-12 mt-2'>
+                  <label class="form-label">Booking Date</label>
+                  <div className='row align-items-center justify-content-between'>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedYear}
+                        onChange={(e) => {
+                          setSelectedYear(e.target.value)
+                        }}>
+                        <option value=''>Year</option>
+                        {years.length !== 0 && years.map((item) => (
+                          <option>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedMonth}
+                        disabled={selectedYear === ""}
+                        onChange={(e) => {
+                          setSelectedMonth(e.target.value)
+                        }}>
+                        <option value=''>Month</option>
+                        {months && months.map((item) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        disabled={selectedMonth === ''}
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}>
+                        <option value=''>Date</option>
+                        {daysInMonth.map((day) => (
+                          <option key={day} value={day}>{day}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                {/* <div className='col-sm-12 mt-2'>
+                  <label class="form-label">Booking Publish Date</label>
+                  <div className='row align-items-center justify-content-between'>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedYear}
+                        onChange={(e) => {
+                          setSelectedYear(e.target.value)
+                        }}>
+                        <option value=''>Year</option>
+                        {years.length !== 0 && years.map((item) => (
+                          <option>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedMonth}
+                        disabled={selectedYear === ""}
+                        onChange={(e) => {
+                          setSelectedMonth(e.target.value)
+                        }}>
+                        <option value=''>Month</option>
+                        {months && months.map((item) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col form-group mr-1'>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        disabled={selectedMonth === ''}
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}>
+                        <option value=''>Date</option>
+                        {daysInMonth.map((day) => (
+                          <option key={day} value={day}>{day}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div> */}
+                {/* <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="Uploadedby" class="form-label">Uploaded By</label>
+                    <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
+                    //value={selectedAdminName}
+                    // onChange={(e) => {
+                    //     setSelectedAdminName(e.target.value)}} 
+                    />
+                  </div>
+                </div> */}
+                {/* <div className='col-sm-12 mt-2'>
+                  <div className='form-group'>
+                    <label for="Uploadon" class="form-label">Uploaded On</label>
+                    <input type="date" class="form-control" id="Uploadon"
+                      value={selectedUploadedDate}
+                      defaultValue={null}
+                      placeholder="dd-mm-yyyy"
+                    onChange={(e) => setSelectedUploadedDate(e.target.value)} 
+                    />
+                  </div>
+                </div> */}
+              </div>
+            </div>
+          </div>
+          <div className="footer-Drawer d-flex justify-content-between align-items-center">
+            <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+            <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
+          </div>
+        </div>
+      </Drawer>
 
 
     </div>

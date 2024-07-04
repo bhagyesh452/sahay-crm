@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useSyncExternalStore } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
@@ -64,8 +63,9 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import { GrStatusGood } from "react-icons/gr";
 import { IoAddCircle } from "react-icons/io5";
-
-
+import { IoFilterOutline } from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
+import { Country, State, City } from 'country-state-city';
 
 
 
@@ -83,7 +83,6 @@ function EmployeeTeamLeads() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const itemsPerPage = 500;
-    const [currentData, setCurrentData] = useState([])
     const [BDMrequests, setBDMrequests] = useState(null);
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -116,7 +115,68 @@ function EmployeeTeamLeads() {
     const [projectionDataNew, setProjectionDataNew] = useState([])
     const [revertBackRequestData, setRevertBackRequestData] = useState([])
     const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+    const [employeeName, setEmployeeName] = useState("");
 
+    // States for filtered and searching data :
+    const stateList = State.getStatesOfCountry("IN");
+    const cityList = City.getCitiesOfCountry("IN");
+
+    const currentYear = new Date().getFullYear();
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    //Create an array of years from 2018 to the current year
+    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+    const [isSearch, setIsSearch] = useState(false);
+    const [isFilter, setIsFilter] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
+    const [selectedStatus, setSelectedStatus] = useState("");   // State for selecting status.
+    const [filteredData, setFilteredData] = useState([]);
+    const [extraData, setExtraData] = useState([]);
+
+    // States for selecting states and cities.
+    const [selectedStateCode, setSelectedStateCode] = useState("");
+    const [selectedState, setSelectedState] = useState("");
+    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
+    const [selectedNewCity, setSelectedNewCity] = useState("");
+
+    //  States for selecting assigned date.
+    const [selectedAssignDate, setSelectedAssignDate] = useState(null);
+    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
+    const [companyIncoDate, setCompanyIncoDate] = useState(null);
+
+    //  States for selecting incorporation date.
+    const [selectedYear, setSelectedYear] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedDate, setSelectedDate] = useState(0);
+    const [monthIndex, setMonthIndex] = useState(0);
+    const [daysInMonth, setDaysInMonth] = useState([]);
+
+    useEffect(() => {
+        let monthIndex;
+        if (selectedYear && selectedMonth) {
+            monthIndex = months.indexOf(selectedMonth);
+            setMonthIndex(monthIndex + 1)
+            const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+            setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+        } else {
+            setDaysInMonth([]);
+        }
+    }, [selectedYear, selectedMonth]);
+
+    useEffect(() => {
+        if (selectedYear && selectedMonth && selectedDate) {
+            const monthIndex = months.indexOf(selectedMonth) + 1;
+            const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+            const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+            const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+            setSelectedCompanyIncoDate(companyIncoDate);
+        }
+    }, [selectedYear, selectedMonth, selectedDate]);
 
 
 
@@ -127,6 +187,7 @@ function EmployeeTeamLeads() {
             // Set the retrieved data in the state
             const tempData = response.data;
             const userData = tempData.find((item) => item._id === userId);
+            setEmployeeName(userData.ename);
             //console.log(tempData);
             setData(userData);
             //setmoreFilteredData(userData);
@@ -173,12 +234,18 @@ function EmployeeTeamLeads() {
     }, [data]);
 
     const fetchTeamLeadsData = async (status) => {
-        const bdmName = data.ename
+        const bdmName = data.ename;
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
             const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send")
             setRevertBackRequestData(revertBackRequestData)
-            setTeamData(response.data)
+            setTeamData(response.data);
+
+            const sortedData = response.data.sort((a, b) => {
+                return new Date(b["Company Incorporation Date  "]) - new Date(a["Company Incorporation Date  "]);
+            });
+            setExtraData(sortedData);
+
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -207,12 +274,12 @@ function EmployeeTeamLeads() {
         }
     }
 
-  
+
 
     //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
-        fetchData()
+        fetchData();
     }, [])
 
     useEffect(() => {
@@ -224,6 +291,7 @@ function EmployeeTeamLeads() {
         }
     }, [data.ename, revertBackRequestData.length]);
 
+    console.log("teamLeads", teamleadsData)
 
 
 
@@ -455,7 +523,7 @@ function EmployeeTeamLeads() {
         oldStatus,
         newBdmStatus
     ) => {
-       console.log(companyId)
+        console.log(companyId)
         const DT = new Date();
         try {
             const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
@@ -1015,54 +1083,56 @@ function EmployeeTeamLeads() {
         }
     };
 
-    const filteredData = teamleadsData.filter((company) => {
-        const fieldValue = company[selectedField];
+    // const filteredData = teamleadsData.filter((company) => {
+    //     const fieldValue = company[selectedField];
 
-        if (selectedField === "State" && citySearch) {
-            // Handle filtering by both State and City
-            const stateMatches = fieldValue
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-            const cityMatches = company.City.toLowerCase().includes(
-                citySearch.toLowerCase()
-            );
-            return stateMatches && cityMatches;
-        } else if (selectedField === "Company Incorporation Date  ") {
-            // Assuming you have the month value in a variable named `month`
-            if (month == 0) {
-                return fieldValue.includes(searchText);
-            } else if (year == 0) {
-                return fieldValue.includes(searchText);
-            }
-            const selectedDate = new Date(fieldValue);
-            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-            const selectedYear = selectedDate.getFullYear();
+    //     if (selectedField === "State" && citySearch) {
+    //         // Handle filtering by both State and City
+    //         const stateMatches = fieldValue
+    //             .toLowerCase()
+    //             .includes(searchText.toLowerCase());
+    //         const cityMatches = company.City.toLowerCase().includes(
+    //             citySearch.toLowerCase()
+    //         );
+    //         return stateMatches && cityMatches;
+    //     } else if (selectedField === "Company Incorporation Date  ") {
+    //         // Assuming you have the month value in a variable named `month`
+    //         if (month == 0) {
+    //             return fieldValue.includes(searchText);
+    //         } else if (year == 0) {
+    //             return fieldValue.includes(searchText);
+    //         }
+    //         const selectedDate = new Date(fieldValue);
+    //         const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+    //         const selectedYear = selectedDate.getFullYear();
 
-            // Use the provided month variable in the comparison
-            return (
-                selectedMonth.toString().includes(month) &&
-                selectedYear.toString().includes(year)
-            );
-        } else if (selectedField === "AssignDate") {
-            // Assuming you have the month value in a variable named `month`
-            return fieldValue.includes(searchText);
-        } else if (selectedField === "Status" && searchText === "All") {
-            // Display all data when Status is "All"
-            return true;
-        } else {
-            // Your existing filtering logic for other fields
-            if (typeof fieldValue === "string") {
-                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-            } else if (typeof fieldValue === "number") {
-                return fieldValue.toString().includes(searchText);
-            } else if (fieldValue instanceof Date) {
-                // Handle date fields
-                return fieldValue.includes(searchText);
-            }
+    //         // Use the provided month variable in the comparison
+    //         return (
+    //             selectedMonth.toString().includes(month) &&
+    //             selectedYear.toString().includes(year)
+    //         );
+    //     } else if (selectedField === "AssignDate") {
+    //         // Assuming you have the month value in a variable named `month`
+    //         return fieldValue.includes(searchText);
+    //     } else if (selectedField === "Status" && searchText === "All") {
+    //         // Display all data when Status is "All"
+    //         return true;
+    //     } else {
+    //         // Your existing filtering logic for other fields
+    //         if (typeof fieldValue === "string") {
+    //             return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+    //         } else if (typeof fieldValue === "number") {
+    //             return fieldValue.toString().includes(searchText);
+    //         } else if (fieldValue instanceof Date) {
+    //             // Handle date fields
+    //             return fieldValue.includes(searchText);
+    //         }
 
-            return false;
-        }
-    });
+    //         return false;
+    //     }
+    // });
+
+
 
     //---------------------------------- function to revert back company-------------------------------------
 
@@ -1089,7 +1159,7 @@ function EmployeeTeamLeads() {
 
     }
 
-    const handleRejectRevertBackCompany = async (companyId , bdmStatus) => {
+    const handleRejectRevertBackCompany = async (companyId, bdmStatus) => {
         try {
             const response = await axios.post(`${secretKey}/bdm-data/rejectrequestrevertbackcompany`, null, {
                 params: {
@@ -1103,19 +1173,275 @@ function EmployeeTeamLeads() {
             );
             setOpenRevertBackRequestDialog(false)
             fetchTeamLeadsData(bdmStatus)
-        }catch(error){
-            console.log("Error rejecting revert request" , error)
+        } catch (error) {
+            console.log("Error rejecting revert request", error)
         }
     }
 
+    // These function will close filter drawer.
+    const functionCloseFilterDrawer = () => {
+        setOpenFilterDrawer(false)
+    }
+
+
+    const [newFilteredData, setNewFilteredData] = useState([]);
+    const [activeTab, setActiveTab] = useState('All');
 
 
 
+    // useEffect(() => {
+    //     if (filteredData.length !== 0) {
+    //         if (bdmNewStatus === "All") {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Busy" ||
+    //                 obj.bdmStatus === "Not Picked Up" ||
+    //                 obj.bdmStatus === "Untouched"
+    //             ));
+    //         } else if (bdmNewStatus === "Interested") {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Interested"
+    //             ));
+    //         } else if (bdmNewStatus === 'FollowUp') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "FollowUp"
+    //             ));
+    //         } else if (bdmNewStatus === 'Matured') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //                 obj.bdmStatus === "Matured"
+    //             ));
+    //         } else if (bdmNewStatus === 'Forwarded') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //             (obj.bdmStatus !== "Not Interested" &&
+    //                 obj.bdmStatus !== "Busy" &&
+    //                 obj.bdmStatus !== "Junk" &&
+    //                 obj.bdmStatus !== "Not Picked Up" &&
+    //                 obj.bdmStatus !== "Matured")
+    //             ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+    //         } else if (bdmNewStatus === 'NotInterested') {
+    //             setTeamLeadsData(filteredData.filter((obj) =>
+    //             (obj.bdmStatus === "Not Interested" ||
+    //                 obj.bdmStatus === "Junk")
+    //             ));
+    //         }
+    //     }
+    //     if (filteredData.length === 1) {
+    //         const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+    //         if ((currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+    //             setBdmNewStatus('All')
+    //         } else if (currentStatus === 'Interested') {
+    //             setBdmNewStatus('Interested')
+    //         } else if (currentStatus === 'FollowUp') {
+    //             setBdmNewStatus('FollowUp')
+    //         } else if (currentStatus === 'Matured') {
+    //             setBdmNewStatus('Matured')
+    //         } else if (currentStatus !== "Not Interested" &&
+    //             currentStatus !== "Busy" &&
+    //             currentStatus !== 'Junk' &&
+    //             currentStatus !== 'Not Picked Up' &&
+    //             currentStatus !== 'Matured') {
+    //             setBdmNewStatus('Forwarded')
+    //         } else if (currentStatus === 'Not Interested') {
+    //             setBdmNewStatus('NotInterested')
+    //         }
+    //     } else if(filteredData.length > 1) {
+    //         setTeamLeadsData(filteredData);
+    //         setFilteredData(newFilteredData)
+    //         if(selectedStatus){
+    //             setBdmNewStatus(selectedStatus)
+    //         }
+    //     }else{
+    //         setTeamLeadsData(filteredData)
+    //     }
+    // }, [filteredData]);
 
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            let filtered;
+            switch (activeTab) {
+                case "All":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Busy" ||
+                        obj.bdmStatus === "Not Picked Up" ||
+                        obj.bdmStatus === "Untouched"
+                    );
+                    break;
+                case "Interested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Interested"
+                    );
+                    break;
+                case "FollowUp":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "FollowUp"
+                    );
+                    break;
+                case "Matured":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Matured"
+                    );
+                    break;
+                case "Forwarded":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus !== "Not Interested" &&
+                        obj.bdmStatus !== "Busy" &&
+                        obj.bdmStatus !== "Junk" &&
+                        obj.bdmStatus !== "Not Picked Up" &&
+                        obj.bdmStatus !== "Matured"
+                    ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                    break;
+                case "NotInterested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Not Interested" ||
+                        obj.bdmStatus === "Junk"
+                    );
+                    break;
+                default:
+                    filtered = filteredData;
+            }
+            setTeamLeadsData(filtered);
+        }
+    
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+            if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
+                setActiveTab('All');
+            } else if (currentStatus === 'Interested') {
+                setActiveTab('Interested');
+            } else if (currentStatus === 'FollowUp') {
+                setActiveTab('FollowUp');
+            } else if (currentStatus === 'Matured') {
+                setActiveTab('Matured');
+            } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
+                setActiveTab('Forwarded');
+            } else if (currentStatus === 'Not Interested') {
+                setActiveTab('NotInterested');
+            }
+        } else if (filteredData.length > 1) {
+            setFilteredData(newFilteredData);
+            if (selectedStatus) {
+                console.log("yahan chal")
+                setBdmNewStatus(selectedStatus)
+                setActiveTab(selectedStatus);
+            }
+        }
+    }, [filteredData, activeTab, selectedAssignDate, selectedCompanyIncoDate, selectedNewCity, selectedState]);
+    
+    console.log("activetab" , activeTab);
+    console.log("selectedStatus" , selectedStatus);
+    console.log("bdmNewStatus" , bdmNewStatus);
+
+
+    // To apply filter :
+    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+        const bdmName = data.ename;
+        console.log("BDM Name is :", bdmName);
+        try {
+            setIsFilter(true);
+            setOpenBacdrop(true);
+    
+            const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
+                params: {
+                    selectedStatus,
+                    selectedState,
+                    selectedNewCity,
+                    selectedAssignDate,
+                    selectedCompanyIncoDate,
+                    selectedYear,
+                    monthIndex,
+                    page,
+                    limit
+                }
+            });
+
+            
+            if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
+                setIsFilter(false);
+            } else {
+                // console.log("Filtered Data is :", response.data);
+                setFilteredData(response.data);
+                setNewFilteredData(response.data);
+            }
+        } catch (error) {
+            console.log("Error to filtered data :", error);
+        } finally {
+            setOpenBacdrop(false);
+            setOpenFilterDrawer(false);
+        }
+    };
+    console.log("Assigned date :",selectedAssignDate);
+
+    console.log("Team data :", teamData);
+    console.log("Filtered data :", filteredData);
+    console.log("Team lead data :", teamleadsData);
+    console.log("Is Filter :", isFilter);
+
+    // To clear filter data :
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus("");
+        setSelectedState("");
+        setSelectedNewCity("");
+        setSelectedAssignDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        setSelectedYear("");
+        setSelectedMonth("");
+        setSelectedDate(0);
+        setFilteredData([]);
+        fetchTeamLeadsData(bdmNewStatus);
+    };
+
+    const handleSearch = (searchQuery) => {
+        setIsSearch(true);
+        const searchValue = searchQuery.toLowerCase();
+
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            if (isFilter) {
+                setFilteredData(newFilteredData);
+            } else {
+                setFilteredData(extraData.filter(obj => obj.bdmStatus === bdmNewStatus || obj.bdmStatus === "Untouched"));  // Assuming extraData is your full dataset
+            }
+            return;
+        }
+        //setIsFilter(false); 
+
+
+        const dataToFilter = isFilter ? filteredData : extraData;
+
+        const filteredItems = dataToFilter.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            if (companyName && companyName.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyNumber && companyNumber.toString().includes(searchValue)) {
+                return true;
+            }
+            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyState && companyState.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+            if (companyCity && companyCity.toString().toLowerCase().includes(searchValue)) {
+                return true;
+            }
+
+            return false;
+        });
+        setFilteredData(filteredItems);
+    };
+
+    const currentData = teamleadsData.slice(startIndex, endIndex);
 
     return (
         <div>
-
             <Header name={data.ename} designation={data.designation} />
             <EmpNav userId={userId} bdmWork={data.bdmWork} />
             {!formOpen && <div className="page-wrapper">
@@ -1157,7 +1483,7 @@ function EmployeeTeamLeads() {
                                 <div className="request-title m-2 d-flex justify-content-between">
                                     <div className="request-content mr-2 text-center">
                                         <h3 className="m-0">{item.ename} has requested to revert back .
-                                        <b>{item["Company Name"]}</b> From you. Do you want accept his request?</h3>
+                                            <b>{item["Company Name"]}</b> From you. Do you want accept his request?</h3>
                                     </div>
                                 </div>
                             </div>
@@ -1170,7 +1496,7 @@ function EmployeeTeamLeads() {
                                 Yes
                             </button>
                             <button
-                                onClick={() => handleRejectRevertBackCompany(item._id , item.bdmStatus)}
+                                onClick={() => handleRejectRevertBackCompany(item._id, item.bdmStatus)}
                                 className="btn btn-danger bdr-radius-none w-100"
                             >
                                 No
@@ -1182,17 +1508,19 @@ function EmployeeTeamLeads() {
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
                 }}>
+
                     <div className="container-xl">
+
                         {/*  ----------------------------------------- Filter Starts from here...  ----------------------------------------------- */}
                         <div className="row g-2 align-items-center mb-2">
-                            <div
+                            {/* <div
                                 style={{
                                     display: "flex",
                                     justifyContent: "space-between",
                                 }}
                                 className="features"
-                            >
-                                <div style={{ display: "flex" }} className="feature1">
+                            > */}
+                                {/* <div style={{ display: "flex" }} className="feature1">
                                     <div
                                         className="form-control"
                                         style={{ height: "fit-content", width: "auto" }}
@@ -1231,9 +1559,9 @@ function EmployeeTeamLeads() {
                                                 className="form-control"
                                             />
                                         </div>
-                                    )}
+                                    )} */}
 
-                                    {visibilityOther === "block" ? (
+                                {/* {visibilityOther === "block" ? (
                                         <div
                                             style={{
                                                 //width: "20vw",
@@ -1242,9 +1570,9 @@ function EmployeeTeamLeads() {
                                             }}
                                             className="input-icon"
                                         >
-                                            <span className="input-icon-addon">
-                                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                                                <svg
+                                            <span className="input-icon-addon"> */}
+                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                {/* <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
                                                     width="20"
@@ -1280,8 +1608,8 @@ function EmployeeTeamLeads() {
                                         </div>
                                     ) : (
                                         <div></div>
-                                    )}
-                                    {visibilityOthernew === "block" ? (
+                                    )} */}
+                                {/* {visibilityOthernew === "block" ? (
                                         <div
                                             style={{
                                                 //width: "20vw",
@@ -1354,8 +1682,8 @@ function EmployeeTeamLeads() {
                                         </div>
                                     ) : (
                                         <div></div>
-                                    )}
-                                    {searchText !== "" && (
+                                    )} */}
+                                {/* {searchText !== "" && (
                                         <div
                                             style={{
                                                 display: "flex",
@@ -1369,13 +1697,13 @@ function EmployeeTeamLeads() {
                                         >
                                             {filteredData.length} results found
                                         </div>
-                                    )}
-                                </div>
-                                <div
+                                    )} */}
+                                {/* </div> */}
+                                {/* <div
                                     style={{ display: "flex", alignItems: "center" }}
                                     className="feature2"
-                                >
-                                    <div
+                                > */}
+                                    {/* <div
                                         className="form-control mr-1 sort-by"
                                         style={{ width: "190px" }}
                                     >
@@ -1477,13 +1805,13 @@ function EmployeeTeamLeads() {
                                             <option value="Interested">Interested</option>
                                             <option value="Not Interested">Not Interested</option>
                                         </select>
-                                    </div>
+                                    </div> */}
 
-                                    {selectedField === "State" && (
+                                    {/* {selectedField === "State" && (
                                         <div style={{ width: "15vw" }} className="input-icon">
-                                            <span className="input-icon-addon">
+                                            <span className="input-icon-addon"> */}
                                                 {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                                                <svg
+                                                {/* <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
                                                     width="20"
@@ -1556,19 +1884,20 @@ function EmployeeTeamLeads() {
                                             <div
                                                 className="input-icon  form-control"
                                                 style={{ margin: "0px 10px", width: "110px" }}
-                                            >
+                                            > */}
                                                 {/* <input
-                            type="number"
-                            value={year}
-                            defaultValue="Select Year"
-                            className="form-control"
-                            placeholder="Select Year.."
-                            onChange={(e) => {
-                              setYear(e.target.value);
-                            }}
-                            aria-label="Search in website"
-                          /> */}
-                                                <select
+                                                    type="number"
+                                                    value={year}
+                                                    defaultValue="Select Year"
+                                                    className="form-control"
+                                                    placeholder="Select Year.."
+                                                    onChange={(e) => {
+                                                      setYear(e.target.value);
+                                                    }}
+                                                    aria-label="Search in website"
+                                                /> */}
+
+                                                {/* <select
                                                     select
                                                     style={{ border: "none", outline: "none" }}
                                                     value={year}
@@ -1589,14 +1918,217 @@ function EmployeeTeamLeads() {
                                                 </select>
                                             </div>
                                         </>
-                                    )}
+                                    )} */}
 
 
+                                {/* </div>
+                            </div> */}
+
+
+
+                            {/* New Filter Starts From Here */}
+                            <div className="page-header d-print-none">
+                                <div className="container-xl">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="d-flex align-items-center">
+                                            <div className="btn-group">
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    <button type="button"
+                                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                        onClick={() => setOpenFilterDrawer(true)}
+                                                    >
+                                                        <IoFilterOutline className='mr-1' /> Filter
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                                            <div class="input-icon ml-1">
+                                                <span class="input-icon-addon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                        <path d="M21 21l-6 -6"></path>
+                                                    </svg>
+                                                </span>
+                                                <input
+                                                    value={searchQuery}
+                                                    onChange={(e) => {
+                                                        setSearchQuery(e.target.value);
+                                                        handleSearch(e.target.value)
+                                                        //   handleFilterSearch(e.target.value)
+                                                        //   setCurrentPage(0);
+                                                    }}
+                                                    className="form-control search-cantrol mybtn"
+                                                    placeholder="Search…"
+                                                    type="text"
+                                                    name="bdeName-search"
+                                                    id="bdeName-search" />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
+
+
                             {/* <!-- Page title actions --> */}
                         </div>
+
+                        {/* This code will open filter drawer. */}
+                        <Drawer
+                            style={{ top: "50px" }}
+                            anchor="left"
+                            open={openFilterDrawer}
+                            onClose={functionCloseFilterDrawer}>
+                            <div style={{ width: "31em" }}>
+                                <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                                    <h2 className="title m-0">
+                                        Filters
+                                    </h2>
+                                    <div>
+                                        <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                                            <IoIosClose style={{
+                                                height: "36px",
+                                                width: "32px",
+                                                color: "grey"
+                                            }} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <hr style={{ margin: "0px" }} />
+                                <div className="body-Drawer">
+                                    <div className='container-xl mt-2 mb-2'>
+                                        <div className='row'>
+                                            <div className='col-sm-12 mt-3'>
+                                                <div className='form-group'>
+                                                    <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                                        value={selectedStatus}
+                                                        onChange={(e) => {
+                                                            setSelectedStatus(e.target.value)
+                                                        }}
+                                                    >
+                                                        <option selected value='Select Status'>Select Status</option>
+                                                        <option value='Not Picked Up'>Not Picked Up</option>
+                                                        <option value="Busy">Busy</option>
+                                                        <option value="Junk">Junk</option>
+                                                        <option value="Not Interested">Not Interested</option>
+                                                        <option value="Untouched">Untouched</option>
+                                                        <option value="Interested">Interested</option>
+                                                        <option value="Matured">Matured</option>
+                                                        <option value="FollowUp">Followup</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className='col-sm-12 mt-2'>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                    <div className='form-group w-50 mr-1'>
+                                                        <label for="exampleFormControlInput1" class="form-label">State</label>
+                                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                                            value={selectedState}
+                                                            onChange={(e) => {
+                                                                setSelectedState(e.target.value)
+                                                                setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                                                setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                                                //handleSelectState(e.target.value)
+                                                            }}
+                                                        >
+                                                            <option value=''>State</option>
+                                                            {stateList.length !== 0 && stateList.map((item) => (
+                                                                <option value={item.name}>{item.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className='form-group w-50'>
+                                                        <label for="exampleFormControlInput1" class="form-label">City</label>
+                                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                                            value={selectedNewCity}
+                                                            onChange={(e) => {
+                                                                setSelectedNewCity(e.target.value)
+                                                            }}
+                                                        >
+                                                            <option value="">City</option>
+                                                            {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                                <option value={item.name}>{item.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='col-sm-12 mt-2'>
+                                                <div className='form-group'>
+                                                    <label for="assignon" class="form-label">BDE Forward Date</label>
+                                                    <input type="date" class="form-control" id="assignon"
+                                                        value={selectedAssignDate}
+                                                        placeholder="dd-mm-yyyy"
+                                                        onChange={(e) => setSelectedAssignDate(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className='col-sm-12 mt-2'>
+                                                <label class="form-label">Incorporation Date</label>
+                                                <div className='row align-items-center justify-content-between'>
+                                                    <div className='col form-group mr-1'>
+                                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                                            value={selectedYear}
+                                                            onChange={(e) => {
+                                                                setSelectedYear(e.target.value)
+                                                            }}
+                                                        >
+                                                            <option value=''>Year</option>
+                                                            {years.length !== 0 && years.map((item) => (
+                                                                <option value={item}>{item}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className='col form-group mr-1'>
+                                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                                            value={selectedMonth}
+                                                            disabled={selectedYear === ""}
+                                                            onChange={(e) => {
+                                                                setSelectedMonth(e.target.value)
+                                                            }}
+                                                        >
+                                                            <option value=''>Month</option>
+                                                            {months && months.map((item) => (
+                                                                <option value={item}>{item}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className='col form-group mr-1'>
+                                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                                            disabled={selectedMonth === ''}
+                                                            value={selectedDate}
+                                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                                        >
+                                                            <option value=''>Date</option>
+                                                            {daysInMonth.map((day) => (
+                                                                <option key={day} value={day}>{day}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                                    <button className='filter-footer-btn btn-clear'
+                                        onClick={handleClearFilter}
+                                    >Clear Filter</button>
+                                    <button className='filter-footer-btn btn-yellow'
+                                        onClick={handleFilterData}
+                                    >Apply Filter</button>
+                                </div>
+                            </div>
+                        </Drawer>
+
 
                         {/* -----------------------------------------    Table Starts from here   ------------------------------------------------ */}
                         <div class="card-header my-tab">
@@ -1607,12 +2139,13 @@ function EmployeeTeamLeads() {
                                         href="#tabs-home-5"
                                         onClick={() => {
                                             setBdmNewStatus("Untouched");
-                                            //setCurrentPage(0);
+                                            setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
-                                                        //obj.bdmStatus === "Busy" ||
-                                                        //obj.bdmStatus === "Not Picked Up" ||
+                                                        // obj.bdmStatus === "Busy" ||
+                                                        // obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Untouched"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1627,10 +2160,10 @@ function EmployeeTeamLeads() {
                                         General{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
-                                                        //obj.bdmStatus === "Busy" ||
-                                                        //obj.bdmStatus === "Not Picked Up" ||
+                                                        // obj.bdmStatus === "Busy" ||
+                                                        // obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Untouched"
                                                 ).length
                                             }
@@ -1642,9 +2175,10 @@ function EmployeeTeamLeads() {
                                         href="#tabs-activity-5"
                                         onClick={() => {
                                             setBdmNewStatus("Interested");
-                                            //setCurrentPage(0);
+                                            setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1659,7 +2193,7 @@ function EmployeeTeamLeads() {
                                         Interested
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).length
                                             }
@@ -1671,9 +2205,10 @@ function EmployeeTeamLeads() {
                                         href="#tabs-activity-5"
                                         onClick={() => {
                                             setBdmNewStatus("FollowUp");
-                                            //setCurrentPage(0);
+                                            setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1688,7 +2223,7 @@ function EmployeeTeamLeads() {
                                         Follow Up{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).length
                                             }
@@ -1700,9 +2235,10 @@ function EmployeeTeamLeads() {
                                         href="#tabs-activity-5"
                                         onClick={() => {
                                             setBdmNewStatus("Matured");
-                                            //setCurrentPage(0);
+                                            setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData
+                                                mappedData
                                                     .filter((obj) => obj.bdmStatus === "Matured")
                                                     .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1718,7 +2254,7 @@ function EmployeeTeamLeads() {
                                         <span className="no_badge">
                                             {" "}
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Matured"
                                                 ).length
                                             }
@@ -1730,9 +2266,10 @@ function EmployeeTeamLeads() {
                                         href="#tabs-activity-5"
                                         onClick={() => {
                                             setBdmNewStatus("NotInterested");
-                                            //setCurrentPage(0);
+                                            setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -1751,7 +2288,7 @@ function EmployeeTeamLeads() {
                                         Not-Interested{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -1815,7 +2352,7 @@ function EmployeeTeamLeads() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {filteredData.map((company, index) => (
+                                            {teamleadsData.map((company, index) => (
                                                 <tr
                                                     key={index}
                                                     style={{ border: "1px solid #ddd" }}
@@ -2165,12 +2702,11 @@ function EmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                     </>)}
-
-
                                                 </tr>
                                             ))}
                                         </tbody>
-                                        {teamleadsData.length === 0 && (
+
+                                        {currentData.length === 0 && (
                                             <tbody>
                                                 <tr>
                                                     <td colSpan={bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" ? "15" : "11"} className="p-2 particular">
@@ -2180,47 +2716,53 @@ function EmployeeTeamLeads() {
                                             </tbody>
                                         )}
                                         {teamleadsData.length !== 0 && (
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                }}
-                                                className="pagination"
-                                            >
-                                                <IconButton
-                                                    onClick={() =>
-                                                        setCurrentPage((prevPage) =>
-                                                            Math.max(prevPage - 1, 0)
-                                                        )
-                                                    }
-                                                    disabled={currentPage === 0}
-                                                >
-                                                    <IconChevronLeft />
-                                                </IconButton>
-                                                {/* <span>
-                          Page {currentPage + 1} of{" "}
-                          {Math.ceil(filteredData.length / itemsPerPage)}
-                        </span> */}
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan={16}>
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                            }}
+                                                            className="pagination"
+                                                        >
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    setCurrentPage((prevPage) =>
+                                                                        Math.max(prevPage - 1, 0)
+                                                                    )
+                                                                }
+                                                                disabled={currentPage === 0}
+                                                            >
+                                                                <IconChevronLeft />
+                                                            </IconButton>
+                                                            <span>
+                                                                Page {currentPage + 1} of{" "}
+                                                                {Math.ceil(teamleadsData.length / itemsPerPage)}
+                                                            </span>
 
-                                                {/* <IconButton
-                          onClick={() =>
-                            setCurrentPage((prevPage) =>
-                              Math.min(
-                                prevPage + 1,
-                                Math.ceil(filteredData.length / itemsPerPage) -
-                                1
-                              )
-                            )
-                          }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                          }
-                        >
-                          <IconChevronRight />
-                        </IconButton> */}
-                                            </div>
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    setCurrentPage((prevPage) =>
+                                                                        Math.min(
+                                                                            prevPage + 1,
+                                                                            Math.ceil(teamleadsData.length / itemsPerPage) -
+                                                                            1
+                                                                        )
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    currentPage ===
+                                                                    Math.ceil(teamleadsData.length / itemsPerPage) - 1
+                                                                }
+                                                            >
+                                                                <IconChevronRight />
+                                                            </IconButton>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
                                         )}
                                     </table>
                                 </div>
@@ -2229,6 +2771,7 @@ function EmployeeTeamLeads() {
                     </div>
 
                 </div>
+
             </div>}
             {formOpen && maturedBooking && (
                 <>
