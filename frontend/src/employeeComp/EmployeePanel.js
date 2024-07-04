@@ -4926,7 +4926,7 @@ function EmployeePanel() {
                 />
                 <label htmlFor="general">General Data </label>
               </div>
-              <div
+              {/* <div
                 style={
                   selectedOption === "notgeneral"
                     ? {
@@ -4944,8 +4944,7 @@ function EmployeePanel() {
                 className="notgeneral form-control col"
                 onClick={() => {
                   setSelectedOption("notgeneral");
-                }}
-              >
+                }}>
                 <input
                   type="radio"
                   id="notgeneral"
@@ -4957,7 +4956,7 @@ function EmployeePanel() {
                   onChange={handleOptionChange}
                 />
                 <label htmlFor="notgeneral">Manual</label>
-              </div>
+              </div> */}
             </div>
             {selectedOption === "notgeneral" ? (
               <>
