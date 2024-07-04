@@ -146,7 +146,7 @@ router.post("/requestData", async (req, res) => {
 
     const requestCreate = {
       ename: name,
-      requestType: "Lead Data",
+      requestType: `${dAmonut} of `,
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
