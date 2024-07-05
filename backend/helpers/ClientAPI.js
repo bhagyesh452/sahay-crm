@@ -452,7 +452,9 @@ router.post(
         UploadPhotos,
         RelevantDocument,
         UploadAuditedStatement,
-        UploadProvisionalStatement
+        UploadProvisionalStatement,
+        UploadDeclaration,
+        UploadRelevantDocs
       )
         .then((info) => {
           console.log("Email Sent:");

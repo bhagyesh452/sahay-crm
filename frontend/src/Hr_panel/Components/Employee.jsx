@@ -27,6 +27,7 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
+import Swal from 'sweetalert2';
 import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "../Components/Navbar/Navbar.jsx";
 
@@ -46,6 +47,13 @@ function EmployeeProfile() {
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);
+  const [editempinfo , setEditEmpInfo] = useState(false);
+
+
+  const [personalEmail, setPersonalEmail] = useState('');
+  const [personalPhone, setPersonalPhone] = useState('');
+  const [contactPerson, setContactPerson] = useState('');
+  const [personalAddress, setPersonalAddress] = useState('');
 
 
 
@@ -94,7 +102,11 @@ function EmployeeProfile() {
     } else {
       alert("No file selected.");
     }
+    closePopUp();
   };
+
+
+
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
@@ -119,11 +131,20 @@ function EmployeeProfile() {
   const fetchEmployeeData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log(response.data , userId);
+      console.log(response.data , userId);  
       const tempData = response.data;
       const data = tempData.find((item) => item._id === userId);
       console.log(data);
       setEmployeeData(data);
+
+
+      // set the personal details fields
+      setPersonalEmail(data.personalEmail || '')
+      setPersonalPhone(data.personalPhone || '');
+      setContactPerson(data.contactPerson || '');
+      setPersonalAddress(data.personalAddress || '');
+
+
       setdata(data);
     } catch (error) {
       console.error("Error fetching employee data", error);
@@ -164,11 +185,61 @@ function EmployeeProfile() {
       editable: false,     // Disable editing for this event
     }
   ]
+  
+
+  // Edit Employee Information from Hr
+
+  const functionEditEmployee = () => {
+    setEditEmpInfo(true);
+  }
+
+  const closePopUp = () => {
+    setEditEmpInfo(false);
+  }
+
+
+  // Handle form submission
+  const handlePersonalDetailsSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.put(
+        `${secretKey}/api/employee/personal-details/${userId}`,
+        {
+          personalEmail,
+          personalPhone,
+          contactPerson,
+          personalAddress,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${newtoken}`,
+          },
+        }
+      );
+
+      console.log('Personal details updated successfully:', response.data);
+      Swal.fire({
+        title: 'Success!',
+        text: 'Personal details updated successfully.',
+        icon: 'success',
+      });
+      fetchEmployeeData();
+    } catch (error) {
+      console.error('Error updating personal details:', error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update personal details.',
+        icon: 'error',
+      });
+    }
+  };
 
 
 
   return (
     <div>
+      
       {data && data.length!==0 &&  <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />}
       {data && data.length!==0 && <Navbar/>}
       {data && data.length!==0 && <div className="page-wrapper">
@@ -329,6 +400,9 @@ function EmployeeProfile() {
                           <div className="EP_Other_info">
                             <div className="EP_Other_info_head">
                               Personal Details
+                              <span className="employee-personal-details" onClick={functionEditEmployee}>
+                              +
+                              </span>
                             </div>
                             <div className="EP_Other_info_body">
                               <div className="row m-0 bdr-btm-eee">
@@ -343,7 +417,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                      nirmeshparekh1@gmail.com
+                                    {data.personalEmail || 'N/A'}
                                     </div>
                                   </div>
                                 </div>
@@ -360,7 +434,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                      +91 99242 83530
+                                    {data.personalPhone || 'N/A'}
                                     </div>
                                   </div>
                                 </div>
@@ -378,7 +452,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">Nimesh</div>
+                                    <div className="ep_info_t">{data.contactPerson || 'N/A'}</div>
                                   </div>
                                 </div>
                               </div>
@@ -393,7 +467,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">02 Dec 2023</div>
+                                    <div className="ep_info_t">{data.personalAddress || 'N/A'}</div>
                                   </div>
                                 </div>
                               </div>
@@ -553,6 +627,75 @@ function EmployeeProfile() {
           </div>
         </div>
       </div>}
+      <Dialog className='My_Mat_Dialog' open={editempinfo} onClose={closePopUp} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Employee Info{" "}
+          <IconButton onClick={closePopUp} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document" onSubmit={handlePersonalDetailsSubmit}>
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Personal Email</label>
+                  <input
+                    type="email"
+                    value={personalEmail}
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Personal name"
+                    onChange={(e) => {
+                      setPersonalEmail(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Personal Phone No.</label>
+                    <input
+                      value={personalPhone}
+                      type="number"
+                      className="form-control"
+                      onChange={(e) => {
+                        setPersonalPhone(e.target.value);
+                      }}
+                    />
+                  </div>
+                <div className="mb-3">
+                  <label className="form-label">Personal Contact Person</label>
+                  <input
+                    value={contactPerson}
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Contact Person"
+                    onChange={(e) => {
+                      setContactPerson(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Personal Address</label>
+                  <input
+                    value={personalAddress}
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Personal Address"
+                    onChange={(e) => {
+                      setPersonalAddress(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <Button className="btn btn-primary bdr-radius-none" type="submit" variant="contained">
+          Save Changes
+        </Button>
+      </Dialog>
     </div>
   );
 }

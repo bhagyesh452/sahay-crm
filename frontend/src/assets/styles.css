@@ -2257,6 +2257,18 @@ td input {
     transition: transform .2s;
     box-shadow: 3px 4px 12px -3px #686868;
 }
+.employee-personal-details {
+    width: 30px;
+    text-align: center;
+    height: 30px;
+    border-radius: 100px;
+    background: #ffba00;
+    right: 10px;
+    bottom: 10px;
+    cursor: pointer;
+    transition: transform .2s;
+    box-shadow: 3px 4px 12px -3px #686868;
+}
 .profile-pic-upload:hover
 {
   color: #ffba00;
