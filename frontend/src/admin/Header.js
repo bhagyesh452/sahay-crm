@@ -67,7 +67,8 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
-      enqueueSnackbar(`Booking Edit Request for ${res}`, {
+      console.log(res.bdeName , res.bdmName)
+      enqueueSnackbar(`Booking Edit Request by ${res.bdeName}`, {
         variant: 'reportComplete',
         persist:true
       });
