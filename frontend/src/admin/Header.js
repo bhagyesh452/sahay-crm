@@ -18,6 +18,7 @@ import notification_audio from "../assets/media/notification_tone.mp3"
 import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
 import Bella_Chao from "./Bella_Chao";
+import booking_audio from "../assets/media/Booking-received.mp3"
 
 // import "./styles/header.css"
 
