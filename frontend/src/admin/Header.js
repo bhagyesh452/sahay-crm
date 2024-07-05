@@ -17,7 +17,7 @@ import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notis
 import notification_audio from "../assets/media/notification_tone.mp3"
 import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
-import Bella_Chao from "./Bella_Chao";
+import Notification_BOX from "./Notification_BOX";
 import booking_audio from "../assets/media/Booking-received.mp3"
 
 // import "./styles/header.css"
@@ -135,7 +135,7 @@ function Header({ name, designation}) {
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
           {/* <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
            */}
-          <Bella_Chao/>
+          <Notification_BOX/>
           
           <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} />
             <div className="nav-item dropdown">
