@@ -151,6 +151,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     let expanse = 0;
     let remainingExpense = 0;
     let remainingMoreExpense = 0;
+    let add_caCommision = 0;
     const today = new Date();
 
 
@@ -196,6 +197,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               expanse = expanseCondition ? expanse + serv.expanse : expanse;
             }
           });
+          if(mainBooking.caCase === "Yes"){
+            add_caCommision += parseInt(mainBooking.caCommission)
+          }
         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
           mainBooking.services.map(serv => {
@@ -221,6 +225,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               expanse = expanseCondition ? expanse + serv.expanse / 2 : expanse;
             }
           });
+          if (mainBooking.caCase === "Yes") {
+            add_caCommision += parseInt(mainBooking.caCommission)/2;
+        }
         } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
           if (mainBooking.bdeName === data.ename) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
@@ -247,6 +254,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 expanse = expanseCondition ? expanse + serv.expanse : expanse;
               }
             });
+            if (mainBooking.caCase === "Yes") {
+              add_caCommision += parseInt(mainBooking.caCommission);
+          }
           }
         }
       } else if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
@@ -355,6 +365,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 expanse = expanseCondition ? expanse + serv.expanse : expanse;
               }
             });
+            if (moreObject.caCase === "Yes") {
+              add_caCommision += parseInt(moreObject.caCommission);
+          }
           } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
             moreObject.services.map(serv => {
@@ -380,6 +393,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 expanse = expanseCondition ? expanse + serv.expanse : expanse;
               }
             });
+            if (moreObject.caCase === "Yes") {
+              add_caCommision += parseInt(moreObject.caCommission)/2;
+          }
           } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
             if (moreObject.bdeName === data.ename) {
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
@@ -406,6 +422,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                   expanse = expanseCondition ? expanse + serv.expanse : expanse;
                 }
               });
+              if (moreObject.caCase === "Yes") {
+                add_caCommision += parseInt(moreObject.caCommission);
+            }
             }
           }
 
@@ -479,7 +498,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
 
     })
-    return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense;
+    return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   };
   const functionCalculateAdvanceCollected = () => {
     let achievedAmount = 0;

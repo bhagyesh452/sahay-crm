@@ -614,7 +614,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         ...newData,
       });
       const name = newData.bdeName;
-      const bdmname = newData.bdmname;
+      const bdmName = newData.bdmName;
       const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
       let GetEmployeeProfile = "no-image"
       if (GetEmployeeData) {
@@ -644,7 +644,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
 
       socketIO.emit('editBooking_requested', {
         bdeName: name,
-        bdmname:bdmname, 
+        bdmName:bdmName, 
       });
 
       res.status(201).json(createdData);
