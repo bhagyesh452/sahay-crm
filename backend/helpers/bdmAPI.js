@@ -236,6 +236,9 @@ console.log(selectedAssignDate)
 
 router.post("/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
+  const socketIO = req.io;
+  
+ 
   console.log(id)
   const {
     newBdmStatus,
@@ -255,11 +258,18 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
-    await CompanyModel.findByIdAndUpdate(id, {
+    const company = await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
+
+    socketIO.emit("bdmDataAcceptedRequest" , {
+      ename : company.ename,
+      companyName : company["Company Name"]
+    })
+
+    console.log(company.ename)
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
