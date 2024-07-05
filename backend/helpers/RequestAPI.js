@@ -16,6 +16,7 @@ const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const NotiModel = require('../models/Notifications.js');
 const adminModel = require('../models/Admin.js');
+const { clouddebugger } = require('googleapis/build/src/apis/clouddebugger/index.js');
 
 
 router.post("/requestCompanyData", async (req, res) => {
@@ -154,6 +155,7 @@ router.post("/requestData", async (req, res) => {
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
+    console.log("saved" , savedRequest)
 
     // Emit a socket event to notify clients about the new request
     socketIO.emit("newRequest", savedRequest);
@@ -297,7 +299,10 @@ router.post("/requestgData", async (req, res) => {
     const saveRequest = await addRequest.save();
 
 
-    socketIO.emit("newRequest", name);
+    socketIO.emit("newRequest",{
+      name:name,
+      dAmonut:numberOfData,
+    });
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
 

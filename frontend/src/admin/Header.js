@@ -43,7 +43,7 @@ function Header({ name, designation}) {
     
 
     socket.on("delete-booking-requested", (res) => {
-      enqueueSnackbar(`${res} sent a Booking Delete Request`, {
+      enqueueSnackbar(`Booking Delete Request Received From ${res}`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -59,7 +59,8 @@ function Header({ name, designation}) {
     });
     
     socket.on("newRequest", (res) => {
-      enqueueSnackbar(`New Data Request from ${res}`, {
+      console.log("res" , res)
+      enqueueSnackbar(`${res.name} Is Asking For ${res.dAmonut} General Data`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -68,8 +69,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
-      console.log(res.bdeName , res.bdmName)
-      enqueueSnackbar(`Booking Edit Request by ${res.bdeName}`, {
+      enqueueSnackbar(`Booking Edit Request Received From ${res.bdeName}`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -78,7 +78,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("approve-request", (res) => {
-      enqueueSnackbar(`Data Approve Request from ${res}`, {
+      enqueueSnackbar(`Lead Upload Request Received From ${res}`, {
         variant: 'reportComplete',
         persist:true
       });
