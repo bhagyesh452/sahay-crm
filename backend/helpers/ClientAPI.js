@@ -523,7 +523,7 @@ router.post(
         !CompanyAddress || CompanyAddress == ""
           ? `
               <span class="variable_span" 
-                    style="width: 470px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
+                    style="width: 473px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
               "></span><br>
               <span class="variable_span" 
                     style="width: 280px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
