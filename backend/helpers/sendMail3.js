@@ -47,29 +47,17 @@ async function createTransporter() {
 const processAttachments = (files) => {
   const attachments = [];
 
-  if (Array.isArray(files)) {
-    files.forEach((file) => {
-      const mimeType = mime.lookup(file.filename);
-      const attachment = {
-        filename: file.originalname,
-        contentType: mimeType,
-        content: file,
-      };
 
-      attachments.push(attachment);
-    });
-  }
+  files.forEach((file) => {
+    const mimeType = mime.lookup(file.filename);
+    const attachment = {
+      filename: file.originalname,
+      contentType: mimeType,
+      content: file,
+    };
 
-  // files.forEach((file) => {
-  //   const mimeType = mime.lookup(file.filename);
-  //   const attachment = {
-  //     filename: file.originalname,
-  //     contentType: mimeType,
-  //     content: file,
-  //   };
-
-  //   attachments.push(attachment);
-  // });
+    attachments.push(attachment);
+  });
 
   return attachments;
 };
@@ -93,7 +81,7 @@ const sendMail3 = async (
 ) => {
   try {
     const newRecepients = recipients;
-    newRecepients.push("support@startupsahay.com")
+    newRecepients.push("nisargpatel@startupsahay.com")
     const transporter = await createTransporter();
     const paymentReceiptAttachments = processAttachments(attachment1);
     const paymentReceiptAttachments2 = processAttachments(attachment2);

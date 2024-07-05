@@ -2450,9 +2450,6 @@ app.put("/api/employee/personal-details/:id", async( req , res ) => {
     }
 
     res.json({  message: " Personal details updated successfully ", updatedData  });
-
-
-
   } catch (error) {
     console.error("Error details updated successfully", updatedData);
     res.status(500).json({error: "Interval Server Error" });

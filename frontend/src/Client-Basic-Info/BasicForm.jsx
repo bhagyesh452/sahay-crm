@@ -190,7 +190,7 @@ const BasicForm = () => {
             });
           });
         }
-      });
+      }); 
 
       const response = await fetch(
         `${secretKey}/clientform/basicinfo-form/${formData.CompanyName}`,

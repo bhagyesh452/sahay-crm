@@ -408,7 +408,7 @@ router.post(
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["support@startupsahay.com"];
+      const email = ["nisargpatel@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
@@ -452,7 +452,9 @@ router.post(
         UploadPhotos,
         RelevantDocument,
         UploadAuditedStatement,
-        UploadProvisionalStatement
+        UploadProvisionalStatement,
+        UploadDeclaration,
+        UploadRelevantDocs
       )
         .then((info) => {
           console.log("Email Sent:");

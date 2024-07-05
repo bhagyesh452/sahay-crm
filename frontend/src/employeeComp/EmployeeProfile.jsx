@@ -98,7 +98,7 @@ function EmployeeProfile() {
   };
 
 
-  
+
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
