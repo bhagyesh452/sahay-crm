@@ -205,7 +205,7 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     type: String,
   },
   caCommission: {
-    type: String,
+    type: Number,
   },
   paymentMethod: {
     type: String,
