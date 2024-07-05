@@ -299,7 +299,10 @@ router.post("/requestgData", async (req, res) => {
     const saveRequest = await addRequest.save();
 
 
-    socketIO.emit("newRequest", name);
+    socketIO.emit("newRequest",{
+      name:name,
+      dAmonut:numberOfData,
+    });
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
 

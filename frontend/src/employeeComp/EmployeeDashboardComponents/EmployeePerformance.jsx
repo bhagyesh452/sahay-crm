@@ -298,7 +298,7 @@ function EmployeePerformance({ data}) {
                         <th>Name</th>
                         <th>Branch</th>
 
-                        <th style={{  borderRadius:' 0 8px  0 0'}}>Achievement Ratio</th>         
+                        <th style={{  borderRadius:' 0 8px  0 0'}}>Achievement</th>         
                     </tr>
                 </thead>
                 {sortedEmployeeData.length!==0 && <tbody>

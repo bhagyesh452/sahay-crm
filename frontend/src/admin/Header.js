@@ -59,7 +59,7 @@ function Header({ name, designation}) {
     });
     socket.on("newRequest", (res) => {
       console.log("res" , res)
-      enqueueSnackbar(`${res} Is Asking For 100 General Data`, {
+      enqueueSnackbar(`${res.name} Is Asking For ${res.dAmonut} General Data`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -68,12 +68,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
-<<<<<<< HEAD
-      enqueueSnackbar(`Booking Edit Request Received From ${res}`, {
-=======
-      console.log(res.bdeName , res.bdmName)
-      enqueueSnackbar(`Booking Edit Request by ${res.bdeName}`, {
->>>>>>> 9482912086fe3a615b29493a6b702704138fe1e4
+      enqueueSnackbar(`Booking Edit Request Received From ${res.bdeName}`, {
         variant: 'reportComplete',
         persist:true
       });
