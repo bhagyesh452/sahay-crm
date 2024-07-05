@@ -1266,13 +1266,13 @@ function EmployeeTeamLeads() {
                 (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
             );
         });
-
         setNewFilteredData(filteredItems);
         setFilteredData(filteredItems);
         filterByTab(filteredItems);
     };
 
     const filterByTab = (data) => {
+        console.log("data is :", data);
         let filtered;
 
         switch (activeTab) {
@@ -1316,7 +1316,6 @@ function EmployeeTeamLeads() {
             default:
                 filtered = data;
         }
-
         setTeamLeadsData(filtered);
     };
 
@@ -1343,7 +1342,7 @@ function EmployeeTeamLeads() {
             }
             setTeamLeadsData(filteredData);
         }
-    }, [filteredData, activeTab, isFilter, newFilteredData, selectedStatus]);
+    }, [filteredData, activeTab]);
 
     console.log("Is Search :", isSearch);
 
@@ -1998,48 +1997,46 @@ function EmployeeTeamLeads() {
 
                             {/* New Filter Starts From Here */}
                             <div className="page-header d-print-none">
-                                <div className="container-xl">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                            <div className="btn-group">
-                                                <div className="btn-group" role="group" aria-label="Basic example">
-                                                    <button type="button"
-                                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                                        onClick={() => setOpenFilterDrawer(true)}
-                                                    >
-                                                        <IoFilterOutline className='mr-1' /> Filter
-                                                    </button>
-                                                </div>
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center">
+                                        <div className="btn-group">
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                <button type="button"
+                                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                    onClick={() => setOpenFilterDrawer(true)}
+                                                >
+                                                    <IoFilterOutline className='mr-1' /> Filter
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="d-flex align-items-center">
-                                            {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
                                     </div>
-                                )} */}
-                                            <div class="input-icon ml-1">
-                                                <span class="input-icon-addon">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                        <path d="M21 21l-6 -6"></path>
-                                                    </svg>
-                                                </span>
-                                                <input
-                                                    value={searchQuery}
-                                                    onChange={(e) => {
-                                                        setSearchQuery(e.target.value);
-                                                        handleSearch(e.target.value)
-                                                        //   handleFilterSearch(e.target.value)
-                                                        //   setCurrentPage(0);
-                                                    }}
-                                                    className="form-control search-cantrol mybtn"
-                                                    placeholder="Search…"
-                                                    type="text"
-                                                    name="bdeName-search"
-                                                    id="bdeName-search" />
-                                            </div>
+                                    <div className="d-flex align-items-center">
+                                        {/* {selectedRows.length !== 0 && (
+                                <div className="selection-data" >
+                                    Total Data Selected : <b>{selectedRows.length}</b>
+                                </div>
+                            )} */}
+                                        <div class="input-icon ml-1">
+                                            <span class="input-icon-addon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                    <path d="M21 21l-6 -6"></path>
+                                                </svg>
+                                            </span>
+                                            <input
+                                                value={searchQuery}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    handleSearch(e.target.value)
+                                                    //   handleFilterSearch(e.target.value)
+                                                    //   setCurrentPage(0);
+                                                }}
+                                                className="form-control search-cantrol mybtn"
+                                                placeholder="Search…"
+                                                type="text"
+                                                name="bdeName-search"
+                                                id="bdeName-search" />
                                         </div>
                                     </div>
                                 </div>
