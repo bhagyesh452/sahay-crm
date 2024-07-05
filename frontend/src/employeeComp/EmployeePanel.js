@@ -1699,6 +1699,7 @@ function EmployeePanel() {
       ...data,
       ename: name,
     }));
+    console.log("updatedCsvData" , updatedCsvdata)
     //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {

@@ -26,6 +26,7 @@ router.post("/requestCompanyData", async (req, res) => {
   let dataArray = [];
   if (Array.isArray(csvData)) {
     dataArray = csvData;
+    console.log("dataArray" , dataArray)
   } else if (typeof csvData === "object" && csvData !== null) {
     dataArray.push(csvData);
   } else {
