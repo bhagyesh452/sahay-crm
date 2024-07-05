@@ -1245,10 +1245,7 @@ function EmployeeTeamLeads() {
         if (!searchQuery || searchQuery.trim().length === 0) {
             setIsSearch(false);
             setIsFilter(false);
-            //filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
-            setFilteredData([]);
-            //fetchTeamLeadsData("Untouched")
-            setTeamData(extraData)
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
             return;
         }
 
@@ -1269,7 +1266,6 @@ function EmployeeTeamLeads() {
                 (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
             );
         });
-
         setNewFilteredData(filteredItems);
         setFilteredData(filteredItems);
         filterByTab(filteredItems);
