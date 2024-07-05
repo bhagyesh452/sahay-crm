@@ -747,6 +747,7 @@ function EmployeesThisMonthBooking() {
 
         expanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
+        console.log("totalAchivedAmount" , totalAchievedAmount)
         return achievedAmount + Math.floor(remainingAmount) - expanse;
     };
 

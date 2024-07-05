@@ -86,7 +86,7 @@ export default function RedesignedForm({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -749,7 +749,7 @@ export default function RedesignedForm({
           isEmptyOrNull(leadData["Company Name"]) ||
           isEmptyOrNull(leadData["Company Number"]) ||
           isEmptyOrNull(leadData.incoDate) ||
-          isEmptyOrNull(leadData.panNumber)
+          isEmptyOrNull(leadData.panNumber) 
         ) {
           Swal.fire({
             title: "Please fill all the details",
@@ -829,6 +829,10 @@ export default function RedesignedForm({
       if (activeStep === 2) {
         if (!leadData.caCase) {
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+          return true;
+        }
+        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+          Swal.fire("Please Enter CA Commission"); 
           return true;
         }
         let isValid = true;
@@ -924,6 +928,8 @@ export default function RedesignedForm({
             generatedTotalAmount: generatedTotalAmount
           };
 
+          console.log("This is sending active step 3", dataToSend);
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step3`,
@@ -948,7 +954,6 @@ export default function RedesignedForm({
           );
           return true;
         }
-       
         const totalAmount = leadData.services.reduce(
           (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
           0
@@ -2895,7 +2900,7 @@ export default function RedesignedForm({
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"

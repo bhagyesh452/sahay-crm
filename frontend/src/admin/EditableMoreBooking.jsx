@@ -83,7 +83,7 @@ export default function EditableMoreBooking({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -1099,6 +1099,10 @@ export default function EditableMoreBooking({
     if (activeStep === 2) {
       if (!leadData.caCase) {
         Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+        return true;
+      }
+      if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+        Swal.fire("Please Enter CA Commission"); 
         return true;
       }
 
@@ -3094,7 +3098,7 @@ export default function EditableMoreBooking({
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"
