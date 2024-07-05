@@ -79,7 +79,7 @@ export default function EditableLeadform({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -606,6 +606,14 @@ export default function EditableLeadform({
         }
       }
       if (activeStep === 2) {
+        if (!leadData.caCase) {
+          Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+          return true;
+        }
+        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+          Swal.fire("Please Enter CA Commission"); 
+          return true;
+        }
 
         let isValid = true;
         for (let service of leadData.services) {
@@ -674,7 +682,7 @@ export default function EditableLeadform({
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
           };
-          console.log("This is sending", dataToSend);
+          console.log("This is sending active step 2", dataToSend);
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step3`,
@@ -2345,7 +2353,7 @@ export default function EditableLeadform({
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"

@@ -18,7 +18,7 @@ const leadSchema = new mongoose.Schema({
     caCase: String,
     caNumber: Number,
     caEmail: String,
-    caCommission: String,
+    caCommission: Number,
     companyName: String,
     contactNumber: Number,
     companyEmail: String,
