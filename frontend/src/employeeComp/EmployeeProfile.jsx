@@ -96,6 +96,9 @@ function EmployeeProfile() {
       alert("No file selected.");
     }
   };
+
+
+  
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
@@ -140,7 +143,6 @@ function EmployeeProfile() {
 
 
   // const today = new Date().toISOString().split('T')[0];
-
   const events = [
     
     {
@@ -327,7 +329,7 @@ function EmployeeProfile() {
                           </div>
                         </div>
                         <div className="col-sm-6 p-0 bdr-left-eee">
-                          <div className="EP_Other_info">
+                          <div className="EP_Other_info d-flex justify-content-between">
                             <div className="EP_Other_info_head">
                               Personal Details
                             </div>
@@ -344,7 +346,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                      nirmeshparekh1@gmail.com
+                                      {data.personal_email}
                                     </div>
                                   </div>
                                 </div>

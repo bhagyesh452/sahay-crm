@@ -2424,6 +2424,38 @@ app.post("/api/hrlogin", async (req, res) => {
 });
 
 
+/**************************************Employee Edit API - HR********************************************************************/
+
+app.put("/api/employee/personal-details/:id", async( req , res ) => {
+  const id = req.params.id;
+  const { personal_email , personal_number , personal_contact_person , personal_address } = req.body;
+
+  try {
+    const updatedData = await adminModel.findByIdAndUpdate(
+      id,
+      {
+        personal_email,
+        personal_number,
+        personal_contact_person, 
+        personal_address
+      },
+      { new: true }
+    );
+
+    if (!updatedData) {
+      res.status(404).json({ error: " Data Not Found " });
+    }
+
+    res.json({  message: " Personal details updated successfully ", updatedData  });
+
+
+
+  } catch (error) {
+    console.error("Error details updated successfully", updatedData);
+    res.status(500).json({error: "Interval Server Error" });
+  }
+})
+
 
 
 http.listen(3001, function () {

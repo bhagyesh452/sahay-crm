@@ -46,6 +46,7 @@ function EmployeeProfile() {
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);
+  const [editempinfo , setEditEmpInfo] = useState(false);
 
 
 
@@ -94,7 +95,11 @@ function EmployeeProfile() {
     } else {
       alert("No file selected.");
     }
+    closePopUp();
   };
+
+
+  
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
@@ -164,6 +169,17 @@ function EmployeeProfile() {
       editable: false,     // Disable editing for this event
     }
   ]
+  
+
+  // Edit Employee Information from Hr
+
+  const functionEditEmployee = () => {
+    setEditEmpInfo(true);
+  }
+
+  const closePopUp = () => {
+    setEditEmpInfo(false);
+  }
 
 
 
@@ -329,6 +345,9 @@ function EmployeeProfile() {
                           <div className="EP_Other_info">
                             <div className="EP_Other_info_head">
                               Personal Details
+                              <span className="employee-personal-details" onClick={functionEditEmployee}>
+                              +
+                              </span>
                             </div>
                             <div className="EP_Other_info_body">
                               <div className="row m-0 bdr-btm-eee">
@@ -553,6 +572,75 @@ function EmployeeProfile() {
           </div>
         </div>
       </div>}
+      <Dialog className='My_Mat_Dialog' open={editempinfo} onClose={closePopUp} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Employee Info{" "}
+          <IconButton onClick={closePopUp} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Personal Email</label>
+                  <input
+                    type="email"
+                    // value={ename}
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Personal name"
+                    // onChange={(e) => {
+                    //   setEname(e.target.value);
+                    // }}
+                  />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Personal Phone No.</label>
+                    <input
+                      // value={number}
+                      type="number"
+                      className="form-control"
+                      // onChange={(e) => {
+                      //   setNumber(e.target.value);
+                      // }}
+                    />
+                  </div>
+                <div className="mb-3">
+                  <label className="form-label">Personal Contact Person</label>
+                  <input
+                    // value={email}
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Contact Person"
+                    // onChange={(e) => {
+                    //   setEmail(e.target.value);
+                    // }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Personal Address</label>
+                  <input
+                    // value={email}
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Personal Address"
+                    // onChange={(e) => {
+                    //   setEmail(e.target.value);
+                    // }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
+          Submit
+        </Button>
+      </Dialog>
     </div>
   );
 }
