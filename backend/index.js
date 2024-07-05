@@ -103,7 +103,10 @@ app.use('/api/requests', (req, res, next) => {
   next();
 }, RequestAPI);
 app.use('/api/teams', TeamsAPI)
-app.use('/api/bdm-data', bdmAPI)
+app.use('/api/bdm-data', (req , res , next)=>{
+  req.io = socketIO;
+  next();
+} , bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
 app.use('/api/rm-services', RMServicesAPI)

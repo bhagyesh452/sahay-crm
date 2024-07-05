@@ -16,6 +16,7 @@ const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const NotiModel = require('../models/Notifications.js');
 const adminModel = require('../models/Admin.js');
+const { clouddebugger } = require('googleapis/build/src/apis/clouddebugger/index.js');
 
 
 router.post("/requestCompanyData", async (req, res) => {
@@ -154,6 +155,7 @@ router.post("/requestData", async (req, res) => {
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
+    console.log("saved" , savedRequest)
 
     // Emit a socket event to notify clients about the new request
     socketIO.emit("newRequest", savedRequest);
@@ -192,7 +194,7 @@ router.get("/get-notification/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
     // Query to get the top 5 unread notifications sorted by requestTime
-    const topUnreadNotifications = await NotiModel.find({ status: "Unread" , ename })
+    const topUnreadNotifications = await NotiModel.find({ status: "Unread", ename })
       .sort({ requestTime: -1 })
       .limit(5);
 
@@ -273,7 +275,7 @@ router.post("/requestgData", async (req, res) => {
     let GetEmployeeProfile = "no-image"
     if (GetEmployeeData) {
       const EmployeeData = GetEmployeeData.employee_profile;
-      
+
 
       if (EmployeeData && EmployeeData.length > 0) {
         GetEmployeeProfile = EmployeeData[0].filename;
@@ -297,7 +299,10 @@ router.post("/requestgData", async (req, res) => {
     const saveRequest = await addRequest.save();
 
 
-    socketIO.emit("newRequest", name);
+    socketIO.emit("newRequest",{
+      name:name,
+      dAmonut:numberOfData,
+    });
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
 
@@ -373,20 +378,20 @@ router.put("/requestgData/:id", async (req, res) => {
     res.json(updatedNotification);
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
     let GetEmployeeProfile = "no-image"
-        if (GetEmployeeData) {
-          const EmployeeData = GetEmployeeData.employee_profile;
-          console.log("Employee Data:", EmployeeData);
-        
-          if (EmployeeData && EmployeeData.length > 0) {
-            GetEmployeeProfile = EmployeeData[0].filename;
-            
-          } else {
-            GetEmployeeProfile = "no-image";
-          }
-        } else {
-          GetEmployeeProfile = "no-image";
-        }
-        
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
     const requestCreate = {
       ename: name,
       requestType: "Lead Data",
@@ -461,20 +466,20 @@ router.post("/deleterequestbybde", async (req, res) => {
     await deleteRequest.save();
     const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
     let GetEmployeeProfile = "no-image"
-        if (GetEmployeeData) {
-          const EmployeeData = GetEmployeeData.employee_profile;
-          console.log("Employee Data:", EmployeeData);
-        
-          if (EmployeeData && EmployeeData.length > 0) {
-            GetEmployeeProfile = EmployeeData[0].filename;
-            
-          } else {
-            GetEmployeeProfile = "no-image";
-          }
-        } else {
-          GetEmployeeProfile = "no-image";
-        }
-        
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      console.log("Employee Data:", EmployeeData);
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
     const requestCreate = {
       ename: ename,
       requestType: "Booking Delete",
@@ -609,22 +614,23 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         ...newData,
       });
       const name = newData.bdeName;
+      const bdmname = newData.bdmname;
       const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
-let GetEmployeeProfile = "no-image"
-    if (GetEmployeeData) {
-      const EmployeeData = GetEmployeeData.employee_profile;
-      console.log("Employee Data:", EmployeeData);
-    
-      if (EmployeeData && EmployeeData.length > 0) {
-        GetEmployeeProfile = EmployeeData[0].filename;
-        
+      let GetEmployeeProfile = "no-image"
+      if (GetEmployeeData) {
+        const EmployeeData = GetEmployeeData.employee_profile;
+        console.log("Employee Data:", EmployeeData);
+
+        if (EmployeeData && EmployeeData.length > 0) {
+          GetEmployeeProfile = EmployeeData[0].filename;
+
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
       } else {
         GetEmployeeProfile = "no-image";
       }
-    } else {
-      GetEmployeeProfile = "no-image";
-    }
-    
+
       const requestCreate = {
         ename: name,
         requestType: "Booking Edit",
@@ -636,7 +642,10 @@ let GetEmployeeProfile = "no-image"
       const addRequest = new NotiModel(requestCreate);
       const saveRequest = await addRequest.save();
 
-      socketIO.emit('editBooking_requested', companyName);
+      socketIO.emit('editBooking_requested', {
+        bdeName: name,
+        bdmname:bdmname, 
+      });
 
       res.status(201).json(createdData);
     } catch (error) {
