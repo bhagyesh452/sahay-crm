@@ -521,9 +521,15 @@ router.post(
       );
       const client_address =
         !CompanyAddress || CompanyAddress == ""
-          ? `<span class="variable_span" 
-                    style="width: 350px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
-              "></span>`
+          ? `
+              <span class="variable_span" 
+                    style="width: 473px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
+              "></span><br>
+              <span class="variable_span" 
+                    style="width: 280px; display: inline-block;border-bottom: 1px solid #656565;padding-bottom: 4px;height:10px;
+              "></span>
+
+              `
           : CompanyAddress;
       //const filePath = path.join(__dirname, './GeneratedDocs/example.docx');
       let forGender = DirectorDetails.find(
