@@ -30,6 +30,8 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { GrNext } from "react-icons/gr";
+import { GrPrevious } from "react-icons/gr";
 
 function EmployeeProfile() {
 
@@ -75,20 +77,20 @@ function EmployeeProfile() {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-  
+
       try {
         const response = await axios.post(`${secretKey}/employee/employeeimages/${data.ename}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${newtoken}`, 
+            Authorization: `Bearer ${newtoken}`,
           },
         });
         console.log("File upload success:", response.data);
         const imageUrl = response.data.imageUrl;
-        setEmpImg1(imageUrl); 
-        localStorage.setItem("empImg1", imageUrl); 
+        setEmpImg1(imageUrl);
+        localStorage.setItem("empImg1", imageUrl);
         fetchEmployeeData()
-        handleClose(); 
+        handleClose();
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -102,8 +104,8 @@ function EmployeeProfile() {
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-}
-  
+  }
+
 
   const handleCameraClick = () => {
     setOpen(true);
@@ -142,7 +144,7 @@ function EmployeeProfile() {
   // const today = new Date().toISOString().split('T')[0];
 
   const events = [
-    
+
     {
       title: 'Present',
       start: '2024-07-02', // Static start date
@@ -170,7 +172,7 @@ function EmployeeProfile() {
 
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
@@ -181,7 +183,7 @@ function EmployeeProfile() {
                   <div className="d-flex align-items-start m-0">
                     <div className="employee_profile_picture d-flex align-items-center justify-content-center">
                       <div className="employee_picture">
-                        <img src={`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && data.employee_profile.length!==0 && encodeURIComponent(data.employee_profile[0].filename)}`} alt="Employee"></img>
+                        <img src={`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && data.employee_profile.length !== 0 && encodeURIComponent(data.employee_profile[0].filename)}`} alt="Employee"></img>
                       </div>
                       <div
                         className="profile-pic-upload"
@@ -535,7 +537,7 @@ function EmployeeProfile() {
                     className="my-card-body p-2"
                     style={{ minHeight: "calc(100vh - 149px)" }}
                   >
-                    <FullCalendar 
+                    {/* <FullCalendar 
                       plugins={[dayGridPlugin,interactionPlugin,listPlugin, timeGridPlugin]}
                       initialView="dayGridMonth"
                       editable={true}
@@ -552,7 +554,43 @@ function EmployeeProfile() {
                       //   }
                       //   return true;
                       // }}
-                    />
+                    /> */}
+
+                    {/* <FullCalendar
+                      plugins={[dayGridPlugin]}
+                      initialView="dayGridMonth"
+                      weekends={false}
+                      events={[
+                        { title: 'event 1', date: '2024-07-05' },
+                        { title: 'event 2', date: '2024-07-04' }
+                      ]}
+                    /> */}
+
+
+
+                    {/* My Custom Calendar */}
+                    {/* <div className="custom-calendar">
+                      <div className="curr-month">
+                        <button className="prev-month-btn"><span><GrPrevious /></span></button>
+                        <h2>Current Month</h2>
+                        <button className="next-month-btn"><GrNext /></button>
+                      </div>
+                      <div className="days">
+                        <input type="text" value="Sun" disabled />
+                        <input type="text" value="Mon" disabled />
+                        <input type="text" value="Tue" disabled />
+                        <input type="text" value="Wed" disabled />
+                        <input type="text" value="Thu" disabled />
+                        <input type="text" value="Fri" disabled />
+                        <input type="text" value="Sat" disabled />
+                      </div>
+                      <div className="dates">
+                        <input type="text" />
+                      </div>
+                    </div> */}
+
+
+
                   </div>
                 </div>
               </div>
