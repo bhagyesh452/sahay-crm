@@ -1316,12 +1316,7 @@ function EmployeeTeamLeads() {
             default:
                 filtered = data;
         }
-        if(filtered.length > 1) {
-            filtered = data.filter((obj)=> obj.bdmStatus === activeTab);
-            setTeamLeadsData(filtered);
-        } else {
-            setTeamLeadsData(filtered);
-        }
+        setTeamLeadsData(filtered);
     };
 
     // useEffect for searching data :
@@ -1347,7 +1342,7 @@ function EmployeeTeamLeads() {
             }
             setTeamLeadsData(filteredData);
         }
-    }, [filteredData, activeTab, isFilter, newFilteredData, selectedStatus]);
+    }, [filteredData, activeTab]);
 
     console.log("Is Search :", isSearch);
 
