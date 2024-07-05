@@ -1245,10 +1245,7 @@ function EmployeeTeamLeads() {
         if (!searchQuery || searchQuery.trim().length === 0) {
             setIsSearch(false);
             setIsFilter(false);
-            //filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
-            setFilteredData([]);
-            //fetchTeamLeadsData("Untouched")
-            setTeamData(extraData)
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
             return;
         }
 
@@ -1269,7 +1266,6 @@ function EmployeeTeamLeads() {
                 (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
             );
         });
-
         setNewFilteredData(filteredItems);
         setFilteredData(filteredItems);
         filterByTab(filteredItems);
@@ -1320,12 +1316,7 @@ function EmployeeTeamLeads() {
             default:
                 filtered = data;
         }
-        if(filtered.length > 1) {
-            filtered = data.filter((obj)=> obj.bdmStatus === activeTab);
-            setTeamLeadsData(filtered);
-        } else {
-            setTeamLeadsData(filtered);
-        }
+        setTeamLeadsData(filtered);
     };
 
     // useEffect for searching data :
@@ -1351,7 +1342,7 @@ function EmployeeTeamLeads() {
             }
             setTeamLeadsData(filteredData);
         }
-    }, [filteredData, activeTab, isFilter, newFilteredData, selectedStatus]);
+    }, [filteredData, activeTab]);
 
     console.log("Is Search :", isSearch);
 
