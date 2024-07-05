@@ -6,7 +6,7 @@ import dummyImg from "../static/EmployeeImg/office-man.png";
 import { useNavigate } from 'react-router-dom';
 import No_noti_image from "../assets/media/no_noti_image.jpg"
 
-function Bella_Chao({isDM}) {
+function Notification_BOX({isDM}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [showNotifications, setShowNotifications] = useState(false);
   const [total_notifications, setTotal_notifications] = useState([])
@@ -178,4 +178,4 @@ function Bella_Chao({isDM}) {
   );
 }
 
-export default Bella_Chao;
+export default Notification_BOX;
