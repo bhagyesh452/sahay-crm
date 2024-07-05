@@ -68,7 +68,12 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
+<<<<<<< HEAD
       enqueueSnackbar(`Booking Edit Request Received From ${res}`, {
+=======
+      console.log(res.bdeName , res.bdmName)
+      enqueueSnackbar(`Booking Edit Request by ${res.bdeName}`, {
+>>>>>>> 9482912086fe3a615b29493a6b702704138fe1e4
         variant: 'reportComplete',
         persist:true
       });
