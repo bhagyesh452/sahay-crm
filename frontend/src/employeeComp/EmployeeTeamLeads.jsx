@@ -1245,7 +1245,10 @@ function EmployeeTeamLeads() {
         if (!searchQuery || searchQuery.trim().length === 0) {
             setIsSearch(false);
             setIsFilter(false);
-            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
+            //filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
+            setFilteredData([]);
+            //fetchTeamLeadsData("Untouched")
+            setTeamData(extraData)
             return;
         }
 
@@ -1273,6 +1276,7 @@ function EmployeeTeamLeads() {
     };
 
     const filterByTab = (data) => {
+        console.log("data is :", data);
         let filtered;
 
         switch (activeTab) {
@@ -1316,8 +1320,12 @@ function EmployeeTeamLeads() {
             default:
                 filtered = data;
         }
-
-        setTeamLeadsData(filtered);
+        if(filtered.length > 1) {
+            filtered = data.filter((obj)=> obj.bdmStatus === activeTab);
+            setTeamLeadsData(filtered);
+        } else {
+            setTeamLeadsData(filtered);
+        }
     };
 
     // useEffect for searching data :
