@@ -57,6 +57,7 @@ function Header({ name, designation}) {
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
+    
     socket.on("newRequest", (res) => {
       enqueueSnackbar(`New Data Request from ${res}`, {
         variant: 'reportComplete',
