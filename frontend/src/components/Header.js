@@ -109,6 +109,19 @@ function Header({ name, designation , empProfile}) {
       }
       
     });
+
+    socket.on("bdmDataAcceptedRequest", (res) => {
+      if(name === res.ename){
+        enqueueSnackbar(`BDM has accpeted ${res.companyName} 🔄`, {
+          variant: 'reportComplete',
+          persist:true
+        });
+      
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+      
+    });
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();

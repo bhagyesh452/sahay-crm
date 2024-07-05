@@ -15,7 +15,7 @@ import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3"
-import booking_audio from "../assets/media/Booking-received.mp3"
+import booking_audio from "../assets/media/moshi_moshi.mp3"    // Replace with Booking-received.mp3 
 import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
 import Bella_Chao from "./Bella_Chao";
@@ -43,7 +43,7 @@ function Header({ name, designation}) {
     
 
     socket.on("delete-booking-requested", (res) => {
-      enqueueSnackbar(`${res} sent a Booking Delete Request`, {
+      enqueueSnackbar(`Booking Delete Request Received From ${res}`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -58,7 +58,8 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("newRequest", (res) => {
-      enqueueSnackbar(`New Data Request from ${res}`, {
+      console.log("res" , res)
+      enqueueSnackbar(`${res.name} Is Asking For ${res.dAmonut} General Data`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -67,7 +68,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
-      enqueueSnackbar(`Booking Edit Request for ${res}`, {
+      enqueueSnackbar(`Booking Edit Request Received From ${res.bdeName}`, {
         variant: 'reportComplete',
         persist:true
       });
@@ -76,7 +77,7 @@ function Header({ name, designation}) {
       audioplayer.play();
     });
     socket.on("approve-request", (res) => {
-      enqueueSnackbar(`Data Approve Request from ${res}`, {
+      enqueueSnackbar(`Lead Upload Request Received From ${res}`, {
         variant: 'reportComplete',
         persist:true
       });
