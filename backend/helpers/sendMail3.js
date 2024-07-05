@@ -47,16 +47,29 @@ async function createTransporter() {
 const processAttachments = (files) => {
   const attachments = [];
 
-  files.forEach((file) => {
-    const mimeType = mime.lookup(file.filename);
-    const attachment = {
-      filename: file.originalname,
-      contentType: mimeType,
-      content: file,
-    };
+  if (Array.isArray(files)) {
+    files.forEach((file) => {
+      const mimeType = mime.lookup(file.filename);
+      const attachment = {
+        filename: file.originalname,
+        contentType: mimeType,
+        content: file,
+      };
 
-    attachments.push(attachment);
-  });
+      attachments.push(attachment);
+    });
+  }
+
+  // files.forEach((file) => {
+  //   const mimeType = mime.lookup(file.filename);
+  //   const attachment = {
+  //     filename: file.originalname,
+  //     contentType: mimeType,
+  //     content: file,
+  //   };
+
+  //   attachments.push(attachment);
+  // });
 
   return attachments;
 };
@@ -74,7 +87,9 @@ const sendMail3 = async (
   attachment5,
   attachment6,
   attachment7,
-  attachment8
+  attachment8,
+  attachment9,
+  attachment10
 ) => {
   try {
     const newRecepients = recipients;
@@ -88,6 +103,8 @@ const sendMail3 = async (
     const paymentReceiptAttachments6 = processAttachments(attachment6);
     const paymentReceiptAttachments7 = processAttachments(attachment7);
     const paymentReceiptAttachments8 = processAttachments(attachment8);
+    const paymentReceiptAttachments9 = processAttachments(attachment9);
+    const paymentReceiptAttachments10 = processAttachments(attachment10);
     console.log(paymentReceiptAttachments);
     console.log(paymentReceiptAttachments2);
     console.log(paymentReceiptAttachments3);
@@ -96,6 +113,8 @@ const sendMail3 = async (
     console.log(paymentReceiptAttachments6);
     console.log(paymentReceiptAttachments7);
     console.log(paymentReceiptAttachments8);
+    console.log(paymentReceiptAttachments9);
+    console.log(paymentReceiptAttachments10);
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
       to: recipients.join(", "),
@@ -111,7 +130,9 @@ const sendMail3 = async (
         ...paymentReceiptAttachments5,
         ...paymentReceiptAttachments6,
         ...paymentReceiptAttachments7,
-        ...paymentReceiptAttachments8
+        ...paymentReceiptAttachments8,
+        ...paymentReceiptAttachments9,
+        ...paymentReceiptAttachments10
       ],
     });
 

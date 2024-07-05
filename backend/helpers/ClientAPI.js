@@ -70,6 +70,8 @@ router.post(
     { name: "RelevantDocument", maxCount: 1 },
     { name: "UploadAuditedStatement", maxCount: 1 },
     { name: "UploadProvisionalStatement", maxCount: 1 },
+    { name: "UploadDeclaration", maxCount: 1 },
+    { name: "UploadRelevantDocs", maxCount: 1 },
   ]),
 
 
@@ -83,6 +85,8 @@ router.post(
       const RelevantDocument = req.files["RelevantDocument"] || [];
       const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
       const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+      const UploadDeclaration = req.files["UploadDeclaration"] || [];
+      const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
 
 
@@ -624,7 +628,9 @@ router.post(
         UploadPhotos,
         RelevantDocument,
         UploadAuditedStatement,
-        UploadProvisionalStatement
+        UploadProvisionalStatement,
+        UploadDeclaration,
+        UploadRelevantDocs
       });
 
       await newUser.save();
