@@ -28,7 +28,7 @@ function Notification_box_employee({ name }) {
 
     // -----------------function for clicking notifications------------------------
 
-    const handleClick=(state , index , id)=>{
+    const handleClick =async(state , index , id) =>{
         navigate(link , {state : {dataStatus : state }});
 
         setTimeout(()=>{
@@ -40,10 +40,11 @@ function Notification_box_employee({ name }) {
         } , 0);
 
         try{
-            
+            const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
+            console.log(response)
 
         }catch(error){
-            
+            console.error("Error updating notification for employee" , error)
         }
     }
 

@@ -60,7 +60,10 @@ export default function AddLeadForm({
   setNowToFetch,
   isAdmin,
   newBdeName,
-  isDeletedEmployeeCompany
+  isDeletedEmployeeCompany,
+  bdmName,
+  bdmEmail,
+  isBDM,
 }) {
   const [totalServices, setTotalServices] = useState(1);
 
@@ -74,10 +77,10 @@ export default function AddLeadForm({
     incoDate: companysInco ? companysInco : "",
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
-    bdmName: "",
+    bdmName: isBDM ? employeeName : (bdmName ? bdmName : ""),
     bdmType: "Close-by",
     otherBdmName: '',
-    bdmEmail: "",
+    bdmEmail:isBDM ? employeeEmail : (bdmEmail ? bdmEmail : ""),
     bookingDate: new Date().toString(),
     bookingSource: "",
     otherBookingSource: "",
