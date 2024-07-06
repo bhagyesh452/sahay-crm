@@ -2168,6 +2168,12 @@ export default function RedesignedForm({
     }
   }
 
+console.log("leadDatacacase" , leadData.caCase)
+
+
+
+
+
   return (
     <div>
       <div className="container mt-2">
@@ -3601,7 +3607,7 @@ export default function RedesignedForm({
                                           )}
                                         </>
                                       )}
-                                      <div className="row m-0">
+                                      {/* <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3609,8 +3615,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {leadData.caCase
-                                            }
+                                            {leadData.caCase}
                                           </div>
                                         </div>
                                       </div>
@@ -3623,8 +3628,7 @@ export default function RedesignedForm({
                                           </div>
                                           <div className="col-sm-9 p-0">
                                             <div className="form-label-data">
-                                              {leadData.caNumber
-                                              }
+                                              {leadData.caNumber}
                                             </div>
                                           </div>
                                         </div>
@@ -3636,8 +3640,7 @@ export default function RedesignedForm({
                                           </div>
                                           <div className="col-sm-9 p-0">
                                             <div className="form-label-data">
-                                              {leadData.caEmail
-                                              }
+                                              {leadData.caEmail}
                                             </div>
                                           </div>
                                         </div>
@@ -3654,7 +3657,7 @@ export default function RedesignedForm({
                                             </div>
                                           </div>
                                         </div>
-                                      </>}
+                                      </>} */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3671,6 +3674,56 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   ))}
+                                    <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase === "Yes" && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>

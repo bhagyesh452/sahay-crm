@@ -2155,6 +2155,13 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
     }
   }
 
+
+  console.log("leadDatacacase" , leadData.caCase)
+
+
+
+
+
   return (
     <div>
       <div className="container mt-2">
@@ -2753,13 +2760,11 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                   </div>
                                 </div>
                                 {renderServices()}
-
                                 <div className="CA-case mb-1">
                                   <label class="form-label mt-2">
                                     CA Case{" "}
                                     {<span style={{ color: "red" }}>*</span>}
                                   </label>
-
                                   <div className="check-ca-case">
                                     <div class="mb-3">
                                       <div>
@@ -3584,7 +3589,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                           )}
                                         </>
                                       )}
-                                      <div className="row m-0">
+                                      {/* <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3637,7 +3642,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                             </div>
                                           </div>
                                         </div>
-                                      </>}
+                                      </>} */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3654,6 +3659,57 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                       </div>
                                     </div>
                                   ))}
+                                  <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase === "Yes" && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>
