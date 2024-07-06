@@ -86,7 +86,7 @@ export default function AddLeadForm({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -783,6 +783,10 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
       if (activeStep === 2) {
         if (!leadData.caCase) {
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+          return true;
+        }
+        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+          Swal.fire("Please Enter CA Commission"); 
           return true;
         }
         let isValid = true;
@@ -2879,7 +2883,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"

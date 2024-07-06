@@ -143,6 +143,7 @@ function Approve_dataComponents() {
 //  --------------------------------------- Other Functions  -----------------------------------------------------
 const handleConfirmAssign = async () => {
     const updatedCsvdata = selectedRows;
+    console.log("updatedcsvdata" , updatedCsvdata)
     const ename = name;
     if (updatedCsvdata.length !== 0) {
       try {

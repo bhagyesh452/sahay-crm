@@ -14,7 +14,7 @@ import axios from "axios";
 import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
 import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
-import notification_audio from "../assets/media/notification_tone.mp3"
+import notification_audio from "../assets/media/iphone_sound.mp3"
 import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
 import Notification_BOX from "./Notification_BOX";
@@ -26,6 +26,7 @@ import booking_audio from "../assets/media/Booking-received.mp3"
 function Header({ name, designation}) {
  
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
 
   //console.log(name)
   //console.log(designation)
@@ -180,16 +181,16 @@ function Header({ name, designation}) {
           </div>
         </div>
       </header>
-      <SnackbarProvider  Components={{
-        reportComplete: ReportComplete
-      }} iconVariant={{
-    success: '✅',
-    error: '✖️',
-    warning: '⚠️',
-    info: 'ℹ️',
-  }} maxSnack={3}>
+      <SnackbarProvider Components={{   reportComplete: ReportComplete  }} 
+                        iconVariant={{
+                          success: '✅',
+                          error: '✖️',
+                          warning: '⚠️',
+                          info: 'ℹ️ ',
+                        }}
+                        maxSnack={5}>
    
-    </SnackbarProvider>
+      </SnackbarProvider>
     </div>
   );
 }

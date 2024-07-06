@@ -163,66 +163,154 @@ router.delete("/leads/:id", async (req, res) => {
 });
 
 // 6. ADD Multiple Companies(Pata nai kyu he)
+// router.post("/leads", async (req, res) => {
+//   const csvData = req.body;
+//   const currentDate = new Date();
+//   const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+//   const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+//   console.log("csvdata", csvData)
+//   const socketIO = req.originalUrl;
+//   //console.log("csvdata" , csvData)
+//   let counter = 0;
+//   let successCounter = 0;
+//   let duplicateEntries = []; // Array to store duplicate entries
+
+//   try {
+//     for (const employeeData of csvData) {
+//       //console.log("employee" , employeeData)
+//       try {
+//         const employeeWithAssignData = {
+//           ...employeeData,
+//           AssignDate: new Date(),
+//           "Company Name": employeeData["Company Name"].toUpperCase(),
+//         };
+//         const employee = new CompanyModel(employeeWithAssignData);
+//         const savedEmployee = await employee.save();
+//         if (employeeData.Remarks !== "") {
+//           const newRemarksHistory = new RemarksHistory({
+//             time,
+//             date,
+//             companyID: employeeData._id,
+//             remarks: Remarks,
+//             bdeName: ename,
+//             companyName: employeeData["Company Name"],
+//             //bdmName: remarksBdmName,
+//           });
+      
+//           //await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
+      
+//           // Save the new entry to MongoDB
+//           await newRemarksHistory.save();
+//         }
+//         //console.log("saved" , savedEmployee)
+//         successCounter++;
+
+//       } catch (error) {
+//         duplicateEntries.push(employeeData);
+//         //console.log("kuch h ye" , duplicateEntries);
+//         console.error("Error saving employee:", error.message);
+//         counter++;
+//       }
+//     }
+
+//     if (duplicateEntries.length > 0) {
+//       //console.log("yahan chala csv pr")
+//       //console.log(duplicateEntries , "duplicate")
+//       const json2csvParser = new Parser();
+//       // If there are duplicate entries, create and send CSV
+//       const csvString = json2csvParser.parse(duplicateEntries);
+//       // console.log(csvString , "csv")
+//       res.setHeader("Content-Type", "text/csv");
+//       res.setHeader(
+//         "Content-Disposition",
+//         "attachment; filename=DuplicateEntries.csv"
+//       );
+//       res.status(200).end(csvString);
+
+//       //console.log("csvString" , csvString)
+//     } else {
+//       // console.log("yahan chala counter pr")
+//       res.status(200).json({
+//         message: "Data sent successfully",
+//         counter: counter,
+//         successCounter: successCounter,
+//       });
+
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//     console.error("Error in bulk save:", error.message);
+//   }
+// });
+
 router.post("/leads", async (req, res) => {
   const csvData = req.body;
-  const socketIO = req.originalUrl;
-  //console.log("csvdata" , csvData)
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+
   let counter = 0;
   let successCounter = 0;
   let duplicateEntries = []; // Array to store duplicate entries
 
   try {
     for (const employeeData of csvData) {
-      //console.log("employee" , employeeData)
       try {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
           "Company Name": employeeData["Company Name"].toUpperCase(),
         };
+
         const employee = new CompanyModel(employeeWithAssignData);
-        //console.log("newemployee" , employee)
         const savedEmployee = await employee.save();
-        //console.log("saved" , savedEmployee)
+
+        if (employeeData.Remarks !== "") {
+          const newRemarksHistory = new RemarksHistory({
+            time,
+            date,
+            companyID: savedEmployee._id, // Use savedEmployee._id instead of employeeData._id
+            remarks: employeeData.Remarks,
+            bdeName: employeeData.ename, // Ensure this is coming from employeeData
+            companyName: employeeData["Company Name"],
+          });
+
+          await newRemarksHistory.save();
+        }
+
         successCounter++;
-        
       } catch (error) {
         duplicateEntries.push(employeeData);
-        //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
       }
     }
-    
+
     if (duplicateEntries.length > 0) {
-      //console.log("yahan chala csv pr")
-      //console.log(duplicateEntries , "duplicate")
       const json2csvParser = new Parser();
-      // If there are duplicate entries, create and send CSV
       const csvString = json2csvParser.parse(duplicateEntries);
-      // console.log(csvString , "csv")
+
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
         "attachment; filename=DuplicateEntries.csv"
       );
       res.status(200).end(csvString);
-
-      //console.log("csvString" , csvString)
     } else {
-      // console.log("yahan chala counter pr")
       res.status(200).json({
         message: "Data sent successfully",
         counter: counter,
         successCounter: successCounter,
       });
-
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
   }
 });
+
+
+
 
 router.delete("/newcompanynamedelete/:id", async (req, res) => {
   const id = req.params.id;
@@ -515,7 +603,7 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
-        console.log("year" , year)
+        console.log("year", year)
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
@@ -533,12 +621,12 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
-    console.log("chala" , selectedCompanyIncoDate)
+    console.log("chala", selectedCompanyIncoDate)
     if (selectedCompanyIncoDate) {
-      console.log(selectedCompanyIncoDate , "yahan chala")
+      console.log(selectedCompanyIncoDate, "yahan chala")
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
-    
+
       if (isEpochDate) {
         console.log("good")
         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
@@ -630,7 +718,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     }
     if (selectedYear) {
       if (monthIndex !== '0') {
-        
+
         const year = parseInt(selectedYear);
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
@@ -727,7 +815,7 @@ router.get('/search-leads', async (req, res) => {
     const limit = parseInt(req.query.limit) || 500; // Items per page
     const skip = (page - 1) * limit; // Number of documents to skip
 
-    
+
     let searchResults;
     let assignedData = [];
     let assignedCount = 0;
@@ -916,7 +1004,7 @@ router.post("/assign-new", async (req, res) => {
   try {
     const bulkOperations = data.map((employeeData) => {
       let updateFields;
-      if(employeeData.Status === 'Matured'){
+      if (employeeData.Status === 'Matured') {
         updateFields = {
           ename: ename,
           bdmAcceptStatus: "NotForwarded",
@@ -926,7 +1014,7 @@ router.post("/assign-new", async (req, res) => {
           AssignDate: new Date(),
           isDeletedEmployeeCompany: true,
         }
-      }else{
+      } else {
         updateFields = {
           ename: ename,
           bdmAcceptStatus: "NotForwarded",
