@@ -165,9 +165,94 @@ function EmployeeProfile() {
       end: '2024-06-30',   // Static end date (same day, all-day event)
       allDay: true,
       editable: false,     // Disable editing for this event
+    },
+    {
+      title: 'Achieved : 10000',
+      start: '2024-07-04', // Static start date
+      end: '2024-07-04',   // Static end date (same day, all-day event)
+      allDay: true,
+      editable: false,     // Disable editing for this event
     }
   ]
 
+
+  // Code to set date, month and year for custom calendar.
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getStartingDayOfMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month, 1).getDay();
+  };
+
+  const getPrevMonth = (date) => {
+    const prevMonthDate = new Date(date.getFullYear(), date.getMonth() - 1);
+    return {
+      year: prevMonthDate.getFullYear(),
+      month: prevMonthDate.getMonth(),
+      days: getDaysInMonth(prevMonthDate),
+    };
+  };
+
+  const getNextMonth = (date) => {
+    const nextMonthDate = new Date(date.getFullYear(), date.getMonth() + 1);
+    return {
+      year: nextMonthDate.getFullYear(),
+      month: nextMonthDate.getMonth(),
+      days: getDaysInMonth(nextMonthDate),
+    };
+  };
+
+  const nextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  };
+
+  const prevMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  };
+
+  const generateDates = () => {
+    const daysInMonth = getDaysInMonth(currentMonth);
+    const startingDay = getStartingDayOfMonth(currentMonth);
+    const prevMonth = getPrevMonth(currentMonth);
+    const nextMonth = getNextMonth(currentMonth);
+    const dates = [];
+
+    // Add dates from the previous month
+    for (let i = startingDay - 1; i >= 0; i--) {
+      dates.push({
+        day: prevMonth.days - i,
+        month: 'prev',
+      });
+    }
+
+    // Add dates from the current month
+    for (let day = 1; day <= daysInMonth; day++) {
+      dates.push({
+        day,
+        month: 'current',
+      });
+    }
+
+    // Add dates from the next month
+    for (let i = 1; dates.length < 42; i++) { // Ensure we fill all cells (6 weeks * 7 days)
+      dates.push({
+        day: i,
+        month: 'next',
+      });
+    }
+
+    return dates;
+  };
+
+  const dates = generateDates();
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 
   return (
@@ -556,38 +641,31 @@ function EmployeeProfile() {
                       // }}
                     /> */}
 
-                    {/* <FullCalendar
-                      plugins={[dayGridPlugin]}
-                      initialView="dayGridMonth"
-                      weekends={false}
-                      events={[
-                        { title: 'event 1', date: '2024-07-05' },
-                        { title: 'event 2', date: '2024-07-04' }
-                      ]}
-                    /> */}
-
 
 
                     {/* My Custom Calendar */}
-                    {/* <div className="custom-calendar">
+                    <div className="custom-calendar">
                       <div className="curr-month">
-                        <button className="prev-month-btn"><span><GrPrevious /></span></button>
-                        <h2>Current Month</h2>
-                        <button className="next-month-btn"><GrNext /></button>
+                        <button className="prev-month-btn" onClick={prevMonth}><span><GrPrevious /></span></button>
+                        <h2>{currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+                        <button className="next-month-btn" onClick={nextMonth}><span><GrNext /></span></button>
                       </div>
                       <div className="days">
-                        <input type="text" value="Sun" disabled />
-                        <input type="text" value="Mon" disabled />
-                        <input type="text" value="Tue" disabled />
-                        <input type="text" value="Wed" disabled />
-                        <input type="text" value="Thu" disabled />
-                        <input type="text" value="Fri" disabled />
-                        <input type="text" value="Sat" disabled />
+                        {dayNames.map((day, index) => (
+                          <input key={index} type="text" value={day} disabled />
+                        ))}
                       </div>
                       <div className="dates">
-                        <input type="text" />
+                        {dates.map((date, index) => (
+                          <div key={index} className={`date-info ${date.month} ${date.month === 'current' && 'current-date'}`}>
+                            <input className="date" type="text" value={date.day < 10 ? `0${date.day}` : date.day} disabled />
+                            <input className="attendance" type="text" value="Attendance" disabled />
+                            <input className="achieved" type="text" value="Achieved" disabled />
+                            <input className="projection" type="text" value="Projection" disabled />
+                          </div>
+                        ))}
                       </div>
-                    </div> */}
+                    </div>
 
 
 
