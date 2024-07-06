@@ -17,7 +17,6 @@ import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -1034,14 +1033,14 @@ export default function AdminBookingForm({
                     }
                   }}>
                     <option value="" selected disabled>Select ISO Type</option>
-                    <option value="ISO 9001">ISO 9001</option>
-                    <option value="ISO 14001">ISO 14001</option>
-                    <option value="ISO 45001">ISO 45001</option>
-                    <option value="ISO 22000">ISO 22000</option>
-                    <option value="ISO 27001">ISO 27001</option>
-                    <option value="ISO 13485">ISO 13485</option>
-                    <option value="ISO 20000-1">ISO 20000-1</option>
-                    <option value="ISO 50001">ISO 50001</option>
+                    <option value="9001">9001</option>
+                    <option value="14001">14001</option>
+                    <option value="45001">45001</option>
+                    <option value="22000">22000</option>
+                    <option value="27001">27001</option>
+                    <option value="13485">13485</option>
+                    <option value="20000-1">20000-1</option>
+                    <option value="50001">50001</option>
                   </select>
                     {/* IAF ISO TYPES */}
                     <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
@@ -1057,10 +1056,10 @@ export default function AdminBookingForm({
                         setIsoType(remainingObject);
                       }
                     }}>
-                      <option value="" selected disabled>Select ISO Duration</option>
-                      <option value="1 YR"> 1 YR</option>
-                      <option value="3 YR">3 YR</option>
-                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                     <option value="" selected disabled>Select ISO VALIDITY</option>
+                      <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
+                      <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
+                      <option value="3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
                     </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
@@ -1075,15 +1074,15 @@ export default function AdminBookingForm({
                       }
                     }}>
                       <option value="" selected disabled>Select ISO Type</option>
-                      <option value="ISO 9001">ISO 9001</option>
-                      <option value="ISO 14001">ISO 14001</option>
-                      <option value="ISO 45001">ISO 45001</option>
-                      <option value="ISO 22000">ISO 22000</option>
-                      <option value="ISO 27001">ISO 27001</option>
-                      <option value="ISO 13485">ISO 13485</option>
-                      <option value="ISO 20000-1">ISO 20000-1</option>
-                      <option value="ISO 50001">ISO 50001</option>
-                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="9001">9001</option>
+                      <option value="14001">14001</option>
+                      <option value="45001">45001</option>
+                      <option value="22000">22000</option>
+                      <option value="27001">27001</option>
+                      <option value="13485">13485</option>
+                      <option value="20000-1">20000-1</option>
+                      <option value="50001">50001</option>
+                      <option value="21001">21001</option>
                       <option value="GMP">GMP</option>
                       <option value="GAP">GAP</option>
                       <option value="FDA">FDA</option>
