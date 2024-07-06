@@ -63,8 +63,8 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
-import { Country, State, City } from 'country-state-city';
 import { RiShareForwardFill } from "react-icons/ri";
+import { Country, State, City } from 'country-state-city';
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -130,7 +130,7 @@ function EmployeeParticular() {
   const [currentTab, setCurrentTab] = useState("Leads");
   const [selectedEmployee, setSelectedEmployee] = useState()
   const [selectedEmployee2, setSelectedEmployee2] = useState()
-  const [isFilter, setIsFilter] = useState(false)
+  const [isFilter, setIsFilter] = useState(false);
   const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
   const [newData, setNewData] = useState([]);
   const [branchName, setBranchName] = useState("");
@@ -340,7 +340,7 @@ function EmployeeParticular() {
 
 
   // Function to fetch new data based on employee name
-  const [extraData, setExtraData] = useState([])
+  const [extraData, setExtraData] = useState([]);
 
   const fetchNewData = async () => {
     try {
@@ -448,7 +448,7 @@ function EmployeeParticular() {
   // });
 
   const [filteredData, setFilteredData] = useState([]);
-  const [isSearch, setIsSearch] = useState(false)
+  const [isSearch, setIsSearch] = useState(false);
 
   const handleSearch = (searchQuery) => {
     const searchQueryLower = searchQuery.toLowerCase();
@@ -584,7 +584,7 @@ function EmployeeParticular() {
       }
     }
 
-  }, [filteredData])
+  }, [filteredData]);
 
   // const filteredData = employeeData.filter((company) => {
   //   const fieldValue = company[selectedField];
@@ -1631,24 +1631,24 @@ function EmployeeParticular() {
   }
 
   //----------------filter for employee section-----------------------------
-  const stateList = State.getStatesOfCountry("IN")
-  const cityList = City.getCitiesOfCountry("IN")
-  const [selectedStateCode, setSelectedStateCode] = useState("")
-  const [selectedState, setSelectedState] = useState("")
-  const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
-  const [selectedNewCity, setSelectedNewCity] = useState("")
-  const [selectedYear, setSelectedYear] = useState("")
-  const [selectedMonth, setSelectedMonth] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [selectedBDEName, setSelectedBDEName] = useState("")
-  const [selectedAssignDate, setSelectedAssignDate] = useState(null)
-  const [selectedAdminName, setSelectedAdminName] = useState("")
+  const stateList = State.getStatesOfCountry("IN");
+  const cityList = City.getCitiesOfCountry("IN");
+  const [selectedStateCode, setSelectedStateCode] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
+  const [selectedNewCity, setSelectedNewCity] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedBDEName, setSelectedBDEName] = useState("");
+  const [selectedAssignDate, setSelectedAssignDate] = useState(null);
+  const [selectedAdminName, setSelectedAdminName] = useState("");
   const [daysInMonth, setDaysInMonth] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(0)
-  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
-  const [openBacdrop, setOpenBacdrop] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(0);
+  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
+  const [openBacdrop, setOpenBacdrop] = useState(false);
   const [companyIncoDate, setCompanyIncoDate] = useState(null);
-  const [monthIndex, setMonthIndex] = useState(0)
+  const [monthIndex, setMonthIndex] = useState(0);
 
 
   const functionCloseFilterDrawer = () => {
@@ -1717,8 +1717,8 @@ function EmployeeParticular() {
 
       } else {
         // Update the employee data with the filtered results
-        console.log(response.data)
-        setFilteredData(response.data)
+        console.log(response.data);
+        setFilteredData(response.data);
       }
     } catch (error) {
       console.log('Error applying filter', error.message);
@@ -2054,6 +2054,7 @@ function EmployeeParticular() {
             className="page-body"
             style={{ marginTop: "0px " }}>
             <div className="container-xl">
+              
               <div className="d-flex align-items-center justify-content-between mb-2">
                 <div className="d-flex align-items-center">
                   <div className="btn-group" role="group" aria-label="Basic example">
@@ -2108,6 +2109,7 @@ function EmployeeParticular() {
                   </div>
                 </div>
               </div>
+
               {/* <div className="row g-2 align-items-center">
                 <div className="col-2">
                   <div

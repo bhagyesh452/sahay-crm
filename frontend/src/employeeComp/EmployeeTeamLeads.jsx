@@ -137,10 +137,14 @@ function EmployeeTeamLeads() {
     const [isFilter, setIsFilter] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
-    const [selectedStatus, setSelectedStatus] = useState("");   // State for selecting status.
     const [filteredData, setFilteredData] = useState([]);
     const [extraData, setExtraData] = useState([]);
+    const [newFilteredData, setNewFilteredData] = useState([]);
+    const [activeTab, setActiveTab] = useState('All');
 
+    // State for selecting status.
+    const [selectedStatus, setSelectedStatus] = useState("");
+    
     // States for selecting states and cities.
     const [selectedStateCode, setSelectedStateCode] = useState("");
     const [selectedState, setSelectedState] = useState("");
@@ -1187,8 +1191,7 @@ function EmployeeTeamLeads() {
     }
 
 
-    const [newFilteredData, setNewFilteredData] = useState([]);
-    const [activeTab, setActiveTab] = useState('All');
+
 
     // const handleSearch = (searchQuery) => {
     //     console.log(searchQuery);

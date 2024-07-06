@@ -81,8 +81,9 @@ import EmployeeParticular from "./EmployeeParticular.js";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoFilterOutline } from "react-icons/io5";
 import { TbFileExport } from "react-icons/tb";
-
-
+import { MdOutlinePostAdd } from "react-icons/md";
+import { IoIosClose } from "react-icons/io";
+import { Country, State, City } from 'country-state-city';
 
 
 
@@ -115,7 +116,7 @@ function AdminEmployeeTeamLeads() {
     const [currentRemarks, setCurrentRemarks] = useState("");
     const [currentRemarksBdm, setCurrentRemarksBdm] = useState("");
     const [companyId, setCompanyId] = useState("");
-    const [searchQuery, setSearchQuery] = useState("")
+    // const [searchQuery, setSearchQuery] = useState("")
     const [bdmNewStatus, setBdmNewStatus] = useState("Untouched");
     const [changeRemarks, setChangeRemarks] = useState("");
     const [updateData, setUpdateData] = useState({});
@@ -127,8 +128,74 @@ function AdminEmployeeTeamLeads() {
     const [empData, setEmpData] = useState([])
     const [selectedEmployee, setSelectedEmployee] = useState()
     const [selectedEmployee2, setSelectedEmployee2] = useState()
-    const [isFilter, setIsFilter] = useState(false)
-    const [extraData, setExtraData] = useState([])
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+    // const [isFilter, setIsFilter] = useState(false)
+    // const [extraData, setExtraData] = useState([])
+
+
+    // States for filtered and searching data :
+    const stateList = State.getStatesOfCountry("IN");
+    const cityList = City.getCitiesOfCountry("IN");
+
+    const currentYear = new Date().getFullYear();
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    //Create an array of years from 2018 to the current year
+    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+    const [isSearch, setIsSearch] = useState(false);
+    const [isFilter, setIsFilter] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
+    const [filteredData, setFilteredData] = useState([]);
+    const [extraData, setExtraData] = useState([]);
+    const [newFilteredData, setNewFilteredData] = useState([]);
+    const [activeTab, setActiveTab] = useState('All');
+
+    // State for selecting status.
+    const [selectedStatus, setSelectedStatus] = useState("");
+
+    // States for selecting states and cities.
+    const [selectedStateCode, setSelectedStateCode] = useState("");
+    const [selectedState, setSelectedState] = useState("");
+    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
+    const [selectedNewCity, setSelectedNewCity] = useState("");
+
+    //  States for selecting assigned date.
+    const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null);
+
+    //  States for selecting company incorporation date.
+    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
+    const [companyIncoDate, setCompanyIncoDate] = useState(null);
+    const [selectedYear, setSelectedYear] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedDate, setSelectedDate] = useState(0);
+    const [monthIndex, setMonthIndex] = useState(0);
+    const [daysInMonth, setDaysInMonth] = useState([]);
+
+    useEffect(() => {
+        let monthIndex;
+        if (selectedYear && selectedMonth) {
+            monthIndex = months.indexOf(selectedMonth);
+            setMonthIndex(monthIndex + 1)
+            const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+            setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+        } else {
+            setDaysInMonth([]);
+        }
+    }, [selectedYear, selectedMonth]);
+
+    useEffect(() => {
+        if (selectedYear && selectedMonth && selectedDate) {
+            const monthIndex = months.indexOf(selectedMonth) + 1;
+            const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+            const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+            const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+            setSelectedCompanyIncoDate(companyIncoDate);
+        }
+    }, [selectedYear, selectedMonth, selectedDate]);
 
     const fetchData = async () => {
         try {
@@ -248,7 +315,7 @@ function AdminEmployeeTeamLeads() {
             }
 
 
-            console.log("response", response.data)
+            // console.log("response", response.data)
         } catch (error) {
             console.log(error)
         }
@@ -338,7 +405,7 @@ function AdminEmployeeTeamLeads() {
         setRemarksBdmName(bdmName)
     };
 
-    console.log("filteredRemarks", filteredRemarks)
+    // console.log("filteredRemarks", filteredRemarks)
 
     //console.log("currentcompanyname", currentCompanyName);
 
@@ -348,7 +415,7 @@ function AdminEmployeeTeamLeads() {
             setRemarksHistory(response.data.reverse());
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-            console.log(response.data);
+            // console.log(response.data);
         } catch (error) {
             console.error("Error fetching remarks history:", error);
         }
@@ -417,7 +484,7 @@ function AdminEmployeeTeamLeads() {
                     console.error("Failed to update status:", response.data.message);
                 }
 
-                console.log("response", response.data);
+                // console.log("response", response.data);
                 fetchTeamLeadsData();
                 Swal.fire("Data Rejected");
                 setIsDeleted(false)
@@ -434,7 +501,7 @@ function AdminEmployeeTeamLeads() {
 
                     }
                 );
-                console.log("remarks", Remarks)
+                // console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -551,7 +618,7 @@ function AdminEmployeeTeamLeads() {
         }
     }
 
-    console.log("bdmNewStatus", bdmNewStatus)
+    // console.log("bdmNewStatus", bdmNewStatus)
 
 
 
@@ -602,7 +669,7 @@ function AdminEmployeeTeamLeads() {
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
-        console.log("bdmnewstatus", bdmnewstatus)
+        // console.log("bdmnewstatus", bdmnewstatus)
         try {
 
             if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
@@ -633,7 +700,7 @@ function AdminEmployeeTeamLeads() {
 
                 const response = await axios.delete(
                     `${secretKey}/bdm-data/delete-bdm-busy/${companyId}`)
-                console.log("yahan dikha", bdmnewstatus)
+                // console.log("yahan dikha", bdmnewstatus)
                 // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
@@ -786,19 +853,19 @@ function AdminEmployeeTeamLeads() {
     };
     const fetchRedesignedFormData = async () => {
         try {
-            console.log(maturedID);
+            // console.log(maturedID);
             const response = await axios.get(
                 `${secretKey}/bookings/redesigned-final-leadData`
             );
             const data = response.data.find((obj) => obj.company === maturedID);
-            console.log(data);
+            // console.log(data);
             setCurrentForm(data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
     useEffect(() => {
-        console.log("Matured ID Changed", maturedID);
+        // console.log("Matured ID Changed", maturedID);
         if (maturedID) {
             fetchRedesignedFormData();
         }
@@ -806,16 +873,16 @@ function AdminEmployeeTeamLeads() {
 
     const handleDelete = async (company) => {
         const companyName = company;
-        console.log(companyName);
+        // console.log(companyName);
 
         try {
             // Send a DELETE request to the backend API endpoint
             const response = await axios.delete(
                 `${secretKey}/projection/delete-followup/${companyName}`
             );
-            console.log(response.data.message); // Log the response message
+            // console.log(response.data.message); // Log the response message
             // Show a success message after successful deletion
-            console.log("Deleted!", "Your data has been deleted.", "success");
+            // console.log("Deleted!", "Your data has been deleted.", "success");
             setCurrentProjection({
                 companyName: "",
                 ename: "",
@@ -951,7 +1018,7 @@ function AdminEmployeeTeamLeads() {
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
-    console.log("yahan locha h", feedbackPoints.length)
+    // console.log("yahan locha h", feedbackPoints.length)
 
 
 
@@ -1045,7 +1112,7 @@ function AdminEmployeeTeamLeads() {
 
             //setBackButton(prevIndex !== 0);
         } else {
-            console.log("Current ID not found in eData array.");
+            // console.log("Current ID not found in eData array.");
         }
     };
 
@@ -1088,7 +1155,7 @@ function AdminEmployeeTeamLeads() {
 
             //setBackButton(nextId !== 0);
         } else {
-            console.log("Current ID not found in eData array.");
+            // console.log("Current ID not found in eData array.");
         }
     };
 
@@ -1145,7 +1212,7 @@ function AdminEmployeeTeamLeads() {
                 companyName: data["Company Name"],
                 bdmAcceptStatus,
             };
-            console.log(newemployeeSelection, data, bdmAcceptStatus)
+            // console.log(newemployeeSelection, data, bdmAcceptStatus)
             // Add the promise for updating CompanyModel to the array
             updatePromises.push(
                 axios.post(`${secretKey}/bdm-data/assign-leads-newbdm`, {
@@ -1209,7 +1276,7 @@ function AdminEmployeeTeamLeads() {
             setVisibilityOthernew("none");
         }
 
-        console.log(selectedField);
+        // console.log(selectedField);
     };
 
     // const filteredData = teamleadsData.filter((company) => {
@@ -1314,19 +1381,20 @@ function AdminEmployeeTeamLeads() {
         setValue(newValue);
     };
 
-    console.log(value)
+    // console.log(value)
 
     // -------------------------------------------handle checkbox----------------------------------------------------------
 
 
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === filteredData.length
+                prevSelectedRows.length === checkboxData.length
                     ? []
-                    : filteredData.map((row) => row._id)
+                    : checkboxData.map((row) => row._id)
             );
         } else {
             // Toggle the selection status of the row with the given id
@@ -1334,8 +1402,8 @@ function AdminEmployeeTeamLeads() {
                 // If the Ctrl key is pressed
                 if (event.ctrlKey) {
                     //console.log("pressed");
-                    const selectedIndex = filteredData.findIndex((row) => row._id === id);
-                    const lastSelectedIndex = filteredData.findIndex((row) =>
+                    const selectedIndex = checkboxData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = checkboxData.findIndex((row) =>
                         prevSelectedRows.includes(row._id)
                     );
 
@@ -1364,15 +1432,16 @@ function AdminEmployeeTeamLeads() {
     const [startRowIndex, setStartRowIndex] = useState(null);
 
     const handleMouseEnter = (id) => {
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-            const endRowIndex = filteredData.findIndex((row) => row._id === id);
+            const endRowIndex = checkboxData.findIndex((row) => row._id === id);
             const selectedRange = [];
             const startIndex = Math.min(startRowIndex, endRowIndex);
             const endIndex = Math.max(startRowIndex, endRowIndex);
 
             for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(filteredData[i]._id);
+                selectedRange.push(checkboxData[i]._id);
             }
 
             setSelectedRows(selectedRange);
@@ -1398,7 +1467,8 @@ function AdminEmployeeTeamLeads() {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
+        setStartRowIndex(checkboxData.findIndex((row) => row._id === id));
     };
 
     function formatDateNow(timestamp) {
@@ -1441,7 +1511,7 @@ function AdminEmployeeTeamLeads() {
                 fetchTeamLeadsData(bdmStatus);
                 //console.log("Company updated and deleted successfully", response.data);
             } catch (error) {
-                console.log("Error Deleting Company", error);
+                // console.log("Error Deleting Company", error);
                 Swal.fire(
                     'Error!',
                     'There was an error deleting the company.',
@@ -1475,50 +1545,51 @@ function AdminEmployeeTeamLeads() {
 
     //------------------------search function--------------------
 
-    const [filteredData, setFilteredData] = useState([]);
-    const [isSearch, setIsSearch] = useState(false)
+    // const [filteredData, setFilteredData] = useState([]);
+    // const [isSearch, setIsSearch] = useState(false)
 
-    const handleSearch = (searchQuery) => {
-        const searchQueryLower = searchQuery.toLowerCase();
+    // const handleSearch = (searchQuery) => {
+    //     const searchQueryLower = searchQuery.toLowerCase();
 
-        // Check if searchQuery is empty or null
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            setIsSearch(false);
-            setFilteredData(extraData); // Assuming extraData is your full dataset
-            return;
-        }
+    //     // Check if searchQuery is empty or null
+    //     if (!searchQuery || searchQuery.trim().length === 0) {
+    //         setIsSearch(false);
+    //         setFilteredData(extraData); // Assuming extraData is your full dataset
+    //         return;
+    //     }
 
-        setIsSearch(true);
+    //     setIsSearch(true);
 
-        const filtered = extraData.filter((company) => {
-            const companyName = company["Company Name"];
-            const companyNumber = company["Company Number"];
-            const companyEmail = company["Company Email"];
-            const companyState = company.State;
-            const companyCity = company.City;
+    //     const filtered = extraData.filter((company) => {
+    //         const companyName = company["Company Name"];
+    //         const companyNumber = company["Company Number"];
+    //         const companyEmail = company["Company Email"];
+    //         const companyState = company.State;
+    //         const companyCity = company.City;
 
-            // Check each field for a match
-            if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
+    //         // Check each field for a match
+    //         if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
 
-            return false;
-        });
+    //         return false;
+    //     });
 
-        setFilteredData(filtered);
-    };
+    //     setFilteredData(filtered);
+    // };
+
 
     useEffect(() => {
         if (filteredData.length !== 0) {
@@ -1591,10 +1662,288 @@ function AdminEmployeeTeamLeads() {
 
     }, [filteredData])
 
-    console.log("filteredData", filteredData)
-    console.log("team", teamleadsData)
-    console.log("teamData", teamData)
+    // console.log("filteredData", filteredData)
+    // console.log("team", teamleadsData)
+    // console.log("teamData", teamData)
 
+
+    // These function will close filter drawer.
+    const functionCloseFilterDrawer = () => {
+        setOpenFilterDrawer(false)
+    }
+
+
+    // Currently running for searching the data :
+    const handleSearch = (searchQuery) => {
+        // console.log(searchQuery);
+
+        setIsFilter(false);
+
+        const searchValue = searchQuery.trim().toLowerCase(); // Trim and convert search query to lowercase
+
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            setIsFilter(false);
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
+            return;
+        }
+
+        setIsSearch(true);
+
+        const filteredItems = extraData.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            return (
+                (companyName && companyName.toString().toLowerCase().includes(searchValue)) ||
+                (companyNumber && companyNumber.toString().includes(searchValue)) ||
+                (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) ||
+                (companyState && companyState.toString().toLowerCase().includes(searchValue)) ||
+                (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
+            );
+        });
+        setNewFilteredData(filteredItems);
+        setFilteredData(filteredItems);
+        filterByTab(filteredItems);
+    };
+
+    const filterByTab = (data) => {
+        // console.log("data is :", data);
+        let filtered;
+
+        switch (activeTab) {
+            case "All":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Busy" ||
+                    obj.bdmStatus === "Not Picked Up" ||
+                    obj.bdmStatus === "Untouched"
+                );
+                break;
+            case "Interested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Interested"
+                );
+                break;
+            case "FollowUp":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "FollowUp"
+                );
+                break;
+            case "Matured":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Matured"
+                );
+                break;
+            case "Forwarded":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus !== "Not Interested" &&
+                    obj.bdmStatus !== "Busy" &&
+                    obj.bdmStatus !== "Junk" &&
+                    obj.bdmStatus !== "Not Picked Up" &&
+                    obj.bdmStatus !== "Matured"
+                ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                break;
+            case "NotInterested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Not Interested" ||
+                    obj.bdmStatus === "Junk"
+                );
+                break;
+            default:
+                filtered = data;
+        }
+        setTeamLeadsData(filtered);
+    };
+
+    // useEffect for searching data :
+    useEffect(() => {
+        if (filteredData.length === 0 && isFilter) {
+            setTeamLeadsData(newFilteredData);
+            return;
+        }
+
+        if (filteredData.length === 0) {
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when no filtered data
+            return;
+        }
+
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus;
+            setBdmNewStatus(currentStatus);
+            filterByTab(filteredData);
+        } else if (filteredData.length > 1) {
+            if (selectedStatus) {
+                setBdmNewStatus(selectedStatus);
+                setActiveTab(selectedStatus);
+            }
+            setTeamLeadsData(filteredData);
+        }
+    }, [filteredData, activeTab]);
+
+    // console.log("Is Search :", isSearch);
+
+    // To clear filter data :
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus("");
+        setSelectedState("");
+        setSelectedNewCity("");
+        setSelectedBdeForwardDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        setSelectedYear("");
+        setSelectedMonth("");
+        setSelectedDate(0);
+        setFilteredData([]);
+        fetchTeamLeadsData(bdmNewStatus);
+    };
+
+    // To apply filter :
+    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+        const bdmName = data.ename;
+        // console.log("BDM Name is :", bdmName);
+        try {
+            setIsFilter(true);
+            setOpenBacdrop(true);
+
+            const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
+                params: {
+                    selectedStatus,
+                    selectedState,
+                    selectedNewCity,
+                    selectedBdeForwardDate,
+                    selectedCompanyIncoDate,
+                    selectedYear,
+                    monthIndex,
+                    page,
+                    limit
+                }
+            });
+
+            if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
+                setIsFilter(false);
+            } else {
+                // console.log("Filtered Data is :", response.data);
+                setFilteredData(response.data);
+                setNewFilteredData(response.data);
+                setTeamLeadsData(response.data)
+            }
+        } catch (error) {
+            console.log("Error to filtered data :", error);
+        } finally {
+            setOpenBacdrop(false);
+            setOpenFilterDrawer(false);
+        }
+    };
+
+    // console.log("Team data :", teamData);
+    // console.log("Filtered data :", filteredData);
+    // console.log("Team lead data :", teamleadsData);
+    // console.log("Is Filter :", isFilter);
+
+    // useEffect for filtering data :
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            let filtered;
+            switch (activeTab) {
+                case "All":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Busy" ||
+                        obj.bdmStatus === "Not Picked Up" ||
+                        obj.bdmStatus === "Untouched"
+                    );
+                    break;
+                case "Interested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Interested"
+                    );
+                    break;
+                case "FollowUp":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "FollowUp"
+                    );
+                    break;
+                case "Matured":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Matured"
+                    );
+                    break;
+                case "Forwarded":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus !== "Not Interested" &&
+                        obj.bdmStatus !== "Busy" &&
+                        obj.bdmStatus !== "Junk" &&
+                        obj.bdmStatus !== "Not Picked Up" &&
+                        obj.bdmStatus !== "Matured"
+                    ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                    break;
+                case "NotInterested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Not Interested" ||
+                        obj.bdmStatus === "Junk"
+                    );
+                    break;
+                default:
+                    filtered = filteredData;
+            }
+            //setTeamLeadsData(filtered);
+
+        } else if (filteredData.length === 0 && isFilter) {
+            //setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData)
+        }
+
+        if (filteredData.length === 0) {
+            setTeamLeadsData([]);
+        }
+
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+            if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
+                setActiveTab('All');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
+            } else if (currentStatus === 'Interested') {
+                setActiveTab('Interested');
+                setBdmNewStatus(currentStatus)
+            } else if (currentStatus === 'FollowUp') {
+                setActiveTab('FollowUp');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
+            } else if (currentStatus === 'Matured') {
+                setActiveTab('Matured');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
+            } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
+                setActiveTab('Forwarded');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
+            } else if (currentStatus === 'Not Interested') {
+                setActiveTab('NotInterested');
+                setBdmNewStatus(currentStatus)
+                setTeamLeadsData(newFilteredData)
+            }
+        } else if (filteredData.length > 1) {
+            setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData)
+            if (selectedStatus) {
+                // console.log("yahan chal")
+                setBdmNewStatus(selectedStatus)
+                setActiveTab(selectedStatus);
+            }
+        }
+
+    }, [filteredData, activeTab]);
+
+    // console.log("activetab", activeTab);
+    // console.log("selectedStatus", selectedStatus);
+    // console.log("bdmNewStatus", bdmNewStatus);
+
+    console.log("Selected rows :", selectedRows);
 
 
 
@@ -1632,7 +1981,7 @@ function AdminEmployeeTeamLeads() {
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-center">
-                                    {selectedRows.length !== 0 && (
+                                    {/* {selectedRows.length !== 0 && (
                                         <div className="request mr-1">
                                             <div className="btn-list">
                                                 <button
@@ -1647,12 +1996,12 @@ function AdminEmployeeTeamLeads() {
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modal-report"
                                                     aria-label="Create new report"
-                                                >
-                                                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                                                </a>
+                                                > */}
+                                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                                    {/* </a>
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* <div className="form-control sort-by">
                                         <label htmlFor="sort-by">Sort By:</label>
@@ -1861,7 +2210,7 @@ function AdminEmployeeTeamLeads() {
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button"
                                         className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                    //onClick={() => setOpenFilterDrawer(true)}
+                                        onClick={() => setOpenFilterDrawer(true)}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
@@ -1870,6 +2219,9 @@ function AdminEmployeeTeamLeads() {
                                     >
                                         <TbFileExport className='mr-1' /> Export Leads
                                     </button>
+                                    {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
+                                        <MdOutlinePostAdd className='mr-1' />Assign Leads
+                                    </button>)}
                                 </div>
                             </div>
                             <div className="d-flex align-items-center">
@@ -2205,8 +2557,9 @@ function AdminEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Untouched");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
                                                         //obj.bdmStatus === "Busy" ||
                                                         //obj.bdmStatus === "Not Picked Up" ||
@@ -2224,10 +2577,10 @@ function AdminEmployeeTeamLeads() {
                                         General{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
-                                                        //obj.bdmStatus === "Busy" ||
-                                                        //obj.bdmStatus === "Not Picked Up" ||
+                                                        // obj.bdmStatus === "Busy" ||
+                                                        // obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Untouched"
                                                 ).length
                                             }
@@ -2240,8 +2593,9 @@ function AdminEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Interested");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -2256,7 +2610,7 @@ function AdminEmployeeTeamLeads() {
                                         Interested
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).length
                                             }
@@ -2269,8 +2623,9 @@ function AdminEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("FollowUp");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -2285,7 +2640,7 @@ function AdminEmployeeTeamLeads() {
                                         Follow Up{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).length
                                             }
@@ -2298,9 +2653,10 @@ function AdminEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Matured");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData
-                                                    .filter((obj) => obj.bdmStatus === "Matured")
+                                                mappedData.filter(
+                                                    (obj) => obj.bdmStatus === "Matured")
                                                     .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
                                         }}
@@ -2315,7 +2671,7 @@ function AdminEmployeeTeamLeads() {
                                         <span className="no_badge">
                                             {" "}
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Matured"
                                                 ).length
                                             }
@@ -2326,10 +2682,11 @@ function AdminEmployeeTeamLeads() {
                                     <a
                                         href="#tabs-activity-5"
                                         onClick={() => {
-                                            setBdmNewStatus("NotInterested");
+                                            setBdmNewStatus("Not Interested");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -2339,7 +2696,7 @@ function AdminEmployeeTeamLeads() {
                                             );
                                         }}
                                         className={
-                                            bdmNewStatus === "NotInterested"
+                                            bdmNewStatus === "Not Interested"
                                                 ? "nav-link active item-act"
                                                 : "nav-link"
                                         }
@@ -2348,7 +2705,7 @@ function AdminEmployeeTeamLeads() {
                                         Not-Interested{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -2380,7 +2737,7 @@ function AdminEmployeeTeamLeads() {
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === filteredData.length
+                                                            selectedRows.length !== 0
                                                         }
                                                         onChange={() => handleCheckboxChange("all")}
                                                     />
@@ -3388,6 +3745,156 @@ function AdminEmployeeTeamLeads() {
                             setOpenAnchor={setOpenAnchor}
                             currentLeadForm={currentForm}
                         />
+                    </div>
+                </div>
+            </Drawer>
+
+
+            {/* This code will open filter drawer. */}
+            <Drawer
+                style={{ top: "50px" }}
+                anchor="left"
+                open={openFilterDrawer}
+                onClose={functionCloseFilterDrawer}>
+                <div style={{ width: "31em" }}>
+                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                        <h2 className="title m-0">
+                            Filters
+                        </h2>
+                        <div>
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                                <IoIosClose style={{
+                                    height: "36px",
+                                    width: "32px",
+                                    color: "grey"
+                                }} />
+                            </button>
+                        </div>
+                    </div>
+                    <hr style={{ margin: "0px" }} />
+                    <div className="body-Drawer">
+                        <div className='container-xl mt-2 mb-2'>
+                            <div className='row'>
+                                <div className='col-sm-12 mt-3'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedStatus}
+                                            onChange={(e) => {
+                                                setSelectedStatus(e.target.value)
+                                            }}
+                                        >
+                                            <option selected value='Select Status'>Select Status</option>
+                                            <option value='Not Picked Up'>Not Picked Up</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Matured">Matured</option>
+                                            <option value="FollowUp">Followup</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='d-flex align-items-center justify-content-between'>
+                                        <div className='form-group w-50 mr-1'>
+                                            <label for="exampleFormControlInput1" class="form-label">State</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedState}
+                                                onChange={(e) => {
+                                                    setSelectedState(e.target.value)
+                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                                    //handleSelectState(e.target.value)
+                                                }}
+                                            >
+                                                <option value=''>State</option>
+                                                {stateList.length !== 0 && stateList.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='form-group w-50'>
+                                            <label for="exampleFormControlInput1" class="form-label">City</label>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedNewCity}
+                                                onChange={(e) => {
+                                                    setSelectedNewCity(e.target.value)
+                                                }}
+                                            >
+                                                <option value="">City</option>
+                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                    <option value={item.name}>{item.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="assignon" class="form-label">BDE Forward Date</label>
+                                        <input type="date" class="form-control" id="assignon"
+                                            value={selectedBdeForwardDate}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedBdeForwardDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <label class="form-label">Incorporation Date</label>
+                                    <div className='row align-items-center justify-content-between'>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedYear}
+                                                onChange={(e) => {
+                                                    setSelectedYear(e.target.value)
+                                                }}
+                                            >
+                                                <option value=''>Year</option>
+                                                {years.length !== 0 && years.map((item) => (
+                                                    <option value={item}>{item}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                value={selectedMonth}
+                                                disabled={selectedYear === ""}
+                                                onChange={(e) => {
+                                                    setSelectedMonth(e.target.value)
+                                                }}
+                                            >
+                                                <option value=''>Month</option>
+                                                {months && months.map((item) => (
+                                                    <option value={item}>{item}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className='col form-group mr-1'>
+                                            <select class="form-select form-select-md" aria-label="Default select example"
+                                                disabled={selectedMonth === ''}
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.target.value)}
+                                            >
+                                                <option value=''>Date</option>
+                                                {daysInMonth.map((day) => (
+                                                    <option key={day} value={day}>{day}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                        <button className='filter-footer-btn btn-clear'
+                            onClick={handleClearFilter}
+                        >Clear Filter</button>
+                        <button className='filter-footer-btn btn-yellow'
+                            onClick={handleFilterData}
+                        >Apply Filter</button>
                     </div>
                 </div>
             </Drawer>
