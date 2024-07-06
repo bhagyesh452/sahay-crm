@@ -125,143 +125,54 @@ export default function EditableMoreBooking({
   const [leadData, setLeadData] = useState(defaultLeadData);
 
   const fetchData = async () => {
-  try {
-    const response = await axios.get(
-      `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
-    );
-    const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
-    console.log("Here is the data", data);
+    try {
+      const response = await axios.get(
+        `${secretKey}/bookings/redesigned-final-leadData/${companysName}`
+      );
+      const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex - 1] : response.data;
+      console.log("Here is the data", data);
 
-    if (!data) {
-      setCompleted({});
-      setActiveStep(0);
-      setSelectedValues("");
-      setLeadData(defaultLeadData);
-      return true;
-    }
-
-    const {
-      Step1Status,
-      Step2Status,
-      Step3Status,
-      Step4Status,
-      Step5Status,
-      ...newLeadData
-    } = data;
-
-    let allIsoTypes = [...isoType]; // Initialize with existing isoType state
-
-    const servicestoSend = newLeadData.services.map((service, index) => {
-      const tempDefaultType = {
-        ...defaultISOtypes,
-        serviceID: index
-      };
-
-      if (service.serviceName.includes("ISO Certificate")) {
-        const uniqueServiceIDs = new Set(allIsoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
-
-        service.isoTypeObject.forEach(isoObj => {
-          if (isoObj.serviceID !== undefined && !uniqueServiceIDs.has(isoObj.serviceID)) {
-            allIsoTypes.push(isoObj);
-            uniqueServiceIDs.add(isoObj.serviceID); // Add new serviceID to the Set
-          }
-        });
-
-        // Ensure tempDefaultType is added only if there is no valid isoTypeObject
-        if (!service.isoTypeObject.length || service.isoTypeObject[0].serviceID === undefined) {
-          allIsoTypes.push(tempDefaultType);
-        }
-      }
-      if(!isNaN(new Date(service.secondPaymentRemarks))){
-        const tempState = {
-          serviceID: index,
-          value: service.secondPaymentRemarks
-        };
-        const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
-        if (prevState) {
-          setSecondTempRemarks(prev =>
-            prev.map(obj => (obj.serviceID === index ? tempState : obj))
-          );
-        } else {
-          setSecondTempRemarks(prev => [...prev, tempState]);
-        }
-      }
-      if(!isNaN(new Date(service.thirdPaymentRemarks))){
-        const tempState = {
-          serviceID: index,
-          value: service.thirdPaymentRemarks
-        };
-        const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
-        if (prevState) {
-          setThirdTempRemarks(prev =>
-            prev.map(obj => (obj.serviceID === index ? tempState : obj))
-          );
-        } else {
-          setThirdTempRemarks(prev => [...prev, tempState]);
-        }
-      }
-      if(!isNaN(new Date(service.fourthPaymentRemarks))){
-        const tempState = {
-          serviceID: index,
-          value: service.fourthPaymentRemarks
-        };
-        const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
-        if (prevState) {
-          setFourthTempRemarks(prev =>
-            prev.map(obj => (obj.serviceID === index ? tempState : obj))
-          );
-        } else {
-          setFourthTempRemarks(prev => [...prev, tempState]);
-        }
+      if (!data) {
+        setCompleted({});
+        setActiveStep(0);
+        setSelectedValues("");
+        setLeadData(defaultLeadData);
+        return true;
       }
 
+      const {
+        Step1Status,
+        Step2Status,
+        Step3Status,
+        Step4Status,
+        Step5Status,
+        ...newLeadData
+      } = data;
 
+      let allIsoTypes = [...isoType]; // Initialize with existing isoType state
 
-      return {
-        ...service,
-        serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
-        paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
-        secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
-        thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
-        fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
-      };
-    });
-
-    // Set all isoTypes once after processing all services
-    setIsoType(allIsoTypes);
-
-    const latestLeadData = {
-      ...newLeadData,
-      services: servicestoSend
-    };
-
-    setLeadData(latestLeadData);
-    setActiveStep(bookingIndex === 0 ? 0 : 1);
-    setCompleted({ 0: true, 1: true, 2: true, 3: true });
-    setSelectedValues(newLeadData.bookingSource);
-    setfetchedService(true);
-    setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-
-    if (Step2Status === true && Step3Status === false) {
-      setCompleted({ 0: true, 1: true });
-      setActiveStep(2);
-      setLeadData((prevState) => ({
-        ...prevState,
-        services: data.services.length !== 0 ? data.services : [defaultService],
-        numberOfServices: data.services.length !== 0 ? data.services.length : 1,
-      }));
-      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-    } else if (Step3Status === true && Step4Status === false) {
-      console.log(data.services, "This is services");
-      setfetchedService(true);
-      setCompleted({ 0: true, 1: true, 2: true });
-      setActiveStep(3);
       const servicestoSend = newLeadData.services.map((service, index) => {
         const tempDefaultType = {
           ...defaultISOtypes,
           serviceID: index
         };
-        if(!isNaN(new Date(service.secondPaymentRemarks))){
+
+        if (service.serviceName.includes("ISO Certificate")) {
+          const uniqueServiceIDs = new Set(allIsoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
+          service.isoTypeObject.forEach(isoObj => {
+            if (isoObj.serviceID !== undefined && !uniqueServiceIDs.has(isoObj.serviceID)) {
+              allIsoTypes.push(isoObj);
+              uniqueServiceIDs.add(isoObj.serviceID); // Add new serviceID to the Set
+            }
+          });
+
+          // Ensure tempDefaultType is added only if there is no valid isoTypeObject
+          if (!service.isoTypeObject.length || service.isoTypeObject[0].serviceID === undefined) {
+            allIsoTypes.push(tempDefaultType);
+          }
+        }
+        if (!isNaN(new Date(service.secondPaymentRemarks))) {
           const tempState = {
             serviceID: index,
             value: service.secondPaymentRemarks
@@ -275,7 +186,7 @@ export default function EditableMoreBooking({
             setSecondTempRemarks(prev => [...prev, tempState]);
           }
         }
-        if(!isNaN(new Date(service.thirdPaymentRemarks))){
+        if (!isNaN(new Date(service.thirdPaymentRemarks))) {
           const tempState = {
             serviceID: index,
             value: service.thirdPaymentRemarks
@@ -289,7 +200,7 @@ export default function EditableMoreBooking({
             setThirdTempRemarks(prev => [...prev, tempState]);
           }
         }
-        if(!isNaN(new Date(service.fourthPaymentRemarks))){
+        if (!isNaN(new Date(service.fourthPaymentRemarks))) {
           const tempState = {
             serviceID: index,
             value: service.fourthPaymentRemarks
@@ -303,103 +214,192 @@ export default function EditableMoreBooking({
             setFourthTempRemarks(prev => [...prev, tempState]);
           }
         }
+
+
+
         return {
           ...service,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
-        };
-      });
-      setLeadData((prevState) => ({
-        ...prevState,
-        services: data.services.length !== 0 ? servicestoSend : [defaultService],
-        caCase: data.caCase,
-        caCommission: data.caCommission,
-        caNumber: data.caNumber,
-        caEmail: data.caEmail,
-      }));
-      setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-    } else if (Step4Status === true && Step5Status === false) {
-      setCompleted({ 0: true, 1: true, 2: true, 3: true });
-      const servicestoSend = newLeadData.services.map((service, index) => {
-        const tempDefaultType = {
-          ...defaultISOtypes,
-          serviceID: index
-        };
-        if(!isNaN(new Date(service.secondPaymentRemarks))){
-          const tempState = {
-            serviceID: index,
-            value: service.secondPaymentRemarks
-          };
-          const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
-          if (prevState) {
-            setSecondTempRemarks(prev =>
-              prev.map(obj => (obj.serviceID === index ? tempState : obj))
-            );
-          } else {
-            setSecondTempRemarks(prev => [...prev, tempState]);
-          }
-        }
-        if(!isNaN(new Date(service.thirdPaymentRemarks))){
-          const tempState = {
-            serviceID: index,
-            value: service.thirdPaymentRemarks
-          };
-          const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
-          if (prevState) {
-            setThirdTempRemarks(prev =>
-              prev.map(obj => (obj.serviceID === index ? tempState : obj))
-            );
-          } else {
-            setThirdTempRemarks(prev => [...prev, tempState]);
-          }
-        }
-        if(!isNaN(new Date(service.fourthPaymentRemarks))){
-          const tempState = {
-            serviceID: index,
-            value: service.fourthPaymentRemarks
-          };
-          const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
-          if (prevState) {
-            setFourthTempRemarks(prev =>
-              prev.map(obj => (obj.serviceID === index ? tempState : obj))
-            );
-          } else {
-            setFourthTempRemarks(prev => [...prev, tempState]);
-          }
-        }
-        return {
-          ...service,
+          serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
           thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
           fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
         };
       });
-      setActiveStep(4);
-      setLeadData((prevState) => ({
-        ...prevState,
-        services: servicestoSend,
-        totalAmount: data.totalAmount,
-        pendingAmount: data.pendingAmount,
-        receivedAmount: data.receivedAmount,
-        otherDocs: data.otherDocs,
-        paymentReceipt: data.paymentReceipt,
-        paymentMethod: data.paymentMethod,
-        extraNotes: data.extraNotes,
-      }));
-    } else if (Step5Status === true) {
-      setCompleted({ 0: true, 1: true, 2: true, 3: true });
-      setSelectedValues(data.bookingSource);
 
-      setActiveStep(4);
+      // Set all isoTypes once after processing all services
+      setIsoType(allIsoTypes);
+
+      const latestLeadData = {
+        ...newLeadData,
+        services: servicestoSend
+      };
+
+      setLeadData(latestLeadData);
+      setActiveStep(bookingIndex === 0 ? 0 : 1);
+      setCompleted({ 0: true, 1: true, 2: true, 3: true });
+      setSelectedValues(newLeadData.bookingSource);
       setfetchedService(true);
       setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+
+      if (Step2Status === true && Step3Status === false) {
+        setCompleted({ 0: true, 1: true });
+        setActiveStep(2);
+        setLeadData((prevState) => ({
+          ...prevState,
+          services: data.services.length !== 0 ? data.services : [defaultService],
+          numberOfServices: data.services.length !== 0 ? data.services.length : 1,
+        }));
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+      } else if (Step3Status === true && Step4Status === false) {
+        console.log(data.services, "This is services");
+        setfetchedService(true);
+        setCompleted({ 0: true, 1: true, 2: true });
+        setActiveStep(3);
+        const servicestoSend = newLeadData.services.map((service, index) => {
+          const tempDefaultType = {
+            ...defaultISOtypes,
+            serviceID: index
+          };
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.secondPaymentRemarks
+            };
+            const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setSecondTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setSecondTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.thirdPaymentRemarks
+            };
+            const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setThirdTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setThirdTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.fourthPaymentRemarks
+            };
+            const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setFourthTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setFourthTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          return {
+            ...service,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+          };
+        });
+        setLeadData((prevState) => ({
+          ...prevState,
+          services: data.services.length !== 0 ? servicestoSend : [defaultService],
+          caCase: data.caCase,
+          caCommission: data.caCommission,
+          caNumber: data.caNumber,
+          caEmail: data.caEmail,
+        }));
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+      } else if (Step4Status === true && Step5Status === false) {
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        const servicestoSend = newLeadData.services.map((service, index) => {
+          const tempDefaultType = {
+            ...defaultISOtypes,
+            serviceID: index
+          };
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.secondPaymentRemarks
+            };
+            const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setSecondTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setSecondTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.thirdPaymentRemarks
+            };
+            const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setThirdTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setThirdTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
+            const tempState = {
+              serviceID: index,
+              value: service.fourthPaymentRemarks
+            };
+            const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+            if (prevState) {
+              setFourthTempRemarks(prev =>
+                prev.map(obj => (obj.serviceID === index ? tempState : obj))
+              );
+            } else {
+              setFourthTempRemarks(prev => [...prev, tempState]);
+            }
+          }
+          return {
+            ...service,
+            paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
+            secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+            thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+            fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+          };
+        });
+        setActiveStep(4);
+        setLeadData((prevState) => ({
+          ...prevState,
+          services: servicestoSend,
+          totalAmount: data.totalAmount,
+          pendingAmount: data.pendingAmount,
+          receivedAmount: data.receivedAmount,
+          otherDocs: data.otherDocs,
+          paymentReceipt: data.paymentReceipt,
+          paymentMethod: data.paymentMethod,
+          extraNotes: data.extraNotes,
+        }));
+      } else if (Step5Status === true) {
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setSelectedValues(data.bookingSource);
+
+        setActiveStep(4);
+        setfetchedService(true);
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
+  };
 
   const handleTextAreaChange = (e) => {
     e.target.style.height = '1px';
@@ -1101,8 +1101,8 @@ export default function EditableMoreBooking({
         Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
         return true;
       }
-      if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
-        Swal.fire("Please Enter CA Commission"); 
+      if (leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)) {
+        Swal.fire("Please Enter CA Commission");
         return true;
       }
 
@@ -1162,17 +1162,17 @@ export default function EditableMoreBooking({
         ...service,
         serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
         secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
-                : service.fourthPaymentRemarks,
+          service.secondPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks.find(obj => obj.serviceID === index).value
+            : service.secondPaymentRemarks,
+        thirdPaymentRemarks:
+          service.thirdPaymentRemarks === "On Particular Date"
+            ? thirdTempRemarks.find(obj => obj.serviceID === index).value
+            : service.thirdPaymentRemarks,
+        fourthPaymentRemarks:
+          service.fourthPaymentRemarks === "On Particular Date"
+            ? fourthTempRemarks.find(obj => obj.serviceID === index).value
+            : service.fourthPaymentRemarks,
         isoTypeObject: isoType
       }));
 
@@ -1231,20 +1231,20 @@ export default function EditableMoreBooking({
         ...service,
         serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
         secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.fourthPaymentRemarks,
+          service.secondPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks.find(obj => obj.serviceID === index).value
+            : service.secondPaymentRemarks,
+        thirdPaymentRemarks:
+          service.thirdPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks.find(obj => obj.serviceID === index).value
+            : service.thirdPaymentRemarks,
+        fourthPaymentRemarks:
+          service.fourthPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks.find(obj => obj.serviceID === index).value
+            : service.fourthPaymentRemarks,
         isoTypeObject: isoType,
-        expanse : service.expanse ? service.expanse : 0,
-        expanseDate : service.expanseDate ? service.expanseDate : defaultDate
+        expanse: service.expanse ? service.expanse : 0,
+        expanseDate: service.expanseDate ? service.expanseDate : defaultDate
 
       }));
       const generatedTotalAmount = leadData.services.reduce(
@@ -1301,20 +1301,20 @@ export default function EditableMoreBooking({
               // Handle services separately as it's an array
               dataToSend.services.forEach((service, index) => {
                 Object.keys(service).forEach((prop) => {
-                  if(prop!=="isoTypeObject"){
+                  if (prop !== "isoTypeObject") {
                     formData.append(`services[${index}][${prop}]`, service[prop]);
-                  }   
+                  }
                 });
               });
 
-              if(isoType.length!==0){
-                 isoType.forEach((isoObj , isoIndex)=>{
-                  Object.keys(isoObj).forEach((isoProp)=>{
-                  
-                      formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
-                                       
-                  })      
-                 })
+              if (isoType.length !== 0) {
+                isoType.forEach((isoObj, isoIndex) => {
+                  Object.keys(isoObj).forEach((isoProp) => {
+
+                    formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                  })
+                })
               }
             } else if (key === "otherDocs") {
               for (let i = 0; i < leadData.otherDocs.length; i++) {
@@ -1330,7 +1330,7 @@ export default function EditableMoreBooking({
           });
           // console.log(activeStep, dataToSend);
 
-     
+
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -1350,20 +1350,20 @@ export default function EditableMoreBooking({
             // Handle services separately as it's an array
             dataToSend.services.forEach((service, index) => {
               Object.keys(service).forEach((prop) => {
-                if(prop!=="isoTypeObject"){
+                if (prop !== "isoTypeObject") {
                   formData.append(`services[${index}][${prop}]`, service[prop]);
-                }   
+                }
               });
             });
 
-            if(isoType.length!==0){
-               isoType.forEach((isoObj , isoIndex)=>{
-                Object.keys(isoObj).forEach((isoProp)=>{
-                
-                    formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]` , isoObj[isoProp]);
-                                     
-                })      
-               })
+            if (isoType.length !== 0) {
+              isoType.forEach((isoObj, isoIndex) => {
+                Object.keys(isoObj).forEach((isoProp) => {
+
+                  formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                })
+              })
             }
           } else if (key === "otherDocs") {
             for (let i = 0; i < leadData.otherDocs.length; i++) {
@@ -1462,10 +1462,10 @@ export default function EditableMoreBooking({
                       ),
 
                     }));
-                    if(isoType.length!==0 && e.target.value !== "ISO Certificate"  ){
+                    if (isoType.length !== 0 && e.target.value !== "ISO Certificate") {
                       setIsoType([]);
                     }
-                    
+
                     if (e.target.value === "ISO Certificate") {
                       if (!isoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = isoType;
@@ -1521,15 +1521,15 @@ export default function EditableMoreBooking({
                       setIsoType(remainingObject);
                     }
                   }}>
-                     <option value="" selected disabled>Select ISO Type</option>
-                    <option value="ISO 9001">ISO 9001</option>
-                    <option value="ISO 14001">ISO 14001</option>
-                    <option value="ISO 45001">ISO 45001</option>
-                    <option value="ISO 22000">ISO 22000</option>
-                    <option value="ISO 27001">ISO 27001</option>
-                    <option value="ISO 13485">ISO 13485</option>
-                    <option value="ISO 20000-1">ISO 20000-1</option>
-                    <option value="ISO 50001">ISO 50001</option>
+                    <option value="" selected disabled>Select ISO Type</option>
+                    <option value="9001">9001</option>
+                    <option value="14001">14001</option>
+                    <option value="45001">45001</option>
+                    <option value="22000">22000</option>
+                    <option value="27001">27001</option>
+                    <option value="13485">13485</option>
+                    <option value="20000-1">20000-1</option>
+                    <option value="50001">50001</option>
                   </select>
                     {/* IAF ISO TYPES */}
                     <select disabled={completed[activeStep] === true} className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
@@ -1545,10 +1545,10 @@ export default function EditableMoreBooking({
                         setIsoType(remainingObject);
                       }
                     }}>
-                     <option value="" selected disabled>Select ISO Duration</option>
-                      <option value="1 YR"> 1 YR</option>
-                      <option value="3 YR">3 YR</option>
-                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                      <option value="" selected disabled>Select ISO VALIDITY</option>
+                      <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
+                      <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
+                      <option value="3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
                     </select></> : <>  <select className="form-select mt-1 ml-1" disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
@@ -1562,16 +1562,16 @@ export default function EditableMoreBooking({
                         setIsoType(remainingObject);
                       }
                     }}>
-                        <option value="" selected disabled>Select ISO Type</option>
-                      <option value="ISO 9001">ISO 9001</option>
-                      <option value="ISO 14001">ISO 14001</option>
-                      <option value="ISO 45001">ISO 45001</option>
-                      <option value="ISO 22000">ISO 22000</option>
-                      <option value="ISO 27001">ISO 27001</option>
-                      <option value="ISO 13485">ISO 13485</option>
-                      <option value="ISO 20000-1">ISO 20000-1</option>
-                      <option value="ISO 50001">ISO 50001</option>
-                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="" selected disabled>Select ISO Type</option>
+                      <option value="9001">9001</option>
+                      <option value="14001">14001</option>
+                      <option value="45001">45001</option>
+                      <option value="22000">22000</option>
+                      <option value="27001">27001</option>
+                      <option value="13485">13485</option>
+                      <option value="20000-1">20000-1</option>
+                      <option value="50001">50001</option>
+                      <option value="21001">21001</option>
                       <option value="GMP">GMP</option>
                       <option value="GAP">GAP</option>
                       <option value="FDA">FDA</option>
@@ -2092,21 +2092,21 @@ export default function EditableMoreBooking({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                   value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
-                                   onChange={(e) => {
-                                     const tempState = {
-                                       serviceID: i,
-                                       value: e.target.value
-                                     };
-                                     const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
-                                     if (prevState) {
-                                       setThirdTempRemarks(prev =>
-                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
-                                       );
-                                     } else {
-                                       setThirdTempRemarks(prev => [...prev, tempState]);
-                                     }
-                                   }}
+                                  value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setThirdTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setThirdTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -2201,21 +2201,21 @@ export default function EditableMoreBooking({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                 value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
-                                 onChange={(e) => {
-                                   const tempState = {
-                                     serviceID: i,
-                                     value: e.target.value
-                                   };
-                                   const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
-                                   if (prevState) {
-                                     setFourthTempRemarks(prev =>
-                                       prev.map(obj => (obj.serviceID === i ? tempState : obj))
-                                     );
-                                   } else {
-                                     setFourthTempRemarks(prev => [...prev, tempState]);
-                                   }
-                                 }}
+                                  value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setFourthTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setFourthTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -2358,16 +2358,16 @@ export default function EditableMoreBooking({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
- 
-  const functionShowSizeLimit = (e)=>{
+
+  const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-  
-    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
-      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+
+    if (Math.round(file.size / (1024 * 1024)) > maxSizeMB) {
+      Swal.fire('Size limit exceeded!', 'Please Upload file less than 24MB', 'warning');
       return false;
-    }else {
+    } else {
       return true;
     }
   }
@@ -3267,7 +3267,7 @@ export default function EditableMoreBooking({
                                           // Update the state with the selected files
 
                                           setStep4Changed(true)
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               paymentReceipt: [
@@ -3371,7 +3371,7 @@ export default function EditableMoreBooking({
                                         onChange={(e) => {
                                           // Update the state with the selected files
                                           setStep4Changed(true)
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               otherDocs: [
@@ -3744,7 +3744,7 @@ export default function EditableMoreBooking({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                            <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                 ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
@@ -3763,7 +3763,7 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
@@ -3783,7 +3783,7 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
@@ -3797,7 +3797,7 @@ export default function EditableMoreBooking({
                                           )}
                                         </>
                                       )}
-                                      <div className="row m-0">
+                                      {/* <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3850,7 +3850,7 @@ export default function EditableMoreBooking({
                                             </div>
                                           </div>
                                         </div>
-                                      </>}
+                                      </>} */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3867,6 +3867,60 @@ export default function EditableMoreBooking({
                                       </div>
                                     </div>
                                   ))}
+                                  <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase
+                                            }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>

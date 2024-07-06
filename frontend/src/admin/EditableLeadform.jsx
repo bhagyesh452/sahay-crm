@@ -3060,6 +3060,60 @@ export default function EditableLeadform({
                                       </div>
                                     </div>
                                   ))}
+                                  <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase
+                                            }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>

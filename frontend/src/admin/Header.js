@@ -13,7 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
-import { SnackbarProvider, enqueueSnackbar , MaterialDesignContent } from 'notistack';
+import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
 import notification_audio from "../assets/media/iphone_sound.mp3"
 import Admin_logo from "../assets/media/admin_image.jpeg"
 import ReportComplete from "../components/ReportComplete";
@@ -23,8 +23,8 @@ import booking_audio from "../assets/media/Booking-received.mp3"
 // import "./styles/header.css"
 
 
-function Header({ name, designation}) {
- 
+function Header({ name, designation }) {
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -35,65 +35,65 @@ function Header({ name, designation}) {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
 
-    
-    
+
+
 
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`Booking Delete Request Received From ${res}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true });
-    
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete", persist: true });
+
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
-    
+
     socket.on("newRequest", (res) => {
-      console.log("res" , res)
+      console.log("res", res)
       enqueueSnackbar(`${res.name} Is Asking For ${res.dAmonut} General Data`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("editBooking_requested", (res) => {
       enqueueSnackbar(`Booking Edit Request Received From ${res.bdeName}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
     socket.on("approve-request", (res) => {
       enqueueSnackbar(`Lead Upload Request Received From ${res}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
-    
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
     };
   }, []);
- 
+
   const adminName = localStorage.getItem("adminName")
 
   const formatDateAndTime = (AssignDate) => {
@@ -106,12 +106,12 @@ function Header({ name, designation}) {
     return indianDate;
   };
 
-  
+
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
-          <button
+          {/* <button
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -121,7 +121,10 @@ function Header({ name, designation}) {
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
-          </button>
+          </button> */}
+
+          {/* -------------left-side-startupsahay-image-code-------------------- */}
+
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href=".">
               <img
@@ -133,63 +136,52 @@ function Header({ name, designation}) {
               />
             </a>
           </h1>
-          <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          {/* <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
+
+            
+          {/* --------------------------notification-box-code--------------------- */}
+          <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
+            {/* <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
            */}
-          <Notification_BOX/>
-          
-          <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            <Notification_BOX />
+            
+            {/* --------------------------------display image code---------------------------- */}
+            <Avatar className="My-Avtar" sx={{ width: 36, height: 36 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu"
               >
-                
+
                 <div className="d-xl-block ps-2">
-                  <div style={{textTransform:"capitalize"}}>{adminName ? adminName : "Admin" }</div>
-                  <div style={{textAlign:"left"}} className="mt-1 small text-muted">
+                  <div style={{ textTransform: "capitalize" }}>{adminName ? adminName : "Admin"}</div>
+                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {designation ? designation : "Admin"}
                   </div>
                 </div>
               </button>
-              <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <a href="#" className="dropdown-item">
-                  Status
-                </a>
-                <a href="#" className="dropdown-item">
-                  Profile
-                </a>
-                <a href="#" className="dropdown-item">
-                  Feedback
-                </a>
-                <div className="dropdown-divider"></div>
-                <a href="#" className="dropdown-item">
-                  Settings
-                </a>
-                <a href="#" className="dropdown-item">
-                  Logout
-                </a>
-              </div>
             </div>
-            <Notification/>
-            <div
-              style={{ display: "flex", alignItems: "center" }}
-              className="item"
-            >             
-            </div>
+
+
+
+{/* ------------------------three dots for logout and profile page component------------------- */}
+            <Notification />
+
           </div>
         </div>
       </header>
-      <SnackbarProvider Components={{   reportComplete: ReportComplete  }} 
-                        iconVariant={{
-                          success: '✅',
-                          error: '✖️',
-                          warning: '⚠️',
-                          info: 'ℹ️ ',
-                        }}
-                        maxSnack={5}>
-   
+
+
+     
+     {/* ----------------------snackbar code---------------------------------  */}
+      <SnackbarProvider Components={{ reportComplete: ReportComplete }}
+        iconVariant={{
+          success: '✅',
+          error: '✖️',
+          warning: '⚠️',
+          info: 'ℹ️ ',
+        }}
+        maxSnack={5}>
       </SnackbarProvider>
     </div>
   );
