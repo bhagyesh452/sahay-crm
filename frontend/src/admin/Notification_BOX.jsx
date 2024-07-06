@@ -32,6 +32,7 @@ function Notification_BOX({ isDM }) {
     // Ensure that DOM manipulation happens after navigation
     setTimeout(() => {
       const element = document.getElementById(`${index}_card`);
+      console.log(element)
       if (element) {
         element.classList.remove('unread');
       }
@@ -141,7 +142,20 @@ function Notification_BOX({ isDM }) {
             </li>
             {
               total_notifications.length !== 0 ? total_notifications.map((obj, index) => (
-                <li id={`${index}_card`} onClick={() => handleClick(obj.requestType === "Data" ? "General" : obj.requestType === "Data Approve" ? "AddRequest" : obj.requestType === "Booking Edit" ? "editBookingRequests" : obj.requestType === "Data Approve" ? "AddRequest" : "deleteBookingRequests", index, obj._id)} className={obj.status === "Unread" ? 'noti-item unread bdr-btm-eee' : 'noti-item bdr-btm-eee'}>
+                <li id={`${index}_card`} onClick={() =>
+                  handleClick(
+                    obj.requestType === "Data" ?
+                      "General" :
+                      obj.requestType === "Data Approve" ?
+                        "AddRequest" :
+                        obj.requestType === "Booking Edit" ?
+                          "editBookingRequests" :
+                          obj.requestType === "Data Approve" ?
+                            "AddRequest" :
+                            "deleteBookingRequests",
+                    index,
+                    obj._id)}
+                  className={obj.status === "Unread" ? 'noti-item unread bdr-btm-eee' : 'noti-item bdr-btm-eee'}>
                   <div className='noti-User-profile'>
                     <img src={obj.img_url !== "no-image" ? `${secretKey}/employee/employeeImg/${obj.ename}/${encodeURIComponent(
                       obj.img_url
@@ -161,11 +175,6 @@ function Notification_BOX({ isDM }) {
                 </div>
               </>
             }
-
-
-
-
-
             <li className='noti-item-footer' onClick={() => {
               navigate(link);
             }}>
