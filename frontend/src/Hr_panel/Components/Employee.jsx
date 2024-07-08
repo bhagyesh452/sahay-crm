@@ -30,6 +30,7 @@ import {
 import Swal from 'sweetalert2';
 import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "../Components/Navbar/Navbar.jsx";
+import { HiPencil } from "react-icons/hi";
 
 function EmployeeProfile() {
 
@@ -50,10 +51,10 @@ function EmployeeProfile() {
   const [editempinfo , setEditEmpInfo] = useState(false);
 
 
-  const [personalEmail, setPersonalEmail] = useState('');
-  const [personalPhone, setPersonalPhone] = useState('');
-  const [contactPerson, setContactPerson] = useState('');
-  const [personalAddress, setPersonalAddress] = useState('');
+  const [personal_email, setPersonalEmail] = useState('');
+  const [personal_number, setPersonalPhone] = useState('');
+  const [personal_contact_person, setContactPerson] = useState('');
+  const [personal_address, setPersonalAddress] = useState('');
 
 
 
@@ -79,28 +80,25 @@ function EmployeeProfile() {
 
 
   const handleSubmit = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-  
-      try {
-        const response = await axios.post(`${secretKey}/employee/employeeimages/${data.ename}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${newtoken}`, 
-          },
-        });
-        console.log("File upload success:", response.data);
-        const imageUrl = response.data.imageUrl;
-        setEmpImg1(imageUrl); 
-        localStorage.setItem("empImg1", imageUrl); 
-        fetchEmployeeData()
-        handleClose(); 
-      } catch (error) {
-        console.error("Error uploading file:", error);
+    console.log("personalEmail",personal_email);
+    console.log("personalPhone",personal_number);
+    console.log("contactPerson",personal_contact_person);
+    console.log("personalAddress",personal_address);
+    try{
+        const response = await axios.post(`${secretKey}/employee/post-employee-detail-byhr/${userId}` , {
+        personal_email , personal_number , personal_contact_person , personal_address
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${newtoken}`,
+        }
       }
-    } else {
-      alert("No file selected.");
+    );
+    console.log("Response", response.data);
+    fetchEmployeeData();
+
+    }catch(error){
+      console.error("Error Updating Employee Details", error);
     }
     closePopUp();
   };
@@ -139,10 +137,10 @@ function EmployeeProfile() {
 
 
       // set the personal details fields
-      setPersonalEmail(data.personalEmail || '')
-      setPersonalPhone(data.personalPhone || '');
-      setContactPerson(data.contactPerson || '');
-      setPersonalAddress(data.personalAddress || '');
+      setPersonalEmail(data.personal_email || '')
+      setPersonalPhone(data.personal_number || '');
+      setContactPerson(data.personal_contact_person || '');
+      setPersonalAddress(data.personal_address || '');
 
 
       setdata(data);
@@ -206,10 +204,10 @@ function EmployeeProfile() {
       const response = await axios.put(
         `${secretKey}/api/employee/personal-details/${userId}`,
         {
-          personalEmail,
-          personalPhone,
-          contactPerson,
-          personalAddress,
+          personal_email,
+          personal_number,
+          personal_contact_person,
+          personal_address,
         },
         {
           headers: {
@@ -305,7 +303,7 @@ function EmployeeProfile() {
                             </div>
                           </div>
                         </DialogContent>
-                        <Button onClick={handleSubmit} className="btn btn-primary">
+                        <Button className="btn btn-primary">
                           Submit
                         </Button>
                       </Dialog>
@@ -398,11 +396,13 @@ function EmployeeProfile() {
                         </div>
                         <div className="col-sm-6 p-0 bdr-left-eee">
                           <div className="EP_Other_info">
-                            <div className="EP_Other_info_head">
-                              Personal Details
-                              <span className="employee-personal-details" onClick={functionEditEmployee}>
-                              +
-                              </span>
+                            <div className="EP-other_info_heads d-flex ln-lg">
+                              <div className="EP_Other_info_head">
+                                Personal Details
+                              </div>
+                              <div className="employee-personal-details" onClick={functionEditEmployee}>
+                                <HiPencil />
+                              </div>
                             </div>
                             <div className="EP_Other_info_body">
                               <div className="row m-0 bdr-btm-eee">
@@ -417,7 +417,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                    {data.personalEmail || 'N/A'}
+                                    {data.personal_email}
                                     </div>
                                   </div>
                                 </div>
@@ -434,7 +434,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                    {data.personalPhone || 'N/A'}
+                                    {data.personal_number}
                                     </div>
                                   </div>
                                 </div>
@@ -452,7 +452,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">{data.contactPerson || 'N/A'}</div>
+                                    <div className="ep_info_t">{data.personal_contact_person}</div>
                                   </div>
                                 </div>
                               </div>
@@ -467,7 +467,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">{data.personalAddress || 'N/A'}</div>
+                                    <div className="ep_info_t">{data.personal_address}</div>
                                   </div>
                                 </div>
                               </div>
@@ -627,7 +627,7 @@ function EmployeeProfile() {
           </div>
         </div>
       </div>}
-      <Dialog className='My_Mat_Dialog' open={editempinfo} onClose={closePopUp} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={editempinfo} onClose={closePopUp} fullWidth maxWidth="sm" onSubmit={handlePersonalDetailsSubmit}>
         <DialogTitle>
           Employee Info{" "}
           <IconButton onClick={closePopUp} style={{ float: "right" }}>
@@ -635,14 +635,14 @@ function EmployeeProfile() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-          <div className="modal-dialog modal-lg" role="document" onSubmit={handlePersonalDetailsSubmit}>
+          <div className="modal-dialog modal-lg" role="document" >
             <div className="modal-content">
               <div className="modal-body">
                 <div className="mb-3">
                   <label className="form-label">Personal Email</label>
                   <input
                     type="email"
-                    value={personalEmail}
+                    value={personal_email}
                     className="form-control"
                     name="example-text-input"
                     placeholder="Your Personal name"
@@ -654,7 +654,7 @@ function EmployeeProfile() {
                 <div className="mb-3">
                     <label className="form-label">Personal Phone No.</label>
                     <input
-                      value={personalPhone}
+                      value={personal_number}
                       type="number"
                       className="form-control"
                       onChange={(e) => {
@@ -665,7 +665,7 @@ function EmployeeProfile() {
                 <div className="mb-3">
                   <label className="form-label">Personal Contact Person</label>
                   <input
-                    value={contactPerson}
+                    value={personal_contact_person}
                     type="text"
                     className="form-control"
                     name="example-text-input"
@@ -678,7 +678,7 @@ function EmployeeProfile() {
                 <div className="mb-3">
                   <label className="form-label">Personal Address</label>
                   <input
-                    value={personalAddress}
+                    value={personal_address}
                     type="text"
                     className="form-control"
                     name="example-text-input"
@@ -692,7 +692,7 @@ function EmployeeProfile() {
             </div>
           </div>
         </DialogContent>
-        <Button className="btn btn-primary bdr-radius-none" type="submit" variant="contained">
+        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
           Save Changes
         </Button>
       </Dialog>
