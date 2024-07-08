@@ -99,6 +99,7 @@ function Approve_dataComponents() {
   useEffect(() => {
     fetchRequestedData();
   }, [name]);
+
   useEffect(() => {
     fetchRequestedData();
   }, [searchText]);
@@ -108,6 +109,7 @@ function Approve_dataComponents() {
   useEffect(() => {
         fetchApproveRequests()
   }, [])
+  
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS

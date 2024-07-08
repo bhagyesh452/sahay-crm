@@ -79,7 +79,8 @@ router.post("/requestCompanyData", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
-      img_url: GetEmployeeProfile
+      employee_status: "Unread",
+      img_url: GetEmployeeProfile,
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
@@ -333,6 +334,18 @@ router.get("/requestgData", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get('/requestgdata/:ename', async (req, res) => {
+  const { ename } = req.params;
+
+  try {
+    const allData = await RequestGModel.find({ ename: ename });
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -679,5 +692,17 @@ router.get("/requestCompanyData", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.get("/requestCompanyData/:ename" , async(req,res)=>{
+  const { ename } = req.params;
+  try{
+    const allData = await CompanyRequestModel.find({ename : ename});
+    res.status(200).json(allData)
+
+  }catch(error){
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
 
 module.exports = router;

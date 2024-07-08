@@ -60,11 +60,6 @@ function EmployeeShowNotification() {
 
 
 
-
-
-
-
-
     return (
         <div>
             <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
@@ -158,15 +153,15 @@ function EmployeeShowNotification() {
                         </ul>
                     </div>
                     <div className="maincontent"  >
-                        {dataType === "General" && <EmployeeGeneralDataComponent />}
-                        {dataType === "deleteBookingRequests" && <EmployeeDeleteBookingComponent />}
-                        {dataType === "editBookingRequests" && <EmployeeBookingEditCopmonent />}
+                        {dataType === "General" && <EmployeeGeneralDataComponent ename={employeeName} />}
+                        {dataType === "deleteBookingRequests" && <EmployeeDeleteBookingComponent ename={employeeName} />}
+                        {dataType === "editBookingRequests" && <EmployeeBookingEditCopmonent ename={employeeName} />}
                         {/* {dataType === "editBookingRequests" &&
                             editData.length !== 0 && currentBooking && compareBooking &&
                             <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
                         } */}
 
-                        {dataType === "AddRequest" && <EmployeeApproveDataComponent />}
+                        {dataType === "AddRequest" && <EmployeeApproveDataComponent ename={employeeName} />}
                     </div>
                 </div>
             </div>
