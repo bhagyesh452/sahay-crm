@@ -243,9 +243,9 @@ function EmployeeTeamLeads() {
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename;
         try {
-            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-            const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send")
-            setRevertBackRequestData(revertBackRequestData)
+            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`);
+            const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send");
+            setRevertBackRequestData(revertBackRequestData);
             setTeamData(response.data);
 
             const sortedData = response.data.sort((a, b) => {
@@ -273,21 +273,16 @@ function EmployeeTeamLeads() {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("NotInterested")
             }
-
-
             //console.log("response", response.data)
         } catch (error) {
             console.log(error)
         }
     }
-
-
-
     //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
         fetchData();
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (revertBackRequestData.length !== 0) {
@@ -299,11 +294,7 @@ function EmployeeTeamLeads() {
     }, [data.ename, revertBackRequestData.length]);
 
     // console.log("teamLeads", teamleadsData);
-
-
-
     //console.log("ename" , data.ename)
-
 
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
@@ -313,6 +304,7 @@ function EmployeeTeamLeads() {
         );
         return formattedDate;
     }
+
     function formatDateNew(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
@@ -320,7 +312,6 @@ function EmployeeTeamLeads() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-
 
     const closePopUpRemarks = () => {
         setOpenRemarks(false)
@@ -346,38 +337,28 @@ function EmployeeTeamLeads() {
         setCurrentCompanyName(companyName);
 
     };
-
     //console.log(filteredRemarksBde, "bderemarks")
-
-
-
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
     const [bdeNameReject, setBdeNameReject] = useState("")
-
 
     const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName, bdeName) => {
         setOpenRemarksEdit(true);
         setFilteredRemarks(
             remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
         );
-
-        //console.log("this is new", bdeName)
-
-        //console.log("companyId" , companyID)
-        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+        //console.log("this is new", bdeName);
+        //console.log("companyId" , companyID);
+        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID));
         setBdeNameReject(bdeName)
         setcid(companyID);
         setCstat(companyStatus);
         setCurrentCompanyName(companyName);
         setRemarksBdmName(bdmName)
     };
-
-    //console.log("tum rejected data", bdeNameReject)
-
-    //console.log("filteredRemarks", filteredRemarks)
-
+    //console.log("tum rejected data", bdeNameReject);
+    //console.log("filteredRemarks", filteredRemarks);
     //console.log("currentcompanyname", currentCompanyName);
 
     const fetchRemarksHistory = async () => {
@@ -516,7 +497,7 @@ function EmployeeTeamLeads() {
             },
         }));
 
-        //   // After updating, you can disable the button
+        // After updating, you can disable the button
     };
 
     //console.log(projectionDataNew)
@@ -561,6 +542,7 @@ function EmployeeTeamLeads() {
             console.log("Error updating status", error.message)
         }
     }
+
     const handlebdmStatusChange = async (
         companyId,
         bdmnewstatus,
@@ -620,9 +602,7 @@ function EmployeeTeamLeads() {
         }
 
     }
-
     //console.log("bdmNewStatus" , bdmNewStatus)
-
 
     const handleDeleteRemarks = async (remarks_id, remarks_value) => {
         const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -644,7 +624,6 @@ function EmployeeTeamLeads() {
             console.error("Error deleting remarks:", error);
         }
     };
-
 
     // -----------------------------projection------------------------------
     const [projectingCompany, setProjectingCompany] = useState("");
@@ -669,7 +648,6 @@ function EmployeeTeamLeads() {
     const [openAnchor, setOpenAnchor] = useState(false);
     const [bdeNameProjection, setBdeNameProjection] = useState("")
     const [bdeProjection, setBdeProjection] = useState([])
-
 
     const functionopenprojection = async (comName) => {
         let companyBdeProjection;
@@ -800,6 +778,7 @@ function EmployeeTeamLeads() {
             console.error("Error fetching data:", error.message);
         }
     };
+
     useEffect(() => {
         //console.log("Matured ID Changed", maturedID);
         if (maturedID) {
@@ -980,12 +959,7 @@ function EmployeeTeamLeads() {
                 break;
         }
     };
-
-
     //console.log("valueSlider", valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5)
-
-
-
 
     const debouncedFeedbackRemarks = useCallback(
         debounce((value) => {
@@ -1018,11 +992,9 @@ function EmployeeTeamLeads() {
         }
     };
 
-
     const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
 
     const functionSubmitNextFollowUpDate = async (nextFollowUpdate, companyId, companyStatus) => {
-
         const data = {
             bdmNextFollowUpDate: nextFollowUpdate
         }
@@ -1047,7 +1019,6 @@ function EmployeeTeamLeads() {
     }
 
     //  ----------------------------------------  Filterization Process ---------------------------------------------
-
     const handleFieldChange = (event) => {
         if (
             event.target.value === "Company Incorporation Date  " ||
@@ -1142,7 +1113,6 @@ function EmployeeTeamLeads() {
 
 
     //---------------------------------- function to revert back company-------------------------------------
-
     const handleRevertBackCompany = async (companyId, companyName, bdmStatus) => {
         console.log("yahan chala")
         try {
@@ -1183,12 +1153,12 @@ function EmployeeTeamLeads() {
         } catch (error) {
             console.log("Error rejecting revert request", error)
         }
-    }
+    };
 
     // These function will close filter drawer.
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
-    }
+    };
 
 
 
@@ -1997,7 +1967,6 @@ function EmployeeTeamLeads() {
                             </div> */}
 
 
-
                             {/* New Filter Starts From Here */}
                             <div className="page-header d-print-none">
                                 <div className="d-flex align-items-center justify-content-between">
@@ -2044,9 +2013,6 @@ function EmployeeTeamLeads() {
                                     </div>
                                 </div>
                             </div>
-
-
-
                             {/* <!-- Page title actions --> */}
                         </div>
 

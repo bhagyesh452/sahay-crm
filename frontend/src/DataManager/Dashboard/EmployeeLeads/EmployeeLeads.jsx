@@ -84,6 +84,7 @@ function EmployeeLeads() {
     });
     const [projectionData, setProjectionData] = useState([]);
     const [loginDetails, setLoginDetails] = useState([]);
+    const [nowToFetch, setNowToFetch] = useState(false);
     const [employeeData, setEmployeeData] = useState([]);
     const [employeeName, setEmployeeName] = useState("");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -116,6 +117,11 @@ function EmployeeLeads() {
     // const [updateData, setUpdateData] = useState({});
     const [eData, seteData] = useState([]);
     const [year, setYear] = useState(0);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [bdmName, setBdmName] = useState("Not Alloted");
+    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    const [branchName, setBranchName] = useState("");
+
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -134,6 +140,7 @@ function EmployeeLeads() {
     const [isSearch, setIsSearch] = useState(false);
     const [isFilter, setIsFilter] = useState(false);
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("")
     const [selectedStateCode, setSelectedStateCode] = useState("");
     const [selectedState, setSelectedState] = useState("");
     const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
@@ -181,9 +188,6 @@ function EmployeeLeads() {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-
-
-
     // Function to fetch employee details by id
     const fetchEmployeeDetails = async () => {
         try {
@@ -230,10 +234,12 @@ function EmployeeLeads() {
                 //console.log("yahan nahi");
                 setEmployeeName(selectedEmployee.ename);
                 setBdmWorkOn(selectedEmployee.bdmWork);
+                setBranchName(selectedEmployee.branchOffice);
             } else if (selectedEmployee2 && selectedEmployee2._id) {
                 //console.log("yahan chala");
                 setEmployeeName(selectedEmployee2.ename);
                 setBdmWorkOn(selectedEmployee2.bdmWork);
+                setBranchName(selectedEmployee2.branchOffice);
             } else {
                 //console.log("yahan bhi");
                 // Handle the case where no employee is found with the given id
@@ -249,9 +255,11 @@ function EmployeeLeads() {
             setOpenAnchor(true);
         }, 500);
     };
+
     const closeAnchor = () => {
         setOpenAnchor(false);
     };
+
     const fetchRedesignedFormData = async () => {
         try {
             //console.log(maturedID);
@@ -263,6 +271,7 @@ function EmployeeLeads() {
             console.error("Error fetching data:", error.message);
         }
     };
+
     useEffect(() => {
         //console.log("Matured ID Changed", maturedID);
         if (maturedID) {
@@ -270,124 +279,90 @@ function EmployeeLeads() {
         }
 
     }, [maturedID])
-    useEffect(() => {
-        if (employeeName) {
-            const fetchCompanies = async () => {
-                try {
-                    setCompaniesLoading(true)
-                    const response = await fetch(`${secretKey}/companies`);
-                    const data = await response.json();
 
-                    // Filter and format the data based on employeeName
-                    const formattedData = data.companies
-                        .filter(
-                            (entry) =>
-                                entry.bdeName === employeeName || entry.bdmName === employeeName
-                        )
-                        .map((entry) => ({
-                            "Company Name": entry.companyName,
-                            "Company Number": entry.contactNumber,
-                            "Company Email": entry.companyEmail,
-                            "Company Incorporation Date": entry.incoDate,
-                            City: "NA",
-                            State: "NA",
-                            ename: employeeName,
-                            AssignDate: entry.bookingDate,
-                            Status: "Matured",
-                            Remarks: "No Remarks Added",
-                        }));
-                    setCompanies(formattedData);
-                } catch (error) {
-                    console.error("Error fetching companies:", error);
-                    setCompanies([]);
-                } finally {
-                    setCompaniesLoading(false)
-                }
-            };
+    // useEffect(() => {
+    //     if (employeeName) {
+    //         const fetchCompanies = async () => {
+    //             try {
+    //                 setCompaniesLoading(true)
+    //                 const response = await fetch(`${secretKey}/companies`);
+    //                 const data = await response.json();
 
-            fetchCompanies();
-        }
-    }, [employeeName]);
+    //                 // Filter and format the data based on employeeName
+    //                 const formattedData = data.companies
+    //                     .filter(
+    //                         (entry) =>
+    //                             entry.bdeName === employeeName || entry.bdmName === employeeName
+    //                     )
+    //                     .map((entry) => ({
+    //                         "Company Name": entry.companyName,
+    //                         "Company Number": entry.contactNumber,
+    //                         "Company Email": entry.companyEmail,
+    //                         "Company Incorporation Date": entry.incoDate,
+    //                         City: "NA",
+    //                         State: "NA",
+    //                         ename: employeeName,
+    //                         AssignDate: entry.bookingDate,
+    //                         Status: "Matured",
+    //                         Remarks: "No Remarks Added",
+    //                     }));
+    //                 setCompanies(formattedData);
+    //             } catch (error) {
+    //                 console.error("Error fetching companies:", error);
+    //                 setCompanies([]);
+    //             } finally {
+    //                 setCompaniesLoading(false)
+    //             }
+    //         };
+    //         fetchCompanies();
+    //     }
+    // }, [employeeName]);
 
     // Function to fetch new data based on employee name
-    // const fetchNewData = async () => {
-    //     try {
-
-    //         setLoading(true)
-    //         const response = await axios.get(
-    //             `${secretKey}/company-data/employees/${employeeName}`
-    //         );
-
-    //         // Sort the data by AssignDate property
-    //         const sortedData = response.data.sort((a, b) => {
-    //             // Assuming AssignDate is a string representation of a date
-    //             return new Date(b.AssignDate) - new Date(a.AssignDate);
-    //         });
-
-    //         setmoreEmpData(sortedData);
-    //         setEmployeeData(
-    //             response.data.filter(
-    //                 (obj) =>
-    //                     obj.Status === "Busy" ||
-    //                     obj.Status === "Not Picked Up" ||
-    //                     obj.Status === "Untouched"
-    //             )
-    //         );
-    //     } catch (error) {
-    //         console.error("Error fetching new data:", error);
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // };
-    //console.log("employeedata", employeeData);
-
-
     const fetchNewData = async () => {
         try {
-    
-          setLoading(true);
-          const response = await axios.get(
-            `${secretKey}/company-data/employees/${employeeName}`
-          );
-    
-          // Sort the data by AssignDate property
-          const sortedData = response.data.sort((a, b) => {
-            // Assuming AssignDate is a string representation of a date
-            return new Date(b.AssignDate) - new Date(a.AssignDate);
-          });
-          setExtraData(sortedData)
-          setNewData(sortedData)
-          setmoreEmpData(sortedData)
-          if (isFilter || isSearch) {
-            setEmployeeData(filteredData)
-          }else {
-              setEmployeeData(
-                sortedData.filter(
-                  (obj) =>
-                    (obj.Status === "Busy" ||
-                      obj.Status === "Not Picked Up" ||
-                      obj.Status === "Untouched") &&
-                    (obj.bdmAcceptStatus !== "Forwarded" &&
-                      obj.bdmAcceptStatus !== "Accept" &&
-                      obj.bdmAcceptStatus !== "Pending")
-                ));
+
+            setLoading(true);
+            const response = await axios.get(`${secretKey}/company-data/employees/${employeeName}`);
+
+            // Sort the data by AssignDate property
+            const sortedData = response.data.sort((a, b) => {
+                // Assuming AssignDate is a string representation of a date
+                return new Date(b.AssignDate) - new Date(a.AssignDate);
+            });
+            setExtraData(sortedData);
+            setNewData(sortedData);
+            setmoreEmpData(sortedData);
+            if (isFilter || isSearch) {
+                setEmployeeData(filteredData);
+            } else {
+                setEmployeeData(
+                    sortedData.filter(
+                        (obj) =>
+                            (obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched") &&
+                            (obj.bdmAcceptStatus !== "Forwarded" &&
+                                obj.bdmAcceptStatus !== "Accept" &&
+                                obj.bdmAcceptStatus !== "Pending")
+                    )
+                );
             }
-    
         } catch (error) {
-          console.error("Error fetching new data:", error);
+            console.error("Error fetching new data:", error);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
-    
-      console.log(moreEmpData.filter(
-        (obj) =>
-          (obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
-            obj.Status === "Untouched") &&
-          (obj.bdmAcceptStatus !== "Forwarded" &&
-            obj.bdmAcceptStatus !== "Accept" &&
-            obj.bdmAcceptStatus !== "Pending")));
+    };
+
+    // console.log(moreEmpData.filter(
+    //     (obj) =>
+    //         (obj.Status === "Busy" ||
+    //             obj.Status === "Not Picked Up" ||
+    //             obj.Status === "Untouched") &&
+    //         (obj.bdmAcceptStatus !== "Forwarded" &&
+    //             obj.bdmAcceptStatus !== "Accept" &&
+    //             obj.bdmAcceptStatus !== "Pending")));
 
     useEffect(() => {
         // Fetch employee details and related data when the component mounts or id changes
@@ -406,7 +381,6 @@ function EmployeeLeads() {
             });
     }, []);
 
-
     useEffect(() => {
         if (employeeName) {
             console.log("Employee found");
@@ -415,6 +389,142 @@ function EmployeeLeads() {
             console.log("No employees found");
         }
     }, [employeeName]);
+
+    const handleSearch = (searchQuery) => {
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        // Check if searchQuery is empty or null
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            setFilteredData(extraData); // Assuming extraData is your full dataset
+            return;
+        }
+
+        setIsSearch(true);
+
+        const filtered = extraData.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            // Check each field for a match
+            if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+            if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+                return true;
+            }
+
+            return false;
+        });
+
+        setFilteredData(filtered);
+    };
+
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            //setEmployeeData(filteredData)
+            if (dataStatus === 'All') {
+                setEmployeeData(
+                    filteredData.filter(
+                        (obj) =>
+                            obj.Status === "Busy" ||
+                            obj.Status === "Not Picked Up" ||
+                            obj.Status === "Untouched"
+                    )
+                );
+            } else if (dataStatus === 'Interested') {
+                setEmployeeData(
+                    filteredData.filter(
+                        (obj) =>
+                            obj.Status === "Interested" &&
+                            obj.bdmAcceptStatus === "NotForwarded" &&
+                            obj.bdmAcceptStatus !== "Pending" &&
+                            obj.bdmAcceptStatus !== "Accept"
+                    )
+                );
+            } else if (dataStatus === 'FollowUp') {
+                setEmployeeData(
+                    filteredData.filter(
+                        (obj) =>
+                            obj.Status === "FollowUp" &&
+                            obj.bdmAcceptStatus === "NotForwarded" &&
+                            obj.bdmAcceptStatus !== "Pending" &&
+                            obj.bdmAcceptStatus !== "Accept"
+                    )
+                )
+            } else if (dataStatus === 'Matured') {
+                setEmployeeData(
+                    filteredData
+                        .filter(
+                            (obj) =>
+                                obj.Status === "Matured" &&
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                        )
+                );
+            } else if (dataStatus === 'Forwarded') {
+                setEmployeeData(
+                    filteredData
+                        .filter(
+                            (obj) =>
+                                (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested" &&
+                                obj.Status !== "Busy" &&
+                                obj.Status !== "Junk" &&
+                                obj.Status !== "Not Picked Up" &&
+                                obj.Status !== "Matured"
+                        )
+                        .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                );
+            } else if (dataStatus === 'NotInterested') {
+                setEmployeeData(
+                    filteredData.filter(
+                        (obj) =>
+                            (obj.Status === "Not Interested" ||
+                                obj.Status === "Junk") &&
+                            (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                    )
+                );
+            }
+            if (filteredData.length === 1) {
+                const currentStatus = filteredData[0].Status; // Access Status directly
+                if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+                    (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+                    setdataStatus('All')
+                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+                    currentStatus === 'Interested') {
+                    setdataStatus('Interested')
+                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+                    currentStatus === 'FollowUp') {
+                    setdataStatus('FollowUp')
+                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+                    setdataStatus('Matured')
+                } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+                    currentStatus !== "Not Interested" &&
+                    currentStatus !== "Busy" &&
+                    currentStatus !== 'Junk' &&
+                    currentStatus !== 'Not Picked Up' &&
+                    currentStatus !== 'Matured') {
+                    setdataStatus('Forwarded')
+                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+                    setdataStatus('NotInterested')
+                }
+            }
+        }
+
+    }, [filteredData]);
 
     // const filteredData = employeeData.filter((company) => {
     //     const fieldValue = company[selectedField];
@@ -461,6 +571,8 @@ function EmployeeLeads() {
     //         return false;
     //     }
     // });
+
+
     const handleFieldChange = (event) => {
         if (event.target.value === "Company Incorporation Date  ") {
             setSelectedField(event.target.value);
@@ -499,7 +611,7 @@ function EmployeeLeads() {
             setSearchText("");
         }
     };
-    const currentData = filteredData.slice(startIndex, endIndex);
+    const currentData = employeeData.slice(startIndex, endIndex);
 
     // useEffect(() => {
     //   // Fetch new data based on employee name when the name changes
@@ -508,15 +620,55 @@ function EmployeeLeads() {
     //   }
     // }, [employeeName]);
 
-    const [selectedRows, setSelectedRows] = useState([]);
+    // const handleCheckboxChange = (id, event) => {
+    //     // If the id is 'all', toggle all checkboxes
+    //     if (id === "all") {
+    //         // If all checkboxes are already selected, clear the selection; otherwise, select all
+    //         setSelectedRows((prevSelectedRows) =>
+    //             prevSelectedRows.length === filteredData.length
+    //                 ? []
+    //                 : filteredData.map((row) => row._id)
+    //         );
+    //     } else {
+    //         // Toggle the selection status of the row with the given id
+    //         setSelectedRows((prevSelectedRows) => {
+    //             // If the Ctrl key is pressed
+    //             if (event.ctrlKey) {
+    //                 //console.log("pressed");
+    //                 const selectedIndex = filteredData.findIndex((row) => row._id === id);
+    //                 const lastSelectedIndex = filteredData.findIndex((row) =>
+    //                     prevSelectedRows.includes(row._id)
+    //                 );
+
+    //                 // Select rows between the last selected row and the current row
+    //                 if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+    //                     const start = Math.min(selectedIndex, lastSelectedIndex);
+    //                     const end = Math.max(selectedIndex, lastSelectedIndex);
+    //                     const idsToSelect = filteredData
+    //                         .slice(start, end + 1)
+    //                         .map((row) => row._id);
+
+    //                     return prevSelectedRows.includes(id)
+    //                         ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+    //                         : [...prevSelectedRows, ...idsToSelect];
+    //                 }
+    //             }
+
+    //             // Toggle the selection status of the row with the given id
+    //             return prevSelectedRows.includes(id)
+    //                 ? prevSelectedRows.filter((rowId) => rowId !== id)
+    //                 : [...prevSelectedRows, id];
+    //         });
+    //     }
+    // };
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === filteredData.length
+                prevSelectedRows.length === employeeData.length
                     ? []
-                    : filteredData.map((row) => row._id)
+                    : employeeData.map((row) => row._id)
             );
         } else {
             // Toggle the selection status of the row with the given id
@@ -524,8 +676,8 @@ function EmployeeLeads() {
                 // If the Ctrl key is pressed
                 if (event.ctrlKey) {
                     //console.log("pressed");
-                    const selectedIndex = filteredData.findIndex((row) => row._id === id);
-                    const lastSelectedIndex = filteredData.findIndex((row) =>
+                    const selectedIndex = employeeData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = employeeData.findIndex((row) =>
                         prevSelectedRows.includes(row._id)
                     );
 
@@ -533,7 +685,7 @@ function EmployeeLeads() {
                     if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
                         const start = Math.min(selectedIndex, lastSelectedIndex);
                         const end = Math.max(selectedIndex, lastSelectedIndex);
-                        const idsToSelect = filteredData
+                        const idsToSelect = employeeData
                             .slice(start, end + 1)
                             .map((row) => row._id);
 
@@ -552,23 +704,28 @@ function EmployeeLeads() {
     };
 
     // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
-    const [newemployeeSelection, setnewEmployeeSelection] =
-        useState("Not Alloted");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
 
     const fetchnewData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
-
             // Set the retrieved data in the state
-
             setnewEmpData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+
     const handleFilterIncoDate = () => {
         setOpenIncoDate(!openIncoDate);
     };
+
+    useEffect(() => {
+        if (employeeName) {
+            fetchNewData();
+        }
+    }, [nowToFetch]);
+
     const handleSort = (sortType) => {
         switch (sortType) {
             case "oldest":
@@ -603,6 +760,7 @@ function EmployeeLeads() {
                 break;
         }
     };
+
     const fetchProjections = async () => {
         try {
             const response = await axios.get(`${secretKey}/projection/projection-data`);
@@ -629,6 +787,7 @@ function EmployeeLeads() {
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
+
     const functionopenprojection = (comName) => {
         setProjectingCompany(comName);
         setOpenProjection(true);
@@ -700,6 +859,9 @@ function EmployeeLeads() {
             fetchEmployeeDetails();
             fetchNewData();
             closepopupAssign();
+            setSelectedRows([])
+            setIsFilter(false)
+            setIsSearch(false)
         } catch (error) {
             console.error("Error updating employee data:", error);
             Swal.close();
@@ -713,38 +875,71 @@ function EmployeeLeads() {
 
     //console.log(loginDetails);
 
+    // const handleMouseDown = (id) => {
+    //     // Initiate drag selection
+    //     setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+    // };
+
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
-    };
+        setStartRowIndex(employeeData.findIndex((row) => row._id === id));
+      }
+
+    // const handleMouseEnter = (id) => {
+    //     // Update selected rows during drag selection
+    //     if (startRowIndex !== null) {
+    //         const endRowIndex = filteredData.findIndex((row) => row._id === id);
+    //         const selectedRange = [];
+    //         const startIndex = Math.min(startRowIndex, endRowIndex);
+    //         const endIndex = Math.max(startRowIndex, endRowIndex);
+
+    //         for (let i = startIndex; i <= endIndex; i++) {
+    //             selectedRange.push(filteredData[i]._id);
+    //         }
+
+    //         setSelectedRows(selectedRange);
+
+    //         // Scroll the window vertically when dragging beyond the visible viewport
+    //         const windowHeight = document.documentElement.clientHeight;
+    //         const mouseY = window.event.clientY;
+    //         const tableHeight = document.querySelector("table").clientHeight;
+    //         const maxVisibleRows = Math.floor(
+    //             windowHeight / (tableHeight / filteredData.length)
+    //         );
+
+    //         if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+    //             window.scrollTo(0, window.scrollY + 20);
+    //         }
+    //     }
+    // };
 
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-            const endRowIndex = filteredData.findIndex((row) => row._id === id);
-            const selectedRange = [];
-            const startIndex = Math.min(startRowIndex, endRowIndex);
-            const endIndex = Math.max(startRowIndex, endRowIndex);
-
-            for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(filteredData[i]._id);
-            }
-
-            setSelectedRows(selectedRange);
-
-            // Scroll the window vertically when dragging beyond the visible viewport
-            const windowHeight = document.documentElement.clientHeight;
-            const mouseY = window.event.clientY;
-            const tableHeight = document.querySelector("table").clientHeight;
-            const maxVisibleRows = Math.floor(
-                windowHeight / (tableHeight / filteredData.length)
-            );
-
-            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
-                window.scrollTo(0, window.scrollY + 20);
-            }
+          const endRowIndex = employeeData.findIndex((row) => row._id === id);
+          const selectedRange = [];
+          const startIndex = Math.min(startRowIndex, endRowIndex);
+          const endIndex = Math.max(startRowIndex, endRowIndex);
+    
+          for (let i = startIndex; i <= endIndex; i++) {
+            selectedRange.push(employeeData[i]._id);
+          }
+    
+          setSelectedRows(selectedRange);
+    
+          // Scroll the window vertically when dragging beyond the visible viewport
+          const windowHeight = document.documentElement.clientHeight;
+          const mouseY = window.event.clientY;
+          const tableHeight = document.querySelector("table").clientHeight;
+          const maxVisibleRows = Math.floor(
+            windowHeight / (tableHeight / employeeData.length)
+          );
+    
+          if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+            window.scrollTo(0, window.scrollY + 20);
+          }
         }
-    };
+      };
 
     const handleMouseUp = () => {
         // End drag selection
@@ -765,6 +960,7 @@ function EmployeeLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
+
     const functionopenpopupremarks = (companyID, companyStatus) => {
         openchangeRemarks(true);
         setFilteredRemarks(
@@ -775,6 +971,7 @@ function EmployeeLeads() {
         setcid(companyID);
         setCstat(companyStatus);
     };
+
     const closepopupRemarks = () => {
         openchangeRemarks(false);
         setFilteredRemarks([]);
@@ -840,9 +1037,6 @@ function EmployeeLeads() {
             console.log('No');
         }
     };
-
-
-
 
     const handleChangeUrlPrev = () => {
         const currId = id;
@@ -950,7 +1144,7 @@ function EmployeeLeads() {
         }
     };
 
-
+// ----------------------------------filter functions----------------------------
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
@@ -988,7 +1182,7 @@ function EmployeeLeads() {
             } else {
                 // Update the employee data with the filtered results
                 console.log(response.data);
-                // setFilteredData(response.data);
+                setFilteredData(response.data);
             }
         } catch (error) {
             console.log('Error applying filter', error.message);
@@ -998,7 +1192,57 @@ function EmployeeLeads() {
         }
     };
 
-    console.log("Filtered data :",)
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus('');
+        setSelectedState('');
+        setSelectedNewCity('');
+        setSelectedYear('');
+        setSelectedMonth('');
+        setSelectedDate(0);
+        setSelectedAssignDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        fetchNewData();
+        //fetchData(1, latestSortCount);
+    };
+
+    const handleCloseForwardBdmPopup = () => {
+        setOpenAssignToBdm(false);
+    };
+
+    const handleForwardDataToBDM = async (bdmName) => {
+        const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+        // console.log("data is:", data);
+        if (selectedRows.length === 0) {
+            Swal.fire("Please Select the Company to Forward", "", "Error");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            return;
+        }
+        if (data.length === 0) {
+            Swal.fire("Can Not Forward Untouched Company", "", "Error");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            return;
+        }
+        try {
+            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+                data: data,
+                name: bdmName
+            });
+            fetchNewData();
+            Swal.fire("Company Forwarded", "", "success");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            setdataStatus("All");
+            console.log("response data is:", response);
+        } catch (error) {
+            console.log("error fetching data", error.message);
+        }
+    };
+
 
 
 
@@ -1186,6 +1430,7 @@ function EmployeeLeads() {
                         </div>
                     </div>
                 </div>
+
                 <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -1260,7 +1505,7 @@ function EmployeeLeads() {
                                             </button>
                                         )}
                                         <button type="button" className="btn mybtn"
-                                        //   onClick={() => setOpenAssignToBdm(true)}
+                                            onClick={() => setOpenAssignToBdm(true)}
                                         >
                                             <RiShareForwardFill className='mr-1' /> Forward to BDM
                                         </button>
@@ -1281,13 +1526,13 @@ function EmployeeLeads() {
                                             </svg>
                                         </span>
                                         <input
-                                            //   value={searchQuery}
-                                            //   onChange={(e) => {
-                                            //     setSearchQuery(e.target.value);
-                                            //     handleSearch(e.target.value)
-                                            //handleFilterSearch(e.target.value)
-                                            //setCurrentPage(0);
-                                            //   }}
+                                            value={searchQuery}
+                                            onChange={(e) => {
+                                                setSearchQuery(e.target.value);
+                                                handleSearch(e.target.value)
+                                                //handleFilterSearch(e.target.value)
+                                                //setCurrentPage(0);
+                                            }}
                                             className="form-control search-cantrol mybtn"
                                             placeholder="Search…"
                                             type="text"
@@ -1308,12 +1553,20 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("All");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData.filter(
+                                                    mappedData.filter(
                                                         (obj) =>
-                                                            obj.Status === "Busy" ||
-                                                            obj.Status === "Not Picked Up" ||
-                                                            obj.Status === "Untouched"
+                                                            (obj.Status === "Busy" ||
+                                                                obj.Status === "Not Picked Up" ||
+                                                                obj.Status === "Untouched") && (
+                                                                obj.bdmAcceptStatus !== "Forwarded" ||
+                                                                obj.bdmAcceptStatus !== "Accept" ||
+                                                                obj.bdmAcceptStatus !== "Pending")
+                                                    ).sort(
+                                                        (a, b) =>
+                                                            new Date(b.lastActionDate) -
+                                                            new Date(a.lastActionDate)
                                                     )
                                                 );
                                             }}
@@ -1327,11 +1580,14 @@ function EmployeeLeads() {
                                             General{" "}
                                             <span className="no_badge">
                                                 {
-                                                    moreEmpData.filter(
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                                                         (obj) =>
-                                                            obj.Status === "Busy" ||
-                                                            obj.Status === "Not Picked Up" ||
-                                                            obj.Status === "Untouched"
+                                                            (obj.Status === "Busy" ||
+                                                                obj.Status === "Not Picked Up" ||
+                                                                obj.Status === "Untouched") &&
+                                                            (obj.bdmAcceptStatus !== "Forwarded" &&
+                                                                obj.bdmAcceptStatus !== "Accept" &&
+                                                                obj.bdmAcceptStatus !== "Pending")
                                                     ).length
                                                 }
                                             </span>
@@ -1343,9 +1599,12 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("Interested");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData.filter(
-                                                        (obj) => obj.Status === "Interested"
+                                                    mappedData.filter(
+                                                        (obj) =>
+                                                            obj.Status === "Interested" &&
+                                                            obj.bdmAcceptStatus === "NotForwarded"
                                                     )
                                                 );
                                             }}
@@ -1359,8 +1618,10 @@ function EmployeeLeads() {
                                             <span>Interested </span>
                                             <span className="no_badge">
                                                 {
-                                                    moreEmpData.filter(
-                                                        (obj) => obj.Status === "Interested"
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                                        (obj) =>
+                                                            obj.Status === "Interested" &&
+                                                            obj.bdmAcceptStatus === "NotForwarded"
                                                     ).length
                                                 }
                                             </span>
@@ -1373,8 +1634,13 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("FollowUp");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                                                    mappedData.filter(
+                                                        (obj) =>
+                                                            obj.Status === "FollowUp" &&
+                                                            obj.bdmAcceptStatus === "NotForwarded"
+                                                    )
                                                 );
                                             }}
                                             className={
@@ -1388,8 +1654,11 @@ function EmployeeLeads() {
 
                                             <span className="no_badge">
                                                 {
-                                                    moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                                                        .length
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                                        (obj) =>
+                                                            obj.Status === "FollowUp" &&
+                                                            obj.bdmAcceptStatus === "NotForwarded"
+                                                    ).length
                                                 }
                                             </span>
                                         </a>
@@ -1401,8 +1670,19 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("Matured");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData.filter((obj) => obj.Status === "Matured")
+                                                    mappedData
+                                                        .filter(
+                                                            (obj) =>
+                                                                obj.Status === "Matured" &&
+                                                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                                                        )
+                                                        .sort(
+                                                            (a, b) =>
+                                                                new Date(b.lastActionDate) -
+                                                                new Date(a.lastActionDate)
+                                                        )
                                                 );
                                             }}
                                             className={
@@ -1413,10 +1693,18 @@ function EmployeeLeads() {
                                             data-bs-toggle="tab"
                                         >
                                             <span>Matured </span>
-                                            <span className="no_badge"> {
-                                                moreEmpData.filter((obj) => obj.Status === "Matured")
-                                                    .length
-                                            }</span>
+                                            <span className="no_badge">
+                                                {" "}
+                                                {
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                                        (obj) =>
+                                                            obj.Status === "Matured" &&
+                                                            (obj.bdmAcceptStatus === "NotForwarded" ||
+                                                                obj.bdmAcceptStatus === "Pending" ||
+                                                                obj.bdmAcceptStatus === "Accept")
+                                                    ).length
+                                                }
+                                            </span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -1425,12 +1713,16 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("Forwarded");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData
+                                                    mappedData
                                                         .filter(
                                                             (obj) =>
                                                                 obj.bdmAcceptStatus !== "NotForwarded" &&
-                                                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                                                obj.Status !== "Not Interested" &&
+                                                                obj.Status !== "Busy" &&
+                                                                obj.Status !== "Junk" &&
+                                                                obj.Status !== "Not Picked Up" &&
                                                                 obj.Status !== "Matured"
                                                         )
                                                         .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
@@ -1448,7 +1740,7 @@ function EmployeeLeads() {
                                             <span className="no_badge">
                                                 {" "}
                                                 {
-                                                    moreEmpData.filter(
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                                                         (obj) =>
                                                             obj.bdmAcceptStatus !== "NotForwarded" &&
                                                             obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
@@ -1464,11 +1756,13 @@ function EmployeeLeads() {
                                             onClick={() => {
                                                 setdataStatus("NotInterested");
                                                 setCurrentPage(0);
+                                                const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                                                 setEmployeeData(
-                                                    moreEmpData.filter(
+                                                    mappedData.filter(
                                                         (obj) =>
-                                                            obj.Status === "Not Interested" ||
-                                                            obj.Status === "Junk"
+                                                            (obj.Status === "Not Interested" ||
+                                                                obj.Status === "Junk") &&
+                                                            (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                                                     )
                                                 );
                                             }}
@@ -1482,10 +1776,11 @@ function EmployeeLeads() {
                                             <span>Not Interested </span>
                                             <span className="no_badge">
                                                 {
-                                                    moreEmpData.filter(
+                                                    ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                                                         (obj) =>
-                                                            obj.Status === "Not Interested" ||
-                                                            obj.Status === "Junk"
+                                                            (obj.Status === "Not Interested" ||
+                                                                obj.Status === "Junk") &&
+                                                            (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                                                     ).length
                                                 }
                                             </span>
@@ -1517,7 +1812,7 @@ function EmployeeLeads() {
                                                         <input
                                                             type="checkbox"
                                                             checked={
-                                                                selectedRows.length === filteredData.length
+                                                                selectedRows.length !== 0
                                                             }
                                                             onChange={() => handleCheckboxChange("all")}
                                                         />
@@ -1876,7 +2171,7 @@ function EmployeeLeads() {
                                             </IconButton>
                                             <span>
                                                 Page {currentPage + 1} of{" "}
-                                                {Math.ceil(filteredData.length / itemsPerPage)}
+                                                {Math.ceil(employeeData.length / itemsPerPage)}
                                             </span>
 
                                             <IconButton
@@ -1884,13 +2179,13 @@ function EmployeeLeads() {
                                                     setCurrentPage((prevPage) =>
                                                         Math.min(
                                                             prevPage + 1,
-                                                            Math.ceil(filteredData.length / itemsPerPage) - 1
+                                                            Math.ceil(employeeData.length / itemsPerPage) - 1
                                                         )
                                                     )
                                                 }
                                                 disabled={
                                                     currentPage ===
-                                                    Math.ceil(filteredData.length / itemsPerPage) - 1
+                                                    Math.ceil(employeeData.length / itemsPerPage) - 1
                                                 }
                                             >
                                                 <IconChevronRight />
@@ -2028,9 +2323,10 @@ function EmployeeLeads() {
                                                     <option value="Not Alloted" disabled>
                                                         Select employee
                                                     </option>
-                                                    {newempData.map((item) => (
-                                                        <option value={item.ename}>{item.ename}</option>
-                                                    ))}
+                                                    {newempData.filter((item) =>
+                                                        (item._id !== id)).map((item) => (
+                                                            <option value={item.ename}>{item.ename}</option>
+                                                        ))}
                                                 </select>
                                             </div>
                                         </div>
@@ -2252,6 +2548,58 @@ function EmployeeLeads() {
                 </div>
             </Drawer>
 
+            {/* ------------------------------- Forward to BDM -------------------------- */}
+            <Dialog
+                open={openAssignToBdm}
+                onClose={handleCloseForwardBdmPopup}
+                fullWidth
+                maxWidth="sm">
+                <DialogTitle>
+                    Forward to BDM{" "}
+                    <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div>
+                        {newempData.length !== 0 ? (
+                            <>
+                                <div className="dialogAssign">
+                                    <label>Forward to BDM</label>
+                                    <div className="form-control">
+                                        <select
+                                            style={{
+                                                width: "inherit",
+                                                border: "none",
+                                                outline: "none",
+                                            }}
+                                            value={bdmName}
+                                            onChange={(e) => setBdmName(e.target.value)}
+                                        >
+                                            <option value="Not Alloted" disabled>
+                                                Select a BDM
+                                            </option>
+                                            {newempData.filter((item) =>
+                                                (item._id !== id && item.bdmWork || item.designation === "Sales Manager")
+                                            ).map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div>
+                                <h1>No Employees Found</h1>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+                <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
+                    Submit
+                </button>
+            </Dialog>
+
             {/* //----------------leads filter drawer------------------------------- */}
             <Drawer
                 style={{ top: "50px" }}
@@ -2392,10 +2740,10 @@ function EmployeeLeads() {
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
                         <button className='filter-footer-btn btn-clear'
-                        // onClick={handleClearFilter}
+                            onClick={handleClearFilter}
                         >Clear Filter</button>
                         <button className='filter-footer-btn btn-yellow'
-                        // onClick={handleFilterData}
+                            onClick={handleFilterData}
                         >Apply Filter</button>
                     </div>
                 </div>

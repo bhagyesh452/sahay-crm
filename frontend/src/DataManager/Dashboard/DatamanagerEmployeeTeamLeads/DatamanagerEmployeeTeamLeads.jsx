@@ -1,6 +1,4 @@
-
 import React, { useEffect, useState } from "react";
-
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import Header from "../../Components/Header/Header.jsx";
 import { useLocation, useParams } from "react-router-dom";
@@ -88,7 +86,7 @@ import { Country, State, City } from 'country-state-city';
 
 function DatamanagerEmployeeTeamLeads() {
     const { id } = useParams();
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
     const [dataStatus, setdataStatus] = useState("All");
     const [currentPage, setCurrentPage] = useState(0);
     const [formOpen, setFormOpen] = useState(false);
@@ -96,15 +94,15 @@ function DatamanagerEmployeeTeamLeads() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const itemsPerPage = 500;
-    const [currentData, setCurrentData] = useState([])
+    const [currentData, setCurrentData] = useState([]);
     const [BDMrequests, setBDMrequests] = useState(null);
     const startIndex = currentPage * itemsPerPage;
     const [currentForm, setCurrentForm] = useState(null);
     const endIndex = startIndex + itemsPerPage;
     const [teamleadsData, setTeamLeadsData] = useState([]);
-    const [teamData, setTeamData] = useState([])
+    const [teamData, setTeamData] = useState([]);
     const [openbdmRequest, setOpenbdmRequest] = useState(false);
-    const [openRemarks, setOpenRemarks] = useState(false)
+    const [openRemarks, setOpenRemarks] = useState(false);
     const [remarksHistory, setRemarksHistory] = useState([]);
     const [filteredRemarks, setFilteredRemarks] = useState([]);
     const [cid, setcid] = useState("");
@@ -118,28 +116,78 @@ function DatamanagerEmployeeTeamLeads() {
     const [updateData, setUpdateData] = useState({});
     const [projectionData, setProjectionData] = useState([]);
     const [eData, seteData] = useState([]);
-    const [bdmWorkOn, setBdmWorkOn] = useState(false)
-    const [bdmNames, setBdmNames] = useState([])
-    const [branchOffice, setBranchOffice] = useState("")
-    const [empData, setEmpData] = useState([])
-    const [selectedEmployee, setSelectedEmployee] = useState()
-    const [selectedEmployee2, setSelectedEmployee2] = useState()
+    const [bdmWorkOn, setBdmWorkOn] = useState(false);
+    const [bdmNames, setBdmNames] = useState([]);
+    const [branchOffice, setBranchOffice] = useState("");
+    const [empData, setEmpData] = useState([]);
+    const [selectedEmployee, setSelectedEmployee] = useState();
+    const [selectedEmployee2, setSelectedEmployee2] = useState();
+    const [openBacdrop, setOpenBacdrop] = useState(false);
 
 
-    // States for filtered and searching data :
-    const stateList = State.getStatesOfCountry("IN");
-    const cityList = City.getCitiesOfCountry("IN");
-
-    const currentYear = new Date().getFullYear();
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
-    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
-
-    const [isFilter, setIsFilter] = useState(false);
-    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
+        // States for filtered and searching data :
+        const stateList = State.getStatesOfCountry("IN");
+        const cityList = City.getCitiesOfCountry("IN");
+    
+        const currentYear = new Date().getFullYear();
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        //Create an array of years from 2018 to the current year
+        const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+    
+        const [isSearch, setIsSearch] = useState(false);
+        const [isFilter, setIsFilter] = useState(false);
+        const [searchQuery, setSearchQuery] = useState("");
+        const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
+        const [filteredData, setFilteredData] = useState([]);
+        const [extraData, setExtraData] = useState([]);
+        const [newFilteredData, setNewFilteredData] = useState([]);
+        const [activeTab, setActiveTab] = useState('All');
+    
+        // State for selecting status.
+        const [selectedStatus, setSelectedStatus] = useState("");
+    
+        // States for selecting states and cities.
+        const [selectedStateCode, setSelectedStateCode] = useState("");
+        const [selectedState, setSelectedState] = useState("");
+        const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
+        const [selectedNewCity, setSelectedNewCity] = useState("");
+    
+        //  States for selecting assigned date.
+        const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null);
+    
+        //  States for selecting company incorporation date.
+        const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
+        const [companyIncoDate, setCompanyIncoDate] = useState(null);
+        const [selectedYear, setSelectedYear] = useState("");
+        const [selectedMonth, setSelectedMonth] = useState("");
+        const [selectedDate, setSelectedDate] = useState(0);
+        const [monthIndex, setMonthIndex] = useState(0);
+        const [daysInMonth, setDaysInMonth] = useState([]);
+    
+        useEffect(() => {
+            let monthIndex;
+            if (selectedYear && selectedMonth) {
+                monthIndex = months.indexOf(selectedMonth);
+                setMonthIndex(monthIndex + 1)
+                const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+                setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+            } else {
+                setDaysInMonth([]);
+            }
+        }, [selectedYear, selectedMonth]);
+    
+        useEffect(() => {
+            if (selectedYear && selectedMonth && selectedDate) {
+                const monthIndex = months.indexOf(selectedMonth) + 1;
+                const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+                const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+                const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+                setSelectedCompanyIncoDate(companyIncoDate);
+            }
+        }, [selectedYear, selectedMonth, selectedDate]);
 
     const fetchData = async () => {
         try {
@@ -189,9 +237,6 @@ function DatamanagerEmployeeTeamLeads() {
                 setBdmWorkOn(data.find((item) => item._id === id)?.bdmWork || null);
                 setData(userData2)
             }
-
-
-
             //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
@@ -219,6 +264,7 @@ function DatamanagerEmployeeTeamLeads() {
             console.error("Error fetching data:", error);
         }
     };
+
     //------------------------fetching tem leads data--------------------------------------
     const fetchCompleteData = async () => {
         try {
@@ -236,7 +282,9 @@ function DatamanagerEmployeeTeamLeads() {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-            setTeamData(response.data)
+            setTeamData(response.data);
+            setExtraData(response.data);
+
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -257,23 +305,21 @@ function DatamanagerEmployeeTeamLeads() {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("NotInterested")
             }
-
-
-            console.log("response", response.data)
+            // console.log("response", response.data);
         } catch (error) {
             console.log(error)
         }
     }
 
-    //console.log("teamData", teamData)
-    //console.log(data.ename)
+    // console.log("team data is :", teamData);
+    //console.log(data.ename);
 
     useEffect(() => {
         if (teamData.length !== 0 && BDMrequests) {
             const companyName = BDMrequests["Company Name"];
             const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
             setMaturedBooking(currentObject);
-            console.log("Current Booking:", currentObject);
+            // console.log("Current Booking:", currentObject);
         }
     }, [teamData, BDMrequests]);
 
@@ -292,7 +338,6 @@ function DatamanagerEmployeeTeamLeads() {
 
     //console.log("ename" , data.ename)
 
-
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -301,6 +346,7 @@ function DatamanagerEmployeeTeamLeads() {
         );
         return formattedDate;
     }
+
     function formatDateNew(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
@@ -309,15 +355,14 @@ function DatamanagerEmployeeTeamLeads() {
         return `${day}/${month}/${year}`;
     }
 
-
     const closePopUpRemarks = () => {
         setOpenRemarks(false)
-
     }
+
     const closePopUpRemarksEdit = () => {
         setOpenRemarksEdit(false)
-
     }
+
     const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
         setOpenRemarks(true);
         setFilteredRemarks(
@@ -327,11 +372,7 @@ function DatamanagerEmployeeTeamLeads() {
         setcid(companyID);
         setCstat(companyStatus);
         setCurrentCompanyName(companyName);
-
     };
-
-
-
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
@@ -349,7 +390,7 @@ function DatamanagerEmployeeTeamLeads() {
         setRemarksBdmName(bdmName)
     };
 
-    console.log("filteredRemarks", filteredRemarks)
+    // console.log("filteredRemarks", filteredRemarks);
 
     //console.log("currentcompanyname", currentCompanyName);
 
@@ -359,12 +400,11 @@ function DatamanagerEmployeeTeamLeads() {
             setRemarksHistory(response.data.reverse());
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-            console.log(response.data);
+            // console.log(response.data);
         } catch (error) {
             console.error("Error fetching remarks history:", error);
         }
     };
-
 
     useEffect(() => {
         fetchRemarksHistory();
@@ -410,9 +450,9 @@ function DatamanagerEmployeeTeamLeads() {
                     {
                         Remarks,
                         remarksBdmName,
-
                     }
                 );
+
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -428,11 +468,10 @@ function DatamanagerEmployeeTeamLeads() {
                     console.error("Failed to update status:", response.data.message);
                 }
 
-                console.log("response", response.data);
+                // console.log("response", response.data);
                 fetchTeamLeadsData();
                 Swal.fire("Data Rejected");
                 setIsDeleted(false)
-
             } else {
                 const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
                     Remarks,
@@ -442,10 +481,10 @@ function DatamanagerEmployeeTeamLeads() {
                     {
                         Remarks,
                         remarksBdmName,
-
                     }
                 );
-                console.log("remarks", Remarks)
+                // console.log("remarks", Remarks)
+
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -459,7 +498,6 @@ function DatamanagerEmployeeTeamLeads() {
                     // Handle the case where the API call was not successful
                     console.error("Failed to update status:", response.data.message);
                 }
-
             }
         } catch (error) {
             // Handle any errors that occur during the API call
@@ -473,8 +511,7 @@ function DatamanagerEmployeeTeamLeads() {
                 isButtonEnabled: false,
             },
         }));
-
-        //   // After updating, you can disable the button
+        // After updating, you can disable the button
     };
 
     // const handleUpdate = async () => {
@@ -528,11 +565,6 @@ function DatamanagerEmployeeTeamLeads() {
     //   }));
     // };
 
-
-
-
-
-
     const handleAcceptClick = async (
         companyId,
         cName,
@@ -561,15 +593,10 @@ function DatamanagerEmployeeTeamLeads() {
             console.log("Error updating status", error.message)
         }
     }
-
-    console.log("bdmNewStatus", bdmNewStatus)
-
-
+    // console.log("bdmNewStatus", bdmNewStatus);
 
     // const handleRejectData = async (companyId) => {
-    //   setIsDeleted(true)
-
-
+    //   setIsDeleted(true);
     //   try {
     //     const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
     //       bdmAcceptStatus: "NotForwarded",
@@ -583,8 +610,6 @@ function DatamanagerEmployeeTeamLeads() {
     //   }
     // }
 
-
-
     // try {
     //   const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
     //     bdmAcceptStatus: "NotForwarded",
@@ -596,7 +621,6 @@ function DatamanagerEmployeeTeamLeads() {
     //   console.log("error reversing bdm forwarded data", error.message);
     //   Swal.fire("Error rekecting data")
     // }
-
 
     const handlebdmStatusChange = async (
         companyId,
@@ -613,7 +637,7 @@ function DatamanagerEmployeeTeamLeads() {
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
-        console.log("bdmnewstatus", bdmnewstatus)
+        // console.log("bdmnewstatus", bdmnewstatus);
         try {
 
             if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
@@ -627,7 +651,7 @@ function DatamanagerEmployeeTeamLeads() {
                         time,
                     }
                 )
-                console.log("yahan dikha ", bdmnewstatus)
+                // console.log("yahan dikha ", bdmnewstatus);
                 // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
@@ -646,7 +670,7 @@ function DatamanagerEmployeeTeamLeads() {
 
                 const response = await axios.delete(
                     `${secretKey}/bdm-data/delete-bdm-busy/${companyId}`)
-                console.log("yahan dikha", bdmnewstatus)
+                // console.log("yahan dikha", bdmnewstatus);
                 // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
@@ -697,12 +721,10 @@ function DatamanagerEmployeeTeamLeads() {
                     });
             }
             // Make an API call to update the employee status in the database
-
         } catch (error) {
             // Handle any errors that occur during the API call
             console.error("Error updating status:", error.message);
         }
-
     }
 
     const handleDeleteRemarks = async (remarks_id, remarks_value) => {
@@ -724,7 +746,6 @@ function DatamanagerEmployeeTeamLeads() {
             console.error("Error deleting remarks:", error);
         }
     };
-
 
     // -----------------------------projection------------------------------
     const [projectingCompany, setProjectingCompany] = useState("");
@@ -789,29 +810,33 @@ function DatamanagerEmployeeTeamLeads() {
         setIsEditProjection(false);
         setSelectedValues([]);
     };
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
         }, 1000);
     };
+    
     const closeAnchor = () => {
         setOpenAnchor(false);
     };
+
     const fetchRedesignedFormData = async () => {
         try {
-            console.log(maturedID);
+            // console.log(maturedID);
             const response = await axios.get(
                 `${secretKey}/bookings/redesigned-final-leadData`
             );
             const data = response.data.find((obj) => obj.company === maturedID);
-            console.log(data);
+            // console.log(data);
             setCurrentForm(data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+
     useEffect(() => {
-        console.log("Matured ID Changed", maturedID);
+        // console.log("Matured ID Changed", maturedID);
         if (maturedID) {
             fetchRedesignedFormData();
         }
@@ -819,14 +844,14 @@ function DatamanagerEmployeeTeamLeads() {
 
     const handleDelete = async (company) => {
         const companyName = company;
-        console.log(companyName);
+        // console.log(companyName);
 
         try {
             // Send a DELETE request to the backend API endpoint
             const response = await axios.delete(
                 `${secretKey}/projection/delete-followup/${companyName}`
             );
-            console.log(response.data.message); // Log the response message
+            // console.log(response.data.message); // Log the response message
             // Show a success message after successful deletion
             console.log("Deleted!", "Your data has been deleted.", "success");
             setCurrentProjection({
@@ -935,7 +960,6 @@ function DatamanagerEmployeeTeamLeads() {
         fetchProjections();
     }, [data]);
 
-
     const [openFeedback, setOpenFeedback] = useState(false)
     const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
     const [valueSlider, setValueSlider] = useState(0)
@@ -947,7 +971,6 @@ function DatamanagerEmployeeTeamLeads() {
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
     const [feedbackPoints, setFeedbackPoints] = useState([])
-
 
     const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
@@ -964,9 +987,7 @@ function DatamanagerEmployeeTeamLeads() {
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
-    console.log("yahan locha h", feedbackPoints.length)
-
-
+    // console.log("yahan locha h", feedbackPoints.length);
 
     const handleCloseFeedback = () => {
         setOpenFeedback(false)
@@ -998,11 +1019,7 @@ function DatamanagerEmployeeTeamLeads() {
                 break;
         }
     };
-
     //console.log("valueSlider", valueSlider, feedbackRemarks)
-
-
-
 
     const debouncedFeedbackRemarks = useCallback(
         debounce((value) => {
@@ -1068,7 +1085,6 @@ function DatamanagerEmployeeTeamLeads() {
     const [employeeData, setEmployeeData] = useState([]);
     const [moreEmpData, setmoreEmpData] = useState([]);
     const [backButton, setBackButton] = useState(false);
-
     const [openAssign, openchangeAssign] = useState(false);
     const [selectedField, setSelectedField] = useState("Company Name");
     const [visibility, setVisibility] = useState("none");
@@ -1081,7 +1097,6 @@ function DatamanagerEmployeeTeamLeads() {
     const [subFilterValue, setSubFilterValue] = useState("");
     const [currentTab, setCurrentTab] = useState("TeamLeads");
     const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
-
 
     const handleChangeUrl = () => {
         const currId = id;
@@ -1108,24 +1123,22 @@ function DatamanagerEmployeeTeamLeads() {
     const functionOpenAssign = () => {
         openchangeAssign(true);
     };
+
     const closepopupAssign = () => {
         openchangeAssign(false);
     };
+    
     const [selectedOption, setSelectedOption] = useState("direct");
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
 
-
-
     const handleUploadData = async (e) => {
         //console.log("Uploading data");
-
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const bdmAcceptStatus = "NotForwarded"
-
 
         const csvdata = teamleadsData
             .filter((employee) => selectedRows.includes(employee._id))
@@ -1158,7 +1171,7 @@ function DatamanagerEmployeeTeamLeads() {
                 companyName: data["Company Name"],
                 bdmAcceptStatus,
             };
-            console.log(newemployeeSelection, data, bdmAcceptStatus)
+            // console.log(newemployeeSelection, data, bdmAcceptStatus);
             // Add the promise for updating CompanyModel to the array
             updatePromises.push(
                 axios.post(`${secretKey}/bdm-data/assign-leads-newbdm`, {
@@ -1198,7 +1211,6 @@ function DatamanagerEmployeeTeamLeads() {
             });
         }
     };
-
     //console.log("new" , newemployeeSelection)
 
     const handleFieldChange = (event) => {
@@ -1221,55 +1233,53 @@ function DatamanagerEmployeeTeamLeads() {
             setSubFilterValue("");
             setVisibilityOthernew("none");
         }
-
-        console.log(selectedField);
+        // console.log(selectedField);
     };
 
-    const filteredData = teamleadsData.filter((company) => {
-        const fieldValue = company[selectedField];
+    // const filteredData = teamleadsData.filter((company) => {
+    //     const fieldValue = company[selectedField];
 
-        if (selectedField === "State" && citySearch) {
-            // Handle filtering by both State and City
-            const stateMatches = fieldValue
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-            const cityMatches = company.City.toLowerCase().includes(
-                citySearch.toLowerCase()
-            );
-            return stateMatches && cityMatches;
-        } else if (selectedField === "Company Incorporation Date  ") {
-            // Assuming you have the month value in a variable named `month`
-            if (month == 0) {
-                return fieldValue.includes(searchText);
-            } else if (year == 0) {
-                return fieldValue.includes(searchText);
-            }
-            const selectedDate = new Date(fieldValue);
-            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-            const selectedYear = selectedDate.getFullYear();
+    //     if (selectedField === "State" && citySearch) {
+    //         // Handle filtering by both State and City
+    //         const stateMatches = fieldValue
+    //             .toLowerCase()
+    //             .includes(searchText.toLowerCase());
+    //         const cityMatches = company.City.toLowerCase().includes(
+    //             citySearch.toLowerCase()
+    //         );
+    //         return stateMatches && cityMatches;
+    //     } else if (selectedField === "Company Incorporation Date  ") {
+    //         // Assuming you have the month value in a variable named `month`
+    //         if (month == 0) {
+    //             return fieldValue.includes(searchText);
+    //         } else if (year == 0) {
+    //             return fieldValue.includes(searchText);
+    //         }
+    //         const selectedDate = new Date(fieldValue);
+    //         const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+    //         const selectedYear = selectedDate.getFullYear();
 
-            // Use the provided month variable in the comparison
-            return (
-                selectedMonth.toString().includes(month) &&
-                selectedYear.toString().includes(year)
-            );
-        } else if (selectedField === "Status" && searchText === "All") {
-            // Display all data when Status is "All"
-            return true;
-        } else {
-            // Your existing filtering logic for other fields
-            if (typeof fieldValue === "string") {
-                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-            } else if (typeof fieldValue === "number") {
-                return fieldValue.toString().includes(searchText);
-            } else if (fieldValue instanceof Date) {
-                // Handle date fields
-                return fieldValue.includes(searchText);
-            }
-
-            return false;
-        }
-    });
+    //         // Use the provided month variable in the comparison
+    //         return (
+    //             selectedMonth.toString().includes(month) &&
+    //             selectedYear.toString().includes(year)
+    //         );
+    //     } else if (selectedField === "Status" && searchText === "All") {
+    //         // Display all data when Status is "All"
+    //         return true;
+    //     } else {
+    //         // Your existing filtering logic for other fields
+    //         if (typeof fieldValue === "string") {
+    //             return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+    //         } else if (typeof fieldValue === "number") {
+    //             return fieldValue.toString().includes(searchText);
+    //         } else if (fieldValue instanceof Date) {
+    //             // Handle date fields
+    //             return fieldValue.includes(searchText);
+    //         }
+    //         return false;
+    //     }
+    // });
 
     const handleDateChange = (e) => {
         const dateValue = e.target.value;
@@ -1287,7 +1297,6 @@ function DatamanagerEmployeeTeamLeads() {
     };
 
     // ------------------------------panel-----------------------------------------
-
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
 
@@ -1320,26 +1329,26 @@ function DatamanagerEmployeeTeamLeads() {
             'aria-controls': `simple-tabpanel-${index}`,
         };
     }
-    const location = useLocation()
+
+    const location = useLocation();
     const [value, setValue] = React.useState(location.pathname === `/datamanager/employeeLeads/${id}` ? 0 : 1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
-    console.log(value)
+    // console.log(value);
 
     // -------------------------------------------handle checkbox----------------------------------------------------------
-
-
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
+        
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === filteredData.length
+                prevSelectedRows.length === checkboxData.length
                     ? []
-                    : filteredData.map((row) => row._id)
+                    : checkboxData.map((row) => row._id)
             );
         } else {
             // Toggle the selection status of the row with the given id
@@ -1347,8 +1356,8 @@ function DatamanagerEmployeeTeamLeads() {
                 // If the Ctrl key is pressed
                 if (event.ctrlKey) {
                     //console.log("pressed");
-                    const selectedIndex = filteredData.findIndex((row) => row._id === id);
-                    const lastSelectedIndex = filteredData.findIndex((row) =>
+                    const selectedIndex = checkboxData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = checkboxData.findIndex((row) =>
                         prevSelectedRows.includes(row._id)
                     );
 
@@ -1377,15 +1386,17 @@ function DatamanagerEmployeeTeamLeads() {
     const [startRowIndex, setStartRowIndex] = useState(null);
 
     const handleMouseEnter = (id) => {
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
+
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-            const endRowIndex = filteredData.findIndex((row) => row._id === id);
+            const endRowIndex = checkboxData.findIndex((row) => row._id === id);
             const selectedRange = [];
             const startIndex = Math.min(startRowIndex, endRowIndex);
             const endIndex = Math.max(startRowIndex, endRowIndex);
 
             for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(filteredData[i]._id);
+                selectedRange.push(checkboxData[i]._id);
             }
 
             setSelectedRows(selectedRange);
@@ -1411,7 +1422,8 @@ function DatamanagerEmployeeTeamLeads() {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
+        setStartRowIndex(checkboxData.findIndex((row) => row._id === id));
     };
 
     function formatDateNow(timestamp) {
@@ -1423,7 +1435,6 @@ function DatamanagerEmployeeTeamLeads() {
     }
 
     //----------------- delete bdm from forwarded data----------------------
-
     const handleDeleteBdm = async (companyId, companyName, bdmStatus) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -1443,33 +1454,291 @@ function DatamanagerEmployeeTeamLeads() {
                         companyName
                     }
                 });
-
-
-                Swal.fire(
-                    'Deleted!',
-                    'The company has been deleted.',
-                    'success'
-                );
-
+                Swal.fire('Deleted!','The company has been deleted.','success');
                 fetchTeamLeadsData(bdmStatus);
                 //console.log("Company updated and deleted successfully", response.data);
             } catch (error) {
                 console.log("Error Deleting Company", error);
-                Swal.fire(
-                    'Error!',
-                    'There was an error deleting the company.',
-                    'error'
-                );
+                Swal.fire('Error!','There was an error deleting the company.','error');
             }
         }
     };
 
+    // These function will close filter drawer.
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
 
+    //------------------------search function--------------------
+    // Currently running for searching the data :
+    const handleSearch = (searchQuery) => {
+        // console.log("Searching value is :",searchQuery);
 
+        setIsFilter(false);
 
+        const searchValue = searchQuery.trim().toLowerCase(); // Trim and convert search query to lowercase
+
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            setIsSearch(false);
+            setIsFilter(false);
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when search is empty
+            return;
+        }
+
+        setIsSearch(true);
+
+        const filteredItems = extraData.filter((company) => {
+            const companyName = company["Company Name"];
+            const companyNumber = company["Company Number"];
+            const companyEmail = company["Company Email"];
+            const companyState = company.State;
+            const companyCity = company.City;
+
+            return (
+                (companyName && companyName.toString().toLowerCase().includes(searchValue)) ||
+                (companyNumber && companyNumber.toString().includes(searchValue)) ||
+                (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) ||
+                (companyState && companyState.toString().toLowerCase().includes(searchValue)) ||
+                (companyCity && companyCity.toString().toLowerCase().includes(searchValue))
+            );
+        });
+        setNewFilteredData(filteredItems);
+        setFilteredData(filteredItems);
+        filterByTab(filteredItems);
+    };
+
+    const filterByTab = (data) => {
+        // console.log("data is :", data);
+        let filtered;
+
+        switch (activeTab) {
+            case "All":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Busy" ||
+                    obj.bdmStatus === "Not Picked Up" ||
+                    obj.bdmStatus === "Untouched"
+                );
+                break;
+            case "Interested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Interested"
+                );
+                break;
+            case "FollowUp":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "FollowUp"
+                );
+                break;
+            case "Matured":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Matured"
+                );
+                break;
+            case "Forwarded":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus !== "Not Interested" &&
+                    obj.bdmStatus !== "Busy" &&
+                    obj.bdmStatus !== "Junk" &&
+                    obj.bdmStatus !== "Not Picked Up" &&
+                    obj.bdmStatus !== "Matured"
+                ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                break;
+            case "NotInterested":
+                filtered = data.filter(obj =>
+                    obj.bdmStatus === "Not Interested" ||
+                    obj.bdmStatus === "Junk"
+                );
+                break;
+            default:
+                filtered = data;
+        }
+        setTeamLeadsData(filtered);
+    };
+
+    // useEffect for searching data :
+    useEffect(() => {
+        if (filteredData.length === 0 && isFilter) {
+            setTeamLeadsData(newFilteredData);
+            return;
+        }
+
+        if (filteredData.length === 0) {
+            filterByTab(extraData); // Reset to full dataset filtered by active tab when no filtered data
+            return;
+        }
+
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus;
+            setBdmNewStatus(currentStatus);
+            filterByTab(filteredData);
+        } else if (filteredData.length > 1) {
+            if (selectedStatus) {
+                setBdmNewStatus(selectedStatus);
+                setActiveTab(selectedStatus);
+            }
+            setTeamLeadsData(filteredData);
+        }
+    }, [filteredData, activeTab]);
+    console.log("Is Search :", isSearch);
+
+    // To clear filter data :
+    const handleClearFilter = () => {
+        setIsFilter(false);
+        functionCloseFilterDrawer();
+        setSelectedStatus("");
+        setSelectedState("");
+        setSelectedNewCity("");
+        setSelectedBdeForwardDate(null);
+        setCompanyIncoDate(null);
+        setSelectedCompanyIncoDate(null);
+        setSelectedYear("");
+        setSelectedMonth("");
+        setSelectedDate(0);
+        setFilteredData([]);
+        fetchTeamLeadsData(bdmNewStatus);
+    };
+
+    // To apply filter :
+    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+        const bdmName = data.ename;
+        // console.log("BDM Name is :", bdmName);
+        try {
+            setIsFilter(true);
+            setOpenBacdrop(true);
+
+            const response = await axios.get(`${secretKey}/bdm-data/filter-employee-team-leads/${bdmName}`, {
+                params: {
+                    selectedStatus,
+                    selectedState,
+                    selectedNewCity,
+                    selectedBdeForwardDate,
+                    selectedCompanyIncoDate,
+                    selectedYear,
+                    monthIndex,
+                    page,
+                    limit
+                }
+            });
+
+            if (!selectedStatus && !selectedState && !selectedNewCity && selectedYear && !selectedCompanyIncoDate) {
+                setIsFilter(false);
+            } else {
+                // console.log("Filtered Data is :", response.data);
+                setFilteredData(response.data);
+                setNewFilteredData(response.data);
+                setTeamLeadsData(response.data)
+            }
+        } catch (error) {
+            console.log("Error to filtered data :", error);
+        } finally {
+            setOpenBacdrop(false);
+            setOpenFilterDrawer(false);
+        }
+    };
+
+    // console.log("Team data :", teamData);
+    console.log("Filtered data :", filteredData);
+    // console.log("Team lead data :", teamleadsData);
+    // console.log("Is Filter :", isFilter);
+
+    // useEffect for filtering data :
+    useEffect(() => {
+        if (filteredData.length !== 0) {
+            let filtered;
+            switch (activeTab) {
+                case "All":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Busy" ||
+                        obj.bdmStatus === "Not Picked Up" ||
+                        obj.bdmStatus === "Untouched"
+                    );
+                    break;
+                case "Interested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Interested"
+                    );
+                    break;
+                case "FollowUp":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "FollowUp"
+                    );
+                    break;
+                case "Matured":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Matured"
+                    );
+                    break;
+                case "Forwarded":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus !== "Not Interested" &&
+                        obj.bdmStatus !== "Busy" &&
+                        obj.bdmStatus !== "Junk" &&
+                        obj.bdmStatus !== "Not Picked Up" &&
+                        obj.bdmStatus !== "Matured"
+                    ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate));
+                    break;
+                case "NotInterested":
+                    filtered = filteredData.filter(obj =>
+                        obj.bdmStatus === "Not Interested" ||
+                        obj.bdmStatus === "Junk"
+                    );
+                    break;
+                default:
+                    filtered = filteredData;
+            }
+            //setTeamLeadsData(filtered);
+
+        } else if (filteredData.length === 0 && isFilter) {
+            //setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData);
+        }
+
+        if (filteredData.length === 0) {
+            setTeamLeadsData([]);
+        }
+
+        if (filteredData.length === 1) {
+            const currentStatus = filteredData[0].bdmStatus; // Access Status directly
+            if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
+                setActiveTab('All');
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
+            } else if (currentStatus === 'Interested') {
+                setActiveTab('Interested');
+                setBdmNewStatus(currentStatus);
+            } else if (currentStatus === 'FollowUp') {
+                setActiveTab('FollowUp');
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
+            } else if (currentStatus === 'Matured') {
+                setActiveTab('Matured');
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
+            } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
+                setActiveTab('Forwarded');
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
+            } else if (currentStatus === 'Not Interested') {
+                setActiveTab('NotInterested');
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
+            }
+        } else if (filteredData.length > 1) {
+            setFilteredData(newFilteredData);
+            setTeamLeadsData(newFilteredData);
+            if (selectedStatus) {
+                // console.log("yahan chal")
+                setBdmNewStatus(selectedStatus);
+                setActiveTab(selectedStatus);
+            }
+        }
+    }, [filteredData, activeTab]);
+
+    // console.log("activetab", activeTab);
+    // console.log("selectedStatus", selectedStatus);
+    // console.log("bdmNewStatus", bdmNewStatus);
+
+    // console.log("Selected rows :", selectedRows);
 
     return (
         <div>
@@ -1677,7 +1946,6 @@ function DatamanagerEmployeeTeamLeads() {
                                             </button>
                                         </Link>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -1685,6 +1953,7 @@ function DatamanagerEmployeeTeamLeads() {
                         </div>
                     </div>
                 </div>
+
                 <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -1755,13 +2024,9 @@ function DatamanagerEmployeeTeamLeads() {
                                             <MdOutlinePostAdd className='mr-1' />Assign Leads
                                         </button>
                                     )}
-                                    <button type="button" className="btn mybtn"
-                                    //   onClick={() => setOpenAssignToBdm(true)}
-                                    >
-                                        <RiShareForwardFill className='mr-1' /> Forward to BDM
-                                    </button>
                                 </div>
                             </div>
+
                             <div className="d-flex align-items-center">
                                 {selectedRows.length !== 0 && (
                                     <div className="selection-data" >
@@ -1777,13 +2042,13 @@ function DatamanagerEmployeeTeamLeads() {
                                         </svg>
                                     </span>
                                     <input
-                                        //   value={searchQuery}
-                                        //   onChange={(e) => {
-                                        //     setSearchQuery(e.target.value);
-                                        //     handleSearch(e.target.value)
+                                          value={searchQuery}
+                                          onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            handleSearch(e.target.value)
                                         //handleFilterSearch(e.target.value)
                                         //setCurrentPage(0);
-                                        //   }}
+                                          }}
                                         className="form-control search-cantrol mybtn"
                                         placeholder="Search…"
                                         type="text"
@@ -1802,8 +2067,9 @@ function DatamanagerEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Untouched");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
                                                         //obj.bdmStatus === "Busy" ||
                                                         //obj.bdmStatus === "Not Picked Up" ||
@@ -1821,10 +2087,10 @@ function DatamanagerEmployeeTeamLeads() {
                                         General{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
-                                                        //obj.bdmStatus === "Busy" ||
-                                                        //obj.bdmStatus === "Not Picked Up" ||
+                                                        // obj.bdmStatus === "Busy" ||
+                                                        // obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Untouched"
                                                 ).length
                                             }
@@ -1837,8 +2103,9 @@ function DatamanagerEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Interested");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1853,7 +2120,7 @@ function DatamanagerEmployeeTeamLeads() {
                                         Interested
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Interested"
                                                 ).length
                                             }
@@ -1866,8 +2133,9 @@ function DatamanagerEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("FollowUp");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
@@ -1882,7 +2150,7 @@ function DatamanagerEmployeeTeamLeads() {
                                         Follow Up{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "FollowUp"
                                                 ).length
                                             }
@@ -1895,9 +2163,10 @@ function DatamanagerEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("Matured");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData
-                                                    .filter((obj) => obj.bdmStatus === "Matured")
+                                                mappedData.filter(
+                                                    (obj) => obj.bdmStatus === "Matured")
                                                     .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
                                             );
                                         }}
@@ -1912,7 +2181,7 @@ function DatamanagerEmployeeTeamLeads() {
                                         <span className="no_badge">
                                             {" "}
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) => obj.bdmStatus === "Matured"
                                                 ).length
                                             }
@@ -1925,8 +2194,9 @@ function DatamanagerEmployeeTeamLeads() {
                                         onClick={() => {
                                             setBdmNewStatus("NotInterested");
                                             //setCurrentPage(0);
+                                            const mappedData = (isSearch || isFilter) ? filteredData : teamData
                                             setTeamLeadsData(
-                                                teamData.filter(
+                                                mappedData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -1936,7 +2206,7 @@ function DatamanagerEmployeeTeamLeads() {
                                             );
                                         }}
                                         className={
-                                            bdmNewStatus === "NotInterested"
+                                            bdmNewStatus === "Not Interested"
                                                 ? "nav-link active item-act"
                                                 : "nav-link"
                                         }
@@ -1945,7 +2215,7 @@ function DatamanagerEmployeeTeamLeads() {
                                         Not-Interested{" "}
                                         <span className="no_badge">
                                             {
-                                                teamData.filter(
+                                                ((isSearch || isFilter) ? filteredData : teamData).filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
                                                         obj.bdmStatus === "Busy" ||
@@ -1977,7 +2247,7 @@ function DatamanagerEmployeeTeamLeads() {
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === filteredData.length
+                                                            selectedRows.length !== 0
                                                         }
                                                         onChange={() => handleCheckboxChange("all")}
                                                     />
@@ -2012,8 +2282,9 @@ function DatamanagerEmployeeTeamLeads() {
                                                 <td>Action</td>
                                             </tr>
                                         </thead>
+
                                         <tbody>
-                                            {filteredData.map((company, index) => (
+                                            {teamleadsData.map((company, index) => (
                                                 <tr
                                                     key={index}
                                                     className={
@@ -2316,6 +2587,7 @@ function DatamanagerEmployeeTeamLeads() {
 
                 </div>
             </div>}
+
             {formOpen && maturedBooking && (
                 <>
                     <RedesignedForm
@@ -2329,13 +2601,12 @@ function DatamanagerEmployeeTeamLeads() {
                         // setNowToFetch={setNowToFetch}
                         companysInco={maturedBooking["Company Incorporation Date  "]}
                         employeeName={maturedBooking.ename}
-
                         bdmName={maturedBooking.bdmName}
                     />
                 </>
             )}
-            {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
 
+            {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
             <Dialog
                 open={openRemarks}
                 onClose={closePopUpRemarks}
@@ -2414,8 +2685,8 @@ function DatamanagerEmployeeTeamLeads() {
           </div> */}
                 </DialogContent>
             </Dialog>
-            {/* ----------------------------------------------------dialog for bdm remarks popup--------------------------------------------- */}
 
+            {/* ----------------------------------------------------dialog for bdm remarks popup--------------------------------------------- */}
             <Dialog
                 open={openRemarksEdit}
                 onClose={closePopUpRemarksEdit}
@@ -2456,8 +2727,8 @@ function DatamanagerEmployeeTeamLeads() {
                     </div>
                 </DialogContent>
             </Dialog>
-            {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
 
+            {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
             <Dialog
                 open={openFeedback}
                 onClose={handleCloseFeedback}
@@ -2573,9 +2844,9 @@ function DatamanagerEmployeeTeamLeads() {
                             Submit
                         </button> */}
                     </div>
-
                 </DialogContent>
             </Dialog>
+
             {/* --------------------------------dialog for assign data-------------------------------- */}
             <Dialog
                 open={openAssign}
@@ -2669,7 +2940,7 @@ function DatamanagerEmployeeTeamLeads() {
                                             }}
                                             className="selector"
                                         >
-                                            <label>Select an Employee</label>
+                                            <label>Select BDM</label>
                                             <div className="form-control">
                                                 <select
                                                     style={{
@@ -2683,7 +2954,7 @@ function DatamanagerEmployeeTeamLeads() {
                                                     }}
                                                 >
                                                     <option value="Not Alloted" disabled>
-                                                        Select employee
+                                                        Select BDM
                                                     </option>
                                                     {bdmNames.map((item) => (
                                                         <option value={item}>{item}</option>
@@ -2695,7 +2966,7 @@ function DatamanagerEmployeeTeamLeads() {
                                 </>
                             ) : (
                                 <div>
-                                    <h1>No Employees Found</h1>
+                                    <h1>No BDM Found</h1>
                                 </div>
                             )}
                         </div>
@@ -2706,10 +2977,7 @@ function DatamanagerEmployeeTeamLeads() {
                 </button>
             </Dialog>
 
-
-
             {/* ---------------------------------projection drawer--------------------------------------------------------- */}
-
             <div>
                 <Drawer
                     style={{ top: "50px" }}
@@ -2961,6 +3229,7 @@ function DatamanagerEmployeeTeamLeads() {
                     </div>
                 </Drawer>
             </div>
+
             {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
             <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
                 <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
@@ -2988,7 +3257,6 @@ function DatamanagerEmployeeTeamLeads() {
                     </div>
                 </div>
             </Drawer>
-
 
             {/* //----------------leads filter drawer------------------------------- */}
             <Drawer
@@ -3019,10 +3287,10 @@ function DatamanagerEmployeeTeamLeads() {
                                     <div className='form-group'>
                                         <label for="exampleFormControlInput1" class="form-label">Status</label>
                                         <select class="form-select form-select-md" aria-label="Default select example"
-                                        //   value={selectedStatus}
-                                        //   onChange={(e) => {
-                                        //     setSelectedStatus(e.target.value)
-                                        //   }}
+                                          value={selectedStatus}
+                                          onChange={(e) => {
+                                            setSelectedStatus(e.target.value)
+                                          }}
                                         >
                                             <option selected value='Select Status'>Select Status</option>
                                             <option value='Not Picked Up'>Not Picked Up</option>
@@ -3041,44 +3309,44 @@ function DatamanagerEmployeeTeamLeads() {
                                         <div className='form-group w-50 mr-1'>
                                             <label for="exampleFormControlInput1" class="form-label">State</label>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            // value={selectedState}
-                                            // onChange={(e) => {
-                                            //   setSelectedState(e.target.value)
-                                            //   setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
-                                            //   setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                            value={selectedState}
+                                            onChange={(e) => {
+                                              setSelectedState(e.target.value)
+                                              setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                              setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
                                             //handleSelectState(e.target.value)
-                                            // }}
+                                            }}
                                             >
                                                 <option value=''>State</option>
-                                                {/* {stateList.length !== 0 && stateList.map((item) => (
+                                                {stateList.length !== 0 && stateList.map((item) => (
                                                     <option value={item.name}>{item.name}</option>
-                                                ))} */}
+                                                ))}
                                             </select>
                                         </div>
                                         <div className='form-group w-50'>
                                             <label for="exampleFormControlInput1" class="form-label">City</label>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            // value={selectedNewCity}
-                                            // onChange={(e) => {
-                                            //   setSelectedNewCity(e.target.value)
-                                            // }}
+                                            value={selectedNewCity}
+                                            onChange={(e) => {
+                                              setSelectedNewCity(e.target.value)
+                                            }}
                                             >
                                                 <option value="">City</option>
-                                                {/* {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
                                                     <option value={item.name}>{item.name}</option>
-                                                ))} */}
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div className='col-sm-12 mt-2'>
                                     <div className='form-group'>
-                                        <label for="assignon" class="form-label">Assign On</label>
+                                        <label for="assignon" class="form-label">BDE Forward Date</label>
                                         <input type="date" class="form-control" id="assignon"
-                                        //   value={selectedAssignDate}
-                                        //   placeholder="dd-mm-yyyy"
-                                        //   defaultValue={null}
-                                        //   onChange={(e) => setSelectedAssignDate(e.target.value)}
+                                          value={selectedBdeForwardDate}
+                                          placeholder="dd-mm-yyyy"
+                                          defaultValue={null}
+                                          onChange={(e) => setSelectedBdeForwardDate(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -3087,10 +3355,10 @@ function DatamanagerEmployeeTeamLeads() {
                                     <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            // value={selectedYear}
-                                            // onChange={(e) => {
-                                            //   setSelectedYear(e.target.value)
-                                            // }}
+                                            value={selectedYear}
+                                            onChange={(e) => {
+                                              setSelectedYear(e.target.value)
+                                            }}
                                             >
                                                 <option value=''>Year</option>
                                                 {years.length !== 0 && years.map((item) => (
@@ -3100,11 +3368,11 @@ function DatamanagerEmployeeTeamLeads() {
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            // value={selectedMonth}
-                                            // disabled={selectedYear === ""}
-                                            // onChange={(e) => {
-                                            //     setSelectedMonth(e.target.value)
-                                            // }}
+                                            value={selectedMonth}
+                                            disabled={selectedYear === ""}
+                                            onChange={(e) => {
+                                                setSelectedMonth(e.target.value)
+                                            }}
                                             >
                                                 <option value=''>Month</option>
                                                 {months && months.map((item) => (
@@ -3114,14 +3382,14 @@ function DatamanagerEmployeeTeamLeads() {
                                         </div>
                                         <div className='col form-group mr-1'>
                                             <select class="form-select form-select-md" aria-label="Default select example"
-                                            // disabled={selectedMonth === ''}
-                                            // value={selectedDate}
-                                            // onChange={(e) => setSelectedDate(e.target.value)}
+                                            disabled={selectedMonth === ''}
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
                                             >
                                                 <option value=''>Date</option>
-                                                {/* {daysInMonth.map((day) => (
+                                                {daysInMonth.map((day) => (
                                                     <option key={day} value={day}>{day}</option>
-                                                ))} */}
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -3131,17 +3399,15 @@ function DatamanagerEmployeeTeamLeads() {
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
                         <button className='filter-footer-btn btn-clear'
-                        // onClick={handleClearFilter}
+                        onClick={handleClearFilter}
                         >Clear Filter</button>
                         <button className='filter-footer-btn btn-yellow'
-                        // onClick={handleFilterData}
+                        onClick={handleFilterData}
                         >Apply Filter</button>
                     </div>
                 </div>
             </Drawer>
-
         </div>
-
     );
 }
 

@@ -1,6 +1,4 @@
-
 import React, { useEffect, useState } from "react";
-
 import Navbar from "./Navbar";
 import Header from "./Header";
 import { useLocation, useParams } from "react-router-dom";
@@ -129,8 +127,7 @@ function AdminEmployeeTeamLeads() {
     const [selectedEmployee, setSelectedEmployee] = useState()
     const [selectedEmployee2, setSelectedEmployee2] = useState()
     const [openBacdrop, setOpenBacdrop] = useState(false);
-    // const [isFilter, setIsFilter] = useState(false)
-    // const [extraData, setExtraData] = useState([])
+    // const [isFilter, setIsFilter] = useState(false);
 
 
     // States for filtered and searching data :
@@ -245,15 +242,13 @@ function AdminEmployeeTeamLeads() {
                 setBdmWorkOn(data.find((item) => item._id === id)?.bdmWork || null);
                 setData(userData2)
             }
-
-
-
             //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+
     const [maturedBooking, setMaturedBooking] = useState(null);
 
     const fetchBDMbookingRequests = async () => {
@@ -274,6 +269,7 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error);
         }
     };
+
     //------------------------fetching tem leads data--------------------------------------
     const fetchCompleteData = async () => {
         try {
@@ -291,8 +287,9 @@ function AdminEmployeeTeamLeads() {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
-            setTeamData(response.data)
-            setExtraData(response.data)
+            setTeamData(response.data);
+            setExtraData(response.data);
+            
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -313,8 +310,6 @@ function AdminEmployeeTeamLeads() {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("NotInterested")
             }
-
-
             // console.log("response", response.data)
         } catch (error) {
             console.log(error)
@@ -348,7 +343,6 @@ function AdminEmployeeTeamLeads() {
 
     //console.log("ename" , data.ename)
 
-
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -357,6 +351,7 @@ function AdminEmployeeTeamLeads() {
         );
         return formattedDate;
     }
+
     function formatDateNew(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
@@ -365,15 +360,14 @@ function AdminEmployeeTeamLeads() {
         return `${day}/${month}/${year}`;
     }
 
-
     const closePopUpRemarks = () => {
         setOpenRemarks(false)
-
     }
+
     const closePopUpRemarksEdit = () => {
         setOpenRemarksEdit(false)
-
     }
+
     const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
         setOpenRemarks(true);
         setFilteredRemarks(
@@ -383,11 +377,7 @@ function AdminEmployeeTeamLeads() {
         setcid(companyID);
         setCstat(companyStatus);
         setCurrentCompanyName(companyName);
-
     };
-
-
-
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
@@ -420,7 +410,6 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
-
 
     useEffect(() => {
         fetchRemarksHistory();
@@ -529,8 +518,7 @@ function AdminEmployeeTeamLeads() {
                 isButtonEnabled: false,
             },
         }));
-
-        //   // After updating, you can disable the button
+        // After updating, you can disable the button
     };
 
     // const handleUpdate = async () => {
@@ -584,11 +572,6 @@ function AdminEmployeeTeamLeads() {
     //   }));
     // };
 
-
-
-
-
-
     const handleAcceptClick = async (
         companyId,
         cName,
@@ -617,15 +600,10 @@ function AdminEmployeeTeamLeads() {
             console.log("Error updating status", error.message)
         }
     }
-
-    // console.log("bdmNewStatus", bdmNewStatus)
-
-
+    // console.log("bdmNewStatus", bdmNewStatus);
 
     // const handleRejectData = async (companyId) => {
-    //   setIsDeleted(true)
-
-
+    //   setIsDeleted(true);
     //   try {
     //     const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
     //       bdmAcceptStatus: "NotForwarded",
@@ -639,8 +617,6 @@ function AdminEmployeeTeamLeads() {
     //   }
     // }
 
-
-
     // try {
     //   const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
     //     bdmAcceptStatus: "NotForwarded",
@@ -652,7 +628,6 @@ function AdminEmployeeTeamLeads() {
     //   console.log("error reversing bdm forwarded data", error.message);
     //   Swal.fire("Error rekecting data")
     // }
-
 
     const handlebdmStatusChange = async (
         companyId,
@@ -751,12 +726,10 @@ function AdminEmployeeTeamLeads() {
                     });
             }
             // Make an API call to update the employee status in the database
-
         } catch (error) {
             // Handle any errors that occur during the API call
             console.error("Error updating status:", error.message);
         }
-
     }
 
     const handleDeleteRemarks = async (remarks_id, remarks_value) => {
@@ -778,7 +751,6 @@ function AdminEmployeeTeamLeads() {
             console.error("Error deleting remarks:", error);
         }
     };
-
 
     // -----------------------------projection------------------------------
     const [projectingCompany, setProjectingCompany] = useState("");
@@ -843,14 +815,17 @@ function AdminEmployeeTeamLeads() {
         setIsEditProjection(false);
         setSelectedValues([]);
     };
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
         }, 1000);
     };
+
     const closeAnchor = () => {
         setOpenAnchor(false);
     };
+
     const fetchRedesignedFormData = async () => {
         try {
             // console.log(maturedID);
@@ -864,6 +839,7 @@ function AdminEmployeeTeamLeads() {
             console.error("Error fetching data:", error.message);
         }
     };
+
     useEffect(() => {
         // console.log("Matured ID Changed", maturedID);
         if (maturedID) {
@@ -989,7 +965,6 @@ function AdminEmployeeTeamLeads() {
         fetchProjections();
     }, [data]);
 
-
     const [openFeedback, setOpenFeedback] = useState(false)
     const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
     const [valueSlider, setValueSlider] = useState(0)
@@ -1001,7 +976,6 @@ function AdminEmployeeTeamLeads() {
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
     const [feedbackPoints, setFeedbackPoints] = useState([])
-
 
     const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
@@ -1018,9 +992,7 @@ function AdminEmployeeTeamLeads() {
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
-    // console.log("yahan locha h", feedbackPoints.length)
-
-
+    // console.log("yahan locha h", feedbackPoints.length);
 
     const handleCloseFeedback = () => {
         setOpenFeedback(false)
@@ -1052,11 +1024,7 @@ function AdminEmployeeTeamLeads() {
                 break;
         }
     };
-
     //console.log("valueSlider", valueSlider, feedbackRemarks)
-
-
-
 
     const debouncedFeedbackRemarks = useCallback(
         debounce((value) => {
@@ -1122,7 +1090,6 @@ function AdminEmployeeTeamLeads() {
     const [employeeData, setEmployeeData] = useState([]);
     const [moreEmpData, setmoreEmpData] = useState([]);
     const [backButton, setBackButton] = useState(false);
-
     const [openAssign, openchangeAssign] = useState(false);
     const [selectedField, setSelectedField] = useState("Company Name");
     const [visibility, setVisibility] = useState("none");
@@ -1135,7 +1102,6 @@ function AdminEmployeeTeamLeads() {
     const [subFilterValue, setSubFilterValue] = useState("");
     const [currentTab, setCurrentTab] = useState("TeamLeads");
     const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
-
 
     const handleChangeUrl = () => {
         const currId = id;
@@ -1152,7 +1118,6 @@ function AdminEmployeeTeamLeads() {
             const nextId = eData[nextIndex];
             window.location.replace(`/admin/employeeleads/${nextId}`);
 
-
             //setBackButton(nextId !== 0);
         } else {
             // console.log("Current ID not found in eData array.");
@@ -1162,24 +1127,22 @@ function AdminEmployeeTeamLeads() {
     const functionOpenAssign = () => {
         openchangeAssign(true);
     };
+
     const closepopupAssign = () => {
         openchangeAssign(false);
     };
+
     const [selectedOption, setSelectedOption] = useState("direct");
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
 
-
-
     const handleUploadData = async (e) => {
         //console.log("Uploading data");
-
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const bdmAcceptStatus = "NotForwarded"
-
 
         const csvdata = teamleadsData
             .filter((employee) => selectedRows.includes(employee._id))
@@ -1252,7 +1215,6 @@ function AdminEmployeeTeamLeads() {
             });
         }
     };
-
     //console.log("new" , newemployeeSelection)
 
     const handleFieldChange = (event) => {
@@ -1275,7 +1237,6 @@ function AdminEmployeeTeamLeads() {
             setSubFilterValue("");
             setVisibilityOthernew("none");
         }
-
         // console.log(selectedField);
     };
 
@@ -1320,7 +1281,6 @@ function AdminEmployeeTeamLeads() {
     //             // Handle date fields
     //             return fieldValue.includes(searchText);
     //         }
-
     //         return false;
     //     }
     // });
@@ -1341,7 +1301,6 @@ function AdminEmployeeTeamLeads() {
     };
 
     // ------------------------------panel-----------------------------------------
-
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
 
@@ -1374,21 +1333,20 @@ function AdminEmployeeTeamLeads() {
             'aria-controls': `simple-tabpanel-${index}`,
         };
     }
-    const location = useLocation()
+
+    const location = useLocation();
     const [value, setValue] = React.useState(location.pathname === `/admin/employeesleads/${id}` ? 0 : 1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
-    // console.log(value)
+    // console.log(value);
 
     // -------------------------------------------handle checkbox----------------------------------------------------------
-
-
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
-        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
+
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
@@ -1432,7 +1390,8 @@ function AdminEmployeeTeamLeads() {
     const [startRowIndex, setStartRowIndex] = useState(null);
 
     const handleMouseEnter = (id) => {
-        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
+
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
             const endRowIndex = checkboxData.findIndex((row) => row._id === id);
@@ -1467,7 +1426,7 @@ function AdminEmployeeTeamLeads() {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData
+        const checkboxData = (isFilter || isSearch) ? filteredData : teamleadsData;
         setStartRowIndex(checkboxData.findIndex((row) => row._id === id));
     };
 
@@ -1480,7 +1439,6 @@ function AdminEmployeeTeamLeads() {
     }
 
     //----------------- delete bdm from forwarded data----------------------
-
     const handleDeleteBdm = async (companyId, companyName, bdmStatus) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -1500,23 +1458,12 @@ function AdminEmployeeTeamLeads() {
                         companyName
                     }
                 });
-
-
-                Swal.fire(
-                    'Deleted!',
-                    'The company has been deleted.',
-                    'success'
-                );
-
+                Swal.fire('Deleted!', 'The company has been deleted.', 'success');
                 fetchTeamLeadsData(bdmStatus);
                 //console.log("Company updated and deleted successfully", response.data);
             } catch (error) {
                 // console.log("Error Deleting Company", error);
-                Swal.fire(
-                    'Error!',
-                    'There was an error deleting the company.',
-                    'error'
-                );
+                Swal.fire('Error!', 'There was an error deleting the company.', 'error');
             }
         }
     };
@@ -1524,7 +1471,6 @@ function AdminEmployeeTeamLeads() {
     //------------------function to export data---------------------
     const handleExportData = async () => {
         try {
-
             const response = await axios.post(
                 `${secretKey}/admin-leads/exportEmployeeTeamLeads/`,
                 {
@@ -1543,136 +1489,12 @@ function AdminEmployeeTeamLeads() {
         }
     };
 
-    //------------------------search function--------------------
-
-    // const [filteredData, setFilteredData] = useState([]);
-    // const [isSearch, setIsSearch] = useState(false)
-
-    // const handleSearch = (searchQuery) => {
-    //     const searchQueryLower = searchQuery.toLowerCase();
-
-    //     // Check if searchQuery is empty or null
-    //     if (!searchQuery || searchQuery.trim().length === 0) {
-    //         setIsSearch(false);
-    //         setFilteredData(extraData); // Assuming extraData is your full dataset
-    //         return;
-    //     }
-
-    //     setIsSearch(true);
-
-    //     const filtered = extraData.filter((company) => {
-    //         const companyName = company["Company Name"];
-    //         const companyNumber = company["Company Number"];
-    //         const companyEmail = company["Company Email"];
-    //         const companyState = company.State;
-    //         const companyCity = company.City;
-
-    //         // Check each field for a match
-    //         if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
-    //             return true;
-    //         }
-    //         if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
-    //             return true;
-    //         }
-    //         if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
-    //             return true;
-    //         }
-    //         if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
-    //             return true;
-    //         }
-    //         if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
-    //             return true;
-    //         }
-
-    //         return false;
-    //     });
-
-    //     setFilteredData(filtered);
-    // };
-
-
-    useEffect(() => {
-        if (filteredData.length !== 0) {
-            setTeamLeadsData(filteredData)
-            // if (dataStatus === 'All') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Untouched"
-            //         )
-            //     );
-            // } else if (dataStatus === 'Interested') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Interested"
-            //         )
-            //     );
-            // } else if (dataStatus === 'FollowUp') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "FollowUp"
-            //         )
-            //     )
-            // } else if (dataStatus === 'Matured') {
-            //     setTeamLeadsData(
-            //         filteredData
-            //             .filter(
-            //                 (obj) =>
-            //                     obj.bdmStatus === "Matured"
-            //             )
-            //     );
-            // } else if (dataStatus === 'NotInterested') {
-            //     setTeamLeadsData(
-            //         filteredData.filter(
-            //             (obj) =>
-            //                 obj.bdmStatus === "Not Interested" ||
-            //                 obj.bdmStatus === "Busy" ||
-            //                 obj.bdmStatus === "Not Picked Up" ||
-            //                 obj.bdmStatus === "Junk"
-            //         )
-            //     );
-            // }
-            // if (filteredData.length === 1) {
-            //     const currentStatus = filteredData[0].Status; // Access Status directly
-            //     if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
-            //         setdataStatus('All')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         currentStatus === 'Interested') {
-            //         setdataStatus('Interested')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-            //         currentStatus === 'FollowUp') {
-            //         setdataStatus('FollowUp')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
-            //         setdataStatus('Matured')
-            //     } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
-            //         currentStatus !== "Not Interested" &&
-            //         currentStatus !== "Busy" &&
-            //         currentStatus !== 'Junk' &&
-            //         currentStatus !== 'Not Picked Up' &&
-            //         currentStatus !== 'Matured') {
-            //         setdataStatus('Forwarded')
-            //     } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
-            //         setdataStatus('NotInterested')
-            //     }
-            // }
-        }
-
-    }, [filteredData])
-
-    // console.log("filteredData", filteredData)
-    // console.log("team", teamleadsData)
-    // console.log("teamData", teamData)
-
-
     // These function will close filter drawer.
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
-
-
+    
+    //------------------------search function--------------------
     // Currently running for searching the data :
     const handleSearch = (searchQuery) => {
         // console.log(searchQuery);
@@ -1782,7 +1604,6 @@ function AdminEmployeeTeamLeads() {
             setTeamLeadsData(filteredData);
         }
     }, [filteredData, activeTab]);
-
     // console.log("Is Search :", isSearch);
 
     // To clear filter data :
@@ -1841,7 +1662,7 @@ function AdminEmployeeTeamLeads() {
     };
 
     // console.log("Team data :", teamData);
-    // console.log("Filtered data :", filteredData);
+    console.log("Filtered data :", filteredData);
     // console.log("Team lead data :", teamleadsData);
     // console.log("Is Filter :", isFilter);
 
@@ -1894,7 +1715,7 @@ function AdminEmployeeTeamLeads() {
 
         } else if (filteredData.length === 0 && isFilter) {
             //setFilteredData(newFilteredData);
-            setTeamLeadsData(newFilteredData)
+            setTeamLeadsData(newFilteredData);
         }
 
         if (filteredData.length === 0) {
@@ -1905,47 +1726,44 @@ function AdminEmployeeTeamLeads() {
             const currentStatus = filteredData[0].bdmStatus; // Access Status directly
             if (["Busy", "Not Picked Up", "Untouched"].includes(currentStatus)) {
                 setActiveTab('All');
-                setBdmNewStatus(currentStatus)
-                setTeamLeadsData(newFilteredData)
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
             } else if (currentStatus === 'Interested') {
                 setActiveTab('Interested');
-                setBdmNewStatus(currentStatus)
+                setBdmNewStatus(currentStatus);
             } else if (currentStatus === 'FollowUp') {
                 setActiveTab('FollowUp');
-                setBdmNewStatus(currentStatus)
-                setTeamLeadsData(newFilteredData)
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
             } else if (currentStatus === 'Matured') {
                 setActiveTab('Matured');
-                setBdmNewStatus(currentStatus)
-                setTeamLeadsData(newFilteredData)
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
             } else if (!["Not Interested", "Busy", 'Junk', 'Not Picked Up', 'Matured'].includes(currentStatus)) {
                 setActiveTab('Forwarded');
-                setBdmNewStatus(currentStatus)
-                setTeamLeadsData(newFilteredData)
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
             } else if (currentStatus === 'Not Interested') {
                 setActiveTab('NotInterested');
-                setBdmNewStatus(currentStatus)
-                setTeamLeadsData(newFilteredData)
+                setBdmNewStatus(currentStatus);
+                setTeamLeadsData(newFilteredData);
             }
         } else if (filteredData.length > 1) {
             setFilteredData(newFilteredData);
-            setTeamLeadsData(newFilteredData)
+            setTeamLeadsData(newFilteredData);
             if (selectedStatus) {
                 // console.log("yahan chal")
-                setBdmNewStatus(selectedStatus)
+                setBdmNewStatus(selectedStatus);
                 setActiveTab(selectedStatus);
             }
         }
-
     }, [filteredData, activeTab]);
 
     // console.log("activetab", activeTab);
     // console.log("selectedStatus", selectedStatus);
     // console.log("bdmNewStatus", bdmNewStatus);
 
-    console.log("Selected rows :", selectedRows);
-
-
+    // console.log("Selected rows :", selectedRows);
 
     return (
         <div>
@@ -2144,7 +1962,6 @@ function AdminEmployeeTeamLeads() {
                                             </button>
                                         </Link>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -2152,6 +1969,7 @@ function AdminEmployeeTeamLeads() {
                         </div>
                     </div>
                 </div>
+
                 <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -2224,6 +2042,7 @@ function AdminEmployeeTeamLeads() {
                                     </button>)}
                                 </div>
                             </div>
+
                             <div className="d-flex align-items-center">
                                 {selectedRows.length !== 0 && (
                                     <div className="selection-data" >
@@ -2254,6 +2073,7 @@ function AdminEmployeeTeamLeads() {
                                 </div>
                             </div>
                         </div>
+
                         {/* <div className="row g-2 align-items-center">
                             <div className="col-2">
                                 <div
@@ -2548,6 +2368,7 @@ function AdminEmployeeTeamLeads() {
                                 </li>
                             </ul>
                         </div> */}
+
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -2772,6 +2593,7 @@ function AdminEmployeeTeamLeads() {
                                                 <td>Action</td>
                                             </tr>
                                         </thead>
+
                                         <tbody>
                                             {teamleadsData.map((company, index) => (
                                                 <tr
@@ -3076,6 +2898,7 @@ function AdminEmployeeTeamLeads() {
 
                 </div>
             </div>}
+
             {formOpen && maturedBooking && (
                 <>
                     <RedesignedForm
@@ -3089,13 +2912,12 @@ function AdminEmployeeTeamLeads() {
                         // setNowToFetch={setNowToFetch}
                         companysInco={maturedBooking["Company Incorporation Date  "]}
                         employeeName={maturedBooking.ename}
-
                         bdmName={maturedBooking.bdmName}
                     />
                 </>
             )}
-            {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
 
+            {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
             <Dialog
                 open={openRemarks}
                 onClose={closePopUpRemarks}
@@ -3174,8 +2996,8 @@ function AdminEmployeeTeamLeads() {
           </div> */}
                 </DialogContent>
             </Dialog>
-            {/* ----------------------------------------------------dialog for bdm remarks popup--------------------------------------------- */}
 
+            {/* ----------------------------------------------------dialog for bdm remarks popup--------------------------------------------- */}
             <Dialog
                 open={openRemarksEdit}
                 onClose={closePopUpRemarksEdit}
@@ -3216,8 +3038,8 @@ function AdminEmployeeTeamLeads() {
                     </div>
                 </DialogContent>
             </Dialog>
-            {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
 
+            {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
             <Dialog
                 open={openFeedback}
                 onClose={handleCloseFeedback}
@@ -3333,9 +3155,9 @@ function AdminEmployeeTeamLeads() {
                             Submit
                         </button> */}
                     </div>
-
                 </DialogContent>
             </Dialog>
+
             {/* --------------------------------dialog for assign data-------------------------------- */}
             <Dialog
                 open={openAssign}
@@ -3466,10 +3288,7 @@ function AdminEmployeeTeamLeads() {
                 </button>
             </Dialog>
 
-
-
             {/* ---------------------------------projection drawer--------------------------------------------------------- */}
-
             <div>
                 <Drawer
                     style={{ top: "50px" }}
@@ -3721,6 +3540,7 @@ function AdminEmployeeTeamLeads() {
                     </div>
                 </Drawer>
             </div>
+
             {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
             <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
                 <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
@@ -3898,11 +3718,7 @@ function AdminEmployeeTeamLeads() {
                     </div>
                 </div>
             </Drawer>
-
-
-
         </div>
-
     );
 }
 
