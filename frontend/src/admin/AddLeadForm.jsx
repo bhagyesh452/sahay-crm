@@ -1292,7 +1292,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                       <option value="" selected disabled>Select ISO VALIDITY</option>
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
-                      <option value="3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
+                      <option value="3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
                     </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 

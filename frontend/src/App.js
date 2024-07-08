@@ -71,7 +71,7 @@ import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/Rmo
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx"; 
 import Employee from "./Hr_panel/Components/Employee.jsx"; 
-
+import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/received_booking_box.jsx";
 
 
 
@@ -138,6 +138,7 @@ function App() {
           <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
           <Route path='/rmofcertification/rmofcertification-bookings/:userId/' element={<RmofCertificationBookings />} />
           <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings/>} />
+          <Route path='/rmofcertification/rmbookingbox' element={<Received_booking_box/>}></Route>
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
           <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken}/>} />
