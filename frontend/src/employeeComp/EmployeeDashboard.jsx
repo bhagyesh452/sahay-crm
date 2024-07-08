@@ -95,6 +95,7 @@ import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwa
 import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
 import EmployeePerformance from "./EmployeeDashboardComponents/EmployeePerformance.jsx";
 import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx";
+import { maxHeight } from "@mui/system";
 
 
 
@@ -4166,6 +4167,72 @@ function EmployeeDashboard() {
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeForwardedReport moreEmpData={moreEmpData}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <div className="dash-card">
+                      <div className="dash-card-head d-flex align-items-center justify-content-between">
+                        <h2 className="m-0">Performance Report</h2>
+                      </div>
+                      <div className="dash-card-body">
+                        <div className="table table-responsive table-style-2 m-0" style={{maxHeight:'231px'}}>
+                          <table className="table table-vcenter table-nowrap">
+                            <thead>
+                              <tr className="tr-sticky">
+                                <th>Month</th>
+                                <th>Target</th>
+                                <th>Achievement</th>
+                                <th>Ratio</th>
+                                <th>Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><b>Jun-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Poor</td>
+                              </tr>
+                              <tr>
+                                <td><b>May-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Extraordinary</td>
+                              </tr>
+                              <tr>
+                                <td><b>Apr-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Extraordinary</td>
+                              </tr>
+                              <tr>
+                                <td><b>Mar-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Extraordinary</td>
+                              </tr>
+                              <tr>
+                                <td><b>Feb-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Extraordinary</td>
+                              </tr>
+                              <tr>
+                                <td><b>Jan-24</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>40%</td>
+                                <td>Extraordinary</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
