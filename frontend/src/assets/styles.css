@@ -2412,9 +2412,7 @@ td input {
   border-radius: 10px;
 }
 
-/*****************************RM panel******************************************/
-
-
+/*****************************RM panel certification******************************************/
 .table-style-2 table thead tr 
 {
   background: #eee !important;
@@ -2485,7 +2483,23 @@ td input {
   border-radius: 10px;
   overflow-y: scroll;
 }
+.rm_bking_list_box_item
+{
+  border-bottom: 1px solid #e5e5e5;
+  border-left: 3px solid #ccc0;
+  cursor: pointer;
+  padding: 8px 10p;
+}
+.rm_bking_cmpny_name
+{
+  font-weight: 600;
+  color: #5c586e;
+  width: 73%;
+}
+.btn-swap
+{
 
+}
 
 
 /*****************************Basic Information Form******************************************/

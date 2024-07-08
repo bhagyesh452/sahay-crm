@@ -673,10 +673,12 @@ function EmployeeMaturedBookings() {
                     <div className="booking-deatils-body">
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
-                        <div className="my-card-head">  <div className="d-flex align-items-center justify-content-between">
-                          <div>Basic Informations</div>
-                          <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
-                        </div></div>
+                        <div className="my-card-head">  
+                          <div className="d-flex align-items-center justify-content-between">
+                            <div>Basic Informations</div>
+                            <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
+                          </div>
+                        </div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
