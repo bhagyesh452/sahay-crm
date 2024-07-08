@@ -2777,9 +2777,14 @@ function BdmBookings() {
         <>
           {" "}
           <AddLeadForm
+            employeeEmail={currentLeadform.bdeEmail}
+            employeeName={currentLeadform.bdeName}
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
+            bdmName={currentLeadform.bdmName}
+            bdmEmail={currentLeadform.bdmEmail}
+            isBDM={true}
           />
         </>
       )}
