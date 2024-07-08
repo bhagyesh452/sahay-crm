@@ -286,7 +286,42 @@ router.post(
             IsMainDirector,
           } = DirectorDetails[index];
 
-          // Check if this is the first director and they are marked as the main director
+          // console.log("Director Details" , DirectorDetails[index].DirectorPassportPhoto[0].originalname)
+          // console.log("Director Details" , DirectorDetails[index].DirectorAdharCard[0].originalname)
+
+
+
+          let DirectorPassportPhoto_condition = '';
+          let DirectorAdharCard_condition = '';
+
+          // Check if Director's Passport Photo is uploaded
+          if (DirectorPassportPhoto && DirectorPassportPhoto.length > 0) {
+            DirectorPassportPhoto_condition = `
+                <div style="display: flex; margin-top: 8px;">
+                    <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                        <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Passport Size Photo</div>
+                    </div>
+                    <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                        <div style="height: 100%; font-size: 12px;">${DirectorPassportPhoto[0].originalname}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+          // Check if Director's Aadhaar Card is uploaded
+          if (DirectorAdharCard && DirectorAdharCard.length > 0) {
+              DirectorAdharCard_condition = `
+                  <div style="display: flex; margin-top: 8px;">
+                      <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                          <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Aadhaar Card</div>
+                      </div>
+                      <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                          <div style="height: 100%; font-size: 12px;">${DirectorAdharCard[0].originalname}</div>
+                      </div>
+                  </div>
+              `;
+          }
+
 
           if (DirectorDetails[index].IsMainDirector === "true") {
             
