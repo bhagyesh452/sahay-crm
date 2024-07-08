@@ -4154,28 +4154,14 @@ function EmployeeDashboard() {
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
-                  {data.length !==0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
-                    <EmployeeCallLogs employeeData = {data}/>
-                  </div>)}
-                  </>}
-                  {/* calling data report */}
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeCallingReport />
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeForwardedReport moreEmpData={moreEmpData}/>
-                  </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">Performance Report</h2>
                       </div>
                       <div className="dash-card-body">
-                        <div className="table table-responsive table-style-2 m-0" style={{maxHeight:'231px'}}>
-                          <table className="table table-vcenter table-nowrap">
+                        <div className="table table-responsive dash  m-0" style={{maxHeight:'231px'}}>
+                          <table className="table table-vcenter top_5_table table-nowrap dash-strip">
                             <thead>
                               <tr className="tr-sticky">
                                 <th>Month</th>
@@ -4243,11 +4229,34 @@ function EmployeeDashboard() {
                                 <td>Outstanding</td>
                               </tr>
                             </tbody>
+                            <tfoot>
+                              <tr style={{position:"sticky",bottom:'0px',padding:'6px 6px'}}>
+                                <td><b>12 Mon</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>249%</td>
+                                <td>Outstanding</td>
+                              </tr>
+                            </tfoot>
                           </table>
                         </div>
                       </div>
                     </div>
                   </div>
+                  </>}
+                  {/* calling data report */}
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeCallingReport />
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                    <EmployeeForwardedReport moreEmpData={moreEmpData}/>
+                  </div>
+                  {data.length !==0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                    <EmployeeCallLogs employeeData = {data}/>
+                  </div>)}
                 </div>
               </div>
             </div>

@@ -529,7 +529,6 @@ table.table.top_5_table {
 {
     transition: transform .2s;
 }
-
 .top_5_table thead tr th:nth-child(2)
 {
     text-align: left !important;
@@ -550,10 +549,23 @@ table.table.top_5_table th
     background: #5f5f5f;
     color: #fff;
 }
+table.table.top_5_table tfoot tr td
+{
+    background: #5f5f5f !important;
+    color: #fff;
+}
 table.table.top_5_table td
 {
     border-top: 6px solid #fff !important;
     background: none !important;
+}
+ table.table.top_5_table.dash-strip tbody tr:nth-child(even)
+{
+    background-color: #6df06a24 !important;
+}
+table.table.top_5_table.dash-strip tbody tr:nth-child(odd)
+{
+    background-color: #ffbb0024  !important;
 }
 /* table.table.top_5_table tbody tr:hover
 {
