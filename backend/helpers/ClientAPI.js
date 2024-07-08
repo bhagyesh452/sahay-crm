@@ -437,9 +437,6 @@ router.post(
           }
 
 
-       
-
-
           if (DirectorDetails[index].IsMainDirector === "true") {
             
             isFirstMainDirectorSet = true;
