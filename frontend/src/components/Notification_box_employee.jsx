@@ -29,7 +29,7 @@ function Notification_box_employee({ name }) {
     // -----------------function for clicking notifications------------------------
 
     const handleClick =async(state , index , id) =>{
-        navigate(link , {state : {dataStatus : state }});
+        navigate(link , {new : {employeeDataStatus : state }});
 
         setTimeout(()=>{
             const element = document.getElementById(`${index}_card`);
@@ -39,13 +39,13 @@ function Notification_box_employee({ name }) {
 
         } , 0);
 
-        try{
-            const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
-            console.log(response)
+        // try{
+        //     const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
+        //     console.log(response)
 
-        }catch(error){
-            console.error("Error updating notification for employee" , error)
-        }
+        // }catch(error){
+        //     console.error("Error updating notification for employee" , error)
+        // }
     }
 
 
