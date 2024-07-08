@@ -294,6 +294,7 @@ router.post("/requestgData", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
+      employee_status:"Unread",
       img_url: GetEmployeeProfile
     }
     const addRequest = new NotiModel(requestCreate);

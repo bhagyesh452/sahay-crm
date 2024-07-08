@@ -23,9 +23,14 @@ status:{
     type:String,
     required:true
 },
+employee_status:{
+    type:String,
+    required:true
+},
 img_url:{
     type:String,
 },
+
 });
 
 
