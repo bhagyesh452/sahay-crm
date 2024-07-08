@@ -388,4 +388,37 @@ router.get("/employeeImg/:employeeName/:filename", (req, res) => {
   });
 });
 
+
+// Edit Employee Details by HR-Portal
+
+router.post(
+  "/post-employee-detail-byhr/:userId",
+  async (req, res) => {
+    const { userId } = req.params;
+    const { personal_email, personal_number, personal_contact_person, personal_address } = req.body;
+
+    try {
+      const updatedEmployee = await adminModel.findByIdAndUpdate(
+        userId,
+        {
+          personal_email,
+          personal_number,
+          personal_contact_person,
+          personal_address,
+        },
+        { new: true } // This option returns the updated document
+      );
+
+      if (!updatedEmployee) {
+        return res.status(404).send("Employee not found");
+      }
+
+      res.json(updatedEmployee);
+    } catch (error) {
+      console.error("Error updating employee details:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
 module.exports = router;

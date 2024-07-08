@@ -416,7 +416,7 @@ function EmployeeProfile() {
                           </div>
                         </div>
                         <div className="col-sm-6 p-0 bdr-left-eee">
-                          <div className="EP_Other_info d-flex justify-content-between">
+                          <div className="EP_Other_info">
                             <div className="EP_Other_info_head">
                               Personal Details
                             </div>
@@ -450,7 +450,7 @@ function EmployeeProfile() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
                                     <div className="ep_info_t">
-                                      +91 99242 83530
+                                      {data.personal_number}
                                     </div>
                                   </div>
                                 </div>
@@ -468,7 +468,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">Nimesh</div>
+                                    <div className="ep_info_t">{data.personal_contact_person}</div>
                                   </div>
                                 </div>
                               </div>
@@ -483,7 +483,7 @@ function EmployeeProfile() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="ml-1">
-                                    <div className="ep_info_t">02 Dec 2023</div>
+                                    <div className="ep_info_t">{data.personal_address}</div>
                                   </div>
                                 </div>
                               </div>
