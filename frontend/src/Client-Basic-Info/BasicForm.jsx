@@ -889,6 +889,9 @@ const BasicForm = () => {
                       }
                     }}
                   />
+                  <div className="input-note">
+                    (Files size should be less than 24MB)
+                  </div>
                   {formSubmitted &&
                     !formData.DirectorDetails[index]?.DirectorAdharCard && (
                       <div style={{ color: "red" }}>
@@ -1315,6 +1318,9 @@ const BasicForm = () => {
                           }
                         }}
                       />
+                      <div className="input-note">
+                        (Files size should be less than 24MB)
+                      </div>
                     </div>
                   </div>
                   <div className="col-lg-4">
@@ -1336,6 +1342,9 @@ const BasicForm = () => {
                           }
                         }}
                       />
+                      <div className="input-note">
+                        (Files size should be less than 24MB)
+                      </div>
                     </div>
                   </div>
                   <div className="col-lg-12">
@@ -1642,6 +1651,9 @@ const BasicForm = () => {
                             }
                           }}
                         />
+                        <div className="input-note">
+                          (Files size should be less than 24MB)
+                        </div>
                         {formSubmitted && !formData.UploadPhotos && (
                           <div style={{ color: "red" }}>{"Upload Photos"}</div>
                         )}
@@ -1717,6 +1729,9 @@ const BasicForm = () => {
                             }
                           }}
                         />
+                         <div className="input-note">
+                          (Files size should be less than 24MB)
+                        </div>
                         {formSubmitted && !formData.RelevantDocument && (
                           <div style={{ color: "red" }}>
                             {"Upload Relevant Document"}
@@ -1791,6 +1806,9 @@ const BasicForm = () => {
                                   }
                                 }}
                               />
+                              <div className="input-note">
+                                  (Files size should be less than 24MB)
+                              </div>
                             </>
                           ) : (
                             <>
@@ -1814,6 +1832,9 @@ const BasicForm = () => {
                                   }
                                 }}
                               />
+                              <div className="input-note">
+                                  (Files size should be less than 24MB)
+                              </div>
                             </>
                           )}
 
@@ -1967,6 +1988,9 @@ const BasicForm = () => {
                           }
                         }}
                       />
+                      <div className="input-note">
+                          (Files size should be less than 24MB)
+                      </div>
                       {formSubmitted && errors.UploadDeclaration && (
                         <div style={{ color: "red" }}>
                           {errors.UploadDeclaration}
@@ -1993,6 +2017,9 @@ const BasicForm = () => {
                           }
                         }}
                       />
+                      <div className="input-note">
+                        (Files size should be less than 24MB)
+                      </div>
                     </div>
                   </div>
                   <div class="col-lg-12">

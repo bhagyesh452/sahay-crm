@@ -59,6 +59,9 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year}`;
 }
 
+
+
+
 router.post(
   "/basicinfo-form/:CompanyName",
 
@@ -89,8 +92,6 @@ router.post(
       const UploadDeclaration = req.files["UploadDeclaration"] || [];
       const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
-      console.log("DirectorP" , DirectorPassportPhoto)
-      console.log("DirectorA" , DirectorAdharCard)
 
 
 
@@ -122,7 +123,7 @@ router.post(
         DirectorDetails,
       } = req.body;
 
-  // Social Media 
+  // Social Media code
       let SocialMediaResponse = SocialMedia  
       let SocialMediaHTML = "";
       if(SocialMedia === "Yes"){
@@ -163,7 +164,7 @@ router.post(
       }
 
 
-      // UploadMOA for Email response with file Name
+      // UploadMOA for Email response with file Name code
       const MOA_response = UploadMOA && UploadMOA.length !== 0 ? "Yes" : "No";
       let MOA_condition = '';
 
@@ -180,7 +181,7 @@ router.post(
         `;
       }
 
-      // UploadAOA for Email response with file Name
+      // UploadAOA for Email response with file Name code
       const AOA_response = UploadAOA && UploadAOA.length !== 0 ? "Yes" : "No";
       let AOA_condition = '';
 
@@ -197,7 +198,7 @@ router.post(
         `;
 }
 
-
+      // Any Kind Of Technology Is Involved In Your Product Or Service code 
       let TechInvolvedResponse = TechnologyInvolved  ? "Yes" : "No";
       let TechnologyInvolvedHtml = "";
       if (TechInvolvedResponse === "Yes") {
@@ -214,8 +215,9 @@ router.post(
       }
 
 
-      // Do You Have Upload Photos of Product or Service
-      let logoOrProduct_condition = UploadPhotos.length !== 0 ? "Yes" : 'No';
+      // Do You Have Upload Photos of Product or Service code
+
+      // let logoOrProduct_condition = UploadPhotos.length !== 0 ? "Yes" : 'No';
       if (UploadPhotos && UploadPhotos.length !== 0) {
         logoOrProduct_condition = `
           <div style="display: flex;margin-top: 8px;">
@@ -229,18 +231,14 @@ router.post(
         `;
       }
 
-
-
-
-
-
+      // Any IP Field code 
       let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
       let RelevantDocumentHtml = "";
       if (AnyIpFiledResponse === "Yes") {
         RelevantDocumentHtml = `
           <div style="display: flex; margin-top: 8px;">
             <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-              <div style="height: 100%; font-size: 12px;">Provide The Option to Upload the Relevant Document</div>
+              <div style="height: 100%; font-size: 12px;">Provide The Option to Upload the Relevant Document Comment</div>
             </div>
             <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
               <div style="height: 100%; font-size: 12px;">${RelevantDocumentComment}</div>
@@ -250,7 +248,8 @@ router.post(
       }
 
 
-      let UploadRelevant_condition = RelevantDocument.length !== 0 ? "Yes" : 'No';
+      // let UploadRelevant_condition = RelevantDocument.length !== 0 ? "Yes" : 'No';
+      let UploadRelevant_condition = '';
       if (RelevantDocument && RelevantDocument.length !== 0) {
         UploadRelevant_condition = `
           <div style="display: flex;margin-top: 8px;">
@@ -266,7 +265,7 @@ router.post(
 
       
 
-      
+      // Do You have ITR Filled for Previous Year code 
       const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
       let ITR_condition = '';
       let ITR_Document_Link = "";  
@@ -292,7 +291,7 @@ router.post(
                     </div>`
       }
       
-
+      // Have You Raised Any Financing Thus Far (Grants, Loans, Investments, Friends And Family, Etc.) code 
       let FinanceHtml = "";
       if (FinanceCondition === "Yes") {
         FinanceHtml = `
@@ -307,6 +306,8 @@ router.post(
         `;
       }
 
+
+      // Upload Declaration code 
       const UploadDeclaration_response = UploadDeclaration && UploadDeclaration.length !== 0 ? "Yes" : "No";
       let UploadDeclaration_condition = '';
 
@@ -323,7 +324,7 @@ router.post(
         `;
       }
 
-
+      // Upload Relevant Docs code 
       const UploadRelevantDocs_response = UploadRelevantDocs && UploadRelevantDocs.length !== 0 ? "Yes" : "No";
       let UploadRelevantDocs_condition = '';
 
@@ -375,86 +376,45 @@ router.post(
       }
 
 
-      
-
-      
-
-      // DirectorDetails code start
+      // DirectorDetails code Start
       const tempHtml = () => {
         let team = "";
         let isFirstMainDirectorSet = false;
+    
         for (let index = 0; index < DirectorDetails.length; index++) {
-          const {
-            DirectorName,
-            DirectorEmail,
-            DirectorMobileNo,
-            DirectorQualification,
-            DirectorWorkExperience,
-            DirectorAnnualIncome,
-            LinkedInProfileLink,
-            DirectorDesignation,
-            DirectorAdharCardNumber,
-            DirectorGender,
-            IsMainDirector,
-            DirectorPassportPhoto,
-            DirectorAdharCard
-          } = DirectorDetails[index];
-
-          // console.log("Director Details" , DirectorDetails[index].DirectorPassportPhoto[0].originalname)
-          // console.log("Director Details" , DirectorDetails[index].DirectorAdharCard[0].originalname)
-
-
-
-          let DirectorPassportPhoto_condition = '';
-          let DirectorAdharCard_condition = '';
-
-          // Check if Director's Passport Photo is uploaded
-          if (DirectorPassportPhoto && DirectorPassportPhoto.length > 0) {
-            DirectorPassportPhoto_condition = `
-                <div style="display: flex; margin-top: 8px;">
-                    <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-                        <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Passport Size Photo</div>
-                    </div>
-                    <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-                        <div style="height: 100%; font-size: 12px;">${DirectorPassportPhoto[0].originalname}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-          // Check if Director's Aadhaar Card is uploaded
-          if (DirectorAdharCard && DirectorAdharCard.length > 0) {
-              DirectorAdharCard_condition = `
-                  <div style="display: flex; margin-top: 8px;">
-                      <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-                          <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Aadhaar Card</div>
-                      </div>
-                      <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-                          <div style="height: 100%; font-size: 12px;">${DirectorAdharCard[0].originalname}</div>
-                      </div>
-                  </div>
-              `;
-          }
-
-
-          if (DirectorDetails[index].IsMainDirector === "true") {
-            
-            isFirstMainDirectorSet = true;
-          }
-
-          team += `
-              <!--Card For Brief About Your Business-->
-              <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
-                        <div>
-                            <h3 style="margin: 0px;">Directors Details</h3>
-                        </div> 
-                        <div>
+            const {
+                DirectorName,
+                DirectorEmail,
+                DirectorMobileNo,
+                DirectorQualification,
+                DirectorWorkExperience,
+                DirectorAnnualIncome,
+                LinkedInProfileLink,
+                DirectorDesignation,
+                DirectorAdharCardNumber,
+                DirectorGender,
+                IsMainDirector,
+            } = DirectorDetails[index];
+    
+            console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
+    
+            if (IsMainDirector === "true") {
+                isFirstMainDirectorSet = true;
+            }
+    
+            team += `
+                <!--Card For Brief About Your Business-->
+                    <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
+                          <div>
+                              <h3 style="margin: 0px;">Directors Details</h3>
+                          </div>
+                    <div>
                         <div style="display: flex; justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
-                            <div> ${DirectorDetails[index].IsMainDirector === "true" ? "Authorized Person" : ""} </div>
+                            <div> ${IsMainDirector === "true" ? "Authorized Person" : ""} </div>
                         </div>
                         <div>
-                            <div style="display: flex;">
+                              <div style="display: flex;">
                                 <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
                                     <div style="height: 100%;font-size:12px;">Enter Director's Name *</div>
                                 </div>
@@ -504,6 +464,22 @@ router.post(
                             </div>
                             <div style="display: flex;">
                                 <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Passport Size Photo</div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorPassportPhoto[index].originalname}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">Director's Aadhaar Card </div>
+                                </div>
+                                <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCard[index].originalname}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
                                     <div style="height: 100%;font-size:12px;">Director's Aadhaar Number </div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
@@ -534,20 +510,14 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">${LinkedInProfileLink}</div>
                                 </div>
                             </div>
-                            <!-- Conditional display of Passport Photo -->
-                                ${DirectorPassportPhoto_condition}
-
-                            <!-- Conditional display of Aadhaar Card -->
-                                ${DirectorAdharCard_condition}
                         </div>
                     </div>
                 </div>
-          `
+            `;
         }
+    
         return team;
-      };
-
-
+    };
 
 
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
@@ -556,12 +526,14 @@ router.post(
         "utf-8"
       );
 
+      // UploadPhotos & Logo condition code
       const logoCondition = UploadPhotos.length !== 0 ? "Yes" : 'No';
+
 
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nisargpatel@startupsahay.com"];
+      const email = ["support@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
@@ -581,7 +553,6 @@ router.post(
       .replace("{{ValueProposition}}", ValueProposition)
       .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
       .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
-      // .replace("{{logoOrProduct_response}}", logoOrProduct_response)
       .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
       .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
       .replace("{{UploadRelevant_condition}}", UploadRelevant_condition)
@@ -692,6 +663,9 @@ router.post(
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
       }
 
+
+
+      
       // Sending email for CompanyEmail
       let htmlNewTemplate = fs.readFileSync(
         "./helpers/client_mail.html",
@@ -750,6 +724,8 @@ router.post(
         },
       };
 
+
+
       pdf
         .create(filedHtml, options)
         .toFile(pdfFilePath, async (err, response) => {
@@ -801,6 +777,8 @@ router.post(
             }
           }
         });
+
+
 
       const newUser = new userModel({
         ...req.body,
