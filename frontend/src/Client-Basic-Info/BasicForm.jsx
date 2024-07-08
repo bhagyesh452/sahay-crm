@@ -37,7 +37,7 @@ const BasicForm = () => {
     SelectServices: [],
     UploadMOA: "",
     UploadAOA: "",
-    SocialMedia:"",
+    SocialMedia: "",
     FacebookLink: "",
     InstagramLink: "",
     LinkedInLink: "",
@@ -51,7 +51,7 @@ const BasicForm = () => {
     RelevantDocument: null,
     UploadAuditedStatement: null,
     UploadProvisionalStatement: null,
-    RelevantDocumentComment:"",
+    RelevantDocumentComment: "",
     DirectInDirectMarket: "",
     BusinessModel: "",
     Finance: "",
@@ -190,7 +190,7 @@ const BasicForm = () => {
             });
           });
         }
-      }); 
+      });
 
       const response = await fetch(
         `${secretKey}/clientform/basicinfo-form/${formData.CompanyName}`,
@@ -288,14 +288,23 @@ const BasicForm = () => {
     }
   };
 
-  const handleInputChange = (e, fieldName, index) => {
+  const handleInputChange = (e, fieldName) => {
     const value = e.target.value;
-    if (fieldName === "DirectorDetails") {
-      const updatedDirectorDetails = [...formData.DirectorDetails];
-      updatedDirectorDetails[index][e.target.name] = value;
+    const checked = e.target.checked;
+
+    if (fieldName === "BusinessModel") {
+      const updatedBusinessModel = [...formData.BusinessModel];
+      if (checked) {
+        updatedBusinessModel.push(value);
+      } else {
+        const index = updatedBusinessModel.indexOf(value);
+        if (index > -1) {
+          updatedBusinessModel.splice(index, 1);
+        }
+      }
       setFormData((prevState) => ({
         ...prevState,
-        DirectorDetails: updatedDirectorDetails,
+        BusinessModel: updatedBusinessModel,
       }));
     } else {
       setFormData((prevState) => ({
@@ -304,6 +313,7 @@ const BasicForm = () => {
       }));
     }
   };
+
 
   const handleDirectorsChange = (e) => {
     const value = parseInt(e.target.value);
@@ -395,8 +405,7 @@ const BasicForm = () => {
 
     // ITR related validations
     if (showItr === null) {
-      newErrors.ITR =
-        "Please select ITR Option";
+      newErrors.ITR = "Please select ITR Option";
     } else if (showItr && !formData.UploadAuditedStatement) {
       newErrors.UploadAuditedStatement =
         "Upload Audited Profit & Loss and Balance Sheet Statement is required.";
@@ -504,7 +513,7 @@ const BasicForm = () => {
 
     setFormData((prevState) => ({
       ...prevState,
-      SocialMedia:e.target.value,
+      SocialMedia: e.target.value,
       DirectorDetails: prevState.DirectorDetails.map((director, i) => ({
         ...director,
         IsMainDirector: i === index,
@@ -560,76 +569,18 @@ const BasicForm = () => {
       }));
     }
   };
-  // const handleIps = (event) => {
-  //   const isYesSelected = event.target.value === "Yes";
-  //   // setShowItr(true);
-  //   setShowItr(event.target.value === 'Yes' ? true : event.target.value === 'No' ? false : null);
-  //   if (!isYesSelected) {
-  //     setFormData((prevState) => ({
-  //       ...prevState,
-  //       UploadAuditedStatement: null,
-  //     }));
-  //   }
-  // };
-  // const handleOptional = (event) => {
-  //   const isNoSelected = event.target.value === "No";
-  //   setShowItr(false);
-  //   if (!isNoSelected) {
-  //     setFormData((prevState) => ({
-  //       ...prevState,
-  //       UploadAuditedStatement: null,
-  //     }));
-  //   }
-  // };
-
+  
   const handleFinance = (event) => {
     setShowFinance(event.target.value === "Yes");
     setFormData({
       ...formData,
-      FinanceCondition: event.target.value
-    })
+      FinanceCondition: event.target.value,
+    });
   };
-  // Email content based on selected Business Model
+
   const getEmailContent = () => {
-    switch (formData.BusinessModel) {
-      case "B2B":
-        return (
-          <div>
-            <h3></h3>
-            <p></p>
-          </div>
-        );
-      case "B2C":
-        return (
-          <div>
-            <h3></h3>
-            <p></p>
-          </div>
-        );
-      case "B2G":
-        return (
-          <div>
-            <h3></h3>
-            <p></p>
-          </div>
-        );
-      case "D2C":
-        return (
-          <div>
-            <h3></h3>
-            <p></p>
-          </div>
-        );
-      case "C2C":
-        return (
-          <div>
-            <h3></h3>
-            <p></p>
-          </div>
-        );
-      default:
-        return null;
-    }
+    const { BusinessModel } = formData;
+    return <div>{BusinessModel.join(", ")}</div>;
   };
 
   // Director and Team Details code
@@ -1743,11 +1694,11 @@ const BasicForm = () => {
                           placeholder="Any Comment"
                           id="Technologyinvolve"
                           value={formData.RelevantDocumentComment}
-                          onChange={(e)=>{
+                          onChange={(e) => {
                             setFormData({
                               ...formData,
-                              RelevantDocumentComment:e.target.value
-                            })
+                              RelevantDocumentComment: e.target.value,
+                            });
                           }}
                         ></textarea>
                         <input
@@ -1905,84 +1856,36 @@ const BasicForm = () => {
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group mt-2 mb-2">
-                      <label class="m-0"> Select Your Business Model</label>
+                      <label class="m-0">Select Your Business Models</label>
                       <div class="d-flex align-items-center mt-2">
-                        <label
-                          class="form-check form-check-inline m-0 me-2"
-                          onChange={(e) =>
-                            handleInputChange(e, "BusinessModel")
-                          }
-                        >
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="BusinessModel"
-                            value="B2B"
-                            checked={formData.BusinessModel === 'B2B'}
-                            onChange={(e) =>
-                              handleInputChange(e, "BusinessModel")
-                            }
-                          />
-                          <span class="form-check-label">B2B</span>
-                        </label>
-                        <label class="form-check form-check-inline m-0 me-2">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="BusinessModel"
-                            value="B2C"
-                            checked={formData.BusinessModel === 'B2C'}
-                            onChange={(e) =>
-                              handleInputChange(e, "BusinessModel")
-                            }
-                          />
-                          <span class="form-check-label">B2C</span>
-                        </label>
-                        <label class="form-check form-check-inline m-0 me-2">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="BusinessModel"
-                            value="B2G"
-                            checked={formData.BusinessModel === 'B2G'}
-                            onChange={(e) =>
-                              handleInputChange(e, "BusinessModel")
-                            }
-                          />
-                          <span class="form-check-label">B2G</span>
-                        </label>
-                        <label class="form-check form-check-inline m-0 me-2">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="BusinessModel"
-                            value="D2C"
-                            checked={formData.BusinessModel === 'D2C'}
-                            onChange={(e) =>
-                              handleInputChange(e, "BusinessModel")
-                            }
-                          />
-                          <span class="form-check-label">D2C</span>
-                        </label>
-                        <label class="form-check form-check-inline m-0 me-2">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="BusinessModel"
-                            value="C2C"
-                            checked={formData.BusinessModel === 'C2C'}
-                            onChange={(e) =>
-                              handleInputChange(e, "BusinessModel")
-                            }
-                          />
-                          <span class="form-check-label">C2C</span>
-                        </label>
-                        {formSubmitted && !formData.BusinessModel && (
-                          <div style={{ color: "red" }}></div>
-                        )}
+                        {["B2B", "B2C", "B2G", "D2C", "C2C"].map((model) => (
+                          <label
+                            class="form-check form-check-inline m-0 me-2"
+                            key={model}
+                          >
+                            <input
+                              class="form-check-input"
+                              type="checkbox" // Change type to radio
+                              name="BusinessModel" // Use same name for all radios to group them
+                              value={model}
+                              checked={formData.BusinessModel.includes(model)} // Check if model is in array
+                              onChange={(e) =>
+                                handleInputChange(e, "BusinessModel")
+                              }
+                            />
+                            <span class="form-check-label">{model}</span>
+                          </label>
+                        ))}
+                        {formSubmitted &&
+                          formData.BusinessModel.length === 0 && (
+                            <div style={{ color: "red" }}>
+                              Please select at least one business model.
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
+
                   <div class="col-lg-12">
                     <hr class="mt-1 mb-1" />
                   </div>
@@ -2044,7 +1947,10 @@ const BasicForm = () => {
                   </div>
                   <div className="col-lg-6">
                     <div className="form-group mt-2 mb-2">
-                      <label htmlFor="Declaration">Upload Declaration<span style={{ color: "red" }}>*</span>:</label>
+                      <label htmlFor="Declaration">
+                        Upload Declaration
+                        <span style={{ color: "red" }}>*</span>:
+                      </label>
                       <input
                         type="file"
                         class="form-control mt-1"
@@ -2062,7 +1968,9 @@ const BasicForm = () => {
                         }}
                       />
                       {formSubmitted && errors.UploadDeclaration && (
-                        <div style={{ color: "red" }}>{errors.UploadDeclaration}</div>
+                        <div style={{ color: "red" }}>
+                          {errors.UploadDeclaration}
+                        </div>
                       )}
                     </div>
                   </div>
