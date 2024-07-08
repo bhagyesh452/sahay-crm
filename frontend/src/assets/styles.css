@@ -2258,9 +2258,9 @@ td input {
     box-shadow: 3px 4px 12px -3px #686868;
 }
 .employee-personal-details {
-    width: 30px;
+    width: 27px;
     text-align: center;
-    height: 30px;
+    height: 24px;
     border-radius: 100px;
     background: #ffba00;
     right: 10px;
@@ -2268,6 +2268,7 @@ td input {
     cursor: pointer;
     transition: transform .2s;
     box-shadow: 3px 4px 12px -3px #686868;
+    margin-left: 134px;
 }
 .profile-pic-upload:hover
 {
