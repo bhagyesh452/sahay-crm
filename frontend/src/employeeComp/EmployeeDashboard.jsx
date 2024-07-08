@@ -4197,36 +4197,50 @@ function EmployeeDashboard() {
                                 <td><b>May-24</b></td>
                                 <td>₹ 60,000</td>
                                 <td>₹ 35,030 </td>
-                                <td>40%</td>
-                                <td>Extraordinary</td>
+                                <td>60%</td>
+                                <td>Below Average</td>
                               </tr>
                               <tr>
                                 <td><b>Apr-24</b></td>
                                 <td>₹ 60,000</td>
                                 <td>₹ 35,030 </td>
-                                <td>40%</td>
-                                <td>Extraordinary</td>
+                                <td>74%</td>
+                                <td>Average</td>
                               </tr>
                               <tr>
                                 <td><b>Mar-24</b></td>
                                 <td>₹ 60,000</td>
                                 <td>₹ 35,030 </td>
-                                <td>40%</td>
-                                <td>Extraordinary</td>
+                                <td>99%</td>
+                                <td>Good</td>
                               </tr>
                               <tr>
                                 <td><b>Feb-24</b></td>
                                 <td>₹ 60,000</td>
                                 <td>₹ 35,030 </td>
-                                <td>40%</td>
-                                <td>Extraordinary</td>
+                                <td>149%</td>
+                                <td>Excellent</td>
                               </tr>
                               <tr>
                                 <td><b>Jan-24</b></td>
                                 <td>₹ 60,000</td>
                                 <td>₹ 35,030 </td>
-                                <td>40%</td>
+                                <td>199%</td>
                                 <td>Extraordinary</td>
+                              </tr>
+                              <tr>
+                                <td><b>Dec-23</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>251%</td>
+                                <td>Exceptional</td>
+                              </tr>
+                              <tr>
+                                <td><b>Nov-23</b></td>
+                                <td>₹ 60,000</td>
+                                <td>₹ 35,030 </td>
+                                <td>249%</td>
+                                <td>Outstanding</td>
                               </tr>
                             </tbody>
                           </table>

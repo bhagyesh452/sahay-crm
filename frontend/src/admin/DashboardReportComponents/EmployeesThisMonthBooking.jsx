@@ -2722,7 +2722,7 @@ function EmployeesThisMonthBooking() {
                                                 }));
                                                 handleSortTargetAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>TARGET AMOUNT</div>
+                                                <div>TARGET</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
@@ -2759,7 +2759,7 @@ function EmployeesThisMonthBooking() {
                                                 }));
                                                 handleSortAchievedAmount(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>ACHIEVED AMOUNT</div>
+                                                <div>ACHIEVED</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
@@ -2796,7 +2796,7 @@ function EmployeesThisMonthBooking() {
                                                 }));
                                                 handleSortRatio(updatedSortType);
                                             }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>TARGET/ACHIEVED RATIO</div>
+                                                <div>ACHIEVED RATIO</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
