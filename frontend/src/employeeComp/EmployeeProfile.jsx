@@ -30,6 +30,8 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { GrNext } from "react-icons/gr";
+import { GrPrevious } from "react-icons/gr";
 
 function EmployeeProfile() {
 
@@ -75,20 +77,20 @@ function EmployeeProfile() {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-  
+
       try {
         const response = await axios.post(`${secretKey}/employee/employeeimages/${data.ename}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${newtoken}`, 
+            Authorization: `Bearer ${newtoken}`,
           },
         });
         console.log("File upload success:", response.data);
         const imageUrl = response.data.imageUrl;
-        setEmpImg1(imageUrl); 
-        localStorage.setItem("empImg1", imageUrl); 
+        setEmpImg1(imageUrl);
+        localStorage.setItem("empImg1", imageUrl);
         fetchEmployeeData()
-        handleClose(); 
+        handleClose();
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -105,8 +107,8 @@ function EmployeeProfile() {
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-}
-  
+  }
+
 
   const handleCameraClick = () => {
     setOpen(true);
@@ -144,7 +146,7 @@ function EmployeeProfile() {
 
   // const today = new Date().toISOString().split('T')[0];
   const events = [
-    
+
     {
       title: 'Present',
       start: '2024-07-02', // Static start date
@@ -165,14 +167,99 @@ function EmployeeProfile() {
       end: '2024-06-30',   // Static end date (same day, all-day event)
       allDay: true,
       editable: false,     // Disable editing for this event
+    },
+    {
+      title: 'Achieved : 10000',
+      start: '2024-07-04', // Static start date
+      end: '2024-07-04',   // Static end date (same day, all-day event)
+      allDay: true,
+      editable: false,     // Disable editing for this event
     }
   ]
 
 
+  // Code to set date, month and year for custom calendar.
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getStartingDayOfMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month, 1).getDay();
+  };
+
+  const getPrevMonth = (date) => {
+    const prevMonthDate = new Date(date.getFullYear(), date.getMonth() - 1);
+    return {
+      year: prevMonthDate.getFullYear(),
+      month: prevMonthDate.getMonth(),
+      days: getDaysInMonth(prevMonthDate),
+    };
+  };
+
+  const getNextMonth = (date) => {
+    const nextMonthDate = new Date(date.getFullYear(), date.getMonth() + 1);
+    return {
+      year: nextMonthDate.getFullYear(),
+      month: nextMonthDate.getMonth(),
+      days: getDaysInMonth(nextMonthDate),
+    };
+  };
+
+  const nextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  };
+
+  const prevMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  };
+
+  const generateDates = () => {
+    const daysInMonth = getDaysInMonth(currentMonth);
+    const startingDay = getStartingDayOfMonth(currentMonth);
+    const prevMonth = getPrevMonth(currentMonth);
+    const nextMonth = getNextMonth(currentMonth);
+    const dates = [];
+
+    // Add dates from the previous month
+    for (let i = startingDay - 1; i >= 0; i--) {
+      dates.push({
+        day: prevMonth.days - i,
+        month: 'prev',
+      });
+    }
+
+    // Add dates from the current month
+    for (let day = 1; day <= daysInMonth; day++) {
+      dates.push({
+        day,
+        month: 'current',
+      });
+    }
+
+    // Add dates from the next month
+    for (let i = 1; dates.length < 42; i++) { // Ensure we fill all cells (6 weeks * 7 days)
+      dates.push({
+        day: i,
+        month: 'next',
+      });
+    }
+
+    return dates;
+  };
+
+  const dates = generateDates();
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
@@ -183,7 +270,7 @@ function EmployeeProfile() {
                   <div className="d-flex align-items-start m-0">
                     <div className="employee_profile_picture d-flex align-items-center justify-content-center">
                       <div className="employee_picture">
-                        <img src={`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && data.employee_profile.length!==0 && encodeURIComponent(data.employee_profile[0].filename)}`} alt="Employee"></img>
+                        <img src={`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && data.employee_profile.length !== 0 && encodeURIComponent(data.employee_profile[0].filename)}`} alt="Employee"></img>
                       </div>
                       <div
                         className="profile-pic-upload"
@@ -537,7 +624,7 @@ function EmployeeProfile() {
                     className="my-card-body p-2"
                     style={{ minHeight: "calc(100vh - 149px)" }}
                   >
-                    <FullCalendar 
+                    {/* <FullCalendar 
                       plugins={[dayGridPlugin,interactionPlugin,listPlugin, timeGridPlugin]}
                       initialView="dayGridMonth"
                       editable={true}
@@ -554,7 +641,36 @@ function EmployeeProfile() {
                       //   }
                       //   return true;
                       // }}
-                    />
+                    /> */}
+
+
+
+                    {/* My Custom Calendar */}
+                    <div className="custom-calendar">
+                      <div className="curr-month">
+                        <button className="prev-month-btn" onClick={prevMonth}><span><GrPrevious /></span></button>
+                        <h2>{currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+                        <button className="next-month-btn" onClick={nextMonth}><span><GrNext /></span></button>
+                      </div>
+                      <div className="days">
+                        {dayNames.map((day, index) => (
+                          <input key={index} type="text" value={day} disabled />
+                        ))}
+                      </div>
+                      <div className="dates">
+                        {dates.map((date, index) => (
+                          <div key={index} className={`date-info ${date.month} ${date.month === 'current' && 'current-date'}`}>
+                            <input className="date" type="text" value={date.day < 10 ? `0${date.day}` : date.day} disabled />
+                            <input className="attendance" type="text" value="Attendance" disabled />
+                            <input className="achieved" type="text" value="Achieved" disabled />
+                            <input className="projection" type="text" value="Projection" disabled />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+
+
                   </div>
                 </div>
               </div>

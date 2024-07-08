@@ -26,6 +26,7 @@ router.post("/requestCompanyData", async (req, res) => {
   let dataArray = [];
   if (Array.isArray(csvData)) {
     dataArray = csvData;
+    console.log("dataArray" , dataArray)
   } else if (typeof csvData === "object" && csvData !== null) {
     dataArray.push(csvData);
   } else {
@@ -293,6 +294,7 @@ router.post("/requestgData", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
+      employee_status:"Unread",
       img_url: GetEmployeeProfile
     }
     const addRequest = new NotiModel(requestCreate);

@@ -157,7 +157,7 @@ const TempSchema = new mongoose.Schema({
     type: String,
   },
   caCommission: {
-    type: String,
+    type: Number,
   },
   paymentMethod: {
     type: String,
@@ -291,7 +291,7 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type: String,
   },
   caCommission: {
-    type: String,
+    type: Number,
   },
   paymentMethod: {
     type: String,

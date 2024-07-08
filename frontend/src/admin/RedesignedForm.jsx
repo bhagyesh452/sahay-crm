@@ -86,7 +86,7 @@ export default function RedesignedForm({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -749,7 +749,7 @@ export default function RedesignedForm({
           isEmptyOrNull(leadData["Company Name"]) ||
           isEmptyOrNull(leadData["Company Number"]) ||
           isEmptyOrNull(leadData.incoDate) ||
-          isEmptyOrNull(leadData.panNumber)
+          isEmptyOrNull(leadData.panNumber) 
         ) {
           Swal.fire({
             title: "Please fill all the details",
@@ -829,6 +829,10 @@ export default function RedesignedForm({
       if (activeStep === 2) {
         if (!leadData.caCase) {
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+          return true;
+        }
+        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+          Swal.fire("Please Enter CA Commission"); 
           return true;
         }
         let isValid = true;
@@ -924,6 +928,8 @@ export default function RedesignedForm({
             generatedTotalAmount: generatedTotalAmount
           };
 
+          console.log("This is sending active step 3", dataToSend);
+
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step3`,
@@ -948,7 +954,6 @@ export default function RedesignedForm({
           );
           return true;
         }
-       
         const totalAmount = leadData.services.reduce(
           (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
           0
@@ -1308,15 +1313,15 @@ export default function RedesignedForm({
                       setIsoType(remainingObject);
                     }
                   }}>
-                     <option value="" selected disabled>Select ISO Type</option>
-                    <option value="ISO 9001">ISO 9001</option>
-                    <option value="ISO 14001">ISO 14001</option>
-                    <option value="ISO 45001">ISO 45001</option>
-                    <option value="ISO 22000">ISO 22000</option>
-                    <option value="ISO 27001">ISO 27001</option>
-                    <option value="ISO 13485">ISO 13485</option>
-                    <option value="ISO 20000-1">ISO 20000-1</option>
-                    <option value="ISO 50001">ISO 50001</option>
+                    <option value="" selected disabled>Select ISO Type</option>
+                    <option value="9001">9001</option>
+                    <option value="14001">14001</option>
+                    <option value="45001">45001</option>
+                    <option value="22000">22000</option>
+                    <option value="27001">27001</option>
+                    <option value="13485">13485</option>
+                    <option value="20000-1">20000-1</option>
+                    <option value="50001">50001</option>
                   </select>
                     {/* IAF ISO TYPES */}
                     <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
@@ -1332,10 +1337,10 @@ export default function RedesignedForm({
                         setIsoType(remainingObject);
                       }
                     }}>
-                     <option value="" selected disabled>Select ISO Duration</option>
-                      <option value="1 YR"> 1 YR</option>
-                      <option value="3 YR">3 YR</option>
-                      <option value="1 YR (3 YR FORMAT)">1 YR (3 YR FORMAT)</option>
+                    <option value="" selected disabled>Select ISO VALIDITY</option>
+                      <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
+                      <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
+                      <option value="3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
                     </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
@@ -1349,16 +1354,16 @@ export default function RedesignedForm({
                         setIsoType(remainingObject);
                       }
                     }}>
-                        <option value="" selected disabled>Select ISO Type</option>
-                      <option value="ISO 9001">ISO 9001</option>
-                      <option value="ISO 14001">ISO 14001</option>
-                      <option value="ISO 45001">ISO 45001</option>
-                      <option value="ISO 22000">ISO 22000</option>
-                      <option value="ISO 27001">ISO 27001</option>
-                      <option value="ISO 13485">ISO 13485</option>
-                      <option value="ISO 20000-1">ISO 20000-1</option>
-                      <option value="ISO 50001">ISO 50001</option>
-                      <option value="ISO 21001">ISO 21001</option>
+                      <option value="" selected disabled>Select ISO Type</option>
+                      <option value="9001">9001</option>
+                      <option value="14001">14001</option>
+                      <option value="45001">45001</option>
+                      <option value="22000">22000</option>
+                      <option value="27001">27001</option>
+                      <option value="13485">13485</option>
+                      <option value="20000-1">20000-1</option>
+                      <option value="50001">50001</option>
+                      <option value="21001">21001</option>
                       <option value="GMP">GMP</option>
                       <option value="GAP">GAP</option>
                       <option value="FDA">FDA</option>
@@ -2163,6 +2168,12 @@ export default function RedesignedForm({
     }
   }
 
+console.log("leadDatacacase" , leadData.caCase)
+
+
+
+
+
   return (
     <div>
       <div className="container mt-2">
@@ -2895,7 +2906,7 @@ export default function RedesignedForm({
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"
@@ -3596,7 +3607,7 @@ export default function RedesignedForm({
                                           )}
                                         </>
                                       )}
-                                      <div className="row m-0">
+                                      {/* <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>CA Case</b>
@@ -3604,8 +3615,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {leadData.caCase
-                                            }
+                                            {leadData.caCase}
                                           </div>
                                         </div>
                                       </div>
@@ -3618,8 +3628,7 @@ export default function RedesignedForm({
                                           </div>
                                           <div className="col-sm-9 p-0">
                                             <div className="form-label-data">
-                                              {leadData.caNumber
-                                              }
+                                              {leadData.caNumber}
                                             </div>
                                           </div>
                                         </div>
@@ -3631,8 +3640,7 @@ export default function RedesignedForm({
                                           </div>
                                           <div className="col-sm-9 p-0">
                                             <div className="form-label-data">
-                                              {leadData.caEmail
-                                              }
+                                              {leadData.caEmail}
                                             </div>
                                           </div>
                                         </div>
@@ -3649,7 +3657,7 @@ export default function RedesignedForm({
                                             </div>
                                           </div>
                                         </div>
-                                      </>}
+                                      </>} */}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -3666,6 +3674,56 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   ))}
+                                    <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase === "Yes" && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>

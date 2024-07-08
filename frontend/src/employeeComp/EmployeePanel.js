@@ -556,7 +556,7 @@ function EmployeePanel() {
     }
   };
 
-  
+
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -600,8 +600,8 @@ function EmployeePanel() {
           (obj) =>
             (obj.Status === "Busy" ||
               obj.Status === "Not Picked Up" ||
-              obj.Status === "Untouched") && 
-              (obj.bdmAcceptStatus !== "Forwarded" &&
+              obj.Status === "Untouched") &&
+            (obj.bdmAcceptStatus !== "Forwarded" &&
               obj.bdmAcceptStatus !== "Accept" &&
               obj.bdmAcceptStatus !== "Pending")));
       setdataStatus("All");
@@ -803,7 +803,7 @@ function EmployeePanel() {
     fetchData();
   }, [userId]);
 
-  
+
   //console.log(remarksHistory);
 
   // const [locationAccess, setLocationAccess] = useState(false);
@@ -1036,7 +1036,7 @@ function EmployeePanel() {
           setdataStatus('NotInterested')
         }
       }
-    }else{
+    } else {
       setEmployeeData(filteredData)
     }
 
@@ -1396,11 +1396,11 @@ function EmployeePanel() {
         );
 
         //console.log("Data sent successfully:", response.data);
-        Swal.fire("Success!","Data Request Sent!","success");
+        Swal.fire("Success!", "Data Request Sent!", "success");
         closepopup();
       } catch (error) {
         console.error("Error:", error.message);
-        Swal.fire("Error!","Please try again later!","error");
+        Swal.fire("Error!", "Please try again later!", "error");
       }
     } else {
       try {
@@ -1699,6 +1699,7 @@ function EmployeePanel() {
       ...data,
       ename: name,
     }));
+    console.log("updatedCsvData", updatedCsvdata)
     //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
@@ -2675,123 +2676,123 @@ function EmployeePanel() {
     return bookingObj ? formatDate(bookingObj.bookingPublishDate) : "N/A"
   }
 
- //----------------filter for employee section-----------------------------
- const stateList = State.getStatesOfCountry("IN")
- const cityList = City.getCitiesOfCountry("IN")
- const [selectedStateCode, setSelectedStateCode] = useState("")
- const [selectedState, setSelectedState] = useState("")
- const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
- const [selectedNewCity, setSelectedNewCity] = useState("")
- const [selectedYear, setSelectedYear] = useState("")
- const [selectedMonth, setSelectedMonth] = useState("")
- const [selectedStatus, setSelectedStatus] = useState("")
- const [selectedBDEName, setSelectedBDEName] = useState("")
- const [selectedAssignDate, setSelectedAssignDate] = useState(null)
- const [selectedAdminName, setSelectedAdminName] = useState("")
- const [daysInMonth, setDaysInMonth] = useState([]);
- const [selectedDate, setSelectedDate] = useState(0)
- const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
- const [openBacdrop, setOpenBacdrop] = useState(false)
- const [companyIncoDate, setCompanyIncoDate] = useState(null);
- const [monthIndex, setMonthIndex] = useState(0)
+  //----------------filter for employee section-----------------------------
+  const stateList = State.getStatesOfCountry("IN")
+  const cityList = City.getCitiesOfCountry("IN")
+  const [selectedStateCode, setSelectedStateCode] = useState("")
+  const [selectedState, setSelectedState] = useState("")
+  const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+  const [selectedNewCity, setSelectedNewCity] = useState("")
+  const [selectedYear, setSelectedYear] = useState("")
+  const [selectedMonth, setSelectedMonth] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState("")
+  const [selectedBDEName, setSelectedBDEName] = useState("")
+  const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+  const [selectedAdminName, setSelectedAdminName] = useState("")
+  const [daysInMonth, setDaysInMonth] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(0)
+  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
+  const [openBacdrop, setOpenBacdrop] = useState(false)
+  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+  const [monthIndex, setMonthIndex] = useState(0)
 
- const functionCloseFilterDrawer = () => {
-   setOpenFilterDrawer(false)
- }
+  const functionCloseFilterDrawer = () => {
+    setOpenFilterDrawer(false)
+  }
 
- const currentYear = new Date().getFullYear();
- const months = [
-   "January", "February", "March", "April", "May", "June",
-   "July", "August", "September", "October", "November", "December"
- ];
- //Create an array of years from 2018 to the current year
- const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  //Create an array of years from 2018 to the current year
+  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
- useEffect(() => {
-  let monthIndex;
-  if (selectedYear && selectedMonth) {
+  useEffect(() => {
+    let monthIndex;
+    if (selectedYear && selectedMonth) {
       monthIndex = months.indexOf(selectedMonth);
       setMonthIndex(monthIndex + 1)
       const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
       setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
-  } else {
+    } else {
       setDaysInMonth([]);
+    }
+  }, [selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth && selectedDate) {
+      const monthIndex = months.indexOf(selectedMonth) + 1;
+      const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+      const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+      const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+      setSelectedCompanyIncoDate(companyIncoDate);
+    }
+  }, [selectedYear, selectedMonth, selectedDate]);
+
+  const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+    try {
+      setIsFilter(true);
+      setOpenBacdrop(true);
+
+      const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
+        params: {
+          employeeName,
+          selectedStatus,
+          selectedState,
+          selectedNewCity,
+          selectedYear,
+          monthIndex,
+          selectedAssignDate,
+          selectedCompanyIncoDate,
+          page,
+          limit
+        }
+      });
+
+      if (
+        !selectedStatus &&
+        !selectedState &&
+        !selectedNewCity &&
+        !selectedYear &&
+        !selectedCompanyIncoDate
+      ) {
+        // If no filters are applied, reset the filter state and stop the backdrop
+        setIsFilter(false);
+      } else {
+        // Update the employee data with the filtered results
+        console.log(response.data)
+        setFilteredData(response.data)
+      }
+    } catch (error) {
+      console.log('Error applying filter', error.message);
+    } finally {
+      setOpenBacdrop(false);
+      setOpenFilterDrawer(false);
+    }
+  };
+
+  console.log("FILTEREDdATA", filteredData)
+
+  const handleClearFilter = () => {
+    setIsFilter(false)
+    setSelectedStatus('')
+    setSelectedState('')
+    setSelectedNewCity('')
+    setSelectedYear('')
+    setSelectedMonth('')
+    setSelectedDate(0)
+    setSelectedAssignDate(null)
+    setCompanyIncoDate(null)
+    setSelectedCompanyIncoDate(null)
+    setFilteredData([])
+    fetchNewData()
+    //fetchData(1, latestSortCount)
   }
-}, [selectedYear, selectedMonth]);
-
- useEffect(() => {
-   if (selectedYear && selectedMonth && selectedDate) {
-     const monthIndex = months.indexOf(selectedMonth) + 1;
-     const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
-     const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-     const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
-     setSelectedCompanyIncoDate(companyIncoDate);
-   }
- }, [selectedYear, selectedMonth, selectedDate]);
-
- const handleFilterData = async (page = 1, limit = itemsPerPage) => {
-   try {
-     setIsFilter(true);
-     setOpenBacdrop(true);
-
-     const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
-       params: {
-         employeeName,
-         selectedStatus,
-         selectedState,
-         selectedNewCity,
-         selectedYear,
-         monthIndex,
-         selectedAssignDate,
-         selectedCompanyIncoDate,
-         page,
-         limit
-       }
-     });
-
-     if (
-       !selectedStatus &&
-       !selectedState &&
-       !selectedNewCity &&
-       !selectedYear &&
-       !selectedCompanyIncoDate
-     ) {
-       // If no filters are applied, reset the filter state and stop the backdrop
-       setIsFilter(false);
-     } else {
-       // Update the employee data with the filtered results
-       console.log(response.data)
-       setFilteredData(response.data)
-     }
-   } catch (error) {
-     console.log('Error applying filter', error.message);
-   } finally {
-     setOpenBacdrop(false);
-     setOpenFilterDrawer(false);
-   }
- };
-
- console.log("FILTEREDdATA" , filteredData)
-
- const handleClearFilter = () => {
-   setIsFilter(false)
-   setSelectedStatus('')
-   setSelectedState('')
-   setSelectedNewCity('')
-   setSelectedYear('')
-   setSelectedMonth('')
-   setSelectedDate(0)
-   setSelectedAssignDate(null)
-   setCompanyIncoDate(null)
-   setSelectedCompanyIncoDate(null)
-   setFilteredData([])
-   fetchNewData()
-   //fetchData(1, latestSortCount)
- }
 
   return (
     <div>
-     <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {/* Dialog box for Request Data */}
 
@@ -2875,8 +2876,8 @@ function EmployeePanel() {
                     </div>
                     <div className="btn-group" role="group" aria-label="Basic example">
                       <button type="button"
-                      className={isFilter ? 'btn mybtn active' : 'btn mybtn'} 
-                      onClick={() => setOpenFilterDrawer(true)}
+                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                        onClick={() => setOpenFilterDrawer(true)}
                       >
                         <IoFilterOutline className='mr-1' /> Filter
                       </button>
@@ -3464,8 +3465,8 @@ function EmployeePanel() {
                               (obj) =>
                                 (obj.Status === "Busy" ||
                                   obj.Status === "Not Picked Up" ||
-                                  obj.Status === "Untouched") && 
-                                  (obj.bdmAcceptStatus !== "Forwarded" &&
+                                  obj.Status === "Untouched") &&
+                                (obj.bdmAcceptStatus !== "Forwarded" &&
                                   obj.bdmAcceptStatus !== "Accept" &&
                                   obj.bdmAcceptStatus !== "Pending")
                             ).sort(
@@ -3484,17 +3485,17 @@ function EmployeePanel() {
                       >
                         General{" "}
                         <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              (obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched") && 
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                (obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched") &&
                                 (obj.bdmAcceptStatus !== "Forwarded" &&
-                                obj.bdmAcceptStatus !== "Accept" &&
-                                obj.bdmAcceptStatus !== "Pending")
-                          ).length
-                        }
+                                  obj.bdmAcceptStatus !== "Accept" &&
+                                  obj.bdmAcceptStatus !== "Pending")
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -3522,13 +3523,13 @@ function EmployeePanel() {
                       >
                         Interested
                         <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "Interested" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          ).length
-                        }
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "Interested" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -3556,13 +3557,13 @@ function EmployeePanel() {
                       >
                         Follow Up{" "}
                         <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "FollowUp" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          ).length
-                        }
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "FollowUp" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -3597,16 +3598,16 @@ function EmployeePanel() {
                       >
                         Matured{" "}
                         <span className="no_badge">
-                        {" "}
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "Matured" &&
-                              (obj.bdmAcceptStatus === "NotForwarded" ||
-                                obj.bdmAcceptStatus === "Pending" ||
-                                obj.bdmAcceptStatus === "Accept")
-                          ).length
-                        }
+                          {" "}
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "Matured" &&
+                                (obj.bdmAcceptStatus === "NotForwarded" ||
+                                  obj.bdmAcceptStatus === "Pending" ||
+                                  obj.bdmAcceptStatus === "Accept")
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -3641,15 +3642,15 @@ function EmployeePanel() {
                       >
                         Bdm Forwarded{" "}
                         <span className="no_badge">
-                        {" "}
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.bdmAcceptStatus !== "NotForwarded" &&
-                              obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                              obj.Status !== "Matured"
-                          ).length
-                        }
+                          {" "}
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                obj.Status !== "Matured"
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -3678,14 +3679,14 @@ function EmployeePanel() {
                       >
                         Not-Interested{" "}
                         <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              (obj.Status === "Not Interested" ||
-                                obj.Status === "Junk") &&
-                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                          ).length
-                        }
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                (obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk") &&
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                            ).length
+                          }
                         </span>
                       </a>
                     </li>
@@ -5266,7 +5267,7 @@ function EmployeePanel() {
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
-                  {console.log("History items :",historyItem)}
+                  {console.log("History items :", historyItem)}
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
@@ -6260,154 +6261,154 @@ function EmployeePanel() {
         </Drawer>
 
         {/* //----------------leads filter drawer------------------------------- */}
-      <Drawer
-        style={{ top: "50px" }}
-        anchor="left"
-        open={openFilterDrawer}
-        onClose={functionCloseFilterDrawer}>
-        <div style={{ width: "31em" }}>
-          <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
-            <h2 className="title m-0">
-              Filters
-            </h2>
-            <div>
-              <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
-                <IoIosClose style={{
-                  height: "36px",
-                  width: "32px",
-                  color: "grey"
-                }} />
-              </button>
+        <Drawer
+          style={{ top: "50px" }}
+          anchor="left"
+          open={openFilterDrawer}
+          onClose={functionCloseFilterDrawer}>
+          <div style={{ width: "31em" }}>
+            <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+              <h2 className="title m-0">
+                Filters
+              </h2>
+              <div>
+                <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                  <IoIosClose style={{
+                    height: "36px",
+                    width: "32px",
+                    color: "grey"
+                  }} />
+                </button>
+              </div>
             </div>
-          </div>
-          <hr style={{ margin: "0px" }} />
-          <div className="body-Drawer">
-            <div className='container-xl mt-2 mb-2'>
-              <div className='row'>
-                <div className='col-sm-12 mt-3'>
-                  <div className='form-group'>
-                    <label for="exampleFormControlInput1" class="form-label">Status</label>
-                    <select class="form-select form-select-md" aria-label="Default select example"
-                      value={selectedStatus}
-                      onChange={(e) => {
-                        setSelectedStatus(e.target.value)
-                      }}
-                    >
-                      <option selected value='Select Status'>Select Status</option>
-                      <option value='Not Picked Up'>Not Picked Up</option>
-                      <option value="Busy">Busy</option>
-                      <option value="Junk">Junk</option>
-                      <option value="Not Interested">Not Interested</option>
-                      <option value="Untouched">Untouched</option>
-                      <option value="Interested">Interested</option>
-                      <option value="Matured">Matured</option>
-                      <option value="FollowUp">Followup</option>
-                    </select>
-                  </div>
-                </div>
-                <div className='col-sm-12 mt-2'>
-                  <div className='d-flex align-items-center justify-content-between'>
-                    <div className='form-group w-50 mr-1'>
-                      <label for="exampleFormControlInput1" class="form-label">State</label>
+            <hr style={{ margin: "0px" }} />
+            <div className="body-Drawer">
+              <div className='container-xl mt-2 mb-2'>
+                <div className='row'>
+                  <div className='col-sm-12 mt-3'>
+                    <div className='form-group'>
+                      <label for="exampleFormControlInput1" class="form-label">Status</label>
                       <select class="form-select form-select-md" aria-label="Default select example"
-                        value={selectedState}
+                        value={selectedStatus}
                         onChange={(e) => {
-                          setSelectedState(e.target.value)
-                          setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
-                          setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
-                          //handleSelectState(e.target.value)
+                          setSelectedStatus(e.target.value)
                         }}
                       >
-                        <option value=''>State</option>
-                        {stateList.length !== 0 && stateList.map((item) => (
-                          <option value={item.name}>{item.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className='form-group w-50'>
-                      <label for="exampleFormControlInput1" class="form-label">City</label>
-                      <select class="form-select form-select-md" aria-label="Default select example"
-                        value={selectedNewCity}
-                        onChange={(e) => {
-                          setSelectedNewCity(e.target.value)
-                        }}
-                      >
-                        <option value="">City</option>
-                        {selectedCity.lenth !== 0 && selectedCity.map((item) => (
-                          <option value={item.name}>{item.name}</option>
-                        ))}
+                        <option selected value='Select Status'>Select Status</option>
+                        <option value='Not Picked Up'>Not Picked Up</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Junk">Junk</option>
+                        <option value="Not Interested">Not Interested</option>
+                        <option value="Untouched">Untouched</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Matured">Matured</option>
+                        <option value="FollowUp">Followup</option>
                       </select>
                     </div>
                   </div>
-                </div>
-                <div className='col-sm-12 mt-2'>
-                  <div className='form-group'>
-                    <label for="assignon" class="form-label">Assign On</label>
-                    <input type="date" class="form-control" id="assignon"
-                      value={selectedAssignDate}
-                      placeholder="dd-mm-yyyy"
-                      defaultValue={null}
-                      onChange={(e) => setSelectedAssignDate(e.target.value)}
-                    />
+                  <div className='col-sm-12 mt-2'>
+                    <div className='d-flex align-items-center justify-content-between'>
+                      <div className='form-group w-50 mr-1'>
+                        <label for="exampleFormControlInput1" class="form-label">State</label>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedState}
+                          onChange={(e) => {
+                            setSelectedState(e.target.value)
+                            setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                            setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                            //handleSelectState(e.target.value)
+                          }}
+                        >
+                          <option value=''>State</option>
+                          {stateList.length !== 0 && stateList.map((item) => (
+                            <option value={item.name}>{item.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='form-group w-50'>
+                        <label for="exampleFormControlInput1" class="form-label">City</label>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedNewCity}
+                          onChange={(e) => {
+                            setSelectedNewCity(e.target.value)
+                          }}
+                        >
+                          <option value="">City</option>
+                          {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                            <option value={item.name}>{item.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className='col-sm-12 mt-2'>
-                  <label class="form-label">Incorporation Date</label>
-                  <div className='row align-items-center justify-content-between'>
-                    <div className='col form-group mr-1'>
-                      <select class="form-select form-select-md" aria-label="Default select example"
-                        value={selectedYear}
-                        onChange={(e) => {
-                          setSelectedYear(e.target.value)
-                        }}
-                      >
-                        <option value=''>Year</option>
-                        {years.length !== 0 && years.map((item) => (
-                          <option>{item}</option>
-                        ))}
-                      </select>
+                  <div className='col-sm-12 mt-2'>
+                    <div className='form-group'>
+                      <label for="assignon" class="form-label">Assign On</label>
+                      <input type="date" class="form-control" id="assignon"
+                        value={selectedAssignDate}
+                        placeholder="dd-mm-yyyy"
+                        defaultValue={null}
+                        onChange={(e) => setSelectedAssignDate(e.target.value)}
+                      />
                     </div>
-                    <div className='col form-group mr-1'>
-                      <select class="form-select form-select-md" aria-label="Default select example"
-                        value={selectedMonth}
-                        disabled={selectedYear === ""}
-                        onChange={(e) => {
-                          setSelectedMonth(e.target.value)
-                        }}
-                      >
-                        <option value=''>Month</option>
-                        {months && months.map((item) => (
-                          <option value={item}>{item}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className='col form-group mr-1'>
-                      <select class="form-select form-select-md" aria-label="Default select example"
-                        disabled={selectedMonth === ''}
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                      >
-                        <option value=''>Date</option>
-                        {daysInMonth.map((day) => (
-                          <option key={day} value={day}>{day}</option>
-                        ))}
-                      </select>
+                  </div>
+                  <div className='col-sm-12 mt-2'>
+                    <label class="form-label">Incorporation Date</label>
+                    <div className='row align-items-center justify-content-between'>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedYear}
+                          onChange={(e) => {
+                            setSelectedYear(e.target.value)
+                          }}
+                        >
+                          <option value=''>Year</option>
+                          {years.length !== 0 && years.map((item) => (
+                            <option>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedMonth}
+                          disabled={selectedYear === ""}
+                          onChange={(e) => {
+                            setSelectedMonth(e.target.value)
+                          }}
+                        >
+                          <option value=''>Month</option>
+                          {months && months.map((item) => (
+                            <option value={item}>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          disabled={selectedMonth === ''}
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                        >
+                          <option value=''>Date</option>
+                          {daysInMonth.map((day) => (
+                            <option key={day} value={day}>{day}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="footer-Drawer d-flex justify-content-between align-items-center">
+              <button className='filter-footer-btn btn-clear'
+                onClick={handleClearFilter}
+              >Clear Filter</button>
+              <button className='filter-footer-btn btn-yellow'
+                onClick={handleFilterData}
+              >Apply Filter</button>
+            </div>
           </div>
-          <div className="footer-Drawer d-flex justify-content-between align-items-center">
-            <button className='filter-footer-btn btn-clear'
-              onClick={handleClearFilter}
-            >Clear Filter</button>
-            <button className='filter-footer-btn btn-yellow'
-              onClick={handleFilterData}
-            >Apply Filter</button>
-          </div>
-        </div>
-      </Drawer>
+        </Drawer>
 
         <div className="compose-email">
           {isOpen && (

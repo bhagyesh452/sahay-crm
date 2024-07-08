@@ -79,7 +79,7 @@ export default function EditableLeadform({
     caCase: false,
     caNumber: 0,
     caEmail: "",
-    caCommission: "",
+    caCommission: 0,
     paymentMethod: "",
     paymentReceipt: [],
     extraNotes: "",
@@ -606,6 +606,14 @@ export default function EditableLeadform({
         }
       }
       if (activeStep === 2) {
+        if (!leadData.caCase) {
+          Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
+          return true;
+        }
+        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
+          Swal.fire("Please Enter CA Commission"); 
+          return true;
+        }
 
         let isValid = true;
         for (let service of leadData.services) {
@@ -674,7 +682,7 @@ export default function EditableLeadform({
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
           };
-          console.log("This is sending", dataToSend);
+          console.log("This is sending active step 2", dataToSend);
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-edit-leadData/${companysName}/step3`,
@@ -2345,7 +2353,7 @@ export default function EditableLeadform({
                                           }
                                         </label>
                                         <input
-                                          type="text"
+                                          type="number"
                                           name="ca-commision"
                                           id="ca-commision"
                                           placeholder="Enter CA's Commision- If any"
@@ -3052,6 +3060,60 @@ export default function EditableLeadform({
                                       </div>
                                     </div>
                                   ))}
+                                  <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {leadData.caCase
+                                            }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {leadData.caCase && <>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Number</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caNumber
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Email</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caEmail
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>CA Commission</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {leadData.caCommission
+                                              }
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>}
 
                                   {/* total amount */}
                                 </div>
