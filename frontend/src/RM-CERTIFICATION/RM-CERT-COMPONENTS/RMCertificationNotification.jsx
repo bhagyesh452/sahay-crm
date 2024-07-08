@@ -132,12 +132,6 @@ React.useEffect(()=>{
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings

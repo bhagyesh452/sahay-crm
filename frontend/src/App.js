@@ -69,9 +69,9 @@ import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofC
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
-import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx"; 
-import Employee from "./Hr_panel/Components/Employee.jsx"; 
-
+import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
+import Employee from "./Hr_panel/Components/Employee.jsx";
+import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 
 
 
@@ -87,7 +87,7 @@ function App() {
   const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
-  
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -137,10 +137,11 @@ function App() {
           <Route path='/rmofcertification/login' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
           <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
           <Route path='/rmofcertification/rmofcertification-bookings/:userId/' element={<RmofCertificationBookings />} />
-          <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings/>} />
+          <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings />} />
+          <Route path='/rmofcertification/received-booking-box/:userId' element={<Received_booking_box />} />
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
-          <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken}/>} />
+          <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken} />} />
           <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
 
 

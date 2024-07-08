@@ -14,6 +14,7 @@ const { sendMail3 } = require("../helpers/sendMail3");
 const { sendMail4 } = require("../helpers/sendMail4");
 
 const userModel = require("../models/CompanyBusinessInput.js");
+const { clouddebugger } = require("googleapis/build/src/apis/clouddebugger/index.js");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -88,6 +89,9 @@ router.post(
       const UploadDeclaration = req.files["UploadDeclaration"] || [];
       const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
+      console.log("DirectorP" , DirectorPassportPhoto)
+      console.log("DirectorA" , DirectorAdharCard)
+
 
 
       // Get user details from the request body
@@ -159,6 +163,41 @@ router.post(
       }
 
 
+      // UploadMOA for Email response with file Name
+      const MOA_response = UploadMOA && UploadMOA.length !== 0 ? "Yes" : "No";
+      let MOA_condition = '';
+
+      if (UploadMOA && UploadMOA.length !== 0) {
+        MOA_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Upload MOA</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${UploadMOA[0].originalname}</div>
+              </div>
+          </div> 
+        `;
+      }
+
+      // UploadAOA for Email response with file Name
+      const AOA_response = UploadAOA && UploadAOA.length !== 0 ? "Yes" : "No";
+      let AOA_condition = '';
+
+      if (UploadAOA && UploadAOA.length !== 0) {
+        AOA_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Upload AOA</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${UploadAOA[0].originalname}</div>
+              </div>
+          </div> 
+        `;
+}
+
+
       let TechInvolvedResponse = TechnologyInvolved  ? "Yes" : "No";
       let TechnologyInvolvedHtml = "";
       if (TechInvolvedResponse === "Yes") {
@@ -175,6 +214,26 @@ router.post(
       }
 
 
+      // Do You Have Upload Photos of Product or Service
+      let logoOrProduct_condition = UploadPhotos.length !== 0 ? "Yes" : 'No';
+      if (UploadPhotos && UploadPhotos.length !== 0) {
+        logoOrProduct_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Upload Photos of LOGO Or Product/Prototype</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${UploadPhotos[0].originalname}</div>
+              </div>
+          </div>
+        `;
+      }
+
+
+
+
+
+
       let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
       let RelevantDocumentHtml = "";
       if (AnyIpFiledResponse === "Yes") {
@@ -189,6 +248,23 @@ router.post(
           </div>
         `;
       }
+
+
+      let UploadRelevant_condition = RelevantDocument.length !== 0 ? "Yes" : 'No';
+      if (RelevantDocument && RelevantDocument.length !== 0) {
+        UploadRelevant_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Provide The Option to Upload the Relevant Document</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${RelevantDocument[0].originalname}</div>
+              </div>
+          </div>
+        `;
+      }
+
+      
 
       
       const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
@@ -231,6 +307,39 @@ router.post(
         `;
       }
 
+      const UploadDeclaration_response = UploadDeclaration && UploadDeclaration.length !== 0 ? "Yes" : "No";
+      let UploadDeclaration_condition = '';
+
+      if (UploadDeclaration && UploadDeclaration.length !== 0) {
+        UploadDeclaration_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Upload Declaration</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${UploadDeclaration[0].originalname}</div>
+              </div>
+          </div> 
+        `;
+      }
+
+
+      const UploadRelevantDocs_response = UploadRelevantDocs && UploadRelevantDocs.length !== 0 ? "Yes" : "No";
+      let UploadRelevantDocs_condition = '';
+
+      if (UploadRelevantDocs && UploadRelevantDocs.length !== 0) {
+        UploadRelevantDocs_condition = `
+          <div style="display: flex;margin-top: 8px;">
+              <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
+                  <div style="height: 100%;font-size:12px;">Upload Relevant Docs</div>
+              </div>
+              <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
+                  <div style="height: 100%;font-size:12px;">${UploadRelevantDocs[0].originalname}</div>
+              </div>
+          </div> 
+        `;
+      }
+
       let uploadPhotosHtml = "";
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
@@ -265,6 +374,9 @@ router.post(
         `;
       }
 
+
+      
+
       
 
       // DirectorDetails code start
@@ -284,9 +396,46 @@ router.post(
             DirectorAdharCardNumber,
             DirectorGender,
             IsMainDirector,
+            DirectorPassportPhoto,
+            DirectorAdharCard
           } = DirectorDetails[index];
 
-          // Check if this is the first director and they are marked as the main director
+          // console.log("Director Details" , DirectorDetails[index].DirectorPassportPhoto[0].originalname)
+          // console.log("Director Details" , DirectorDetails[index].DirectorAdharCard[0].originalname)
+
+
+
+          let DirectorPassportPhoto_condition = '';
+          let DirectorAdharCard_condition = '';
+
+          // Check if Director's Passport Photo is uploaded
+          if (DirectorPassportPhoto && DirectorPassportPhoto.length > 0) {
+            DirectorPassportPhoto_condition = `
+                <div style="display: flex; margin-top: 8px;">
+                    <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                        <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Passport Size Photo</div>
+                    </div>
+                    <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                        <div style="height: 100%; font-size: 12px;">${DirectorPassportPhoto[0].originalname}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+          // Check if Director's Aadhaar Card is uploaded
+          if (DirectorAdharCard && DirectorAdharCard.length > 0) {
+              DirectorAdharCard_condition = `
+                  <div style="display: flex; margin-top: 8px;">
+                      <div style="width: 30%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                          <div style="height: 100%; font-size: 12px;">Director ${index + 1}'s Aadhaar Card</div>
+                      </div>
+                      <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
+                          <div style="height: 100%; font-size: 12px;">${DirectorAdharCard[0].originalname}</div>
+                      </div>
+                  </div>
+              `;
+          }
+
 
           if (DirectorDetails[index].IsMainDirector === "true") {
             
@@ -385,10 +534,14 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">${LinkedInProfileLink}</div>
                                 </div>
                             </div>
+                            <!-- Conditional display of Passport Photo -->
+                                ${DirectorPassportPhoto_condition}
+
+                            <!-- Conditional display of Aadhaar Card -->
+                                ${DirectorAdharCard_condition}
                         </div>
                     </div>
                 </div>
-          
           `
         }
         return team;
@@ -408,7 +561,7 @@ router.post(
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["support@startupsahay.com"];
+      const email = ["nisargpatel@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
@@ -428,16 +581,26 @@ router.post(
       .replace("{{ValueProposition}}", ValueProposition)
       .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
       .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
+      // .replace("{{logoOrProduct_response}}", logoOrProduct_response)
       .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
       .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
+      .replace("{{UploadRelevant_condition}}", UploadRelevant_condition)
+      .replace("{{logoOrProduct_condition}}", logoOrProduct_condition )
       .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
       .replace("{{ITR_Condition}}", ITR_response)
+      .replace("{{MOA_response}}", MOA_condition)
+      .replace("{{AOA_response}}", AOA_condition)
       .replace("{{ITR_Document_Link}}", ITR_condition)
       .replace("{{BusinessModel}}", BusinessModel)
       .replace("{{FinanceResponse}}", FinanceCondition)
       .replace("{{FinanceHtml}}", FinanceHtml)
+      .replace("{{UploadDeclaration_condition}}", UploadDeclaration_condition)
+      .replace("{{UploadRelevantDocs_condition}}", UploadRelevantDocs_condition)
       .replace("{{Logo_Condition}}", logoCondition)
       .replace("{{generatedHtml}}", generatedHtml)
+
+
+    
       
 
       await sendMail3(
@@ -471,11 +634,26 @@ router.post(
       );
       const DirectorEmail = details.DirectorEmail;
 
+
+      const servicesArrayForSendMail4 = Object.values(SelectServices);
+      const selectedServiceToShow = servicesArrayForSendMail4.find(
+        (service) => service === "Seed Funding Support"
+      )
+      let subjectForSendMail4;
+      if(selectedServiceToShow){
+         subjectForSendMail4 = `${CompanyName} | LOA & MITC`;
+      }
+      else{
+        subjectForSendMail4 = `${CompanyName} | MITC` ;
+      }
+
+
       // Send Thank You Message with pdf Draft sendMaiel4.js
 
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
-      const subject1 = `${CompanyName} | LOA & MITC`;
+      // const subject1 = `${CompanyName} | LOA & MITC`;
+      const subject1 = subjectForSendMail4;
       const text1 = "";
       const html1 = `
            <p>Dear Client,</p>
