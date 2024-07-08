@@ -71,8 +71,7 @@ import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/Rmo
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
 import Employee from "./Hr_panel/Components/Employee.jsx";
-import Received_booking_box from './RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx'
-// import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/received_booking_box.jsx";
+import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 
 
 
