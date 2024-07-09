@@ -2553,9 +2553,9 @@ export default function EditableLeadform({
                                         <option value="ICICI Bank">
                                           ICICI Bank
                                         </option>
-                                        <option value="SRK Seedfund(Non GST)/IDFC first Bank">
+                                        {/* <option value="SRK Seedfund(Non GST)/IDFC first Bank">
                                           SRK Seedfund(Non GST)/IDFC first Bank
-                                        </option>
+                                        </option> */}
                                         <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
                                           STARTUP SAHAY SERVICES/ADVISORY(Non
                                           GST)/ IDFC First Bank
