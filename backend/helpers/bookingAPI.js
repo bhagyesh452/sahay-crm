@@ -2218,7 +2218,12 @@ router.post(
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
       <p class="Declaration_text_data">
-        I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+        I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+        between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+        services, and no additional services will be provided without separate payment, even in the case of rejection. 
+        Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+        is eligible for the re-application.
+        
       </p>
       </div>` : "";
           const serviceKawali = renderServiceKawali();
@@ -2310,7 +2315,11 @@ router.post(
       </div>
             <div class="Declaration_text">
               <p class="Declaration_text_data">
-                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
               </p>
             </div>
            
@@ -4177,9 +4186,13 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return servicesHtml;
     };
     const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
-<p class="Declaration_text_data">
-  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
-</p>
+    <p class="Declaration_text_data">
+                     I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
+    </p>
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
@@ -4267,7 +4280,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>
       <div class="Declaration_text">
         <p class="Declaration_text_data">
-          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+                          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
         </p>
       </div>
      
