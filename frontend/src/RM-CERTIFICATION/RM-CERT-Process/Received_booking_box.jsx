@@ -2,6 +2,8 @@ import React , {useState , useEffect} from 'react';
 import axios from 'axios';
 import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
+import { SlActionRedo } from "react-icons/sl";
+
 
 
 function Received_booking_box() {
@@ -97,11 +99,71 @@ function Received_booking_box() {
                                 <div className="booking-list-body">
                                     <div className='rm_bking_list_box_item'>
                                         <div className='d-flex justify-content-between align-items-center'>
-                                            <div className='rm_bking_cmpny_name My_Text_Wrap'>
-                                                Incscale Technologies Private Limited
+                                            <div className='rm_cmpny_name_services'>
+                                                <div className='rm_bking_cmpny_name My_Text_Wrap'>
+                                                    Start-Up Sahay Private Limited
+                                                </div>
+                                                <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
+                                                    <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
+                                                        Seed Fund
+                                                    </div>
+                                                    <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
+                                                        Income Tax Exemption
+                                                    </div>
+                                                    <div className='rm_bking_item_serices clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1 My_Text_Wrap mb-1'>
+                                                        ISO Certificate IAF ISO 9001 1 YR (3 YR FORMAT)
+                                                    </div>
+                                                    <div className='rm_bking_item_serices clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1 My_Text_Wrap mb-1'>
+                                                        Startup Certificate
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div>
-                                                <button className='btn btn-sm btn-swap'>Swap</button>
+                                                <button className='btn btn-sm btn-swap-round d-flex align-items-center'> 
+                                                    <div className='btn-swap-icon'>
+                                                        <SlActionRedo />
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className='d-flex justify-content-between align-items-center mt-1'>
+                                            <div className='rm_bking_time'>
+                                                02:00 AM | 20 Jun 2024
+                                            </div>
+                                            <div className='rm_bking_by'>
+                                                By Ravi Prajapati
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='rm_bking_list_box_item'>
+                                        <div className='d-flex justify-content-between align-items-center'>
+                                            <div className='rm_cmpny_name_services'>
+                                                <div className='rm_bking_cmpny_name My_Text_Wrap'>
+                                                    Incscale Technologies Private Limited
+                                                </div>
+                                                <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
+                                                    <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
+                                                        Startup Certificate 
+                                                    </div>
+                                                    <div className='rm_bking_item_serices clr-bg-light-ff8800 bdr-l-clr-ff8800 clr-ff8800 My_Text_Wrap mb-1'>
+                                                        Seed Fund
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button className='btn btn-sm btn-swap-round d-flex align-items-center'> 
+                                                    <div className='btn-swap-icon'>
+                                                        <SlActionRedo />
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className='d-flex justify-content-between align-items-center mt-1'>
+                                            <div className='rm_bking_time'>
+                                                Just Now
+                                            </div>
+                                            <div className='rm_bking_by'>
+                                                By Vaibhav Acharya
                                             </div>
                                         </div>
                                     </div>

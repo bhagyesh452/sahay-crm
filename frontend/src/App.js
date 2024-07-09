@@ -70,14 +70,8 @@ import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
-import Employee from "./Hr_panel/Components/Employee.jsx";
-import Received_booking_box from './RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx'
-import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
-import EmployeeGeneralDataComponent from "./employeeComp/EmployeeNotificationComponents/EmployeeGeneralDataComponent.jsx";
-import EmployeeApproveDataComponent from "./employeeComp/EmployeeNotificationComponents/EmployeeApproveDataComponent.jsx";
-import EmployeeBookingEditCopmonent from "./employeeComp/EmployeeNotificationComponents/EmployeeBookingEditCopmonent.jsx";
-import EmployeeDeleteBookingComponent from './employeeComp/EmployeeNotificationComponents/EmployeeDeleteBookingComponent.jsx'
-// import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/received_booking_box.jsx";
+import Employee from "./Hr_panel/Components/EmployeeView.jsx";
+import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 
 
 

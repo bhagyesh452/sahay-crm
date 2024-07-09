@@ -1,9 +1,6 @@
-
-
 import React, { useEffect, useState } from "react";
 //import EmpNav from "./EmpNav.js";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
-
 import Header from "../../Components/Header/Header.jsx";
 import { useParams } from "react-router-dom";
 import notificationSound from "../../../assets/media/iphone_sound.mp3";
@@ -54,6 +51,16 @@ import Edit from "@mui/icons-material/Edit";
 import { FaWhatsapp } from "react-icons/fa";
 import RedesignedForm from "../../../admin/RedesignedForm.jsx";
 // import DrawerComponent from "../components/Drawer.js";
+import { IoFilterOutline } from "react-icons/io5";
+import { TbFileImport } from "react-icons/tb";
+import { TbFileExport } from "react-icons/tb";
+import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
+import { IoIosClose } from "react-icons/io";
+import { Country, State, City } from 'country-state-city';
+
 
 function BdmLeads() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -67,6 +74,8 @@ function BdmLeads() {
   const [openLogin, setOpenLogin] = useState(false);
   const [requestData, setRequestData] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [openBacdrop, setOpenBacdrop] = useState(false);
+  const [employeeName, setEmployeeName] = useState("");
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -95,12 +104,78 @@ function BdmLeads() {
   const [isOpen, setIsOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
 
+  // States for filtered and searching data :
+  const stateList = State.getStatesOfCountry("IN");
+  const cityList = City.getCitiesOfCountry("IN");
+
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  //Create an array of years from 2018 to the current year
+  const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+  const [isSearch, setIsSearch] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false);    // Open and Close filter when button clicked.
+  const [filteredData, setFilteredData] = useState([]);
+  const [extraData, setExtraData] = useState([]);
+  const [newFilteredData, setNewFilteredData] = useState([]);
+  const [activeTab, setActiveTab] = useState('All');
+
+  // State for selecting status.
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  // States for selecting states and cities.
+  const [selectedStateCode, setSelectedStateCode] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
+  const [selectedNewCity, setSelectedNewCity] = useState("");
+
+  //  States for selecting assigned date.
+  const [selectedAssignDate, setSelectedAssignDate] = useState(null);
+
+  //  States for selecting company incorporation date.
+  const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null);
+  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedDate, setSelectedDate] = useState(0);
+  const [monthIndex, setMonthIndex] = useState(0);
+  const [daysInMonth, setDaysInMonth] = useState([]);
+
+  useEffect(() => {
+    let monthIndex;
+    if (selectedYear && selectedMonth) {
+      monthIndex = months.indexOf(selectedMonth);
+      setMonthIndex(monthIndex + 1)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+    } else {
+      setDaysInMonth([]);
+    }
+  }, [selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth && selectedDate) {
+      const monthIndex = months.indexOf(selectedMonth) + 1;
+      const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+      const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+      const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+      setSelectedCompanyIncoDate(companyIncoDate);
+    }
+  }, [selectedYear, selectedMonth, selectedDate]);
+
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
+
   const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback");
   };
+
   function navigate(url) {
     window.location.href = url;
   }
@@ -122,6 +197,7 @@ function BdmLeads() {
   //     console.error('Error:', error);
   //   }
   // };
+
   const handleChangeMail = (e) => {
     const { name, value } = e.target;
     setEmailData({ ...emailData, [name]: value });
@@ -134,6 +210,7 @@ function BdmLeads() {
     // Close the compose popup after sending
     setIsOpen(false);
   };
+
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
@@ -184,13 +261,15 @@ function BdmLeads() {
     const audio = new Audio(notificationSound);
     audio.play();
   };
+
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
+
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
     });
@@ -210,13 +289,14 @@ function BdmLeads() {
       socket.disconnect();
     };
   }, []);
+
   const functionopenpopup = () => {
     openchange(true);
   };
 
-  //console.log("projectingcompnay", projectingCompany)
+  //console.log("projectingcompnay", projectingCompany);
+  //console.log("kuchlikho", currentProjection);
 
-  //console.log("kuchlikho", currentProjection)
   const fetchEditRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
@@ -225,7 +305,6 @@ function BdmLeads() {
       console.error("Error fetching data:", error);
     }
   };
-
   //console.log(totalBookings, "This is elon musk");
 
   const functionopenprojection = (comName) => {
@@ -312,7 +391,7 @@ function BdmLeads() {
 
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
-  const [currentCompanyName, setCurrentCompanyName] = useState("")
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
 
   const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
     openchangeRemarks(true);
@@ -326,8 +405,6 @@ function BdmLeads() {
   };
   //console.log("currentcompanyname", currentCompanyName)
 
-
-
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -336,12 +413,15 @@ function BdmLeads() {
   );
 
   const [openNew, openchangeNew] = useState(false);
+
   const functionopenpopupNew = () => {
     openchangeNew(true);
   };
+
   const closeAnchor = () => {
     setOpenAnchor(false);
   };
+
   const functionopenpopupCSV = () => {
     openchangeCSV(true);
   };
@@ -349,12 +429,15 @@ function BdmLeads() {
   const closepopup = () => {
     openchange(false);
   };
+
   const closepopupCSV = () => {
     openchangeCSV(false);
   };
+
   const closepopupNew = () => {
     openchangeNew(false);
   };
+
   const closepopupRemarks = () => {
     openchangeRemarks(false);
     setFilteredRemarks([]);
@@ -370,6 +453,7 @@ function BdmLeads() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
+      setEmployeeName(userData.ename);
       //console.log(tempData);
       setData(userData);
       setmoreFilteredData(userData);
@@ -389,6 +473,7 @@ function BdmLeads() {
     }
   };
   //console.log(projectionData)
+
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
 
@@ -409,6 +494,7 @@ function BdmLeads() {
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
+      setExtraData(sortedData);
       setmoreEmpData(sortedData);
       setTempData(tempData);
       setEmployeeData(
@@ -439,7 +525,7 @@ function BdmLeads() {
           sortedData
             .filter((data) =>
               //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-              ["Busy","Not Picked Up"].includes(data.Status)
+              ["Busy", "Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Busy") return -1;
@@ -457,7 +543,7 @@ function BdmLeads() {
       if (status === "Not Interested" || status === "Junk" || status === "Busy" || status === "Not Picked Up") {
         setEmployeeData(
           tempData.filter(
-            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk" ||status === "Busy" || status === "Not Picked Up"
+            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk" || status === "Busy" || status === "Not Picked Up"
           )
         );
         setdataStatus("NotInterested");
@@ -490,8 +576,7 @@ function BdmLeads() {
   };
 
   useEffect(() => {
-    if(data.ename){
-
+    if (data.ename) {
       fetchNewData("Matured");
     }
   }, [nowToFetch]);
@@ -519,10 +604,8 @@ function BdmLeads() {
       setSubFilterValue("");
       setVisibilityOthernew("none");
     }
-
     //console.log(selectedField);
   };
-
   //console.log(tempData);
 
   const handleDateChange = (e) => {
@@ -596,7 +679,7 @@ function BdmLeads() {
   }, [userId]);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
-  
+
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks/remarks-history`);
@@ -610,9 +693,11 @@ function BdmLeads() {
   };
   //console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
+
   useEffect(() => {
     fetchProjections();
   }, [data]);
+
   useEffect(() => {
     fetchRemarksHistory();
     fetchBookingDeleteRequests();
@@ -634,10 +719,12 @@ function BdmLeads() {
     //   // Now you can send these coordinates to your server for further processing
     // };
     // // console.log(localStorage.getItem("newtoken"), locationAccess);
+    
     if (userId !== localStorage.getItem("bdmUserId")) {
       localStorage.removeItem("bdmToken");
       window.location.replace("/bdmlogin");
     }
+
     // const errorCallback = (error) => {
     //   console.error("Geolocation error:", error.message);
     //   setLocationAccess(false);
@@ -653,74 +740,60 @@ function BdmLeads() {
     //   navigator.geolocation.clearWatch(watchId);
     // };
   }, []);
+
   // console.log(locationAccess);
 
   // console.log(employeeData);
 
-  const filteredData = employeeData.filter((company) => {
-    const fieldValue = company[selectedField];
+  // const filteredData = employeeData.filter((company) => {
+  //   const fieldValue = company[selectedField];
 
-    if (selectedField === "State" && citySearch) {
-      // Handle filtering by both State and City
-      const stateMatches = fieldValue
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const cityMatches = company.City.toLowerCase().includes(
-        citySearch.toLowerCase()
-      );
-      return stateMatches && cityMatches;
-    } else if (selectedField === "Company Incorporation Date  ") {
-      // Assuming you have the month value in a variable named `month`
-      if (month == 0) {
-        return fieldValue.includes(searchText);
-      } else if (year == 0) {
-        return fieldValue.includes(searchText);
-      }
-      const selectedDate = new Date(fieldValue);
-      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-      const selectedYear = selectedDate.getFullYear();
+  //   if (selectedField === "State" && citySearch) {
+  //     // Handle filtering by both State and City
+  //     const stateMatches = fieldValue
+  //       .toLowerCase()
+  //       .includes(searchText.toLowerCase());
+  //     const cityMatches = company.City.toLowerCase().includes(
+  //       citySearch.toLowerCase()
+  //     );
+  //     return stateMatches && cityMatches;
+  //   } else if (selectedField === "Company Incorporation Date  ") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     if (month == 0) {
+  //       return fieldValue.includes(searchText);
+  //     } else if (year == 0) {
+  //       return fieldValue.includes(searchText);
+  //     }
+  //     const selectedDate = new Date(fieldValue);
+  //     const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+  //     const selectedYear = selectedDate.getFullYear();
 
-      // Use the provided month variable in the comparison
-      return (
-        selectedMonth.toString().includes(month) &&
-        selectedYear.toString().includes(year)
-      );
-    } else if (selectedField === "AssignDate") {
-      // Assuming you have the month value in a variable named `month`
-      return fieldValue.includes(searchText);
-    } else if (selectedField === "Status" && searchText === "All") {
-      // Display all data when Status is "All"
-      return true;
-    } else {
-      // Your existing filtering logic for other fields
-      if (typeof fieldValue === "string") {
-        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-      } else if (typeof fieldValue === "number") {
-        return fieldValue.toString().includes(searchText);
-      } else if (fieldValue instanceof Date) {
-        // Handle date fields
-        return fieldValue.includes(searchText);
-      }
+  //     // Use the provided month variable in the comparison
+  //     return (
+  //       selectedMonth.toString().includes(month) &&
+  //       selectedYear.toString().includes(year)
+  //     );
+  //   } else if (selectedField === "AssignDate") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     return fieldValue.includes(searchText);
+  //   } else if (selectedField === "Status" && searchText === "All") {
+  //     // Display all data when Status is "All"
+  //     return true;
+  //   } else {
+  //     // Your existing filtering logic for other fields
+  //     if (typeof fieldValue === "string") {
+  //       return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+  //     } else if (typeof fieldValue === "number") {
+  //       return fieldValue.toString().includes(searchText);
+  //     } else if (fieldValue instanceof Date) {
+  //       // Handle date fields
+  //       return fieldValue.includes(searchText);
+  //     }
 
-      return false;
-    }
-  });
-
-  const [companyName, setCompanyName] = useState("");
-  const [maturedCompanyName, setMaturedCompanyName] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [companyInco, setCompanyInco] = useState(null);
-  const [companyNumber, setCompanyNumber] = useState(0);
-  const [companyId, setCompanyId] = useState("");
-  const [formOpen, setFormOpen] = useState(false);
-  const [editFormOpen, setEditFormOpen] = useState(false);
-  const [addFormOpen, setAddFormOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
+  //     return false;
+  //   }
+  // });
   //console.log(companyName, companyInco);
-
-  const currentData = filteredData.slice(startIndex, endIndex);
-
   //console.log("currentData", currentData)
 
   // const handleStatusChange = async (
@@ -772,6 +845,155 @@ function BdmLeads() {
   //   }
   // };
 
+  const handleSearch = (searchQuery) => {
+    const searchQueryLower = searchQuery.toLowerCase();
+
+    // Check if searchQuery is empty or null
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      setIsSearch(false);
+      setFilteredData(extraData); // Assuming extraData is your full dataset
+      return;
+    }
+
+    setIsFilter(false);
+    setIsSearch(true);
+    
+    const filtered = extraData.filter((company) => {
+      const companyName = company["Company Name"];
+      const companyNumber = company["Company Number"];
+      const companyEmail = company["Company Email"];
+      const companyState = company.State;
+      const companyCity = company.City;
+
+      // Check each field for a match
+      if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+        return true;
+      }
+      return false;
+    });
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    if (filteredData.length !== 0) {
+      //setEmployeeData(filteredData)
+      if (dataStatus === 'All') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up" ||
+              obj.Status === "Untouched"
+          )
+        );
+      } else if (dataStatus === 'Interested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "Interested" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" &&
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        );
+      } else if (dataStatus === 'FollowUp') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              obj.Status === "FollowUp" &&
+              obj.bdmAcceptStatus === "NotForwarded" &&
+              obj.bdmAcceptStatus !== "Pending" &&
+              obj.bdmAcceptStatus !== "Accept"
+          )
+        )
+      } else if (dataStatus === 'Matured') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                obj.Status === "Matured" &&
+                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+            )
+        );
+      } else if (dataStatus === 'Forwarded') {
+        setEmployeeData(
+          filteredData
+            .filter(
+              (obj) =>
+                (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
+                obj.bdmAcceptStatus !== "NotForwarded" &&
+                obj.Status !== "Not Interested" &&
+                obj.Status !== "Busy" &&
+                obj.Status !== "Junk" &&
+                obj.Status !== "Not Picked Up" &&
+                obj.Status !== "Matured"
+            )
+            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+        );
+      } else if (dataStatus === 'NotInterested') {
+        setEmployeeData(
+          filteredData.filter(
+            (obj) =>
+              (obj.Status === "Not Interested" ||
+                obj.Status === "Junk") &&
+              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+          )
+        );
+      }
+      if (filteredData.length === 1) {
+        const currentStatus = filteredData[0].Status; // Access Status directly
+        if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+          setdataStatus('All')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'Interested') {
+          setdataStatus('Interested')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+          currentStatus === 'FollowUp') {
+          setdataStatus('FollowUp')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+          setdataStatus('Matured')
+        } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+          currentStatus !== "Not Interested" &&
+          currentStatus !== "Busy" &&
+          currentStatus !== 'Junk' &&
+          currentStatus !== 'Not Picked Up' &&
+          currentStatus !== 'Matured') {
+          setdataStatus('Forwarded')
+        } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+          setdataStatus('NotInterested')
+        }
+      }
+    } else {
+      setEmployeeData(filteredData)
+    }
+
+  }, [filteredData]);
+
+  const [companyName, setCompanyName] = useState("");
+  const [maturedCompanyName, setMaturedCompanyName] = useState("");
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [companyInco, setCompanyInco] = useState(null);
+  const [companyNumber, setCompanyNumber] = useState(0);
+  const [companyId, setCompanyId] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const currentData = employeeData.slice(startIndex, endIndex);
 
   const handleStatusChange = async (
     employeeId,
@@ -793,18 +1015,18 @@ function BdmLeads() {
       setFormOpen(true);
       return true;
     }
-  
+
     // Assuming `data` is defined somewhere in your code
     const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-  
+
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
-  
+
     try {
       let response;
-  
+
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp") {
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
@@ -815,25 +1037,25 @@ function BdmLeads() {
               title,
               date,
               time,
-              
-            })
-            const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}` , {
-              bdmAcceptStatus : "NotForwarded"
-            })
 
-            const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`,{
-              caseType:"NotForwarded"
-            }
-            )
-          
-          
+            })
+          const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}`, {
+            bdmAcceptStatus: "NotForwarded"
+          })
+
+          const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`, {
+            caseType: "NotForwarded"
+          }
+          )
+
+
         } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}` , {
+          response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}`, {
             newStatus
           });
 
           //console.log(response.data)
-         
+
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${employeeId}`,
             {
@@ -843,10 +1065,10 @@ function BdmLeads() {
               time,
             }
           );
-          
+
         }
       }
-  
+
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
@@ -859,7 +1081,7 @@ function BdmLeads() {
           }
         );
       }
-  
+
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming `fetchNewData` is a function to fetch updated employee data
@@ -873,7 +1095,7 @@ function BdmLeads() {
       console.error("Error updating status:", error.message);
     }
   };
-  
+
 
   const fetchBookingDeleteRequests = async () => {
     try {
@@ -1034,7 +1256,7 @@ function BdmLeads() {
 
   // Request form for Employees
 
-  const [selectedYear, setSelectedYear] = useState("");
+  // const [selectedYear, setSelectedYear] = useState("");
   const [companyType, setCompanyType] = useState("");
   const [numberOfData, setNumberOfData] = useState("");
 
@@ -1049,6 +1271,7 @@ function BdmLeads() {
   const handleNumberOfDataChange = (event) => {
     setNumberOfData(event.target.value);
   };
+
   function formatDateproper(inputDate) {
     const options = { month: "long", day: "numeric", year: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -1057,6 +1280,7 @@ function BdmLeads() {
     );
     return formattedDate;
   }
+
   const handleSubmit = async (event) => {
     const name = data.ename;
     const dateObject = new Date();
@@ -1158,7 +1382,7 @@ function BdmLeads() {
     e.preventDefault();
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
-    } 
+    }
     else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
       Swal.fire("Company Number is required");
     } else if (cemail === "") {
@@ -1252,6 +1476,7 @@ function BdmLeads() {
     setFirstPlus(false);
     setSecondPlus(true);
   };
+
   const functionOpenThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(true);
@@ -1268,6 +1493,7 @@ function BdmLeads() {
     setSecondPlus(false);
     setFirstPlus(true);
   };
+
   const functionCloseThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(false);
@@ -1417,8 +1643,8 @@ function BdmLeads() {
   // csvdata.map((item)=>{
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
-
   //console.log("csv", csvdata);
+
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
@@ -1453,6 +1679,7 @@ function BdmLeads() {
       Swal.fire("Please upload data");
     }
   };
+
   const fetchApproveRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
@@ -1471,6 +1698,7 @@ function BdmLeads() {
       console.error("Error fetching data:", error.message);
     }
   };
+
   const fetchRedesignedFormData = async () => {
     try {
       //console.log(maturedID);
@@ -1484,14 +1712,15 @@ function BdmLeads() {
       console.error("Error fetching data:", error.message);
     }
   };
+
   useEffect(() => {
     //console.log("Matured ID Changed", maturedID);
     if (maturedID) {
       fetchRedesignedFormData();
     }
   }, [maturedID]);
-
   //console.log("Current Form:", currentForm);
+
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1501,6 +1730,7 @@ function BdmLeads() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
+
   // useEffect(() => {
   //   const employeeName = data.ename;
   //   if (employeeName) {
@@ -1697,9 +1927,11 @@ function BdmLeads() {
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
   };
+
   const handleCloseIncoDate = () => {
     setOpenIncoDate(false);
   };
+  
   const handleMarktrue = async () => {
     try {
       // Assuming 'id' is the ID of the object you want to mark as read
@@ -1714,6 +1946,7 @@ function BdmLeads() {
       console.error("Error marking object as read:", error);
     }
   };
+
   const createNewArray = (data) => {
     let dataArray;
 
@@ -1764,8 +1997,7 @@ function BdmLeads() {
   };
 
   // Call the function to create the new array
-  const resultArray =
-    moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
+  const resultArray = moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
 
   // const handleYearFilterChange = (e, selectedYear) => {
   //   const isChecked = e.target.checked;
@@ -1988,106 +2220,106 @@ function BdmLeads() {
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
-    // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+  // -------------------------------------------------add leads form validation and debounce correction----------------------------------
 
-    const debouncedSetCname = debounce((value) => {
-      setCname(value);
-    }, 10);
-  
-    const debouncedSetEmail = debounce((value) => {
-      setCemail(value);
-    }, 10);
-  
-    const debouncedSetAddress = debounce((value) => {
-      setCompanyAddress(value);
-    }, 10);
-  
-    const debouncedSetIncoDate = debounce((value) => {
-      setCidate(value);
-    }, 10);
-  
-    const [errorCNumber, setErrorCNumber] = useState('');
-  
-    const debouncedSetCompanyNumber = debounce((value) => {
-      if (/^\d{10}$/.test(value)) {
-        setCnumber(value);
-        setErrorCNumber('');
-      } else {
-        setErrorCNumber('Please enter a 10-digit number');
-        setCnumber()
-      }
-  
-    }, 10);
-  
-    const debouncedSetCity = debounce((value) => {
-      setCity(value);
-    }, 10);
-  
-    const debouncedSetState = debounce((value) => {
-      setState(value);
-    }, 10);
-  
-    const debounceSetFirstDirectorName = debounce((value) => {
-      setDirectorNameFirst(value);
-    }, 10);
-  
-    const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
-    const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
-    const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
-  
-    const debounceSetFirstDirectorNumber = debounce((value) => {
-      if (/^\d{10}$/.test(value)) {
-        setDirectorNumberFirst(value)
-        setErrorDirectorNumberFirst("")
-      } else {
-        setErrorDirectorNumberFirst('Please Enter 10 digit Number')
-        setDirectorNumberFirst()
-      }
-    }, 10);
-  
-    const debounceSetFirstDirectorEmail = debounce((value) => {
-      setDirectorEmailFirst(value);
-    }, 10);
-  
-    const debounceSetSecondDirectorName = debounce((value) => {
-      setDirectorNameSecond(value);
-    }, 10);
-  
-    const debounceSetSecondDirectorNumber = debounce((value) => {
-      if (/^\d{10}$/.test(value)) {
-        setDirectorNumberSecond(value)
-        setErrorDirectorNumberSecond("")
-      } else {
-        setErrorDirectorNumberSecond('Please Enter 10 digit Number')
-        setDirectorNumberSecond()
-      }
-    }, 10);
-  
-    const debounceSetSecondDirectorEmail = debounce((value) => {
-      setDirectorEmailSecond(value);
-    }, 10);
-  
-    const debounceSetThirdDirectorName = debounce((value) => {
-      setDirectorNameThird(value);
-    }, 10);
-  
-    const debounceSetThirdDirectorNumber = debounce((value) => {
-      if (/^\d{10}$/.test(value)) {
-        setDirectorNumberThird(value)
-        setErrorDirectorNumberThird("")
-      } else {
-        setErrorDirectorNumberThird('Please Enter 10 digit Number')
-        setDirectorNumberThird()
-      }
-    }, 10);
-  
-    const debounceSetThirdDirectorEmail = debounce((value) => {
-      setDirectorEmailThird(value);
-    }, 10);
-  
-  
-  
-  
+  const debouncedSetCname = debounce((value) => {
+    setCname(value);
+  }, 10);
+
+  const debouncedSetEmail = debounce((value) => {
+    setCemail(value);
+  }, 10);
+
+  const debouncedSetAddress = debounce((value) => {
+    setCompanyAddress(value);
+  }, 10);
+
+  const debouncedSetIncoDate = debounce((value) => {
+    setCidate(value);
+  }, 10);
+
+  const [errorCNumber, setErrorCNumber] = useState('');
+
+  const debouncedSetCompanyNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setCnumber(value);
+      setErrorCNumber('');
+    } else {
+      setErrorCNumber('Please enter a 10-digit number');
+      setCnumber()
+    }
+
+  }, 10);
+
+  const debouncedSetCity = debounce((value) => {
+    setCity(value);
+  }, 10);
+
+  const debouncedSetState = debounce((value) => {
+    setState(value);
+  }, 10);
+
+  const debounceSetFirstDirectorName = debounce((value) => {
+    setDirectorNameFirst(value);
+  }, 10);
+
+  const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+  const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+  const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+
+  const debounceSetFirstDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberFirst(value)
+      setErrorDirectorNumberFirst("")
+    } else {
+      setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+      setDirectorNumberFirst()
+    }
+  }, 10);
+
+  const debounceSetFirstDirectorEmail = debounce((value) => {
+    setDirectorEmailFirst(value);
+  }, 10);
+
+  const debounceSetSecondDirectorName = debounce((value) => {
+    setDirectorNameSecond(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberSecond(value)
+      setErrorDirectorNumberSecond("")
+    } else {
+      setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+      setDirectorNumberSecond()
+    }
+  }, 10);
+
+  const debounceSetSecondDirectorEmail = debounce((value) => {
+    setDirectorEmailSecond(value);
+  }, 10);
+
+  const debounceSetThirdDirectorName = debounce((value) => {
+    setDirectorNameThird(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberThird(value)
+      setErrorDirectorNumberThird("")
+    } else {
+      setErrorDirectorNumberThird('Please Enter 10 digit Number')
+      setDirectorNumberThird()
+    }
+  }, 10);
+
+  const debounceSetThirdDirectorEmail = debounce((value) => {
+    setDirectorEmailThird(value);
+  }, 10);
+
+
+
+
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
@@ -2177,6 +2409,71 @@ function BdmLeads() {
 
   // console.log(paymentLink)
 
+  const functionCloseFilterDrawer = () => {
+    setOpenFilterDrawer(false)
+  };
+
+  const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+    try {
+      setIsFilter(true);
+      setOpenBacdrop(true);
+
+      const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
+        params: {
+          employeeName,
+          selectedStatus,
+          selectedState,
+          selectedNewCity,
+          selectedYear,
+          monthIndex,
+          selectedAssignDate,
+          selectedCompanyIncoDate,
+          page,
+          limit
+        }
+      });
+
+      if (
+        !selectedStatus &&
+        !selectedState &&
+        !selectedNewCity &&
+        !selectedYear &&
+        !selectedCompanyIncoDate
+      ) {
+        // If no filters are applied, reset the filter state and stop the backdrop
+        setIsFilter(false);
+      } else {
+        // Update the employee data with the filtered results
+        console.log(response.data)
+        setFilteredData(response.data)
+      }
+    } catch (error) {
+      console.log('Error applying filter', error.message);
+    } finally {
+      setOpenBacdrop(false);
+      setOpenFilterDrawer(false);
+    }
+  };
+
+  console.log("FILTEREDdATA", filteredData);
+
+  const handleClearFilter = () => {
+    functionCloseFilterDrawer();
+    setIsFilter(false);
+    setSelectedStatus('');
+    setSelectedState('');
+    setSelectedNewCity('');
+    setSelectedYear('');
+    setSelectedMonth('');
+    setSelectedDate(0);
+    setSelectedAssignDate(null);
+    setCompanyIncoDate(null);
+    setSelectedCompanyIncoDate(null);
+    setFilteredData([]);
+    fetchNewData();
+    //fetchData(1, latestSortCount)
+  };
+
   return (
     <div>
       <Header bdmName={data.ename} designation={data.designation} />
@@ -2189,6 +2486,7 @@ function BdmLeads() {
             <div className="page-wrapper">
               <div className="page-header d-print-none">
                 <div className="container-xl">
+
                   {requestData !== null && requestData !== undefined && (
                     <div className="notification-bar">
                       <div className="noti-text">
@@ -2203,15 +2501,16 @@ function BdmLeads() {
                       </div>
                     </div>
                   )}
-                  <div className="row g-2 align-items-center">
+
+                  {/* <div className="row g-2 align-items-center">
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
                       }}
                       className="features">
-                      <div style={{ display: "flex" }} className="feature1">
-                        {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                      <div style={{ display: "flex" }} className="feature1"> */}
+                  {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
                         Gmail SignIn
                     </button>
                     <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -2228,7 +2527,7 @@ function BdmLeads() {
 
                     </Dialog> */}
 
-                        <div
+                  {/* <div
                           className="form-control"
                           style={{ height: "fit-content", width: "auto" }}>
                           <select
@@ -2277,9 +2576,9 @@ function BdmLeads() {
                             }}
                             className="input-icon"
                           >
-                            <span className="input-icon-addon">
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                              <svg
+                            <span className="input-icon-addon"> */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                  {/* <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="icon"
                                 width="20"
@@ -2518,9 +2817,9 @@ function BdmLeads() {
 
                         {selectedField === "State" && (
                           <div style={{ width: "15vw" }} className="input-icon">
-                            <span className="input-icon-addon">
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                              <svg
+                            <span className="input-icon-addon"> */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                  {/* <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="icon"
                                 width="20"
@@ -2593,8 +2892,8 @@ function BdmLeads() {
                             <div
                               className="input-icon  form-control"
                               style={{ margin: "0px 10px", width: "110px" }}
-                            >
-                              {/* <input
+                            > */}
+                  {/* <input
                             type="number"
                             value={year}
                             defaultValue="Select Year"
@@ -2605,7 +2904,7 @@ function BdmLeads() {
                             }}
                             aria-label="Search in website"
                           /> */}
-                              <select
+                  {/* <select
                                 select
                                 style={{ border: "none", outline: "none" }}
                                 value={year}
@@ -2644,9 +2943,9 @@ function BdmLeads() {
                               data-bs-toggle="modal"
                               data-bs-target="#modal-report"
                               aria-label="Create new report"
-                            >
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                            </a>
+                            > */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  {/* </a>
                           </div>
                         </div>
                         <div
@@ -2665,9 +2964,9 @@ function BdmLeads() {
                               data-bs-toggle="modal"
                               data-bs-target="#modal-report"
                               aria-label="Create new report"
-                            >
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                            </a>
+                            > */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  {/* </a>
                           </div>
                         </div>
                         <div className="importCSV request">
@@ -2675,9 +2974,9 @@ function BdmLeads() {
                             <button
                               className="btn btn-primary d-none d-sm-inline-block"
                               onClick={functionopenpopupCSV}
-                            >
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                              <svg
+                            > */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  {/* <svg
                                 style={{
                                   verticalAlign: "middle",
                                 }}
@@ -2708,17 +3007,78 @@ function BdmLeads() {
                               data-bs-toggle="modal"
                               data-bs-target="#modal-report"
                               aria-label="Create new report"
-                            >
-                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                            </a>
+                            > */}
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  {/* </a>
                           </div>
                         </div>
                       </div>
+                    </div> */}
+                  {/* <!-- Page title actions --> */}
+                  {/* </div> */}
+
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center">
+                      <div className="btn-group mr-2">
+                        <button type="button" className="btn mybtn"
+                          onClick={functionopenpopupNew}
+                        >
+                          <TiUserAddOutline className='mr-1' /> Add Leads
+                        </button>
+                      </div>
+                      <div className="btn-group" role="group" aria-label="Basic example">
+                        <button type="button"
+                          className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                          onClick={() => setOpenFilterDrawer(true)}
+                        >
+                          <IoFilterOutline className='mr-1' /> Filter
+                        </button>
+                        <button type="button" className="btn mybtn"
+                          onClick={functionopenpopupCSV}
+                        >
+                          <TbFileImport className='mr-1' /> Import Leads
+                        </button>
+                        <button type="button" className="btn mybtn"
+                          onClick={functionopenpopup}
+                        >
+                          <MdOutlinePostAdd className='mr-1' /> Request Data
+                        </button>
+                      </div>
                     </div>
-                    {/* <!-- Page title actions --> */}
+                    <div className="d-flex align-items-center">
+                      {/* {selectedRows.length !== 0 && (
+                                    <div className="selection-data" >
+                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                    </div>
+                                )} */}
+                      <div class="input-icon ml-1">
+                        <span class="input-icon-addon">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                            <path d="M21 21l-6 -6"></path>
+                          </svg>
+                        </span>
+                        <input
+                          value={searchQuery}
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            handleSearch(e.target.value);
+                            //handleFilterSearch(e.target.value)
+                            //setCurrentPage(0);
+                          }}
+                          className="form-control search-cantrol mybtn"
+                          placeholder="Search…"
+                          type="text"
+                          name="bdeName-search"
+                          id="bdeName-search" />
+                      </div>
+                    </div>
                   </div>
+
                 </div>
               </div>
+
               <div
                 onCopy={(e) => {
                   e.preventDefault();
@@ -2736,12 +3096,20 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("All");
                             setCurrentPage(0);
+                            const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
-                              moreEmpData.filter(
+                              mappedData.filter(
                                 (obj) =>
-                                  obj.Status === "Busy" ||
-                                  obj.Status === "Not Picked Up" ||
-                                  obj.Status === "Untouched"
+                                  (obj.Status === "Busy" ||
+                                    obj.Status === "Not Picked Up" ||
+                                    obj.Status === "Untouched") &&
+                                  (obj.bdmAcceptStatus !== "Forwarded" &&
+                                    obj.bdmAcceptStatus !== "Accept" &&
+                                    obj.bdmAcceptStatus !== "Pending")
+                              ).sort(
+                                (a, b) =>
+                                  new Date(b.lastActionDate) -
+                                  new Date(a.lastActionDate)
                               )
                             );
                           }}
@@ -2755,11 +3123,14 @@ function BdmLeads() {
                           General{" "}
                           <span className="no_badge">
                             {
-                              moreEmpData.filter(
+                              ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                                 (obj) =>
-                                  obj.Status === "Busy" ||
-                                  obj.Status === "Not Picked Up" ||
-                                  obj.Status === "Untouched"
+                                  (obj.Status === "Busy" ||
+                                    obj.Status === "Not Picked Up" ||
+                                    obj.Status === "Untouched") &&
+                                  (obj.bdmAcceptStatus !== "Forwarded" &&
+                                    obj.bdmAcceptStatus !== "Accept" &&
+                                    obj.bdmAcceptStatus !== "Pending")
                               ).length
                             }
                           </span>
@@ -2771,9 +3142,12 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("Interested");
                             setCurrentPage(0);
+                            const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "Interested"
+                              mappedData.filter(
+                                (obj) =>
+                                  obj.Status === "Interested" &&
+                                  obj.bdmAcceptStatus === "NotForwarded"
                               )
                             );
                           }}
@@ -2787,8 +3161,10 @@ function BdmLeads() {
                           Interested{" "}
                           <span className="no_badge">
                             {
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "Interested"
+                              ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                (obj) =>
+                                  obj.Status === "Interested" &&
+                                  obj.bdmAcceptStatus === "NotForwarded"
                               ).length
                             }
                           </span>
@@ -2801,9 +3177,12 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("FollowUp");
                             setCurrentPage(0);
+                            const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "FollowUp"
+                              mappedData.filter(
+                                (obj) =>
+                                  obj.Status === "FollowUp" &&
+                                  obj.bdmAcceptStatus === "NotForwarded"
                               )
                             );
                           }}
@@ -2817,8 +3196,10 @@ function BdmLeads() {
                           Follow Up{" "}
                           <span className="no_badge">
                             {
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "FollowUp"
+                              ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                (obj) =>
+                                  obj.Status === "FollowUp" &&
+                                  obj.bdmAcceptStatus === "NotForwarded"
                               ).length
                             }
                           </span>
@@ -2831,9 +3212,14 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("Matured");
                             setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
-                              moreEmpData
-                                .filter((obj) => obj.Status === "Matured")
+                              mappedData
+                                .filter(
+                                  (obj) =>
+                                    obj.Status === "Matured" &&
+                                    (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                                )
                                 .sort(
                                   (a, b) =>
                                     new Date(b.lastActionDate) -
@@ -2852,8 +3238,12 @@ function BdmLeads() {
                           <span className="no_badge">
                             {" "}
                             {
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "Matured"
+                              ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                                (obj) =>
+                                  obj.Status === "Matured" &&
+                                  (obj.bdmAcceptStatus === "NotForwarded" ||
+                                    obj.bdmAcceptStatus === "Pending" ||
+                                    obj.bdmAcceptStatus === "Accept")
                               ).length
                             }
                           </span>
@@ -2865,11 +3255,13 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("NotInterested");
                             setCurrentPage(0);
+                            const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
-                              moreEmpData.filter(
+                              mappedData.filter(
                                 (obj) =>
-                                  obj.Status === "Not Interested" ||
-                                  obj.Status === "Junk"
+                                  (obj.Status === "Not Interested" ||
+                                    obj.Status === "Junk") &&
+                                  (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                               )
                             );
                           }}
@@ -2883,10 +3275,11 @@ function BdmLeads() {
                           Not-Interested{" "}
                           <span className="no_badge">
                             {
-                              moreEmpData.filter(
+                              ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                                 (obj) =>
-                                  obj.Status === "Not Interested" ||
-                                  obj.Status === "Junk"
+                                  (obj.Status === "Not Interested" ||
+                                    obj.Status === "Junk") &&
+                                  (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                               ).length
                             }
                           </span>
@@ -3125,7 +3518,7 @@ function BdmLeads() {
                             <tbody>
                               <tr>
                                 <td colSpan="11">
-                                  <div  className="LoaderTDSatyle">
+                                  <div className="LoaderTDSatyle">
                                     <ClipLoader
                                       color="lightgrey"
                                       loading
@@ -3635,11 +4028,12 @@ function BdmLeads() {
           </>
         )
       }
+
       {formOpen && (<>
         <RedesignedForm
           // matured={true}
           // companysId={companyId}
-          isBdm = {true}
+          isBdm={true}
           setDataStatus={setdataStatus}
           setFormOpen={setFormOpen}
           companysName={companyName}
@@ -3668,8 +4062,8 @@ function BdmLeads() {
       }
       {
         addFormOpen && (
-          <> 
-          {/* <AddLeadForm setFormOpen={setAddFormOpen}
+          <>
+            {/* <AddLeadForm setFormOpen={setAddFormOpen}
             companysName={companyName}
             setNowToFetch={setNowToFetch}
             setDataStatus={setdataStatus} /> */}
@@ -3679,7 +4073,7 @@ function BdmLeads() {
 
 
       {/* Request Data popup */}
-      <Dialog className='My_Mat_Dialog'   open={open} onClose={closepopup} fullWidth maxWidth="sm">
+      <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Request Data{" "}
           <IconButton onClick={closepopup} style={{ float: "right" }}>
@@ -3828,12 +4222,13 @@ function BdmLeads() {
           <button
             style={{ width: "100%" }}
             onClick={handleSubmit}
-            className="btn btn-primary bdr-radius-none" 
+            className="btn btn-primary bdr-radius-none"
           >
             Submit
           </button>
         </div>
       </Dialog>
+
       {/* --------------------------  Inco-filter ---------------- */}
       {/* <Dialog
         open={openIncoDate}
@@ -3974,7 +4369,7 @@ function BdmLeads() {
                 }}
               ></textarea>
             </div>
-     
+
           </div>
         </DialogContent>
         <button
@@ -3988,7 +4383,6 @@ function BdmLeads() {
       </Dialog>
 
       {/* ADD Leads starts here */}
-
       {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
         <DialogTitle>
           Company Info{" "}
@@ -4094,7 +4488,7 @@ function BdmLeads() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-        <div className="modal-dialog" role="document">
+          <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-body">
                 <div className="row">
@@ -4146,7 +4540,7 @@ function BdmLeads() {
                   <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
-                        Company Incorporation Date 
+                        Company Incorporation Date
                       </label>
                       <input
                         onChange={(e) => {
@@ -4541,6 +4935,7 @@ function BdmLeads() {
           </div>
         </div>
       </Drawer>
+
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer
@@ -4815,6 +5210,157 @@ function BdmLeads() {
             </div>
           </div>
         </Drawer>
+
+        {/* //----------------leads filter drawer------------------------------- */}
+        <Drawer
+          style={{ top: "50px" }}
+          anchor="left"
+          open={openFilterDrawer}
+          onClose={functionCloseFilterDrawer}>
+          <div style={{ width: "31em" }}>
+            <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+              <h2 className="title m-0">
+                Filters
+              </h2>
+              <div>
+                <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
+                  <IoIosClose style={{
+                    height: "36px",
+                    width: "32px",
+                    color: "grey"
+                  }} />
+                </button>
+              </div>
+            </div>
+            <hr style={{ margin: "0px" }} />
+            <div className="body-Drawer">
+              <div className='container-xl mt-2 mb-2'>
+                <div className='row'>
+                  <div className='col-sm-12 mt-3'>
+                    <div className='form-group'>
+                      <label for="exampleFormControlInput1" class="form-label">Status</label>
+                      <select class="form-select form-select-md" aria-label="Default select example"
+                        value={selectedStatus}
+                        onChange={(e) => {
+                          setSelectedStatus(e.target.value)
+                        }}
+                      >
+                        <option selected value='Select Status'>Select Status</option>
+                        <option value='Not Picked Up'>Not Picked Up</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Junk">Junk</option>
+                        <option value="Not Interested">Not Interested</option>
+                        <option value="Untouched">Untouched</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Matured">Matured</option>
+                        <option value="FollowUp">Followup</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className='col-sm-12 mt-2'>
+                    <div className='d-flex align-items-center justify-content-between'>
+                      <div className='form-group w-50 mr-1'>
+                        <label for="exampleFormControlInput1" class="form-label">State</label>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedState}
+                          onChange={(e) => {
+                            setSelectedState(e.target.value)
+                            setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                            setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                            //handleSelectState(e.target.value)
+                          }}
+                        >
+                          <option value=''>State</option>
+                          {stateList.length !== 0 && stateList.map((item) => (
+                            <option value={item.name}>{item.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='form-group w-50'>
+                        <label for="exampleFormControlInput1" class="form-label">City</label>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedNewCity}
+                          onChange={(e) => {
+                            setSelectedNewCity(e.target.value)
+                          }}
+                        >
+                          <option value="">City</option>
+                          {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                            <option value={item.name}>{item.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col-sm-12 mt-2'>
+                    <div className='form-group'>
+                      <label for="assignon" class="form-label">Assign On</label>
+                      <input type="date" class="form-control" id="assignon"
+                        value={selectedAssignDate}
+                        placeholder="dd-mm-yyyy"
+                        defaultValue={null}
+                        onChange={(e) => setSelectedAssignDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className='col-sm-12 mt-2'>
+                    <label class="form-label">Incorporation Date</label>
+                    <div className='row align-items-center justify-content-between'>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedYear}
+                          onChange={(e) => {
+                            setSelectedYear(e.target.value)
+                          }}
+                        >
+                          <option value=''>Year</option>
+                          {years.length !== 0 && years.map((item) => (
+                            <option>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          value={selectedMonth}
+                          disabled={selectedYear === ""}
+                          onChange={(e) => {
+                            setSelectedMonth(e.target.value)
+                          }}
+                        >
+                          <option value=''>Month</option>
+                          {months && months.map((item) => (
+                            <option value={item}>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className='col form-group mr-1'>
+                        <select class="form-select form-select-md" aria-label="Default select example"
+                          disabled={selectedMonth === ''}
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                        >
+                          <option value=''>Date</option>
+                          {daysInMonth.map((day) => (
+                            <option key={day} value={day}>{day}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="footer-Drawer d-flex justify-content-between align-items-center">
+              <button className='filter-footer-btn btn-clear'
+              onClick={handleClearFilter}
+              >Clear Filter</button>
+              <button className='filter-footer-btn btn-yellow'
+              onClick={handleFilterData}
+              >Apply Filter</button>
+            </div>
+          </div>
+        </Drawer>
+
         <div className="compose-email">
           {isOpen && (
             <div className="compose-popup">
