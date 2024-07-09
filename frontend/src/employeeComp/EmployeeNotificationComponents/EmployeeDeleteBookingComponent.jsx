@@ -41,6 +41,27 @@ function EmployeeDeleteBookingComponent({ ename }) {
     }
   }, [ename])
 
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
+
+
+    socket.on("delete-request-done", () => {
+      fetchDataDelete(); // Same condition
+    });
+
+    socket.on("delete-request-done-ondelete", () => {
+      fetchDataDelete(); // Same condition
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
 
 
 

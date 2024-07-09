@@ -21,10 +21,11 @@ import CloseIcon from "@mui/icons-material/Close";
 
 function EmployeeGeneralDataComponent({ ename }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [requestData, setRequestData] = useState([])
+  const [requestData, setRequestData] = useState([]);
+  const [search_requestData, setSearch_requestData] = useState([]);
+  const [searchText, setSearchText] = useState("")
 
 
-  console.log("boom" , ename)
 
   function formatDate(timestamp) {
     const date = new Date(timestamp);
@@ -45,6 +46,29 @@ function EmployeeGeneralDataComponent({ ename }) {
       console.log("Error fetching request data", error.messgae)
     }
   }
+
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
+    
+    socket.on("data-sent", () => {
+      fetchRequestGDetails()
+      });
+
+    socket.on("delete-leads-request-bde" , ()=>{
+      fetchRequestGDetails()
+    });
+   
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
 
   useEffect(() => {
     fetchRequestGDetails()
@@ -78,26 +102,25 @@ function EmployeeGeneralDataComponent({ ename }) {
     <div className="my-card mt-2">
       <div className="my-card-head p-2">
         <div className="filter-area d-flex justify-content-between w-100">
-          <div className="filter-by-bde d-flex align-items-center">
+          {/* <div className="filter-by-bde d-flex align-items-center">
             <div className='mr-2'>
               <label htmlFor="search_bde ">BDE : </label>
             </div>
-            {/* <div className='GeneralNoti-Filter'>
+            <div className='GeneralNoti-Filter'>
                     <input value={searchText} onChange={(e) => setSearchText(e.target.value)} type="text" name="search_bde" id="search_bde" className='form-control col-sm-8' placeholder='Please Enter BDE name' />
-                </div> */}
-          </div>
-          <div className="filter-by-date d-flex align-items-center">
+                </div>
+          </div> */}
+          {/* <div className="filter-by-date d-flex align-items-center">
             <div className='mr-2'>
               <label htmlFor="search_bde "> Filter By : </label>
             </div>
-            {/* <div className='GeneralNoti-Filter'>
+            <div className='GeneralNoti-Filter'>
                     <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)} name="filter_requests" id="filter_requests" className="form-select">
                         <option value="Pending" selected>Pending</option>
                         <option value="Completed" >Completed</option>
                     </select>
-                </div> */}
-          </div>
-
+                </div>
+          </div> */}
         </div>
       </div>
       <div className='my-card-body p-2'>
@@ -127,9 +150,7 @@ function EmployeeGeneralDataComponent({ ename }) {
                       </div>
                     </td>
                     <td><div className="Notification-date d-flex align-items-center justify-content-center">
-
                       <MdDateRange style={{ fontSize: '16px' }} />
-
                       <div style={{ marginLeft: '5px' }} className="noti-text">
                         <b>
                           {formatDate(obj.cDate)}

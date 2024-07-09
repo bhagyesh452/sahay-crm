@@ -72,7 +72,7 @@ import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
 import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
-
+import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 
 
 
@@ -117,10 +117,7 @@ function App() {
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
           <Route path='/employee/show-notification/:userId' element={newtoken ? <EmployeeShowNotification /> : <Navigate to='/' />}></Route>
-          <Route path='/employees/employees-notification-general-data/:userId' element={newtoken ? <EmployeeGeneralDataComponent/> : <Navigate to = '/'/>}></Route>
-          <Route path='/employees/employees-notification-approve-data/:userId' element={newtoken ? <EmployeeApproveDataComponent/> : <Navigate to = '/'/>}></Route>
-          <Route path='/employees/employees-notification-bookingedit/:userId' element={newtoken ? <EmployeeBookingEditCopmonent/> : <Navigate to = '/'/>}></Route>
-          <Route path='/employees/employees-notification-deletebooking/:userId' element={newtoken ? <EmployeeDeleteBookingComponent/> : <Navigate to = '/'/>}></Route>
+        
 
           {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
           <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>

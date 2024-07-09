@@ -193,16 +193,17 @@ router.get("/get-notification", async (req, res) => {
     res.status(500).json({ message: "Error fetching notifications", error: err });
   }
 });
-router.get("/get-notification/:ename", async (req, res) => {
+router.get("/get-notification/:name", async (req, res) => {
   try {
-    const { ename } = req.params;
+    const { name } = req.params;
+    console.log("name" , name)
     // Query to get the top 5 unread notifications sorted by requestTime
-    const topUnreadNotifications = await NotiModel.find({ status: "Unread", ename })
+    const topUnreadNotifications = await NotiModel.find({ ename: name, employee_status: "Unread" })
       .sort({ requestTime: -1 })
       .limit(5);
 
-    // Query to get the count of all unread notifications
-    const totalUnreadCount = await NotiModel.countDocuments({ status: "Unread" });
+    // Query to get the count of all unread notifications for the specified ename
+    const totalUnreadCount = await NotiModel.countDocuments({ ename: name, employee_status: "Unread" });
 
     // Respond with both the top unread notifications and the total count
     res.status(200).json({
@@ -390,13 +391,11 @@ router.put("/requestgData/:id", async (req, res) => {
     if (!updatedNotification) {
       return res.status(404).json({ error: "Notification not found" });
     }
-
-    res.json(updatedNotification);
     const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
     let GetEmployeeProfile = "no-image"
     if (GetEmployeeData) {
       const EmployeeData = GetEmployeeData.employee_profile;
-      console.log("Employee Data:", EmployeeData);
+      //console.log("Employee Data:", EmployeeData);
 
       if (EmployeeData && EmployeeData.length > 0) {
         GetEmployeeProfile = EmployeeData[0].filename;
@@ -414,34 +413,68 @@ router.put("/requestgData/:id", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
+      employee_status:"Unread",
       img_url: GetEmployeeProfile
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
-    socketIO.emit("data-sent", name);
+    socketIO.emit("data-sent", {
+      name : name,
+      dAmount : updatedNotification.dAmount
+    });
+
+    res.status(200).json(updatedNotification);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// router.delete("/requestgData/:id", async (req, res) => {
+//   const { id } = req.params;
+//   try {
+
+//     // Update the 'read' property in the MongoDB model
+//     const updatedNotification = await RequestGModel.findByIdAndDelete(
+//       id
+//     );
+//     res.status(200).json({ error: "Request Deleted" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.delete("/requestgData/:id", async (req, res) => {
   const { id } = req.params;
-
+  const socketIO = req.io;
 
   try {
+    // Find the document by its ID
+    const notification = await RequestGModel.findById(id);
+    
+    // If the document doesn't exist, return an error
+    if (!notification) {
+      return res.status(404).json({ error: "Request not found" });
+    }
 
-    // Update the 'read' property in the MongoDB model
-    const updatedNotification = await RequestGModel.findByIdAndDelete(
-      id
-    );
+    // Use the data before deleting it
+    // For example, you can log the data or emit it to a socket event
+    socketIO.emit("delete-leads-request-bde", {
+      name: notification.ename,
+      dAmount: notification.dAmount,
+      // add other properties you need to use here
+    });
 
-    res.status(200).json({ error: "Request Deleted" });
+    // Delete the document after using its data
+    await RequestGModel.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Request Deleted" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 router.post("/deleterequestbybde", async (req, res) => {
   try {
     const {
@@ -555,8 +588,10 @@ router.get("/editRequestByBde", async (req, res) => {
 });
 
 router.post("/deleterequestbybde/:id", async (req, res) => {
+
   try {
     const _id = req.params.id;
+    const socketIO = req.io;
     // Find document by ID and update the assigned field
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
       { _id: _id },
@@ -567,6 +602,11 @@ router.post("/deleterequestbybde/:id", async (req, res) => {
     if (!updatedCompany) {
       return res.status(404).json({ error: "Company not found" });
     }
+
+    socketIO.emit('delete-request-done-ondelete', {
+      name : updatedCompany.ename,
+      companyName : updatedCompany.companyName
+    });
 
     // If document is updated successfully, return the updated document
     res.json(updatedCompany);
@@ -639,7 +679,7 @@ router.post("/update-data-ondelete/:ename", async (req, res) => {
     }
 
     // Emit an event to notify clients
-    socketIO.emit('data-action-performed', ename);
+    socketIO.emit('data-action-performed-ondelete', ename);
 
     // Send success response
     res.status(200).send("Data updated successfully");

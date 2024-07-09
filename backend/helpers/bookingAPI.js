@@ -72,7 +72,18 @@ function formatDateNew(timestamp) {
 // Edit Request for Booking
 router.get("/editable-LeadData", async (req, res) => {
   try {
-    const data = await EditableDraftModel.find(); // Fetch all data from the collection
+    const data = await EditableDraftModel.find({assigned : "Pending"}); // Fetch all data from the collection
+    res.json(data); // Send the data as JSON response
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/editable-LeadData/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    const data = await EditableDraftModel.find({bdeName : ename}); // Fetch all data from the collection
     res.json(data); // Send the data as JSON response
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -186,20 +197,25 @@ router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
   }
 });
 
-router.delete("/delete-redesigned-booking-request/:CompanyName",
-  async (req, res) => {
-    try {
-      const companyName = req.params.CompanyName;
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-      res.status(200).json({ message: "Document updated successfully" });
-    } catch {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) => {
+  try {
+    const companyName = req.params.CompanyName;
+    const updatedDocument = await EditableDraftModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { assigned: "Reject" },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
     }
+
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
 
 // *************************************************************  UPdate Methods **************************************************************
 
@@ -4668,7 +4684,11 @@ router.delete(
             }
           );
           companyName = deletedBooking["Company Name"]
-          socketIO.emit('delete-request-done', companyName);
+          socketIO.emit('delete-request-done', {
+            name : deletedBooking.bdeName,
+            companyName : companyName
+          });
+
         } else {
           return res.status(404).send("Booking not found");
         }

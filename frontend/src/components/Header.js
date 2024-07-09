@@ -42,18 +42,23 @@ function Header({ name, designation, empProfile }) {
     });
 
     socket.on("data-sent", (res) => {
-      if (res === name) {
-        enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
-
+      if (res.name === name) {
+        enqueueSnackbar(`Your Request of ${res.dAmount} Leads is Accepted!PLEASE REFRESH 🔄`, { variant: "reportComplete", persist: true });
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
 
     });
+    socket.on("delete-leads-request-bde" , (res)=>{
+      if(res.name === name){
+        enqueueSnackbar(`Your Request of ${res.dAmount} Leads is Rejected!`, { variant: "reportComplete", persist: true });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    })
     socket.on("data-assigned", (res) => {
       if (res === name) {
         enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
@@ -69,8 +74,44 @@ function Header({ name, designation, empProfile }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
+
+    socket.on("data-action-performed-ondelete", (res) => {
+      if (name === res) {
+        enqueueSnackbar(`DATA REQUEST REJECTED! PLEASE REFRESH 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+    socket.on("delete-request-done", (res) => {
+      if (res.name === name) {
+        enqueueSnackbar(`Booking Delete Request Accepted for ${res.companyName}!`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+
+    socket.on("delete-request-done-ondelete", (res) => {
+      if (res.name === name) {
+        enqueueSnackbar(`Booking Delete Request Rejected for ${res.companyName}!`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+
+
     socket.on("Remaining_Payment_Added", (res) => {
 
       if (name === res.name) {

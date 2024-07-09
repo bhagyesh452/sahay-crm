@@ -46,8 +46,26 @@ function EmployeeApproveDataComponent({ ename }) {
     }
   }, [ename])
 
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
+    });
+    socket.on("data-action-performed", () => {
+      fetchCompanyRequests()
+    });
+    socket.on("data-action-performed-ondelete", () => {
+      fetchCompanyRequests()
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
-console.log("requestedcompanydata" , requestedCompanyData)
+
+  console.log("requestedcompanydata", requestedCompanyData)
 
 
 
@@ -108,7 +126,7 @@ console.log("requestedcompanydata" , requestedCompanyData)
                   </td>
                   <td>
                     <div className='Approve-folder'>
-                     {obj.assigned}
+                      {obj.assigned}
                     </div>
                   </td>
                 </tr>

@@ -14,12 +14,9 @@ const { sendMail3 } = require("../helpers/sendMail3");
 const { sendMail4 } = require("../helpers/sendMail4");
 
 const userModel = require("../models/CompanyBusinessInput.js");
-<<<<<<< HEAD
-=======
 const {
   clouddebugger,
 } = require("googleapis/build/src/apis/clouddebugger/index.js");
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -94,11 +91,6 @@ router.post(
       const UploadDeclaration = req.files["UploadDeclaration"] || [];
       const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       // Get user details from the request body
       const {
         CompanyName,
@@ -167,10 +159,6 @@ router.post(
         `;
       }
 
-<<<<<<< HEAD
-
-      let TechInvolvedResponse = TechnologyInvolved  ? "Yes" : "No";
-=======
       // UploadMOA for Email response with file Name code
       const MOA_response = UploadMOA && UploadMOA.length !== 0 ? "Yes" : "No";
       let MOA_condition = "";
@@ -207,7 +195,6 @@ router.post(
 
       // Any Kind Of Technology Is Involved In Your Product Or Service code
       let TechInvolvedResponse = TechnologyInvolved ? "Yes" : "No";
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       let TechnologyInvolvedHtml = "";
       if (TechInvolvedResponse === "Yes") {
         TechnologyInvolvedHtml = `
@@ -224,9 +211,6 @@ router.post(
 
       // Do You Have Upload Photos of Product or Service code
 
-<<<<<<< HEAD
-      let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
-=======
       // let logoOrProduct_condition = UploadPhotos.length !== 0 ? "Yes" : 'No';
       if (UploadPhotos && UploadPhotos.length !== 0) {
         logoOrProduct_condition = `
@@ -244,7 +228,6 @@ router.post(
       // Any IP Field code
       let AnyIpFiledResponse =
         RelevantDocument && RelevantDocument.length !== 0 ? "Yes" : "No";
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       let RelevantDocumentHtml = "";
       if (AnyIpFiledResponse === "Yes") {
         RelevantDocumentHtml = `
@@ -259,13 +242,6 @@ router.post(
         `;
       }
 
-<<<<<<< HEAD
-      
-      const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
-      let ITR_condition = '';
-      let ITR_Document_Link = "";  
-      if(UploadAuditedStatement && UploadAuditedStatement.length!==0){
-=======
       // let UploadRelevant_condition = RelevantDocument.length !== 0 ? "Yes" : 'No';
       let UploadRelevant_condition = "";
       if (RelevantDocument && RelevantDocument.length !== 0) {
@@ -289,7 +265,6 @@ router.post(
       let ITR_condition = "";
       let ITR_Document_Link = "";
       if (UploadAuditedStatement && UploadAuditedStatement.length !== 0) {
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
         ITR_condition = ` <div style="display: flex;margin-top: 8px;">
                         <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
                             <div style="height: 100%;font-size:12px;"> Upload Audited Profit & Loss and Balance Sheet Statement </div>
@@ -329,8 +304,6 @@ router.post(
         `;
       }
 
-<<<<<<< HEAD
-=======
       // Upload Declaration code
       const UploadDeclaration_response =
         UploadDeclaration && UploadDeclaration.length !== 0 ? "Yes" : "No";
@@ -367,7 +340,6 @@ router.post(
         `;
       }
 
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       let uploadPhotosHtml = "";
       if (UploadPhotos && UploadPhotos !== "No Upload Photos") {
         uploadPhotosHtml = `
@@ -400,13 +372,7 @@ router.post(
         `;
       }
 
-<<<<<<< HEAD
-      
-
-      // DirectorDetails code start
-=======
       // DirectorDetails code Start
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       const tempHtml = () => {
         let team = "";
         let isFirstMainDirectorSet = false;
@@ -426,16 +392,9 @@ router.post(
             IsMainDirector,
           } = DirectorDetails[index];
 
-<<<<<<< HEAD
-          // Check if this is the first director and they are marked as the main director
-
-          if (DirectorDetails[index].IsMainDirector === "true") {
-            
-=======
           console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
 
           if (IsMainDirector === "true") {
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
             isFirstMainDirectorSet = true;
           }
 
@@ -558,12 +517,7 @@ router.post(
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
-          
-          `
-=======
             `;
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
         }
 
         return team;
@@ -585,35 +539,6 @@ router.post(
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
-<<<<<<< HEAD
-      .replace("{{CompanyName}}", CompanyName)
-      .replace("{{CompanyEmail}}", CompanyEmail)
-      .replace("{{CompanyNo}}", CompanyNo)
-      .replace("{{BrandName}}", BrandName)
-      .replace("{{WebsiteLink}}", WebsiteLink)
-      .replace("{{CompanyAddress}}", CompanyAddress)
-      .replace("{{CompanyPanNumber}}", CompanyPanNumber)
-      .replace("{{SelectServices}}", SelectServices)
-      .replace("{{SocialMediaResponse}}", SocialMediaResponse)
-      .replace("{{SocialMedia_Conditional}}", SocialMediaHTML)
-      .replace("{{CompanyActivities}}", CompanyActivities)
-      .replace("{{ProductService}}", ProductService)
-      .replace("{{CompanyUSP}}", CompanyUSP)
-      .replace("{{ValueProposition}}", ValueProposition)
-      .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
-      .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
-      .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
-      .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
-      .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
-      .replace("{{ITR_Condition}}", ITR_response)
-      .replace("{{ITR_Document_Link}}", ITR_condition)
-      .replace("{{BusinessModel}}", BusinessModel)
-      .replace("{{FinanceResponse}}", FinanceCondition)
-      .replace("{{FinanceHtml}}", FinanceHtml)
-      .replace("{{Logo_Condition}}", logoCondition)
-      .replace("{{generatedHtml}}", generatedHtml)
-      
-=======
         .replace("{{CompanyName}}", CompanyName)
         .replace("{{CompanyEmail}}", CompanyEmail)
         .replace("{{CompanyNo}}", CompanyNo)
@@ -649,7 +574,6 @@ router.post(
         )
         .replace("{{Logo_Condition}}", logoCondition)
         .replace("{{generatedHtml}}", generatedHtml);
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
 
       await sendMail3(
         email,
@@ -680,8 +604,6 @@ router.post(
       );
       const DirectorEmail = details.DirectorEmail;
 
-<<<<<<< HEAD
-=======
       // Seed Funding Support with Attachmend of LOA & MITC Both Service on Subject
       const servicesArrayForSendMail4 = Object.values(SelectServices);
       const selectedServiceToShow = servicesArrayForSendMail4.find(
@@ -704,14 +626,9 @@ router.post(
       const servicesArrayForPitchDeckServiceSendMail5 = Object.values(SelectServices);
 
       const selectedServicePitch = servicesArrayForPitchDeckServiceSendMail5.find(
-        (service) => service === "Pitch Deck Development"
+        (service) => service === "Pitch Deck Development "
       );
 
-      if (selectedServicePitch) {
-        console.log("Pitch Deck Development service is selected.");
-      } else {
-        console.log("Pitch Deck Development service is not selected.");
-      }
 
       console.log(servicesArrayForPitchDeckServiceSendMail5);
       console.log("SELECTED" , selectedServicePitch);
@@ -722,17 +639,12 @@ router.post(
       //   servicesForPitchDeckServiceSendMail5 = `${CompanyName} | MITC`;
       // }
 
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       // Send Thank You Message with pdf Draft sendMaiel4.js
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
-<<<<<<< HEAD
-      const subject1 = `${CompanyName} | LOA & MITC`;
-=======
       // const subject1 = `${CompanyName} | LOA & MITC`;
       const subject1 = subjectForSendMail4;
       // const subject2 = servicesForPitchDeckServiceSendMail5;
->>>>>>> a4703f9354294881a19cc68ece4ba53f9ffff26f
       const text1 = "";
       const html1 = `
           <p>Dear Client,</p>
@@ -771,6 +683,8 @@ router.post(
           <p>Start-Up Sahay Private Limited</p>
           <p>+91-9998992601</p>
     `;
+
+    const htmlToSend = selectedServicePitch !== undefined && selectedServicePitch !== null && selectedServicePitch !== "" ? html2 : html1;
 
     
 
@@ -889,9 +803,8 @@ router.post(
                   recipients,
                   ccEmail,
                   subject1,
-                  ``,
-                  html1,
-                  html2,
+                  text1,
+                  htmlToSend,
                   clientDocument
                 );
               }, 4000);

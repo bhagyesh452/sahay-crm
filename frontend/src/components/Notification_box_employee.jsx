@@ -72,6 +72,7 @@ function Notification_box_employee({ name }) {
         }
     }
 
+    console.log("name" , name)
     // --------------------------------------  Fetch functions --------------------------------------------
     const fetchNotification = async () => {
         try {
@@ -115,8 +116,10 @@ function Notification_box_employee({ name }) {
 
 
     useEffect(() => {
-        fetchNotification();
-    }, [])
+        if(name){
+            fetchNotification();
+        }
+    }, [name])
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);

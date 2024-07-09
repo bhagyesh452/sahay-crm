@@ -68,6 +68,7 @@ function General_dataComponent() {
           reconnection: true, 
           transports: ['websocket'],
         });
+        
         socket.on("newRequest", () => {
           fetchRequestGDetails()
           });

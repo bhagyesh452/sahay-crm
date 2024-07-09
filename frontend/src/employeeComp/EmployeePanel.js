@@ -132,11 +132,9 @@ function EmployeePanel() {
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
-
   const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback");
   };
-
   function navigate(url) {
     window.location.href = url;
   }
@@ -158,7 +156,6 @@ function EmployeePanel() {
   //     console.error('Error:', error);
   //   }
   // };
-
   const handleChangeMail = (e) => {
     const { name, value } = e.target;
     setEmailData({ ...emailData, [name]: value });
@@ -171,9 +168,8 @@ function EmployeePanel() {
     // Close the compose popup after sending
     setIsOpen(false);
   };
-
   const [employeeData, setEmployeeData] = useState([]);
-  const [redesignedData, setRedesignedData] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([])
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
   const [visibility, setVisibility] = useState("none");
@@ -283,6 +279,7 @@ function EmployeePanel() {
     };
   }, []);
 
+
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -295,6 +292,7 @@ function EmployeePanel() {
       console.error("Error fetching data:", error);
     }
   };
+
 
   const fetchBDMbookingRequests = async () => {
     const bdeName = data.ename;
@@ -310,6 +308,7 @@ function EmployeePanel() {
       console.error("Error fetching data:", error);
     }
   };
+
   //console.log(totalBookings, "This is elon musk");
 
   const functionopenprojection = (comName) => {
@@ -335,6 +334,8 @@ function EmployeePanel() {
       setSelectedValues(findOneprojection.offeredServices);
     }
   };
+
+
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -384,6 +385,8 @@ function EmployeePanel() {
   const [filteredRemarksBdm, setFilteredRemarksBdm] = useState([])
   const [filteredRemarksBde, setFilteredRemarksBde] = useState([])
 
+
+
   const functionopenpopupremarksEdit = (
     companyID,
     companyStatus,
@@ -406,6 +409,7 @@ function EmployeePanel() {
     setOpenRemarksEdit(false);
     //setOpenPopupByBdm(false);
   };
+
 
   const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
 
@@ -500,7 +504,7 @@ function EmployeePanel() {
         //console.log(bdmNames)
         setBdmNames(bdmNames.map((obj) => obj.ename))
       } else {
-        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && (employee.bdmWork || employee.designation === "Sales Manager"))
+        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
         setBdmNames(bdmNames.map((obj) => obj.ename))
         //console.log(bdmNames)
       }
@@ -513,6 +517,7 @@ function EmployeePanel() {
   };
 
   //console.log("bdmNames", bdmNames)
+
 
   const fecthTeamData = async () => {
     const ename = data.ename;
@@ -537,6 +542,7 @@ function EmployeePanel() {
     fetchBDMbookingRequests();
     fetchRedesignedFormDataAll()
   }, [data.ename]);
+
   // console.log("This is elon musk" , BDMrequests);
 
   const fetchProjections = async () => {
@@ -549,6 +555,7 @@ function EmployeePanel() {
       console.error("Error fetching Projection Data:", error.message);
     }
   };
+
 
   const fetchRemarksHistory = async () => {
     try {
@@ -563,8 +570,8 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  //console.log(projectionData)
 
+  //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
   const [revertedData, setRevertedData] = useState([])
@@ -662,6 +669,8 @@ function EmployeePanel() {
     }
   };
 
+
+
   useEffect(() => {
     if (data.ename) {
       fetchNewData();
@@ -672,6 +681,8 @@ function EmployeePanel() {
           .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
       );
     }
+
+
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
@@ -734,7 +745,10 @@ function EmployeePanel() {
     }
   };
 
+
+
   useEffect(() => {
+
     if (revertedData.length !== 0) {
       setOpenRevertBackRequestDialog(true)
     } else if (data.ename) {
@@ -742,6 +756,7 @@ function EmployeePanel() {
       fetchNewData()
     }
   }, [data.ename, revertedData.length]);
+
 
   // useEffect(() => {
   //   const checkAndRunActiveStatus = () => {
@@ -818,12 +833,10 @@ function EmployeePanel() {
     //   // Now you can send these coordinates to your server for further processing
     // };
     // // console.log(localStorage.getItem("newtoken"), locationAccess);
-    
     if (userId !== localStorage.getItem("userId")) {
       localStorage.removeItem("newtoken");
       window.location.replace("/");
     }
-
     // const errorCallback = (error) => {
     //   console.error("Geolocation error:", error.message);
     //   setLocationAccess(false);
@@ -839,7 +852,6 @@ function EmployeePanel() {
     //   navigator.geolocation.clearWatch(watchId);
     // };
   }, []);
-
   // console.log(locationAccess);
 
   // console.log(employeeData);
@@ -902,10 +914,8 @@ function EmployeePanel() {
       setFilteredData(extraData); // Assuming extraData is your full dataset
       return;
     }
-    
     setIsFilter(false);
     setIsSearch(true);
-
     const filtered = extraData.filter((company) => {
       const companyName = company["Company Name"];
       const companyNumber = company["Company Number"];
@@ -929,8 +939,10 @@ function EmployeePanel() {
       if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
         return true;
       }
+
       return false;
     });
+
     setFilteredData(filtered);
   };
 
@@ -1028,7 +1040,7 @@ function EmployeePanel() {
       setEmployeeData(filteredData)
     }
 
-  }, [filteredData]);
+  }, [filteredData])
 
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -1045,7 +1057,6 @@ function EmployeePanel() {
   //console.log(companyName, companyInco);
 
   const currentData = employeeData.slice(startIndex, endIndex);
-
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
   const [newBdeName, setNewBdeName] = useState("")
 
@@ -1351,7 +1362,6 @@ function EmployeePanel() {
   const handleNumberOfDataChange = (event) => {
     setNumberOfData(event.target.value);
   };
-
   function formatDateproper(inputDate) {
     const options = { month: "long", day: "numeric", year: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -1360,7 +1370,6 @@ function EmployeePanel() {
     );
     return formattedDate;
   }
-
   const handleSubmit = async (event) => {
     const name = data.ename;
     const dateObject = new Date();
@@ -1517,7 +1526,6 @@ function EmployeePanel() {
     setFirstPlus(false);
     setSecondPlus(true);
   };
-
   const functionOpenThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(true);
@@ -1534,7 +1542,6 @@ function EmployeePanel() {
     setSecondPlus(false);
     setFirstPlus(true);
   };
-
   const functionCloseThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(false);
@@ -1685,6 +1692,7 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
+
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
@@ -1721,7 +1729,6 @@ function EmployeePanel() {
       Swal.fire("Please upload data");
     }
   };
-
   const fetchApproveRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
@@ -1740,7 +1747,6 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
-
   const fetchRedesignedFormData = async () => {
     try {
       //console.log(maturedID);
@@ -1755,7 +1761,6 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
-
   const fetchRedesignedFormDataAll = async () => {
     try {
       //console.log(maturedID);
@@ -1768,7 +1773,6 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
-
   useEffect(() => {
     //console.log("Matured ID Changed", maturedID);
     if (maturedID) {
@@ -1776,7 +1780,6 @@ function EmployeePanel() {
     }
   }, [maturedID]);
   //console.log("Current Form:", currentForm);
-
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1786,7 +1789,6 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleIconButtonClick = (comName) => {
@@ -1891,11 +1893,9 @@ function EmployeePanel() {
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
   };
-
   const handleCloseIncoDate = () => {
     setOpenIncoDate(false);
   };
-
   const handleMarktrue = async () => {
     try {
       // Assuming 'id' is the ID of the object you want to mark as read
@@ -1910,7 +1910,6 @@ function EmployeePanel() {
       console.error("Error marking object as read:", error);
     }
   };
-
   const createNewArray = (data) => {
     let dataArray;
 
@@ -1961,7 +1960,8 @@ function EmployeePanel() {
   };
 
   // Call the function to create the new array
-  const resultArray = moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
+  const resultArray =
+    moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
 
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e) => {
@@ -2831,7 +2831,6 @@ function EmployeePanel() {
                 </DialogContent>
               </Dialog>
             )}
-
             {revertedData.length !== 0 && revertedData.map((item) => (
               <Dialog key={item._id} open={openRevertBackRequestDialog}>
                 <DialogContent sx={{ width: "lg" }}>
@@ -2850,11 +2849,14 @@ function EmployeePanel() {
                             item._id,
                             item.Status
                           )
-                        }}
+                        }
+                        }
+
                         className="request-accept"
                       >
                         ok
                       </button>
+
                     </div>
                   </div>
                 </DialogContent>
@@ -2910,7 +2912,7 @@ function EmployeePanel() {
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
-                          handleSearch(e.target.value);
+                          handleSearch(e.target.value)
                           //handleFilterSearch(e.target.value)
                           //setCurrentPage(0);
                         }}
