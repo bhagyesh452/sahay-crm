@@ -925,7 +925,7 @@ function HrEmployees({ onEyeButtonClick }) {
         maxWidth="sm"
       >
         <DialogTitle>
-          Employee Info{" "}
+          Employee Info
           <IconButton onClick={closepopup} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}

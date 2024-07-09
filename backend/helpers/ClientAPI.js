@@ -14,7 +14,9 @@ const { sendMail3 } = require("../helpers/sendMail3");
 const { sendMail4 } = require("../helpers/sendMail4");
 
 const userModel = require("../models/CompanyBusinessInput.js");
-const { clouddebugger } = require("googleapis/build/src/apis/clouddebugger/index.js");
+const {
+  clouddebugger,
+} = require("googleapis/build/src/apis/clouddebugger/index.js");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -59,9 +61,6 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year}`;
 }
 
-
-
-
 router.post(
   "/basicinfo-form/:CompanyName",
 
@@ -78,7 +77,6 @@ router.post(
     { name: "UploadRelevantDocs", maxCount: 1 },
   ]),
 
-
   async (req, res) => {
     try {
       const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
@@ -88,12 +86,10 @@ router.post(
       const UploadPhotos = req.files["UploadPhotos"] || [];
       const RelevantDocument = req.files["RelevantDocument"] || [];
       const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
-      const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+      const UploadProvisionalStatement =
+        req.files["UploadProvisionalStatement"] || [];
       const UploadDeclaration = req.files["UploadDeclaration"] || [];
       const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
-
-
-
 
       // Get user details from the request body
       const {
@@ -123,10 +119,10 @@ router.post(
         DirectorDetails,
       } = req.body;
 
-  // Social Media code
-      let SocialMediaResponse = SocialMedia  
+      // Social Media code
+      let SocialMediaResponse = SocialMedia;
       let SocialMediaHTML = "";
-      if(SocialMedia === "Yes"){
+      if (SocialMedia === "Yes") {
         SocialMediaHTML = `
                     <div style="display: flex;margin-top: 8px;">
                         <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
@@ -160,13 +156,12 @@ router.post(
                             <div style="height: 100%;font-size:12px;">${YoutubeLink}</div>
                         </div>
                     </div> 
-        `
+        `;
       }
-
 
       // UploadMOA for Email response with file Name code
       const MOA_response = UploadMOA && UploadMOA.length !== 0 ? "Yes" : "No";
-      let MOA_condition = '';
+      let MOA_condition = "";
 
       if (UploadMOA && UploadMOA.length !== 0) {
         MOA_condition = `
@@ -183,7 +178,7 @@ router.post(
 
       // UploadAOA for Email response with file Name code
       const AOA_response = UploadAOA && UploadAOA.length !== 0 ? "Yes" : "No";
-      let AOA_condition = '';
+      let AOA_condition = "";
 
       if (UploadAOA && UploadAOA.length !== 0) {
         AOA_condition = `
@@ -196,10 +191,10 @@ router.post(
               </div>
           </div> 
         `;
-}
+      }
 
-      // Any Kind Of Technology Is Involved In Your Product Or Service code 
-      let TechInvolvedResponse = TechnologyInvolved  ? "Yes" : "No";
+      // Any Kind Of Technology Is Involved In Your Product Or Service code
+      let TechInvolvedResponse = TechnologyInvolved ? "Yes" : "No";
       let TechnologyInvolvedHtml = "";
       if (TechInvolvedResponse === "Yes") {
         TechnologyInvolvedHtml = `
@@ -213,7 +208,6 @@ router.post(
           </div>
         `;
       }
-
 
       // Do You Have Upload Photos of Product or Service code
 
@@ -231,8 +225,9 @@ router.post(
         `;
       }
 
-      // Any IP Field code 
-      let AnyIpFiledResponse = RelevantDocument && RelevantDocument.length!==0 ? "Yes" : "No";
+      // Any IP Field code
+      let AnyIpFiledResponse =
+        RelevantDocument && RelevantDocument.length !== 0 ? "Yes" : "No";
       let RelevantDocumentHtml = "";
       if (AnyIpFiledResponse === "Yes") {
         RelevantDocumentHtml = `
@@ -247,9 +242,8 @@ router.post(
         `;
       }
 
-
       // let UploadRelevant_condition = RelevantDocument.length !== 0 ? "Yes" : 'No';
-      let UploadRelevant_condition = '';
+      let UploadRelevant_condition = "";
       if (RelevantDocument && RelevantDocument.length !== 0) {
         UploadRelevant_condition = `
           <div style="display: flex;margin-top: 8px;">
@@ -263,13 +257,14 @@ router.post(
         `;
       }
 
-      
-
-      // Do You have ITR Filled for Previous Year code 
-      const ITR_response = UploadAuditedStatement && UploadAuditedStatement.length!==0 ? "Yes" : "No";
-      let ITR_condition = '';
-      let ITR_Document_Link = "";  
-      if(UploadAuditedStatement && UploadAuditedStatement.length!==0){
+      // Do You have ITR Filled for Previous Year code
+      const ITR_response =
+        UploadAuditedStatement && UploadAuditedStatement.length !== 0
+          ? "Yes"
+          : "No";
+      let ITR_condition = "";
+      let ITR_Document_Link = "";
+      if (UploadAuditedStatement && UploadAuditedStatement.length !== 0) {
         ITR_condition = ` <div style="display: flex;margin-top: 8px;">
                         <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
                             <div style="height: 100%;font-size:12px;"> Upload Audited Profit & Loss and Balance Sheet Statement </div>
@@ -278,8 +273,11 @@ router.post(
                             <!-- file link -->
                             <div style="height: 100%;font-size:12px;">${UploadAuditedStatement[0].originalname}</div>
                         </div>
-                    </div>`
-      }else if(UploadProvisionalStatement && UploadProvisionalStatement.length!==0) {
+                    </div>`;
+      } else if (
+        UploadProvisionalStatement &&
+        UploadProvisionalStatement.length !== 0
+      ) {
         ITR_condition = ` <div style="display: flex;margin-top: 8px;">
                         <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
                             <div style="height: 100%;font-size:12px;"> Upload Provisional Statement or Accounts report till date for Projection</div>
@@ -288,10 +286,10 @@ router.post(
                             <!-- file link -->
                             <div style="height: 100%;font-size:12px;">${UploadProvisionalStatement[0].originalname}</div>
                         </div>
-                    </div>`
+                    </div>`;
       }
-      
-      // Have You Raised Any Financing Thus Far (Grants, Loans, Investments, Friends And Family, Etc.) code 
+
+      // Have You Raised Any Financing Thus Far (Grants, Loans, Investments, Friends And Family, Etc.) code
       let FinanceHtml = "";
       if (FinanceCondition === "Yes") {
         FinanceHtml = `
@@ -306,10 +304,10 @@ router.post(
         `;
       }
 
-
-      // Upload Declaration code 
-      const UploadDeclaration_response = UploadDeclaration && UploadDeclaration.length !== 0 ? "Yes" : "No";
-      let UploadDeclaration_condition = '';
+      // Upload Declaration code
+      const UploadDeclaration_response =
+        UploadDeclaration && UploadDeclaration.length !== 0 ? "Yes" : "No";
+      let UploadDeclaration_condition = "";
 
       if (UploadDeclaration && UploadDeclaration.length !== 0) {
         UploadDeclaration_condition = `
@@ -324,9 +322,10 @@ router.post(
         `;
       }
 
-      // Upload Relevant Docs code 
-      const UploadRelevantDocs_response = UploadRelevantDocs && UploadRelevantDocs.length !== 0 ? "Yes" : "No";
-      let UploadRelevantDocs_condition = '';
+      // Upload Relevant Docs code
+      const UploadRelevantDocs_response =
+        UploadRelevantDocs && UploadRelevantDocs.length !== 0 ? "Yes" : "No";
+      let UploadRelevantDocs_condition = "";
 
       if (UploadRelevantDocs && UploadRelevantDocs.length !== 0) {
         UploadRelevantDocs_condition = `
@@ -355,8 +354,6 @@ router.post(
         `;
       }
 
-      
-
       let businessModelHtml = "";
       if (BusinessModel && BusinessModel !== "No Business Model") {
         businessModelHtml = `
@@ -375,34 +372,33 @@ router.post(
         `;
       }
 
-
       // DirectorDetails code Start
       const tempHtml = () => {
         let team = "";
         let isFirstMainDirectorSet = false;
-    
+
         for (let index = 0; index < DirectorDetails.length; index++) {
-            const {
-                DirectorName,
-                DirectorEmail,
-                DirectorMobileNo,
-                DirectorQualification,
-                DirectorWorkExperience,
-                DirectorAnnualIncome,
-                LinkedInProfileLink,
-                DirectorDesignation,
-                DirectorAdharCardNumber,
-                DirectorGender,
-                IsMainDirector,
-            } = DirectorDetails[index];
-    
-            console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
-    
-            if (IsMainDirector === "true") {
-                isFirstMainDirectorSet = true;
-            }
-    
-            team += `
+          const {
+            DirectorName,
+            DirectorEmail,
+            DirectorMobileNo,
+            DirectorQualification,
+            DirectorWorkExperience,
+            DirectorAnnualIncome,
+            LinkedInProfileLink,
+            DirectorDesignation,
+            DirectorAdharCardNumber,
+            DirectorGender,
+            IsMainDirector,
+          } = DirectorDetails[index];
+
+          console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
+
+          if (IsMainDirector === "true") {
+            isFirstMainDirectorSet = true;
+          }
+
+          team += `
                 <!--Card For Brief About Your Business-->
                     <div style="border: 1px solid #ccc;background: #f4f4f4;padding: 15px;border-radius: 10px;margin-top: 10px;">
                           <div>
@@ -411,7 +407,11 @@ router.post(
                     <div>
                         <div style="display: flex; justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
-                            <div> ${IsMainDirector === "true" ? "Authorized Person" : ""} </div>
+                            <div> ${
+                              IsMainDirector === "true"
+                                ? "Authorized Person"
+                                : ""
+                            } </div>
                         </div>
                         <div>
                               <div style="display: flex;">
@@ -467,7 +467,9 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">Director's Passport Size Photo</div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${DirectorPassportPhoto[index].originalname}</div>
+                                    <div style="height: 100%;font-size:12px;">${
+                                      DirectorPassportPhoto[index].originalname
+                                    }</div>
                                 </div>
                             </div>
                             <div style="display: flex;">
@@ -475,7 +477,9 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">Director's Aadhaar Card </div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCard[index].originalname}</div>
+                                    <div style="height: 100%;font-size:12px;">${
+                                      DirectorAdharCard[index].originalname
+                                    }</div>
                                 </div>
                             </div>
                             <div style="display: flex;">
@@ -515,10 +519,9 @@ router.post(
                 </div>
             `;
         }
-    
-        return team;
-    };
 
+        return team;
+      };
 
       const generatedHtml = tempHtml(); // Call the tempHtml function to generate HTML
       let sendMain3HTML = fs.readFileSync(
@@ -527,52 +530,50 @@ router.post(
       );
 
       // UploadPhotos & Logo condition code
-      const logoCondition = UploadPhotos.length !== 0 ? "Yes" : 'No';
-
+      const logoCondition = UploadPhotos.length !== 0 ? "Yes" : "No";
 
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["support@startupsahay.com"];
+      const email = ["nisargpatel@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
-      .replace("{{CompanyName}}", CompanyName)
-      .replace("{{CompanyEmail}}", CompanyEmail)
-      .replace("{{CompanyNo}}", CompanyNo)
-      .replace("{{BrandName}}", BrandName)
-      .replace("{{WebsiteLink}}", WebsiteLink)
-      .replace("{{CompanyAddress}}", CompanyAddress)
-      .replace("{{CompanyPanNumber}}", CompanyPanNumber)
-      .replace("{{SelectServices}}", SelectServices)
-      .replace("{{SocialMediaResponse}}", SocialMediaResponse)
-      .replace("{{SocialMedia_Conditional}}", SocialMediaHTML)
-      .replace("{{CompanyActivities}}", CompanyActivities)
-      .replace("{{ProductService}}", ProductService)
-      .replace("{{CompanyUSP}}", CompanyUSP)
-      .replace("{{ValueProposition}}", ValueProposition)
-      .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
-      .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
-      .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
-      .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
-      .replace("{{UploadRelevant_condition}}", UploadRelevant_condition)
-      .replace("{{logoOrProduct_condition}}", logoOrProduct_condition )
-      .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
-      .replace("{{ITR_Condition}}", ITR_response)
-      .replace("{{MOA_response}}", MOA_condition)
-      .replace("{{AOA_response}}", AOA_condition)
-      .replace("{{ITR_Document_Link}}", ITR_condition)
-      .replace("{{BusinessModel}}", BusinessModel)
-      .replace("{{FinanceResponse}}", FinanceCondition)
-      .replace("{{FinanceHtml}}", FinanceHtml)
-      .replace("{{UploadDeclaration_condition}}", UploadDeclaration_condition)
-      .replace("{{UploadRelevantDocs_condition}}", UploadRelevantDocs_condition)
-      .replace("{{Logo_Condition}}", logoCondition)
-      .replace("{{generatedHtml}}", generatedHtml)
-
-
-    
-      
+        .replace("{{CompanyName}}", CompanyName)
+        .replace("{{CompanyEmail}}", CompanyEmail)
+        .replace("{{CompanyNo}}", CompanyNo)
+        .replace("{{BrandName}}", BrandName)
+        .replace("{{WebsiteLink}}", WebsiteLink)
+        .replace("{{CompanyAddress}}", CompanyAddress)
+        .replace("{{CompanyPanNumber}}", CompanyPanNumber)
+        .replace("{{SelectServices}}", SelectServices)
+        .replace("{{SocialMediaResponse}}", SocialMediaResponse)
+        .replace("{{SocialMedia_Conditional}}", SocialMediaHTML)
+        .replace("{{CompanyActivities}}", CompanyActivities)
+        .replace("{{ProductService}}", ProductService)
+        .replace("{{CompanyUSP}}", CompanyUSP)
+        .replace("{{ValueProposition}}", ValueProposition)
+        .replace("{{TechInvolvedResponse}}", TechInvolvedResponse)
+        .replace("{{TechnologyInvolvedHtml}}", TechnologyInvolvedHtml)
+        .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
+        .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
+        .replace("{{UploadRelevant_condition}}", UploadRelevant_condition)
+        // .replace("{{logoOrProduct_condition}}", logoOrProduct_condition )
+        .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
+        .replace("{{ITR_Condition}}", ITR_response)
+        .replace("{{MOA_response}}", MOA_condition)
+        .replace("{{AOA_response}}", AOA_condition)
+        .replace("{{ITR_Document_Link}}", ITR_condition)
+        .replace("{{BusinessModel}}", BusinessModel)
+        .replace("{{FinanceResponse}}", FinanceCondition)
+        .replace("{{FinanceHtml}}", FinanceHtml)
+        .replace("{{UploadDeclaration_condition}}", UploadDeclaration_condition)
+        .replace(
+          "{{UploadRelevantDocs_condition}}",
+          UploadRelevantDocs_condition
+        )
+        .replace("{{Logo_Condition}}", logoCondition)
+        .replace("{{generatedHtml}}", generatedHtml);
 
       await sendMail3(
         email,
@@ -598,52 +599,97 @@ router.post(
           res.status(500).send("Error sending email");
         });
 
-        
-
       const details = DirectorDetails.find(
         (details) => details.IsMainDirector === "true"
       );
       const DirectorEmail = details.DirectorEmail;
 
-
+      // Seed Funding Support with Attachmend of LOA & MITC Both Service on Subject
       const servicesArrayForSendMail4 = Object.values(SelectServices);
       const selectedServiceToShow = servicesArrayForSendMail4.find(
         (service) => service === "Seed Funding Support"
-      )
+      );
       let subjectForSendMail4;
-      if(selectedServiceToShow){
-         subjectForSendMail4 = `${CompanyName} | LOA & MITC`;
-      }
-      else{
-        subjectForSendMail4 = `${CompanyName} | MITC` ;
+      if (selectedServiceToShow) {
+        subjectForSendMail4 = `${CompanyName} | LOA & MITC`;
+      } else {
+        subjectForSendMail4 = `${CompanyName} | MITC`;
       }
 
+      // Add Pitch Deck Development Service Select Then Sent to Draft on CompanyEmail
+      // const servicesArrayForPitchDeckServiceSendMail5 = Object.values(SelectServices);
+      // const selectedPitchServiceToShow = servicesArrayForPitchDeckServiceSendMail5.find(
+      //   (service) => service === "Pitch Deck Development"
+      // );
+      // console.log(selectedPitchServiceToShow)
+
+      const servicesArrayForPitchDeckServiceSendMail5 = Object.values(SelectServices);
+
+      const selectedServicePitch = servicesArrayForPitchDeckServiceSendMail5.find(
+        (service) => service === "Pitch Deck Development"
+      );
+
+      if (selectedServicePitch) {
+        console.log("Pitch Deck Development service is selected.");
+      } else {
+        console.log("Pitch Deck Development service is not selected.");
+      }
+
+      console.log(servicesArrayForPitchDeckServiceSendMail5);
+      console.log("SELECTED" , selectedServicePitch);
+      // let servicesForPitchDeckServiceSendMail5;
+      // if (selectedPitchServiceToShow) {
+      //   servicesForPitchDeckServiceSendMail5 = `${CompanyName} | LOA & MITC`;
+      // } else {
+      //   servicesForPitchDeckServiceSendMail5 = `${CompanyName} | MITC`;
+      // }
 
       // Send Thank You Message with pdf Draft sendMaiel4.js
-
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
       // const subject1 = `${CompanyName} | LOA & MITC`;
       const subject1 = subjectForSendMail4;
+      // const subject2 = servicesForPitchDeckServiceSendMail5;
       const text1 = "";
       const html1 = `
-           <p>Dear Client,</p>
+          <p>Dear Client,</p>
     
-    <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
-    
-    <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
-    
-    <p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
-    
-    <p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
-    
-    <p>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</p>
-    <p>Best regards,</p>
-    
-    <p>Operation Team </p>
-    <p>+91-9998992601</p>
-    <p>Start-Up Sahay Private Limited</p>
+          <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for Your Company ${CompanyName}. As a first step, we will provide you with limited content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
+          
+          <p>Simultaneously, our graphic designer will work on the visual elements of the pitch deck. Once you approve the content shared by our employee, it will be incorporated into the pitch deck. The final version of the pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
+          
+          <p>During this time, our financial analyst will reach out to you for financial inputs to create a comprehensive financial projection. The financial projection will be included in the application for the ${SelectServices}</p>
+          
+          <p>Please note that the entire process, including content creation, graphic design, and financial projection, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
+          
+          <p>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</p>
+          <p>Best regards,</p>
+          
+          <p>Operation Team </p>
+          <p>+91-9998992601</p>
+          <p>Start-Up Sahay Private Limited</p>
           `;
+
+      // html2 code for Pitch Deck Development Service Select Then Sending the email draft on CompanyEmail
+      const html2 = `
+          <p>Dear Client,</p>
+
+          <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your project for ${CompanyName}. As a first step, we will provide you with the content for your pitch deck, which will be created by our team to meet pitch deck standards.</p>
+
+          <p>Once you approve the content shared by our team members, our graphic designer will start working on the visual elements of the pitch deck. The final version of the pitch deck will then be shared with you in the WhatsApp group for your final approval.</p>
+
+          <p>Please note that the entire process, including content creation and graphic design, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
+
+          <p>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</p>
+
+          <p>Best regards,</p>
+
+          <p>Operations Team</p>
+          <p>Start-Up Sahay Private Limited</p>
+          <p>+91-9998992601</p>
+    `;
+
+    
 
       let MainDirectorName;
       let MainDirectorDesignation;
@@ -663,9 +709,6 @@ router.post(
         MainDirectorDesignation = DirectorDetails[0].DirectorDesignation;
       }
 
-
-
-      
       // Sending email for CompanyEmail
       let htmlNewTemplate = fs.readFileSync(
         "./helpers/client_mail.html",
@@ -724,8 +767,6 @@ router.post(
         },
       };
 
-
-
       pdf
         .create(filedHtml, options)
         .toFile(pdfFilePath, async (err, response) => {
@@ -767,6 +808,7 @@ router.post(
                   subject1,
                   ``,
                   html1,
+                  html2,
                   clientDocument
                 );
               }, 4000);
@@ -777,8 +819,6 @@ router.post(
             }
           }
         });
-
-
 
       const newUser = new userModel({
         ...req.body,
@@ -794,7 +834,7 @@ router.post(
         UploadAuditedStatement,
         UploadProvisionalStatement,
         UploadDeclaration,
-        UploadRelevantDocs
+        UploadRelevantDocs,
       });
 
       await newUser.save();

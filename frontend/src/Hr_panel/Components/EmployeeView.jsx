@@ -1,6 +1,6 @@
 import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../Components/Header/Header.jsx";
+import Header from "./Header/Header.jsx";
 import axios from "axios";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
@@ -29,7 +29,7 @@ import {
 } from "@mui/material";
 import Swal from 'sweetalert2';
 import CloseIcon from "@mui/icons-material/Close";
-import Navbar from "../Components/Navbar/Navbar.jsx";
+import Navbar from "./Navbar/Navbar.jsx";
 import { HiPencil } from "react-icons/hi";
 
 function EmployeeProfile() {
@@ -396,7 +396,7 @@ function EmployeeProfile() {
                         </div>
                         <div className="col-sm-6 p-0 bdr-left-eee">
                           <div className="EP_Other_info">
-                            <div className="EP-other_info_heads d-flex ln-lg">
+                            <div className="EP-other_info_heads d-flex ln-lg align-items-center">
                               <div className="EP_Other_info_head">
                                 Personal Details
                               </div>
@@ -629,7 +629,7 @@ function EmployeeProfile() {
       </div>}
       <Dialog className='My_Mat_Dialog' open={editempinfo} onClose={closePopUp} fullWidth maxWidth="sm" onSubmit={handlePersonalDetailsSubmit}>
         <DialogTitle>
-          Employee Info{" "}
+          Employee Edit Info{" "}
           <IconButton onClick={closePopUp} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
