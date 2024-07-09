@@ -210,13 +210,15 @@ router.post(
       }
 
       // Do You Have Upload Photos of Product or Service code
+      const logoCondition = UploadPhotos.length !== 0 ? "Yes" : "No";
 
-      // let logoOrProduct_condition = UploadPhotos.length !== 0 ? "Yes" : 'No';
+
+      let UploadPhotos_condition = "";
       if (UploadPhotos && UploadPhotos.length !== 0) {
-        logoOrProduct_condition = `
+        UploadPhotos_condition = `
           <div style="display: flex;margin-top: 8px;">
               <div style="width: 30%;align-self: stretch;border: 1px solid #ccc; padding: 8px; background: #fff;">
-                  <div style="height: 100%;font-size:12px;">Upload Photos of LOGO Or Product/Prototype</div>
+                  <div style="height: 100%;font-size:12px;">Upload Photos of LOGO Or Product/Prototype </div>
               </div>
               <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
                   <div style="height: 100%;font-size:12px;">${UploadPhotos[0].originalname}</div>
@@ -530,12 +532,12 @@ router.post(
       );
 
       // UploadPhotos & Logo condition code
-      const logoCondition = UploadPhotos.length !== 0 ? "Yes" : "No";
+      
 
       let finalHTML = sendMain3HTML;
 
       // Send Basic-details Admin email-id of  for sendEmail-3.js
-      const email = ["nisargpatel@startupsahay.com"];
+      const email = ["support@startupsahay.com"];
       const subject = CompanyName + " Business Inputs and Basic Information";
       const text = "";
       const html = finalHTML
@@ -558,6 +560,7 @@ router.post(
         .replace("{{AnyIpFiledResponse}}", AnyIpFiledResponse)
         .replace("{{RelevantDocumentHtml}}", RelevantDocumentHtml)
         .replace("{{UploadRelevant_condition}}", UploadRelevant_condition)
+        .replace("{{UploadPhotos_condition}}", UploadPhotos_condition)
         // .replace("{{logoOrProduct_condition}}", logoOrProduct_condition )
         .replace("{{DirectInDirectMarket}}", DirectInDirectMarket)
         .replace("{{ITR_Condition}}", ITR_response)
@@ -604,7 +607,10 @@ router.post(
       );
       const DirectorEmail = details.DirectorEmail;
 
-      // Seed Funding Support with Attachmend of LOA & MITC Both Service on Subject
+
+
+
+      // Seed Funding Support with Attachment of LOA & MITC Both Service on Subject
       const servicesArrayForSendMail4 = Object.values(SelectServices);
       const selectedServiceToShow = servicesArrayForSendMail4.find(
         (service) => service === "Seed Funding Support"
@@ -616,40 +622,33 @@ router.post(
         subjectForSendMail4 = `${CompanyName} | MITC`;
       }
 
-      // Add Pitch Deck Development Service Select Then Sent to Draft on CompanyEmail
-      // const servicesArrayForPitchDeckServiceSendMail5 = Object.values(SelectServices);
-      // const selectedPitchServiceToShow = servicesArrayForPitchDeckServiceSendMail5.find(
-      //   (service) => service === "Pitch Deck Development"
-      // );
-      // console.log(selectedPitchServiceToShow)
 
+
+      // function Pitch Deck Development Service
       const servicesArrayForPitchDeckServiceSendMail5 = Object.values(SelectServices);
-
       const selectedServicePitch = servicesArrayForPitchDeckServiceSendMail5.find(
-        (service) => service === "Pitch Deck Development"
+        (service) => service === "Pitch Deck Development "
       );
-
-      if (selectedServicePitch) {
-        console.log("Pitch Deck Development service is selected.");
-      } else {
-        console.log("Pitch Deck Development service is not selected.");
-      }
-
       console.log(servicesArrayForPitchDeckServiceSendMail5);
       console.log("SELECTED" , selectedServicePitch);
-      // let servicesForPitchDeckServiceSendMail5;
-      // if (selectedPitchServiceToShow) {
-      //   servicesForPitchDeckServiceSendMail5 = `${CompanyName} | LOA & MITC`;
-      // } else {
-      //   servicesForPitchDeckServiceSendMail5 = `${CompanyName} | MITC`;
-      // }
+
+
+
+      // function Income Tax Exemption Service
+      const servicesArrayForIncomeTaxExemptionSendMail6 = Object.values(SelectServices);
+      const selectedServiceIncome = servicesArrayForIncomeTaxExemptionSendMail6.find(
+        (service) => service === "Income Tax Exemption"
+      );
+      console.log(servicesArrayForIncomeTaxExemptionSendMail6);
+      console.log("SELECTED" , selectedServiceIncome);
+
+
+
 
       // Send Thank You Message with pdf Draft sendMaiel4.js
       const recipients = [CompanyEmail];
       const ccEmail = [DirectorEmail];
-      // const subject1 = `${CompanyName} | LOA & MITC`;
       const subject1 = subjectForSendMail4;
-      // const subject2 = servicesForPitchDeckServiceSendMail5;
       const text1 = "";
       const html1 = `
           <p>Dear Client,</p>
@@ -688,8 +687,43 @@ router.post(
           <p>Start-Up Sahay Private Limited</p>
           <p>+91-9998992601</p>
     `;
-
     
+    // html3 code for Income Tax Exemption Service Then Sending the email draft on CompanyEmail
+    const html3 = `
+          <p>Dear Client,</p>
+
+          <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your Income Tax Exemption service for ${CompanyName}. As a first step, we will provide you the content draft for your pitch deck, which will be created by our team to meet the required standards.</p>
+          
+          <p>Once you approve the content shared by our team members, our graphic designer will start working on the visual elements of the pitch deck. After the design is finalized, the complete pitch deck will be shared with you in the WhatsApp group for your final approval.</p>
+          
+          <p>Upon receiving your approval, we will proceed to submit the pitch deck and other required documents to the concerned department on your behalf.</p>
+          
+          <p>Meanwhile, our team will get in touch with you if any additional documents are required to complete the application process.</p>
+          
+          <p>Please note that the entire process, including content creation, graphic design, and submission to the concerned department, will take approximately 15 to 20 working days. We strive to deliver high-quality results within this timeframe. However, it's important to mention that any delays in providing information or approvals from your end may affect the delivery timeline.</p>
+
+          <P>Once again, we appreciate your trust in our services. Should you have any questions or require further clarification, please feel free to reach out to us through the WhatsApp group or contact our team directly.</P>
+          
+          <p>Best regards,</p>
+          <p>Operation Team</p>
+          <p>+91-9998992601</p>
+          <p>Start-Up Sahay Private Limited</p>
+        `;
+
+
+
+    // Condition for html1 html2 & html3 code
+    let htmlToSend;
+    if (selectedServiceIncome !== undefined && selectedServiceIncome !== null && selectedServiceIncome !== "") {
+      htmlToSend = html3;
+    } else if (selectedServicePitch !== undefined && selectedServicePitch !== null && selectedServicePitch !== "") {
+      htmlToSend = html2;
+    } else {
+      htmlToSend = html1;
+    }
+
+
+
 
       let MainDirectorName;
       let MainDirectorDesignation;
@@ -806,11 +840,14 @@ router.post(
                   recipients,
                   ccEmail,
                   subject1,
-                  ``,
-                  html1,
-                  html2,
+                  text1,
+                  htmlToSend,
                   clientDocument
-                );
+                ) .then(() => {
+                  console.log("Email sent successfully");
+                }).catch((error) => {
+                  console.error("Error sending email:", error);
+                });;
               }, 4000);
               //res.status(200).send('Generated Pdf Successfully');
             } catch (error) {
