@@ -1962,7 +1962,7 @@ function EmployeesThisMonthBooking() {
     const [filteredDataFromSearchInRemainingPayment, setFilteredDataFromSearchInRemainingPayment] = useState([]);
     const [selectedDateRangeInRemainingPayment, setSelectedDateRangeInRemainingPayment] = useState([null, null]);
     const [searchCompanyServiceNameInRemainingPayments, setSearchCompanyServiceNameInRemainingPayments] = useState("");
-    let fullRemainingPaymentObject = [];
+    const [fullRemainingPaymentObject, setFullRemainingPaymentObject] = useState([]);
 
     const today = new Date();
     const thisYear = today.getFullYear();
@@ -2014,6 +2014,7 @@ function EmployeesThisMonthBooking() {
         setRemainingPaymentObject(currentMonthData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setRemainingRecievedObject(currentMonthData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setCompleteRemainingPaymentObject(fullRemainingPaymentObject.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
+        setFullRemainingPaymentObject(currentMonthData);
         // setRemainingPaymentObjectFilter(remainingMainObject)
         // console.log("Remaining payments :", remainingMainObject);
     }, [redesignedData, thisMonth, thisYear]);
@@ -2205,7 +2206,7 @@ function EmployeesThisMonthBooking() {
     const [filteredDataFromSearchInAdvancePayment, setFilteredDataFromSearchInAdvancePayment] = useState([]);
     const [selectedDateRangeInAdvancePayment, setSelectedDateRangeInAdvancePayment] = useState([null, null]);
     const [searchCompanyServiceNameInAdvancePayments, setSearchCompanyServiceNameInAdvancePayments] = useState("");
-    let fullAdvancePaymentObject = [];
+    const [fullAdvancePaymentObject, setFullAdvancePaymentObject] = useState([]);
 
     useEffect(() => {
         const newAdvancePaymentObject = [];
@@ -2240,18 +2241,19 @@ function EmployeesThisMonthBooking() {
                 });
             });
         });
-
+        
+        
         const currentMonthData = fullAdvancePaymentObject.filter(payment => {
             const paymentDate = new Date(payment.paymentDate);
             return paymentDate.getFullYear() === thisYear && paymentDate.getMonth() === thisMonth;
         });
-
+        
         setAdvancePaymentObject(currentMonthData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setTotalPaymentObject(currentMonthData.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
         setCompleteAdvancePaymentObject(fullAdvancePaymentObject.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)));
+        setFullAdvancePaymentObject(currentMonthData);
         // setAdvancePaymentObjectFilter(newAdvancePaymentObject);
         // console.log("Advance Payment :", newAdvancePaymentObject);
-        console.log("Full advance payment object :", fullAdvancePaymentObject);
     }, [redesignedData, thisMonth, thisYear]);
 
     // Sorting Total Amount
