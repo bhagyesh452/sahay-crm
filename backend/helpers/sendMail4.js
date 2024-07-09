@@ -122,7 +122,7 @@ const processAttachments = (files) => {
 
 
 // Function to send email with attachments and CC
-const sendMail4 = async (recipients, ccEmail, subject1,text1,htmlToSend, attachments) => {
+const sendMail4 = async (recipients, ccEmail, subject1, text1,htmlToSend , attachments) => {
 
   try {
     const ccEmailNew = ccEmail;
