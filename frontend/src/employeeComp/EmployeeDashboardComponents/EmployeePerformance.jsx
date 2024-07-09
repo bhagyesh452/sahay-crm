@@ -284,7 +284,7 @@ function EmployeePerformance({ data}) {
     <div>
         <div className="dash-card" style={{minHeight:'299px'}}>
             <div className="dash-card-head">
-                <h2 className="m-0 d-flex align-items-end justify-content-between">
+                <h2 className="m-0 d-flex align-items-end justify-content-between flex-wrap">
                     <div>Top 5 Performers</div>
                     <div style={{fontSize:"11px"}}> (Ranking Is Done Based On Collection)</div>
                 </h2>
