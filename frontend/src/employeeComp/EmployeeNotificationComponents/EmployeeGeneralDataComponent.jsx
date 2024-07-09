@@ -24,7 +24,7 @@ function EmployeeGeneralDataComponent({ ename }) {
   const [requestData, setRequestData] = useState([])
 
 
-
+  console.log("boom" , ename)
 
   function formatDate(timestamp) {
     const date = new Date(timestamp);
@@ -118,7 +118,7 @@ function EmployeeGeneralDataComponent({ ename }) {
                     <td>{index + 1}</td>
                     <td>
                       <div className="Notification-date d-flex align-items-center justify-content-center">
-                        <IoDocumentTextOutline style={{ fontSize: '16px' }} />
+                        
                         <div style={{ marginLeft: '5px' }} className="noti-text">
                           <b>
                             {obj.dAmount}

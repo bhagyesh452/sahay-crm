@@ -252,9 +252,11 @@ router.post("/update-redesigned-final-form/:CompanyName",
       if (!updatedDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
+      const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
+        { "Company Name": companyName }, 
+        { assigned: "Accept" }, 
+        { new: true }
+      );
       socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
       res
         .status(200)
@@ -265,6 +267,8 @@ router.post("/update-redesigned-final-form/:CompanyName",
     }
   }
 );
+
+
 router.put("/update-more-booking/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
@@ -321,9 +325,11 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           // Set all properties except "moreBookings"
           { new: true } // Return the updated document
         );
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": CompanyName,
-      });
+        const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
+          { "Company Name": CompanyName }, 
+          { assigned: "Accept" }, 
+          { new: true }
+        );
       socketIO.emit('booking-updated', moreDocument.bdeName)
 
       res.status(200).json(updatedDocument);
@@ -4640,6 +4646,7 @@ router.delete(
             {
               $set: {
                 request: true,
+                assigned:"Accept"
               },
             }
           );

@@ -26,7 +26,7 @@ router.post("/requestCompanyData", async (req, res) => {
   let dataArray = [];
   if (Array.isArray(csvData)) {
     dataArray = csvData;
-    console.log("dataArray" , dataArray)
+    console.log("dataArray", dataArray)
   } else if (typeof csvData === "object" && csvData !== null) {
     dataArray.push(csvData);
   } else {
@@ -41,6 +41,7 @@ router.post("/requestCompanyData", async (req, res) => {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
+          assigned: "Pending"
         };
         //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
@@ -157,7 +158,7 @@ router.post("/requestData", async (req, res) => {
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
-    console.log("saved" , savedRequest)
+    console.log("saved", savedRequest)
 
     // Emit a socket event to notify clients about the new request
     socketIO.emit("newRequest", savedRequest);
@@ -295,16 +296,16 @@ router.post("/requestgData", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
-      employee_status:"Unread",
+      employee_status: "Unread",
       img_url: GetEmployeeProfile
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
 
 
-    socketIO.emit("newRequest",{
-      name:name,
-      dAmonut:numberOfData,
+    socketIO.emit("newRequest", {
+      name: name,
+      dAmonut: numberOfData,
     });
     // Emit a socket.io message when a new request is posted
     // io.emit('newRequest', savedRequest);
@@ -452,6 +453,7 @@ router.post("/deleterequestbybde", async (req, res) => {
       request,
       ename,
       bookingIndex,
+      assigned
     } = req.body;
     const socketIO = req.io;
 
@@ -461,8 +463,14 @@ router.post("/deleterequestbybde", async (req, res) => {
       bookingIndex,
       request: false,
     });
+    console.log(findRequest)
+
     if (findRequest) {
-      return res.status(400).json({ message: "Request already exists" });
+      if (findRequest.assigned === "Reject") {
+        return res.status(400).json({ message: "Request already rejected by admin" });
+      } else {
+        return res.status(400).json({ message: "Request already exists" });
+      }
     }
 
     // Create a new delete request object
@@ -475,24 +483,21 @@ router.post("/deleterequestbybde", async (req, res) => {
       request,
       ename,
       bookingIndex,
+      assigned
     });
 
     // Save the delete request to the database
     await deleteRequest.save();
+
     const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
-    let GetEmployeeProfile = "no-image"
+    let GetEmployeeProfile = "no-image";
     if (GetEmployeeData) {
       const EmployeeData = GetEmployeeData.employee_profile;
       console.log("Employee Data:", EmployeeData);
 
       if (EmployeeData && EmployeeData.length > 0) {
         GetEmployeeProfile = EmployeeData[0].filename;
-
-      } else {
-        GetEmployeeProfile = "no-image";
       }
-    } else {
-      GetEmployeeProfile = "no-image";
     }
 
     const requestCreate = {
@@ -501,10 +506,13 @@ router.post("/deleterequestbybde", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
+      employee_status: "Unread",
       img_url: GetEmployeeProfile
-    }
+    };
+
     const addRequest = new NotiModel(requestCreate);
-    const saveRequest = await addRequest.save();
+    await addRequest.save();
+
     socketIO.emit('delete-booking-requested', ename);
     res.status(200).json({ message: "Delete request created successfully" });
   } catch (error) {
@@ -513,15 +521,29 @@ router.post("/deleterequestbybde", async (req, res) => {
   }
 });
 
+
 router.get("/deleterequestbybde", async (req, res) => {
   try {
-    const company = await RequestDeleteByBDE.find();
+    const company = await RequestDeleteByBDE.find({assigned : "Pending"});
     res.json(company);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+router.get("/deleterequestbybde/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    const company = await RequestDeleteByBDE.find({ename : ename});
+    res.status(200).json(company);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 router.get("/editRequestByBde", async (req, res) => {
   try {
     const company = await BookingsRequestModel.find();
@@ -532,16 +554,21 @@ router.get("/editRequestByBde", async (req, res) => {
   }
 });
 
-router.delete("/deleterequestbybde/:id", async (req, res) => {
+router.post("/deleterequestbybde/:id", async (req, res) => {
   try {
     const _id = req.params.id;
-    // Find document by company name and delete it
-    const updatedCompany = await RequestDeleteByBDE.findByIdAndDelete(_id);
+    // Find document by ID and update the assigned field
+    const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
+      { _id: _id },
+      { assigned: "Reject" },
+      { new: true }
+    );
+
     if (!updatedCompany) {
       return res.status(404).json({ error: "Company not found" });
     }
 
-    // If document is deleted successfully, return the deleted document
+    // If document is updated successfully, return the updated document
     res.json(updatedCompany);
   } catch (error) {
     console.error(error);
@@ -549,19 +576,76 @@ router.delete("/deleterequestbybde/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete-data/:ename", async (req, res) => {
+
+// router.delete("/delete-data/:ename", async (req, res) => {
+//   const { ename } = req.params;
+//   const socketIO = req.io;
+
+//   try {
+//     // Delete all data objects with the given ename
+//     await CompanyRequestModel.deleteMany({ ename });
+//     socketIO.emit('data-action-performed', ename)
+
+//     // Send success response
+//     res.status(200).send("Data deleted successfully");
+//   } catch (error) {
+//     // Send error response
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+router.post("/update-data/:ename", async (req, res) => {
   const { ename } = req.params;
+  const updatedCsvData = req.body; // Ensure you're sending the CSV data in the request body
   const socketIO = req.io;
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
 
   try {
-    // Delete all data objects with the given ename
-    await CompanyRequestModel.deleteMany({ ename });
-    socketIO.emit('data-action-performed', ename)
+    // Loop through each item in the CSV data
+    for (const employeeData of updatedCsvData) {
+      // Update the assigned field for each employee data
+      await CompanyRequestModel.updateOne({ _id: employeeData._id }, { assigned: "Accept" });
+    }
+
+    // Emit an event to notify clients
+    socketIO.emit('data-action-performed', ename);
 
     // Send success response
-    res.status(200).send("Data deleted successfully");
+    res.status(200).send("Data updated successfully");
   } catch (error) {
-    // Send error response
+    console.error("Error updating data:", error.message);
+    // Send error response if any exception occurs
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+router.post("/update-data-ondelete/:ename", async (req, res) => {
+  const { ename } = req.params;
+  const updatedCsvData = req.body; // Ensure you're sending the CSV data in the request body
+  const socketIO = req.io;
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+
+  try {
+    // Loop through each item in the CSV data
+    for (const employeeData of updatedCsvData) {
+      // Update the assigned field for each employee data
+      await CompanyRequestModel.updateOne({ _id: employeeData._id }, { assigned: "Reject" });
+    }
+
+    // Emit an event to notify clients
+    socketIO.emit('data-action-performed', ename);
+
+    // Send success response
+    res.status(200).send("Data updated successfully");
+  } catch (error) {
+    console.error("Error updating data:", error.message);
+    // Send error response if any exception occurs
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -626,6 +710,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         "Company Name": companyName,
         bookingIndex,
         requestDate,
+        assigned:"Pending",
         ...newData,
       });
       const name = newData.bdeName;
@@ -652,6 +737,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         requestTime: new Date(),
         designation: "SE",
         status: "Unread",
+        employee_status:"Unread",
         img_url: GetEmployeeProfile
       }
       const addRequest = new NotiModel(requestCreate);
@@ -659,7 +745,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
 
       socketIO.emit('editBooking_requested', {
         bdeName: name,
-        bdmName:bdmName, 
+        bdmName: bdmName,
       });
 
       res.status(201).json(createdData);
@@ -683,9 +769,12 @@ router.get("/recent-updates", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
 router.get("/requestCompanyData", async (req, res) => {
   try {
-    const data = await CompanyRequestModel.find();
+    const data = await CompanyRequestModel.find({ assigned: "Pending" });
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -693,13 +782,24 @@ router.get("/requestCompanyData", async (req, res) => {
   }
 });
 
-router.get("/requestCompanyData/:ename" , async(req,res)=>{
+router.get("/requestCompanyData/:ename", async (req, res) => {
   const { ename } = req.params;
-  try{
-    const allData = await CompanyRequestModel.find({ename : ename});
+  try {
+    const allData = await CompanyRequestModel.find({ ename: ename });
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/requestCompanyData/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    const allData = await CompanyRequestModel.find({ ename: ename });
     res.status(200).json(allData)
 
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }

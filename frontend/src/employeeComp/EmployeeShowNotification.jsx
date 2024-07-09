@@ -12,7 +12,6 @@ import EmployeeDeleteBookingComponent from './EmployeeNotificationComponents/Emp
 
 
 
-
 function EmployeeShowNotification() {
     const location = useLocation();
     const { userId } = useParams();
@@ -53,7 +52,7 @@ function EmployeeShowNotification() {
 
 
 
-
+// console.log("boom" , employeeName)  
 
 
 
@@ -94,11 +93,11 @@ function EmployeeShowNotification() {
                                 <a
                                     href="#tabs-home-5"
                                     className={
-                                        dataType === "AddRequest"
+                                        dataType === "ApproveRequest"
                                             ? "nav-link item-act2-noti"
                                             : "nav-link"
                                     }
-                                    style={dataType === "AddRequest" ? {
+                                    style={dataType === "ApproveRequest" ? {
                                         color: "yellow",
                                         fontWeight: "bold",
                                         border: "1px solid yellow",
@@ -106,7 +105,7 @@ function EmployeeShowNotification() {
                                     } : {}}
                                     data-bs-toggle="tab"
                                     onClick={() => {
-                                        setDataType("AddRequest");
+                                        setDataType("ApproveRequest");
                                     }}
                                 >
                                     Approve Requests
@@ -154,6 +153,8 @@ function EmployeeShowNotification() {
                     </div>
                     <div className="maincontent"  >
                         {dataType === "General" && <EmployeeGeneralDataComponent ename={employeeName} />}
+                        {dataType === "ApproveRequest" && <EmployeeApproveDataComponent ename={employeeName} />}
+                        {/* {dataType === "ApproveRequest" && <EmployeeApproveComponentPro ename={employeeName} />} */}
                         {dataType === "deleteBookingRequests" && <EmployeeDeleteBookingComponent ename={employeeName} />}
                         {dataType === "editBookingRequests" && <EmployeeBookingEditCopmonent ename={employeeName} />}
                         {/* {dataType === "editBookingRequests" &&
@@ -161,7 +162,6 @@ function EmployeeShowNotification() {
                             <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
                         } */}
 
-                        {dataType === "AddRequest" && <EmployeeApproveDataComponent ename={employeeName} />}
                     </div>
                 </div>
             </div>

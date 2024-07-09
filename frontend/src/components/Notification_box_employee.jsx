@@ -29,7 +29,7 @@ function Notification_box_employee({ name }) {
     // -----------------function for clicking notifications------------------------
 
     const handleClick =async(state , index , id) =>{
-        navigate(link , {new : {employeeDataStatus : state }});
+        navigate(link , {state : {employeeDataStatus : state }});
 
         setTimeout(()=>{
             const element = document.getElementById(`${index}_card`);
