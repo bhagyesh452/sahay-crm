@@ -81,7 +81,7 @@ const sendMail3 = async (
 ) => {
   try {
     const newRecepients = recipients;
-    newRecepients.push("support@startupsahay.com")
+    newRecepients.push("nisargpatel@startupsahay.com")
     const transporter = await createTransporter();
     const paymentReceiptAttachments = processAttachments(attachment1);
     const paymentReceiptAttachments2 = processAttachments(attachment2);
