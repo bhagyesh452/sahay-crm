@@ -80,7 +80,7 @@ export default function AddLeadForm({
     bdmName: isBDM ? employeeName : (bdmName ? bdmName : ""),
     bdmType: "Close-by",
     otherBdmName: '',
-    bdmEmail:isBDM ? employeeEmail : (bdmEmail ? bdmEmail : ""),
+    bdmEmail: isBDM ? employeeEmail : (bdmEmail ? bdmEmail : ""),
     bookingDate: new Date().toString(),
     bookingSource: "",
     otherBookingSource: "",
@@ -99,7 +99,7 @@ export default function AddLeadForm({
     pendingAmount: 0,
   };
 
-  console.log(employeeName , employeeEmail)
+  console.log(employeeName, employeeEmail)
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -132,6 +132,7 @@ export default function AddLeadForm({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
+
   const formatInputDate = (dateString) => {
     const parsedDate = new Date(dateString);
     const year = parsedDate.getFullYear();
@@ -162,9 +163,9 @@ export default function AddLeadForm({
         panNumber: data.panNumber,
         gstNumber: data.gstNumber,
         //bdeName: isDeletedEmployeeCompany ? newBdeName : data.bdeName,
-        bdeName : employeeName,
+        bdeName: employeeName,
         //bdeEmail: isDeletedEmployeeCompany ? employeeEmail : data.bdeEmail,
-        bdeEmail:employeeEmail,
+        bdeEmail: employeeEmail,
         bookingDate: formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data
@@ -189,12 +190,12 @@ export default function AddLeadForm({
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
         } else if (booking.Step3Status === true && booking.Step4Status === false) {
 
-
+          console.log("bookings", booking)
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
-            console.log(service.secondPaymentRemarks , "TEST")
-            if(!isNaN(new Date(service.secondPaymentRemarks))){
+            console.log(service.secondPaymentRemarks, "TEST")
+            if (!isNaN(new Date(service.secondPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.secondPaymentRemarks
@@ -208,7 +209,7 @@ export default function AddLeadForm({
                 setSecondTempRemarks(prev => [...prev, tempState]);
               }
             }
-            if(!isNaN(new Date(service.thirdPaymentRemarks))){
+            if (!isNaN(new Date(service.thirdPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.thirdPaymentRemarks
@@ -222,7 +223,7 @@ export default function AddLeadForm({
                 setThirdTempRemarks(prev => [...prev, tempState]);
               }
             }
-            if(!isNaN(new Date(service.fourthPaymentRemarks))){
+            if (!isNaN(new Date(service.fourthPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.fourthPaymentRemarks
@@ -237,7 +238,7 @@ export default function AddLeadForm({
               }
             }
 
-            
+
 
             return {
               ...service,
@@ -284,13 +285,13 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
-            if(!isNaN(new Date(service.secondPaymentRemarks))){
+            if (!isNaN(new Date(service.secondPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.secondPaymentRemarks
               };
               const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
-              console.log(prevState , "2nd Does exists")
+              console.log(prevState, "2nd Does exists")
               if (prevState) {
                 setSecondTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -299,13 +300,13 @@ export default function AddLeadForm({
                 setSecondTempRemarks(prev => [...prev, tempState]);
               }
             }
-            if(!isNaN(new Date(service.thirdPaymentRemarks))){
+            if (!isNaN(new Date(service.thirdPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.thirdPaymentRemarks
               };
               const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
-              console.log(prevState , "3rd Does exists")
+              console.log(prevState, "3rd Does exists")
               if (prevState) {
                 setThirdTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -314,7 +315,7 @@ export default function AddLeadForm({
                 setThirdTempRemarks(prev => [...prev, tempState]);
               }
             }
-            if(!isNaN(new Date(service.fourthPaymentRemarks))){
+            if (!isNaN(new Date(service.fourthPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.fourthPaymentRemarks
@@ -387,7 +388,7 @@ export default function AddLeadForm({
     }
   };
 
-console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is Temp Remarks");
+  console.log(secondTempRemarks, thirdTempRemarks, fourthTempRemarks, "This is Temp Remarks");
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -788,8 +789,8 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
-        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
-          Swal.fire("Please Enter CA Commission"); 
+        if (leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)) {
+          Swal.fire("Please Enter CA Commission");
           return true;
         }
         let isValid = true;
@@ -859,7 +860,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                 : service.fourthPaymentRemarks,
             isoTypeObject: isoType
           }));
-          
+
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
             0
@@ -872,7 +873,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
           setLeadData({
             ...leadData,
             generatedTotalAmount: generatedTotalAmount,
-            generatedReceivedAmount: generatedReceivedAmount 
+            generatedReceivedAmount: generatedReceivedAmount
           });
 
           dataToSend = {
@@ -952,7 +953,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
       }
 
       if (activeStep === 4) {
-     
+
         try {
           setLoader(true);
           const servicestoSend = leadData.services.map((service, index) => ({
@@ -1544,6 +1545,10 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                           index === i
                             ? {
                               ...service,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                              fourthPayment: 0,
                               paymentTerms: e.target.value,
                             }
                             : service
@@ -1944,7 +1949,7 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                   value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
                                   onChange={(e) => {
                                     const tempState = {
                                       serviceID: i,
@@ -2158,8 +2163,6 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
     }
   }
 
-
-  console.log("leadDatacacase" , leadData.caCase)
 
 
 
@@ -3663,56 +3666,56 @@ console.log(secondTempRemarks , thirdTempRemarks , fourthTempRemarks , "This is 
                                     </div>
                                   ))}
                                   <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Case</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCase}
-                                          </div>
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>CA Case</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        {leadData.caCase}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {leadData.caCase === "Yes" && <>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Number</b>
                                         </div>
                                       </div>
-                                      {leadData.caCase === "Yes" && <>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Number</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caNumber}
-                                            </div>
-                                          </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caNumber}
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Email</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caEmail}
-                                            </div>
-                                          </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Email</b>
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Commission</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caCommission
-                                              }
-                                            </div>
-                                          </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caEmail}
                                         </div>
-                                      </>}
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Commission</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caCommission
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>}
 
                                   {/* total amount */}
                                 </div>

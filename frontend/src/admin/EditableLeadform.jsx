@@ -1202,6 +1202,10 @@ export default function EditableLeadform({
                           index === i
                             ? {
                                 ...service,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                                fourthPayment: 0,
                                 paymentTerms: e.target.value,
                               }
                             : service

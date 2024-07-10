@@ -1414,11 +1414,11 @@ export default function EditableMoreBooking({
                           index === i
                             ? {
                               ...service,
-                              paymentTerms: e.target.value,
                               firstPayment: 0,
                               secondPayment: 0,
                               thirdPayment: 0,
-                              fourthPayment: 0
+                              fourthPayment: 0,
+                              paymentTerms: e.target.value,
                             }
                             : service
                         ),
