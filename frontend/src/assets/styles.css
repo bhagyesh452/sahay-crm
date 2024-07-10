@@ -1906,6 +1906,9 @@ th.th-sticky1::after {
   font-size: 18px;
 }
 
+.clr-ffffff {
+  color: #ffffff;
+}
 .clr-1ac9bd {
   color: #1ac9bd;
 }
@@ -2496,17 +2499,49 @@ td input {
   border-bottom: 1px solid #e5e5e5;
   border-left: 3px solid #ccc0;
   cursor: pointer;
-  padding: 8px 10p;
+  padding: 8px 10px;
 }
 .rm_bking_cmpny_name
 {
   font-weight: 600;
   color: #5c586e;
-  width: 73%;
+  width: 100%;
 }
-.btn-swap
+.btn-swap-icon
 {
-
+  font-size: 14px;
+  line-height: 12px;
+}
+.rm_cmpny_name_services
+{
+  max-width: calc( 100% - 40px );
+}
+.rm_bking_item_serices
+{
+  font-size: 10px;
+  /* font-weight: 500; */
+  padding: 1px 6px 1px 6px;
+  /* border-radius: 3px; */
+  border-left: 1px solid transparent;
+  margin-right: 6px;
+  max-width: 92px;
+}
+.rm_bking_by, .rm_bking_time
+{
+  font-size: 10px;
+  color: #929dab;
+  font-weight: 500;
+}
+.btn-swap-round
+{
+  background: #ffd669;
+  border: none;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 100px;
+  margin-left: 10px;
 }
 
 

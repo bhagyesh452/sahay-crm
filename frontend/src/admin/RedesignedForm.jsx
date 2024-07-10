@@ -1593,6 +1593,10 @@ export default function RedesignedForm({
                           index === i
                             ? {
                               ...service,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                              fourthPayment: 0,
                               paymentTerms: e.target.value,
                             }
                             : service

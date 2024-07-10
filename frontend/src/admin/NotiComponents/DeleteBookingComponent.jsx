@@ -47,6 +47,7 @@ function DeleteBookingComponent() {
   useEffect(() => {
     fetchDataDelete()
   }, [])
+  
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
@@ -80,7 +81,7 @@ function DeleteBookingComponent() {
     }
   }, [searchText])
 
-  const handleDelete = async (Id, bookingIndex) => {
+  const handleAcceptDeleteRequest = async (Id, bookingIndex) => {
     // Assuming you have an API endpoint for deleting a company
     try {
       const response = await fetch(
@@ -112,7 +113,7 @@ function DeleteBookingComponent() {
 
   const handleDeleteRequest = async (Id) => {
     try {
-      const response = await axios.delete(
+      const response = await axios.post(
         `${secretKey}/requests/deleterequestbybde/${Id}`
       );
       console.log("Deleted company:", response.data);
@@ -203,7 +204,7 @@ function DeleteBookingComponent() {
                   </td>
                   <td>
                     {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
-                      <div className="Notification_acceptbtn" onClick={() => handleDelete(obj.companyID, obj.bookingIndex)}>
+                      <div className="Notification_acceptbtn" onClick={() => handleAcceptDeleteRequest(obj.companyID, obj.bookingIndex)}>
                         <TiTick />
                       </div>
                       <div className="Notification_rejectbtn" onClick={() => handleDeleteRequest(obj._id)}>

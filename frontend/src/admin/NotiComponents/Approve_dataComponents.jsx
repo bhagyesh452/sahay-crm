@@ -73,14 +73,15 @@ function Approve_dataComponents() {
       const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
      
       const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.ename === curr.ename)) {
-          const [dateString, timeString] = formatDateAndTime(
-            curr.AssignDate
-          ).split(", ");
+        // Ensure `curr.assigned` is treated as a boolean
+        if (!acc.some((item) => item.ename === curr.ename) && curr.assigned === "Pending") {
+          const [dateString, timeString] = formatDateAndTime(curr.AssignDate).split(", ");
           acc.push({ ename: curr.ename, date: dateString, time: timeString });
         }
         return acc;
       }, []);
+
+      
       setMapArray(uniqueEnames);
       setTotalData(uniqueEnames)
     } catch (error) {
@@ -99,6 +100,7 @@ function Approve_dataComponents() {
   useEffect(() => {
     fetchRequestedData();
   }, [name]);
+
   useEffect(() => {
     fetchRequestedData();
   }, [searchText]);
@@ -108,6 +110,7 @@ function Approve_dataComponents() {
   useEffect(() => {
         fetchApproveRequests()
   }, [])
+
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
@@ -154,10 +157,16 @@ const handleConfirmAssign = async () => {
           text: "Data successfully sent to the Employee",
           icon: "success",
         });
-        await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
+        // await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
+        const response = await axios.post(`${secretKey}/requests/update-data/${ename}` , updatedCsvdata);
         
-        fetchApproveRequests();
-        closepopup();
+
+        if(response.status === 200){
+          setSelectedRows([])
+          fetchApproveRequests();
+          closepopup();
+
+        }
       } catch (error) {
         if (error.response.status !== 500) {     
           Swal.fire("Some of the data are not unique");
@@ -174,21 +183,33 @@ const handleConfirmAssign = async () => {
       Swal.fire("Please upload data");
     }
   };
+
+
   const handleDeleteData = async () => {
+    const updatedCsvdata = selectedRows;
+    console.log("updatedcsvdata" , updatedCsvdata)
     const ename = name;
-    try {
-      // Make a DELETE request to the backend endpoint
-      const response = await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
-      fetchApproveRequests();
-      closepopup();
-      if(response.status===200){
-        Swal.fire("Request Rejected!");
+    if(updatedCsvdata.length !== 0){
+      try {
+        // Make a DELETE request to the backend endpoint
+        //const response = await axios.delete(`${secretKey}/requests/delete-data/${ename}`);
+        const response = await axios.post(`${secretKey}/requests/update-data-ondelete/${ename}` , updatedCsvdata);
+        if(response.status === 200){
+          Swal.fire("Request Rejected!");
+          setSelectedRows([])
+          fetchApproveRequests();
+          closepopup();
+        }
+    
+        console.log(`Data objects with ename ${ename} deleted successfully`);
+      } catch (error) {
+        console.error('Error deleting data:', error);
       }
-  
-      console.log(`Data objects with ename ${ename} deleted successfully`);
-    } catch (error) {
-      console.error('Error deleting data:', error);
+
+    }else{
+      Swal.fire("Please Select Data")
     }
+   
   };
   const handleCheckboxChange = (row) => {
     // If the row is 'all', toggle all checkboxes

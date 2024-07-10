@@ -57,6 +57,7 @@ function Booking_editComponents() {
       const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
       setTotalBookings(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
+        console.log("curr" , curr)
         if (!acc.some((item) => item.requestBy === curr.requestBy)) {
           const newDate = new Date(curr.requestDate).toLocaleDateString();
           const newTime = new Date(curr.requestDate).toLocaleTimeString();

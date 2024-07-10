@@ -93,20 +93,20 @@ const sendMail3 = async (
     const paymentReceiptAttachments8 = processAttachments(attachment8);
     const paymentReceiptAttachments9 = processAttachments(attachment9);
     const paymentReceiptAttachments10 = processAttachments(attachment10);
-    console.log(paymentReceiptAttachments);
-    console.log(paymentReceiptAttachments2);
-    console.log(paymentReceiptAttachments3);
-    console.log(paymentReceiptAttachments4);
-    console.log(paymentReceiptAttachments5);
-    console.log(paymentReceiptAttachments6);
-    console.log(paymentReceiptAttachments7);
-    console.log(paymentReceiptAttachments8);
-    console.log(paymentReceiptAttachments9);
-    console.log(paymentReceiptAttachments10);
+    // console.log(paymentReceiptAttachments);
+    // console.log(paymentReceiptAttachments2);
+    // console.log(paymentReceiptAttachments3);
+    // console.log(paymentReceiptAttachments4);
+    // console.log(paymentReceiptAttachments5);
+    // console.log(paymentReceiptAttachments6);
+    // console.log(paymentReceiptAttachments7);
+    // console.log(paymentReceiptAttachments8);
+    // console.log(paymentReceiptAttachments9);
+    // console.log(paymentReceiptAttachments10);
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
       to: recipients.join(", "),
-      replyTo: "support@startupsahay.com",
+      replyTo: "shivangi@startupsahay.com",
       subject,
       text,
       html,

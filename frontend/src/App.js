@@ -70,9 +70,9 @@ import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
-import Employee from "./Hr_panel/Components/Employee.jsx";
+import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
-
+import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 
 
 
@@ -116,6 +116,8 @@ function App() {
           </Route>
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
+          <Route path='/employee/show-notification/:userId' element={newtoken ? <EmployeeShowNotification /> : <Navigate to='/' />}></Route>
+        
 
           {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
           <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>

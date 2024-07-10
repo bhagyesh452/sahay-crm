@@ -34,10 +34,10 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
   };
 
   console.log("Requested Booking",requestedBooking, "Existing Booking",  existingBooking);
-  const handleRejectClick = async ()=>{
 
+  const handleRejectClick = async ()=>{
     try {
-      const response = await axios.delete(`${secretKey}/bookings/delete-redesigned-booking-request/${existingBooking["Company Name"]}`);
+      const response = await axios.post(`${secretKey}/bookings/delete-redesigned-booking-request/${existingBooking["Company Name"]}`);
      Swal.fire({title:"Request Deleted" , icon:"success"}) // Display success message
     } catch (error) {
       console.log("Error updating data" ,error) ;

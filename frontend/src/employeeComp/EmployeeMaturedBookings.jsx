@@ -240,7 +240,7 @@ function EmployeeMaturedBookings() {
   };
 
 
-  console.log("currentLeadForm", currentLeadform)
+ 
 
   const handleRequestDelete = async (Id, companyID, companyName, index) => {
     const confirmDelete = await Swal.fire({
@@ -253,7 +253,7 @@ function EmployeeMaturedBookings() {
       confirmButtonText: "Yes, proceed!",
       cancelButtonText: "No, cancel",
     });
-
+  
     if (confirmDelete.isConfirmed) {
       try {
         const sendingData = {
@@ -263,25 +263,24 @@ function EmployeeMaturedBookings() {
           time: new Date().toLocaleTimeString(),
           date: new Date().toLocaleDateString(),
           ename: data.ename,
-
-          bookingIndex: index // Replace 'Your Ename Value' with the actual value
+          bookingIndex: index,
+          assigned: "Pending" // Replace 'Your Ename Value' with the actual value
         };
-
-        // const response = await fetch(`${secretKey}/deleterequestbybde`, {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(sendingData),
-        // });
+  
         const response = await axios.post(`${secretKey}/requests/deleterequestbybde`, sendingData);
-
-
-        Swal.fire({ title: "Delete Request Sent", icon: "success" });
-        // Log the response message
+  
+        if (response.status === 200) {
+          // If the response is ok, show success messages
+          Swal.fire({ title: response.data.message || "Delete request created successfully", icon: "success" });
+        }
       } catch (error) {
-
-        Swal.fire({ title: "Request Already Exists!", icon: "error" });
+        if (error.response) {
+          // If the response has a status code, show an error message
+          Swal.fire({ title: error.response.data.message || "Something went wrong", icon: "error" });
+        } else {
+          // For other types of errors, show a generic error message
+          Swal.fire({ title: error.message, icon: "error" });
+        }
         console.error("Error creating delete request:", error);
         // Handle the error as per your application's requirements
       }
@@ -289,6 +288,7 @@ function EmployeeMaturedBookings() {
       console.log("No, cancel");
     }
   };
+  
 
   const [currentForm, setCurrentForm] = useState(null);
   const [bookingIndex, setBookingIndex] = useState(0);

@@ -72,7 +72,18 @@ function formatDateNew(timestamp) {
 // Edit Request for Booking
 router.get("/editable-LeadData", async (req, res) => {
   try {
-    const data = await EditableDraftModel.find(); // Fetch all data from the collection
+    const data = await EditableDraftModel.find({assigned : "Pending"}); // Fetch all data from the collection
+    res.json(data); // Send the data as JSON response
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/editable-LeadData/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    const data = await EditableDraftModel.find({bdeName : ename}); // Fetch all data from the collection
     res.json(data); // Send the data as JSON response
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -186,20 +197,25 @@ router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
   }
 });
 
-router.delete("/delete-redesigned-booking-request/:CompanyName",
-  async (req, res) => {
-    try {
-      const companyName = req.params.CompanyName;
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
-      res.status(200).json({ message: "Document updated successfully" });
-    } catch {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) => {
+  try {
+    const companyName = req.params.CompanyName;
+    const updatedDocument = await EditableDraftModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { assigned: "Reject" },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
     }
+
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
 
 // *************************************************************  UPdate Methods **************************************************************
 
@@ -252,9 +268,11 @@ router.post("/update-redesigned-final-form/:CompanyName",
       if (!updatedDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
-      });
+      const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
+        { "Company Name": companyName }, 
+        { assigned: "Accept" }, 
+        { new: true }
+      );
       socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
       res
         .status(200)
@@ -265,6 +283,8 @@ router.post("/update-redesigned-final-form/:CompanyName",
     }
   }
 );
+
+
 router.put("/update-more-booking/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
@@ -321,9 +341,11 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           // Set all properties except "moreBookings"
           { new: true } // Return the updated document
         );
-      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": CompanyName,
-      });
+        const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
+          { "Company Name": CompanyName }, 
+          { assigned: "Accept" }, 
+          { new: true }
+        );
       socketIO.emit('booking-updated', moreDocument.bdeName)
 
       res.status(200).json(updatedDocument);
@@ -2218,7 +2240,12 @@ router.post(
           };
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
       <p class="Declaration_text_data">
-        I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+        I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+        between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+        services, and no additional services will be provided without separate payment, even in the case of rejection. 
+        Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+        is eligible for the re-application.
+        
       </p>
       </div>` : "";
           const serviceKawali = renderServiceKawali();
@@ -2310,7 +2337,11 @@ router.post(
       </div>
             <div class="Declaration_text">
               <p class="Declaration_text_data">
-                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
               </p>
             </div>
            
@@ -4177,9 +4208,13 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return servicesHtml;
     };
     const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
-<p class="Declaration_text_data">
-  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
-</p>
+    <p class="Declaration_text_data">
+                     I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
+    </p>
 </div>` : "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
@@ -4267,7 +4302,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 </div>
       <div class="Declaration_text">
         <p class="Declaration_text_data">
-          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+                          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
+                between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
+                services, and no additional services will be provided without separate payment, even in the case of rejection. 
+                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
+                is eligible for the re-application.
         </p>
       </div>
      
@@ -4640,11 +4679,16 @@ router.delete(
             {
               $set: {
                 request: true,
+                assigned:"Accept"
               },
             }
           );
           companyName = deletedBooking["Company Name"]
-          socketIO.emit('delete-request-done', companyName);
+          socketIO.emit('delete-request-done', {
+            name : deletedBooking.bdeName,
+            companyName : companyName
+          });
+
         } else {
           return res.status(404).send("Booking not found");
         }

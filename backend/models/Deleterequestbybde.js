@@ -32,6 +32,9 @@ const deleteSchema = new mongoose.Schema({
   bookingIndex:{
     type : Number,
     required:true
+  },
+  assigned:{
+    type:String,
   }
 });
 

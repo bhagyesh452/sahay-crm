@@ -160,6 +160,9 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
  bookingIndex:{
   type:Number,
   default:0
+ },
+ assigned :{
+  type:String,
  }
 });
 
