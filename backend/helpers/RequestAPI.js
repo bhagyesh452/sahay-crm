@@ -235,6 +235,27 @@ router.put('/update-notification/:id', async (req, res) => {
     res.status(500).json({ message: "Error updating notification status", error: err });
   }
 });
+
+router.put('/update-notification-employee/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedNotification = await NotiModel.findByIdAndUpdate(
+      id,
+      { employee_status: 'read' },
+      { new: true } // Returns the updated document
+    );
+
+    if (!updatedNotification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+
+    res.status(200).json(updatedNotification);
+  } catch (err) {
+    console.error("Error updating notification status", err);
+    res.status(500).json({ message: "Error updating notification status", error: err });
+  }
+});
 router.post("/setMarktrue/:id", async (req, res) => {
   try {
     const id = req.params.id;

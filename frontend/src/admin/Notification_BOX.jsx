@@ -101,8 +101,11 @@ function Notification_BOX({ isDM }) {
       fetchNotification()
     });
     socket.on("approve-request", (res) => {
-      fetchNotification()
+      fetchNotification();
     });
+    socket.on("bookingbooking-edit-request-delete" , (res)=>{
+      fetchNotification();
+    })
 
     // Clean up the socket connection when the component unmounts
     return () => {
