@@ -28,24 +28,24 @@ function Notification_box_employee({ name }) {
 
     // -----------------function for clicking notifications------------------------
 
-    const handleClick =async(state , index , id) =>{
-        navigate(link , {state : {employeeDataStatus : state }});
+    const handleClick = async (state, index, id) => {
+        navigate(link, { state: { employeeDataStatus: state } });
 
-        setTimeout(()=>{
+        setTimeout(() => {
             const element = document.getElementById(`${index}_card`);
-            if(element){
+            if (element) {
                 element.classList.remove('unread')
             }
 
-        } , 0);
+        }, 0);
 
-        // try{
-        //     const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
-        //     console.log(response)
+        try {
+            const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
+            console.log(response)
 
-        // }catch(error){
-        //     console.error("Error updating notification for employee" , error)
-        // }
+        } catch (error) {
+            console.error("Error updating notification for employee", error)
+        }
     }
 
 
@@ -71,8 +71,7 @@ function Notification_box_employee({ name }) {
             return `${days} d ago`;
         }
     }
-
-    console.log("name" , name)
+    console.log("name", name)
     // --------------------------------------  Fetch functions --------------------------------------------
     const fetchNotification = async () => {
         try {
@@ -107,7 +106,39 @@ function Notification_box_employee({ name }) {
         socket.on("approve-request", (res) => {
             fetchNotification()
         });
-
+        socket.on("delete-leads-request-bde", (res) => {
+            fetchNotification();
+        });
+        socket.on("data-sent", (res) => {
+            fetchNotification();
+        });
+        socket.on("data-assigned", (res) => {
+            fetchNotification();
+        });
+        socket.on("data-action-performed", (res) => {
+            fetchNotification();
+        });
+        socket.on("data-action-performed-ondelete", (res) => {
+            fetchNotification();
+        });
+        socket.on("delete-request-done", (res) => {
+            fetchNotification();
+        });
+        socket.on("delete-request-done-ondelete", (res) => {
+            fetchNotification();
+        });
+        socket.on("Remaining_Payment_Added", (res) => {
+            fetchNotification();
+        });
+        socket.on("expanse-added", (res) => {
+            fetchNotification();
+        });
+        socket.on("booking-updated", (res) => {
+            fetchNotification();
+        });
+        socket.on("bookingbooking-edit-request-delete",()=>{
+            fetchNotification();
+        })
         // Clean up the socket connection when the component unmounts
         return () => {
             socket.disconnect();
@@ -116,7 +147,7 @@ function Notification_box_employee({ name }) {
 
 
     useEffect(() => {
-        if(name){
+        if (name) {
             fetchNotification();
         }
     }, [name])

@@ -103,6 +103,13 @@ function Booking_editComponents() {
       reconnection: true, 
       transports: ['websocket'],
     });
+    socket.on("booking-updated" ,async()=>{
+      fetchEditRequests();
+    })
+
+    socket.on("bookingbooking-edit-request-delete",()=>{
+      fetchEditRequests();
+    })
 
     return () => {
       socket.disconnect();

@@ -250,6 +250,7 @@ function BookingList() {
 
     if (confirmation.isConfirmed) {
       if (id) {
+        console.log("id" , id)
         fetch(
           `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
@@ -270,6 +271,7 @@ function BookingList() {
             console.error("Error during delete request:", error);
           });
       } else {
+        console.log("company" , company)
         fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
