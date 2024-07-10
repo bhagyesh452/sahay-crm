@@ -78,6 +78,7 @@ function Employees({ onEyeButtonClick }) {
   // const handleLogin = ()=>{
   //   setIsLoggedIn(true)
   // }
+
   const handleEyeButtonClick = (id) => {
     onEyeButtonClick(id);
     //console.log(id);
@@ -95,15 +96,15 @@ function Employees({ onEyeButtonClick }) {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
         updateActiveStatus(); // Don't fetch instead, just change that particular active status
-      }, 5000); 
+      }, 5000);
     });
 
     socket.on("user-disconnected", () => {
@@ -125,7 +126,7 @@ function Employees({ onEyeButtonClick }) {
   const [dataToDelete, setDataToDelete] = useState([])
 
 
-  const handleDeleteClick = async (itemId, nametochange, dataToDelete , filteredCompanyData) => {
+  const handleDeleteClick = async (itemId, nametochange, dataToDelete, filteredCompanyData) => {
     // Open the confirm delete modal
     // console.log(nametochange)
     // console.log("filtered" , filteredCompanyData)
@@ -150,7 +151,7 @@ function Employees({ onEyeButtonClick }) {
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
-          
+
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
           fetchData();
@@ -181,9 +182,9 @@ function Employees({ onEyeButtonClick }) {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const handledeletefromcompany = async (filteredCompanyData) => { 
+  const handledeletefromcompany = async (filteredCompanyData) => {
     if (filteredCompanyData && filteredCompanyData.length !== 0) {
-      
+
       try {
         // Update companyData in the second database
         await Promise.all(
@@ -399,7 +400,6 @@ function Employees({ onEyeButtonClick }) {
         branchOffice: branchOffice,
         targetDetails: targetObjects,
         bdmWork,
-
       };
 
       let dataToSendUpdated = {
@@ -440,6 +440,11 @@ function Employees({ onEyeButtonClick }) {
           `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
+        // Updates data in performance report:
+        const response2 = await axios.put(`${secretKey}/employee/editPerformanceReport/${selectedDataId}`, {
+          targetDetails: dataToSend.targetDetails,
+          email: dataToSend.email
+        });
 
         //console.log(response.data,"updateddata")
 
@@ -469,7 +474,13 @@ function Employees({ onEyeButtonClick }) {
         }
       } else {
         const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
-        //console.log(response.data , "datatosend")
+        // Adds data in performance report:
+        const response2 = await axios.post(`${secretKey}/employee/addPerformanceReport`, {
+          targetDetails: dataToSend.targetDetails,
+          email: dataToSend.email
+        });
+        // console.log(response.data, "datatosend");
+        console.log("Performance report info :", response2.data.data);
         Swal.fire({
           title: "Data Added!",
           text: "You have successfully added the data!",
@@ -1010,7 +1021,7 @@ function Employees({ onEyeButtonClick }) {
                                       setDataToDelete(dataToDelete);
                                       const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                                       setCompanyDdata(filteredCompanyData);
-                                      handleDeleteClick(item._id, item.ename, dataToDelete , filteredCompanyData);
+                                      handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
                                     }}
                                   >
                                     <IconTrash

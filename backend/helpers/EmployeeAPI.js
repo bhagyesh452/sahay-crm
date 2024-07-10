@@ -3,6 +3,7 @@ var router = express.Router();
 const dotenv = require("dotenv");
 dotenv.config();
 const adminModel = require("../models/Admin.js");
+const PerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
@@ -420,5 +421,126 @@ router.post(
     }
   }
 );
+
+// Employee Performance APIs
+// Add new performance record:
+router.post('/addPerformanceReport', async (req, res) => {
+  try {
+    const { targetDetails, email, achievement } = req.body;
+
+    // Fetch employee information from adminModel
+    const employeeInfo = await adminModel.findOne({ email: email });
+
+    if (!employeeInfo) {
+      return res.status(404).json({ result: false, message: 'Employee not found' });
+    }
+
+    // Process each target detail separately
+    const performanceData = await Promise.all(targetDetails.map(async (target) => {
+
+      // Ensure achievement and target.amount are valid numbers or default to 0
+      const actualAchievement = Number.isNaN(parseFloat(achievement)) ? 0 : parseFloat(achievement);
+      const actualTargetAmount = Number.isNaN(parseFloat(target.amount)) ? 0 : parseFloat(target.amount);
+
+      // Calculate ratio only if both achievement and target.amount are valid numbers
+      const ratio = actualTargetAmount === 0 ? 0 : (actualAchievement / actualTargetAmount) * 100;
+      let result;
+      
+      if(Math.round(ratio) > 0 && Math.round(ratio) <= 40) {
+        result = "Poor"
+      }
+      else if(Math.round(ratio) >= 41 && Math.round(ratio) <= 60) {
+        result = "Below Average"
+      }
+      else if(Math.round(ratio) >= 61 && Math.round(ratio) <= 74) {
+        result = "Average"
+      }
+      else if(Math.round(ratio) >= 75 && Math.round(ratio) <= 99) {
+        result = "Good"
+      }
+      else if(Math.round(ratio) >= 100 && Math.round(ratio) <= 149) {
+        result = "Excellent"
+      }
+      else if(Math.round(ratio) >= 150 && Math.round(ratio) <= 199) {
+        result = "Extraordinary"
+      }
+      else if(Math.round(ratio) >= 200 && Math.round(ratio) <= 249) {
+        result = "Outstanding"
+      }
+      else if(Math.round(ratio) >= 250) {
+        result = "Exceptional"
+      }
+      
+      return await PerformanceReportModel.create({
+        empId: employeeInfo._id,
+        empName: employeeInfo.ename,
+        month: `${target.month}-${target.year}`,
+        target: actualTargetAmount,
+        achievement: actualAchievement,
+        ratio: Math.round(ratio),
+        result: result || ""
+      });
+    }));
+
+    res.status(201).json({ result: true, message: "Data added successfully", data: performanceData });
+  } catch (error) {
+    res.status(500).json({ result: false, message: 'Error creating performance report', error: error.message });
+  }
+});
+
+// Fetch performance report for employee based on empId
+router.get('/fetchPerformanceReport/:empId', async (req, res) => {
+  const empId = req.params.empId;
+
+  try {
+    // Fetch performance reports for the specified employee ID
+    const performanceReports = await PerformanceReportModel.find({ empId: empId });
+
+    if (!performanceReports || performanceReports.length === 0) {
+      return res.status(404).json({ result: false, message: 'Performance reports not found for this employee ID' });
+    }
+
+    res.status(200).json({ result: true, message: "Data fetched successfully", data: performanceReports });
+  } catch (error) {
+    res.status(500).json({ result: false, message: 'Error fetching performance reports', error: error.message });
+  }
+});
+
+// Update performance record if empId exists otherwise create new performance record:
+router.put('/editPerformanceReport/:empId', async (req, res) => {
+  try {
+    const empId = req.params.id;
+    const { targetDetails, email } = req.body;
+
+    const employeeInfo = await adminModel.findOne({ email: email });
+
+    if (!employeeInfo) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Update or create performance report with same _id as employee
+    const performanceData = await Promise.all(targetDetails.map(async (target) => {
+      await PerformanceReportModel.findOneAndUpdate(
+        {
+          empId: employeeInfo._id, // Use employee's _id as _id for PerformanceReportModel
+          month: `${target.month}-${target.year}`
+        },
+        {
+          empId: empId, // Ensure _id consistency
+          empName: employeeInfo.ename,
+          month: `${target.month}-${target.year}`,
+          target: target.amount
+        },
+        {
+          upsert: true, // Creates a new document if no match is found
+          new: true // Returns the updated document
+        }
+      );
+    }));
+    res.status(200).json({ result: true, message: 'Performance details updated successfully', data: performanceData });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating performance details', error: error.message });
+  }
+});
 
 module.exports = router;
