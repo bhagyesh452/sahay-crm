@@ -3582,7 +3582,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {obj.secondPaymentRemarks !== "On Particular Date"
+                                                  {obj.thirdPaymentRemarks !== "On Particular Date"
                                                     ? obj.thirdPaymentRemarks
                                                     : `Payment On ${thirdTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
@@ -3602,7 +3602,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {obj.secondPaymentRemarks !== "On Particular Date"
+                                                  {obj.fourthPaymentRemarks !== "On Particular Date"
                                                     ? obj.fourthPaymentRemarks
                                                     : `Payment On ${fourthTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
