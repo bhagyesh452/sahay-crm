@@ -753,7 +753,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     }
 
     console.log(baseQuery);
-    console.log("chal")
+  
 
     const data = await CompanyModel.find(baseQuery).lean();
 
@@ -1040,6 +1040,11 @@ router.post("/assign-new", async (req, res) => {
           multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
           Status: "Untouched",
           AssignDate: new Date(),
+          extractedDate: ename === "Extracted" ? new Date() : null,
+          lastAssignedEmployee: ename === "Extracted" ? employeeData.ename : null,
+          extractedMultipleBde: employeeData.extractedMultipleBde && Array.isArray(employeeData.extractedMultipleBde)
+            ? [...employeeData.extractedMultipleBde, employeeData.ename]
+            : [employeeData.ename],
         }
       }
       return {
