@@ -360,18 +360,18 @@ function EmployeeParticular() {
       setmoreEmpData(sortedData)
       if (isFilter || isSearch) {
         setEmployeeData(filteredData)
-      }else {
-          setEmployeeData(
-            sortedData.filter(
-              (obj) =>
-                (obj.Status === "Busy" ||
-                  obj.Status === "Not Picked Up" ||
-                  obj.Status === "Untouched") &&
-                (obj.bdmAcceptStatus !== "Forwarded" &&
-                  obj.bdmAcceptStatus !== "Accept" &&
-                  obj.bdmAcceptStatus !== "Pending")
-            ));
-        }
+      } else {
+        setEmployeeData(
+          sortedData.filter(
+            (obj) =>
+              (obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up" ||
+                obj.Status === "Untouched") &&
+              (obj.bdmAcceptStatus !== "Forwarded" &&
+                obj.bdmAcceptStatus !== "Accept" &&
+                obj.bdmAcceptStatus !== "Pending")
+          ));
+      }
 
     } catch (error) {
       console.error("Error fetching new data:", error);
@@ -1131,9 +1131,11 @@ function EmployeeParticular() {
           Swal.showLoading();
         }
       });
+ 
+      
 
       const response = await axios.post(`${secretKey}/company-data/assign-new`, {
-        ename: newemployeeSelection,
+        ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
         data: csvdata,
       });
 
@@ -1163,7 +1165,8 @@ function EmployeeParticular() {
     }
   };
 
-  console.log("employeeData" , employeeData)
+  console.log("employeeData", employeeData)
+  console.log("selectedoption" , selectedOption)
 
 
 
@@ -1666,14 +1669,14 @@ function EmployeeParticular() {
   useEffect(() => {
     let monthIndex;
     if (selectedYear && selectedMonth) {
-        monthIndex = months.indexOf(selectedMonth);
-        setMonthIndex(monthIndex + 1)
-        const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
-        setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+      monthIndex = months.indexOf(selectedMonth);
+      setMonthIndex(monthIndex + 1)
+      const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+      setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
     } else {
-        setDaysInMonth([]);
+      setDaysInMonth([]);
     }
-}, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth]);
 
   useEffect(() => {
     if (selectedYear && selectedMonth && selectedDate) {
@@ -1710,13 +1713,15 @@ function EmployeeParticular() {
         !selectedState &&
         !selectedNewCity &&
         !selectedYear &&
-        !selectedCompanyIncoDate
+        !selectedCompanyIncoDate &&
+        !selectedAssignDate
       ) {
         // If no filters are applied, reset the filter state and stop the backdrop
         setIsFilter(false);
 
       } else {
         // Update the employee data with the filtered results
+        console.log("selectedAssign", selectedAssignDate)
         console.log(response.data);
         setFilteredData(response.data);
       }
@@ -1727,6 +1732,8 @@ function EmployeeParticular() {
       setOpenFilterDrawer(false);
     }
   };
+
+  console.log("filtered", filteredData)
 
   const handleClearFilter = () => {
     setIsFilter(false)
@@ -1739,6 +1746,7 @@ function EmployeeParticular() {
     setSelectedAssignDate(null)
     setCompanyIncoDate(null)
     setSelectedCompanyIncoDate(null)
+    setFilteredData([])
     fetchNewData()
     //fetchData(1, latestSortCount)
   }
@@ -2054,7 +2062,7 @@ function EmployeeParticular() {
             className="page-body"
             style={{ marginTop: "0px " }}>
             <div className="container-xl">
-              
+
               <div className="d-flex align-items-center justify-content-between mb-2">
                 <div className="d-flex align-items-center">
                   <div className="btn-group" role="group" aria-label="Basic example">
@@ -3380,6 +3388,39 @@ function EmployeeParticular() {
                   onChange={handleOptionChange}
                 />
                 <label htmlFor="direct">Move In General Data</label>
+              </div>
+              <div
+                style={
+                  selectedOption === "extractedData"
+                    ? {
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 9px 0px 0px",
+                      cursor: "pointer",
+                    }
+                    : {
+                      backgroundColor: "white",
+                      margin: "10px 9px 0px 0px",
+                      cursor: "pointer",
+                    }
+                }
+                className="extractedData form-control"
+                onClick={() => {
+                  setSelectedOption("extractedData");
+                }}>
+                <input
+                  type="radio"
+                  id="extractedData"
+                  value="extractedData"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "extractedData"}
+                  onChange={(e) => {
+                    handleOptionChange(e);
+                    setnewEmployeeSelection("Extracted");
+                  }}
+                />
+                <label htmlFor="extractedData">Extracted Data</label>
               </div>
               <div
                 style={

@@ -3279,8 +3279,7 @@ function TestLeads() {
                                     className="extractedData form-control"
                                     onClick={() => {
                                         setSelectedOption("extractedData");
-                                    }}
-                                >
+                                    }}>
                                     <input
                                         type="radio"
                                         id="extractedData"
