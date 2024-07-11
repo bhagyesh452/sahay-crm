@@ -30,6 +30,9 @@ const CompanySchema = new mongoose.Schema({
   AssignDate: {
     type: Date
   }, 
+  UploadDate: {
+    type: Date
+  }, 
   Status:{
     type:String,
     default:"Untouched"
@@ -124,6 +127,9 @@ const CompanySchema = new mongoose.Schema({
     type:Boolean,
     default:false,
   },
+  extractedMultipleBde:{
+    type:Array,
+  }
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);
