@@ -30,6 +30,9 @@ const CompanySchema = new mongoose.Schema({
   AssignDate: {
     type: Date
   }, 
+  UploadDate: {
+    type: Date
+  }, 
   Status:{
     type:String,
     default:"Untouched"
@@ -123,6 +126,15 @@ const CompanySchema = new mongoose.Schema({
   isDeletedEmployeeCompany:{
     type:Boolean,
     default:false,
+  },
+  extractedMultipleBde:{
+    type:Array,
+  },
+  lastAssignedEmployee:{
+    type:String
+  },
+  extractedDate:{
+    type:Date
   },
 });
 

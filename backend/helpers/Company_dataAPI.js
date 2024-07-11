@@ -196,9 +196,9 @@ router.delete("/leads/:id", async (req, res) => {
 //             companyName: employeeData["Company Name"],
 //             //bdmName: remarksBdmName,
 //           });
-      
+
 //           //await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
-      
+
 //           // Save the new entry to MongoDB
 //           await newRemarksHistory.save();
 //         }
@@ -258,7 +258,6 @@ router.post("/leads", async (req, res) => {
       try {
         const employeeWithAssignData = {
           ...employeeData,
-          AssignDate: new Date(),
           "Company Name": employeeData["Company Name"].toUpperCase(),
         };
 
@@ -412,7 +411,9 @@ router.get('/new-leads', async (req, res) => {
     if (dataStatus === "Unassigned") {
       query = { ename: "Not Alloted" };
     } else if (dataStatus === "Assigned") {
-      query = { ename: { $ne: "Not Alloted" } };
+      query = { $and: [{ ename: { $ne: "Not Alloted" } }, { ename: { $ne: "Extracted" } }] };
+    } else if (dataStatus === "Extracted") {
+      query = { ename: "Extracted" };
     }
 
     let sortQuery = {};
@@ -445,7 +446,10 @@ router.get('/new-leads', async (req, res) => {
 
     // Get total count of documents for pagination
     const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
-    const assignedCount = await CompanyModel.countDocuments({ ename: { $ne: "Not Alloted" } });
+    const assignedCount = await CompanyModel.countDocuments({
+      $and: [{ ename: { $ne: "Not Alloted" } }, { ename: { $ne: "Extracted" } }]
+    });
+    const extractedCount = await CompanyModel.countDocuments({ ename: "Extracted" });
     const totalCount = await CompanyModel.countDocuments(query);
 
     // Calculate total pages
@@ -457,7 +461,8 @@ router.get('/new-leads', async (req, res) => {
       currentPage: page,
       totalPages: totalPages,
       unAssignedCount: unAssignedCount,
-      assignedCount: assignedCount
+      assignedCount: assignedCount,
+      extractedCount: extractedCount
     });
   } catch (error) {
     console.error('Error fetching employee data:', error);
@@ -562,7 +567,7 @@ router.get('/filter-leads', async (req, res) => {
     selectedCompanyIncoDate,
   } = req.query;
 
-  console.log(selectedYear)
+  //console.log(selectedYear)
 
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
@@ -584,21 +589,13 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedAdminName && selectedAdminName.trim() !== '') {
       baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
+    console.log("oploadDate", selectedUploadedDate)
     if (selectedUploadedDate) {
-      baseQuery.AssignDate = {
+      baseQuery.UploadDate = {
         $gte: new Date(selectedUploadedDate).toISOString(),
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
     }
-
-    // if (selectedYear) {
-    //   const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-    //   const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-    //   baseQuery["Company Incorporation Date  "] = {
-    //     $gte: yearStartDate,
-    //     $lt: yearEndDate
-    //   };
-    // }
 
     if (selectedYear) {
       if (monthIndex !== '0') {
@@ -621,9 +618,9 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
-    console.log("chala", selectedCompanyIncoDate)
+
     if (selectedCompanyIncoDate) {
-      console.log(selectedCompanyIncoDate, "yahan chala")
+
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
@@ -642,8 +639,18 @@ router.get('/filter-leads', async (req, res) => {
 
     console.log(baseQuery);
 
+
+
+    let extractedData = [];
+    let extractedDataCount = 0;
+    if (!selectedBDEName || selectedBDEName.trim() === '') {
+      let extractedQuery = { ...baseQuery, ename: "Extracted" }
+      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+      extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
+    }
+
     // Fetch assigned data
-    let assignedQuery = { ...baseQuery, ename: { $ne: 'Not Alloted' } };
+    let assignedQuery = { ...baseQuery, ename: { $nin: ['Not Alloted', 'Extracted'] } };
     if (selectedBDEName && selectedBDEName.trim() !== '') {
       assignedQuery.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
     }
@@ -663,6 +670,8 @@ router.get('/filter-leads', async (req, res) => {
     res.status(200).json({
       assigned: assignedData,
       unassigned: unassignedData,
+      extracted: extractedData,
+      extractedDataCount: extractedDataCount,
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
@@ -821,6 +830,8 @@ router.get('/search-leads', async (req, res) => {
     let assignedCount = 0;
     let unassignedData = [];
     let unassignedCount = 0;
+    let extractedData = [];
+    let extractedDataCount = 0;
 
 
     if (searchQuery) {
@@ -842,8 +853,13 @@ router.get('/search-leads', async (req, res) => {
           };
         }
       }
+    
+      let extractedQuery = { ...query, ename: "Extracted" }
+      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+      extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
+
       // Fetch assigned data
-      let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
+      let assignedQuery = { ...query, ename: { $nin: ["Not Alloted", "Extracted"] } };
       assignedCount = await CompanyModel.countDocuments(assignedQuery);
       assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
 
@@ -859,6 +875,8 @@ router.get('/search-leads', async (req, res) => {
     res.status(200).json({
       assigned: assignedData,
       unassigned: unassignedData,
+      extracted: extractedData,
+      extractedDataCount: extractedDataCount,
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
@@ -1037,6 +1055,7 @@ router.post("/assign-new", async (req, res) => {
               bdmStatusChangeTime: "",
               bdmRemarks: "",
               RevertBackAcceptedCompanyRequest: "",
+              Remarks:""
             },
           },
         },

@@ -3342,7 +3342,7 @@ function EmployeeParticular() {
         fullWidth
         maxWidth="sm">
         <DialogTitle>
-          Change BDE{" "}
+          Change BDE
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
