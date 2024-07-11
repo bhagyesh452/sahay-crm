@@ -96,6 +96,7 @@ import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTo
 import EmployeePerformance from "./EmployeeDashboardComponents/EmployeePerformance.jsx";
 import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx";
 import { maxHeight } from "@mui/system";
+import EmployeePerformanceReport from "./EmployeeDashboardComponents/EmployeePerformanceReport.jsx";
 
 
 
@@ -163,19 +164,34 @@ function EmployeeDashboard() {
   const dateRangePickerProhectionRef = useRef(null);
   const dateRangePickerProhectionSummaryRef = useRef(null);
 
+  // Performance Report State :
+  const [performanceReport, setPerformanceReport] = useState([]);
+
+  const fetchPerformanceReport = async () => {
+    const response = await axios.get(`${secretKey}/employee/fetchPerformanceReport/${userId}`);
+    if(response.data.data.length !== 0) {
+      setPerformanceReport(response.data.data);
+    }
+    console.log("Performance report is :", response.data.data);
+  };
+
+  useEffect(()=>{
+    fetchPerformanceReport();
+  },[]);
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
   };
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-
       setData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -2229,7 +2245,6 @@ function EmployeeDashboard() {
     { value: 'total', label: 'Total' }
   ];
 
-
   const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -4155,7 +4170,8 @@ function EmployeeDashboard() {
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <div className="dash-card d-none">
+                    <EmployeePerformanceReport redesignedData = {redesignedData} data={data}/>
+                    {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">Performance Report</h2>
                       </div>
@@ -4241,7 +4257,7 @@ function EmployeeDashboard() {
                           </table>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   </>}
                   {/* calling data report */}

@@ -3,7 +3,6 @@ import { GoArrowUp } from "react-icons/go";
 import { GoArrowDown } from "react-icons/go";
 import { LineChart } from '@mui/x-charts/LineChart';
 import GaugeComponent from 'react-gauge-component';
-
 import Box from '@mui/material/Box';
 
 
@@ -143,8 +142,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       }
     });
     return achievedAmount
-
   };
+
   const functionCalculateAchievedRevenue = () => {
     let achievedAmount = 0;
     let remainingAmount = 0;
@@ -495,11 +494,16 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           })
         }
       })
-
-
     })
     return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   };
+
+  // setMayMonthData()
+  // setJuneonth()
+  // setCurrent()
+  // appBarClasses.post(may month)
+
+
   const functionCalculateAdvanceCollected = () => {
     let achievedAmount = 0;
     let remainingAmount = 0;
