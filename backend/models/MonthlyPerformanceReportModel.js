@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
-const PerformanceReportSchema = new mongoose.Schema({
-    empId: {
-        type: String
-    },
-    empName: {
-        type: String
-    },
+const targetDetailsSchema = new mongoose.Schema({
     month: {
         type: String
     },
@@ -22,6 +16,16 @@ const PerformanceReportSchema = new mongoose.Schema({
     result: {
         type: String
     }
+});
+
+const PerformanceReportSchema = new mongoose.Schema({
+    empId: {
+        type: String
+    },
+    empName: {
+        type: String
+    },
+    targetDetails: [targetDetailsSchema]    
 });
 
 const MonthlyPerformanceReportModel = mongoose.model('MonthlyPerformanceReport', PerformanceReportSchema);

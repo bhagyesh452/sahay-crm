@@ -424,69 +424,71 @@ router.post(
 
 // Employee Performance APIs
 // Add new performance record:
-router.post('/addPerformanceReport', async (req, res) => {
-  try {
-    const { targetDetails, email, achievement } = req.body;
+const moment = require('moment'); // Import moment.js for date manipulation
+const MonthlyPerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
 
-    // Fetch employee information from adminModel
-    const employeeInfo = await adminModel.findOne({ email: email });
+// router.post('/addPerformanceReport', async (req, res) => {
+//     try {
+//         const { targetDetails, email, achievement } = req.body;
 
-    if (!employeeInfo) {
-      return res.status(404).json({ result: false, message: 'Employee not found' });
-    }
+//         // Fetch employee information from adminModel
+//         const employeeInfo = await adminModel.findOne({ email: email });
 
-    // Process each target detail separately
-    const performanceData = await Promise.all(targetDetails.map(async (target) => {
+//         if (!employeeInfo) {
+//             return res.status(404).json({ result: false, message: 'Employee not found' });
+//         }
 
-      // Ensure achievement and target.amount are valid numbers or default to 0
-      const actualAchievement = Number.isNaN(parseFloat(achievement)) ? 0 : parseFloat(achievement);
-      const actualTargetAmount = Number.isNaN(parseFloat(target.amount)) ? 0 : parseFloat(target.amount);
+//         // Calculate previous month and year
+//         const today = moment(); // Get current date
+//         const previousMonth = today.clone().subtract(1, 'months'); // Calculate previous month
+//         const previousMonthIndex = previousMonth.month(); // Get index of previous month (0-11)
+//         const previousYear = previousMonth.year(); // Get year of previous month
 
-      // Calculate ratio only if both achievement and target.amount are valid numbers
-      const ratio = actualTargetAmount === 0 ? 0 : (actualAchievement / actualTargetAmount) * 100;
-      let result;
-      
-      if(Math.round(ratio) > 0 && Math.round(ratio) <= 40) {
-        result = "Poor"
-      }
-      else if(Math.round(ratio) >= 41 && Math.round(ratio) <= 60) {
-        result = "Below Average"
-      }
-      else if(Math.round(ratio) >= 61 && Math.round(ratio) <= 74) {
-        result = "Average"
-      }
-      else if(Math.round(ratio) >= 75 && Math.round(ratio) <= 99) {
-        result = "Good"
-      }
-      else if(Math.round(ratio) >= 100 && Math.round(ratio) <= 149) {
-        result = "Excellent"
-      }
-      else if(Math.round(ratio) >= 150 && Math.round(ratio) <= 199) {
-        result = "Extraordinary"
-      }
-      else if(Math.round(ratio) >= 200 && Math.round(ratio) <= 249) {
-        result = "Outstanding"
-      }
-      else if(Math.round(ratio) >= 250) {
-        result = "Exceptional"
-      }
-      
-      return await PerformanceReportModel.create({
-        empId: employeeInfo._id,
-        empName: employeeInfo.ename,
-        month: `${target.month}-${target.year}`,
-        target: actualTargetAmount,
-        achievement: actualAchievement,
-        ratio: Math.round(ratio),
-        result: result || ""
-      });
-    }));
+//         // Process each target detail for the previous month
+//         const performanceData = await Promise.all(targetDetails.map(async (target) => {
+//             const actualAchievement = Number.isNaN(parseFloat(achievement)) ? 0 : parseFloat(achievement);
+//             const actualTargetAmount = Number.isNaN(parseFloat(target.amount)) ? 0 : parseFloat(target.amount);
 
-    res.status(201).json({ result: true, message: "Data added successfully", data: performanceData });
-  } catch (error) {
-    res.status(500).json({ result: false, message: 'Error creating performance report', error: error.message });
-  }
-});
+//             const ratio = actualTargetAmount === 0 ? 0 : (actualAchievement / actualTargetAmount) * 100;
+//             let result;
+
+//             // Determine the result based on the ratio
+//             if (Math.round(ratio) > 0 && Math.round(ratio) <= 40) {
+//                 result = "Poor";
+//             } else if (Math.round(ratio) >= 41 && Math.round(ratio) <= 60) {
+//                 result = "Below Average";
+//             } else if (Math.round(ratio) >= 61 && Math.round(ratio) <= 74) {
+//                 result = "Average";
+//             } else if (Math.round(ratio) >= 75 && Math.round(ratio) <= 99) {
+//                 result = "Good";
+//             } else if (Math.round(ratio) >= 100 && Math.round(ratio) <= 149) {
+//                 result = "Excellent";
+//             } else if (Math.round(ratio) >= 150 && Math.round(ratio) <= 199) {
+//                 result = "Extraordinary";
+//             } else if (Math.round(ratio) >= 200 && Math.round(ratio) <= 249) {
+//                 result = "Outstanding";
+//             } else if (Math.round(ratio) >= 250) {
+//                 result = "Exceptional";
+//             }
+
+//             // Create and save performance report for the previous month
+//             return await PerformanceReportModel.create({
+//                 empId: employeeInfo._id,
+//                 empName: employeeInfo.ename,
+//                 month: `${previousMonth.format('MMMM')}-${previousYear}`, // Format month as full name
+//                 target: actualTargetAmount,
+//                 achievement: actualAchievement,
+//                 ratio: Math.round(ratio),
+//                 result: result || ""
+//             });
+//         }));
+
+//         res.status(201).json({ result: true, message: "Data added successfully", data: performanceData });
+//     } catch (error) {
+//         res.status(500).json({ result: false, message: 'Error creating performance report', error: error.message });
+//     }
+// });
+
 
 // Fetch performance report for employee based on empId
 router.get('/fetchPerformanceReport/:empId', async (req, res) => {
@@ -495,10 +497,11 @@ router.get('/fetchPerformanceReport/:empId', async (req, res) => {
   try {
     // Fetch performance reports for the specified employee ID
     const performanceReports = await PerformanceReportModel.find({ empId: empId });
+    console.log("performance" , performanceReports)
 
-    if (!performanceReports || performanceReports.length === 0) {
-      return res.status(404).json({ result: false, message: 'Performance reports not found for this employee ID' });
-    }
+    // if (!performanceReports || performanceReports.length === 0) {
+    //   return res.status(400).json({ result: false, message: 'Performance reports not found for this employee ID' });
+    // }
 
     res.status(200).json({ result: true, message: "Data fetched successfully", data: performanceReports });
   } catch (error) {
@@ -509,38 +512,104 @@ router.get('/fetchPerformanceReport/:empId', async (req, res) => {
 // Update performance record if empId exists otherwise create new performance record:
 router.put('/editPerformanceReport/:empId', async (req, res) => {
   try {
-    const empId = req.params.id;
-    const { targetDetails, email } = req.body;
+      const empId = req.params.empId;
+      const { targetDetails, email } = req.body;
 
-    const employeeInfo = await adminModel.findOne({ email: email });
+      // Find the employee information by email
+      const employeeInfo = await adminModel.findOne({ email: email });
 
-    if (!employeeInfo) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
+      // If employee is not found, return a 404 status with a message
+      if (!employeeInfo) {
+          return res.status(404).json({ message: 'Employee not found' });
+      }
 
-    // Update or create performance report with same _id as employee
-    const performanceData = await Promise.all(targetDetails.map(async (target) => {
-      await PerformanceReportModel.findOneAndUpdate(
-        {
-          empId: employeeInfo._id, // Use employee's _id as _id for PerformanceReportModel
-          month: `${target.month}-${target.year}`
-        },
-        {
-          empId: empId, // Ensure _id consistency
-          empName: employeeInfo.ename,
-          month: `${target.month}-${target.year}`,
-          target: target.amount
-        },
-        {
-          upsert: true, // Creates a new document if no match is found
-          new: true // Returns the updated document
-        }
-      );
-    }));
-    res.status(200).json({ result: true, message: 'Performance details updated successfully', data: performanceData });
+      // Find the existing performance report for the employee
+      let performanceReport = await PerformanceReportModel.findOne({ empId });
+
+      // Function to calculate ratio and result
+      const calculateRatioAndResult = (achievement, target) => {
+          const actualAchievement = Number.isNaN(parseFloat(achievement)) ? 0 : parseFloat(achievement);
+          const actualTargetAmount = Number.isNaN(parseFloat(target)) ? 0 : parseFloat(target);
+          const ratio = actualTargetAmount === 0 ? 0 : (actualAchievement / actualTargetAmount) * 100;
+          let result = "";
+
+          if (Math.round(ratio) >= 0 && Math.round(ratio) <= 40) {
+              result = "Poor";
+          } else if (Math.round(ratio) >= 41 && Math.round(ratio) <= 60) {
+              result = "Below Average";
+          } else if (Math.round(ratio) >= 61 && Math.round(ratio) <= 74) {
+              result = "Average";
+          } else if (Math.round(ratio) >= 75 && Math.round(ratio) <= 99) {
+              result = "Good";
+          } else if (Math.round(ratio) >= 100 && Math.round(ratio) <= 149) {
+              result = "Excellent";
+          } else if (Math.round(ratio) >= 150 && Math.round(ratio) <= 199) {
+              result = "Extraordinary";
+          } else if (Math.round(ratio) >= 200 && Math.round(ratio) <= 249) {
+              result = "Outstanding";
+          } else if (Math.round(ratio) >= 250) {
+              result = "Exceptional";
+          }
+
+          return { ratio: Math.round(ratio), result };
+      };
+
+      if (performanceReport) {
+          // Loop through targetDetails to update or add new details
+          for (const detail of targetDetails) {
+              const { ratio, result } = calculateRatioAndResult(detail.achievement, detail.target);
+
+              // Find the specific target detail for the month-year combination
+              let targetDetail = performanceReport.targetDetails.find(td => td.month === `${detail.month}-${detail.year}`);
+
+              if (targetDetail) {
+                  // Update the existing target detail
+                  targetDetail.target = parseFloat(detail.target) || 0;
+                  targetDetail.achievement = parseFloat(detail.achievement) || 0;
+                  targetDetail.ratio = ratio;
+                  targetDetail.result = result;
+              } else {
+                  // Add new target detail for the month-year combination
+                  performanceReport.targetDetails.push({
+                      month: `${detail.month}`,
+                      target: parseFloat(detail.target) || 0,
+                      achievement: parseFloat(detail.achievement) || 0,
+                      ratio: ratio,
+                      result: result
+                  });
+              }
+          }
+
+          // Save the updated performance report
+          await performanceReport.save();
+      } else {
+          // Create new performance report if none exists
+          const newTargetDetails = targetDetails.map(detail => {
+              const { ratio, result } = calculateRatioAndResult(detail.achievement, detail.target);
+              return {
+                  month: `${detail.month}`, // Combine month and year
+                  target: parseFloat(detail.target) || 0,
+                  achievement: parseFloat(detail.achievement) || 0,
+                  ratio: ratio,
+                  result: result
+              };
+          });
+
+          performanceReport = await PerformanceReportModel.create({
+              empId: empId,
+              empName: employeeInfo.ename,
+              targetDetails: newTargetDetails
+          });
+      }
+
+      // Return success response with the performance data
+      res.status(200).json({ result: true, message: 'Performance details updated successfully', data: performanceReport });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating performance details', error: error.message });
+      // Return error response in case of an exception
+      res.status(500).json({ message: 'Error updating performance details', error: error.message });
   }
 });
+
+
 
 module.exports = router;

@@ -96,6 +96,7 @@ import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTo
 import EmployeePerformance from "./EmployeeDashboardComponents/EmployeePerformance.jsx";
 import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx";
 import { maxHeight } from "@mui/system";
+import EmployeePerformanceReport from "./EmployeeDashboardComponents/EmployeePerformanceReport.jsx";
 
 
 
@@ -184,7 +185,7 @@ function EmployeeDashboard() {
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
   };
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -4169,7 +4170,8 @@ function EmployeeDashboard() {
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <div className="dash-card">
+                    <EmployeePerformanceReport redesignedData = {redesignedData} data={data}/>
+                    {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">Performance Report</h2>
                       </div>
@@ -4255,7 +4257,7 @@ function EmployeeDashboard() {
                           </table>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   </>}
                   {/* calling data report */}

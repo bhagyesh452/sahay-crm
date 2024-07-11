@@ -142,8 +142,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       }
     });
     return achievedAmount
-
   };
+
   const functionCalculateAchievedRevenue = () => {
     let achievedAmount = 0;
     let remainingAmount = 0;

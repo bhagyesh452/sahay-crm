@@ -441,10 +441,10 @@ function Employees({ onEyeButtonClick }) {
           dataToSendUpdated
         );
         // Updates data in performance report:
-        const response2 = await axios.put(`${secretKey}/employee/editPerformanceReport/${selectedDataId}`, {
-          targetDetails: dataToSend.targetDetails,
-          email: dataToSend.email
-        });
+        // const response2 = await axios.put(`${secretKey}/employee/editPerformanceReport/${selectedDataId}`, {
+        //   email: dataToSend.email,
+        //   targetDetails: dataToSend.targetDetails
+        // });
 
         //console.log(response.data,"updateddata")
 
@@ -475,9 +475,9 @@ function Employees({ onEyeButtonClick }) {
       } else {
         const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
         // Adds data in performance report:
-        const response2 = await axios.post(`${secretKey}/employee/addPerformanceReport`, {
-          targetDetails: dataToSend.targetDetails,
-          email: dataToSend.email
+        const response2 = await axios.post(`${secretKey}/employee/addPerformanceReport/`, {
+          email: dataToSend.email,
+          targetDetails: targetObjects
         });
         // console.log(response.data, "datatosend");
         console.log("Performance report info :", response2.data.data);
