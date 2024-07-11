@@ -1565,7 +1565,7 @@ th.th-sticky1::after {
   font-weight: 500;
 }
 
-.my-card-body {}
+.my-card-body {position: relative;}
 
 .booking_inner_dtl_h {
   padding: 4px 10px;
@@ -1577,9 +1577,12 @@ th.th-sticky1::after {
 .booking_inner_dtl_b {
   padding: 4px 10px;
   font-size: 12px;
-  color: #6f717e;
+  color: #5c5d72;
 }
-
+.bdr-ededed
+{
+  border: 1px solid #ededed;
+}
 .bdr-top-eee {
   border-top: 1px solid #eee;
 }
@@ -2557,14 +2560,6 @@ td input {
   color: #838897;
   font-weight: 400;
 }
-.rm_all_bkng_right
-{
-
-}
-.rm_bkng_items
-{
-
-}
 .rm_bkng_item_no
 {
   font-size: 12px !important;
@@ -2583,18 +2578,44 @@ td input {
 {
   border-bottom: 2px solid #ffb900 !important;
 }
-.rm_bkng_item_details
-{
-
-}
-.rm_bkng_item_detail_inner
-{
-
-}
 .rm_bkng_item_detail_inner .booking_inner_dtl_h,.rm_bkng_item_detail_inner .booking_inner_dtl_b
 {
   font-size: 11px;
 } 
+.rm_bkng_item_detail_inner_services
+{
+  height: calc(100vh - 482px);
+  overflow-y: scroll;
+  position: relative;
+}
+.rmbidis_nav_item
+{
+  max-width: 142px;
+}
+.rmbidis_nav_link
+{
+  font-size: 11px;
+  padding: 4px 6px;
+}
+/* .rmbidis_nav_link:hover
+{
+  border: none !important;
+} */
+.rmbidis_nav_link.active
+{
+  background: #fff !important;
+  color: #ffb900 !important;
+  border: none !important;
+  font-weight: 500;
+  border-bottom: 1px solid #ffb900 !important;
+}
+.rm_bkng_item_detail_inner_services .nav
+{
+  position: sticky;
+  top: 0;
+  background: #f8f8f8;
+  z-index: 1;
+}
 /*****************************Basic Information Form******************************************/
 .form-control,  
 .form-select {
@@ -3120,3 +3141,4 @@ border: 1px solid #ffefc6 !important;
 .date-info.current {
   background-color: #e0f7fa; /* Change to desired background color for current date */
 }
+
