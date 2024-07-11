@@ -250,7 +250,7 @@ router.post('/exportLeads', async (req, res) => {
         query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
       }
       if (selectedUploadedDate) {
-        query.AssignDate = {
+        query.UploaDate = {
           $gte: new Date(selectedUploadedDate).toISOString(),
           $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
         };
@@ -274,12 +274,12 @@ router.post('/exportLeads', async (req, res) => {
           };
         }
       }
-      console.log("chala" , selectedCompanyIncoDate)
+      
       if (selectedCompanyIncoDate) {
-        console.log(selectedCompanyIncoDate , "yahan chala")
+        console.log(selectedCompanyIncoDate, "yahan chala")
         const selectedDate = new Date(selectedCompanyIncoDate);
         const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
-      
+
         if (isEpochDate) {
           console.log("good")
           // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
@@ -297,7 +297,9 @@ router.post('/exportLeads', async (req, res) => {
       if (dataStatus === 'Unassigned') {
         query.ename = 'Not Alloted';
       } else if (dataStatus === 'Assigned') {
-        query.ename = { $ne: 'Not Alloted' };
+        query.ename = { $nin: ['Not Alloted' , "Extracted"] };
+      } else if(dataStatus === 'Extracted'){
+        query.ename = "Extracted"
       }
     }
 
@@ -523,7 +525,7 @@ router.get('/getIds', async (req, res) => {
       query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
     if (selectedUploadedDate) {
-      query.AssignDate = {
+      query.UploadDate = {
         $gte: new Date(selectedUploadedDate).toISOString(),
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
       };
@@ -548,10 +550,10 @@ router.get('/getIds', async (req, res) => {
       }
     }
     if (selectedCompanyIncoDate) {
-      console.log(selectedCompanyIncoDate , "yahan chala")
+      
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
-    
+
       if (isEpochDate) {
         console.log("good")
         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
@@ -570,7 +572,9 @@ router.get('/getIds', async (req, res) => {
       if (dataStatus === 'Unassigned') {
         query.ename = 'Not Alloted';
       } else if (dataStatus === 'Assigned') {
-        query.ename = { $ne: 'Not Alloted' };
+        query.ename = { $nin: ['Not Alloted' , "Extracted"] };
+      } else if(dataStatus === "Extracted"){
+        query.ename = "Extracted"
       }
     }
 
@@ -617,9 +621,16 @@ router.get('/getIds', async (req, res) => {
     let assignedCount = 0;
     let unassignedData = [];
     let unassignedCount = 0;
+    let extractedData = [];
+    let extractedDataCount = 0;
     const limit = 500;
 
     if (isFilter || isSearching) {
+
+      let extractedQuery = { ...query, ename: "Extracted" }
+      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+      extractedData = await CompanyModel.find(extractedQuery).lean();
+
       // Fetch assigned data
       let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
       assignedCount = await CompanyModel.countDocuments(assignedQuery);
@@ -640,8 +651,10 @@ router.get('/getIds', async (req, res) => {
       allIds,
       assigned: assignedData,
       unassigned: unassignedData,
+      extracted:extractedData,
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
+      extractedDataCount : extractedDataCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
     });
   } catch (error) {
@@ -834,6 +847,7 @@ router.post("/fetch-by-ids", async (req, res) => {
 // });
 
 const mongoose = require('mongoose');
+const RemarksHistory = require('../models/RemarksHistory.js');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
@@ -847,6 +861,7 @@ router.post("/postAssignData", async (req, res) => {
       await model.bulkWrite(batch);
     }
   };
+  
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({
@@ -861,6 +876,110 @@ router.post("/postAssignData", async (req, res) => {
           multiBdmName: [],
           Status: "Untouched",
           isDeletedEmployeeCompany: obj.Status === "Matured",
+          extractedMultipleBde: obj.extractedMultipleBde || []
+        },
+        $unset: {
+          bdmName: "",
+          bdeOldStatus: "",
+          bdeForwardDate: "",
+          bdmStatusChangeDate: "",
+          bdmStatusChangeTime: "",
+          bdmRemarks: "",
+          RevertBackAcceptedCompanyRequest: "",
+          Remarks:""
+        }
+      }
+    }
+  }));
+
+  // Bulk operations for TeamLeadsModel
+  const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: { _id: obj._id }
+    }
+  }));
+
+  // Bulk operations for FollowUpModel
+  const bulkOperationsProjection = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: { companyName: obj["Company Name"] }
+    }
+  }));
+
+  // Bulk operations for RedesignedLeadformModel
+  const bulkOperationsRedesignedModel = selectedObjects.map((obj) => ({
+    updateOne: {
+      filter: { "Company Name": obj["Company Name"] },
+      update: {
+        $set: {
+          isDeletedEmployeeCompany: true,
+        }
+      }
+    }
+  }));
+
+  const bulkOperationsRemarksHistory = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: { companyName: obj["Company Name"] }
+    }
+  }));
+
+  try {
+    // Perform bulk operations in parallel
+    await Promise.all([
+      executeBulkOperations(CompanyModel, bulkOperationsCompany),
+      executeBulkOperations(TeamLeadsModel, bulkOperationsTeamLeads),
+      executeBulkOperations(FollowUpModel, bulkOperationsProjection),
+      executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel),
+      executeBulkOperations(RemarksHistory ,bulkOperationsRemarksHistory)
+    ]);
+    socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
+    // Add the recent update to the RecentUpdatesModel
+    const newUpdate = new RecentUpdatesModel({
+      title,
+      date,
+      time
+    });
+    await newUpdate.save();
+
+    res.json({ message: "Data posted successfully" });
+  } catch (error) {
+    console.error("Error posting assign data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/postExtractedData", async (req, res) => {
+  const { employeeSelection, selectedObjects, title, date, time } = req.body;
+  const socketIO = req.io;
+  const dataSize = selectedObjects.length;
+  
+  // Helper function to perform bulk operations in parallel
+  const executeBulkOperations = async (model, operations, batchSize = 100) => {
+    for (let i = 0; i < operations.length; i += batchSize) {
+      const batch = operations.slice(i, i + batchSize);
+      await model.bulkWrite(batch);
+    }
+  };
+
+
+  const bulkOperationsCompany = selectedObjects.map((obj) => ({
+    updateOne: {
+      filter: { _id: obj._id },
+      update: {
+        $set: {
+          ename: 'Extracted',
+          AssignDate: new Date(),
+          bdmAcceptStatus: "NotForwarded",
+          feedbackPoints: [],
+          multiBdmName: [],
+          Status: "Untouched",
+          isDeletedEmployeeCompany: obj.Status === "Matured",
+          extractedMultipleBde: obj.extractedMultipleBde && Array.isArray(obj.extractedMultipleBde)
+          ? [...obj.extractedMultipleBde, obj.ename]
+          : [obj.ename],
+          lastAssignedEmployee:obj.ename,
+          extractedDate:new Date()
         },
         $unset: {
           bdmName: "",
@@ -874,8 +993,6 @@ router.post("/postAssignData", async (req, res) => {
       }
     }
   }));
-
-  // Bulk operations for TeamLeadsModel
   const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
     deleteOne: {
       filter: { _id: obj._id }
@@ -909,7 +1026,7 @@ router.post("/postAssignData", async (req, res) => {
       executeBulkOperations(FollowUpModel, bulkOperationsProjection),
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
     ]);
-    socketIO.emit('data-assigned' , {name : employeeSelection , length : dataSize});
+    //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
       title,
@@ -923,8 +1040,8 @@ router.post("/postAssignData", async (req, res) => {
     console.error("Error posting assign data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
 
+})
 
 
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {

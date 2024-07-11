@@ -49,8 +49,8 @@ function Header({ name, designation, empProfile }) {
       }
 
     });
-    socket.on("delete-leads-request-bde" , (res)=>{
-      if(res.name === name){
+    socket.on("delete-leads-request-bde", (res) => {
+      if (res.name === name) {
         enqueueSnackbar(`Your Request of ${res.dAmount} Leads is Rejected!`, { variant: "reportComplete", persist: true });
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
@@ -132,26 +132,32 @@ function Header({ name, designation, empProfile }) {
           variant: 'info',
           autoHideDuration: 5000
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
 
     });
     socket.on("booking-updated", (res) => {
-
       if (name === res.name) {
-        enqueueSnackbar(`Booking for ${res.companyName} has been Updated!`, {
-          variant: 'info',
-          autoHideDuration: 5000
+        enqueueSnackbar(`Booking Edit Request for ${res.companyName} has been Accepted!`, {
+          variant: 'reportComplete',
+          persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
-
+   
+    socket.on("bookingbooking-edit-request-delete" ,async(res)=>{
+      if(name === res.name){
+        enqueueSnackbar(`Booking Edit Request for ${res.companyName} has been Rejected!`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    })
     socket.on("bdmDataAcceptedRequest", (res) => {
       if (name === res.ename) {
         enqueueSnackbar(`BDM has accpeted ${res.companyName} 🔄`, {

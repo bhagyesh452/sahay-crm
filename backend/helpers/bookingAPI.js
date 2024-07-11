@@ -200,6 +200,7 @@ router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
 router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) => {
   try {
     const companyName = req.params.CompanyName;
+    const socketIO = req.io;
     const updatedDocument = await EditableDraftModel.findOneAndUpdate(
       { "Company Name": companyName },
       { assigned: "Reject" },
@@ -209,7 +210,7 @@ router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) 
     if (!updatedDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-
+    socketIO.emit('bookingbooking-edit-request-delete', { name: updatedDocument.bdeName, companyName: companyName })
     res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
   } catch (error) {
     console.error("Error updating document:", error);
@@ -346,7 +347,10 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           { assigned: "Accept" }, 
           { new: true }
         );
-      socketIO.emit('booking-updated', moreDocument.bdeName)
+      socketIO.emit('booking-updated', {
+        name : moreDocument.bdeName,
+        companyName : moreDocument["Company Name"]
+    })
 
       res.status(200).json(updatedDocument);
     } catch (error) {
@@ -4612,6 +4616,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 // Request to Delete a booking
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
+    console.log("yahan chala delete wali api final")
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
@@ -4633,6 +4638,8 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(
         companyId
       )
+    }else{
+      return true;
     }
     if (deletedBooking) {
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
@@ -4733,6 +4740,7 @@ router.delete(
 router.delete(
   "/redesigned-delete-particular-booking/:company/:companyId",
   async (req, res) => {
+    console.log("yahan chala delete wali api")
     try {
       const company = req.params.company;
       const companyId = req.params.companyId;

@@ -10,7 +10,6 @@ import io from "socket.io-client";
 import { TbViewportWide } from "react-icons/tb";
 import Nodata from "../../components/Nodata";
 
-
 function EmployeeBookingEditCopmonent({ ename }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [editableBookingData, setEditableBookingData] = useState([])
@@ -42,6 +41,25 @@ function EmployeeBookingEditCopmonent({ ename }) {
       fetchEditRequests();
     }
   },[ename])
+
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path:'/socket.io',
+      reconnection: true, 
+      transports: ['websocket'],
+    });
+    socket.on("booking-updated", () => {
+      fetchEditRequests();
+    });
+    socket.on("bookingbooking-edit-request-delete" , ()=>{
+      fetchEditRequests();
+    })
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   console.log(editableBookingData)
 

@@ -170,7 +170,7 @@ function ShowNotification() {
         <div className="page-header">
           <div className="container-xl">
              {/* <!-- Page pre-title --> */}
-             <h2 className="page-title">Notifications </h2>
+             <h2 className="page-title">Notifications</h2>
           </div>
         </div>
         <div className="container-xl">
