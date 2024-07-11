@@ -550,7 +550,7 @@ router.get('/getIds', async (req, res) => {
       }
     }
     if (selectedCompanyIncoDate) {
-      console.log(selectedCompanyIncoDate, "yahan chala")
+      
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
@@ -572,7 +572,9 @@ router.get('/getIds', async (req, res) => {
       if (dataStatus === 'Unassigned') {
         query.ename = 'Not Alloted';
       } else if (dataStatus === 'Assigned') {
-        query.ename = { $ne: 'Not Alloted' };
+        query.ename = { $nin: ['Not Alloted' , "Extracted"] };
+      } else if(dataStatus === "Extracted"){
+        query.ename = "Extracted"
       }
     }
 
@@ -619,9 +621,16 @@ router.get('/getIds', async (req, res) => {
     let assignedCount = 0;
     let unassignedData = [];
     let unassignedCount = 0;
+    let extractedData = [];
+    let extractedDataCount = 0;
     const limit = 500;
 
     if (isFilter || isSearching) {
+
+      let extractedQuery = { ...query, ename: "Extracted" }
+      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+      extractedData = await CompanyModel.find(extractedQuery).lean();
+
       // Fetch assigned data
       let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
       assignedCount = await CompanyModel.countDocuments(assignedQuery);
@@ -642,8 +651,10 @@ router.get('/getIds', async (req, res) => {
       allIds,
       assigned: assignedData,
       unassigned: unassignedData,
+      extracted:extractedData,
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
+      extractedDataCount : extractedDataCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
     });
   } catch (error) {
@@ -942,7 +953,7 @@ router.post("/postExtractedData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
   const socketIO = req.io;
   const dataSize = selectedObjects.length;
-  console.log("employeeselection" , employeeSelection)
+  
   // Helper function to perform bulk operations in parallel
   const executeBulkOperations = async (model, operations, batchSize = 100) => {
     for (let i = 0; i < operations.length; i += batchSize) {
@@ -966,7 +977,9 @@ router.post("/postExtractedData", async (req, res) => {
           isDeletedEmployeeCompany: obj.Status === "Matured",
           extractedMultipleBde: obj.extractedMultipleBde && Array.isArray(obj.extractedMultipleBde)
           ? [...obj.extractedMultipleBde, obj.ename]
-          : [obj.ename]
+          : [obj.ename],
+          lastAssignedEmployee:obj.ename,
+          extractedDate:new Date()
         },
         $unset: {
           bdmName: "",

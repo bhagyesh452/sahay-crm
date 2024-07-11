@@ -129,7 +129,13 @@ const CompanySchema = new mongoose.Schema({
   },
   extractedMultipleBde:{
     type:Array,
-  }
+  },
+  lastAssignedEmployee:{
+    type:String
+  },
+  extractedDate:{
+    type:Date
+  },
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);
