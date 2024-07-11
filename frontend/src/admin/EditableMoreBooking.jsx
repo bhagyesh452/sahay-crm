@@ -3384,7 +3384,7 @@ export default function EditableMoreBooking({
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {obj.secondPaymentRemarks !== "On Particular Date"
+                                                  {obj.thirdPaymentRemarks !== "On Particular Date"
                                                     ? obj.thirdPaymentRemarks
                                                     : `Payment On ${thirdTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
@@ -3404,7 +3404,7 @@ export default function EditableMoreBooking({
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
                                                   -{" "}
-                                                  {obj.secondPaymentRemarks !== "On Particular Date"
+                                                  {obj.fourthPaymentRemarks !== "On Particular Date"
                                                     ? obj.fourthPaymentRemarks
                                                     : `Payment On ${fourthTempRemarks.find(obj => obj.serviceID === index).value}`}
                                                 </div>
