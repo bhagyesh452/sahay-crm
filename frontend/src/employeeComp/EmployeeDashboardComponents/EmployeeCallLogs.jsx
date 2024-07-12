@@ -140,13 +140,13 @@ function EmployeeCallLogs({ employeeData }) {
 
 
 
-    console.log(selectDate)
-    console.log("startTime", selectStartTime)
-    console.log("endTime", selectEndTime)
-    //console.log(value)
-    console.log("totalcalls", totalcalls)
-    console.log("Start Timestamp:", startTimestamp);
-    console.log("End Timestamp:", endTimestamp);
+    // console.log(selectDate)
+    // console.log("startTime", selectStartTime)
+    // console.log("endTime", selectEndTime)
+    // //console.log(value)
+    // console.log("totalcalls", totalcalls)
+    // console.log("Start Timestamp:", startTimestamp);
+    // console.log("End Timestamp:", endTimestamp);
     // console.log(typeof(totalcalls))
 
     const convertSecondsToHMS = (totalSeconds) => {
