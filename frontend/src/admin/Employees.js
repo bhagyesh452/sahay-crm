@@ -63,21 +63,21 @@ function Employees({ onEyeButtonClick }) {
   const [nowFetched, setNowFetched] = useState(false);
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
+  
+ 
   const defaultObject = {
     year: "",
     month: "",
-    amount: 0
+    amount: 0,
+    achievedAmount: 0,
+    ratio:0,
+    result:"N/A"
   }
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
 
 
   const [open, openchange] = useState(false);
-
-  // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
-  // const handleLogin = ()=>{
-  //   setIsLoggedIn(true)
-  // }
 
   const handleEyeButtonClick = (id) => {
     onEyeButtonClick(id);
@@ -116,13 +116,64 @@ function Employees({ onEyeButtonClick }) {
     };
   }, []);
 
-  // const handleDeleteClick = (itemId, nametochange) => {
-  //   // Open the confirm delete modal
-  //   setCompanyDdata(cdata.filter((item) => item.ename === nametochange));
-
-  //   setItemIdToDelete(itemId);
-  //   setIsModalOpen(true);
-  // };
+  // app.get('/api/achieved-details/:ename', async (req, res) => {
+  //   const { ename } = req.params;
+  
+  //   try {
+  //     const adminData = await adminModel.findOne({ ename });
+  //     if (!adminData) {
+  //       return res.status(404).json({ error: 'Admin not found' });
+  //     }
+  
+  //     const redesignedData = await RedesignedLeaformModel.find();
+  //     if (!redesignedData) {
+  //       return res.status(404).json({ error: 'No redesigned data found' });
+  //     }
+  
+  //     const functionCalculateAchievedRevenue = (redesignedData, ename, filterBy = 'This Month') => {
+  //       let achievedAmount = 0;
+  //       let remainingAmount = 0;
+  //       let expanse = 0;
+  //       let remainingExpense = 0;
+  //       let remainingMoreExpense = 0;
+  //       let add_caCommision = 0;
+  //       const today = new Date();
+  
+  //       redesignedData.map((mainBooking) => {
+  //         let condition = false;
+  //         switch (filterBy) {
+  //           case 'Today':
+  //             condition = (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString());
+  //             break;
+  //           case 'Last Month':
+  //             condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (new Date(mainBooking.bookingDate).getFullYear() === today.getFullYear());
+  //             break;
+  //           case 'This Month':
+  //             condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth()) && (new Date(mainBooking.bookingDate).getFullYear() === today.getFullYear());
+  //             break;
+  //           default:
+  //             break;
+  //         }
+  //         if (condition && (mainBooking.bdeName === ename || mainBooking.bdmName === ename)) {
+  //           // Your calculation logic here
+  //           // ... (omitted for brevity)
+  //         }
+  //       });
+  
+  //       return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
+  //     };
+  
+  //     const achievedRevenue = functionCalculateAchievedRevenue(redesignedData, ename);
+  
+  // //  Ab yaha par jese hi achievedAmount aaye, adminModel me update kar do is month ka //data update ho jaye
+  
+  
+  // //Update hone ke baad pura object get karake frontend pe bhej do
+  //     res.json();
+  //   } catch (error) {
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // });
   const [dataToDelete, setDataToDelete] = useState([])
 
 
@@ -434,19 +485,11 @@ function Employees({ onEyeButtonClick }) {
           Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
           return true;
         }
-        //console.log(dataToSend, "Bhoom");
-        //console.log("updateddata",dataToSendUpdated)
+
         const response = await axios.put(
           `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
         );
-        // Updates data in performance report:
-        // const response2 = await axios.put(`${secretKey}/employee/editPerformanceReport/${selectedDataId}`, {
-        //   email: dataToSend.email,
-        //   targetDetails: dataToSend.targetDetails
-        // });
-
-        //console.log(response.data,"updateddata")
 
         Swal.fire({
           title: "Data Updated Succesfully!",
@@ -722,7 +765,6 @@ function Employees({ onEyeButtonClick }) {
 
   }
 
-  console.log(cdata.filter((obj) => obj.ename === 'Rahul Saiekh'))
 
 
 

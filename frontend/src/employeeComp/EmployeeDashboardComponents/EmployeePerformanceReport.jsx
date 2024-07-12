@@ -31,7 +31,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     }, [data]); // Ensure this useEffect runs whenever `data` changes
 
 
-    console.log("Target Details is :", targetDetails);
+    //console.log("Target Details is :", targetDetails);
 
     const functionCalculateAchievedRevenue = () => {
         let achievedAmount = 0;
@@ -47,7 +47,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
             if ((new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) && (new Date(mainBooking.bookingDate).getFullYear() === today.getFullYear())) {
                 condition = true;
             }
-            console.log("condition :", condition);
+            //console.log("condition :", condition);
             if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
 
                 if (mainBooking.bdeName === mainBooking.bdmName) {
@@ -244,7 +244,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
         const totalAchievedAmount = achievedAmount - expanse;
 
         const achievement = achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision - 1;
-        console.log("totalAchievedRevenue is :", achievement);
+        //console.log("totalAchievedRevenue is :", achievement);
         setAchievedAmount(achievement);
         return achievement;
     };
@@ -272,7 +272,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                 return target.month === previousMonth && parseInt(target.year) === previousYear;
             });
 
-            console.log("Filtered data is :", filteredTargets);
+            //console.log("Filtered data is :", filteredTargets);
 
             if (filteredTargets.length === 0) {
                 console.log("No target details found for the previous month.");
@@ -302,7 +302,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
 
     const today = moment();
     const currentMonth = today.month(); // Use moment.js to get the current month as a number
-    console.log("Current month:", currentMonth);
+    //console.log("Current month:", currentMonth);
     useEffect(() => {
         // Calculate the next run date on the 1st of the next month
         let nextRunDate = today.clone().startOf('month'); // Set to the 1st of current month
@@ -311,7 +311,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
             nextRunDate.add(1, 'months'); // Move to the 1st of next month if today is not the 1st
         }
 
-        console.log("Next running date is:", nextRunDate.format('YYYY-MM-DD'));
+        //console.log("Next running date is:", nextRunDate.format('YYYY-MM-DD'));
 
         // Calculate milliseconds until next run date
         const delay = nextRunDate.diff(today);
@@ -330,7 +330,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
         try {
             const response = await axios.get(`${secretKey}/employee/fetchPerformanceReport/${data._id}`);
             setPerformanceData(response.data.data);
-            console.log("Performance data is :", response.data.data);            
+            //console.log("Performance data is :", response.data.data);            
         } catch (error) {
             console.log("Error to fetch performance data", error);
         }

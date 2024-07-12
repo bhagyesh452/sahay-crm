@@ -252,7 +252,7 @@ function EmployeeForwardedReport() {
     if (selectedMonthOption === 'Today') {
       const filterFollowDataRecieved = followData.filter((company) => 
         new Date(company.estPaymentDate).getDate() === today.getDate() && company.bdmName === data.ename && company.caseType === "Recieved")
-      console.log(filterFollowDataRecieved)
+      //console.log(filterFollowDataRecieved)
       const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
       const finalPayment = totalPaymentRecieved
       return finalPayment.toLocaleString();
@@ -324,7 +324,7 @@ function EmployeeForwardedReport() {
         }
         
         if(condition){
-          console.log(bdeName , selectedMonthOption , mainBooking)
+          //console.log(bdeName , selectedMonthOption , mainBooking)
           if (mainBooking.bdeName === mainBooking.bdmName) {
             generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
@@ -468,7 +468,7 @@ function EmployeeForwardedReport() {
           }
           
           if(condition){
-            console.log(bdeName , selectedMonthOption , mainBooking)
+            //console.log(bdeName , selectedMonthOption , mainBooking)
             if (mainBooking.bdeName === mainBooking.bdmName) {
               generatedRevenue += parseInt(mainBooking.generatedReceivedAmount)
             } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
