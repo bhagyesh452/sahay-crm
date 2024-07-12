@@ -598,11 +598,29 @@ router.get('/achieved-details/:ename', async (req, res) => {
     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
 
     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
-      console.log(targetDetail.month, "tragetmonth")
-      console.log("lastmonth", lastMonth)
       if (targetDetail.month === lastMonth) {
-        console.log("chala")
         targetDetail.achievedAmount = achievedAmount;
+        targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
+        const roundedRatio = Math.round(targetDetail.ratio);
+        if (roundedRatio === 0) {
+          targetDetail.result = "VeryPoor";
+        } else if (roundedRatio > 0 && roundedRatio <= 40) {
+          targetDetail.result = "Poor";
+        } else if (roundedRatio >= 41 && roundedRatio <= 60) {
+          targetDetail.result = "Below Average";
+        } else if (roundedRatio >= 61 && roundedRatio <= 74) {
+          targetDetail.result = "Average";
+        } else if (roundedRatio >= 75 && roundedRatio <= 99) {
+          targetDetail.result = "Good";
+        } else if (roundedRatio >= 100 && roundedRatio <= 149) {
+          targetDetail.result = "Excellent";
+        } else if (roundedRatio >= 150 && roundedRatio <= 199) {
+          targetDetail.result = "Extraordinary";
+        } else if (roundedRatio >= 200 && roundedRatio <= 249) {
+          targetDetail.result = "Outstanding";
+        } else if (roundedRatio >= 250) {
+          targetDetail.result = "Exceptional";
+        }
       }
       return targetDetail;
     });
@@ -620,9 +638,6 @@ router.get('/achieved-details/:ename', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-module.exports = router;
-
 
 // 2. Read the Employee
 router.get("/einfo", async (req, res) => {
