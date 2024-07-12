@@ -6,33 +6,7 @@ import Nodata from '../../components/Nodata';
 function EmployeePerformanceReport({ redesignedData, data }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-    // const [Filterby, setFilterby] = useState("This Month");
-    // // console.log("Data :", data);
-    // // console.log("redesigned", redesignedData);
-
-    // const [targetDetails, setTargetDetails] = useState([]);
     const [achievedAmount, setAchievedAmount] = useState(0);
-    // const [dataSent, setDataSent] = useState(false);
-    // const [performanceData, setPerformanceData] = useState([]);
-
-    // useEffect(() => {
-    //     if (data && data.targetDetails && data.targetDetails.length !== 0) {
-    //         setTargetDetails(data.targetDetails);
-    //     } else {
-    //         setTargetDetails([
-    //             {
-    //                 year: "",
-    //                 month: "",
-    //                 amount: 0,
-    //             },
-    //         ]);
-    //     }
-    // }, [data]); // Ensure this useEffect runs whenever `data` changes
-
-
-    // //console.log("Target Details is :", targetDetails);
-
     const functionCalculateAchievedRevenue = () => {
         let achievedAmount = 0;
         let remainingAmount = 0;
@@ -253,11 +227,6 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     useEffect(() => {
         functionCalculateAchievedRevenue();
     }, [redesignedData]);
-
-    console.log("achievedamount", achievedAmount)
-
-
-    const [employeeData, setEmployeeData] = useState([])
     const fetchEmployeeData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`)
@@ -271,7 +240,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     const fetchPerformanceData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/achieved-details/${data.ename}`)
-            console.log("response for performance" , response.data)
+            console.log("response for performance", response.data)
             console.log("performance report")
         } catch (error) {
             console.log("Error fetching data", error.message)
@@ -287,6 +256,10 @@ function EmployeePerformanceReport({ redesignedData, data }) {
 
     }, [data.ename])
 
+    const today = new Date();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const currentMonth = monthNames[today.getMonth()];
+    const targetDetailsLength = data.targetDetails?.length || 0;
 
 
     return (
@@ -310,33 +283,70 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                             </thead>
                             <tbody>
                                 {data.targetDetails ? (
-                                    data.targetDetails.map((perData,index) => {
-                                       
-                                            return (
-                                                <tr key={`${index + 1}`}>
-                                                    <td>{perData.month}</td>
-                                                    <td>{perData.amount}</td>
-                                                    <td>{perData.achievedAmount}</td>
-                                                    <td>{perData.ratio}</td>
-                                                    <td>{perData.result}</td>
-                                                </tr>
-                                            );
-                                    })
+                                    data.targetDetails
+                                        .filter((perData) => perData.month !== currentMonth) // Exclude the current month
+                                        .map((perData, index) => (
+                                            <tr key={`${index + 1}`}>
+                                                <td>{perData.month}</td>
+                                                <td>{perData.amount}</td>
+                                                <td>{perData.achievedAmount}</td>
+                                                <td>{perData.ratio}%</td>
+                                                <td>{perData.result}</td>
+                                            </tr>
+                                        ))
                                 ) : (
                                     <div className="if-n0-dash-data text-center">
                                         <Nodata />
                                     </div>
                                 )}
                             </tbody>
-                            {/* <tfoot>
+                            <tfoot>
                                 <tr style={{ position: "sticky", bottom: '0px', padding: '6px 6px' }}>
-                                    <td><b>12 Mon</b></td>
-                                    <td>₹ 60,000</td>
-                                    <td>₹ 35,030 </td>
-                                    <td>249%</td>
-                                    <td>Outstanding</td>
+                                    <td>{targetDetailsLength - 1}</td>
+                                    <td>
+                                        ₹ {data.targetDetails?.filter((perData) => perData.month !== currentMonth).reduce((acc, curr) => {
+                                            return acc + parseFloat(curr.amount || 0);
+                                        }, 0) || 0}
+                                    </td>
+                                    <td>
+                                        ₹ {data.targetDetails?.filter((perData) => perData.month !== currentMonth).reduce((acc, curr) => {
+                                            return acc + parseFloat(curr.achievedAmount || 0);
+                                        }, 0) || 0}
+                                    </td>
+                                    <td>
+                                        {(() => {
+                                            const totalAmount = data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0) || 0;
+
+                                            const totalAchieved = data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.achievedAmount || 0), 0) || 0;
+
+                                            return totalAmount > 0 ? `${Math.round((totalAchieved / totalAmount) * 100)}%` : '0%';
+                                        })()}
+                                    </td>
+                                    <td>
+                                        {(() => {
+                                            const totalAchieved = data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.achievedAmount || 0), 0) || 0;
+
+                                            const totalAmount = data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0) || 0;
+
+                                            const ratio = totalAmount > 0 ? totalAchieved / totalAmount : 0;
+
+                                            if (ratio >= 2.49) return "Exceptional";
+                                            if (ratio >= 2.0) return "Outstanding";
+                                            if (ratio >= 1.5) return "Extraordinary";
+                                            if (ratio >= 1.0) return "Excellent";
+                                            if (ratio >= 0.75) return "Good";
+                                            if (ratio >= 0.6) return "Average";
+                                            if (ratio >= 0.4) return "Below Average";
+                                            return "Poor";
+                                        })()}
+                                    </td>
                                 </tr>
-                            </tfoot> */}
+                            </tfoot>
+
                         </table>
                     </div>
                 </div>
