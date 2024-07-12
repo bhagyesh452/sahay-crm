@@ -260,6 +260,15 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentMonth = monthNames[today.getMonth()];
     const targetDetailsLength = data.targetDetails?.length || 0;
+    const sortedTargetDetails = data.targetDetails ? data.targetDetails.sort((a, b) => {
+        const monthA = monthNames.indexOf(a.month); // Get index of month
+        const monthB = monthNames.indexOf(b.month);
+
+        // Compare years first, then months
+        return b.year - a.year || monthB - monthA; // descending order
+    }) : [];
+
+    console.log(sortedTargetDetails)
 
 
     return (
@@ -283,14 +292,14 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                             </thead>
                             <tbody>
                                 {data.targetDetails ? (
-                                    data.targetDetails
+                                    sortedTargetDetails
                                         .filter((perData) => perData.month !== currentMonth) // Exclude the current month
                                         .map((perData, index) => (
                                             <tr key={`${index + 1}`}>
-                                                <td>{perData.month}</td>
-                                                <td>{perData.amount}</td>
-                                                <td>{perData.achievedAmount}</td>
-                                                <td>{perData.ratio}%</td>
+                                                <td>{`${perData.month} - ${perData.year}`}</td>
+                                                <td>₹{new Intl.NumberFormat('en-IN').format(perData.amount)}</td>
+                                                <td>₹{new Intl.NumberFormat('en-IN').format(perData.achievedAmount)}</td>
+                                                <td>{Math.round(perData.ratio)}%</td>
                                                 <td>{perData.result}</td>
                                             </tr>
                                         ))
@@ -304,14 +313,16 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                                 <tr style={{ position: "sticky", bottom: '0px', padding: '6px 6px' }}>
                                     <td>{targetDetailsLength - 1}</td>
                                     <td>
-                                        ₹ {data.targetDetails?.filter((perData) => perData.month !== currentMonth).reduce((acc, curr) => {
-                                            return acc + parseFloat(curr.amount || 0);
-                                        }, 0) || 0}
+                                        ₹ {new Intl.NumberFormat('en-IN').format(
+                                            data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0) || 0
+                                        )}
                                     </td>
                                     <td>
-                                        ₹ {data.targetDetails?.filter((perData) => perData.month !== currentMonth).reduce((acc, curr) => {
-                                            return acc + parseFloat(curr.achievedAmount || 0);
-                                        }, 0) || 0}
+                                        ₹ {new Intl.NumberFormat('en-IN').format(
+                                            data.targetDetails?.filter((perData) => perData.month !== currentMonth)
+                                                .reduce((acc, curr) => acc + parseFloat(curr.achievedAmount || 0), 0) || 0
+                                        )}
                                     </td>
                                     <td>
                                         {(() => {

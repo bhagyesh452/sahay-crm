@@ -573,6 +573,8 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
   });
 
+  console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
+
   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
 };
 
@@ -591,6 +593,8 @@ router.get('/achieved-details/:ename', async (req, res) => {
     }
 
     const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
+
+    console.log("achievedAmount" , achievedAmount)
 
     const today = new Date();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
