@@ -26,6 +26,7 @@ import { MdHistory } from "react-icons/md";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from 'axios';
 import ClipLoader from "react-spinners/ClipLoader";
+import { axisClasses } from '@mui/x-charts';
 
 
 function EmployeesProjectionSummary() {
@@ -54,7 +55,7 @@ function EmployeesProjectionSummary() {
   const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
   const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("");
   const [historyDataCompany, sethistoryDataCompany] = useState([]);
-
+  const [todaysCollection, setTodaysCollection] = useState([]);
 
   //--------------------date formats--------------------------------
   function formatDateFinal(timestamp) {
@@ -73,32 +74,46 @@ function EmployeesProjectionSummary() {
     return `${month}/${day}/${year}`;
   }
 
+  // fetch today's collection
+  const fetchTodaysCollection = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/showTodaysCollection`);
+      console.log("Today's collection is :", response.data.data);
+      setTodaysCollection(response.data.data);
+    } catch (error) {
+      console.log("Error to fetch today's collection");
+    }
+  };
+
+  useEffect(() => {
+    fetchTodaysCollection();
+  }, []);
 
   //-----------------------fetching Employee Data------------------------------------------
   const [loading, setLoading] = useState(false)
   const fetchEmployeeInfo = async () => {
-    try{
+    try {
       setLoading(true);
       const response = await fetch(`${secretKey}/employee/einfo`);
       if (!response.ok) {
-          throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok');
       }
       const data = await response.json();
-        
-          setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-          setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-          setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-          //setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-          //setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-          //setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-          setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-          // setEmployeeDataFilter(data.filter)
-        
-    }catch(error){
-        console.error(`Error Fetching Employee Data `, error);
-      }finally{
-        setLoading(false)
-      }
+
+      setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+      setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+      setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+      //setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+      //setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+      //setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+      setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+      // setEmployeeDataFilter(data.filter)
+
+    } catch (error) {
+      console.error(`Error Fetching Employee Data `, error);
+    } finally {
+      setLoading(false)
+    }
   };
 
   const debounceDelay = 300;
@@ -110,7 +125,7 @@ function EmployeesProjectionSummary() {
   }, [])
 
   //-----------------------------------fetching function follow up data-----------------------------------
- 
+
   const fetchFollowUpData = async () => {
     try {
       setLoading(true)
@@ -798,17 +813,17 @@ function EmployeesProjectionSummary() {
                 {loading ?
                   (<tbody>
                     <tr>
-                        <td colSpan="12">
-                            <div  className="LoaderTDSatyle">
-                                <ClipLoader
-                                color="lightgrey"
-                                loading
-                                size={30}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                                />
-                            </div>
-                        </td>
+                      <td colSpan="12">
+                        <div className="LoaderTDSatyle">
+                          <ClipLoader
+                            color="lightgrey"
+                            loading
+                            size={30}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                          />
+                        </div>
+                      </td>
                     </tr>
                   </tbody>) :
                   (<tbody>
@@ -974,6 +989,319 @@ function EmployeesProjectionSummary() {
                     </tr>
                   </tbody>
                 )}
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+        {/* Today's Collection */}
+        <div className="card mt-2">
+          <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+            <div className="dashboard-title pl-1"  >
+              <h2 className="m-0">
+                Today's Projection
+              </h2>
+            </div>
+            <div className="d-flex align-items-center pr-1">
+              <div className="filter-booking mr-1 d-flex align-items-center">
+                <div className="filter-title mr-1">
+                  <h2 className="m-0">
+                    Filter Branch :
+                  </h2>
+                </div>
+                <div className="filter-main">
+                  <select
+                    className="form-select"
+                    id={`branch-filter`}
+                    onChange={(e) => {
+                      handleFilterBranchOffice(e.target.value)
+                    }}
+                  >
+                    <option value="" disabled selected>
+                      Select Branch
+                    </option>
+
+                    <option value={"Gota"}>Gota</option>
+                    <option value={"Sindhu Bhawan"}>
+                      Sindhu Bhawan
+                    </option>
+                    <option value={"none"}>None</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-icon mr-1">
+                <span class="input-icon-addon">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                    <path d="M21 21l-6 -6"></path>
+                  </svg>
+                </span>
+                <input
+                  value={searchTermProjection}
+                  onChange={(e) =>
+                    debouncedFilterSearchProjection(e.target.value)
+                  }
+                  className="form-control"
+                  placeholder="Enter BDE Name..."
+                  type="text"
+                  name="bdeName-search"
+                  id="bdeName-search" />
+              </div>
+              <div className="date-filter">
+                <LocalizationProvider dateAdapter={AdapterDayjs}  >
+                  <DemoContainer components={["SingleInputDateRangeField"]} sx={{
+                    padding: '0px',
+                    with: '220px'
+                  }}>
+                    <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                      onChange={(values) => {
+                        const startDate = moment(values[0]).format(
+                          "DD/MM/YYYY"
+                        );
+                        const endDate = moment(values[1]).format(
+                          "DD/MM/YYYY"
+                        );
+                        setSelectedDateRange([startDate, endDate]);
+                        handleSelect(values); // Call handleSelect with the selected values
+                      }}
+                      slots={{ field: SingleInputDateRangeField }}
+                      slotProps={{
+                        shortcuts: {
+                          items: shortcutsItems,
+                        },
+                        actionBar: { actions: [] },
+                        textField: {
+                          InputProps: { endAdornment: <Calendar /> },
+                        },
+                      }}
+                    //calendars={1}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div>
+                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                  <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
+                  <Select
+                    className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={projectionNames}
+                    onChange={(event) => {
+                      setProjectionNames(event.target.value)
+                      handleSelectProjectionSummary(event.target.value)
+                    }}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={MenuProps}
+                  >
+                    {options.map((name) => (
+                      <MenuItem
+                        key={name}
+                        value={name}
+                        style={getStyles(name, projectionNames, theme)}
+                      >
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
+          </div>
+          <div className="card-body">
+            <div id="table-default" className="row tbl-scroll">
+              <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                <thead className="admin-dash-tbl-thead">
+                  <tr>
+                    <th>
+                      Sr. No
+                    </th>
+                    <th>Employee Name</th>
+                    <th>
+                      No. Of Company
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          let newSortType;
+                          if (sortTypeProjection === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortTypeProjection === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortTotalCompanies(newSortType);
+                        }}
+                      />
+                    </th>
+                    <th>
+                      Services Offered
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          let newSortType;
+                          if (sortTypeServices === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortTypeServices === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortOfferedServices(newSortType);
+                        }}
+                      />
+                    </th>
+                    <th>
+                      Offered Price
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          let newSortType;
+                          if (sortTypePrice === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortTypePrice === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortOffredPrize(newSortType);
+                        }}
+                      />
+                    </th>
+                    <th>
+                      Expected Collection
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          let newSortType;
+                          if (sortTypeExpectedPayment === "ascending") {
+                            newSortType = "descending";
+                          } else if (
+                            sortTypeExpectedPayment === "descending"
+                          ) {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortExpectedPayment(newSortType);
+                        }}
+                      />
+                    </th>
+                    {/* <th>Est. Payment Date</th> */}
+                  </tr>
+                </thead>
+                {loading ? (
+                  <tbody>
+                    <tr>
+                      <td colSpan="12">
+                        <div className="LoaderTDSatyle">
+                          <ClipLoader
+                            color="lightgrey"
+                            loading
+                            size={30}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                ) : (
+                  <tbody>
+                    {todaysCollection && todaysCollection.length !== 0 ? (
+                      todaysCollection.map((obj, index) => (
+                        <tr key={`row-${index}`}>
+                          <td>{index + 1}</td>
+                          <td>{obj.empName}</td>
+                          <td>{obj.noOfCompany}</td>
+                          <td>{obj.noOfServiceOffered}</td>
+                          <td>{obj.totalOfferedPrice}</td>
+                          <td>{obj.totalCollectionExpected}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="particular" colSpan={9}>
+                          <Nodata />
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                )}
+
+
+                {/* <tfoot className="admin-dash-tbl-tfoot"    >
+                  <tr style={{ fontWeight: 500 }}>
+                    <td colSpan="2">
+                      Total
+                    </td>
+                    <td>
+                      {
+                        followDataToday.filter((partObj) => partObj.ename)
+                          .length
+                      }
+                      <FcDatabase
+                        onClick={() => {
+                          functionCompleteProjectionTable();
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          marginRight: "-71px",
+                          marginLeft: "55px",
+                        }}
+                      />
+                    </td>
+                    <td>
+                      {followDataToday.reduce(
+                        (totalServices, partObj) => {
+                          totalServices += partObj.offeredServices.length;
+                          return totalServices;
+                        },
+                        0
+                      )}
+                    </td>
+                    <td>
+                      {followDataToday
+                        .reduce((totalOfferedPrize, partObj) => {
+                          totalOfferedPrize += partObj.offeredPrize;
+                          return totalOfferedPrize;
+                        }, 0)
+                        .toLocaleString("en-IN", numberFormatOptions)}
+                    </td>
+                    <td>
+                      {followDataToday
+                        .reduce((totalPaymentSum, partObj) => {
+                          totalPaymentSum += partObj.totalPayment;
+                          return totalPaymentSum;
+                        }, 0)
+                        .toLocaleString("en-IN", numberFormatOptions)}
+                    </td>
+                  </tr>
+                </tfoot> */}
+
               </table>
             </div>
           </div>

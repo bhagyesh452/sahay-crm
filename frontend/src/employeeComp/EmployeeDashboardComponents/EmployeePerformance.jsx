@@ -35,7 +35,7 @@ function EmployeePerformance({ data}) {
         "December",
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
-
+    console.log("currentMonth" , currentMonth)
 
 
   
@@ -48,7 +48,7 @@ function EmployeePerformance({ data}) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            const filteredData = data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+            const filteredData = data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.ename !== "DIRECT")
             setEmployeeData(filteredData);
             setSortedEmployeeData(filteredData.sort((a,b)=>functionCalculateOnlyAchieved(b.ename) - functionCalculateOnlyAchieved(a.ename)));
 
