@@ -332,6 +332,9 @@ function Employees({ onEyeButtonClick }) {
             year: "",
             month: "",
             amount: 0,
+            achievedAmount:0,
+            ratio:0,
+            result:"N/A"
           },
         ]
     );
@@ -1356,7 +1359,7 @@ function Employees({ onEyeButtonClick }) {
                       </div>
                     </div>
                   </div>
-                  <div className="col-lg-5">
+                  <div className="col-lg-3">
                     <div className="mb-3">
                       <input
                         placeholder="ADD Target value"
@@ -1366,7 +1369,24 @@ function Employees({ onEyeButtonClick }) {
                         onChange={(e) => {
                           setTargetObjects(prevState => {
                             const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
+                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value}; // Update the specific object at the given index
+                            return updatedTargets; // Set the updated array as the new state
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-3">
+                    <div className="mb-3">
+                      <input
+                        placeholder="ADD achieved amount"
+                        type="number"
+                        className="form-control"
+                        value={obj.achievedAmount}
+                        onChange={(e) => {
+                          setTargetObjects(prevState => {
+                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                            updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value}; // Update the specific object at the given index
                             return updatedTargets; // Set the updated array as the new state
                           });
                         }}
