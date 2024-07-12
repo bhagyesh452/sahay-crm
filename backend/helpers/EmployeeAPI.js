@@ -607,7 +607,7 @@ router.get('/achieved-details/:ename', async (req, res) => {
         targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
         const roundedRatio = Math.round(targetDetail.ratio);
         if (roundedRatio === 0) {
-          targetDetail.result = "VeryPoor";
+          targetDetail.result = "Poor";
         } else if (roundedRatio > 0 && roundedRatio <= 40) {
           targetDetail.result = "Poor";
         } else if (roundedRatio >= 41 && roundedRatio <= 60) {
@@ -688,7 +688,7 @@ router.put("/einfo/:id", async (req, res) => {
     // Determine the result based on the ratio
     const roundedRatio = Math.round(target.ratio);
     if (roundedRatio === 0) {
-      target.result = "VeryPoor";
+      target.result = "Poor";
     } else if (roundedRatio > 0 && roundedRatio <= 40) {
       target.result = "Poor";
     } else if (roundedRatio >= 41 && roundedRatio <= 60) {

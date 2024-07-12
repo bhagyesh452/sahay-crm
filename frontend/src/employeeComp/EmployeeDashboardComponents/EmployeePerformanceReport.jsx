@@ -284,7 +284,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                             <thead>
                                 <tr className="tr-sticky">
                                     <th>Month</th>
-                                    <th>Target</th>
+                                    <th id='my-center'>Target</th>
                                     <th>Achievement</th>
                                     <th>Ratio</th>
                                     <th>Result</th>
@@ -296,8 +296,8 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                                         .filter((perData) => perData.month !== currentMonth) // Exclude the current month
                                         .map((perData, index) => (
                                             <tr key={`${index + 1}`}>
-                                                <td>{`${perData.month} - ${perData.year}`}</td>
-                                                <td>₹{new Intl.NumberFormat('en-IN').format(perData.amount)}</td>
+                                                <td>{`${perData.month} - ${String(perData.year).slice(-2)}`}</td>
+                                                <td id='my-center'>₹{new Intl.NumberFormat('en-IN').format(perData.amount)}</td>
                                                 <td>₹{new Intl.NumberFormat('en-IN').format(perData.achievedAmount)}</td>
                                                 <td>{Math.round(perData.ratio)}%</td>
                                                 <td>{perData.result}</td>
@@ -312,7 +312,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                             <tfoot>
                                 <tr style={{ position: "sticky", bottom: '0px', padding: '6px 6px' }}>
                                     <td>{targetDetailsLength - 1}</td>
-                                    <td>
+                                    <td id='my-center'>
                                         ₹ {new Intl.NumberFormat('en-IN').format(
                                             data.targetDetails?.filter((perData) => perData.month !== currentMonth)
                                                 .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0) || 0
