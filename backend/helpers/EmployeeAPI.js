@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const adminModel = require("../models/Admin.js");
 const PerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
+const TodaysCollectionModel = require("../models/TodaysGeneralProjection.js");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
@@ -907,7 +908,7 @@ router.post(
   }
 );
 
-// Employee Performance APIs
+// Employee Performance APIs:
 // Add new performance record:
 const moment = require('moment'); // Import moment.js for date manipulation
 const MonthlyPerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
@@ -982,7 +983,7 @@ router.get('/fetchPerformanceReport/:empId', async (req, res) => {
   try {
     // Fetch performance reports for the specified employee ID
     const performanceReports = await PerformanceReportModel.find({ empId: empId });
-    console.log("performance", performanceReports)
+    // console.log("performance", performanceReports)
 
     // if (!performanceReports || performanceReports.length === 0) {
     //   return res.status(400).json({ result: false, message: 'Performance reports not found for this employee ID' });
@@ -1095,6 +1096,53 @@ router.put('/editPerformanceReport/:empId', async (req, res) => {
   }
 });
 
+// Todays Projection APIs:
+// Adds record for today's collection:
+router.post('/addTodaysProjection', async (req, res) => {
+  try {
+    const { empId, noOfCompany, noOfServiceOffered, totalOfferedPrice, totalCollectionExpected, date, time } = req.body;
 
+    const employeeInfo = await adminModel.findOne({ _id: empId });
+
+    if (!employeeInfo) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    const TodaysCollection = await TodaysCollectionModel.create({
+      empId: empId,
+      empName: employeeInfo.ename,
+      noOfCompany: parseInt(noOfCompany),
+      noOfServiceOffered: parseInt(noOfServiceOffered),
+      totalOfferedPrice: parseInt(totalOfferedPrice),
+      totalCollectionExpected: parseInt(totalCollectionExpected),
+      date: date || new Date(),
+      time: time || new Date()
+    });
+    res.status(200).json({ result: true, message: "Today's collection successfully added", data: TodaysCollection });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error adding today's collection", error: error });
+  }
+});
+
+// Displaying all the records for current date:
+router.get('/showTodaysCollection', async (req, res) => {
+  try {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1; // Months are zero-based
+    const year = today.getFullYear();
+    
+    // Format the date as "d/m/yyyy"
+    const formattedToday = `${day}/${month}/${year}`;
+
+    const todaysCollections = await TodaysCollectionModel.find({
+      date: formattedToday
+    });
+
+    res.status(200).json({ result: true, message: "Today's collection successfully fetched", data: todaysCollections });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error displaying today's collection", error: error });
+  }
+});
 
 module.exports = router;

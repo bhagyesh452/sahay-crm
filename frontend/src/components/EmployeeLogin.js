@@ -155,6 +155,12 @@ function EmployeeLogin({ setnewToken }) {
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
+      
+      // Store designation, login time, and date in localStorage
+      localStorage.setItem("designation", designation);
+      localStorage.setItem("loginTime", new Date().toISOString());
+      localStorage.setItem("loginDate", new Date().toISOString().substr(0, 10)); // Store YYYY-MM-DD format
+
       window.location.replace(`/employee-dashboard/${userId}`);
     } catch (error) {
       console.error("Login failed:", error.response.data.message);
