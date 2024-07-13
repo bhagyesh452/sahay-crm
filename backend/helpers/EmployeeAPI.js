@@ -574,6 +574,8 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
   });
 
+  console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
+
   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
 };
 
@@ -593,6 +595,8 @@ router.get('/achieved-details/:ename', async (req, res) => {
 
     const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
 
+    console.log("achievedAmount" , achievedAmount)
+
     const today = new Date();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
@@ -603,7 +607,7 @@ router.get('/achieved-details/:ename', async (req, res) => {
         targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
         const roundedRatio = Math.round(targetDetail.ratio);
         if (roundedRatio === 0) {
-          targetDetail.result = "VeryPoor";
+          targetDetail.result = "Poor";
         } else if (roundedRatio > 0 && roundedRatio <= 40) {
           targetDetail.result = "Poor";
         } else if (roundedRatio >= 41 && roundedRatio <= 60) {
@@ -684,7 +688,7 @@ router.put("/einfo/:id", async (req, res) => {
     // Determine the result based on the ratio
     const roundedRatio = Math.round(target.ratio);
     if (roundedRatio === 0) {
-      target.result = "VeryPoor";
+      target.result = "Poor";
     } else if (roundedRatio > 0 && roundedRatio <= 40) {
       target.result = "Poor";
     } else if (roundedRatio >= 41 && roundedRatio <= 60) {

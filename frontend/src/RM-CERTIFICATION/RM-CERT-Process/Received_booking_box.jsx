@@ -36,6 +36,7 @@ function Received_booking_box() {
     fetchData();
   }, []);
 
+  const mycustomloop = Array(10).fill(null); // Create an array with 10 elements
 
   console.log('employeeData', employeeData)
   return (
@@ -99,6 +100,7 @@ function Received_booking_box() {
                                     </div>
                                 </div>
                                 <div className="booking-list-body">
+                                    {mycustomloop.map((_, index) => (
                                     <div className='rm_bking_list_box_item'>
                                         <div className='d-flex justify-content-between align-items-center'>
                                             <div className='rm_cmpny_name_services'>
@@ -137,6 +139,7 @@ function Received_booking_box() {
                                             </div>
                                         </div>
                                     </div>
+                                    ))}
                                 </div>  
                             </div>
                         </div>
