@@ -4219,7 +4219,7 @@ function EmployeeDashboard() {
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeePerformance redesignedData = {redesignedData} data={data}/>
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3 Performance_Report_w">
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3 Performance_Report_w d-none">
                     <EmployeePerformanceReport redesignedData = {redesignedData} data={data}/>
                     {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
@@ -4311,7 +4311,7 @@ function EmployeeDashboard() {
                   </div>
                   </>}
                   {/* calling data report */}
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3 Top_Selling_Services_w">
+                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
