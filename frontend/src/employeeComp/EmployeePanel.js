@@ -2883,7 +2883,7 @@ function EmployeePanel() {
           noOfServiceOffered: noOfServiceOffered,
           totalOfferedPrice: offeredPrice,
           totalCollectionExpected: expectedCollection,
-          date: currentDate,
+          date: todayDate,
           time: currentTime
       };
      

@@ -119,11 +119,12 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                   </a>
 
                 </li> */}
-                <li
+                <Link style={{ textDecoration: "none", color: "black" }}
                   className={
                     location.pathname === `/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                   }
-                  onClick={handleClickMyBookings}
+                  //onClick={handleClickMyBookings}
+                  to={`/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}`}
                 >
 
                   <a className="nav-link" href="#">
@@ -133,7 +134,7 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                     <span className="nav-link-title">My Bookings</span>
                   </a>
 
-                </li>
+                </Link>
               </ul>
 
             </div>
