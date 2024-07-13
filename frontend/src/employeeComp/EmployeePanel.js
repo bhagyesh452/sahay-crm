@@ -17,7 +17,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IoIosClose } from "react-icons/io";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
@@ -70,8 +70,8 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { Country, State, City } from 'country-state-city';
-
-
+import TodaysCollection from "./TodaysCollection.jsx";
+import { GoPlusCircle } from "react-icons/go";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2790,8 +2790,120 @@ function EmployeePanel() {
     //fetchData(1, latestSortCount)
   }
 
+  const [shouldShowCollection, setShouldShowCollection] = useState(false);
+  const [currentDate, setCurrentDate] = useState(getCurrentDate());
+
+  useEffect(() => {
+    const checkAndShowCollection = () => {
+      const designation = localStorage.getItem('designation');
+      const loginTime = new Date(localStorage.getItem('loginTime'));
+      const loginDate = localStorage.getItem('loginDate');
+
+      const currentDateTime = new Date(); // Current date and time in local time
+
+      // Extract current hour and minute
+      const currentHour = currentDateTime.getHours();
+      console.log("Current hour is :", currentHour);
+      const currentMinute = currentDateTime.getMinutes();
+
+      // Extract login hour from loginTime
+      const loginHour = loginTime.getHours();
+
+      // Get current date in YYYY-MM-DD format
+      const newCurrentDate = getCurrentDate();
+
+      // Check conditions to show the collection pop-up
+      if (
+        designation === 'Sales Executive' &&
+        loginDate === newCurrentDate && // Check if it's the same login date
+        currentHour >= 10 &&
+        !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
+      ) {
+        setShouldShowCollection(true);
+        localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
+      }
+    };
+
+    checkAndShowCollection(); // Call the function initially
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, currentDate]); // Trigger when userId or currentDate changes
+
+  // Function to get current date in YYYY-MM-DD format
+  function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  const [noOfCompany, setNoOfCompany] = useState("");
+  const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
+  const [offeredPrice, setOffferedPrice] = useState("");
+  const [expectedCollection, setExpectedCollection] = useState("");
+  const [openTodaysColection, setOpenTodaysCollection] = useState(false);
+  
+  const [errors, setErrors] = useState({
+      noOfCompany: "",
+      noOfServiceOffered: "",
+      offeredPrice: "",
+      expectedCollection: ""
+  });
+
+  const closePopup = () => {
+      setOpenTodaysCollection(false);
+  };
+
+  const handleClose = (event, reason) => {
+      if (reason === 'backdropClick') {
+          return;
+      }
+      closePopup();
+  };
+
+  const date = new Date();
+  const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+  const handleSubmitTodaysCollection = async () => {
+      let formErrors = {
+          noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
+          noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
+          offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
+          expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
+      };
+      setErrors(formErrors);
+      if (Object.values(formErrors).some(error => error !== "")) {
+          return;
+      }
+
+      const payload = {
+          empId: userId,
+          noOfCompany: noOfCompany,
+          noOfServiceOffered: noOfServiceOffered,
+          totalOfferedPrice: offeredPrice,
+          totalCollectionExpected: expectedCollection,
+          date: currentDate,
+          time: currentTime
+      };
+     
+
+      try {
+          const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
+          console.log("Data sent successfully:", response);
+          Swal.fire("Success!", "Data Request Sent!", "success");
+          closepopup();
+      } catch (error) {
+          console.log("Error to send today's collection", error);
+          Swal.fire("Error!", "Error to send today's collection!", "error");
+      }
+  };
+
+
+
   return (
     <div>
+      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey}/>}
       <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {/* Dialog box for Request Data */}
@@ -2891,6 +3003,12 @@ function EmployeePanel() {
                         onClick={functionopenpopup}
                       >
                         <MdOutlinePostAdd className='mr-1' /> Request Data
+                      </button>
+                      <button type="button" className="btn mybtn"
+                       onClick={() => setOpenTodaysCollection(true)}
+                     
+                      >
+                        <GoPlusCircle className='mr-1'/> Today's General Projection
                       </button>
                     </div>
                   </div>
@@ -6474,6 +6592,102 @@ function EmployeePanel() {
             </div>
           )}
         </div>
+
+        {/* --------------Dialog for todays general projetion----------------- */}
+        <Dialog
+                className='My_Mat_Dialog'
+                open={openTodaysColection}
+                onClose={handleClose}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    Today's Project Collection{" "}
+                    <IconButton onClick={closePopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary" />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className='d-flex'>
+
+                                    <div className="mb-3 col-6">
+                                        <label className="form-label">No. Of Company</label>
+                                        <input
+                                            type="number"
+                                            value={noOfCompany}
+                                            className="form-control"
+                                            placeholder="No. Of Company"
+                                            required
+                                            onChange={(e) => {
+                                                setNoOfCompany(e.target.value);
+                                                setErrors({ ...errors, noOfCompany: "" });
+                                            }}
+                                        />
+                                        {errors.noOfCompany && <p className="text-danger">{errors.noOfCompany}</p>}
+                                    </div>
+                                    <div className="mb-3 col-6 mx-1">
+                                        <label className="form-label">No. Of Service Offered</label>
+                                        <input
+                                            type="number"
+                                            value={noOfServiceOffered}
+                                            className="form-control"
+                                            placeholder="No. Of Services"
+                                            required
+                                            onChange={(e) => {
+                                                setNoOfServiceOffered(e.target.value);
+                                                setErrors({ ...errors, noOfServiceOffered: "" });
+                                            }}
+                                        />
+                                        {errors.noOfServiceOffered && <p className="text-danger">{errors.noOfServiceOffered}</p>}
+                                    </div>
+                                </div>
+                                <div className='d-flex'>
+                                    <div className="mb-3 col-6">
+                                        <label className="form-label">Total Offered Price</label>
+                                        <input
+                                            type="number"
+                                            value={offeredPrice}
+                                            className="form-control"
+                                            placeholder="Offered Price"
+                                            required
+                                            onChange={(e) => {
+                                                setOffferedPrice(e.target.value);
+                                                setErrors({ ...errors, offeredPrice: "" });
+                                            }}
+                                        />
+                                        {errors.offeredPrice && <p className="text-danger">{errors.offeredPrice}</p>}
+                                    </div>
+                                    <div className="mb-3 col-6 mx-1">
+                                        <label className="form-label">Total Collection Expected</label>
+                                        <input
+                                            type="number"
+                                            value={expectedCollection}
+                                            className="form-control"
+                                            placeholder="Expected Collection"
+                                            required
+                                            onChange={(e) => {
+                                                setExpectedCollection(e.target.value);
+                                                setErrors({ ...errors, expectedCollection: "" });
+                                            }}
+                                        />
+                                        {errors.expectedCollection && <p className="text-danger">{errors.expectedCollection}</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+                <Button
+                    className="btn btn-primary bdr-radius-none"
+                    onClick={handleSubmitTodaysCollection}
+                    variant="contained"
+                >
+                    Submit
+                </Button>
+            </Dialog>
       </div>
     </div>
   );
