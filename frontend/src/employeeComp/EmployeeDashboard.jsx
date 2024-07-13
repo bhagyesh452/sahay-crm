@@ -2425,6 +2425,51 @@ function EmployeeDashboard() {
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
 
+  // useEffect(() => {
+  //   const checkAndShowCollection = () => {
+  //     const designation = localStorage.getItem('designation');
+  //     const loginTime = new Date(localStorage.getItem('loginTime'));
+  //     const loginDate = localStorage.getItem('loginDate');
+
+  //     const currentDateTime = new Date(); // Current date and time in local time
+
+  //     // Extract current hour and minute
+  //     const currentHour = currentDateTime.getHours();
+  //     console.log("Current hour is :", currentHour);
+  //     const currentMinute = currentDateTime.getMinutes();
+
+  //     // Extract login hour from loginTime
+  //     const loginHour = loginTime.getHours();
+
+  //     // Get current date in YYYY-MM-DD format
+  //     const newCurrentDate = getCurrentDate();
+
+  //     // Check conditions to show the collection pop-up
+  //     if (
+  //       designation === 'Sales Executive' &&
+  //       loginDate === newCurrentDate && // Check if it's the same login date
+  //       currentHour >= 10 &&
+  //       !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
+  //     ) {
+  //       setShouldShowCollection(true);
+  //       localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
+  //     }
+  //   };
+
+  //   checkAndShowCollection(); // Call the function initially
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [userId, currentDate]); // Trigger when userId or currentDate changes
+
+  // // Function to get current date in YYYY-MM-DD format
+  // function getCurrentDate() {
+  //   const now = new Date();
+  //   const year = now.getFullYear();
+  //   const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  //   const day = now.getDate().toString().padStart(2, "0");
+  //   return `${year}-${month}-${day}`;
+  // }
+
   useEffect(() => {
     const checkAndShowCollection = () => {
       const designation = localStorage.getItem('designation');
@@ -2458,7 +2503,13 @@ function EmployeeDashboard() {
 
     checkAndShowCollection(); // Call the function initially
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Set an interval to check every minute
+    const intervalId = setInterval(() => {
+      checkAndShowCollection();
+    }, 60000); // 60000 ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [userId, currentDate]); // Trigger when userId or currentDate changes
 
   // Function to get current date in YYYY-MM-DD format
