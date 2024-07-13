@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import Nodata from '../../components/Nodata';
+import { borderRadius } from '@mui/system';
 
 function EmployeePerformanceReport({ redesignedData, data }) {
 
@@ -288,7 +289,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                                     <th id='my-center'>Target</th>
                                     <th>Achievement</th>
                                     <th>Ratio</th>
-                                    <th>Result</th>
+                                    <th style={{borderRadius: '0 7px 0 0'}}>Result</th>
                                 </tr>
                             </thead>
                             <tbody>
