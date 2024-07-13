@@ -166,19 +166,6 @@ function EmployeeDashboard() {
   const dateRangePickerProhectionSummaryRef = useRef(null);
 
   // Performance Report State :
-  const [performanceReport, setPerformanceReport] = useState([]);
-
-  const fetchPerformanceReport = async () => {
-    const response = await axios.get(`${secretKey}/employee/fetchPerformanceReport/${userId}`);
-    if(response.data.data.length !== 0) {
-      setPerformanceReport(response.data.data);
-    }
-    console.log("Performance report is :", response.data.data);
-  };
-
-  useEffect(()=>{
-    fetchPerformanceReport();
-  },[]);
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {

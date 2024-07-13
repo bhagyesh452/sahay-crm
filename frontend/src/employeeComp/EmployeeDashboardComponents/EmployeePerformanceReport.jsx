@@ -7,6 +7,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [achievedAmount, setAchievedAmount] = useState(0);
+    
     const functionCalculateAchievedRevenue = () => {
         let achievedAmount = 0;
         let remainingAmount = 0;

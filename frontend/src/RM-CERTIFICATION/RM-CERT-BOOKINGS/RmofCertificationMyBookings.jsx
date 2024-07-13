@@ -9,6 +9,9 @@ import Swal from "sweetalert2";
 import '../../assets/table.css';
 import '../../assets/styles.css';
 import dummyImg from "../../static/EmployeeImg/office-man.png";
+import { Link } from "react-router-dom";
+import { useIsFocusVisible } from "@mui/material";
+import RmofCertificationCompanyTaskManage from "./RmofCertificationCompanyTaskManage";
 
 
 function RmofCertificationMyBookings() {
@@ -61,45 +64,46 @@ function RmofCertificationMyBookings() {
     const handleDeleteRmBooking = async (companyName, serviceName) => {
         // Display confirmation dialog using SweetAlert
         const confirmDelete = await Swal.fire({
-          title: 'Are you sure?',
-          text: `Do you want to delete ${serviceName} for ${companyName}?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!',
+            title: 'Are you sure?',
+            text: `Do you want to delete ${serviceName} for ${companyName}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
         });
-      
+
         // Proceed with deletion if user confirms
         if (confirmDelete.isConfirmed) {
-          try {
-            // Send delete request to backend
-            const response = await axios.delete(`${secretKey}/rm-services/delete-rm-services`, {
-              data: { companyName, serviceName }
-            });
-      
-            console.log(response.data);
-            Swal.fire('Deleted!', 'The record has been deleted.', 'success');
-            fetchData();
-            // Handle UI updates or further actions after deletion
-          } catch (error) {
-            console.error("Error Deleting Company", error.message);
-            Swal.fire('Error!', 'Failed to delete the record.', 'error');
-            // Handle error scenario, e.g., show an error message or handle error state
-          }
+            try {
+                // Send delete request to backend
+                const response = await axios.delete(`${secretKey}/rm-services/delete-rm-services`, {
+                    data: { companyName, serviceName }
+                });
+
+                console.log(response.data);
+                Swal.fire('Deleted!', 'The record has been deleted.', 'success');
+                fetchData();
+                // Handle UI updates or further actions after deletion
+            } catch (error) {
+                console.error("Error Deleting Company", error.message);
+                Swal.fire('Error!', 'Failed to delete the record.', 'error');
+                // Handle error scenario, e.g., show an error message or handle error state
+            }
         } else {
-          // Handle cancel or dismiss scenario if needed
-          Swal.fire('Cancelled', 'Delete operation cancelled.', 'info');
+            // Handle cancel or dismiss scenario if needed
+            Swal.fire('Cancelled', 'Delete operation cancelled.', 'info');
         }
-      };
+    };
 
 
     console.log(rmServicesData)
 
     const mycustomloop = Array(7).fill(null); // Create an array with 10 elements
+    const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
 
     return (
-        <div>   
+        <div>
             <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
             <div className="page-wrapper d-none">
@@ -261,7 +265,7 @@ function RmofCertificationMyBookings() {
                                                                     obj.serviceName
                                                                 )
                                                             }
-                                                            style={{marginLeft:"30px"}}
+                                                            style={{ marginLeft: "30px" }}
                                                             className="Services_Preview_action_delete mt-1"
                                                         >
                                                             <MdDelete />
@@ -273,78 +277,18 @@ function RmofCertificationMyBookings() {
                                     </table>
                                 </div>
                             </div>
-                            {/* {(!isFilter || !isSearching)  && data.length === 0  && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
-                            {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0  && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
-                             {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0  && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )} */}
-                            {/* {data.length !== 0 && (
-                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    <span>Page {currentPage} /{totalCount}</span>
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )} */}
-                            {/* {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0))) && (
-                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                    {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
-                                    {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
-                                        ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                        ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
-                                        ((!isFilter || !isSearching) && data.length < itemsPerPage)
-                                    }>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )} */}
+                         
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="page-wrapper">
+            {!openCompanyTaskComponent && <div className="page-wrapper">
                 <div className="page-header m-0">
                     <div className="container-xl">
                         <div className="mt-3 d-flex">
                             <div className="btn-group" role="group" aria-label="Basic example">
-                                <button type="button"  className="btn mybtn"  >
+                                <button type="button" className="btn mybtn"  >
                                     <IoFilterOutline className='mr-1' /> Filter
                                 </button>
                             </div>
@@ -473,35 +417,35 @@ function RmofCertificationMyBookings() {
                                             </thead>
                                             <tbody>
                                                 {mycustomloop.map((_, index) => (
-                                                <tr>
-                                                    <td><b>1</b></td>
-                                                    <td><b>India Private Limited</b></td>
-                                                    <td>9924283530</td>
-                                                    <td>20/02/2024</td>
-                                                    <td><b>Start-up India Certificate</b></td>
-                                                    <td><div>Working</div></td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center justify-content-center">
-                                                            {/* <div className="tbl-pro-img">
+                                                    <tr>
+                                                        <td><b>1</b></td>
+                                                        <td><b>India Private Limited</b></td>
+                                                        <td>9924283530</td>
+                                                        <td>20/02/2024</td>
+                                                        <td><b>Start-up India Certificate</b></td>
+                                                        <td><div>Working</div></td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
                                                                 <img src={dummyImg}></img>
                                                             </div> */}
-                                                            <div> Vishal Gohel</div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center justify-content-center">
-                                                            {/* <div className="tbl-pro-img">
+                                                                <div> Vishal Gohel</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
                                                                 <img src={dummyImg}></img>
                                                             </div> */}
-                                                            <div> Vishnu  Suthar</div>
-                                                        </div>
-                                                    </td>
-                                                    <td>Close By</td>
-                                                    <td>₹ 8,000/-</td>
-                                                    <td><button className="btn btn-sm btn-success">View</button>
-                                                        <button className="btn btn-sm btn-danger ml-1">Undo</button>
-                                                    </td>
-                                                </tr>
+                                                                <div> Vishnu  Suthar</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>Close By</td>
+                                                        <td>₹ 8,000/-</td>
+                                                        <td><button className="btn btn-sm btn-success" onClick={()=>setOpenCompanyTaskComponent(true)}>View</button>
+                                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                                        </td>
+                                                    </tr>
                                                 ))}
                                             </tbody>
                                         </table>
@@ -528,34 +472,38 @@ function RmofCertificationMyBookings() {
                                             </thead>
                                             <tbody>
                                                 {mycustomloop.map((_, index) => (
-                                                <tr>
-                                                    <td><b>1</b></td>
-                                                    <td><b>India Private Limited</b></td>
-                                                    <td>9924283530</td>
-                                                    <td>20/02/2024</td>
-                                                    <td><b>Start-up India Certificate</b></td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center justify-content-center">
-                                                            {/* <div className="tbl-pro-img">
+                                                    <tr>
+                                                        <td><b>1</b></td>
+                                                        <td><b>India Private Limited</b></td>
+                                                        <td>9924283530</td>
+                                                        <td>20/02/2024</td>
+                                                        <td><b>Start-up India Certificate</b></td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
                                                                 <img src={dummyImg}></img>
                                                             </div> */}
-                                                            <div> Vishal Gohel</div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center justify-content-center">
-                                                            {/* <div className="tbl-pro-img">
+                                                                <div> Vishal Gohel</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
                                                                 <img src={dummyImg}></img>
                                                             </div> */}
-                                                            <div> Vishnu  Suthar</div>
-                                                        </div>
-                                                    </td>
-                                                    <td>Close By</td>
-                                                    <td>₹ 8,000/-</td>
-                                                    <td><button className="btn btn-sm btn-success">View</button>
-                                                        <button className="btn btn-sm btn-danger ml-1">Undo</button>
-                                                    </td>
-                                                </tr>
+                                                                <div> Vishnu  Suthar</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>Close By</td>
+                                                        <td>₹ 8,000/-</td>
+                                                        <td><button className="btn btn-sm btn-success" onClick={()=>setOpenCompanyTaskComponent(true)}>
+                                                          
+                                                                View
+                                                           
+                                                        </button>
+                                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                                        </td>
+                                                    </tr>
                                                 ))}
                                             </tbody>
                                         </table>
@@ -577,7 +525,11 @@ function RmofCertificationMyBookings() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
+            {openCompanyTaskComponent && 
+            <>
+            <RmofCertificationCompanyTaskManage/>
+            </>}
         </div>
     )
 }
