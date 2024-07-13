@@ -499,9 +499,7 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
       }
-    }
-
-    if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
+    }else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
       let remainingExpanseCondition = false;
       switch (filterBy) {
         case 'Today':
