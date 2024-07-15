@@ -2892,6 +2892,10 @@ function EmployeePanel() {
           const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
           console.log("Data sent successfully:", response);
           Swal.fire("Success!", "Data Request Sent!", "success");
+          setNoOfCompany("");
+          setNoOfServiceOffered("");
+          setOffferedPrice("");
+          setExpectedCollection("");
           closePopup();
       } catch (error) {
           console.log("Error to send today's collection", error);
