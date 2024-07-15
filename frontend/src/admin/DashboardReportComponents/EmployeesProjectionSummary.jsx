@@ -55,7 +55,6 @@ function EmployeesProjectionSummary() {
   const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
   const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("");
   const [historyDataCompany, sethistoryDataCompany] = useState([]);
-  const [todaysCollection, setTodaysCollection] = useState([]);
 
   //--------------------date formats--------------------------------
   function formatDateFinal(timestamp) {
@@ -74,20 +73,6 @@ function EmployeesProjectionSummary() {
     return `${month}/${day}/${year}`;
   }
 
-  // fetch today's collection
-  const fetchTodaysCollection = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/employee/showTodaysCollection`);
-      console.log("Today's collection is :", response.data.data);
-      setTodaysCollection(response.data.data);
-    } catch (error) {
-      console.log("Error to fetch today's collection");
-    }
-  };
-
-  useEffect(() => {
-    fetchTodaysCollection();
-  }, []);
 
   //-----------------------fetching Employee Data------------------------------------------
   const [loading, setLoading] = useState(false)
@@ -238,14 +223,14 @@ function EmployeesProjectionSummary() {
         return [today.startOf("month"), today.endOf("month")];
       },
     },
-    {
-      label: "Next Month",
-      getValue: () => {
-        const today = dayjs();
-        const startOfNextMonth = today.endOf("month").add(1, "day");
-        return [startOfNextMonth, startOfNextMonth.endOf("month")];
-      },
-    },
+    // {
+    //   label: "Next Month",
+    //   getValue: () => {
+    //     const today = dayjs();
+    //     const startOfNextMonth = today.endOf("month").add(1, "day");
+    //     return [startOfNextMonth, startOfNextMonth.endOf("month")];
+    //   },
+    // },
     { label: "Reset", getValue: () => [null, null] },
   ];
   const handleSelect = (values) => {
@@ -589,6 +574,115 @@ function EmployeesProjectionSummary() {
       console.error("Error downloading CSV:", error);
     }
   };
+
+  // Today's Collection :
+  const [todaysProjection, setTodaysProjection] = useState([]);
+  const [sortedTodaysProjection, setSortedTodaysProjection] = useState([]);
+  const [isDateSelected, setIsDateSelected] = useState("false");
+  const [sortTodaysProjection, setSortTodaysProjection] = useState({
+    noOfCompany: "none",
+    noOfServiceOffered: "none",
+    offeredPrice: "none",
+    expectedCollection: "none"
+  });
+
+  // fetch today's collection
+  const fetchTodaysCollection = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/showTodaysCollection`);
+      console.log("Today's collection is :", response.data.data);
+      setTodaysProjection(response.data.data);
+    } catch (error) {
+      console.log("Error to fetch today's collection");
+    }
+  };
+
+  useEffect(() => {
+    fetchTodaysCollection();
+  }, []);
+
+  useEffect(() => {
+
+  }, []);
+
+  // Functions for Filtering and Sorting :
+  const handleSortCompanies = (type) => {
+    let sortedData = todaysProjection;
+    if(type === "ascending") {
+      const ascendingSort = sortedData.sort((a,b) => a.noOfCompany - b.noOfCompany);
+      // console.log("Ascending sort in company :", ascendingSort);
+    } else if(type === "descending") {
+      const descendingSort = sortedData.sort((a,b) => b.noOfCompany - a.noOfCompany);
+      // console.log("Descending sort in company :", descendingSort);
+    } else if(type === "none") {
+      const data = sortedData;
+      // console.log("Without sort in company :", data);
+    }
+    setSortedTodaysProjection(sortedData);
+  };
+
+  const handleSortServices = (type) => {
+    let sortedData = todaysProjection;
+    if(type === "ascending") {
+      const ascendingSort = sortedData.sort((a,b) => a.noOfServiceOffered - b.noOfServiceOffered);
+      // console.log("Ascending sort in services :", ascendingSort);
+    } else if(type === "descending") {
+      const descendingSort = sortedData.sort((a,b) => b.noOfServiceOffered - a.noOfServiceOffered);
+      // console.log("Descending sort in service :", descendingSort);
+    } else if(type === "none") {
+      const data = sortedData;
+      // console.log("Without sort in service :", data);
+    }
+    setSortedTodaysProjection(sortedData);
+  };
+
+  const handleSortOfferedPrice = (type) => {
+    let sortedData = todaysProjection;
+    if(type === "ascending") {
+      const ascendingSort = sortedData.sort((a,b) => a.totalOfferedPrice - b.totalOfferedPrice);
+      // console.log("Ascending sort in offered price :", ascendingSort);
+    } else if(type === "descending") {
+      const descendingSort = sortedData.sort((a,b) => b.totalOfferedPrice - a.totalOfferedPrice);
+      // console.log("Descending sort in offered price :", descendingSort);
+    } else if(type === "none") {
+      const data = sortedData;
+      // console.log("Without sort in offered price :", data);
+    }
+    setSortedTodaysProjection(sortedData);
+  };
+
+  const handleSortExpectedCollection = (type) => {
+    let sortedData = todaysProjection;
+    if(type === "ascending") {
+      const ascendingSort = sortedData.sort((a,b) => a.totalCollectionExpected - b.totalCollectionExpected);
+      // console.log("Ascending sort in expected collection :", ascendingSort);
+    } else if(type === "descending") {
+      const descendingSort = sortedData.sort((a,b) => b.totalCollectionExpected - a.totalCollectionExpected);
+      // console.log("Descending sort in expected collection :", descendingSort);
+    } else if(type === "none") {
+      const data = sortedData;
+      // console.log("Without sort in expected collection :", data);
+    }
+    setSortedTodaysProjection(sortedData);
+  };
+
+  const handleDateFilter = () => {
+
+  };
+
+  
+  const handleNameFilter = (selectedEmpName) => {
+    console.log("Selected name is :", selectedEmpName);
+    const filteredTodayProjectionWithEmpName = todaysProjection.filter((item) => item.empName.to === selectedEmpName.includes().toString());
+    console.log("Today's projection filter by using employee name :", filteredTodayProjectionWithEmpName);
+    if(filteredTodayProjectionWithEmpName.length > 0) {
+      setSortedTodaysProjection(filteredTodayProjectionWithEmpName);
+    } else {
+      setSortedTodaysProjection(todaysProjection)
+    }
+  }
+
+
   return (
     <div>
       <div className="employee-dashboard"
@@ -1004,7 +1098,7 @@ function EmployeesProjectionSummary() {
               </h2>
             </div>
             <div className="d-flex align-items-center pr-1">
-              <div className="filter-booking mr-1 d-flex align-items-center">
+              {/* <div className="filter-booking mr-1 d-flex align-items-center">
                 <div className="filter-title mr-1">
                   <h2 className="m-0">
                     Filter Branch :
@@ -1029,8 +1123,8 @@ function EmployeesProjectionSummary() {
                     <option value={"none"}>None</option>
                   </select>
                 </div>
-              </div>
-              <div class="input-icon mr-1">
+              </div> */}
+              {/* <div class="input-icon mr-1">
                 <span class="input-icon-addon">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -1048,7 +1142,7 @@ function EmployeesProjectionSummary() {
                   type="text"
                   name="bdeName-search"
                   id="bdeName-search" />
-              </div>
+              </div> */}
               <div className="date-filter">
                 <LocalizationProvider dateAdapter={AdapterDayjs}  >
                   <DemoContainer components={["SingleInputDateRangeField"]} sx={{
@@ -1076,7 +1170,7 @@ function EmployeesProjectionSummary() {
                           InputProps: { endAdornment: <Calendar /> },
                         },
                       }}
-                    //calendars={1}
+                      calendars={1}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -1092,7 +1186,7 @@ function EmployeesProjectionSummary() {
                     value={projectionNames}
                     onChange={(event) => {
                       setProjectionNames(event.target.value)
-                      handleSelectProjectionSummary(event.target.value)
+                      handleNameFilter(event.target.value)
                     }}
                     input={<OutlinedInput label="Name" />}
                     MenuProps={MenuProps}
@@ -1129,16 +1223,20 @@ function EmployeesProjectionSummary() {
                           cursor: "pointer",
                           marginLeft: "4px",
                         }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeProjection === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortTypeProjection === "descending") {
-                            newSortType = "none";
+                        onClick={(e) => {
+                          let updatedSortType;
+                          if (sortTodaysProjection.noOfCompany === "ascending") {
+                            updatedSortType = "descending";
+                          } else if (sortTodaysProjection.noOfCompany === "descending") {
+                            updatedSortType = "none";
                           } else {
-                            newSortType = "ascending";
+                            updatedSortType = "ascending";
                           }
-                          handleSortTotalCompanies(newSortType);
+                          setSortTodaysProjection((prev) => ({
+                            ...prev,
+                            noOfCompany: updatedSortType
+                          }))
+                          handleSortCompanies(updatedSortType);
                         }}
                       />
                     </th>
@@ -1151,16 +1249,20 @@ function EmployeesProjectionSummary() {
                           cursor: "pointer",
                           marginLeft: "4px",
                         }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeServices === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortTypeServices === "descending") {
-                            newSortType = "none";
+                        onClick={(e) => {
+                          let updatedSortType;
+                          if (sortTodaysProjection.noOfServiceOffered === "ascending") {
+                            updatedSortType = "descending";
+                          } else if (sortTodaysProjection.noOfServiceOffered === "descending") {
+                            updatedSortType = "none";
                           } else {
-                            newSortType = "ascending";
+                            updatedSortType = "ascending";
                           }
-                          handleSortOfferedServices(newSortType);
+                          setSortTodaysProjection((prev) => ({
+                            ...prev,
+                            noOfServiceOffered: updatedSortType
+                          }))
+                          handleSortServices(updatedSortType);
                         }}
                       />
                     </th>
@@ -1173,16 +1275,20 @@ function EmployeesProjectionSummary() {
                           cursor: "pointer",
                           marginLeft: "4px",
                         }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypePrice === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortTypePrice === "descending") {
-                            newSortType = "none";
+                        onClick={(e) => {
+                          let updatedSortType;
+                          if (sortTodaysProjection.offeredPrice === "ascending") {
+                            updatedSortType = "descending";
+                          } else if (sortTodaysProjection.offeredPrice === "descending") {
+                            updatedSortType = "none";
                           } else {
-                            newSortType = "ascending";
+                            updatedSortType = "ascending";
                           }
-                          handleSortOffredPrize(newSortType);
+                          setSortTodaysProjection((prev) => ({
+                            ...prev,
+                            offeredPrice: updatedSortType
+                          }))
+                          handleSortOfferedPrice(updatedSortType);
                         }}
                       />
                     </th>
@@ -1195,18 +1301,20 @@ function EmployeesProjectionSummary() {
                           cursor: "pointer",
                           marginLeft: "4px",
                         }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeExpectedPayment === "ascending") {
-                            newSortType = "descending";
-                          } else if (
-                            sortTypeExpectedPayment === "descending"
-                          ) {
-                            newSortType = "none";
+                        onClick={(e) => {
+                          let updatedSortType;
+                          if (sortTodaysProjection.expectedCollection === "ascending") {
+                            updatedSortType = "descending";
+                          } else if (sortTodaysProjection.expectedCollection === "descending") {
+                            updatedSortType = "none";
                           } else {
-                            newSortType = "ascending";
+                            updatedSortType = "ascending";
                           }
-                          handleSortExpectedPayment(newSortType);
+                          setSortTodaysProjection((prev) => ({
+                            ...prev,
+                            expectedCollection: updatedSortType
+                          }))
+                          handleSortExpectedCollection(updatedSortType);
                         }}
                       />
                     </th>
@@ -1231,15 +1339,15 @@ function EmployeesProjectionSummary() {
                   </tbody>
                 ) : (
                   <tbody>
-                    {todaysCollection && todaysCollection.length !== 0 ? (
-                      todaysCollection.map((obj, index) => (
+                    {todaysProjection && todaysProjection.length !== 0 ? (
+                      todaysProjection.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td>{index + 1}</td>
                           <td>{obj.empName}</td>
                           <td>{obj.noOfCompany}</td>
                           <td>{obj.noOfServiceOffered}</td>
-                          <td>{obj.totalOfferedPrice}</td>
-                          <td>{obj.totalCollectionExpected}</td>
+                          <td>{obj.totalOfferedPrice.toLocaleString("en-IN", numberFormatOptions)}</td>
+                          <td>{obj.totalCollectionExpected.toLocaleString("en-IN", numberFormatOptions)}</td>
                         </tr>
                       ))
                     ) : (
@@ -1251,19 +1359,16 @@ function EmployeesProjectionSummary() {
                     )}
                   </tbody>
                 )}
-
-
-                {/* <tfoot className="admin-dash-tbl-tfoot"    >
+                <tfoot className="admin-dash-tbl-tfoot"    >
                   <tr style={{ fontWeight: 500 }}>
-                    <td colSpan="2">
+                    <td colSpan="1">
                       Total
                     </td>
                     <td>
                       {
-                        followDataToday.filter((partObj) => partObj.ename)
-                          .length
+                        todaysProjection.filter((partObj) => partObj.empName).length
                       }
-                      <FcDatabase
+                      {/* <FcDatabase
                         onClick={() => {
                           functionCompleteProjectionTable();
                         }}
@@ -1272,43 +1377,49 @@ function EmployeesProjectionSummary() {
                           marginRight: "-71px",
                           marginLeft: "55px",
                         }}
-                      />
+                      /> */}
                     </td>
                     <td>
-                      {followDataToday.reduce(
-                        (totalServices, partObj) => {
-                          totalServices += partObj.offeredServices.length;
-                          return totalServices;
+                      {todaysProjection.reduce(
+                        (noOfCompany, partObj) => {
+                          noOfCompany += partObj.noOfCompany;
+                          return noOfCompany;
                         },
                         0
                       )}
                     </td>
                     <td>
-                      {followDataToday
-                        .reduce((totalOfferedPrize, partObj) => {
-                          totalOfferedPrize += partObj.offeredPrize;
-                          return totalOfferedPrize;
-                        }, 0)
-                        .toLocaleString("en-IN", numberFormatOptions)}
+                      {todaysProjection
+                        .reduce((offeredServices, partObj) => {
+                          offeredServices += partObj.noOfServiceOffered;
+                          return offeredServices;
+                        }, 0
+                        )}
                     </td>
                     <td>
-                      {followDataToday
-                        .reduce((totalPaymentSum, partObj) => {
-                          totalPaymentSum += partObj.totalPayment;
-                          return totalPaymentSum;
-                        }, 0)
-                        .toLocaleString("en-IN", numberFormatOptions)}
+                      {todaysProjection
+                        .reduce((offeredPrice, partObj) => {
+                          offeredPrice += partObj.totalOfferedPrice;
+                          return offeredPrice;
+                        }, 0).toLocaleString("en-IN", numberFormatOptions)}
+                    </td>
+                    <td>
+                      {todaysProjection
+                        .reduce((expectedPrice, partObj) => {
+                          expectedPrice += partObj.totalCollectionExpected;
+                          return expectedPrice;
+                        }, 0).toLocaleString("en-IN", numberFormatOptions)}
                     </td>
                   </tr>
-                </tfoot> */}
+                </tfoot>
 
               </table>
             </div>
           </div>
         </div>
       </div>
-      {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
+      {/* -------------------------------------projection-dashboard--------------------------------------------- */}
       <Dialog
         open={openProjectionTable}
         onClose={closeProjectionTable}
@@ -1377,8 +1488,8 @@ function EmployeesProjectionSummary() {
                 </tr>
               </thead>
               <tbody>
-                {/* Map through uniqueEnames array to render rows */}
 
+                {/* Map through uniqueEnames array to render rows */}
                 {projectedDataToday && projectedDataToday.length > 0
                   ? //   projectedDataDateRange.map((obj, Index) => (
                   //     <tr key={`sub-row-${Index}`}>
@@ -1587,8 +1698,8 @@ function EmployeesProjectionSummary() {
                 </tr>
               </thead>
               <tbody>
-                {/* Map through uniqueEnames array to render rows */}
 
+                {/* Map through uniqueEnames array to render rows */}
                 {followDataToday && followDataToday.length > 0
                   ? followDataToday.map((obj, Index) => (
                     <tr key={`sub-row-${Index}`}>
@@ -1670,7 +1781,6 @@ function EmployeesProjectionSummary() {
       </Dialog>
 
       {/* ------------------------------------------------------projection history dialog------------------------------------------------------- */}
-
       <Dialog
         open={openProjectionHistoryTable}
         onClose={closeProjectionHistoryTable}
