@@ -27,6 +27,9 @@ import EmployeesProjectionSummary from "./EmployeesProjectionSummary.jsx";
 import Nodata from "../../components/Nodata.jsx";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { RiDatabaseLine } from "react-icons/ri";
+import { GrDocumentPerformance } from "react-icons/gr";
+import AdminEmployeePerformanceReport from "./AdminEmployeePerformanceReport.jsx";
+
 
 
 
@@ -127,6 +130,15 @@ function Dashboard() {
                                     }
                                     {...a11yProps(3)}
                                 />
+                                <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <GrDocumentPerformance style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Performacne Report</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(3)}
+                                />
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0} className="mat-tab-inner">
@@ -140,6 +152,9 @@ function Dashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
                             <EmployeesProjectionSummary/>
+                        </CustomTabPanel>
+                        <CustomTabPanel value={value} index={4} className="mat-tab-inner">
+                            <AdminEmployeePerformanceReport />
                         </CustomTabPanel>
                     </div>
                 </div>

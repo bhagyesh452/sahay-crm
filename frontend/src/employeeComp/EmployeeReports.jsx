@@ -91,6 +91,7 @@ import EmployeeCallingReport from "./EmployeeDashboardComponents/EmployeeCalling
 import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwardedReport.jsx";
 import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
 import TodaysCollection from "./TodaysCollection.jsx";
+import { IconTrash } from "@tabler/icons-react";
 
 
 
@@ -2445,7 +2446,24 @@ function EmployeeReports() {
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
-  } 
+  }
+
+  const [todaysCollection, setTodaysCollection] = useState([]);
+  // Emplpoyee Today's Collection:
+  // fetch today's collection
+  const fetchTodaysCollection = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/showEmployeeTodaysCollection/${userId}`);
+      console.log("Today's collection is :", response.data.data);
+      setTodaysCollection(response.data.data);
+    } catch (error) {
+      console.log("Error to fetch today's collection");
+    }
+  };
+
+  useEffect(() => {
+    fetchTodaysCollection();
+  }, []);
 
   return (
     <div className="admin-dashboard">
@@ -2571,6 +2589,7 @@ function EmployeeReports() {
             </div>
           </div>
         </div>
+
         {/* Today's Report in Numbers */}
         <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Today's Report</h3>
@@ -2677,6 +2696,7 @@ function EmployeeReports() {
             </div>
           </div>
         </div>
+
         {/* Current Month Reports Report in Numbers */}
         <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Current Month Report</h3>
@@ -3194,8 +3214,6 @@ function EmployeeReports() {
                         </div>
                       </div>
 
-
-
                       {/* recieved bdm report total */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-2">
@@ -3303,6 +3321,7 @@ function EmployeeReports() {
             </div>
           </div>
         </div>
+
         {/* -----projection dashboard new---*/}
         <div className="container-xl mt-4">
           <div className="row">
@@ -3501,6 +3520,7 @@ function EmployeeReports() {
                 </div>
               </div>
             </div>
+
             <div className="col-12 mt-2" id="projectiondashboardemployee">
               <div className="card">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
@@ -3684,7 +3704,6 @@ function EmployeeReports() {
         </div>
 
         {/* -----Booking dashboard---*/}
-
         <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
           <div className="card">
             <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
@@ -3770,6 +3789,7 @@ function EmployeeReports() {
                 position="auto"
               />
             </div>} */}
+
             <div className="card-body">
               <div id="table-default" className="row tbl-scroll"  >
                 <table className="table-vcenter table-nowrap admin-dash-tbl">
@@ -3936,7 +3956,6 @@ function EmployeeReports() {
         </div>
 
         {/* --- Todays Follow Up date Data---*/}
-
         <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
           <div className="card">
             <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
@@ -4178,7 +4197,273 @@ function EmployeeReports() {
             </div>
           </div>
         </div>
+
+        {/* --- Today's General Collection ---*/}
+        <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
+          <div className="card">
+            <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+              <div className="dashboard-title pl-1"  >
+                <h2 className="m-0">
+                  Today's General Collections
+                </h2>
+              </div>
+              <div className="d-flex align-items-center pr-1">
+                <div class="input-icon mr-1">
+                  <span class="input-icon-addon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                      <path d="M21 21l-6 -6"></path>
+                    </svg>
+                  </span>
+
+                  <input
+                    className="form-control"
+                    value={newSearchTermFollow}
+                    onChange={(e) => filterSearchBookingFollow(e.target.value)}
+                    placeholder="Search here....."
+                    type="text"
+                    name="bdeName-search"
+                    id="bdeName-search"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="card-body">
+              <div id="table-default" className="row tbl-scroll">
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th>Sr. No</th>
+                      {/* <th>BOOKING DATE & TIME</th> */}
+                      <th>Date</th>
+                      <th>No. Of Company</th>
+                      <th>Services Offered</th>
+                      <th>Offered Price</th>
+                      <th>Expected Collection</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  {todaysCollection && todaysCollection.length > 0 ? (
+                    <>
+                      <tbody>
+                        {todaysCollection.map((mainObj, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            {/* <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td> */}
+                            <td>{mainObj.date}</td>
+                            <td>{mainObj.noOfCompany}</td>
+                            <td>{mainObj.noOfServiceOffered}</td>
+                            <td>{mainObj.totalOfferedPrice}</td>
+                            <td>{mainObj.totalCollectionExpected}</td>
+                            <td>
+                              <div className="d-flex justify-content-center align-items-center">
+                              {<div className="icons-btn">
+                                  <IconButton
+                                    // onClick={async () => {
+                                    //   const dataToDelete = data.filter(obj => obj._id === item._id);
+                                    //   setDataToDelete(dataToDelete);
+                                    //   const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                                    //   setCompanyDdata(filteredCompanyData);
+                                    //   handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
+                                    // }}
+                                  >
+                                    <IconTrash
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "red",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+
+                                </div>}
+                                </div>
+                              </td>
+                            <td>
+                              {followDataToday &&
+                                followDataToday.some(
+                                  (item) =>
+                                    item.companyName ===
+                                    mainObj["Company Name"]
+                                ) ? (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        mainObj["Company Name"]
+                                      );
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                    color="#fbb900"
+                                  />
+                                </IconButton>
+                              ) : (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        mainObj["Company Name"]
+                                      );
+                                      setIsEditProjection(true);
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                  />
+                                </IconButton>
+                              )}
+                            </td>
+                            {/* <td>{mainObj.services[0]}</td> */}
+                            {/* <td>
+                                ₹
+                                {(mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.originalTotalPayment / 2
+                                  : mainObj.originalTotalPayment
+                                ).toLocaleString()}
+                              </td> */}
+                            {/* <td>
+                                ₹
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                    : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                  : mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                    : mainObj.originalTotalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                ₹
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment -
+                                    mainObj.firstPayment
+                                    : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.bdmType === "closeby"
+                                    ? `Closed by ${mainObj.bdmName}`
+                                    : `Supported by ${mainObj.bdmName}`
+                                  : `Self Closed`}{" "}
+                              </td>
+                              <td>{mainObj.paymentRemarks}</td> */}
+                          </tr>
+                        ))}
+                      </tbody>
+                      {/* <tfoot>
+                        <tr>
+                          <th colSpan={3}>
+                            <strong>Total</strong>
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.originalTotalPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                        </tr>
+                      </tfoot> */}
+                    </>
+                  ) : filteredBooking &&
+                    filteredBooking.length === 0 &&
+                    loading ? (
+                    <tr>
+                      <td
+                        colSpan={12}
+                        style={{
+                          position: "absolute",
+                          left: "50%",
+                          textAlign: "center",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        <ScaleLoader
+                          color="lightgrey"
+                          loading
+                          cssOverride={override}
+                          size={10}
+                          height="25"
+                          width="2"
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <td colSpan={12} style={{ textAlign: "center" }}>
+                        <Nodata />
+                      </td>
+                    </tr>
+                  )}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer

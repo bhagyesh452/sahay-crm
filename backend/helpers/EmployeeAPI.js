@@ -877,7 +877,6 @@ router.get("/employeeImg/:employeeName/:filename", (req, res) => {
 
 
 // Edit Employee Details by HR-Portal
-
 router.post(
   "/post-employee-detail-byhr/:userId",
   async (req, res) => {
@@ -907,7 +906,6 @@ router.post(
     }
   }
 );
-
 
 // Adds record for today's collection:
 router.post('/addTodaysProjection', async (req, res) => {
@@ -949,6 +947,25 @@ router.get('/showTodaysCollection', async (req, res) => {
 
     const todaysCollections = await TodaysCollectionModel.find({
       date: formattedToday
+    });
+
+    res.status(200).json({ result: true, message: "Today's collection successfully fetched", data: todaysCollections });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error displaying today's collection", error: error });
+  }
+});
+
+// Displaying records based on employee id:
+router.get('/showEmployeeTodaysCollection/:empId', async (req, res) => {
+  const {empId} = req.params;
+  try {
+    // const today = new Date();
+    // const day = today.getDate();
+    // const month = today.getMonth() + 1; // Months are zero-based
+    // const year = today.getFullYear();
+
+    const todaysCollections = await TodaysCollectionModel.find({
+      empId: empId
     });
 
     res.status(200).json({ result: true, message: "Today's collection successfully fetched", data: todaysCollections });
