@@ -27,7 +27,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from 'axios';
 import ClipLoader from "react-spinners/ClipLoader";
 import { axisClasses } from '@mui/x-charts';
-
+import Swal from "sweetalert2";
+import { IconTrash } from "@tabler/icons-react";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 function EmployeesProjectionSummary() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -575,7 +577,7 @@ function EmployeesProjectionSummary() {
     }
   };
 
-  // Today's Collection :
+  // Today's Projection :
   const [todaysProjection, setTodaysProjection] = useState([]);
   const [sortedTodaysProjection, setSortedTodaysProjection] = useState([]);
   const [isDateSelected, setIsDateSelected] = useState("false");
@@ -586,35 +588,27 @@ function EmployeesProjectionSummary() {
     expectedCollection: "none"
   });
 
-  // fetch today's collection
-  const fetchTodaysCollection = async () => {
+  // fetch today's projection
+  const fetchTodaysProjection = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/showTodaysCollection`);
-      console.log("Today's collection is :", response.data.data);
+      const response = await axios.get(`${secretKey}/employee/showTodaysProjection`);
+      // console.log("Today's projection is :", response.data.data);
       setTodaysProjection(response.data.data);
     } catch (error) {
-      console.log("Error to fetch today's collection");
+      console.log("Error to fetch today's projection :", error);
     }
   };
-
-  useEffect(() => {
-    fetchTodaysCollection();
-  }, []);
-
-  useEffect(() => {
-
-  }, []);
 
   // Functions for Filtering and Sorting :
   const handleSortCompanies = (type) => {
     let sortedData = todaysProjection;
-    if(type === "ascending") {
-      const ascendingSort = sortedData.sort((a,b) => a.noOfCompany - b.noOfCompany);
+    if (type === "ascending") {
+      const ascendingSort = sortedData.sort((a, b) => a.noOfCompany - b.noOfCompany);
       // console.log("Ascending sort in company :", ascendingSort);
-    } else if(type === "descending") {
-      const descendingSort = sortedData.sort((a,b) => b.noOfCompany - a.noOfCompany);
+    } else if (type === "descending") {
+      const descendingSort = sortedData.sort((a, b) => b.noOfCompany - a.noOfCompany);
       // console.log("Descending sort in company :", descendingSort);
-    } else if(type === "none") {
+    } else if (type === "none") {
       const data = sortedData;
       // console.log("Without sort in company :", data);
     }
@@ -623,13 +617,13 @@ function EmployeesProjectionSummary() {
 
   const handleSortServices = (type) => {
     let sortedData = todaysProjection;
-    if(type === "ascending") {
-      const ascendingSort = sortedData.sort((a,b) => a.noOfServiceOffered - b.noOfServiceOffered);
+    if (type === "ascending") {
+      const ascendingSort = sortedData.sort((a, b) => a.noOfServiceOffered - b.noOfServiceOffered);
       // console.log("Ascending sort in services :", ascendingSort);
-    } else if(type === "descending") {
-      const descendingSort = sortedData.sort((a,b) => b.noOfServiceOffered - a.noOfServiceOffered);
+    } else if (type === "descending") {
+      const descendingSort = sortedData.sort((a, b) => b.noOfServiceOffered - a.noOfServiceOffered);
       // console.log("Descending sort in service :", descendingSort);
-    } else if(type === "none") {
+    } else if (type === "none") {
       const data = sortedData;
       // console.log("Without sort in service :", data);
     }
@@ -638,13 +632,13 @@ function EmployeesProjectionSummary() {
 
   const handleSortOfferedPrice = (type) => {
     let sortedData = todaysProjection;
-    if(type === "ascending") {
-      const ascendingSort = sortedData.sort((a,b) => a.totalOfferedPrice - b.totalOfferedPrice);
+    if (type === "ascending") {
+      const ascendingSort = sortedData.sort((a, b) => a.totalOfferedPrice - b.totalOfferedPrice);
       // console.log("Ascending sort in offered price :", ascendingSort);
-    } else if(type === "descending") {
-      const descendingSort = sortedData.sort((a,b) => b.totalOfferedPrice - a.totalOfferedPrice);
+    } else if (type === "descending") {
+      const descendingSort = sortedData.sort((a, b) => b.totalOfferedPrice - a.totalOfferedPrice);
       // console.log("Descending sort in offered price :", descendingSort);
-    } else if(type === "none") {
+    } else if (type === "none") {
       const data = sortedData;
       // console.log("Without sort in offered price :", data);
     }
@@ -653,13 +647,13 @@ function EmployeesProjectionSummary() {
 
   const handleSortExpectedCollection = (type) => {
     let sortedData = todaysProjection;
-    if(type === "ascending") {
-      const ascendingSort = sortedData.sort((a,b) => a.totalCollectionExpected - b.totalCollectionExpected);
+    if (type === "ascending") {
+      const ascendingSort = sortedData.sort((a, b) => a.totalCollectionExpected - b.totalCollectionExpected);
       // console.log("Ascending sort in expected collection :", ascendingSort);
-    } else if(type === "descending") {
-      const descendingSort = sortedData.sort((a,b) => b.totalCollectionExpected - a.totalCollectionExpected);
+    } else if (type === "descending") {
+      const descendingSort = sortedData.sort((a, b) => b.totalCollectionExpected - a.totalCollectionExpected);
       // console.log("Descending sort in expected collection :", descendingSort);
-    } else if(type === "none") {
+    } else if (type === "none") {
       const data = sortedData;
       // console.log("Without sort in expected collection :", data);
     }
@@ -670,17 +664,60 @@ function EmployeesProjectionSummary() {
 
   };
 
-  
+
   const handleNameFilter = (selectedEmpName) => {
     console.log("Selected name is :", selectedEmpName);
     const filteredTodayProjectionWithEmpName = todaysProjection.filter((item) => item.empName.to === selectedEmpName.includes().toString());
     console.log("Today's projection filter by using employee name :", filteredTodayProjectionWithEmpName);
-    if(filteredTodayProjectionWithEmpName.length > 0) {
+    if (filteredTodayProjectionWithEmpName.length > 0) {
       setSortedTodaysProjection(filteredTodayProjectionWithEmpName);
     } else {
       setSortedTodaysProjection(todaysProjection)
     }
-  }
+  };
+
+// Deleting today's projection :
+const handleDeleteTodaysProjection = async (id) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you really want to remove this item?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.delete(`${secretKey}/employee/deleteTodaysProjection/${id}`)
+        console.log("Data successfully deleted :", response.data.data);
+        Swal.fire("Success!", "Data Successfully Deleted!", "success");
+        fetchTodaysProjection();
+      } catch (error) {
+        console.error("Error deleting today's projection :", error);
+        Swal.fire("Error!", "Error deleting today's projection!", "error");
+      }
+    }
+  })
+};
+
+// Fetch data on component mount
+useEffect(() => {
+  fetchTodaysProjection();
+}, []);
+
+// Sort the data when todaysProjection changes
+useEffect(() => {
+  const sortedData = [...todaysProjection].sort((a, b) => {
+    const [dayA, monthA, yearA] = a.date.split('/');
+    const [dayB, monthB, yearB] = b.date.split('/');
+    const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+    const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+    return dateB - dateA;
+  });
+  setSortedTodaysProjection(sortedData);
+}, [todaysProjection]);
 
 
   return (
@@ -1215,7 +1252,7 @@ function EmployeesProjectionSummary() {
                     </th>
                     <th>Employee Name</th>
                     <th>
-                      No. Of Company
+                      No. Of Companies
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1318,7 +1355,7 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
-                    {/* <th>Est. Payment Date</th> */}
+                    <th>Action</th>
                   </tr>
                 </thead>
                 {loading ? (
@@ -1348,6 +1385,24 @@ function EmployeesProjectionSummary() {
                           <td>{obj.noOfServiceOffered}</td>
                           <td>{obj.totalOfferedPrice.toLocaleString("en-IN", numberFormatOptions)}</td>
                           <td>{obj.totalCollectionExpected.toLocaleString("en-IN", numberFormatOptions)}</td>
+                          <td>
+                            <div className="d-flex justify-content-center align-items-center">
+                              <div className="icons-btn">
+                                <IconButton
+                                  onClick={() => handleDeleteTodaysProjection(obj._id)}
+                                >
+                                  <IconTrash
+                                    style={{
+                                      cursor: "pointer",
+                                      color: "red",
+                                      width: "14px",
+                                      height: "14px",
+                                    }}
+                                  />
+                                </IconButton>
+                              </div>
+                            </div>
+                          </td>
                         </tr>
                       ))
                     ) : (
@@ -1410,6 +1465,7 @@ function EmployeesProjectionSummary() {
                           return expectedPrice;
                         }, 0).toLocaleString("en-IN", numberFormatOptions)}
                     </td>
+                    <td>-</td>
                   </tr>
                 </tfoot>
 
