@@ -521,12 +521,8 @@ function Employees({ onEyeButtonClick }) {
       } else {
         const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
         // Adds data in performance report:
-        const response2 = await axios.post(`${secretKey}/employee/addPerformanceReport/`, {
-          email: dataToSend.email,
-          targetDetails: targetObjects
-        });
         // console.log(response.data, "datatosend");
-        console.log("Performance report info :", response2.data.data);
+        
         Swal.fire({
           title: "Data Added!",
           text: "You have successfully added the data!",
@@ -1318,6 +1314,7 @@ function Employees({ onEyeButtonClick }) {
                           </option>
                           <option value="2024">2024</option>
                           <option value="2023">2023</option>
+                          <option value="2022">2022</option>
                         </select>
                       </div>
                     </div>
