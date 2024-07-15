@@ -573,7 +573,7 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
     processBooking(mainBooking, ename);
     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
   });
-
+  console.log(achievedAmount,expanse,remainingAmount,)
   console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
 
   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
