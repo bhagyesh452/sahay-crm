@@ -1289,7 +1289,7 @@ function EmployeesThisMonthBooking() {
                     }
                 }
                 if (moreObject.remainingPayments.length !== 0) {
-                    mainBooking.remainingPayments.forEach(item => {
+                    moreObject.remainingPayments.forEach(item => {
                         if (new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                             mainBooking.services.forEach(serv => {
                                 if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
@@ -1329,25 +1329,7 @@ function EmployeesThisMonthBooking() {
 
         });
         const currentDate = new Date();
-        // if (
-        //     startDate.getMonth() === currentDate.getMonth() &&
-        //     startDate.getFullYear() === currentDate.getFullYear() &&
-        //     endDate.getMonth() === currentDate.getMonth() &&
-        //     endDate.getFullYear() === currentDate.getFullYear()
-        // ) {
-        //     const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
-        //     const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
-        //     totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
-        //     console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), expanse, consoleAchievedAmount)
-        //     return consoleAchievedAmount;
-        // } else {
-        //     const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
-        //     totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
-        //     console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount))
-        //     return achievedAmount + Math.floor(remainingAmount) - expanse;
-        // }
-
-
+        
         const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
