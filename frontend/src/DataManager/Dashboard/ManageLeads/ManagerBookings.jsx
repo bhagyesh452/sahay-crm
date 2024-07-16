@@ -545,6 +545,7 @@ function ManagerBookings() {
     }
   }
 
+  //console.log("currentleadform" , currentLeadform.moreBookings[0].services[0].expanseDate)
 
   return (
     <div>
@@ -1214,7 +1215,7 @@ function ManagerBookings() {
                                                         ...expanseObject,
                                                         expanseDate: e.target.value
                                                       })
-                                                    }} type="date" className="form-control" id="expanse-input"/>
+                                                    }} type="date" className="form-control" id="expanse-input" />
                                                   </div>
                                                 </div>
 
@@ -1271,7 +1272,7 @@ function ManagerBookings() {
                                     </div>
                                   </div>
                                 </div>
-                                {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
+                                {(obj.expanse !== 0 && obj.expanse) && <div className="row m-0 bdr-btm-eee">
                                   <div className="col-lg-6 col-sm-2 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
@@ -1295,7 +1296,11 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                          {(() => {
+                                            const dateToFormat = obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate;
+                                            console.log('Formatting date:', dateToFormat);
+                                            return formatDatePro(dateToFormat);
+                                          })()}
                                         </div>
                                       </div>
                                     </div>
@@ -1650,11 +1655,11 @@ function ManagerBookings() {
                                                           >
                                                             <AddCircle />
                                                           </div>}
-                                                          
+
                                                           <IconButton onClick={() => functionDeleteRemainingPayment(0, obj.serviceName)}>
-                                                              <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
-                                                            </IconButton>
-                                                          
+                                                            <MdDelete style={{ height: '14px', width: '14px', color: '#be1e1e' }} />
+                                                          </IconButton>
+
 
                                                         </div>
 
@@ -2542,7 +2547,7 @@ function ManagerBookings() {
                                         </div>
                                       </div>
                                     </div>
-                                   {obj.expanse && obj.expanse !== 0 && <div className="row m-0 bdr-btm-eee">
+                                    {obj.expanse && obj.expanse !== 0 && <div className="row m-0 bdr-btm-eee">
                                       <div className="col-lg-6 col-sm-2 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
@@ -2566,7 +2571,11 @@ function ManagerBookings() {
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              {formatDatePro(obj.expanseDate ? obj.expansesDate : currentLeadform.bookingDate)}
+                                              {(() => {
+                                                const dateToFormat = obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate;
+                                                console.log('Formatting date:', dateToFormat);
+                                                return formatDatePro(dateToFormat);
+                                              })()}
                                             </div>
                                           </div>
                                         </div>
@@ -3430,7 +3439,7 @@ function ManagerBookings() {
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
-            employeeName = {currentLeadform.bdeName}
+            employeeName={currentLeadform.bdeName}
             employeeEmail={currentLeadform.bdeEmail}
           />
         </>
