@@ -41,7 +41,8 @@ router.post("/requestCompanyData", async (req, res) => {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
-          assigned: "Pending"
+          assigned: "Pending",
+          requestDate:new Date()
         };
         //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
@@ -360,12 +361,23 @@ router.get("/requestgData", async (req, res) => {
   }
 });
 
-router.get('/requestgdata/:ename', async (req, res) => {
+function parseDateString2(dateString) {
+  return new Date(dateString); // This will correctly parse the date format
+}
+
+router.get('/requestgData/:ename', async (req, res) => {
   const { ename } = req.params;
 
   try {
-    const allData = await RequestGModel.find({ ename: ename });
-    res.status(200).json(allData);
+    const sevenDaysAgo = getDate7DaysAgo();
+    const allData = await RequestGModel.find({ ename });
+    
+    const filteredCompany = allData.filter(item => {
+      const itemDate = parseDateString2(item.cDate);
+      return itemDate >= sevenDaysAgo;
+    });
+
+    res.status(200).json(filteredCompany); // sReturn the filtered data
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -586,17 +598,50 @@ router.get("/deleterequestbybde", async (req, res) => {
   }
 });
 
+function parseDateString(dateString) {
+  const [day, month, year] = dateString.split('/').map(Number);
+  return new Date(year, month - 1, day);
+}
 
+function getDate7DaysAgo() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Ensure the time is set to the start of the day
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  return sevenDaysAgo;
+}
 router.get("/deleterequestbybde/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
-    const company = await RequestDeleteByBDE.find({ename : ename});
-    res.status(200).json(company);
+    const sevenDaysAgo = getDate7DaysAgo();
+    const company = await RequestDeleteByBDE.find({ ename });
+
+    // Filter company based on the date field within the last 7 days
+    const filteredCompany = company.filter(item => {
+      const itemDate = parseDateString(item.date);
+      return itemDate >= sevenDaysAgo;
+    });
+
+    console.log("company", filteredCompany);
+    res.status(200).json(filteredCompany);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+// router.get("/deleterequestbybde/:ename", async (req, res) => {
+//   const { ename } = req.params;
+//   try {
+//     const company = await RequestDeleteByBDE.find({ename : ename});
+//     //console.log("company" , company)
+//     res.status(200).json(company);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 router.get("/editRequestByBde", async (req, res) => {
   try {
@@ -843,22 +888,28 @@ router.get("/requestCompanyData", async (req, res) => {
   }
 });
 
-router.get("/requestCompanyData/:ename", async (req, res) => {
-  const { ename } = req.params;
-  try {
-    const allData = await CompanyRequestModel.find({ ename: ename });
-    res.status(200).json(allData);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+// router.get("/requestCompanyData/:ename", async (req, res) => {
+//   const { ename } = req.params;
+//   try {
+//     const allData = await CompanyRequestModel.find({ ename: ename });
+//     res.status(200).json(allData);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 router.get("/requestCompanyData/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
+    const sevenDaysAgo = getDate7DaysAgo();
     const allData = await CompanyRequestModel.find({ ename: ename });
-    res.status(200).json(allData)
+    const filteredCompany = allData.filter(item=>{
+      const itemDate = new Date(item.requestDate);
+      return itemDate >= sevenDaysAgo;
+    })
+    //console.log("fileterd" , filteredCompany)
+    res.status(200).json(filteredCompany)
 
   } catch (error) {
     console.error("Error fetching data:", error.message);
