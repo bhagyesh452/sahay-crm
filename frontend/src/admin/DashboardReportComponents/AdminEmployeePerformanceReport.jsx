@@ -5,6 +5,7 @@ import Nodata from '../../components/Nodata';
 function AdminEmployeePerformanceReport() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [empPerformanceData, setEmpPerformanceData] = useState([]);
+  const [expandedEmployee, setExpandedEmployee] = useState(null);
 
   const fetchEmployeePerformance = async () => {
     try {
@@ -20,7 +21,6 @@ function AdminEmployeePerformanceReport() {
     fetchEmployeePerformance();
   }, []);
 
-  const [expandedEmployee, setExpandedEmployee] = useState(null);
 
   const toggleEmployeeDetails = (employeeId) => {
     setExpandedEmployee(expandedEmployee === employeeId ? null : employeeId);
@@ -160,6 +160,7 @@ function AdminEmployeePerformanceReport() {
           <table className="table-vcenter table-nowrap admin-dash-tbl"  >
             <thead className="admin-dash-tbl-thead">
               <tr>
+                <th>Sr. No</th>
                 <th>Name</th>
                 <th>Month</th>
                 <th>
@@ -257,7 +258,7 @@ function AdminEmployeePerformanceReport() {
             </thead>
             <tbody>
             {empPerformanceData.length > 0 ? (
-                empPerformanceData.map((employee) => {
+                empPerformanceData.map((employee, index) => {
                   const filteredTargetDetails = employee.targetDetails.filter((perData) => {
                     const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
                     const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
@@ -276,6 +277,7 @@ function AdminEmployeePerformanceReport() {
                   return (
                     <React.Fragment key={employee._id}>
                       <tr onClick={() => toggleEmployeeDetails(employee._id)} style={{ cursor: 'pointer' }}>
+                        <td>{index + 1}</td>
                         <td>{employee.ename}</td>
 
                         <td>{filteredTargetDetails.length}</td>
@@ -292,8 +294,8 @@ function AdminEmployeePerformanceReport() {
                           const totalTarget = filteredTargetDetails.reduce((total, obj) => total + parseFloat(obj.amount || 0), 0);
                           const totalAchieved = filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0);
                           const ratio = totalTarget > 0 ? (totalAchieved / totalTarget) * 100 : 0;
-                          return `${ratio.toFixed(2)}%`;
-                        })()}</td>
+                          return Math.round(ratio);
+                        })()}%</td>
 
                         <td>{(() => {
                           const totalTarget = filteredTargetDetails.reduce((total, obj) => total + parseFloat(obj.amount || 0), 0);
@@ -312,7 +314,7 @@ function AdminEmployeePerformanceReport() {
                       </tr>
                       {expandedEmployee === employee._id && (
                           <tr id='expandedId'>
-                            <td colSpan="6" id='parent-TD-Inner'>
+                            <td colSpan="7" id='parent-TD-Inner'>
                               <div id='table-default' className="table table-default dash w-100 m-0 arrowsudo">
                                 <table className='table-vcenter table-nowrap admin-dash-tbl w-100 innerTable'  >
                                   <thead>
@@ -330,9 +332,9 @@ function AdminEmployeePerformanceReport() {
                                       <tr className='particular' key={`${employee._id}-${index}`}>
                                         <td>{index + 1}</td>
                                         <td>{perData.month}-{perData.year}</td>
-                                        <td>₹ {perData.amount || 0}</td>
-                                        <td>₹ {perData.achievedAmount || 0}</td>
-                                        <td>{perData.ratio.toFixed(2) || 0}%</td>
+                                        <td>₹ {new Intl.NumberFormat('en-IN').format(perData.amount || 0)}</td>
+                                        <td>₹ {new Intl.NumberFormat('en-IN').format(perData.achievedAmount || 0)}</td>
+                                        <td>{Math.round(perData.ratio) || 0}%</td>
                                         <td>{perData.result || '-'}</td>
                                       </tr>
                                     ))}

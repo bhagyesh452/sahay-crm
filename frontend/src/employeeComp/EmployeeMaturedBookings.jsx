@@ -39,6 +39,7 @@ import RemainingAmnt from "../static/my-images/money.png";
 import { FaList } from "react-icons/fa6";
 import { FaTableCellsLarge } from "react-icons/fa6";
 import TodaysCollection from './TodaysCollection.jsx';
+import { jwtDecode } from "jwt-decode";
 
 
 function EmployeeMaturedBookings() {
@@ -241,7 +242,7 @@ function EmployeeMaturedBookings() {
   };
 
 
- 
+
 
   const handleRequestDelete = async (Id, companyID, companyName, index) => {
     const confirmDelete = await Swal.fire({
@@ -254,7 +255,7 @@ function EmployeeMaturedBookings() {
       confirmButtonText: "Yes, proceed!",
       cancelButtonText: "No, cancel",
     });
-  
+
     if (confirmDelete.isConfirmed) {
       try {
         const sendingData = {
@@ -267,9 +268,9 @@ function EmployeeMaturedBookings() {
           bookingIndex: index,
           assigned: "Pending" // Replace 'Your Ename Value' with the actual value
         };
-  
+
         const response = await axios.post(`${secretKey}/requests/deleterequestbybde`, sendingData);
-  
+
         if (response.status === 200) {
           // If the response is ok, show success messages
           Swal.fire({ title: response.data.message || "Delete request created successfully", icon: "success" });
@@ -289,7 +290,7 @@ function EmployeeMaturedBookings() {
       console.log("No, cancel");
     }
   };
-  
+
 
   const [currentForm, setCurrentForm] = useState(null);
   const [bookingIndex, setBookingIndex] = useState(0);
@@ -485,11 +486,57 @@ function EmployeeMaturedBookings() {
     return `${year}-${month}-${day}`;
   }
 
+  // Auto logout functionality
+  useEffect(() => {
+    // Function to check token expiry and initiate logout if expired
+    const checkTokenExpiry = () => {
+      const token = localStorage.getItem("newtoken");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const currentTime = Date.now() / 1000; // Get current time in seconds
+          if (decoded.exp < currentTime) {
+            // console.log("Decode Expirary :", decoded.exp);
+            // Token expired, perform logout actions
+            // console.log("Logout called");
+            handleLogout();
+          } else {
+            // Token not expired, continue session
+            const timeToExpire = decoded.exp - currentTime;
+            console.log(`Token expires in ${timeToExpire} seconds`);
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          // console.log("Logout called");
+          handleLogout(); // Handle invalid token or decoding errors
+        }
+      }
+    };
+
+    // Initial check on component mount
+    checkTokenExpiry();
+
+    // Periodically check token expiry (e.g., every minute)
+    const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
+
+  const handleLogout = () => {
+    // Clear local storage and redirect to login page
+    localStorage.removeItem("newtoken");
+    localStorage.removeItem("userId");
+    // localStorage.removeItem("designation");
+    // localStorage.removeItem("loginTime");
+    // localStorage.removeItem("loginDate");
+    window.location.replace("/"); // Redirect to login page
+  };
+
 
   return (
     <div>
-      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey}/>}
-     <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
@@ -721,7 +768,7 @@ function EmployeeMaturedBookings() {
                     <div className="booking-deatils-body">
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
-                        <div className="my-card-head">  
+                        <div className="my-card-head">
                           <div className="d-flex align-items-center justify-content-between">
                             <div>Basic Informations</div>
                             <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>

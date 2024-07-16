@@ -17,7 +17,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IoIosClose } from "react-icons/io";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
-import {Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
@@ -72,6 +72,7 @@ import { MdOutlineDeleteSweep } from "react-icons/md";
 import { Country, State, City } from 'country-state-city';
 import TodaysCollection from "./TodaysCollection.jsx";
 import { GoPlusCircle } from "react-icons/go";
+import { jwtDecode } from "jwt-decode";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2842,23 +2843,23 @@ function EmployeePanel() {
   const [offeredPrice, setOffferedPrice] = useState("");
   const [expectedCollection, setExpectedCollection] = useState("");
   const [openTodaysColection, setOpenTodaysCollection] = useState(false);
-  
+
   const [errors, setErrors] = useState({
-      noOfCompany: "",
-      noOfServiceOffered: "",
-      offeredPrice: "",
-      expectedCollection: ""
+    noOfCompany: "",
+    noOfServiceOffered: "",
+    offeredPrice: "",
+    expectedCollection: ""
   });
 
   const closePopup = () => {
-      setOpenTodaysCollection(false);
+    setOpenTodaysCollection(false);
   };
 
   const handleClose = (event, reason) => {
-      if (reason === 'backdropClick') {
-          return;
-      }
-      closePopup();
+    if (reason === 'backdropClick') {
+      return;
+    }
+    closePopup();
   };
 
   const date = new Date();
@@ -2866,48 +2867,93 @@ function EmployeePanel() {
   const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
   const handleSubmitTodaysCollection = async () => {
-      let formErrors = {
-          noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
-          noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
-          offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
-          expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
-      };
-      setErrors(formErrors);
-      if (Object.values(formErrors).some(error => error !== "")) {
-          return;
-      }
+    let formErrors = {
+      noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
+      noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
+      offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
+      expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
+    };
+    setErrors(formErrors);
+    if (Object.values(formErrors).some(error => error !== "")) {
+      return;
+    }
 
-      const payload = {
-          empId: userId,
-          noOfCompany: noOfCompany,
-          noOfServiceOffered: noOfServiceOffered,
-          totalOfferedPrice: offeredPrice,
-          totalCollectionExpected: expectedCollection,
-          date: todayDate,
-          time: currentTime
-      };
-     
+    const payload = {
+      empId: userId,
+      noOfCompany: noOfCompany,
+      noOfServiceOffered: noOfServiceOffered,
+      totalOfferedPrice: offeredPrice,
+      totalCollectionExpected: expectedCollection,
+      date: todayDate,
+      time: currentTime
+    };
 
-      try {
-          const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
-          console.log("Data successfully added :", response);
-          Swal.fire("Success!", "Data Successfully Added!", "success");
-          setNoOfCompany("");
-          setNoOfServiceOffered("");
-          setOffferedPrice("");
-          setExpectedCollection("");
-          closePopup();
-      } catch (error) {
-          console.log("Error to send today's collection", error);
-          Swal.fire("Error!", "Error to send today's collection!", "error");
-      }
+
+    try {
+      const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
+      console.log("Data successfully added :", response);
+      Swal.fire("Success!", "Data Successfully Added!", "success");
+      setNoOfCompany("");
+      setNoOfServiceOffered("");
+      setOffferedPrice("");
+      setExpectedCollection("");
+      closePopup();
+    } catch (error) {
+      console.log("Error to send today's collection", error);
+      Swal.fire("Error!", "Error to send today's collection!", "error");
+    }
   };
 
+  // Auto logout functionality
+  useEffect(() => {
+    // Function to check token expiry and initiate logout if expired
+    const checkTokenExpiry = () => {
+      const token = localStorage.getItem("newtoken");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const currentTime = Date.now() / 1000; // Get current time in seconds
+          if (decoded.exp < currentTime) {
+            // console.log("Decode Expirary :", decoded.exp);
+            // Token expired, perform logout actions
+            // console.log("Logout called");
+            handleLogout();
+          } else {
+            // Token not expired, continue session
+            const timeToExpire = decoded.exp - currentTime;
+            console.log(`Token expires in ${timeToExpire} seconds`);
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          // console.log("Logout called");
+          handleLogout(); // Handle invalid token or decoding errors
+        }
+      }
+    };
+
+    // Initial check on component mount
+    checkTokenExpiry();
+
+    // Periodically check token expiry (e.g., every minute)
+    const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
+
+  const handleLogout = () => {
+    // Clear local storage and redirect to login page
+    localStorage.removeItem("newtoken");
+    localStorage.removeItem("userId");
+    // localStorage.removeItem("designation");
+    // localStorage.removeItem("loginTime");
+    // localStorage.removeItem("loginDate");
+    window.location.replace("/"); // Redirect to login page
+  };
 
 
   return (
     <div>
-      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey}/>}
+      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
       <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {/* Dialog box for Request Data */}
@@ -3009,10 +3055,10 @@ function EmployeePanel() {
                         <MdOutlinePostAdd className='mr-1' /> Request Data
                       </button>
                       <button type="button" className="btn mybtn"
-                       onClick={() => setOpenTodaysCollection(true)}
-                     
+                        onClick={() => setOpenTodaysCollection(true)}
+
                       >
-                        <GoPlusCircle className='mr-1'/> Today's General Projection
+                        <GoPlusCircle className='mr-1' /> Today's General Projection
                       </button>
                     </div>
                   </div>
@@ -6599,99 +6645,99 @@ function EmployeePanel() {
 
         {/* --------------Dialog for todays general projetion----------------- */}
         <Dialog
-                className='My_Mat_Dialog'
-                open={openTodaysColection}
-                onClose={handleClose}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    Today's Project Collection{" "}
-                    <IconButton onClick={closePopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="modal-dialog modal-lg" role="document">
-                        <div className="modal-content">
-                            <div className="modal-body">
-                                <div className='d-flex'>
+          className='My_Mat_Dialog'
+          open={openTodaysColection}
+          onClose={handleClose}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>
+            Today's Project Collection{" "}
+            <IconButton onClick={closePopup} style={{ float: "right" }}>
+              <CloseIcon color="primary" />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <div className="modal-dialog modal-lg" role="document">
+              <div className="modal-content">
+                <div className="modal-body">
+                  <div className='d-flex'>
 
-                                    <div className="mb-3 col-6">
-                                        <label className="form-label">No. Of Company</label>
-                                        <input
-                                            type="number"
-                                            value={noOfCompany}
-                                            className="form-control"
-                                            placeholder="No. Of Company"
-                                            required
-                                            onChange={(e) => {
-                                                setNoOfCompany(e.target.value);
-                                                setErrors({ ...errors, noOfCompany: "" });
-                                            }}
-                                        />
-                                        {errors.noOfCompany && <p className="text-danger">{errors.noOfCompany}</p>}
-                                    </div>
-                                    <div className="mb-3 col-6 mx-1">
-                                        <label className="form-label">No. Of Service Offered</label>
-                                        <input
-                                            type="number"
-                                            value={noOfServiceOffered}
-                                            className="form-control"
-                                            placeholder="No. Of Services"
-                                            required
-                                            onChange={(e) => {
-                                                setNoOfServiceOffered(e.target.value);
-                                                setErrors({ ...errors, noOfServiceOffered: "" });
-                                            }}
-                                        />
-                                        {errors.noOfServiceOffered && <p className="text-danger">{errors.noOfServiceOffered}</p>}
-                                    </div>
-                                </div>
-                                <div className='d-flex'>
-                                    <div className="mb-3 col-6">
-                                        <label className="form-label">Total Offered Price</label>
-                                        <input
-                                            type="number"
-                                            value={offeredPrice}
-                                            className="form-control"
-                                            placeholder="Offered Price"
-                                            required
-                                            onChange={(e) => {
-                                                setOffferedPrice(e.target.value);
-                                                setErrors({ ...errors, offeredPrice: "" });
-                                            }}
-                                        />
-                                        {errors.offeredPrice && <p className="text-danger">{errors.offeredPrice}</p>}
-                                    </div>
-                                    <div className="mb-3 col-6 mx-1">
-                                        <label className="form-label">Total Collection Expected</label>
-                                        <input
-                                            type="number"
-                                            value={expectedCollection}
-                                            className="form-control"
-                                            placeholder="Expected Collection"
-                                            required
-                                            onChange={(e) => {
-                                                setExpectedCollection(e.target.value);
-                                                setErrors({ ...errors, expectedCollection: "" });
-                                            }}
-                                        />
-                                        {errors.expectedCollection && <p className="text-danger">{errors.expectedCollection}</p>}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="mb-3 col-6">
+                      <label className="form-label">No. Of Company</label>
+                      <input
+                        type="number"
+                        value={noOfCompany}
+                        className="form-control"
+                        placeholder="No. Of Company"
+                        required
+                        onChange={(e) => {
+                          setNoOfCompany(e.target.value);
+                          setErrors({ ...errors, noOfCompany: "" });
+                        }}
+                      />
+                      {errors.noOfCompany && <p className="text-danger">{errors.noOfCompany}</p>}
                     </div>
-                </DialogContent>
-                <Button
-                    className="btn btn-primary bdr-radius-none"
-                    onClick={handleSubmitTodaysCollection}
-                    variant="contained"
-                >
-                    Submit
-                </Button>
-            </Dialog>
+                    <div className="mb-3 col-6 mx-1">
+                      <label className="form-label">No. Of Service Offered</label>
+                      <input
+                        type="number"
+                        value={noOfServiceOffered}
+                        className="form-control"
+                        placeholder="No. Of Services"
+                        required
+                        onChange={(e) => {
+                          setNoOfServiceOffered(e.target.value);
+                          setErrors({ ...errors, noOfServiceOffered: "" });
+                        }}
+                      />
+                      {errors.noOfServiceOffered && <p className="text-danger">{errors.noOfServiceOffered}</p>}
+                    </div>
+                  </div>
+                  <div className='d-flex'>
+                    <div className="mb-3 col-6">
+                      <label className="form-label">Total Offered Price</label>
+                      <input
+                        type="number"
+                        value={offeredPrice}
+                        className="form-control"
+                        placeholder="Offered Price"
+                        required
+                        onChange={(e) => {
+                          setOffferedPrice(e.target.value);
+                          setErrors({ ...errors, offeredPrice: "" });
+                        }}
+                      />
+                      {errors.offeredPrice && <p className="text-danger">{errors.offeredPrice}</p>}
+                    </div>
+                    <div className="mb-3 col-6 mx-1">
+                      <label className="form-label">Total Collection Expected</label>
+                      <input
+                        type="number"
+                        value={expectedCollection}
+                        className="form-control"
+                        placeholder="Expected Collection"
+                        required
+                        onChange={(e) => {
+                          setExpectedCollection(e.target.value);
+                          setErrors({ ...errors, expectedCollection: "" });
+                        }}
+                      />
+                      {errors.expectedCollection && <p className="text-danger">{errors.expectedCollection}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+          <Button
+            className="btn btn-primary bdr-radius-none"
+            onClick={handleSubmitTodaysCollection}
+            variant="contained"
+          >
+            Submit
+          </Button>
+        </Dialog>
       </div>
     </div>
   );

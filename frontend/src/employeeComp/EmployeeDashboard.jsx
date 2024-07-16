@@ -98,6 +98,7 @@ import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx
 import { maxHeight } from "@mui/system";
 import EmployeePerformanceReport from "./EmployeeDashboardComponents/EmployeePerformanceReport.jsx";
 import TodaysCollection from "./TodaysCollection.jsx";
+import { jwtDecode } from "jwt-decode";
 
 
 
@@ -368,8 +369,8 @@ function EmployeeDashboard() {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
     socket.on("connect", () => {
@@ -2110,7 +2111,7 @@ function EmployeeDashboard() {
 
     // });
 
-    
+
 
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
@@ -2508,10 +2509,56 @@ function EmployeeDashboard() {
     return `${year}-${month}-${day}`;
   }
 
+  // Auto logout functionality
+  useEffect(() => {
+    // Function to check token expiry and initiate logout if expired
+    const checkTokenExpiry = () => {
+      const token = localStorage.getItem("newtoken");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const currentTime = Date.now() / 1000; // Get current time in seconds
+          if (decoded.exp < currentTime) {
+            // console.log("Decode Expirary :", decoded.exp);
+            // Token expired, perform logout actions
+            // console.log("Logout called");
+            handleLogout();
+          } else {
+            // Token not expired, continue session
+            const timeToExpire = decoded.exp - currentTime;
+            console.log(`Token expires in ${timeToExpire} seconds`);
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          // console.log("Logout called");
+          handleLogout(); // Handle invalid token or decoding errors
+        }
+      }
+    };
+
+    // Initial check on component mount
+    checkTokenExpiry();
+
+    // Periodically check token expiry (e.g., every minute)
+    const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
+
+  const handleLogout = () => {
+    // Clear local storage and redirect to login page
+    localStorage.removeItem("newtoken");
+    localStorage.removeItem("userId");
+    // localStorage.removeItem("designation");
+    // localStorage.removeItem("loginTime");
+    // localStorage.removeItem("loginDate");
+    window.location.replace("/"); // Redirect to login page
+  };
+
   return (
     <div className="admin-dashboard">
-      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey}/>}
-     <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="page-wrapper employess-new-dashboard">
         <div className="Dash-Main mt-3">
@@ -2526,13 +2573,13 @@ function EmployeeDashboard() {
                 </div>
                 {/* Lead reports */}
                 <div className="row mt-2 mb-4">
-                 { <>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeePerformance redesignedData = {redesignedData} data={data}/>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3 Performance_Report_w d-none">
-                    <EmployeePerformanceReport redesignedData = {redesignedData} data={data}/>
-                    {/* <div className="dash-card">
+                  {<>
+                    <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                      <EmployeePerformance redesignedData={redesignedData} data={data} />
+                    </div>
+                    <div className="col-sm-4 col-md-4 col-lg-4 mt-3 Performance_Report_w d-none">
+                      <EmployeePerformanceReport redesignedData={redesignedData} data={data} />
+                      {/* <div className="dash-card">
                       <div className="dash-card-head d-flex align-items-center justify-content-between">
                         <h2 className="m-0">Performance Report</h2>
                       </div>
@@ -2619,20 +2666,20 @@ function EmployeeDashboard() {
                         </div>
                       </div>
                     </div> */}
-                  </div>
+                    </div>
                   </>}
                   {/* calling data report */}
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeTopSellingServices redesignedData = {redesignedData} ename={data.ename}/>
+                    <EmployeeTopSellingServices redesignedData={redesignedData} ename={data.ename} />
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeCallingReport />
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
-                    <EmployeeForwardedReport moreEmpData={moreEmpData}/>
+                    <EmployeeForwardedReport moreEmpData={moreEmpData} />
                   </div>
-                  {data.length !==0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
-                    <EmployeeCallLogs employeeData = {data}/>
+                  {data.length !== 0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                    <EmployeeCallLogs employeeData={data} />
                   </div>)}
                 </div>
               </div>
