@@ -249,7 +249,7 @@ app.post("/api/employeelogin", async (req, res) => {
   } else {
     // If credentials are correct
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "1h",
+      expiresIn: "3h",
     });
     res.json({ newtoken });
     socketIO.emit("Employee-login");
