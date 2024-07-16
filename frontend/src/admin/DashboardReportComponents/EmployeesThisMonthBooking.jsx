@@ -1289,7 +1289,7 @@ function EmployeesThisMonthBooking() {
                     }
                 }
                 if (moreObject.remainingPayments.length !== 0) {
-                    mainBooking.remainingPayments.forEach(item => {
+                    moreObject.remainingPayments.forEach(item => {
                         if (new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                             mainBooking.services.forEach(serv => {
                                 if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
@@ -1327,15 +1327,15 @@ function EmployeesThisMonthBooking() {
                 }
             })
 
-        })
-
-
+        });
+        const currentDate = new Date();
+        
         const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
         //console.log("BDE :" , bdeName,  achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense, add_caCommision)
         console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), expanse, consoleAchievedAmount)
-        return achievedAmount + Math.floor(remainingAmount) - expanse ;
+        return consoleAchievedAmount;
     };
 
     // const functionCalculateAchievedAmount = (bdeName) => {

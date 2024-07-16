@@ -80,6 +80,10 @@ const CompanySchema = new mongoose.Schema({
   },
   assigned:{
     type:String,
+  },
+  requestDate:{
+    type:Date,
+    default:new Date()
   }
 
 });

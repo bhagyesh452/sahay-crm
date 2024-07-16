@@ -37,7 +37,7 @@ function EmployeeGeneralDataComponent({ ename }) {
 
   const fetchRequestGDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/requests/requestgdata/${ename}`)
+      const response = await axios.get(`${secretKey}/requests/requestgData/${ename}`)
       const data = response.data.reverse()
       console.log(response.data)
       setRequestData(data)

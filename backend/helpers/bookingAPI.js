@@ -80,11 +80,26 @@ router.get("/editable-LeadData", async (req, res) => {
   }
 });
 
+function getDate7DaysAgo() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Ensure the time is set to the start of the day
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  return sevenDaysAgo;
+}
+
 router.get("/editable-LeadData/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
+    const sevenDaysAgo = getDate7DaysAgo();
     const data = await EditableDraftModel.find({ bdeName: ename }); // Fetch all data from the collection
-    res.json(data); // Send the data as JSON response
+    
+    const filteredCompany = data.filter(item => {
+      const itemDate = new Date(item.requestDate); // Parse the date
+      return itemDate >= sevenDaysAgo; // Filter based on the date
+    });
+
+    res.status(200).json(filteredCompany); // Send the filtered data as JSON response
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal Server Error" });

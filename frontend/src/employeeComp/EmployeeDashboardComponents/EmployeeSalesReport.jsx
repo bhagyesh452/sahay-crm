@@ -499,7 +499,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //   return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   // };
 
-  const functionCalculateAchievedRevenue = () => {
+  const functionCalculateAchievedRevenue = (Filterby) => {
     //console.log("yahan chla achieved full function")
     let achievedAmount = 0;
     let remainingAmount = 0;
@@ -1247,7 +1247,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   
     redesignedData.forEach((mainBooking) => {
       const bookingDate = new Date(mainBooking.bookingDate);
-      const isLastMonth = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (bookingDate.getFullYear() === today.getFullYear());
+      const isLastMonth = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (bookingDate.getFullYear() === today.getFullYear());
   
       if (isLastMonth && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
         if (mainBooking.bdeName === mainBooking.bdmName) {
@@ -1256,7 +1256,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (serv.expanse) {
               const expanseDate = new Date(serv.expanseDate || mainBooking.bookingDate);
               expanseDate.setHours(0, 0, 0, 0);
-              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
+              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
               expanse = isLastMonthExpanse ? expanse + serv.expanse : expanse;
             }
           });
@@ -1269,7 +1269,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (serv.expanse) {
               const expanseDate = new Date(serv.expanseDate || mainBooking.bookingDate);
               expanseDate.setHours(0, 0, 0, 0);
-              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
+              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
               expanse = isLastMonthExpanse ? expanse + serv.expanse / 2 : expanse;
             }
           });
@@ -1282,7 +1282,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (serv.expanse) {
               const expanseDate = new Date(serv.expanseDate || mainBooking.bookingDate);
               expanseDate.setHours(0, 0, 0, 0);
-              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
+              const isLastMonthExpanse = (new Date(expanseDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (new Date(expanseDate).getFullYear() === today.getFullYear());
               expanse = isLastMonthExpanse ? expanse + serv.expanse : expanse;
             }
           });
@@ -1293,11 +1293,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       }else if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
         const remainingExpanseCondition = mainBooking.remainingPayments.some(item => {
           const paymentDate = new Date(item.paymentDate);
-          return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) && paymentDate.getFullYear() === today.getFullYear();
+          return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
         });
   
         if (remainingExpanseCondition) {
-          const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+          const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1);
           const endDate = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
           mainBooking.services.forEach((serv) => {
             if (serv.expanseDate) {
@@ -1317,7 +1317,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   
         mainBooking.remainingPayments.forEach((remainingObj) => {
           const paymentDate = new Date(remainingObj.paymentDate);
-          const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) && paymentDate.getFullYear() === today.getFullYear();
+          const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
   
           if (isLastMonthPayment) {
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName);
@@ -1336,7 +1336,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   
       mainBooking.moreBookings.forEach((moreObject) => {
         const moreBookingDate = new Date(moreObject.bookingDate);
-        const isLastMonthMoreBooking = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (moreBookingDate.getFullYear() === today.getFullYear());
+        const isLastMonthMoreBooking = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (moreBookingDate.getFullYear() === today.getFullYear());
   
         if (isLastMonthMoreBooking && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
           if (moreObject.bdeName === moreObject.bdmName) {
@@ -1345,7 +1345,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               if (serv.expanse) {
                 const expanseDate = new Date(serv.expanseDate || moreObject.bookingDate);
                 expanseDate.setHours(0, 0, 0, 0);
-                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear());
+                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (expanseDate.getFullYear() === today.getFullYear());
                 if (isLastMonthExpanse) {
                   expanse += serv.expanse;
                 }
@@ -1360,7 +1360,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               if (serv.expanse) {
                 const expanseDate = new Date(serv.expanseDate || moreObject.bookingDate);
                 expanseDate.setHours(0, 0, 0, 0);
-                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear());
+                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (expanseDate.getFullYear() === today.getFullYear());
                 if (isLastMonthExpanse) {
                   expanse += serv.expanse / 2;
                 }
@@ -1375,7 +1375,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               if (serv.expanse) {
                 const expanseDate = new Date(serv.expanseDate || moreObject.bookingDate);
                 expanseDate.setHours(0, 0, 0, 0);
-                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && (expanseDate.getFullYear() === today.getFullYear());
+                const isLastMonthExpanse = (expanseDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (expanseDate.getFullYear() === today.getFullYear());
                 if (isLastMonthExpanse) {
                   expanse += serv.expanse;
                 }
@@ -1390,11 +1390,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         if (moreObject.remainingPayments.length !== 0 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
           const remainingExpanseCondition = moreObject.remainingPayments.some(item => {
             const paymentDate = new Date(item.paymentDate);
-            return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) && paymentDate.getFullYear() === today.getFullYear();
+            return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
           });
   
           if (remainingExpanseCondition) {
-            const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+            const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1);
             const endDate = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
             moreObject.services.forEach((serv) => {
               if (serv.expanseDate) {
@@ -1414,7 +1414,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   
           moreObject.remainingPayments.forEach((remainingObj) => {
             const paymentDate = new Date(remainingObj.paymentDate);
-            const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) && paymentDate.getFullYear() === today.getFullYear();
+            const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
   
             if (isLastMonthPayment) {
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName);
@@ -2154,7 +2154,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                   <div className="col-sm-7 p-0">
                     <div className="dsrd-body-data-num">
                       <label className="m-0 dash-Revenue-label">Revenue</label>
-                      <h2 className="m-0 dash-Revenue-amnt">₹  {showData ? parseInt(functionCalculateAchievedRevenue()).toLocaleString() : "XXXXXX"} /-</h2>
+                      <h2 className="m-0 dash-Revenue-amnt">₹  {showData ? parseInt(functionCalculateAchievedRevenue(Filterby)).toLocaleString() : "XXXXXX"} /-</h2>
                       <div className="d-flex aling-items-center mt-1">
                         {improvement > 0 ? <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
                           <GoArrowUp />
@@ -2163,9 +2163,18 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                           <GoArrowDown />
                           <div>{Math.abs(improvement)} %</div>
                         </div>}
-                        {Filterby !== "Today" ? <div className="dsrd-Revenue-lastmonthfixamnt">
+                        {/* {Filterby !== "Today" ? <div className="dsrd-Revenue-lastmonthfixamnt">
                           vs Last Month: ₹ {showData ? functionCalculateLastMonthRevenue() : "XXXXXX"}
                         </div> : <div className="dsrd-Revenue-lastmonthfixamnt">
+                          vs Yesterday's Collection: ₹ {showData ? functionCalculateYesterdayRevenue() : "XXXXXX"}
+                        </div>} */}
+                        {Filterby === "This Month" && <div className="dsrd-Revenue-lastmonthfixamnt">
+                          vs Last Month: ₹ {showData ? functionCalculateAchievedRevenue("Last Month") : "XXXXXX"}
+                        </div>}
+                        {Filterby === "Last Month" && <div className="dsrd-Revenue-lastmonthfixamnt">
+                          vs Last Month: ₹ {showData ? functionCalculateLastMonthRevenue() : "XXXXXX"}
+                        </div>}
+                        {Filterby === "Today" &&   <div className="dsrd-Revenue-lastmonthfixamnt">
                           vs Yesterday's Collection: ₹ {showData ? functionCalculateYesterdayRevenue() : "XXXXXX"}
                         </div>}
                       </div>
