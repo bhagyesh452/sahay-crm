@@ -3267,3 +3267,44 @@ border: 1px solid #ffefc6 !important;
   z-index: -1;
   transition: transform .3s ease;
 } */
+ .innerTable
+ {
+  overflow: hidden;
+  border-radius: 10px !important;
+  background: #f8f7f5;
+  border: 1px solid #ccc;
+ }
+ .innerTH
+{
+  padding: 5px 0 5px 0 !important;
+  background: #f8f7f5 ! IMPORTANT;
+  font-weight: 600 !important;
+}
+#parent-TD-Inner
+{
+  background: #ececec  !important;
+  padding: 15px 7px 10px 7px !important;
+  position: relative;
+}
+
+.arrowsudo
+{
+  position: relative;
+}
+.arrowsudo::before
+{
+  position: absolute;
+  content: "";
+  width: 18px;
+  height: 18px;
+  border: 1px solid #ededed;
+  rotate: 45deg;
+  background: #f8f7f5;
+  top: -9.5px;
+  left: 129px;
+  z-index: 0;
+  border-left: 1px solid #ededed;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: 0.5s;
+}
