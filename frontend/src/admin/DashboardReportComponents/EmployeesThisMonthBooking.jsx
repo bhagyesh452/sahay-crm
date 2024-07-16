@@ -1145,7 +1145,7 @@ function EmployeesThisMonthBooking() {
                 mainBooking.remainingPayments.map((remainingObj) => {
                     const remainingPaymentDate = new Date(remainingObj.paymentDate);
                     remainingPaymentDate.setHours(0, 0, 0, 0);
-                    if (((remainingPaymentDate >= startDate && remainingPaymentDate <= endDate) || (isSameDayMonthYear(remainingPaymentDate, startDate) && isSameDayMonthYear(remainingPaymentDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
+                    if (((remainingPaymentDate >= startDate && remainingPaymentDate <= endDate) || (isSameDayMonthYear(remainingPaymentDate, startDate) && isSameDayMonthYear(remainingPaymentDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) && (new Date(remainingObj.paymentDate).getMonth() !== new Date(mainBooking.bookingDate).getMonth() && new Date(remainingObj.paymentDate).getFullYear() !== new Date(mainBooking.bookingDate).getFullYear())) {
                         mainBooking.services.forEach(serv => {
                             if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
                                 if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
@@ -1290,14 +1290,14 @@ function EmployeesThisMonthBooking() {
                 }
                 if (moreObject.remainingPayments.length !== 0) {
                     moreObject.remainingPayments.forEach(item => {
-                        if (new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-                            mainBooking.services.forEach(serv => {
-                                if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-                                    if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                        if (new Date(item.paymentDate) >= startDate && new Date(item.paymentDate) <= endDate && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
+                            moreObject.services.forEach(serv => {
+                                if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate && (new Date(item.paymentDate).getMonth() !== new Date(moreObject.bookingDate).getMonth() && new Date(item.paymentDate).getFullYear() !== new Date(moreObject.bookingDate).getFullYear())) {
+                                    if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
                                         remainingExpense += serv.expanse / 2;
-                                    } else if (mainBooking.bdeName === mainBooking.bdmName) {
+                                    } else if (moreObject.bdeName === moreObject.bdmName) {
                                         remainingExpense += serv.expanse;
-                                    } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by" && mainBooking.bdemName === bdeName) {
+                                    } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by" && moreObject.bdemName === bdeName) {
                                         remainingExpense += serv.expanse;
                                     }
                                 }
@@ -1326,7 +1326,10 @@ function EmployeesThisMonthBooking() {
                     })
                 }
             })
+            if(bdeName === "Ankit Gohel"){
 
+                console.log(bdeName , " : " , mainBooking["Company Name"] , achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense)
+            }
         });
         const currentDate = new Date();
         
@@ -1334,7 +1337,7 @@ function EmployeesThisMonthBooking() {
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
         //console.log("BDE :" , bdeName,  achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense, add_caCommision)
-        console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), expanse, consoleAchievedAmount)
+        // console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), expanse, consoleAchievedAmount)
         return consoleAchievedAmount;
     };
 
