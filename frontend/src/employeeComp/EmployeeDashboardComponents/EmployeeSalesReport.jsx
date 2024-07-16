@@ -1297,7 +1297,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         });
   
         if (remainingExpanseCondition) {
-          const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+          const startDate = new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1);
           const endDate = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
           mainBooking.services.forEach((serv) => {
             if (serv.expanseDate) {
