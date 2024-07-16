@@ -59,11 +59,11 @@ function TodaysCollection({ empId, secretKey }) {
         try {
             const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
             console.log("Data sent successfully:", response);
-            Swal.fire("Success!", "Data Request Sent!", "success");
+            Swal.fire("Success!", "Data Successfully Sent!", "success");
             closepopup();
         } catch (error) {
             console.log("Error to send today's collection", error);
-            Swal.fire("Error!", "Error to send today's collection!", "error");
+            Swal.fire("Error!", "Error to send today's projection!", "error");
         }
     };
 

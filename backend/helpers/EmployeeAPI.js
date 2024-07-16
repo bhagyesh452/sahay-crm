@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const adminModel = require("../models/Admin.js");
 const PerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
-const TodaysCollectionModel = require("../models/TodaysGeneralProjection.js");
+const TodaysProjectionModel = require("../models/TodaysGeneralProjection.js");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
@@ -907,7 +907,7 @@ router.post(
   }
 );
 
-// Adds record for today's collection:
+// Adds record for today's projection :
 router.post('/addTodaysProjection', async (req, res) => {
   try {
     const { empId, noOfCompany, noOfServiceOffered, totalOfferedPrice, totalCollectionExpected, date, time } = req.body;
@@ -918,7 +918,7 @@ router.post('/addTodaysProjection', async (req, res) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    const TodaysCollection = await TodaysCollectionModel.create({
+    const todaysProjection = await TodaysProjectionModel.create({
       empId: empId,
       empName: employeeInfo.ename,
       noOfCompany: parseInt(noOfCompany),
@@ -928,14 +928,14 @@ router.post('/addTodaysProjection', async (req, res) => {
       date: date || new Date(),
       time: time || new Date()
     });
-    res.status(200).json({ result: true, message: "Today's collection successfully added", data: TodaysCollection });
+    res.status(200).json({ result: true, message: "Today's projection successfully added", data: todaysProjection });
   } catch (error) {
-    res.status(500).json({ result: false, message: "Error adding today's collection", error: error });
+    res.status(500).json({ result: false, message: "Error adding today's projection :", error });
   }
 });
 
-// Displaying all the records for current date:
-router.get('/showTodaysCollection', async (req, res) => {
+// Displaying all the records for current date :
+router.get('/showTodaysProjection', async (req, res) => {
   try {
     const today = new Date();
     const day = today.getDate();
@@ -945,32 +945,79 @@ router.get('/showTodaysCollection', async (req, res) => {
     // Format the date as "d/m/yyyy"
     const formattedToday = `${day}/${month}/${year}`;
 
-    const todaysCollections = await TodaysCollectionModel.find({
+    const todaysProjection = await TodaysProjectionModel.find({
       date: formattedToday
     });
 
-    res.status(200).json({ result: true, message: "Today's collection successfully fetched", data: todaysCollections });
+    res.status(200).json({ result: true, message: "Today's projection successfully fetched", data: todaysProjection });
   } catch (error) {
-    res.status(500).json({ result: false, message: "Error displaying today's collection", error: error });
+    res.status(500).json({ result: false, message: "Error displaying today's projection :", error });
   }
 });
 
-// Displaying records based on employee id:
-router.get('/showEmployeeTodaysCollection/:empId', async (req, res) => {
+// Displaying records based on employee id :
+router.get('/showEmployeeTodaysProjection/:empId', async (req, res) => {
   const {empId} = req.params;
   try {
-    // const today = new Date();
-    // const day = today.getDate();
-    // const month = today.getMonth() + 1; // Months are zero-based
-    // const year = today.getFullYear();
-
-    const todaysCollections = await TodaysCollectionModel.find({
+    const todaysProjection = await TodaysProjectionModel.find({
       empId: empId
     });
 
-    res.status(200).json({ result: true, message: "Today's collection successfully fetched", data: todaysCollections });
+    res.status(200).json({ result: true, message: "Today's projection successfully fetched", data: todaysProjection });
   } catch (error) {
-    res.status(500).json({ result: false, message: "Error displaying today's collection", error: error });
+    res.status(500).json({ result: false, message: "Error displaying today's projection :", error });
+  }
+});
+
+// Update today's projection based on _id :
+router.put('/updateTodaysProjection/:id', async (req, res) => {
+  const { id } = req.params;
+  const { empId, noOfCompany, noOfServiceOffered, totalOfferedPrice, totalCollectionExpected, date, time } = req.body;
+
+  try {
+    const employeeInfo = await adminModel.findOne({ _id: empId });
+
+    if (!employeeInfo) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    const updatedProjection = await TodaysProjectionModel.findByIdAndUpdate(id,
+      {
+        empId: empId,
+        empName: employeeInfo.ename,
+        noOfCompany: parseInt(noOfCompany),
+        noOfServiceOffered: parseInt(noOfServiceOffered),
+        totalOfferedPrice: parseInt(totalOfferedPrice),
+        totalCollectionExpected: parseInt(totalCollectionExpected),
+        date: date || new Date(),
+        time: time || new Date()
+      },
+      { new: true } // When we use { new: true }, the response will contain the updated document:
+    );
+
+    if (updatedProjection) {
+      res.status(200).json({ result: true, message: "Projection successfully updated", data: updatedProjection });
+    } else {
+      res.status(404).json({ result: false, message: "Projection not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error updating today's projection", error });
+  }
+});
+
+// Deleting today's projection based on _id :
+router.delete('/deleteTodaysProjection/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedProjection = await TodaysProjectionModel.findByIdAndDelete(id);
+
+    if (deletedProjection) {
+      res.status(200).json({ result: true, message: "Data successfully deleted", data: deletedProjection });
+    } else {
+      res.status(404).json({ result: false, message: "Data not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error deleting data :", error });
   }
 });
 

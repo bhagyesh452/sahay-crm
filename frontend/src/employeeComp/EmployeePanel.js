@@ -2890,8 +2890,8 @@ function EmployeePanel() {
 
       try {
           const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
-          console.log("Data sent successfully:", response);
-          Swal.fire("Success!", "Data Request Sent!", "success");
+          console.log("Data successfully added :", response);
+          Swal.fire("Success!", "Data Successfully Added!", "success");
           setNoOfCompany("");
           setNoOfServiceOffered("");
           setOffferedPrice("");

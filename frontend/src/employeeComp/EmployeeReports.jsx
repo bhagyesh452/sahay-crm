@@ -92,7 +92,9 @@ import EmployeeForwardedReport from "./EmployeeDashboardComponents/EmployeeForwa
 import EmployeeTopSellingServices from "./EmployeeDashboardComponents/EmployeeTopSellingServices.jsx";
 import TodaysCollection from "./TodaysCollection.jsx";
 import { IconTrash } from "@tabler/icons-react";
-
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 
 
@@ -359,8 +361,8 @@ function EmployeeReports() {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
     socket.on("connect", () => {
@@ -2100,7 +2102,7 @@ function EmployeeReports() {
 
     // });
 
-    
+
 
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
@@ -2448,29 +2450,151 @@ function EmployeeReports() {
     return `${year}-${month}-${day}`;
   }
 
-  const [todaysCollection, setTodaysCollection] = useState([]);
+  const [todaysProjection, setTodaysProjection] = useState([]);
+  const [sortedTodaysProjection, setSortedTodayProjection] = useState([]);
+
   // Emplpoyee Today's Collection:
   // fetch today's collection
-  const fetchTodaysCollection = async () => {
+  const fetchTodaysProjecion = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/showEmployeeTodaysCollection/${userId}`);
-      console.log("Today's collection is :", response.data.data);
-      setTodaysCollection(response.data.data);
+      const response = await axios.get(`${secretKey}/employee/showEmployeeTodaysProjection/${userId}`);
+      // console.log("Today's projection is :", response.data.data);
+      setTodaysProjection(response.data.data);
     } catch (error) {
       console.log("Error to fetch today's collection");
     }
   };
 
+  // Deleting today's projection :
+  const handleDeleteTodaysProjection = async (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you really want to remove this item?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/deleteTodaysProjection/${id}`)
+          console.log("Data successfully deleted :", response.data.data);
+          Swal.fire("Success!", "Data Successfully Deleted!", "success");
+          fetchTodaysProjecion();
+        } catch (error) {
+          console.error("Error deleting today's projection :", error);
+          Swal.fire("Error!", "Error deleting today's projection!", "error");
+        }
+      }
+    })
+  };
+
+  const [id, setId] = useState(null);
+  const [noOfCompany, setNoOfCompany] = useState("");
+  const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
+  const [offeredPrice, setOffferedPrice] = useState("");
+  const [expectedCollection, setExpectedCollection] = useState("");
+  const [open, setOpen] = useState(false);
+  const [errors, setErrors] = useState({
+    noOfCompany: "",
+    noOfServiceOffered: "",
+    offeredPrice: "",
+    expectedCollection: ""
+  });
+
+  const closePopup = () => {
+    setOpen(false);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'backdropClick') {
+      return;
+    }
+    closePopup();
+  };
+
+  const date = new Date();
+  const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+  const handleUpdateTodaysProjection = async (id) => {
+    setId(id); // Set the ID of the item being edited
+    try {
+      const response = await axios.get(`${secretKey}/employee/showEmployeeTodaysProjection/${userId}`);
+      const data = response.data.data.find(item => item._id === id);
+      if (data) {
+        setNoOfCompany(data.noOfCompany);
+        setNoOfServiceOffered(data.noOfServiceOffered);
+        setOffferedPrice(data.totalOfferedPrice);
+        setExpectedCollection(data.totalCollectionExpected);
+        setOpen(true); // Open the dialog
+      }
+    } catch (error) {
+      console.log("Error fetching data for update", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    let formErrors = {
+      noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
+      noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
+      offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
+      expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
+    };
+    setErrors(formErrors);
+    if (Object.values(formErrors).some(error => error !== "")) {
+      return;
+    }
+
+    const payload = {
+      empId: userId,
+      noOfCompany: noOfCompany,
+      noOfServiceOffered: noOfServiceOffered,
+      totalOfferedPrice: offeredPrice,
+      totalCollectionExpected: expectedCollection,
+      date: todayDate,
+      time: currentTime
+    };
+    // console.log("Payload data is :", payload);
+
+    try {
+      const response = await axios.put(`${secretKey}/employee/updateTodaysProjection/${id}`, payload);
+      // console.log("Data updated successfully:", response.data.data);
+      Swal.fire("Success!", "Data Successfully Updated!", "success");
+      closePopup();
+      fetchTodaysProjecion(); // Refresh the data
+    } catch (error) {
+      console.log("Error updating today's collection", error);
+      Swal.fire("Error!", "Error updating today's projection!", "error");
+    }
+  };
+
+  // Fetch data on component mount
   useEffect(() => {
-    fetchTodaysCollection();
+    fetchTodaysProjecion();
   }, []);
+
+  // Sort the data when todaysProjection changes
+  useEffect(() => {
+    const sortedData = [...todaysProjection].sort((a, b) => {
+      const [dayA, monthA, yearA] = a.date.split('/');
+      const [dayB, monthB, yearB] = b.date.split('/');
+      const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+      const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+      return dateB - dateA;
+    });
+    setSortedTodayProjection(sortedData);
+  }, [todaysProjection]);
 
   return (
     <div className="admin-dashboard">
-      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey}/>}
-     <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation} />
+      {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
+      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="page-wrapper">
+
         {/* Lead Report Dashboard Numbers */}
         <div className="dashboard-headings container-xl display-none">
           <h3 className="m-0">Leads Report</h3>
@@ -4198,13 +4322,13 @@ function EmployeeReports() {
           </div>
         </div>
 
-        {/* --- Today's General Collection ---*/}
+        {/* --- Today's General Projection ---*/}
         <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
           <div className="card">
             <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
               <div className="dashboard-title pl-1"  >
                 <h2 className="m-0">
-                  Today's General Collections
+                  Today's General Projection
                 </h2>
               </div>
               <div className="d-flex align-items-center pr-1">
@@ -4243,21 +4367,21 @@ function EmployeeReports() {
                       <th>Sr. No</th>
                       {/* <th>BOOKING DATE & TIME</th> */}
                       <th>Date</th>
-                      <th>No. Of Company</th>
+                      <th>No. Of Companies</th>
                       <th>Services Offered</th>
                       <th>Offered Price</th>
                       <th>Expected Collection</th>
                       <th>ACTION</th>
                     </tr>
                   </thead>
-                  {todaysCollection && todaysCollection.length > 0 ? (
+
+                  {sortedTodaysProjection && sortedTodaysProjection.length > 0 ? (
                     <>
                       <tbody>
-                        {todaysCollection.map((mainObj, index) => (
+                        {sortedTodaysProjection.map((mainObj, index) => (
                           <tr key={index}>
                             <td>{index + 1}</td>
-                            {/* <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                                })`}</td> */}
+                            {/* <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td> */}
                             <td>{mainObj.date}</td>
                             <td>{mainObj.noOfCompany}</td>
                             <td>{mainObj.noOfServiceOffered}</td>
@@ -4265,15 +4389,9 @@ function EmployeeReports() {
                             <td>{mainObj.totalCollectionExpected}</td>
                             <td>
                               <div className="d-flex justify-content-center align-items-center">
-                              {<div className="icons-btn">
+                                <div className="icons-btn">
                                   <IconButton
-                                    // onClick={async () => {
-                                    //   const dataToDelete = data.filter(obj => obj._id === item._id);
-                                    //   setDataToDelete(dataToDelete);
-                                    //   const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
-                                    //   setCompanyDdata(filteredCompanyData);
-                                    //   handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
-                                    // }}
+                                    onClick={() => handleDeleteTodaysProjection(mainObj._id)}
                                   >
                                     <IconTrash
                                       style={{
@@ -4284,146 +4402,66 @@ function EmployeeReports() {
                                       }}
                                     />
                                   </IconButton>
-
-                                </div>}
                                 </div>
-                              </td>
-                            <td>
-                              {followDataToday &&
-                                followDataToday.some(
-                                  (item) =>
-                                    item.companyName ===
-                                    mainObj["Company Name"]
-                                ) ? (
-                                <IconButton>
-                                  <RiEditCircleFill
-                                    onClick={() => {
-                                      functionopenprojection(
-                                        mainObj["Company Name"]
-                                      );
-                                    }}
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
-                                    }}
-                                    color="#fbb900"
-                                  />
-                                </IconButton>
-                              ) : (
-                                <IconButton>
-                                  <RiEditCircleFill
-                                    onClick={() => {
-                                      functionopenprojection(
-                                        mainObj["Company Name"]
-                                      );
-                                      setIsEditProjection(true);
-                                    }}
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
-                                    }}
-                                  />
-                                </IconButton>
-                              )}
+                                <div className="icons-btn">
+                                  <IconButton onClick={() => handleUpdateTodaysProjection(mainObj._id)}>
+                                    <ModeEditIcon
+                                      style={{
+                                        cursor: "pointer",
+                                        color: "#a29d9d",
+                                        width: "14px",
+                                        height: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </div>
+                              </div>
                             </td>
-                            {/* <td>{mainObj.services[0]}</td> */}
-                            {/* <td>
-                                ₹
-                                {(mainObj.bdeName !== mainObj.bdmName
-                                  ? mainObj.originalTotalPayment / 2
-                                  : mainObj.originalTotalPayment
-                                ).toLocaleString()}
-                              </td> */}
-                            {/* <td>
-                                ₹
-                                {(mainObj.firstPayment !== 0
-                                  ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                    : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                                  : mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                    : mainObj.originalTotalPayment / 2
-                                ).toLocaleString()}{" "}
-                              </td>
-                              <td>
-                                ₹
-                                {(mainObj.firstPayment !== 0
-                                  ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment -
-                                    mainObj.firstPayment
-                                    : (mainObj.originalTotalPayment -
-                                      mainObj.firstPayment) /
-                                    2
-                                  : 0
-                                ).toLocaleString()}{" "}
-                              </td>
-                              <td>
-                                {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                              </td>
-                              <td>
-                                {mainObj.bdeName !== mainObj.bdmName
-                                  ? mainObj.bdmType === "closeby"
-                                    ? `Closed by ${mainObj.bdmName}`
-                                    : `Supported by ${mainObj.bdmName}`
-                                  : `Self Closed`}{" "}
-                              </td>
-                              <td>{mainObj.paymentRemarks}</td> */}
                           </tr>
                         ))}
                       </tbody>
-                      {/* <tfoot>
+
+                      <tfoot>
                         <tr>
-                          <th colSpan={3}>
+                          <th colSpan={2}>
                             <strong>Total</strong>
                           </th>
-                          <th>-</th>
-                          <th>-</th>
-                          <th>-</th>
                           <th>
-                            ₹
-                            {filteredBooking
-                              .reduce((total, obj) => {
-                                return obj.bdeName === obj.bdmName
-                                  ? total + obj.originalTotalPayment
-                                  : total + obj.originalTotalPayment / 2;
-                              }, 0)
-                              .toLocaleString()}
+                            {sortedTodaysProjection.reduce(
+                              (noOfCompany, partObj) => {
+                                noOfCompany += partObj.noOfCompany;
+                                return noOfCompany;
+                              },
+                              0
+                            )}
+                          </th>
+                          <th>
+                            {sortedTodaysProjection
+                              .reduce((offeredServices, partObj) => {
+                                offeredServices += partObj.noOfServiceOffered;
+                                return offeredServices;
+                              }, 0
+                              )}
                           </th>
                           <th>
                             ₹
-                            {filteredBooking
-                              .reduce((total, obj) => {
-                                return obj.bdeName === obj.bdmName
-                                  ? obj.firstPayment === 0
-                                    ? total + obj.originalTotalPayment
-                                    : total + obj.firstPayment
-                                  : obj.firstPayment === 0
-                                    ? total + obj.originalTotalPayment / 2
-                                    : total + obj.firstPayment / 2;
-                              }, 0)
-                              .toLocaleString()}
+                            {sortedTodaysProjection
+                              .reduce((offeredPrice, partObj) => {
+                                offeredPrice += partObj.totalOfferedPrice;
+                                return offeredPrice;
+                              }, 0).toLocaleString()}
                           </th>
                           <th>
                             ₹
-                            {filteredBooking
-                              .reduce((total, obj) => {
-                                return obj.bdeName === obj.bdmName
-                                  ? obj.firstPayment === 0
-                                    ? total + obj.originalTotalPayment
-                                    : total + obj.firstPayment
-                                  : obj.firstPayment === 0
-                                    ? total + obj.originalTotalPayment / 2
-                                    : total + obj.firstPayment / 2;
-                              }, 0)
-                              .toLocaleString()}
+                            {sortedTodaysProjection
+                              .reduce((expectedPrice, partObj) => {
+                                expectedPrice += partObj.totalCollectionExpected;
+                                return expectedPrice;
+                              }, 0).toLocaleString()}
                           </th>
-                          <th>-</th>
-                          <th>-</th>
                           <th>-</th>
                         </tr>
-                      </tfoot> */}
+                      </tfoot>
                     </>
                   ) : filteredBooking &&
                     filteredBooking.length === 0 &&
@@ -4463,6 +4501,101 @@ function EmployeeReports() {
           </div>
         </div>
       </div>
+
+      {/* Dialogbox to update today's projection */}
+      <Dialog
+        className='My_Mat_Dialog'
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Today's Project Collection{" "}
+          <IconButton onClick={closePopup} style={{ float: "right" }}>
+            <CloseIcon color="primary" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className='d-flex'>
+                  <div className="mb-3 col-6">
+                    <label className="form-label">No. Of Company</label>
+                    <input
+                      type="number"
+                      value={noOfCompany}
+                      className="form-control"
+                      placeholder="No. Of Company"
+                      required
+                      onChange={(e) => {
+                        setNoOfCompany(e.target.value);
+                        setErrors({ ...errors, noOfCompany: "" });
+                      }}
+                    />
+                    {errors.noOfCompany && <p className="text-danger">{errors.noOfCompany}</p>}
+                  </div>
+                  <div className="mb-3 col-6 mx-1">
+                    <label className="form-label">No. Of Service Offered</label>
+                    <input
+                      type="number"
+                      value={noOfServiceOffered}
+                      className="form-control"
+                      placeholder="No. Of Services"
+                      required
+                      onChange={(e) => {
+                        setNoOfServiceOffered(e.target.value);
+                        setErrors({ ...errors, noOfServiceOffered: "" });
+                      }}
+                    />
+                    {errors.noOfServiceOffered && <p className="text-danger">{errors.noOfServiceOffered}</p>}
+                  </div>
+                </div>
+                <div className='d-flex'>
+                  <div className="mb-3 col-6">
+                    <label className="form-label">Total Offered Price</label>
+                    <input
+                      type="number"
+                      value={offeredPrice}
+                      className="form-control"
+                      placeholder="Offered Price"
+                      required
+                      onChange={(e) => {
+                        setOffferedPrice(e.target.value);
+                        setErrors({ ...errors, offeredPrice: "" });
+                      }}
+                    />
+                    {errors.offeredPrice && <p className="text-danger">{errors.offeredPrice}</p>}
+                  </div>
+                  <div className="mb-3 col-6 mx-1">
+                    <label className="form-label">Total Collection Expected</label>
+                    <input
+                      type="number"
+                      value={expectedCollection}
+                      className="form-control"
+                      placeholder="Expected Collection"
+                      required
+                      onChange={(e) => {
+                        setExpectedCollection(e.target.value);
+                        setErrors({ ...errors, expectedCollection: "" });
+                      }}
+                    />
+                    {errors.expectedCollection && <p className="text-danger">{errors.expectedCollection}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <Button
+          className="btn btn-primary bdr-radius-none"
+          onClick={handleSubmit}
+          variant="contained"
+        >
+          Update
+        </Button>
+      </Dialog>
 
       {/* Drawer for Follow Up Projection  */}
       <div>
