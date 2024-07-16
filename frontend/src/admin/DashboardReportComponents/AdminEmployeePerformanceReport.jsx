@@ -310,19 +310,38 @@ function AdminEmployeePerformanceReport() {
                           return "Poor";
                         })()}</td>
                       </tr>
-
                       {expandedEmployee === employee._id && (
-                        filteredTargetDetails.map((perData, index) => (
-                          <tr key={`${employee._id}-${index}`}>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}></th>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}>{perData.month}-{perData.year}</th>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}>₹ {perData.amount || 0}</th>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}>₹ {perData.achievedAmount || 0}</th>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}>{perData.ratio.toFixed(2) || 0}%</th>
-                            <th style={{backgroundColor: "#e0e0e0", color: "#000"}}>{perData.result || '-'}</th>
+                          <tr id='expandedId'>
+                            <td colSpan="6" id='parent-TD-Inner'>
+                              <div id='table-default' className="table table-default dash w-100 m-0 arrowsudo">
+                                <table className='table-vcenter table-nowrap admin-dash-tbl w-100 innerTable'  >
+                                  <thead>
+                                    <tr>
+                                      <th className='innerTH'>Sr.No</th>
+                                      <th className='innerTH'>Month</th>
+                                      <th className='innerTH'>Target</th>
+                                      <th className='innerTH'>Achievement</th>
+                                      <th className='innerTH'>Ratio</th>
+                                      <th className='innerTH'>Result</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {filteredTargetDetails.map((perData, index) => (
+                                      <tr className='particular' key={`${employee._id}-${index}`}>
+                                        <td>{index + 1}</td>
+                                        <td>{perData.month}-{perData.year}</td>
+                                        <td>₹ {perData.amount || 0}</td>
+                                        <td>₹ {perData.achievedAmount || 0}</td>
+                                        <td>{perData.ratio.toFixed(2) || 0}%</td>
+                                        <td>{perData.result || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </td>
                           </tr>
-                        ))
-                      )}
+                       )}
                     </React.Fragment>
                   );
                 })
