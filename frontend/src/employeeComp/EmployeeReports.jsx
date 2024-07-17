@@ -2517,6 +2517,7 @@ function EmployeeReports() {
   };
 
   const date = new Date();
+  // console.log("Date is :", date);
   const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
@@ -2589,7 +2590,7 @@ function EmployeeReports() {
     setSortedTodayProjection(sortedData);
   }, [todaysProjection]);
 
-  // Auto logout functionality
+  // Auto logout functionality :
   useEffect(() => {
     // Function to check token expiry and initiate logout if expired
     const checkTokenExpiry = () => {
@@ -4432,11 +4433,11 @@ function EmployeeReports() {
                             <td>{mainObj.date}</td>
                             <td>{mainObj.noOfCompany}</td>
                             <td>{mainObj.noOfServiceOffered}</td>
-                            <td>{mainObj.totalOfferedPrice}</td>
-                            <td>{mainObj.totalCollectionExpected}</td>
+                            <td>₹{mainObj.totalOfferedPrice.toLocaleString()}</td>
+                            <td>₹{mainObj.totalCollectionExpected.toLocaleString()}</td>
                             <td>
                               <div className="d-flex justify-content-center align-items-center">
-                                <div className="icons-btn">
+                                {/* <div className="icons-btn">
                                   <IconButton
                                     onClick={() => handleDeleteTodaysProjection(mainObj._id)}
                                   >
@@ -4449,9 +4450,22 @@ function EmployeeReports() {
                                       }}
                                     />
                                   </IconButton>
-                                </div>
-                                <div className="icons-btn">
-                                  <IconButton onClick={() => handleUpdateTodaysProjection(mainObj._id)}>
+                                </div> */}
+                                {mainObj.date === todayDate ? <>
+                                  <div className="icons-btn">
+                                    <IconButton onClick={() => handleUpdateTodaysProjection(mainObj._id)}>
+                                      <ModeEditIcon
+                                        style={{
+                                          cursor: "pointer",
+                                          color: "rgb(251, 185, 0)",
+                                          width: "14px",
+                                          height: "14px",
+                                        }}
+                                      />
+                                    </IconButton>
+                                  </div>
+                                </> : <> <div className="icons-btn">
+                                  <IconButton >
                                     <ModeEditIcon
                                       style={{
                                         cursor: "pointer",
@@ -4462,6 +4476,8 @@ function EmployeeReports() {
                                     />
                                   </IconButton>
                                 </div>
+                                </>
+                                }
                               </div>
                             </td>
                           </tr>

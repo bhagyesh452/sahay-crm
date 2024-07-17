@@ -73,7 +73,7 @@ import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
 import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
-
+import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 
 
 function App() {
@@ -117,6 +117,11 @@ function App() {
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
           <Route path='/employee/show-notification/:userId' element={newtoken ? <EmployeeShowNotification /> : <Navigate to='/' />}></Route>
+
+
+          {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
+          {/* <Route path='/customerLogin' element={<CustomerLogin />}></Route>
+          <Route path='/customer/dashboard/:email' element={<CustomerLogin />}></Route>  */}
         
 
           {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
