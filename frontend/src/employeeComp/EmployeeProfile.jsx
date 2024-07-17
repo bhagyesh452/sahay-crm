@@ -42,7 +42,10 @@ function EmployeeProfile() {
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+  
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, [data.ename]);
 
   const [empImg1, setEmpImg1] = useState(
     localStorage.getItem("empImg1") || "initial_image_url"

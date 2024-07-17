@@ -17,7 +17,10 @@ function Received_booking_box() {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   console.log(rmCertificationUserId)
 
-
+  useEffect(() => {
+    document.title = `RMOFCERT-Sahay-CRM`;
+  }, []);
+  
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);

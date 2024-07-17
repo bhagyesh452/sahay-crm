@@ -167,13 +167,19 @@ function EmployeeDashboard() {
   const dateRangePickerProhectionSummaryRef = useRef(null);
 
   // Performance Report State :
-
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
   };
+
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, [data.ename]);
+
+
+
 
   const fetchData = async () => {
     try {

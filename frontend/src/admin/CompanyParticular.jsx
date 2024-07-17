@@ -18,6 +18,10 @@ function CompanyParticular({}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const { companyId } = useParams();
 
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
+
   const fetchCompany = async () => {
     try {
       // Make a GET request to fetch data of the specific company by its name

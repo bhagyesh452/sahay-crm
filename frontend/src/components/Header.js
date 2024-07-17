@@ -47,7 +47,13 @@ function Header({ name, designation, empProfile }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
+    });
+    socket.on("new-leads-assigned", (res) => {
+      if (res === name) {
+        enqueueSnackbar(`New Leads Assigned To You!PLEASE REFRESH 🔄`, { variant: "reportComplete", persist: true });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
     });
     socket.on("delete-leads-request-bde", (res) => {
       if (res.name === name) {

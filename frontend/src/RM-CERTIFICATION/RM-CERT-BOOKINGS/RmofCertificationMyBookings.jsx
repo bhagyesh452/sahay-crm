@@ -22,7 +22,9 @@ function RmofCertificationMyBookings() {
     const [isFilter, setIsFilter] = useState(false)
     const [rmServicesData, setRmServicesData] = useState([])
 
-
+    useEffect(() => {
+        document.title = `RMOFCERT-Sahay-CRM`;
+      }, []);
 
 
     const fetchData = async () => {

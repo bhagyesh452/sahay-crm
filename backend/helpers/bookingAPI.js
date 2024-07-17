@@ -17,6 +17,7 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
 const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
+const NotiModel = require('../models/Notifications.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -221,6 +222,16 @@ router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) 
       { assigned: "Reject" },
       { new: true }
     );
+    const updateNotification = await NotiModel.findOneAndUpdate(
+      { companyName: companyName },
+      { 
+        $set: { 
+          employeeRequestType: `Booking Edit has been Rejected`, 
+          employee_status: "Unread" 
+        }
+      },
+      { new: true }
+    );
 
     if (!updatedDocument) {
       return res.status(404).json({ message: "Document not found" });
@@ -287,6 +298,17 @@ router.post("/update-redesigned-final-form/:CompanyName",
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
         { assigned: "Accept" },
+        { new: true }
+      );
+
+      const updateNotification = await NotiModel.findOneAndUpdate(
+        { companyName: companyName },
+        { 
+          $set: { 
+            employeeRequestType: `Booking Edit has been Accept`, 
+            employee_status: "Unread" 
+          }
+        },
         { new: true }
       );
       socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
@@ -360,6 +382,16 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": CompanyName },
         { assigned: "Accept" },
+        { new: true }
+      );
+      const updateNotification = await NotiModel.findOneAndUpdate(
+        { companyName: CompanyName },
+        { 
+          $set: { 
+            employeeRequestType: `Booking Edit has been Accept`, 
+            employee_status: "Unread" 
+          }
+        },
         { new: true }
       );
       socketIO.emit('booking-updated', {
@@ -4734,6 +4766,17 @@ router.delete(
               },
             }
           );
+          const updateNotification = await NotiModel.findOneAndUpdate(
+            { companyName: deletedBooking["Company Name"] },
+            { 
+              $set: { 
+                employeeRequestType: `Booking Delete has been Accept`, 
+                employee_status: "Unread" 
+              }
+            },
+            { new: true }
+          );
+
           companyName = deletedBooking["Company Name"]
           socketIO.emit('delete-request-done', {
             name: deletedBooking.bdeName,
@@ -4765,6 +4808,17 @@ router.delete(
             },
           }
         );
+        const updateNotification = await NotiModel.findOneAndUpdate(
+          { companyName: moreObject["Company Name"] },
+          { 
+            $set: { 
+              employeeRequestType: `Booking Delete has been Accept`, 
+              employee_status: "Unread" 
+            }
+          },
+          { new: true }
+        );
+
         const companyName = moreObject["Company Name"];
         socketIO.emit('delete-request-done', companyName);
         console.log("Delete request emitted")

@@ -164,6 +164,10 @@ function EmployeeTeamLeads() {
     const [daysInMonth, setDaysInMonth] = useState([]);
 
     useEffect(() => {
+        document.title = `Employee-Sahay-CRM`;
+      }, [data.ename]);
+      
+    useEffect(() => {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);

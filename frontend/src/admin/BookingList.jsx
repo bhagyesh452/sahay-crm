@@ -77,6 +77,10 @@ function BookingList() {
       setCurrentDataLoading(false);
     }
   };
+
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
   
   useEffect(() => {
     if (currentCompanyName === "") {

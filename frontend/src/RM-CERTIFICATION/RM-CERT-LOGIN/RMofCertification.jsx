@@ -18,6 +18,10 @@ const [rmCertificationUserId, setRmCertificationUserId] = useState(null)
 const [designation, setDesignation] = useState("")
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+useEffect(() => {
+    document.title = `RMOFCERT-Sahay-CRM`;
+  }, []);
+
 const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo/${email}/${password}`);
