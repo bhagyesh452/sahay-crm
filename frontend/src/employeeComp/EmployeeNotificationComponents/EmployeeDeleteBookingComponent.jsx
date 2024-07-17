@@ -8,35 +8,41 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
 import Nodata from "../../components/Nodata";
-
+import ClipLoader from "react-spinners/ClipLoader";
 
 function EmployeeDeleteBookingComponent({ ename }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [bookingDeleteData, setBookingDeleteData] = useState([])
-
+  const [filteredBookingDeleteData, setFilteredBookingDeleteData] = useState([])
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+const [searchText, setSearchText] = useState("")
 
 
   function parseDateString(dateString) {
     const [day, month, year] = dateString.split("/").map(Number);
     return new Date(year, month - 1, day);
-}
+  }
 
-function formatDate(timestamp) {
+  function formatDate(timestamp) {
     const date = parseDateString(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
-}
+  }
 
   const fetchDataDelete = async () => {
     try {
+      setCurrentDataLoading(true)
       const response = await axios.get(`${secretKey}/requests/deleterequestbybde/${ename}`)
       const tempData = response.data;
       console.log("response", tempData)
       setBookingDeleteData(tempData)
+      setFilteredBookingDeleteData(tempData)
     } catch (error) {
       console.log("Internal Server Error", error.message)
+    } finally {
+      setCurrentDataLoading(false)
     }
   }
 
@@ -49,8 +55,8 @@ function formatDate(timestamp) {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
 
@@ -67,22 +73,36 @@ function formatDate(timestamp) {
     };
   }, []);
 
-console.log("bokkingdeletedata" , bookingDeleteData)
+  console.log("bokkingdeletedata", bookingDeleteData)
+
+  useEffect(() => {
+    if (searchText) {
+      console.log(searchText)
+      console.log(filteredBookingDeleteData)
+      const filteredData = filteredBookingDeleteData.filter(obj => {
+        console.log(obj.companyName); // Log the company name
+        return obj.companyName?.toLowerCase().includes(searchText.toLowerCase());
+      });
+      setBookingDeleteData(filteredData);
+    } else {
+      setBookingDeleteData(filteredBookingDeleteData); // Reset to original data if no search text
+    }
+  }, [searchText]);
 
 
   return (
     <div className="my-card mt-2">
       <div className="my-card-head p-2">
-        {/* <div className="filter-area d-flex justify-content-between w-100">
+        <div className="filter-area d-flex justify-content-between w-100">
         <div className="filter-by-bde d-flex align-items-center">
           <div className='mr-2'>
-            <label htmlFor="search_bde ">BDE : </label>
+            <label htmlFor="search_bde ">Company Name : </label>
           </div>
           <div className='Notification_filter'>
             <input type="text" name="search_bde" id="search_bde" value={searchText} onChange={(e) => setSearchText(e.target.value)} className='form-control col-sm-8' placeholder='Please Enter BDE name' />
           </div>
         </div>
-        <div className="filter-by-date d-flex align-items-center">
+        {/* <div className="filter-by-date d-flex align-items-center">
           <div className='mr-2'>
             <label htmlFor="search_bde "> Filter By : </label>
           </div>
@@ -92,8 +112,8 @@ console.log("bokkingdeletedata" , bookingDeleteData)
               <option value="Completed" >Completed</option>
             </select>
           </div>
-        </div>
-      </div> */}
+        </div> */}
+      </div>
       </div>
       <div className='my-card-body p-2'>
         <div className='Notification-table-main table-resposive'>
@@ -106,43 +126,63 @@ console.log("bokkingdeletedata" , bookingDeleteData)
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
-              {bookingDeleteData.length !== 0 ? bookingDeleteData.map((obj, index) => (
-                <tr>
-                  <td>{index + 1}</td>
-                  <td className="text-muted">
-                    {obj.companyName}
-                  </td>
-                  <td className="text-muted">
-                    <div className="Notification-date d-flex align-items-center justify-content-center">
-                      <div style={{ marginLeft: '5px' }} className="noti-text">
-                        <b>
-                          {formatDate(obj.date)}
-                        </b>
-                      </div>
-                    </div>
-
-                  </td>
-                  <td>
-                    {obj.assigned}
-                  </td>
-                </tr>
-              )) : <tr>
-                <td colSpan={5}>
-                  <span
-                    style={{
-                      textAlign: "center",
-                      fontSize: "25px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <Nodata />
-                  </span>
+            {currentDataLoading ? (<body>
+              <tr>
+                <td colSpan="4" >
+                  <div className="LoaderTDSatyle">
+                    <ClipLoader
+                      color="lightgrey"
+                      loading
+                      size={30}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
+                  </div>
                 </td>
+              </tr>
+            </body>)
+              :
+              (<tbody>
+                {bookingDeleteData.length !== 0 ? bookingDeleteData.map((obj, index) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td className="text-muted">
+                      {obj.companyName}
+                    </td>
+                    <td className="text-muted">
+                      <div className="Notification-date d-flex align-items-center justify-content-center">
+                        <div style={{ marginLeft: '5px' }} className="noti-text">
+                          <b>
+                            {formatDate(obj.date)}
+                          </b>
+                        </div>
+                      </div>
+
+                    </td>
+                    {obj.assigned ? (
+                      obj.assigned === "Reject" ? (
+                        <td id="colorRed">{obj.assigned}</td>
+                      ) : (
+                        <td>{obj.assigned}</td>
+                      )
+                    ) : <td></td>}
+                  </tr>
+                )) : <tr>
+                  <td colSpan={5}>
+                    <span
+                      style={{
+                        textAlign: "center",
+                        fontSize: "25px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <Nodata />
+                    </span>
+                  </td>
 
 
-              </tr>}
-            </tbody>
+                </tr>}
+              </tbody>)}
           </table>
         </div>
       </div>
