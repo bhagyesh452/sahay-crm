@@ -1,5 +1,7 @@
 export const options = [
   
+
+  //certification
   { value: "Start-Up India Certificate", label: "Start-Up India Certificate" },
   { value: "MSME/UDYAM Certificate", label: "MSME/UDYAM Certificate 3" },
   { value: "ISO Certificate", label: "ISO Certificate" },
@@ -9,12 +11,18 @@ export const options = [
   { value: "FSSAI Certificate", label: "FSSAI Certificate" },
   { value: "APEDA Certificate", label: "APEDA Certificate" },
   { value: "GST Certificate", label: "GST Certificate" },
-  { value: "Company Brochure", label: "Company Brochure" },
-  { value: "Product Catalog", label: "Product Catalog" },
-  { value: "Logo Design", label: "Logo Design" },
-  { value: "Business Card Design", label: "Business Card Design" },
-  { value: "Letter Head Design", label: "Letter Head Design" },
-  { value: "Broucher Design", label: "Broucher Design" },
+
+  { value: "Company Incorporation", label: "Company Incorporation" },
+  { value: "Trademark Registration", label: "Trademark Registration" },
+  { value: "Copyright Registration", label: "Copyright Registration" },
+  { value: "Patent Registration", label: "Patent Registration" },
+  { value: "Organization DSC", label: "Organization DSC" },
+  { value: "Director DSC", label: "Director DSC" },
+  { value: "Self Certification", label: "Self Certification" },
+  { value: "GeM", label: "GeM" },
+
+
+
 
 
   // Funding Services
@@ -52,8 +60,17 @@ export const options = [
   {value : "Incubation Support" , label : 'Incubation Support'},
 
 
-
+  //design
+  { value: "Company Brochure", label: "Company Brochure" },
+  { value: "Product Catalog", label: "Product Catalog" },
+  { value: "Logo Design", label: "Logo Design" },
+  { value: "Business Card Design", label: "Business Card Design" },
+  { value: "Letter Head Design", label: "Letter Head Design" },
+  { value: "Broucher Design", label: "Broucher Design" },
+  { value: "Other Design Service", label: "Other Design Service" },
   
+
+  //It
   {value : 'Digital Marketing' , label : 'Digital Marketing'},
   { value: "SEO Services", label: "SEO Services" },
   { value: "Branding Services", label: "Branding Services" },
@@ -75,15 +92,10 @@ export const options = [
   { value: "ERP Development", label: "ERP Development" },
   { value: "E-Commerce Website", label: "E-Commerce Website" },
   { value: "Product Development", label: "Product Development" },
-  { value: "Company Incorporation", label: "Company Incorporation" },
-  { value: "Trademark Registration", label: "Trademark Registration" },
-  { value: "Copyright Registration", label: "Copyright Registration" },
-  { value: "Patent Registration", label: "Patent Registration" },
-  { value: "Organization DSC", label: "Organization DSC" },
-  { value: "Director DSC", label: "Director DSC" },
-  { value: "Self Certification", label: "Self Certification" },
-  { value: "GeM", label: "GeM" },
-  { value: "Other Design Service", label: "Other Design Service" },
+
+
+
+ 
 
   // Add more options as needed
 ];

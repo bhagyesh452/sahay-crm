@@ -2218,7 +2218,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                         width="226.7375030517578"
                         height="178.5768051147461"
                         marginInPercent={{ top: 0.03, bottom: 0.05, left: 0.07, right: 0.07 }}
-                        value={Math.round((functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2) > 100 ? 100 : (functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2))}
+                        value={Math.round((functionCalculateAchievedRevenue(Filterby) / functionGetAmount() * 100).toFixed(2) > 100 ? 100 : (functionCalculateAchievedRevenue(Filterby) / functionGetAmount() * 100).toFixed(2))}
                         type="radial"
                         labels={{
                           tickLabels: {

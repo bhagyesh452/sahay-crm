@@ -161,7 +161,7 @@ function EmployeeLogin({ setnewToken }) {
       localStorage.setItem("loginTime", new Date().toISOString());
       localStorage.setItem("loginDate", new Date().toISOString().substr(0, 10)); // Store YYYY-MM-DD format
 
-      window.location.replace(`/employee-dashboard/${userId}`);
+      window.location.replace(`/employee-dashboard/${userId}`);     
     } catch (error) {
       console.error("Login failed:", error.response.data.message);
       if (error.response.status === 401) {
@@ -177,6 +177,23 @@ function EmployeeLogin({ setnewToken }) {
       }
     }
   };
+  const logout = () => {
+    localStorage.removeItem("newtoken");
+    console.log("Token removed after 1 minute");
+    window.location.replace("/");
+  };
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem("newtoken");
+    if (token) {
+      // Set timeout to log out user after 1 minute
+      const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
+
+      // Clear timeout if the component unmounts
+      return () => clearTimeout(timer);
+    }
+  }, []); // Empty dependency array ensures this runs once when the component mounts
+
 
   
   
