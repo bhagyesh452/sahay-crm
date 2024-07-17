@@ -338,6 +338,7 @@ function TestLeads() {
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setTotalCount(response.data.totalPages)
                 setCurrentPage(1)
+
                 if (response.data.assigned.length > 0 || response.data.unassigned.length > 0 || response.data.extracted.length > 0) {
                     if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
                         setDataStatus('Unassigned');
@@ -788,7 +789,7 @@ function TestLeads() {
             ...data,
             ename: newemployeeSelection,
             AssignDate: properDate,
-            //UploadDate:properDate,
+            // UploadDate:properDate,
             UploadedBy: adminName
         }));
 
@@ -1222,13 +1223,12 @@ function TestLeads() {
                 }
 
             } else if (selectedOption === "extractedData") {
-                console.log("yahan chala")
+                //console.log("yahan chala")
                 //setEmployeeSelection("Extracted")
                 handleExtractData();
             } else {
                 return true;
             }
-
         } catch (error) {
             console.error('Error fetching selected data:', error);
             Swal.fire('Error fetching data. Please try again.');
@@ -1675,6 +1675,7 @@ function TestLeads() {
     const [selectedBDEName, setSelectedBDEName] = useState("")
     const [selectedAssignDate, setSelectedAssignDate] = useState(null)
     const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
+    const [selectedExtractedDate, setSelectedExtractedDate] = useState(null);
     const [selectedAdminName, setSelectedAdminName] = useState("")
     const [daysInMonth, setDaysInMonth] = useState([]);
     const [selectedDate, setSelectedDate] = useState(0)
@@ -1729,6 +1730,7 @@ function TestLeads() {
                     selectedBDEName,
                     selectedAssignDate,
                     selectedUploadedDate,
+                    selectedExtractedDate,
                     selectedAdminName,
                     selectedYear,
                     monthIndex,
@@ -1743,6 +1745,7 @@ function TestLeads() {
                 !selectedBDEName &&
                 !selectedAssignDate &&
                 !selectedUploadedDate &&
+                !selectedExtractedDate &&
                 !selectedAdminName &&
                 !selectedYear &&
                 !selectedCompanyIncoDate) {
@@ -1780,12 +1783,14 @@ function TestLeads() {
 
     const handleClearFilter = () => {
         setIsFilter(false)
+        functionCloseFilterDrawer()
         setSelectedStatus('')
         setSelectedState('')
         setSelectedNewCity('')
         setSelectedBDEName('')
         setSelectedAssignDate(null)
         setSelectedUploadedDate(null)
+        setSelectedExtractedDate(null);
         setSelectedAdminName('')
         setSelectedYear('')
         setMonthIndex(0)
@@ -1875,6 +1880,7 @@ function TestLeads() {
                 </div>
                 <div className="page-body">
                     <div className="container-xl">
+
                         <div class="card-header  my-tab">
                             <ul
                                 class="nav nav-tabs card-header-tabs nav-fill p-0"
@@ -1940,6 +1946,7 @@ function TestLeads() {
                                 </li>
                             </ul>
                         </div>
+
                         <div className="card">
                             <div className="card-body p-0">
                                 <div
@@ -2115,289 +2122,293 @@ function TestLeads() {
                                             <tbody>
                                                 {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
                                                     <tr
-                                                    key={index}
-                                                    className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                    style={{ border: "1px solid #ddd" }}>
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedRows.includes(company._id)}
-                                                            onChange={() => handleCheckboxChange(company._id)}
-                                                            onMouseDown={() => handleMouseDown(company._id)}
-                                                            onMouseEnter={() => handleMouseEnter(company._id)}
-                                                            onMouseUp={handleMouseUp}
-                                                        />
-                                                    </td>
-                                                    <td>{startIndex - 500 + index + 1}</td>
-                                                    <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
-                                                    {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>
-                                                        <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                            <p className="rematkText text-wrap m-0">
-                                                                {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                            </p>
-                                                            <div
-                                                                onClick={() => {
-                                                                    functionopenpopupremarks(company._id, company.Status);
-                                                                }}
-                                                                style={{ cursor: "pointer" }}>
-                                                                <IconEye
+                                                        key={index}
+                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd" }}>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows.includes(company._id)}
+                                                                onChange={() => handleCheckboxChange(company._id)}
+                                                                onMouseDown={() => handleMouseDown(company._id)}
+                                                                onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                        </td>
+                                                        <td>{startIndex - 500 + index + 1}</td>
+                                                        <td>{company["Company Name"]}</td>
+                                                        <td>{company["Company Number"]}</td>
+                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                        <td>{company["City"]}</td>
+                                                        <td>{company["State"]}</td>
+                                                        <td>{company["Company Email"]}</td>
 
+                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>
+                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <p className="rematkText text-wrap m-0">
+                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                </p>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        functionopenpopupremarks(company._id, company.Status);
+                                                                    }}
+                                                                    style={{ cursor: "pointer" }}>
+                                                                    <IconEye
+
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                            marginLeft: "4px",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </td>}
+
+                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                        <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                            <button className='tbl-action-btn' onClick={
+                                                                data.length === "0"
+                                                                    ? Swal.fire("Please Import Some data first")
+                                                                    : () => {
+                                                                        setOpenLeadsModifyPopUp(true);
+                                                                        handleUpdateClick(company._id);
+                                                                    }
+                                                            }>
+                                                                < MdOutlineEdit
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "grey",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                <IconEye
                                                                     style={{
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "#d6a10c",
                                                                         cursor: "pointer",
-                                                                        marginLeft: "4px",
                                                                     }}
                                                                 />
-                                                            </div>
-                                                        </div>
-                                                    </td>}
-                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                    <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                    {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                    {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                    {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                    <td>
-                                                        <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                            <MdDeleteOutline
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "#bf0b0b",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-                                                        </button>
-                                                        <button className='tbl-action-btn' onClick={
-                                                            data.length === "0"
-                                                                ? Swal.fire("Please Import Some data first")
-                                                                : () => {
-                                                                    setOpenLeadsModifyPopUp(true);
-                                                                    handleUpdateClick(company._id);
-                                                                }
-                                                        }>
-                                                            < MdOutlineEdit
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "grey",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-
-                                                        </button>
-
-                                                        <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                            <IconEye
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "#d6a10c",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
                                                 ))}
+
                                                 {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.map((company, index) => (
                                                     <tr
-                                                    key={index}
-                                                    className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                    style={{ border: "1px solid #ddd" }}>
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedRows.includes(company._id)}
-                                                            onChange={() => handleCheckboxChange(company._id)}
-                                                            onMouseDown={() => handleMouseDown(company._id)}
-                                                            onMouseEnter={() => handleMouseEnter(company._id)}
-                                                            onMouseUp={handleMouseUp}
-                                                        />
-                                                    </td>
-                                                    <td>{startIndex - 500 + index + 1}</td>
-                                                    <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
-                                                    {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>
-                                                        <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                            <p className="rematkText text-wrap m-0">
-                                                                {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                            </p>
-                                                            <div
-                                                                onClick={() => {
-                                                                    functionopenpopupremarks(company._id, company.Status);
-                                                                }}
-                                                                style={{ cursor: "pointer" }}>
-                                                                <IconEye
+                                                        key={index}
+                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd" }}>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows.includes(company._id)}
+                                                                onChange={() => handleCheckboxChange(company._id)}
+                                                                onMouseDown={() => handleMouseDown(company._id)}
+                                                                onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                        </td>
+                                                        <td>{startIndex - 500 + index + 1}</td>
+                                                        <td>{company["Company Name"]}</td>
+                                                        <td>{company["Company Number"]}</td>
+                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                        <td>{company["City"]}</td>
+                                                        <td>{company["State"]}</td>
+                                                        <td>{company["Company Email"]}</td>
+                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>
+                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <p className="rematkText text-wrap m-0">
+                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                </p>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        functionopenpopupremarks(company._id, company.Status);
+                                                                    }}
+                                                                    style={{ cursor: "pointer" }}>
+                                                                    <IconEye
 
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                            marginLeft: "4px",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </td>}
+                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                        
+                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                        <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                            <button className='tbl-action-btn' onClick={
+                                                                data.length === "0"
+                                                                    ? Swal.fire("Please Import Some data first")
+                                                                    : () => {
+                                                                        setOpenLeadsModifyPopUp(true);
+                                                                        handleUpdateClick(company._id);
+                                                                    }
+                                                            }>
+                                                                < MdOutlineEdit
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "grey",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                <IconEye
                                                                     style={{
                                                                         width: "14px",
                                                                         height: "14px",
                                                                         color: "#d6a10c",
                                                                         cursor: "pointer",
-                                                                        marginLeft: "4px",
                                                                     }}
                                                                 />
-                                                            </div>
-                                                        </div>
-                                                    </td>}
-                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                    <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                    {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                    {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                    {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                    <td>
-                                                        <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                            <MdDeleteOutline
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "#bf0b0b",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-                                                        </button>
-                                                        <button className='tbl-action-btn' onClick={
-                                                            data.length === "0"
-                                                                ? Swal.fire("Please Import Some data first")
-                                                                : () => {
-                                                                    setOpenLeadsModifyPopUp(true);
-                                                                    handleUpdateClick(company._id);
-                                                                }
-                                                        }>
-                                                            < MdOutlineEdit
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "grey",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-
-                                                        </button>
-
-                                                        <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                            <IconEye
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "#d6a10c",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
                                                 ))}
+
                                                 {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
-                                                     <tr
-                                                     key={index}
-                                                     className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                     style={{ border: "1px solid #ddd" }}>
-                                                     <td>
-                                                         <input
-                                                             type="checkbox"
-                                                             checked={selectedRows.includes(company._id)}
-                                                             onChange={() => handleCheckboxChange(company._id)}
-                                                             onMouseDown={() => handleMouseDown(company._id)}
-                                                             onMouseEnter={() => handleMouseEnter(company._id)}
-                                                             onMouseUp={handleMouseUp}
-                                                         />
-                                                     </td>
-                                                     <td>{startIndex - 500 + index + 1}</td>
-                                                     <td>{company["Company Name"]}</td>
-                                                     <td>{company["Company Number"]}</td>
-                                                     <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                     <td>{company["City"]}</td>
-                                                     <td>{company["State"]}</td>
-                                                     <td>{company["Company Email"]}</td>
-                                                     {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                     {(dataStatus === "Assigned") && <td>
-                                                         <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                             <p className="rematkText text-wrap m-0">
-                                                                 {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                             </p>
-                                                             <div
-                                                                 onClick={() => {
-                                                                     functionopenpopupremarks(company._id, company.Status);
-                                                                 }}
-                                                                 style={{ cursor: "pointer" }}>
-                                                                 <IconEye
+                                                    <tr
+                                                        key={index}
+                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd" }}>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows.includes(company._id)}
+                                                                onChange={() => handleCheckboxChange(company._id)}
+                                                                onMouseDown={() => handleMouseDown(company._id)}
+                                                                onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                        </td>
+                                                        <td>{startIndex - 500 + index + 1}</td>
+                                                        <td>{company["Company Name"]}</td>
+                                                        <td>{company["Company Number"]}</td>
+                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                        <td>{company["City"]}</td>
+                                                        <td>{company["State"]}</td>
+                                                        <td>{company["Company Email"]}</td>
+                                                        
+                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>
+                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <p className="rematkText text-wrap m-0">
+                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                </p>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        functionopenpopupremarks(company._id, company.Status);
+                                                                    }}
+                                                                    style={{ cursor: "pointer" }}>
+                                                                    <IconEye
 
-                                                                     style={{
-                                                                         width: "14px",
-                                                                         height: "14px",
-                                                                         color: "#d6a10c",
-                                                                         cursor: "pointer",
-                                                                         marginLeft: "4px",
-                                                                     }}
-                                                                 />
-                                                             </div>
-                                                         </div>
-                                                     </td>}
-                                                     <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                     <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                     {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                     {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                     {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                     {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                     <td>
-                                                         <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                             <MdDeleteOutline
-                                                                 style={{
-                                                                     width: "14px",
-                                                                     height: "14px",
-                                                                     color: "#bf0b0b",
-                                                                     cursor: "pointer",
-                                                                 }}
-                                                             />
-                                                         </button>
-                                                         <button className='tbl-action-btn' onClick={
-                                                             data.length === "0"
-                                                                 ? Swal.fire("Please Import Some data first")
-                                                                 : () => {
-                                                                     setOpenLeadsModifyPopUp(true);
-                                                                     handleUpdateClick(company._id);
-                                                                 }
-                                                         }>
-                                                             < MdOutlineEdit
-                                                                 style={{
-                                                                     width: "14px",
-                                                                     height: "14px",
-                                                                     color: "grey",
-                                                                     cursor: "pointer",
-                                                                 }}
-                                                             />
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                            marginLeft: "4px",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </td>}
+                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                        <td>
+                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                <MdDeleteOutline
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#bf0b0b",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                            <button className='tbl-action-btn' onClick={
+                                                                data.length === "0"
+                                                                    ? Swal.fire("Please Import Some data first")
+                                                                    : () => {
+                                                                        setOpenLeadsModifyPopUp(true);
+                                                                        handleUpdateClick(company._id);
+                                                                    }
+                                                            }>
+                                                                < MdOutlineEdit
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "grey",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
 
-                                                         </button>
-
-                                                         <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                             <IconEye
-                                                                 style={{
-                                                                     width: "14px",
-                                                                     height: "14px",
-                                                                     color: "#d6a10c",
-                                                                     cursor: "pointer",
-                                                                 }}
-                                                             />
-                                                         </button>
-                                                     </td>
-                                                 </tr>
+                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                <IconEye
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#d6a10c",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
                                                 ))}
+
                                                 {(!isFilter && !isSearching) && data.map((company, index) => (
                                                     <tr
                                                         key={index}
@@ -2477,7 +2488,6 @@ function TestLeads() {
                                                                         cursor: "pointer",
                                                                     }}
                                                                 />
-
                                                             </button>
 
                                                             <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
@@ -2498,6 +2508,7 @@ function TestLeads() {
                                     </table>
                                 </div>
                             </div>
+
                             {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
@@ -2509,6 +2520,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
+
                             {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
@@ -2520,6 +2532,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
+
                             {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
@@ -2531,6 +2544,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
+
                             {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
                                 <table>
                                     <tbody>
@@ -2542,6 +2556,7 @@ function TestLeads() {
                                     </tbody>
                                 </table>
                             )}
+
                             {/* {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
@@ -2553,6 +2568,7 @@ function TestLeads() {
                                     </button>
                                 </div>
                             )} */}
+
                             {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
@@ -3149,7 +3165,6 @@ function TestLeads() {
             </Dialog> */}
 
             {/* --------------------------dialog to assign leads--------------------------------------------------------------- */}
-
             <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data
@@ -3438,9 +3453,7 @@ function TestLeads() {
                 </div>
             </Dialog>
 
-            {/* ----------------------------------------------dialog for modify leads----------------------------------------------- */}
-
-
+            {/* --------------------------dialog for modify leads------------------------------ */}
             <Dialog className='My_Mat_Dialog' open={openLeadsModifyPopUp} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
                 <DialogTitle className="d-flex align-items-center justify-content-between">
                     <div>
@@ -3817,8 +3830,8 @@ function TestLeads() {
                     Submit
                 </button>
             </Dialog>
-            {/* //----------------------------dialog to view remarks popup------------------------- */}
 
+            {/* ---------------------------dialog to view remarks popup------------------------- */}
             <Dialog className='My_Mat_Dialog'
                 open={openRemarks}
                 onClose={closepopupRemarks}
@@ -3866,8 +3879,8 @@ function TestLeads() {
                     </div>
                 </DialogContent>
             </Dialog>
-            {/* //------------------------------drawer for filter-------------------------------------- */}
 
+            {/* ---------------------------drawer for filter----------------------------- */}
             <Drawer
                 style={{ top: "50px" }}
                 anchor="left"
@@ -4028,6 +4041,16 @@ function TestLeads() {
                                             defaultValue={null}
                                             placeholder="dd-mm-yyyy"
                                             onChange={(e) => setSelectedUploadedDate(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Extracted On</label>
+                                        <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedExtractedDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedExtractedDate(e.target.value)} />
                                     </div>
                                 </div>
                             </div>

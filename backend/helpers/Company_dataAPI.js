@@ -561,6 +561,7 @@ router.get('/filter-leads', async (req, res) => {
     selectedBDEName,
     selectedAssignDate,
     selectedUploadedDate,
+    selectedExtractedDate,
     selectedAdminName,
     selectedYear,
     monthIndex,
@@ -590,10 +591,18 @@ router.get('/filter-leads', async (req, res) => {
       baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
     console.log("oploadDate", selectedUploadedDate)
+    
     if (selectedUploadedDate) {
       baseQuery.UploadDate = {
         $gte: new Date(selectedUploadedDate).toISOString(),
         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+      };
+    }
+
+    if (selectedExtractedDate) {
+      baseQuery.extractedDate = {
+        $gte: new Date(selectedExtractedDate).toISOString(),
+        $lt: new Date(new Date(selectedExtractedDate).setDate(new Date(selectedExtractedDate).getDate() + 1)).toISOString()
       };
     }
 
