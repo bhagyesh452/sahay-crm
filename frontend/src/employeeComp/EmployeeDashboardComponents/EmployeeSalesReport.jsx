@@ -2144,7 +2144,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       default:
         return 0; // Handle default case if needed
     }
-    const improvement = (achievedRevenue / comparisonRevenue) * 100;
+    const improvement = ((comparisonRevenue - achievedRevenue) / comparisonRevenue) * 100;
     //console.log(achievedRevenue , comparisonRevenue , improvement);
     return Math.round(improvement) || 0;
   };
