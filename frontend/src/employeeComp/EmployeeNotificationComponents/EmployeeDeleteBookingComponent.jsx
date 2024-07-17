@@ -77,9 +77,12 @@ const [searchText, setSearchText] = useState("")
 
   useEffect(() => {
     if (searchText) {
-      const filteredData = filteredBookingDeleteData.filter(obj =>
-        obj["Company Name"]?.toLowerCase().includes(searchText.toLowerCase())
-      );
+      console.log(searchText)
+      console.log(filteredBookingDeleteData)
+      const filteredData = filteredBookingDeleteData.filter(obj => {
+        console.log(obj.companyName); // Log the company name
+        return obj.companyName?.toLowerCase().includes(searchText.toLowerCase());
+      });
       setBookingDeleteData(filteredData);
     } else {
       setBookingDeleteData(filteredBookingDeleteData); // Reset to original data if no search text
