@@ -17,6 +17,7 @@ import {
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 function EmployeeGeneralDataComponent({ ename }) {
@@ -24,6 +25,7 @@ function EmployeeGeneralDataComponent({ ename }) {
   const [requestData, setRequestData] = useState([]);
   const [search_requestData, setSearch_requestData] = useState([]);
   const [searchText, setSearchText] = useState("")
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
 
 
 
@@ -37,6 +39,7 @@ function EmployeeGeneralDataComponent({ ename }) {
 
   const fetchRequestGDetails = async () => {
     try {
+      setCurrentDataLoading(true)
       const response = await axios.get(`${secretKey}/requests/requestgData/${ename}`)
       const data = response.data.reverse()
       console.log(response.data)
@@ -44,6 +47,8 @@ function EmployeeGeneralDataComponent({ ename }) {
 
     } catch (error) {
       console.log("Error fetching request data", error.messgae)
+    }finally{
+      setCurrentDataLoading(false)
     }
   }
 
@@ -134,7 +139,23 @@ function EmployeeGeneralDataComponent({ ename }) {
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
+            {currentDataLoading ? (<tbody>
+              <tr>
+                <td colSpan="4" >
+                  <div className="LoaderTDSatyle">
+                    <ClipLoader
+                      color="lightgrey"
+                      loading
+                      size={30}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>)
+            :
+            (<tbody>
               {requestData.length !== 0 ?
                 requestData.map((obj, index) => (
                   <tr>
@@ -184,7 +205,7 @@ function EmployeeGeneralDataComponent({ ename }) {
                     </span>
                   </td>
                 </tr>}
-            </tbody>
+            </tbody>)}
           </table>
         </div>
       </div>
