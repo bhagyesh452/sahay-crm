@@ -164,7 +164,7 @@ router.post("/requestData", async (req, res) => {
     // Emit a socket event to notify clients about the new request
     socketIO.emit("newRequest", savedRequest);
 
-    res.json(savedRequest);
+    res.status(200).json(savedRequest);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
