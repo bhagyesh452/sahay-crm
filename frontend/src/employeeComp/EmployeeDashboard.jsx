@@ -2509,7 +2509,7 @@ function EmployeeDashboard() {
     return `${year}-${month}-${day}`;
   }
 
-  // Auto logout functionality
+  //Auto logout functionality
   useEffect(() => {
     // Function to check token expiry and initiate logout if expired
     const checkTokenExpiry = () => {
@@ -2519,9 +2519,6 @@ function EmployeeDashboard() {
           const decoded = jwtDecode(token);
           const currentTime = Date.now() / 1000; // Get current time in seconds
           if (decoded.exp < currentTime) {
-            // console.log("Decode Expirary :", decoded.exp);
-            // Token expired, perform logout actions
-            // console.log("Logout called");
             handleLogout();
           } else {
             // Token not expired, continue session
@@ -2554,6 +2551,23 @@ function EmployeeDashboard() {
     // localStorage.removeItem("loginDate");
     window.location.replace("/"); // Redirect to login page
   };
+
+  // const logout = () => {
+  //   localStorage.removeItem("newtoken");
+  //   console.log("Token removed after 1 minute");
+  //   window.location.replace("/");
+  // };
+  // useEffect(() => {
+  //   // Check if user is logged in
+  //   const token = localStorage.getItem("newtoken");
+  //   if (token) {
+  //     // Set timeout to log out user after 1 minute
+  //     const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
+
+  //     // Clear timeout if the component unmounts
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, []); // Empty dependency array ensures this runs once when the component mounts
 
   return (
     <div className="admin-dashboard">

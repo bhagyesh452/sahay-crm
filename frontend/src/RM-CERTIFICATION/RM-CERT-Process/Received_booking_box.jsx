@@ -4,14 +4,14 @@ import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHead
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import { SlActionRedo } from "react-icons/sl";
 import { IoDocumentTextOutline } from "react-icons/io5";
-
+import { options } from '../../components/Options.js';
 
 
 
 function Received_booking_box() {
 
 
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [employeeData, setEmployeeData] = useState([])
 
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -36,9 +36,73 @@ function Received_booking_box() {
     fetchData();
   }, []);
 
+//--------fetching booking data by default date should be operation date of rm portal date-------------------------------
+const [redesignedData, setRedesignedData] = useState([])
+
+const fetchRedesignedFormData = async (page) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today
+  
+    try {
+      const response = await axios.get(
+        `${secretKey}/bookings/redesigned-final-leadData`
+      );
+  
+      const filteredAndSortedData = response.data
+        .filter(item => {
+          const lastActionDate = new Date(item.lastActionDate);
+          lastActionDate.setHours(0 , 0 , 0 , 0)
+          console.log(lastActionDate , today)
+          return lastActionDate <= today; // Compare directly
+        })
+        .sort((a, b) => {
+          const dateA = new Date(a.lastActionDate);
+          const dateB = new Date(b.lastActionDate);
+          return dateB - dateA; // Sort in descending order
+        });
+  
+      setRedesignedData(filteredAndSortedData);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  
+  useEffect(() => {
+    fetchRedesignedFormData();
+  }, []);
+
+  const certificationLabels = [
+    "Start-Up India Certificate",
+    "MSME/UDYAM Certificate",
+    "ISO Certificate",
+    "IEC CODE Certificate",
+    "BIS Certificate",
+    "NSIC Certificate",
+    "FSSAI Certificate",
+    "APEDA Certificate",
+    "GST Certificate",
+    "Company Incorporation",
+    "Trademark Registration",
+    "Copyright Registration",
+    "Patent Registration",
+    "Organization DSC",
+    "Director DSC",
+    "Self Certification",
+    "GeM"
+  ];
+
+  // Filter certification options
+  const certificationOptions = options.filter(option =>
+    certificationLabels.includes(option.label)
+  );
+
+console.log("options" , certificationOptions)
+console.log("redesigned" , redesignedData)
+
+
   const mycustomloop = Array(10).fill(null); // Create an array with 10 elements
 
-  console.log('employeeData', employeeData)
+
   return (
     <div>
         <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
@@ -100,26 +164,26 @@ function Received_booking_box() {
                                     </div>
                                 </div>
                                 <div className="booking-list-body">
-                                    {mycustomloop.map((_, index) => (
+                                    {redesignedData.map((obj, index) => (
                                     <div className='rm_bking_list_box_item'>
                                         <div className='d-flex justify-content-between align-items-center'>
                                             <div className='rm_cmpny_name_services'>
                                                 <div className='rm_bking_cmpny_name My_Text_Wrap'>
-                                                    Start-Up Sahay Private Limited
+                                                    {obj["Company Name"]}
                                                 </div>
                                                 <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
                                                     <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
                                                         Seed Fund
                                                     </div>
-                                                    <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
+                                                    {/* <div className='rm_bking_item_serices clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad My_Text_Wrap mb-1'>
                                                         Income Tax Exemption
-                                                    </div>
+                                                    </div> */}
                                                     <div className='rm_bking_item_serices clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1 My_Text_Wrap mb-1'>
                                                         ISO Certificate IAF ISO 9001 1 YR (3 YR FORMAT)
                                                     </div>
-                                                    <div className='rm_bking_item_serices clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1 My_Text_Wrap mb-1'>
+                                                    {/* <div className='rm_bking_item_serices clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1 My_Text_Wrap mb-1'>
                                                         Startup Certificate
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                             <div>
