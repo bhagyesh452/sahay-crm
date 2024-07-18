@@ -94,7 +94,7 @@ router.get("/editable-LeadData/:ename", async (req, res) => {
   try {
     const sevenDaysAgo = getDate7DaysAgo();
     const data = await EditableDraftModel.find({ bdeName: ename }); // Fetch all data from the collection
-    
+
     const filteredCompany = data.filter(item => {
       const itemDate = new Date(item.requestDate); // Parse the date
       return itemDate >= sevenDaysAgo; // Filter based on the date
@@ -224,10 +224,10 @@ router.post("/delete-redesigned-booking-request/:CompanyName", async (req, res) 
     );
     const updateNotification = await NotiModel.findOneAndUpdate(
       { companyName: companyName },
-      { 
-        $set: { 
-          employeeRequestType: `Booking Edit has been Rejected`, 
-          employee_status: "Unread" 
+      {
+        $set: {
+          employeeRequestType: `Booking Edit has been Rejected`,
+          employee_status: "Unread"
         }
       },
       { new: true }
@@ -303,10 +303,10 @@ router.post("/update-redesigned-final-form/:CompanyName",
 
       const updateNotification = await NotiModel.findOneAndUpdate(
         { companyName: companyName },
-        { 
-          $set: { 
-            employeeRequestType: `Booking Edit has been Accept`, 
-            employee_status: "Unread" 
+        {
+          $set: {
+            employeeRequestType: `Booking Edit has been Accept`,
+            employee_status: "Unread"
           }
         },
         { new: true }
@@ -386,10 +386,10 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       );
       const updateNotification = await NotiModel.findOneAndUpdate(
         { companyName: CompanyName },
-        { 
-          $set: { 
-            employeeRequestType: `Booking Edit has been Accept`, 
-            employee_status: "Unread" 
+        {
+          $set: {
+            employeeRequestType: `Booking Edit has been Accept`,
+            employee_status: "Unread"
           }
         },
         { new: true }
@@ -1050,7 +1050,7 @@ router.post(
               ${newData.services[i].serviceName === "Start Up Certificate"
                   ? newData.services[i].withDSC
                     ? "Start Up Certificate With DSC"
-                    : "Start Up Certificate Without DCS"
+                    : "Start Up Certificate Without DSC"
                   : newData.services[i].serviceName
                 }
             </div>
@@ -1972,19 +1972,22 @@ router.post(
               `;
               }
 
-              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create"]
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
                   newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
-                      newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                        newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                          newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                            newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                              newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                    newData.services[i].serviceName;
+                      newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
+                        newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                          newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                            newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                              newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                    newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                      newData.services[i].serviceName === "Start Up Certificate" && newData.services[i].withDSC ? "Start Up Certificate(With DSC)" :
+                                        newData.services[i].serviceName === "Start Up Certificate" && !newData.services[i].withDSC ? "Start Up Certificate(Without DSC)" :
+                                          newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                  <thead>
@@ -1993,7 +1996,8 @@ router.post(
       Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Application Support" :
                   newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "I-Create" ? "I-Create Application Support" :
-                      newData.services[i].serviceName + " Application Support"}
+                      newData.services[i].serviceName === "DBS Grant" ? "DBS Grant Application Support" :
+                        newData.services[i].serviceName + " Application Support"}
     </td>
   </tr>
 </thead>
@@ -2101,19 +2105,22 @@ router.post(
               </tr>
               `;
               }
-              const conditionalServices = ["Seed Funding Application", "Income Tax Exemption Application", "Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create"]
+              const conditionalServices = ["Seed Funding Application", "Income Tax Exemption Application", "Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
                   newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
-                      newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                        newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                          newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                            newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                              newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                    newData.services[i].serviceName;
+                      newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
+                        newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                          newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                            newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                              newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                    newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                      newData.services[i].serviceName === "Start Up Certificate" && newData.services[i].withDSC ? "Start Up Certificate(With DSC)" :
+                                        newData.services[i].serviceName === "Start Up Certificate" && !newData.services[i].withDSC ? "Start Up Certificate(Without DSC)" :
+                                          newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                             <thead>
@@ -2122,7 +2129,8 @@ router.post(
       Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Application Support" :
                   newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" :
                     newData.services[i].serviceName === "I-Create" ? "I-Create Application Support" :
-                      newData.services[i].serviceName + " Application Support"}
+                      newData.services[i].serviceName === "DBS Grant" ? "DBS Grant Application Support" :
+                        newData.services[i].serviceName + " Application Support"}
     </td>
   </tr>
 </thead>
@@ -2212,96 +2220,230 @@ router.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
+          //   const renderServiceKawali = () => {
+          //     let servicesHtml = "";
+          //     let fundingServices = "";
+          //     let fundingServicesArray = "";
+          //     let incomeTaxServices = "";
+
+          //     // for (let i = 0; i < newData.services.length; i++) {
+          //     //   if (
+          //     //     newData.services[i].serviceName === "Start-Up India Certificate"
+          //     //   ) {
+          //     //     servicesHtml = `
+          //     //     <p class="Declaration_text_head mt-2">
+          //     //     <b>
+          //     //       Start-Up India Certification Acknowledgement:
+          //     //     </b>
+          //     //   </p>
+          //     //   <p class="Declaration_text_data">
+          //     //   I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+          //     //   </p>
+
+          //     //   `;
+          //     //   } else if (
+          //     //     allowedServiceNames.includes(newData.services[i].serviceName)
+          //     //   ) {
+          //     //     fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
+          //     //     fundingServices = `
+          //     //     <p class="Declaration_text_head mt-2">
+          //     //     <b>
+          //     //     ${newData.services[i].serviceName} Acknowledgement:   
+          //     //     </b>
+          //     //   </p>
+          //     //   <p class="Declaration_text_data">
+          //     //   I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          //     //   </p>
+          //     //   `;
+          //     //   } else if (
+          //     //     newData.services[i].serviceName === "Income Tax Exemption"
+          //     //   ) {
+
+          //     //     incomeTaxServices = `
+          //     //     <p class="Declaration_text_head mt-2">
+          //     //     <b>
+          //     //     Income Tax Exemption Document Support Services Acknowledgement:   
+          //     //     </b>
+          //     //   </p>
+          //     //   <p class="Declaration_text_data">
+          //     //   I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+          //     //   </p>
+          //     // `;
+          //     //   } else {
+          //     //     servicesHtml += `
+          //     // <br>
+          //     // `;
+          //     //   }
+          //     // }
+          //     for (let i = 0; i < newData.services.length; i++) {
+          //       if (
+          //         newData.services[i].serviceName === "Start-Up India Certificate" &&
+          //         newData.services[i].withDSC
+          //       ) {
+          //         servicesHtml = `
+          //         <p class="Declaration_text_head mt-2">
+          //         <b>
+          //           Start-Up India Certification Acknowledgement:
+          //         </b>
+          //       </p>
+          //       <p class="Declaration_text_data">
+          //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+          //       </p>
+          //       <p class="Declaration_text_data">
+          //      I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
+          //       </p>
+
+          //       `;
+          //       } else if (newData.services[i].serviceName === "Start-Up India Certificate" &&
+          //         !newData.services[i].withDSC) {
+          //         servicesHtml = `
+          //           <p class="Declaration_text_head mt-2">
+          //           <b>
+          //             Start-Up India Certification Acknowledgement:
+          //           </b>
+          //         </p>
+          //         <p class="Declaration_text_data">
+          //         I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+          //         </p>
+          //         <p class="Declaration_text_data">
+          //        I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
+          //         </p>
+
+          //         `;
+
+          //       } else if (
+          //         allowedServiceNames.includes(newData.services[i].serviceName)
+          //       ) {
+          //         fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
+          //         fundingServices = `
+          //         <p class="Declaration_text_head mt-2">
+          //         <b>
+          //         ${newData.services[i].serviceName} Acknowledgement:   
+          //         </b>
+          //       </p>
+          //       <p class="Declaration_text_data">
+          //       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          //       </p>
+          //       `;
+          //       } else if (
+          //         newData.services[i].serviceName === "Income Tax Exemption"
+          //       ) {
+
+          //         incomeTaxServices = `
+          //         <p class="Declaration_text_head mt-2">
+          //         <b>
+          //         Income Tax Exemption Document Support Services Acknowledgement:   
+          //         </b>
+          //       </p>
+          //       <p class="Declaration_text_data">
+          //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+          //       </p>
+          //     `;
+          //       } else {
+          //         servicesHtml += `
+          //     <br>
+          //     `;
+          //       }
+          //     }
+
+          //     if (fundingServicesArray !== "") {
+          //       servicesHtml += `
+          //       <p class="Declaration_text_head mt-2">
+          //       <b>
+          //       ${fundingServicesArray} Acknowledgement:    
+          //       </b>
+          //     </p>
+          //     <p class="Declaration_text_data">
+          //     I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          //     </p>
+          //   `;
+          //     }
+          //     if (incomeTaxServices !== "") {
+          //       servicesHtml += `
+          //       <p class="Declaration_text_head mt-2">
+          //       <b>
+          //       Income Tax Exemption Document Support Services Acknowledgement:     
+          //       </b>
+          //     </p>
+          //     <p class="Declaration_text_data">
+          //     I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+          //     </p>
+          // `;
+          //     }
+
+          //     return servicesHtml;
+          //   };
+
           const renderServiceKawali = () => {
             let servicesHtml = "";
-            let fundingServices = "";
             let fundingServicesArray = "";
+            let fundingServices = "";
             let incomeTaxServices = "";
 
             for (let i = 0; i < newData.services.length; i++) {
-              if (
-                newData.services[i].serviceName === "Start-Up India Certificate"
-              ) {
-                servicesHtml = `
-                <p class="Declaration_text_head mt-2">
-                <b>
-                  Start-Up India Certification Acknowledgement:
-                </b>
-              </p>
-              <p class="Declaration_text_data">
-              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-              </p>
-              
-              `;
-              } else if (
-                allowedServiceNames.includes(newData.services[i].serviceName)
-              ) {
-                fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
-                fundingServices = `
-                <p class="Declaration_text_head mt-2">
-                <b>
-                ${newData.services[i].serviceName} Acknowledgement:   
-                </b>
-              </p>
-              <p class="Declaration_text_data">
-              I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-              </p>
-              `;
-              } else if (
-                newData.services[i].serviceName === "Income Tax Exemption"
-              ) {
+              const service = newData.services[i];
 
-                incomeTaxServices = `
-                <p class="Declaration_text_head mt-2">
-                <b>
-                Income Tax Exemption Document Support Services Acknowledgement:   
-                </b>
-              </p>
-              <p class="Declaration_text_data">
-              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-              </p>
-            `;
-              } else {
+              if (service.serviceName === "Start-Up India Certificate" && service.withDSC) {
                 servicesHtml += `
-            <br>
-            `;
+                <p class="Declaration_text_head mt-2">
+                  <b>Start-Up India Certification Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data">
+                  I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+                </p>
+                <p class="Declaration_text_data">
+                  I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
+                </p>`;
+              } else if (service.serviceName === "Start-Up India Certificate" && !service.withDSC) {
+                servicesHtml += `
+                <p class="Declaration_text_head mt-2">
+                  <b>Start-Up India Certification Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data">
+                  I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+                </p>
+                <p class="Declaration_text_data">
+                  I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
+                </p>`;
+              } else if (allowedServiceNames.includes(service.serviceName)) {
+                fundingServicesArray += `${service.serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : service.serviceName + " Document Support"},`;
+                fundingServices += `
+                <p class="Declaration_text_head mt-2">
+                  <b>${service.serviceName} Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data">
+                  I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+                </p>`;
+              } else if (service.serviceName === "Income Tax Exemption") {
+                incomeTaxServices += `
+                <p class="Declaration_text_head mt-2">
+                  <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data">
+                  I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+                </p>`;
+              } else {
+                servicesHtml += `<br>`;
               }
             }
 
             if (fundingServicesArray !== "") {
-              //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-
-              //   Re-application support will be provided at no extra cost. 
-
-              // ` : ``
               servicesHtml += `
               <p class="Declaration_text_head mt-2">
-              <b>
-              ${fundingServicesArray} Acknowledgement:    
-              </b>
-            </p>
-            <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-            </p>
-          `;
-
-
+                <b>${fundingServicesArray} Acknowledgement:</b>
+              </p>
+              <p class="Declaration_text_data">
+                I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+              </p>`;
             }
+
             if (incomeTaxServices !== "") {
-              servicesHtml += `
-              <p class="Declaration_text_head mt-2">
-              <b>
-              Income Tax Exemption Document Support Services Acknowledgement:     
-              </b>
-            </p>
-            <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-            </p>
-        `;
+              servicesHtml += incomeTaxServices;
             }
 
             return servicesHtml;
           };
+
           const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
       <p class="Declaration_text_data">
         I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
@@ -2314,9 +2456,6 @@ router.post(
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
-
-
-
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const mainPageHtml = `
@@ -2339,10 +2478,7 @@ router.post(
                     <p class="Declaration_text_data">
                     As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
                     </p>
-                 
                   </div>
-               
-                  
                 </section>
               
               </div>
@@ -3945,19 +4081,22 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
             newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
-                newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                              newData.services[i].serviceName;
+                newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
+                  newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                    newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                      newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                        newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                              newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                newData.services[i].serviceName === "Start Up Certificate" && newData.services[i].withDSC ? "Start Up Certificate(With DSC)" :
+                                  newData.services[i].serviceName === "Start Up Certificate" && !newData.services[i].withDSC ? "Start Up Certificate(Without DSC)" :
+                                    newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                        <thead>
@@ -3966,7 +4105,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Application Support" :
             newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "I-Create" ? "I-Create Application Support" :
-                newData.services[i].serviceName + " Application Support"}
+                newData.services[i].serviceName === "DBS Grant" ? "DBS Grant Application Support" :
+                  newData.services[i].serviceName + " Application Support"}
     </td>
   </tr>
 </thead>
@@ -4079,19 +4219,22 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
             newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
-                newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                  newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                    newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                      newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                        newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                          newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                              newData.services[i].serviceName;
+                newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
+                  newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                    newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                      newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                        newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                          newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                              newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                newData.services[i].serviceName === "Start Up Certificate" && newData.services[i].withDSC ? "Start Up Certificate(With DSC)" :
+                                  newData.services[i].serviceName === "Start Up Certificate" && !newData.services[i].withDSC ? "Start Up Certificate(Without DSC)" :
+                                    newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                        <thead>
@@ -4100,7 +4243,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       Service: ${newData.services[i].serviceName === "Income Tax Exemption" ? "Income Tax Exemption (80IAC) Application Support" :
             newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Application Support" :
               newData.services[i].serviceName === "I-Create" ? "I-Create Application Support" :
-                newData.services[i].serviceName + " Application Support"}
+                newData.services[i].serviceName === "DBS Grant" ? "DBS Grant Application Support" :
+                  newData.services[i].serviceName + " Application Support"}
     </td>
   </tr>
 </thead>
@@ -4194,95 +4338,164 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       ? 'style="display:block'
       : 'style="display:none';
 
+    //   const renderServiceKawali = () => {
+    //     let servicesHtml = "";
+    //     let fundingServices = "";
+    //     let fundingServicesArray = "";
+    //     let incomeTaxServices = "";
+
+    //     for (let i = 0; i < newData.services.length; i++) {
+    //       if (
+    //         newData.services[i].serviceName === "Start-Up India Certificate"
+    //       ) {
+    //         servicesHtml = `
+    //         <p class="Declaration_text_head mt-2">
+    //         <b>
+    //           Start-Up India Certification Acknowledgement:
+    //         </b>
+    //       </p>
+    //       <p class="Declaration_text_data">
+    //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+    //       </p>
+    //       `;
+    //       } else if (
+    //         allowedServiceNames.includes(newData.services[i].serviceName)
+    //       ) {
+    //         fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"}`;
+    //         fundingServices = `
+    //         <p class="Declaration_text_head mt-2">
+    //         <b>
+    //         ${newData.services[i].serviceName} Acknowledgement:   
+    //         </b>
+    //       </p>
+    //       <p class="Declaration_text_data">
+    //       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+    //       </p>
+
+    //       `;
+
+
+    //       } else if (
+    //         newData.services[i].serviceName === "Income Tax Exemption"
+    //       ) {
+
+    //         incomeTaxServices = `
+    //         <p class="Declaration_text_head mt-2">
+    //         <b>
+    //         Income Tax Exemption Document Support Services Acknowledgement:   
+    //         </b>
+    //       </p>
+    //       <p class="Declaration_text_data">
+    //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+    //       </p>
+    //     `;
+    //       } else {
+    //         servicesHtml += `
+    //     <br>
+    //     `;
+    //       }
+    //     }
+
+    //     if (fundingServicesArray !== "") {
+    //       //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
+    //       //   Re-application support will be provided at no extra cost.
+
+    //       // ` : ``;
+    //       servicesHtml += `
+    //       <p class="Declaration_text_head mt-2">
+    //       <b>
+    //       ${fundingServicesArray} Acknowledgement:    
+    //       </b>
+    //     </p>
+    //     <p class="Declaration_text_data">
+    //     I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+    //     </p>
+    //   `;
+
+
+
+
+    //     }
+    //     if (incomeTaxServices !== "") {
+    //       servicesHtml += `
+    //       <p class="Declaration_text_head mt-2">
+    //       <b>
+    //       Income Tax Exemption Document Support Services Acknowledgement:     
+    //       </b>
+    //     </p>
+    //     <p class="Declaration_text_data">
+    //     I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+    //     </p>
+    // `;
+    //     }
+
+    //     return servicesHtml;
+    //   };
     const renderServiceKawali = () => {
       let servicesHtml = "";
-      let fundingServices = "";
       let fundingServicesArray = "";
+      let fundingServices = "";
       let incomeTaxServices = "";
 
       for (let i = 0; i < newData.services.length; i++) {
-        if (
-          newData.services[i].serviceName === "Start-Up India Certificate"
-        ) {
-          servicesHtml = `
-          <p class="Declaration_text_head mt-2">
-          <b>
-            Start-Up India Certification Acknowledgement:
-          </b>
-        </p>
-        <p class="Declaration_text_data">
-        I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-        </p>
-        `;
-        } else if (
-          allowedServiceNames.includes(newData.services[i].serviceName)
-        ) {
-          fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"}`;
-          fundingServices = `
-          <p class="Declaration_text_head mt-2">
-          <b>
-          ${newData.services[i].serviceName} Acknowledgement:   
-          </b>
-        </p>
-        <p class="Declaration_text_data">
-        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-        </p>
-        
-        `;
+        const service = newData.services[i];
 
-
-        } else if (
-          newData.services[i].serviceName === "Income Tax Exemption"
-        ) {
-
-          incomeTaxServices = `
-          <p class="Declaration_text_head mt-2">
-          <b>
-          Income Tax Exemption Document Support Services Acknowledgement:   
-          </b>
-        </p>
-        <p class="Declaration_text_data">
-        I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-        </p>
-      `;
-        } else {
+        if (service.serviceName === "Start-Up India Certificate" && service.withDSC) {
           servicesHtml += `
-      <br>
-      `;
+        <p class="Declaration_text_head mt-2">
+          <b>Start-Up India Certification Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+        </p>
+        <p class="Declaration_text_data">
+          I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
+        </p>`;
+        } else if (service.serviceName === "Start-Up India Certificate" && !service.withDSC) {
+          servicesHtml += `
+        <p class="Declaration_text_head mt-2">
+          <b>Start-Up India Certification Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+        </p>
+        <p class="Declaration_text_data">
+          I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
+        </p>`;
+        } else if (allowedServiceNames.includes(service.serviceName)) {
+          fundingServicesArray += `${service.serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : service.serviceName + " Document Support"},`;
+          fundingServices += `
+        <p class="Declaration_text_head mt-2">
+          <b>${service.serviceName} Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+        </p>`;
+        } else if (service.serviceName === "Income Tax Exemption") {
+          incomeTaxServices += `
+        <p class="Declaration_text_head mt-2">
+          <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+        </p>`;
+        } else {
+          servicesHtml += `<br>`;
         }
       }
 
       if (fundingServicesArray !== "") {
-        //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-        //   Re-application support will be provided at no extra cost.
-
-        // ` : ``;
         servicesHtml += `
-        <p class="Declaration_text_head mt-2">
-        <b>
-        ${fundingServicesArray} Acknowledgement:    
-        </b>
+      <p class="Declaration_text_head mt-2">
+        <b>${fundingServicesArray} Acknowledgement:</b>
       </p>
       <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-      </p>
-    `;
-
-
-
-
+        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      </p>`;
       }
+
       if (incomeTaxServices !== "") {
-        servicesHtml += `
-        <p class="Declaration_text_head mt-2">
-        <b>
-        Income Tax Exemption Document Support Services Acknowledgement:     
-        </b>
-      </p>
-      <p class="Declaration_text_data">
-      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-      </p>
-  `;
+        servicesHtml += incomeTaxServices;
       }
 
       return servicesHtml;
@@ -4692,7 +4905,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 // Request to Delete a booking
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
-    console.log("yahan chala delete wali api final")
+
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
@@ -4768,10 +4981,10 @@ router.delete(
           );
           const updateNotification = await NotiModel.findOneAndUpdate(
             { companyName: deletedBooking["Company Name"] },
-            { 
-              $set: { 
-                employeeRequestType: `Booking Delete has been Accept`, 
-                employee_status: "Unread" 
+            {
+              $set: {
+                employeeRequestType: `Booking Delete has been Accept`,
+                employee_status: "Unread"
               }
             },
             { new: true }
@@ -4810,10 +5023,10 @@ router.delete(
         );
         const updateNotification = await NotiModel.findOneAndUpdate(
           { companyName: moreObject["Company Name"] },
-          { 
-            $set: { 
-              employeeRequestType: `Booking Delete has been Accept`, 
-              employee_status: "Unread" 
+          {
+            $set: {
+              employeeRequestType: `Booking Delete has been Accept`,
+              employee_status: "Unread"
             }
           },
           { new: true }
