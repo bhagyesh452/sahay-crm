@@ -147,6 +147,10 @@ function BdmLeads() {
   const [daysInMonth, setDaysInMonth] = useState([]);
 
   useEffect(() => {
+    document.title = `BDM-Sahay-CRM`;
+  }, []);
+
+  useEffect(() => {
     let monthIndex;
     if (selectedYear && selectedMonth) {
       monthIndex = months.indexOf(selectedMonth);

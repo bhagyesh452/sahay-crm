@@ -64,6 +64,10 @@ function Employees({ onEyeButtonClick }) {
     };
   }, []);
 
+  useEffect(() => {
+    document.title = `Datamanager-Sahay-CRM`;
+  }, []);
+
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);

@@ -88,6 +88,10 @@ function ManagerBookings() {
   }, [leadFormData]);
 
   useEffect(() => {
+    document.title = `Datamanager-Sahay-CRM`;
+  }, []);
+  
+  useEffect(() => {
     setLeadFormData(
       infiniteBooking.filter((obj) =>
         obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())

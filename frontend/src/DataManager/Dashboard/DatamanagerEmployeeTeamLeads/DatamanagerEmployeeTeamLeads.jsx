@@ -178,6 +178,11 @@ function DatamanagerEmployeeTeamLeads() {
                 setDaysInMonth([]);
             }
         }, [selectedYear, selectedMonth]);
+
+        useEffect(() => {
+            document.title = `Datamanager-Sahay-CRM`;
+          }, []);
+        
     
         useEffect(() => {
             if (selectedYear && selectedMonth && selectedDate) {

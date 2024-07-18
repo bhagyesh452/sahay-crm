@@ -38,7 +38,9 @@ function DatamanagerNewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
-
+    useEffect(() => {
+        document.title = `Datamanager-Sahay-CRM`;
+      }, []);
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
