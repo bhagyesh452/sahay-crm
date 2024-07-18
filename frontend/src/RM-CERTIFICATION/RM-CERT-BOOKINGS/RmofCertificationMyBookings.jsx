@@ -12,6 +12,8 @@ import dummyImg from "../../static/EmployeeImg/office-man.png";
 import { Link } from "react-router-dom";
 import { useIsFocusVisible } from "@mui/material";
 import RmofCertificationCompanyTaskManage from "./RmofCertificationCompanyTaskManage";
+import { FaRegEye } from "react-icons/fa";
+import { CiUndo } from "react-icons/ci";
 
 
 function RmofCertificationMyBookings() {
@@ -101,7 +103,7 @@ function RmofCertificationMyBookings() {
 
     console.log(rmServicesData)
 
-    const mycustomloop = Array(7).fill(null); // Create an array with 10 elements
+    const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
     const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
 
     return (
@@ -286,9 +288,9 @@ function RmofCertificationMyBookings() {
             </div>
 
             {!openCompanyTaskComponent && <div className="page-wrapper">
-                <div className="page-header m-0">
+                <div className="page-header rm_Filter m-0">
                     <div className="container-xl">
-                        <div className="mt-3 d-flex">
+                        <div className="d-flex">
                             <div className="btn-group" role="group" aria-label="Basic example">
                                 <button type="button" className="btn mybtn"  >
                                     <IoFilterOutline className='mr-1' /> Filter
@@ -319,14 +321,14 @@ function RmofCertificationMyBookings() {
                         </div>
                     </div>
                 </div>
-                <div className="page-body m-0">
-                    <div className="container-xl">
+                <div className="page-body rm_Dtl_box m-0">
+                    <div className="container-xl mt-2">
                         <div className="my-tab card-header">
-                            <ul class="nav nav-tabs rm_task_section_navtabs card-header-tabs nav-fill p-0">
+                            <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#General">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 General
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -337,8 +339,8 @@ function RmofCertificationMyBookings() {
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link" data-bs-toggle="tab" href="#Working">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 Working
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -349,8 +351,8 @@ function RmofCertificationMyBookings() {
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link" data-bs-toggle="tab" href="#Submited">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 Submited
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -361,8 +363,8 @@ function RmofCertificationMyBookings() {
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link" data-bs-toggle="tab" href="#Approved">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 Approved
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -373,8 +375,8 @@ function RmofCertificationMyBookings() {
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link" data-bs-toggle="tab" href="#Hold">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 Hold
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -385,8 +387,8 @@ function RmofCertificationMyBookings() {
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
                                     <a class="nav-link" data-bs-toggle="tab" href="#Defaulter">
-                                        <div className="d-flex aling-items-center justify-content-between w-100">
-                                            <div>
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="rm_txt_tsn">
                                                 Defaulter
                                             </div>
                                             <div className="rm_tsn_bdge">
@@ -444,8 +446,8 @@ function RmofCertificationMyBookings() {
                                                         </td>
                                                         <td>Close By</td>
                                                         <td>₹ 8,000/-</td>
-                                                        <td><button className="btn btn-sm btn-success" onClick={()=>setOpenCompanyTaskComponent(true)}>View</button>
-                                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
+                                                        <td><button className="action-btn action-btn-primary" onClick={()=>setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
+                                                            <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -455,62 +457,7 @@ function RmofCertificationMyBookings() {
                                 </div>
                             </div>
                             <div class="tab-pane" id="Working">
-                                <div className="RM-my-booking-lists">
-                                    <div className="table table-responsive table-style-3 m-0">
-                                        <table className="table table-vcenter table-nowrap">
-                                            <thead>
-                                                <tr className="tr-sticky">
-                                                    <th>Sr.No</th>
-                                                    <th>Company Name</th>
-                                                    <th>Company Number</th>
-                                                    <th>BOOKING DATE</th>
-                                                    <th>SERVICE NAME</th>
-                                                    <th>BDE NAME</th>
-                                                    <th>BDM NAME</th>
-                                                    <th>BDM TYPE</th>
-                                                    <th>Total Payment</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {mycustomloop.map((_, index) => (
-                                                    <tr>
-                                                        <td><b>1</b></td>
-                                                        <td><b>India Private Limited</b></td>
-                                                        <td>9924283530</td>
-                                                        <td>20/02/2024</td>
-                                                        <td><b>Start-up India Certificate</b></td>
-                                                        <td>
-                                                            <div className="d-flex align-items-center justify-content-center">
-                                                                {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                <div> Vishal Gohel</div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="d-flex align-items-center justify-content-center">
-                                                                {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                <div> Vishnu  Suthar</div>
-                                                            </div>
-                                                        </td>
-                                                        <td>Close By</td>
-                                                        <td>₹ 8,000/-</td>
-                                                        <td><button className="btn btn-sm btn-success" onClick={()=>setOpenCompanyTaskComponent(true)}>
-                                                          
-                                                                View
-                                                           
-                                                        </button>
-                                                            <button className="btn btn-sm btn-danger ml-1">Undo</button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+
                             </div>
                             <div class="tab-pane" id="Submited">
 
