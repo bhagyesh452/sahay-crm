@@ -309,7 +309,6 @@ router.post("/requestgData", async (req, res) => {
       ename: name,
       cTime: cTime,
       cDate: cDate,
-      assigned_status: "New Leads Assigned"
     });
 
     // Save the data to MongoDB
@@ -338,13 +337,72 @@ router.post("/requestgData", async (req, res) => {
       status: "Unread",
       employee_status: "Unread",
       img_url: GetEmployeeProfile,
-      companyName: "Number Leads Approved"
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
 
 
     socketIO.emit("newRequest", {
+      name: name,
+      dAmonut: numberOfData,
+    });
+    // Emit a socket.io message when a new request is posted
+    // io.emit('newRequest', savedRequest);
+
+    res.json(savedRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/gDataByAdmin", async (req, res) => {
+
+  try {
+    const { numberOfData, name, cTime, cDate } = req.body;
+    const socketIO = req.io;
+    // Create a new RequestModel instance
+    const newRequest = new RequestGModel({
+      dAmount: numberOfData,
+      ename: name,
+      cTime: cTime,
+      cDate: cDate,
+      assigned_status: "New Leads Assigned"
+    });
+
+    // Save the data to MongoDB
+    const savedRequest = await newRequest.save();
+    const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+    const requestCreate = {
+      ename:name,
+      requestType: "Lead Upload",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      employee_status: "Unread",
+      companyName: "Approved Bulk Leads",
+      employeeRequestType: "Leads Are Assigned",
+    };
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+
+
+    socketIO.emit("new-leads-assigned", {
       name: name,
       dAmonut: numberOfData,
     });

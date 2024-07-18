@@ -932,7 +932,7 @@ router.post("/postAssignData", async (req, res) => {
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel),
       executeBulkOperations(RemarksHistory, bulkOperationsRemarksHistory)
     ]);
-    socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
+    //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
       title,
@@ -941,23 +941,23 @@ router.post("/postAssignData", async (req, res) => {
     });
     await newUpdate.save();
 
-    if (employeeSelection !== "Not Alloted" || employeeSelection !== 'Extracted') {
-      const requestCreate = {
-        ename: employeeSelection,
-        requestType: "Lead Upload",
-        requestTime: new Date(),
-        designation: "SE",
-        status: "Unread",
-        employee_status: "Unread",
-        companyName: "Approved Bulk Leads",
-        employeeRequestType: "Leads Are Assigned",
-      };
+    // if (employeeSelection !== "Not Alloted" || employeeSelection !== 'Extracted') {
+    //   const requestCreate = {
+    //     ename: employeeSelection,
+    //     requestType: "Lead Upload",
+    //     requestTime: new Date(),
+    //     designation: "SE",
+    //     status: "Unread",
+    //     employee_status: "Unread",
+    //     companyName: "Approved Bulk Leads",
+    //     employeeRequestType: "Leads Are Assigned",
+    //   };
       
-      console.log("requestcreate", requestCreate)
-      const addRequest = new NotiModel(requestCreate);
-      await addRequest.save();
-      socketIO.emit('new-leads-assigned', employeeSelection);
-    }
+    //   console.log("requestcreate", requestCreate)
+    //   const addRequest = new NotiModel(requestCreate);
+    //   await addRequest.save();
+    //   socketIO.emit('new-leads-assigned', employeeSelection);
+    // }
 
 
 

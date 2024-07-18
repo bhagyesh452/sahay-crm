@@ -1361,7 +1361,7 @@ function TestLeads() {
                 time
             });
 
-            const response = await axios.post(`${secretKey}/requests/requestgData`, {
+            const response = await axios.post(`${secretKey}/requests/gDataByAdmin`, {
                 numberOfData: dataToSend.length,
                 name: employeeSelection,
                 cTime,
