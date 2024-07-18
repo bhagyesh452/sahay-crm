@@ -18,35 +18,103 @@ function CustomerLogin() {
         return re.test(String(email).toLowerCase());
     };
 
+    // const handleSendOtp = async () => {
+    //     if (email.length === 0) {
+    //         setErrorMessage("Please enter your email");
+    //         setShowOtpTextBox(false);
+    //         return;
+    //     }
+
+    //     if (!validateEmail(email)) {
+    //         setErrorMessage("Please enter a valid email");
+    //         setShowOtpTextBox(false);
+    //         return;
+    //     }
+
+    //     try {
+    //         const response = await axios.post(`${secretKey}/customer/send-otp`, { email });
+
+    //         const response2 = await axios.get(`${secretKey}/customer/fetch-lead-from-email/${email}`);
+    //         console.log("Fetched data is :", response2.data.data);
+
+    //         localStorage.setItem("companyEmail", response2.data.data["Company Email"]);
+    //         localStorage.setItem("companyName", response2.data.data["Company Name"]);
+    //         localStorage.setItem("companyPhoneNo", response2.data.data["Company Number"]);
+    //         localStorage.setItem("companyPanNo", response2.data.data["panNumber"]);
+    //         localStorage.setItem("companyServices", response2.data.data["services"]);
+
+    //         if (response.status === 200 && response2.status === 200) {
+    //             setShowOtpTextBox(true);
+    //         } else if (response2.status === 404) {
+    //             setShowOtpTextBox(false);
+    //             setErrorMessage("Email not registered");
+    //         } else {
+    //             setErrorMessage('Error sending OTP. Please try again.');
+    //         }
+    //     } catch (error) {
+    //         setErrorMessage('Error sending OTP. Please try again.');
+    //     }
+    // };
+
     const handleSendOtp = async () => {
         if (email.length === 0) {
             setErrorMessage("Please enter your email");
             setShowOtpTextBox(false);
             return;
         }
-
+    
         if (!validateEmail(email)) {
             setErrorMessage("Please enter a valid email");
             setShowOtpTextBox(false);
             return;
         }
-
+    
         try {
-            const response = await axios.post(`${secretKey}/customer/send-otp`, { email });
-
-            if (response.status === 200) {
-                setShowOtpTextBox(true);
+            const response2 = await axios.get(`${secretKey}/customer/fetch-lead-from-email/${email}`);
+    
+            if (response2.status === 200) {
+                console.log("Fetched data is:", response2.data.data);
                 setErrorMessage("");
+                
+                localStorage.setItem("companyEmail", response2.data.data["Company Email"]);
+                localStorage.setItem("companyName", response2.data.data["Company Name"]);
+                localStorage.setItem("companyPhoneNo", response2.data.data["Company Number"]);
+                localStorage.setItem("companyPanNo", response2.data.data["panNumber"]);
+                localStorage.setItem("companyServices", response2.data.data["services"]);
+    
+                const response = await axios.post(`${secretKey}/customer/send-otp`, { email });
+    
+                if (response.status === 200) {
+                    setShowOtpTextBox(true);
+                    setErrorMessage("");    
+                } else {
+                    setShowOtpTextBox(false);
+                    setErrorMessage('Error sending OTP. Please try again.');
+                }
             } else {
-                setErrorMessage('Error sending OTP. Please try again.');
+                setShowOtpTextBox(false);
+                setErrorMessage("Email not registered");
             }
         } catch (error) {
-            setErrorMessage('Error sending OTP. Please try again.');
+            if (error.response && error.response.status === 404) {
+                setShowOtpTextBox(false);
+                setErrorMessage("Email not registered");
+            } else {
+                setShowOtpTextBox(false);
+                setErrorMessage('Error sending OTP. Please try again.');
+            }
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (otp.length === 0) {
+            setErrorMessage("Please enter otp");
+            return;
+        }
+
         try {
             const response = await axios.post(`${secretKey}/customer/verify-otp`, { email, otp });
 
