@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
 import "../dist/css/tabler-payments.min.css?1684106062";
@@ -41,29 +41,33 @@ function EmpNav({ userId, bdmWork }) {
     window.location.replace(`/employee-bookings/${userId}`)
   }
 
-  const handleClickReports=()=>{
+  const handleClickReports = () => {
     window.location.replace(`/employee-reports/${userId}`)
   }
-  const [data, setData] = useState([])
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/employee/einfo`);
-      // Set the retrieved data in the state
-      const tempData = response.data;
-      const userData = tempData.find((item) => item._id === userId);
-      setData(userData);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  useEffect(()=>{
-      fetchData()
-  },[userId])
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(`${secretKey}/employee/einfo`);
 
-  console.log("data" , data)
+
+  //     // Set the retrieved data in the state
+  //     const tempData = response.data;
+  //     const userData = tempData.find((item) => item._id === userId);
+  //     setData(userData);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error.message);
+  //   }
+  // };
+  // const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  // useEffect(() => {
+  //   if (userId) {
+  //     fetchData()
+  //   }
+  // }, [userId])
+
   
+
 
   return (
     <div>
@@ -108,7 +112,7 @@ function EmpNav({ userId, bdmWork }) {
                 >
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
+                      <GrDocumentStore style={{ height: "22px", width: "15px" }} />
                     </span>
                     <span className="nav-link-title">My Leads</span>
                   </a>
@@ -116,7 +120,7 @@ function EmpNav({ userId, bdmWork }) {
                 </Link>
 
 
-                {data.bdmWork && (
+                {bdmWork && (
                   <Link style={{ textDecoration: "none", color: "black" }} className={
                     location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                   }
