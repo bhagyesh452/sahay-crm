@@ -224,6 +224,10 @@ function EmployeePanel() {
 
   //console.log(userId);
 
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, [data.ename]);
+
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
     audio.play();

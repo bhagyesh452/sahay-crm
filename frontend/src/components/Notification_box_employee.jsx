@@ -87,6 +87,9 @@ function Notification_box_employee({ name }) {
     console.log("totalnotification", total_notifications)
     // ------------------------------------  Socket IO Requests ----------------------------------------------------------------
     useEffect(() => {
+        if(name){
+            
+        }
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
             path: '/socket.io',
@@ -103,6 +106,9 @@ function Notification_box_employee({ name }) {
         socket.on("editBooking_requested", (res) => {
             fetchNotification()
         });
+        socket.on("new-leads-assigned", (res) => {
+            fetchNotification();
+        })
         socket.on("approve-request", (res) => {
             fetchNotification()
         });
@@ -136,7 +142,7 @@ function Notification_box_employee({ name }) {
         socket.on("booking-updated", (res) => {
             fetchNotification();
         });
-        socket.on("bookingbooking-edit-request-delete",()=>{
+        socket.on("bookingbooking-edit-request-delete", () => {
             fetchNotification();
         })
         // Clean up the socket connection when the component unmounts
@@ -201,7 +207,15 @@ function Notification_box_employee({ name }) {
                                         <div className='noti-designation'>{obj.designation}</div>
                                     </div>
                                     <div className='noti-data'>
-                                        <p className='m-0 My_Text_Wrap' title=''><b>You</b> Sent a <b>{obj.requestType} Request</b></p>
+                                        <p className="m-0 My_Text_Wrap" title={obj.employeeRequestType}>
+                                            {obj.employeeRequestType === "Leads Are Assigned" ? (
+                                                <b>New Leads Are Assigned</b>
+                                            ) : (
+                                                <>
+                                                    <b>Your request of</b> <b>{obj.employeeRequestType}</b>
+                                                </>
+                                            )}
+                                        </p>
                                         <div className='noti-time mt-1'>
                                             {formatDate(obj.requestTime)}
                                         </div>

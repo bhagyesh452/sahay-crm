@@ -2208,7 +2208,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                         </div>}
                       </div>
                       <div className="dsrd-TARGET-INCENTIVE">
-                        TARGET - <b>₹ {showData ? functionGetAmount().toLocaleString() : "XXXXX"}</b> | INCENTIVE - <b>₹ {showData ? (functionGetAmount() < functionCalculateAchievedRevenue() ? parseInt((functionCalculateAchievedRevenue() - functionGetAmount()) / 10).toLocaleString() : 0) : "XXXXX"}</b>
+                        TARGET - <b>₹ {showData ? functionGetAmount().toLocaleString() : "XXXXX"}</b> | INCENTIVE - <b>₹ {showData ? (functionGetAmount() < functionCalculateAchievedRevenue(Filterby) ? parseInt((functionCalculateAchievedRevenue(Filterby) - functionGetAmount()) / 10).toLocaleString() : 0) : "XXXXX"}</b>
                       </div>
                     </div>
                   </div>

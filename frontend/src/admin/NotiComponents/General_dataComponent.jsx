@@ -139,6 +139,7 @@ function General_dataComponent() {
             });
         }
     };
+    
     const handleConfirmAssign = async () => {
         const employeeSelection = name;
         const selectedObjects = selectedRows;

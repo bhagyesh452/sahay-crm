@@ -9,7 +9,7 @@ const TeamLeadsModel = require('../models/TeamLeads.js');
 const FollowUpModel = require("../models/FollowUp");
 const { Parser } = require('json2csv');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
-
+const NotiModel = require('../models/Notifications.js');
 
 function formatDateFinal(timestamp) {
   const date = new Date(timestamp);
@@ -274,7 +274,7 @@ router.post('/exportLeads', async (req, res) => {
           };
         }
       }
-      
+
       if (selectedCompanyIncoDate) {
         console.log(selectedCompanyIncoDate, "yahan chala")
         const selectedDate = new Date(selectedCompanyIncoDate);
@@ -297,8 +297,8 @@ router.post('/exportLeads', async (req, res) => {
       if (dataStatus === 'Unassigned') {
         query.ename = 'Not Alloted';
       } else if (dataStatus === 'Assigned') {
-        query.ename = { $nin: ['Not Alloted' , "Extracted"] };
-      } else if(dataStatus === 'Extracted'){
+        query.ename = { $nin: ['Not Alloted', "Extracted"] };
+      } else if (dataStatus === 'Extracted') {
         query.ename = "Extracted"
       }
     }
@@ -550,7 +550,7 @@ router.get('/getIds', async (req, res) => {
       }
     }
     if (selectedCompanyIncoDate) {
-      
+
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
@@ -572,8 +572,8 @@ router.get('/getIds', async (req, res) => {
       if (dataStatus === 'Unassigned') {
         query.ename = 'Not Alloted';
       } else if (dataStatus === 'Assigned') {
-        query.ename = { $nin: ['Not Alloted' , "Extracted"] };
-      } else if(dataStatus === "Extracted"){
+        query.ename = { $nin: ['Not Alloted', "Extracted"] };
+      } else if (dataStatus === "Extracted") {
         query.ename = "Extracted"
       }
     }
@@ -651,10 +651,10 @@ router.get('/getIds', async (req, res) => {
       allIds,
       assigned: assignedData,
       unassigned: unassignedData,
-      extracted:extractedData,
+      extracted: extractedData,
       totalAssigned: assignedCount,
       totalUnassigned: unassignedCount,
-      extractedDataCount : extractedDataCount,
+      extractedDataCount: extractedDataCount,
       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
     });
   } catch (error) {
@@ -853,7 +853,6 @@ router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
   const socketIO = req.io;
   const dataSize = selectedObjects.length;
-
   // Helper function to perform bulk operations in parallel
   const executeBulkOperations = async (model, operations, batchSize = 100) => {
     for (let i = 0; i < operations.length; i += batchSize) {
@@ -861,7 +860,7 @@ router.post("/postAssignData", async (req, res) => {
       await model.bulkWrite(batch);
     }
   };
-  
+
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({
@@ -886,7 +885,7 @@ router.post("/postAssignData", async (req, res) => {
           bdmStatusChangeTime: "",
           bdmRemarks: "",
           RevertBackAcceptedCompanyRequest: "",
-          Remarks:""
+          Remarks: ""
         }
       }
     }
@@ -931,9 +930,9 @@ router.post("/postAssignData", async (req, res) => {
       executeBulkOperations(TeamLeadsModel, bulkOperationsTeamLeads),
       executeBulkOperations(FollowUpModel, bulkOperationsProjection),
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel),
-      executeBulkOperations(RemarksHistory ,bulkOperationsRemarksHistory)
+      executeBulkOperations(RemarksHistory, bulkOperationsRemarksHistory)
     ]);
-    socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
+    //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
     // Add the recent update to the RecentUpdatesModel
     const newUpdate = new RecentUpdatesModel({
       title,
@@ -941,6 +940,26 @@ router.post("/postAssignData", async (req, res) => {
       time
     });
     await newUpdate.save();
+
+    // if (employeeSelection !== "Not Alloted" || employeeSelection !== 'Extracted') {
+    //   const requestCreate = {
+    //     ename: employeeSelection,
+    //     requestType: "Lead Upload",
+    //     requestTime: new Date(),
+    //     designation: "SE",
+    //     status: "Unread",
+    //     employee_status: "Unread",
+    //     companyName: "Approved Bulk Leads",
+    //     employeeRequestType: "Leads Are Assigned",
+    //   };
+      
+    //   console.log("requestcreate", requestCreate)
+    //   const addRequest = new NotiModel(requestCreate);
+    //   await addRequest.save();
+    //   socketIO.emit('new-leads-assigned', employeeSelection);
+    // }
+
+
 
     res.json({ message: "Data posted successfully" });
   } catch (error) {
@@ -953,7 +972,7 @@ router.post("/postExtractedData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
   const socketIO = req.io;
   const dataSize = selectedObjects.length;
-  
+
   // Helper function to perform bulk operations in parallel
   const executeBulkOperations = async (model, operations, batchSize = 100) => {
     for (let i = 0; i < operations.length; i += batchSize) {
@@ -976,10 +995,10 @@ router.post("/postExtractedData", async (req, res) => {
           Status: "Untouched",
           isDeletedEmployeeCompany: obj.Status === "Matured",
           extractedMultipleBde: obj.extractedMultipleBde && Array.isArray(obj.extractedMultipleBde)
-          ? [...obj.extractedMultipleBde, obj.ename]
-          : [obj.ename],
-          lastAssignedEmployee:obj.ename,
-          extractedDate:new Date()
+            ? [...obj.extractedMultipleBde, obj.ename]
+            : [obj.ename],
+          lastAssignedEmployee: obj.ename,
+          extractedDate: new Date()
         },
         $unset: {
           bdmName: "",

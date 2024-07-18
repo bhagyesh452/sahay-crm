@@ -47,7 +47,7 @@ function EmployeeGeneralDataComponent({ ename }) {
 
     } catch (error) {
       console.log("Error fetching request data", error.messgae)
-    }finally{
+    } finally {
       setCurrentDataLoading(false)
     }
   }
@@ -55,19 +55,19 @@ function EmployeeGeneralDataComponent({ ename }) {
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
-    
+
     socket.on("data-sent", () => {
       fetchRequestGDetails()
-      });
+    });
 
-    socket.on("delete-leads-request-bde" , ()=>{
+    socket.on("delete-leads-request-bde", () => {
       fetchRequestGDetails()
     });
-   
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
@@ -154,58 +154,71 @@ function EmployeeGeneralDataComponent({ ename }) {
                 </td>
               </tr>
             </tbody>)
-            :
-            (<tbody>
-              {requestData.length !== 0 ?
-                requestData.map((obj, index) => (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>
-                      <div className="Notification-date d-flex align-items-center justify-content-center">
-                        
+              :
+              (<tbody>
+                {requestData.length !== 0 ?
+                  requestData.map((obj, index) => (
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>
+                        <div className="Notification-date d-flex align-items-center justify-content-center">
+
+                          <div style={{ marginLeft: '5px' }} className="noti-text">
+                            <b>
+                              {obj.dAmount}
+                            </b>
+                          </div>
+                        </div>
+                      </td>
+                      <td><div className="Notification-date d-flex align-items-center justify-content-center">
+                        <MdDateRange style={{ fontSize: '16px' }} />
                         <div style={{ marginLeft: '5px' }} className="noti-text">
                           <b>
-                            {obj.dAmount}
+                            {formatDate(obj.cDate)}
                           </b>
                         </div>
-                      </div>
-                    </td>
-                    <td><div className="Notification-date d-flex align-items-center justify-content-center">
-                      <MdDateRange style={{ fontSize: '16px' }} />
-                      <div style={{ marginLeft: '5px' }} className="noti-text">
-                        <b>
-                          {formatDate(obj.cDate)}
-                        </b>
-                      </div>
-                    </div></td>
-                    <td>
-                      <div>
-                        {!obj.assigned && <div className="Notification-folder-open">
-                          Pending
-                        </div>}
-                      </div>
-                      {obj.assigned && <div className='d-flex align-items-center justify-content-center'>
-                        <div className="Notification_completedbtn">
-                          Accepted
+                      </div></td>
+                      <td>
+                        <div>
+                          {obj.assigned_status === "New Leads Assigned" ? (
+                            <div className="Notification-folder-open">
+                              New Leads
+                            </div>
+                          ) : (
+                            <div>
+                              {!obj.assigned && (
+                                <div className="Notification-folder-open">
+                                  Pending
+                                </div>
+                              )}
+                              {obj.assigned && (
+                                <div className='d-flex align-items-center justify-content-center'>
+                                  <div className="Notification_completedbtn">
+                                    Accepted
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </div>}
+
                       </td>
-                  </tr>
-                ))
-                : <tr>
-                  <td colSpan={5}>
-                    <span
-                      style={{
-                        textAlign: "center",
-                        fontSize: "25px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <Nodata />
-                    </span>
-                  </td>
-                </tr>}
-            </tbody>)}
+                    </tr>
+                  ))
+                  : <tr>
+                    <td colSpan={5}>
+                      <span
+                        style={{
+                          textAlign: "center",
+                          fontSize: "25px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <Nodata />
+                      </span>
+                    </td>
+                  </tr>}
+              </tbody>)}
           </table>
         </div>
       </div>

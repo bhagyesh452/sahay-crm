@@ -35,7 +35,9 @@ import { AiOutlineUserDelete } from "react-icons/ai";
 function NewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-
+    useEffect(() => {
+        document.title = `Admin-Sahay-CRM`;
+      }, []);
 
 
     function CustomTabPanel(props) {

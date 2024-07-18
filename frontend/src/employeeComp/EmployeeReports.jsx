@@ -185,7 +185,9 @@ function EmployeeReports() {
   const [moreEmpData, setmoreEmpData] = useState([])
   const [speed, setSpeed] = useState(0);
 
-
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, [data.ename]);
 
 
   // -------------------------api for contact number-------------------------------------------------------

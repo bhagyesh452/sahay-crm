@@ -30,6 +30,12 @@ employee_status:{
 img_url:{
     type:String,
 },
+companyName:{
+    type:String
+},
+employeeRequestType:{
+    type:String,
+}
 
 });
 

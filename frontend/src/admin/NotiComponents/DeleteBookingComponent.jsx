@@ -111,10 +111,10 @@ function DeleteBookingComponent() {
     }
   };
 
-  const handleDeleteRequest = async (Id) => {
+  const handleDeleteRequest = async (Id , companyName) => {
     try {
-      const response = await axios.post(
-        `${secretKey}/requests/deleterequestbybde/${Id}`
+      const response = await axios.post(`${secretKey}/requests/deleterequestbybde/${Id}` , 
+        companyName
       );
       console.log("Deleted company:", response.data);
       Swal.fire({ title: "Request Rejected", icon: "success" });
@@ -207,7 +207,7 @@ function DeleteBookingComponent() {
                       <div className="Notification_acceptbtn" onClick={() => handleAcceptDeleteRequest(obj.companyID, obj.bookingIndex)}>
                         <TiTick />
                       </div>
-                      <div className="Notification_rejectbtn" onClick={() => handleDeleteRequest(obj._id)}>
+                      <div className="Notification_rejectbtn" onClick={() => handleDeleteRequest(obj._id , obj.companyName)}>
                         <ImCross />
                       </div>
                     </div>}

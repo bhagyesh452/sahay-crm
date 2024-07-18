@@ -9,6 +9,11 @@ function RmCertificationDashboard() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [employeeData, setEmployeeData] = useState([])
 
+
+  useEffect(() => {
+    document.title = `RMOFCERT-Sahay-CRM`;
+  }, []);
+  
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   console.log(rmCertificationUserId)
 

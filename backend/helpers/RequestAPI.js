@@ -42,7 +42,7 @@ router.post("/requestCompanyData", async (req, res) => {
           ...employeeData,
           AssignDate: new Date(),
           assigned: "Pending",
-          requestDate:new Date()
+          requestDate: new Date()
         };
         //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
@@ -83,6 +83,7 @@ router.post("/requestCompanyData", async (req, res) => {
       status: "Unread",
       employee_status: "Unread",
       img_url: GetEmployeeProfile,
+      companyName: "Approved Bulk Leads"
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
@@ -197,25 +198,40 @@ router.get("/get-notification", async (req, res) => {
 router.get("/get-notification/:name", async (req, res) => {
   try {
     const { name } = req.params;
-    console.log("name" , name)
+    console.log("name", name);
+
     // Query to get the top 5 unread notifications sorted by requestTime
-    const topUnreadNotifications = await NotiModel.find({ ename: name, employee_status: "Unread" })
-      .sort({ requestTime: -1 })
-      .limit(5);
+    if (name) {
+      const topUnreadNotifications = await NotiModel.find({
+        ename: name,
+        employee_status: "Unread",
+        employeeRequestType: { $ne: null, $ne: "", $exists: true }
+        //srequestType: { $ne: "Lead Upload" } // Corrected this line
+      })
+        .sort({ requestTime: -1 })
+        .limit(5);
+      console.log("unred employee notification", topUnreadNotifications)
+      // Query to get the count of all unread notifications for the specified ename
+      const totalUnreadCount = await NotiModel.countDocuments({
+        ename: name,
+        employee_status: "Unread",
+        employeeRequestType: { $ne: null, $ne: "", $exists: true }
+      });
 
-    // Query to get the count of all unread notifications for the specified ename
-    const totalUnreadCount = await NotiModel.countDocuments({ ename: name, employee_status: "Unread" });
+      // Respond with both the top unread notifications and the total count
+      res.status(200).json({
+        topUnreadNotifications,
+        totalUnreadCount
+      });
 
-    // Respond with both the top unread notifications and the total count
-    res.status(200).json({
-      topUnreadNotifications,
-      totalUnreadCount
-    });
+    }
+
   } catch (err) {
     console.error("Error fetching notifications", err);
     res.status(500).json({ message: "Error fetching notifications", error: err });
   }
 });
+
 router.put('/update-notification/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -320,13 +336,73 @@ router.post("/requestgData", async (req, res) => {
       designation: "SE",
       status: "Unread",
       employee_status: "Unread",
-      img_url: GetEmployeeProfile
+      img_url: GetEmployeeProfile,
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
 
 
     socketIO.emit("newRequest", {
+      name: name,
+      dAmonut: numberOfData,
+    });
+    // Emit a socket.io message when a new request is posted
+    // io.emit('newRequest', savedRequest);
+
+    res.json(savedRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/gDataByAdmin", async (req, res) => {
+
+  try {
+    const { numberOfData, name, cTime, cDate } = req.body;
+    const socketIO = req.io;
+    // Create a new RequestModel instance
+    const newRequest = new RequestGModel({
+      dAmount: numberOfData,
+      ename: name,
+      cTime: cTime,
+      cDate: cDate,
+      assigned_status: "New Leads Assigned"
+    });
+
+    // Save the data to MongoDB
+    const savedRequest = await newRequest.save();
+    const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
+    let GetEmployeeProfile = "no-image"
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+
+
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+
+      } else {
+        GetEmployeeProfile = "no-image";
+      }
+    } else {
+      GetEmployeeProfile = "no-image";
+    }
+
+    const requestCreate = {
+      ename:name,
+      requestType: "Lead Upload",
+      requestTime: new Date(),
+      designation: "SE",
+      status: "Unread",
+      employee_status: "Unread",
+      companyName: "Approved Bulk Leads",
+      employeeRequestType: "Leads Are Assigned",
+    };
+    const addRequest = new NotiModel(requestCreate);
+    const saveRequest = await addRequest.save();
+
+
+    socketIO.emit("new-leads-assigned", {
       name: name,
       dAmonut: numberOfData,
     });
@@ -371,7 +447,7 @@ router.get('/requestgData/:ename', async (req, res) => {
   try {
     const sevenDaysAgo = getDate7DaysAgo();
     const allData = await RequestGModel.find({ ename });
-    
+
     const filteredCompany = allData.filter(item => {
       const itemDate = parseDateString2(item.cDate);
       return itemDate >= sevenDaysAgo;
@@ -393,6 +469,17 @@ router.put("/requestData/:id", async (req, res) => {
     const updatedNotification = await RequestModel.findByIdAndUpdate(
       id,
       { read, assigned },
+      { new: true }
+    );
+
+    const updateNotificationModel = await NotiModel.findOneAndUpdate(
+      { companyName: "Number Leads Approved" },
+      {
+        $set: {
+          employeeRequestType: "Leads Are Approved",
+          employee_status: "Unread"
+        }
+      },
       { new: true }
     );
 
@@ -420,6 +507,18 @@ router.put("/requestgData/:id", async (req, res) => {
       { read, assigned },
       { new: true }
     );
+
+    const updateNotificationModel = await NotiModel.findOneAndUpdate(
+      { companyName: "Number Leads Approved" },
+      {
+        $set: {
+          employeeRequestType: `${updatedNotification.dAmount} Leads Are Approved`,
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    )
+
     const name = updatedNotification.ename;
     if (!updatedNotification) {
       return res.status(404).json({ error: "Notification not found" });
@@ -446,14 +545,14 @@ router.put("/requestgData/:id", async (req, res) => {
       requestTime: new Date(),
       designation: "SE",
       status: "Unread",
-      employee_status:"Unread",
+      employee_status: "Unread",
       img_url: GetEmployeeProfile
     }
     const addRequest = new NotiModel(requestCreate);
     const saveRequest = await addRequest.save();
     socketIO.emit("data-sent", {
-      name : name,
-      dAmount : updatedNotification.dAmount
+      name: name,
+      dAmount: updatedNotification.dAmount
     });
 
     res.status(200).json(updatedNotification);
@@ -485,7 +584,18 @@ router.delete("/requestgData/:id", async (req, res) => {
   try {
     // Find the document by its ID
     const notification = await RequestGModel.findById(id);
-    
+
+    const updateNotificationModel = await NotiModel.findOneAndUpdate(
+      { companyName: "Number Leads Approved" },
+      {
+        $set: {
+          employeeRequestType: `${notification.dAmount} Leads Are Rejected`,
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    )
+
     // If the document doesn't exist, return an error
     if (!notification) {
       return res.status(404).json({ error: "Request not found" });
@@ -573,9 +683,10 @@ router.post("/deleterequestbybde", async (req, res) => {
       designation: "SE",
       status: "Unread",
       employee_status: "Unread",
-      img_url: GetEmployeeProfile
+      img_url: GetEmployeeProfile,
+      companyName: companyName
     };
-
+    console.log("requestcreate", requestCreate)
     const addRequest = new NotiModel(requestCreate);
     await addRequest.save();
 
@@ -590,7 +701,7 @@ router.post("/deleterequestbybde", async (req, res) => {
 
 router.get("/deleterequestbybde", async (req, res) => {
   try {
-    const company = await RequestDeleteByBDE.find({assigned : "Pending"});
+    const company = await RequestDeleteByBDE.find({ assigned: "Pending" });
     res.json(company);
   } catch (error) {
     console.error(error);
@@ -654,7 +765,7 @@ router.get("/editRequestByBde", async (req, res) => {
 });
 
 router.post("/deleterequestbybde/:id", async (req, res) => {
-
+  const { companyName } = req.body
   try {
     const _id = req.params.id;
     const socketIO = req.io;
@@ -665,13 +776,24 @@ router.post("/deleterequestbybde/:id", async (req, res) => {
       { new: true }
     );
 
+    const updateNotification = await NotiModel.findOneAndUpdate(
+      { companyName: companyName },
+      {
+        $set: {
+          employeeRequestType: `Booking Request has been Rejected`,
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    )
+
     if (!updatedCompany) {
       return res.status(404).json({ error: "Company not found" });
     }
 
     socketIO.emit('delete-request-done-ondelete', {
-      name : updatedCompany.ename,
-      companyName : updatedCompany.companyName
+      name: updatedCompany.ename,
+      companyName: updatedCompany.companyName
     });
 
     // If document is updated successfully, return the updated document
@@ -715,6 +837,17 @@ router.post("/update-data/:ename", async (req, res) => {
       await CompanyRequestModel.updateOne({ _id: employeeData._id }, { assigned: "Accept" });
     }
 
+    const updateNotificationModel = await NotiModel.findOneAndUpdate(
+      { companyName: "Approved Bulk Leads" },
+      {
+        $set: {
+          employeeRequestType: "Leads Are Approved",
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    )
+
     // Emit an event to notify clients
     socketIO.emit('data-action-performed', ename);
 
@@ -743,7 +876,16 @@ router.post("/update-data-ondelete/:ename", async (req, res) => {
       // Update the assigned field for each employee data
       await CompanyRequestModel.updateOne({ _id: employeeData._id }, { assigned: "Reject" });
     }
-
+    const updateNotificationModel = await NotiModel.findOneAndUpdate(
+      { companyName: "Approved Bulk Leads" },
+      {
+        $set: {
+          employeeRequestType: "Leads Are Rejected",
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    )
     // Emit an event to notify clients
     socketIO.emit('data-action-performed-ondelete', ename);
 
@@ -816,7 +958,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         "Company Name": companyName,
         bookingIndex,
         requestDate,
-        assigned:"Pending",
+        assigned: "Pending",
         ...newData,
       });
       const name = newData.bdeName;
@@ -843,8 +985,9 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
         requestTime: new Date(),
         designation: "SE",
         status: "Unread",
-        employee_status:"Unread",
-        img_url: GetEmployeeProfile
+        employee_status: "Unread",
+        img_url: GetEmployeeProfile,
+        companyName: companyName
       }
       const addRequest = new NotiModel(requestCreate);
       const saveRequest = await addRequest.save();
@@ -904,7 +1047,7 @@ router.get("/requestCompanyData/:ename", async (req, res) => {
   try {
     const sevenDaysAgo = getDate7DaysAgo();
     const allData = await CompanyRequestModel.find({ ename: ename });
-    const filteredCompany = allData.filter(item=>{
+    const filteredCompany = allData.filter(item => {
       const itemDate = new Date(item.requestDate);
       return itemDate >= sevenDaysAgo;
     })
