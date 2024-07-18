@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect , useState } from 'react';
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
 import "../dist/css/tabler-payments.min.css?1684106062";
@@ -11,6 +11,14 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { LiaDigitalTachographSolid } from "react-icons/lia";
 import { VscGraph } from "react-icons/vsc";
 import { GrDocumentStore } from "react-icons/gr";
+import axios from 'axios';
+
+
+
+
+
+
+
 function EmpNav({ userId, bdmWork }) {
   const location = useLocation();
 
@@ -36,6 +44,26 @@ function EmpNav({ userId, bdmWork }) {
   const handleClickReports=()=>{
     window.location.replace(`/employee-reports/${userId}`)
   }
+  const [data, setData] = useState([])
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      // Set the retrieved data in the state
+      const tempData = response.data;
+      const userData = tempData.find((item) => item._id === userId);
+      setData(userData);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  useEffect(()=>{
+      fetchData()
+  },[userId])
+
+  console.log("data" , data)
+  
 
   return (
     <div>
@@ -44,9 +72,9 @@ function EmpNav({ userId, bdmWork }) {
           <div className="navbar">
             <div className="container-xl">
               <ul className="navbar-nav">
-                <li className={
+                <Link style={{ textDecoration: "none", color: "black" }} className={
                   location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
-                } onClick={handleDashboardClick}>
+                } to={`/employee-dashboard/${userId}`}>
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -71,16 +99,13 @@ function EmpNav({ userId, bdmWork }) {
                     </span>
                     <span className="nav-link-title">Dashboard</span>
                   </a>
-                </li>
-                <li onClick={handleConvertedLeadsClicksame}
+                </Link>
+                <Link to={`/employee-data/${userId}`}
                   className={
                     location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
                   }
+                  style={{ textDecoration: "none", color: "black" }}
                 >
-                  {/* <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to={"/employee-data/"}
-                  > */}
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
@@ -88,14 +113,14 @@ function EmpNav({ userId, bdmWork }) {
                     <span className="nav-link-title">My Leads</span>
                   </a>
                   {/* </Link> */}
-                </li>
+                </Link>
 
 
-                {bdmWork && (
-                  <li className={
+                {data.bdmWork && (
+                  <Link style={{ textDecoration: "none", color: "black" }} className={
                     location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                   }
-                    onClick={handleConvertedLeadsClick}>
+                    to={`/employee-team-leads/${userId}`}>
 
                     <a className="nav-link" href="#">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -105,28 +130,28 @@ function EmpNav({ userId, bdmWork }) {
                       <span className="nav-link-title">Team Leads</span>
                     </a>
 
-                  </li>
+                  </Link>
                 )}
-                <li
+                <Link style={{ textDecoration: "none", color: "black" }}
                   className={
                     location.pathname === `/employee-bookings/${userId}` ? "nav-item active" : "nav-item"
                   }
-                  onClick={handleClickMyBookings}
+                  to={`/employee-bookings/${userId}`}
                 >
 
-                  <a className="nav-link" href="#">
+                  <a className="nav-link" href="./">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       <BiBookContent style={{ height: "24px", width: "19px" }} />
                     </span>
                     <span className="nav-link-title">My Bookings</span>
                   </a>
 
-                </li>
-                <li
+                </Link>
+                <Link style={{ textDecoration: "none", color: "black" }}
                   className={
                     location.pathname === `/employee-reports/${userId}` ? "nav-item active" : "nav-item"
                   }
-                  onClick={handleClickReports}
+                  to={`/employee-reports/${userId}`}
                 >
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -135,7 +160,7 @@ function EmpNav({ userId, bdmWork }) {
                     <span className="nav-link-title">Reports</span>
                   </a>
 
-                </li>
+                </Link>
               </ul>
 
             </div>

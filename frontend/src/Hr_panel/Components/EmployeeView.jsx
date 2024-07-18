@@ -46,6 +46,11 @@ function EmployeeProfile() {
   const [empImg1, setEmpImg1] = useState(
     localStorage.getItem("empImg1") || "initial_image_url"
   );
+
+  useEffect(() => {
+    document.title = `HR-Sahay-CRM`;
+  }, []);
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);
   const [editempinfo , setEditEmpInfo] = useState(false);
