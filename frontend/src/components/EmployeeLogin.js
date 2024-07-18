@@ -105,6 +105,9 @@ function EmployeeLogin({ setnewToken }) {
     };
   }, []);
 
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, []);
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();

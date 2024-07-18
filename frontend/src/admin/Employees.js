@@ -94,6 +94,10 @@ function Employees({ onEyeButtonClick }) {
     }
   };
   useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
+  
+  useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path: '/socket.io',
@@ -661,6 +665,7 @@ function Employees({ onEyeButtonClick }) {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
+
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
 

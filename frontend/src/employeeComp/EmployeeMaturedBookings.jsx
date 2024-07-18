@@ -51,8 +51,10 @@ function EmployeeMaturedBookings() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 
-  console.log(userId)
 
+  useEffect(() => {
+    document.title = `Employee-Sahay-CRM`;
+  }, [data.ename]);
 
   const fetchData = async () => {
     try {

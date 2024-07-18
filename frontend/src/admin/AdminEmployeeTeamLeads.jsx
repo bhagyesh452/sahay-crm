@@ -173,6 +173,10 @@ function AdminEmployeeTeamLeads() {
     const [daysInMonth, setDaysInMonth] = useState([]);
 
     useEffect(() => {
+        document.title = `Admin-Sahay-CRM`;
+      }, []);
+
+    useEffect(() => {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);

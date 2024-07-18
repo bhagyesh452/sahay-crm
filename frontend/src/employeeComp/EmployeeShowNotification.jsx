@@ -49,7 +49,9 @@ function EmployeeShowNotification() {
         fetchData()
     }, [])
 
-
+    useEffect(() => {
+        document.title = `Employee-Sahay-CRM`;
+      }, [data.ename]);
 
 
 // console.log("boom" , employeeName)  

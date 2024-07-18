@@ -16,7 +16,10 @@ function RMofCertificationListViewBookings({ bookingsData }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+    useEffect(() => {
+        document.title = `RMOFCERT-Sahay-CRM`;
+      }, []);
+      
     const handleViewTable = () => {
         setOpenTableView(true)
         setOpenListView(false)

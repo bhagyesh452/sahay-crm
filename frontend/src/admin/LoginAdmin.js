@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
@@ -14,6 +14,10 @@ function LoginAdmin({ setToken }) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
 
   // e.preventDefault();
   // const response = await fetch('http://62.72.56.202:3001/login');

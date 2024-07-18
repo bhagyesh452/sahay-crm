@@ -70,6 +70,7 @@ const { Parser } = require("json2csv");
 const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
 const RMServicesAPI = require("./helpers/RMServicesApi.js")
+const CustomerAPI = require("./helpers/CustomerApi.js")
 const { MongoClient } = require('mongodb');
 // const { Cashfree } = require('cashfree-pg');
 
@@ -112,7 +113,7 @@ app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
 app.use('/api/rm-services', RMServicesAPI)
 app.use('/api/clientform', ClientAPI)
-
+app.use('/api/customer', CustomerAPI)
 
 
 

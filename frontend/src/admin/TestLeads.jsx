@@ -99,6 +99,10 @@ function TestLeads() {
     //       setAuthToken(token);
     //     }, [token]);
 
+    useEffect(() => {
+        document.title = `Admin-Sahay-CRM`;
+      }, []);
+
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
@@ -1319,6 +1323,14 @@ function TestLeads() {
     //         Swal.fire("Error Assigning Data");
     //     }
     // };
+    function formatDateproper(inputDate) {
+        const options = { month: "long", day: "numeric", year: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+          "en-US",
+          options
+        );
+        return formattedDate;
+      }
 
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
@@ -1326,12 +1338,18 @@ function TestLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus
+        const dateObject = new Date();
+        const hours = dateObject.getHours().toString().padStart(2, "0");
+        const minutes = dateObject.getMinutes().toString().padStart(2, "0");
+        const cTime = `${hours}:${minutes}`;
+        const cDate = formatDateproper(dateObject);
 
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData
         const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
         //const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
+        console.log("length", dataToSend.length)
         try {
             setOpenBacdrop(true)
             setOpenAssignLeadsDialog(false)
@@ -1341,6 +1359,13 @@ function TestLeads() {
                 title,
                 date,
                 time
+            });
+
+            const response = await axios.post(`${secretKey}/requests/gDataByAdmin`, {
+                numberOfData: dataToSend.length,
+                name: employeeSelection,
+                cTime,
+                cDate,
             });
 
             if (isFilter) {
@@ -2265,7 +2290,7 @@ function TestLeads() {
                                                         </td>}
                                                         <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                         <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                        
+
                                                         {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
                                                         {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                         {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
@@ -2335,7 +2360,7 @@ function TestLeads() {
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
-                                                        
+
                                                         {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                         {(dataStatus === "Assigned") && <td>
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">

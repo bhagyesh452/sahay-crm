@@ -147,6 +147,10 @@ function EmployeeParticular() {
     );
     return formattedDate;
   }
+
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
   // Function to fetch employee details by id
   // const fetchEmployeeDetails = async () => {
   //   try {

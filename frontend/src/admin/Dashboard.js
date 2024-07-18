@@ -153,6 +153,10 @@ function Dashboard() {
       });
   };
 
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
+
   const [employeeInfo, setEmployeeInfo] = useState([])
   const [forwardEmployeeData, setForwardEmployeeData] = useState([])
   const [forwardEmployeeDataFilter, setForwardEmployeeDataFilter] = useState([])

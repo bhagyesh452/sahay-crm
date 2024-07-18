@@ -26,6 +26,9 @@ const requestSchema = new mongoose.Schema({
   AssignRead : {
     type:Boolean,
     default:false
+  },
+  assigned_status:{
+    type:String
   }
 });
 

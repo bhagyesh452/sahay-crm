@@ -47,7 +47,13 @@ function Header({ name, designation, empProfile }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
+    });
+    socket.on("new-leads-assigned", (res) => {
+      if (res.name === name) {
+        enqueueSnackbar(`New Leads Assigned To You!PLEASE REFRESH 🔄`, { variant: "reportComplete", persist: true });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
     });
     socket.on("delete-leads-request-bde", (res) => {
       if (res.name === name) {
@@ -56,14 +62,15 @@ function Header({ name, designation, empProfile }) {
         audioplayer.play();
       }
     })
-    socket.on("data-assigned", (res) => {
-      if (res === name) {
-        enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
-        const audioplayer = new Audio(notification_audio);
-        audioplayer.play();
-      }
+    // socket.on("data-assigned", (res) => {
+    //   if (res === name) {
+    //     enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
+    //     const audioplayer = new Audio(notification_audio);
+    //     audioplayer.play();
+    //   }
 
-    });
+    // });
+
     socket.on("data-action-performed", (res) => {
       if (name === res) {
         enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {

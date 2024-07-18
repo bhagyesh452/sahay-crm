@@ -89,6 +89,10 @@ function RmofCertificationBookings() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
 
+  useEffect(() => {
+    document.title = `RMOFCERT-Sahay-CRM`;
+  }, []);
+
   const defaultLeadData = {
     "Company Name": "",
     "Company Number": 0,
