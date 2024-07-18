@@ -40,7 +40,9 @@ import AdminEmployeePerformanceReport from "./AdminEmployeePerformanceReport.jsx
 function Dashboard() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-
+    useEffect(() => {
+        document.title = `Admin-Sahay-CRM`;
+      }, []);
 
 
     function CustomTabPanel(props) {
