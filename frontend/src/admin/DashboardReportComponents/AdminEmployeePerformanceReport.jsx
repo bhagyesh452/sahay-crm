@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Nodata from '../../components/Nodata';
+import ClipLoader from "react-spinners/ClipLoader";
 
 function AdminEmployeePerformanceReport() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -8,16 +9,20 @@ function AdminEmployeePerformanceReport() {
   const [expandedEmployee, setExpandedEmployee] = useState(null);
   const [isFilter, setIsFilter] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
+  const [currentDataLoading, setCurrentDataLoading] = useState(false);
 
   const fetchEmployeePerformance = async () => {
     try {
+      setCurrentDataLoading(true);
       const response = await axios.get(`${secretKey}/employee/einfo`);
       console.log("Employee data is :", response.data);
       setEmpPerformanceData(response.data);
       setFilteredData(response.data);
     } catch (error) {
       console.error('Error fetching employee performance:', error);
-    }
+    } finally {
+      setCurrentDataLoading(false);
+  }
   };
 
   const toggleEmployeeDetails = (employeeId) => {
@@ -40,6 +45,7 @@ function AdminEmployeePerformanceReport() {
   let achievedAmount = 0;
 
   const handleFilterBranchOffice = (branch) => {
+    setCurrentDataLoading(true);
     console.log("Employee data in handle filter :", empPerformanceData);
     if (branch === "none") {
       setFilteredData(empPerformanceData);
