@@ -84,7 +84,10 @@ const CompanySchema = new mongoose.Schema({
   requestDate:{
     type:Date,
     default:new Date()
-  }
+  },
+  UploadDate: {
+    type: Date
+  }, 
 
 });
 

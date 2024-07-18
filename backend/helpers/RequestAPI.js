@@ -42,7 +42,8 @@ router.post("/requestCompanyData", async (req, res) => {
           ...employeeData,
           AssignDate: new Date(),
           assigned: "Pending",
-          requestDate: new Date()
+          requestDate: new Date(),
+          UploadDate:new Date(),
         };
         //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
@@ -210,7 +211,7 @@ router.get("/get-notification/:name", async (req, res) => {
       })
         .sort({ requestTime: -1 })
         .limit(5);
-      console.log("unred employee notification", topUnreadNotifications)
+      //console.log("unred employee notification", topUnreadNotifications)
       // Query to get the count of all unread notifications for the specified ename
       const totalUnreadCount = await NotiModel.countDocuments({
         ename: name,

@@ -229,6 +229,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     useEffect(() => {
         functionCalculateAchievedRevenue();
     }, [redesignedData]);
+    
     const fetchEmployeeData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`)
@@ -295,7 +296,6 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                             <tbody>
                                 {data.targetDetails ? (
                                     sortedTargetDetails
-                                        .filter((perData) => perData.month !== currentMonth) // Exclude the current month
                                         .map((perData, index) => (
                                             <tr key={`${index + 1}`}>
                                                 <td>{`${perData.month} - ${String(perData.year).slice(-2)}`}</td>
