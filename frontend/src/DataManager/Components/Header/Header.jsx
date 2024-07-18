@@ -54,7 +54,7 @@ function Header({ name }) {
       audioplayer.play();
     });
     socket.on("newRequest", (res) => {
-      enqueueSnackbar(`${res.name} Is Asking For ${res.dAmonut} General Data`, {
+      enqueueSnackbar(`${res.name} Is Asking For Data`, {
         variant: 'reportComplete',
         persist:true
       });
