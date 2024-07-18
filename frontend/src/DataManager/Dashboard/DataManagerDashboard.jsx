@@ -127,6 +127,10 @@ function Dashboard() {
 
   const [companyDataTotal, setCompanyDataTotal] = useState([])
 
+  useEffect(() => {
+    document.title = `Datamanager-Sahay-CRM`;
+  }, []);
+
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
     fetch(`${secretKey}/company-data/leads`)

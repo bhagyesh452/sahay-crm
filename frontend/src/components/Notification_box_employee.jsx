@@ -87,9 +87,6 @@ function Notification_box_employee({ name }) {
     console.log("totalnotification", total_notifications)
     // ------------------------------------  Socket IO Requests ----------------------------------------------------------------
     useEffect(() => {
-        if(name){
-            
-        }
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
             path: '/socket.io',
@@ -153,10 +150,8 @@ function Notification_box_employee({ name }) {
 
 
     useEffect(() => {
-        if (name) {
-            fetchNotification();
-        }
-    }, [name])
+        fetchNotification();
+    }, [])
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);

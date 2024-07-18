@@ -167,6 +167,10 @@ function EmployeeLeads() {
     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
     useEffect(() => {
+        document.title = `Datamanager-Sahay-CRM`;
+      }, []);
+
+    useEffect(() => {
         let monthIndex;
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);

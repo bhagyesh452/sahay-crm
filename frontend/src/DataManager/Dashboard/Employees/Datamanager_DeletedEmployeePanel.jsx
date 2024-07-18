@@ -85,6 +85,10 @@ function Datamanager_DeletedEmployeePanel() {
     setFilteredData(filtered);
   };
 
+  useEffect(() => {
+    document.title = `Datamanager-Sahay-CRM`;
+  }, []);
+
   const adminName = localStorage.getItem("adminName")
   // ----------------------------------------- material ui bdm work switch---------------------------------------
 

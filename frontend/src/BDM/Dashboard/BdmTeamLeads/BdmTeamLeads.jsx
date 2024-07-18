@@ -82,6 +82,9 @@ function BdmTeamLeads() {
   const [openBacdrop, setOpenBacdrop] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
 
+  useEffect(() => {
+    document.title = `BDM-Sahay-CRM`;
+  }, []);
 
   // States for filtered and searching data :
   const stateList = State.getStatesOfCountry("IN");
