@@ -2535,11 +2535,10 @@ router.post(
               extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
             } else if (service.serviceName === "Income Tax Exemption Application") {
               extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+            }else if(service.serviceName === "GST Registration Application Support"){
+              extraServiceName = "GST Registration Application Support"
             }
           })
-
-
-
           const renamedExtraServiceName = extraServiceName == ("Seed Fund Application") ? "Seed Fund Application Support" : extraServiceName == "Income Tax Exemption Application" ? "Income Tax Exemption Application Support" : "Seed Fund Application Support , Income Tax Exemption Application Support"
           const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" || obj.serviceName === "Income Tax Exemption Application") ? `<div class="PDF_main">
       <section>
@@ -2627,7 +2626,7 @@ router.post(
           })) ? 2 : tempPageLength;
 
 
-          const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
+          const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application" || extraServiceName ===  "GST Registration Application Support") ? pagelength + 1 : pagelength
 
 
           const options = {
@@ -4519,6 +4518,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
       } else if (service.serviceName === "Income Tax Exemption Application") {
         extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+      }else if(service.serviceName === "GST Registration Application Support"){
+        extraServiceName = "GST Registration Application Support"
       }
     })
 
@@ -4609,7 +4610,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     })) ? 2 : tempPageLength;
 
 
-    const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
+    const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application" || extraServiceName ===  "GST Registration Application Support") ? pagelength + 1 : pagelength
+    //const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
 
 
     const options = {
