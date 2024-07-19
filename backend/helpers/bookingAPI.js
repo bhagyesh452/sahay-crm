@@ -106,6 +106,8 @@ router.get("/editable-LeadData/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 // Get Request for bookings Draft 
 router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
@@ -118,7 +120,7 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
 
     if (existingData) {
       // If company exists in RedesignedDraftModel, return the data
-      return res.json(existingData);
+      return res.status(200).json(existingData);
     }
 
     // If company not found in RedesignedDraftModel, search in RedesignedLeadformModel
@@ -163,12 +165,13 @@ router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
       bdeName: newData.bdeName,
       bdeEmail: newData.bdeEmail,
     });
-    res.json(TempDataObject);
+    res.status(200).json(TempDataObject);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data" });
   }
 });
+
 // Get Request for fetching bookings Data
 router.get("/redesigned-final-leadData", async (req, res) => {
   try {

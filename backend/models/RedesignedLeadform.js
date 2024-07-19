@@ -1,20 +1,20 @@
 const mongoose = require("mongoose");
 
 const isoTypeSchema = new mongoose.Schema({
-  serviceID:{
-    type:Number
+  serviceID: {
+    type: Number
   },
-  type:{
-    type:String
+  type: {
+    type: String
   },
-  IAFtype1:{
-    type:String
+  IAFtype1: {
+    type: String
   },
-  IAFtype2:{
-    type:String
+  IAFtype2: {
+    type: String
   },
-  Nontype:{
-    type:String
+  Nontype: {
+    type: String
   }
 })
 
@@ -32,11 +32,11 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  withGST:{
-    type:Boolean
-  },  
-  withDSC:{
-    type:Boolean
+  withGST: {
+    type: Boolean
+  },
+  withDSC: {
+    type: Boolean
   },
   paymentTerms: {
     type: String,
@@ -54,57 +54,57 @@ const ServiceSchema = new mongoose.Schema({
   fourthPayment: {
     type: Number,
   },
-  secondPaymentRemarks:{
+  secondPaymentRemarks: {
     type: String,
   },
-  thirdPaymentRemarks:{
+  thirdPaymentRemarks: {
     type: String,
   },
-  fourthPaymentRemarks:{
+  fourthPaymentRemarks: {
     type: String,
   },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
   },
-  expanse:{
-    type:Number
+  expanse: {
+    type: Number
   },
-  expanseDate:{
-    type:Date
+  expanseDate: {
+    type: Date
   }
 });
 
 const RemainingPaymentSchema = new mongoose.Schema({
-  serviceName : {
-    type:String
+  serviceName: {
+    type: String
   },
-  remainingAmount:{
-    type:Number
+  remainingAmount: {
+    type: Number
   },
-  paymentMethod:{
-    type:String
+  paymentMethod: {
+    type: String
   },
-  extraRemarks :{
-    type:String
+  extraRemarks: {
+    type: String
   },
-  totalPayment:{
-    type:Number
+  totalPayment: {
+    type: Number
   },
-  receivedPayment:{
-    type:Number
+  receivedPayment: {
+    type: Number
   },
-  pendingPayment:{
-    type:Number
+  pendingPayment: {
+    type: Number
   },
-  paymentReceipt:{
-    type:Array
+  paymentReceipt: {
+    type: Array
   },
-  paymentDate:{
-    type:Date
+  paymentDate: {
+    type: Date
   },
-  publishDate:{
-    type:Date
+  publishDate: {
+    type: Date
   }
 })
 
@@ -113,8 +113,8 @@ const TempSchema = new mongoose.Schema({
   bdeName: {
     type: String,
   },
-  bdmType:{
-    type:String,
+  bdmType: {
+    type: String,
   },
   bdeEmail: {
     type: String,
@@ -122,8 +122,8 @@ const TempSchema = new mongoose.Schema({
   bdmName: {
     type: String,
   },
-  otherBdmName:{
-    type:String,
+  otherBdmName: {
+    type: String,
   },
   bdmEmail: {
     type: String,
@@ -140,8 +140,8 @@ const TempSchema = new mongoose.Schema({
   bookingSource: {
     type: String,
   },
-  otherBookingSource:{
-    type:String,
+  otherBookingSource: {
+    type: String,
   },
   numberOfServices: {
     type: Number,
@@ -177,51 +177,51 @@ const TempSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  generatedTotalAmount:{
-    type:Number,
+  generatedTotalAmount: {
+    type: Number,
   },
-  generatedReceivedAmount:{
-    type:Number,
+  generatedReceivedAmount: {
+    type: Number,
   },
-  otherDocs : {
-    type : Array
+  otherDocs: {
+    type: Array
   },
   Step1Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step2Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step3Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step4Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step5Status: {
     type: Boolean,
-    default:false
+    default: false
   },
-  remainingPayments : [RemainingPaymentSchema]
+  remainingPayments: [RemainingPaymentSchema]
 });
 
 const RedesignedLeadformSchema = new mongoose.Schema({
-    company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'newcdatas',
-        localField: 'Company Name',
-        foreignField: 'Company Name',
-        justOne: true,
-        match: { Status: 'Matured' }
-      },
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'newcdatas',
+    localField: 'Company Name',
+    foreignField: 'Company Name',
+    justOne: true,
+    match: { Status: 'Matured' }
+  },
   "Company Name": {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   "Company Number": {
     type: Number,
@@ -231,12 +231,12 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  panNumber:{
-    type:String,
-    required:true
+  panNumber: {
+    type: String,
+    required: true
   },
-  gstNumber:{
-    type:String
+  gstNumber: {
+    type: String
   },
   incoDate: {
     type: String,
@@ -253,14 +253,14 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   bdeEmail: {
     type: String,
   },
-  bdmType:{
-    type:String,
+  bdmType: {
+    type: String,
   },
   bdmEmail: {
     type: String,
   },
-  otherBdmName:{
-    type:String,
+  otherBdmName: {
+    type: String,
   },
   lastActionDate: {
     type: String,
@@ -271,6 +271,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   bookingDate: {
     type: String,
     required: true,
+  },
+  bookingTime: {
+    type: Date,
   },
   bookingSource: {
     type: String,
@@ -297,9 +300,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type: String,
   },
   paymentReceipt: {
-    type : Array
-  },otherDocs : {
-    type : Array
+    type: Array
+  }, otherDocs: {
+    type: Array
   },
   extraNotes: {
     type: String,
@@ -313,21 +316,21 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  generatedTotalAmount:{
-    type:Number,
+  generatedTotalAmount: {
+    type: Number,
   },
-  generatedReceivedAmount:{
-    type:Number,
+  generatedReceivedAmount: {
+    type: Number,
   },
-  moreBookings:[TempSchema],
-  remainingPayments : [RemainingPaymentSchema],
-  isDeletedEmployeeCompany:{
-    type:Boolean,
-    default:false,
+  moreBookings: [TempSchema],
+  remainingPayments: [RemainingPaymentSchema],
+  isDeletedEmployeeCompany: {
+    type: Boolean,
+    default: false,
   }
-  
+
 });
 
-const RedesignedLeadformModel = mongoose.model("RedesignedLeadform",RedesignedLeadformSchema);
+const RedesignedLeadformModel = mongoose.model("RedesignedLeadform", RedesignedLeadformSchema);
 
 module.exports = RedesignedLeadformModel;
