@@ -2219,6 +2219,7 @@ router.post(
               ...allowedServiceNames,
               "Income Tax Exemption",
               "Start-Up India Certificate",
+              "GST Registration Application Support",
             ];
             return tempServices.includes(service.serviceName);
           })
@@ -2280,30 +2281,12 @@ router.post(
                 <p class="Declaration_text_head mt-2">
                   <b>GST Registration Application Support Acknowledgement:</b>
                 </p>
-                <ol>
-
-                <li>Scope of Work:</li>
-
-                <ul>
-                <li class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</li>
-                <li class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</li>
-                </ul>
-
-                <li>Dealing with GST Officers:</li> 
-
-                <ul>
-                <li class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</li>
-                <li class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</li>
-                </ul>
-
-                 <li>Non-Refundable Payment:</li> 
-
-                <ul>
-                <li class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</li>
-                <li class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</li>
-                </ul>
-
-                </ol>
+                <p class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</p>
+                <p class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</p> 
+                <p class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</p>
+                <p class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</p>              
+                <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</p>
+                <p class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
                 `
 
               } else {
@@ -4279,34 +4262,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
           </p>`;
         } else if (service.serviceName === "GST Registration Application Support") {
           gstCertificateServices += `
-          <p class="Declaration_text_head mt-2">
-            <b>GST Registration Application Support Acknowledgement:</b>
-          </p>
-          <ol>
-
-          <li>Scope of Work:</li>
-
-          <ul>
-          <li class="Declaration_text_data">I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</li>
-          <li class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</li>
-          </ul>
-
-          <li>Dealing with GST Officers:</li> 
-
-          <ul>
-          <li class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</li>
-          <li class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</li>
-          </ul>
-
-           <li>Non-Refundable Payment:</li> 
-
-          <ul>
-          <li class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</li>
-          <li class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</li>
-          </ul>
-
-          </ol>
-          `
+                <p class="Declaration_text_head mt-2">
+                  <b>GST Registration Application Support Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</p>
+                <p class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</p> 
+                <p class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</p>
+                <p class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</p>              
+                <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</p>
+                <p class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
+                `
 
         } else {
           servicesHtml += `<br>`;

@@ -14,6 +14,7 @@ function Received_booking_box() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
+    const [currentLeadform, setCurrentLeadform] = useState(null);
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
 
@@ -73,6 +74,7 @@ function Received_booking_box() {
     //--------fetching booking data by default date should be operation date of rm portal date-------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
     const [leadFormData, setLeadFormData] = useState([]);
+    const [currentCompanyName, setCurrentCompanyName] = useState("");
 
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-07-15");
@@ -97,6 +99,7 @@ function Received_booking_box() {
 
             setRedesignedData(filteredAndSortedData);
             setLeadFormData(filteredAndSortedData)
+            //setCurrentCompanyName(filteredAndSortedData[0]["Company Name"])
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -133,7 +136,14 @@ function Received_booking_box() {
         certificationLabels.includes(option.label)
     );
 
+    useEffect(() => {
+        if (currentCompanyName === "") {
+            setCurrentLeadform(leadFormData[0]);
+        }
+    }, [leadFormData]);
+
     console.log("leadformdata", leadFormData)
+    console.log("currentleadform" , currentLeadform)
 
     return (
         <div>
@@ -197,7 +207,25 @@ function Received_booking_box() {
                                     </div>
                                     <div className="booking-list-body">
                                         {leadFormData.length !== 0 && leadFormData.map((obj, index) => (
-                                            <div className='rm_bking_list_box_item'>
+                                            <div  className={
+                                                currentLeadform &&
+                                                    currentLeadform["Company Name"] ===
+                                                    obj["Company Name"]
+                                                    ? "rm_bking_list_box_item activeBox"
+                                                    : "rm_bking_list_box_item"
+                                            } 
+                                            onClick={() =>{
+
+                                                setCurrentLeadform(
+                                                  leadFormData.find(
+                                                    (data) =>
+                                                      data["Company Name"] === obj["Company Name"]
+                                                  )
+                                                )
+                                
+                                              }
+                                              }
+                                              >
                                                 <div className='d-flex justify-content-between align-items-center'>
                                                     <div className='rm_cmpny_name_services'>
                                                         <div className='rm_bking_cmpny_name My_Text_Wrap'>
@@ -283,10 +311,15 @@ function Received_booking_box() {
                                                     </div>
                                                     <div className='d-flex justify-content-between align-items-center'>
                                                         <div className='rm_total_bking'>
-                                                            Total Booking : <b>2</b>
+                                                            Total Booking :
+                                                            <b>
+                                                                2 {/* {Array.isArray(leadFormData.moreBookings) ? leadFormData.moreBookings.length + 1  : 1} */}
+                                                            </b>
                                                         </div>
                                                         <div className='rm_total_services'>
-                                                            Total Services : <b>5</b>
+                                                            Total Services : <b>
+
+                                                            </b>
                                                         </div>
                                                     </div>
                                                 </div>
