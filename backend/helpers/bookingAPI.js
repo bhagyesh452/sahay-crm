@@ -2204,6 +2204,7 @@ router.post(
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Support",
+            
           ];
           const AuthorizedName = newData.services.some((service) => {
             const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
@@ -2223,165 +2224,14 @@ router.post(
           })
             ? 'style="display:block'
             : 'style="display:none';
-          //   const renderServiceKawali = () => {
-          //     let servicesHtml = "";
-          //     let fundingServices = "";
-          //     let fundingServicesArray = "";
-          //     let incomeTaxServices = "";
 
-          //     // for (let i = 0; i < newData.services.length; i++) {
-          //     //   if (
-          //     //     newData.services[i].serviceName === "Start-Up India Certificate"
-          //     //   ) {
-          //     //     servicesHtml = `
-          //     //     <p class="Declaration_text_head mt-2">
-          //     //     <b>
-          //     //       Start-Up India Certification Acknowledgement:
-          //     //     </b>
-          //     //   </p>
-          //     //   <p class="Declaration_text_data">
-          //     //   I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-          //     //   </p>
-
-          //     //   `;
-          //     //   } else if (
-          //     //     allowedServiceNames.includes(newData.services[i].serviceName)
-          //     //   ) {
-          //     //     fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
-          //     //     fundingServices = `
-          //     //     <p class="Declaration_text_head mt-2">
-          //     //     <b>
-          //     //     ${newData.services[i].serviceName} Acknowledgement:   
-          //     //     </b>
-          //     //   </p>
-          //     //   <p class="Declaration_text_data">
-          //     //   I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          //     //   </p>
-          //     //   `;
-          //     //   } else if (
-          //     //     newData.services[i].serviceName === "Income Tax Exemption"
-          //     //   ) {
-
-          //     //     incomeTaxServices = `
-          //     //     <p class="Declaration_text_head mt-2">
-          //     //     <b>
-          //     //     Income Tax Exemption Document Support Services Acknowledgement:   
-          //     //     </b>
-          //     //   </p>
-          //     //   <p class="Declaration_text_data">
-          //     //   I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-          //     //   </p>
-          //     // `;
-          //     //   } else {
-          //     //     servicesHtml += `
-          //     // <br>
-          //     // `;
-          //     //   }
-          //     // }
-          //     for (let i = 0; i < newData.services.length; i++) {
-          //       if (
-          //         newData.services[i].serviceName === "Start-Up India Certificate" &&
-          //         newData.services[i].withDSC
-          //       ) {
-          //         servicesHtml = `
-          //         <p class="Declaration_text_head mt-2">
-          //         <b>
-          //           Start-Up India Certification Acknowledgement:
-          //         </b>
-          //       </p>
-          //       <p class="Declaration_text_data">
-          //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-          //       </p>
-          //       <p class="Declaration_text_data">
-          //      I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
-          //       </p>
-
-          //       `;
-          //       } else if (newData.services[i].serviceName === "Start-Up India Certificate" &&
-          //         !newData.services[i].withDSC) {
-          //         servicesHtml = `
-          //           <p class="Declaration_text_head mt-2">
-          //           <b>
-          //             Start-Up India Certification Acknowledgement:
-          //           </b>
-          //         </p>
-          //         <p class="Declaration_text_data">
-          //         I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-          //         </p>
-          //         <p class="Declaration_text_data">
-          //        I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
-          //         </p>
-
-          //         `;
-
-          //       } else if (
-          //         allowedServiceNames.includes(newData.services[i].serviceName)
-          //       ) {
-          //         fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"},`;
-          //         fundingServices = `
-          //         <p class="Declaration_text_head mt-2">
-          //         <b>
-          //         ${newData.services[i].serviceName} Acknowledgement:   
-          //         </b>
-          //       </p>
-          //       <p class="Declaration_text_data">
-          //       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          //       </p>
-          //       `;
-          //       } else if (
-          //         newData.services[i].serviceName === "Income Tax Exemption"
-          //       ) {
-
-          //         incomeTaxServices = `
-          //         <p class="Declaration_text_head mt-2">
-          //         <b>
-          //         Income Tax Exemption Document Support Services Acknowledgement:   
-          //         </b>
-          //       </p>
-          //       <p class="Declaration_text_data">
-          //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-          //       </p>
-          //     `;
-          //       } else {
-          //         servicesHtml += `
-          //     <br>
-          //     `;
-          //       }
-          //     }
-
-          //     if (fundingServicesArray !== "") {
-          //       servicesHtml += `
-          //       <p class="Declaration_text_head mt-2">
-          //       <b>
-          //       ${fundingServicesArray} Acknowledgement:    
-          //       </b>
-          //     </p>
-          //     <p class="Declaration_text_data">
-          //     I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          //     </p>
-          //   `;
-          //     }
-          //     if (incomeTaxServices !== "") {
-          //       servicesHtml += `
-          //       <p class="Declaration_text_head mt-2">
-          //       <b>
-          //       Income Tax Exemption Document Support Services Acknowledgement:     
-          //       </b>
-          //     </p>
-          //     <p class="Declaration_text_data">
-          //     I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-          //     </p>
-          // `;
-          //     }
-
-          //     return servicesHtml;
-          //   };
 
           const renderServiceKawali = () => {
             let servicesHtml = "";
             let fundingServicesArray = "";
             let fundingServices = "";
             let incomeTaxServices = "";
+            let gstCertificateServices = "";
 
             for (let i = 0; i < newData.services.length; i++) {
               const service = newData.services[i];
@@ -2425,6 +2275,37 @@ router.post(
                 <p class="Declaration_text_data">
                   I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
                 </p>`;
+              } else if (service.serviceName === "GST Registration Application Support") {
+                gstCertificateServices += `
+                <p class="Declaration_text_head mt-2">
+                  <b>GST Registration Application Support Acknowledgement:</b>
+                </p>
+                <ol>
+
+                <li>Scope of Work:</li>
+
+                <ul>
+                <li class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</li>
+                <li class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</li>
+                </ul>
+
+                <li>Dealing with GST Officers:</li> 
+
+                <ul>
+                <li class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</li>
+                <li class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</li>
+                </ul>
+
+                 <li>Non-Refundable Payment:</li> 
+
+                <ul>
+                <li class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</li>
+                <li class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</li>
+                </ul>
+
+                </ol>
+                `
+
               } else {
                 servicesHtml += `<br>`;
               }
@@ -2442,6 +2323,10 @@ router.post(
 
             if (incomeTaxServices !== "") {
               servicesHtml += incomeTaxServices;
+            }
+
+            if (gstCertificateServices !== "") {
+              servicesHtml += gstCertificateServices
             }
 
             return servicesHtml;
@@ -4320,7 +4205,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Support",
-      "Chunauti "
+      "Chunauti ",
     ];
 
     const AuthorizedName = newData.services.some((service) => {
@@ -4335,153 +4220,94 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         ...allowedServiceNames,
         "Income Tax Exemption",
         "Start-Up India Certificate",
+        "GST Registration Application Support",
       ];
       return tempServices.includes(service.serviceName);
     })
       ? 'style="display:block'
       : 'style="display:none';
 
-    //   const renderServiceKawali = () => {
-    //     let servicesHtml = "";
-    //     let fundingServices = "";
-    //     let fundingServicesArray = "";
-    //     let incomeTaxServices = "";
 
-    //     for (let i = 0; i < newData.services.length; i++) {
-    //       if (
-    //         newData.services[i].serviceName === "Start-Up India Certificate"
-    //       ) {
-    //         servicesHtml = `
-    //         <p class="Declaration_text_head mt-2">
-    //         <b>
-    //           Start-Up India Certification Acknowledgement:
-    //         </b>
-    //       </p>
-    //       <p class="Declaration_text_data">
-    //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-    //       </p>
-    //       `;
-    //       } else if (
-    //         allowedServiceNames.includes(newData.services[i].serviceName)
-    //       ) {
-    //         fundingServicesArray += `${newData.services[i].serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : newData.services[i].serviceName + " Document Support"}`;
-    //         fundingServices = `
-    //         <p class="Declaration_text_head mt-2">
-    //         <b>
-    //         ${newData.services[i].serviceName} Acknowledgement:   
-    //         </b>
-    //       </p>
-    //       <p class="Declaration_text_data">
-    //       I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-    //       </p>
-
-    //       `;
-
-
-    //       } else if (
-    //         newData.services[i].serviceName === "Income Tax Exemption"
-    //       ) {
-
-    //         incomeTaxServices = `
-    //         <p class="Declaration_text_head mt-2">
-    //         <b>
-    //         Income Tax Exemption Document Support Services Acknowledgement:   
-    //         </b>
-    //       </p>
-    //       <p class="Declaration_text_data">
-    //       I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-    //       </p>
-    //     `;
-    //       } else {
-    //         servicesHtml += `
-    //     <br>
-    //     `;
-    //       }
-    //     }
-
-    //     if (fundingServicesArray !== "") {
-    //       //   const seedfundIncluded = newData.services.some(obj => obj.serviceName == "Seed Funding Support") ? `
-    //       //   Re-application support will be provided at no extra cost.
-
-    //       // ` : ``;
-    //       servicesHtml += `
-    //       <p class="Declaration_text_head mt-2">
-    //       <b>
-    //       ${fundingServicesArray} Acknowledgement:    
-    //       </b>
-    //     </p>
-    //     <p class="Declaration_text_data">
-    //     I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-    //     </p>
-    //   `;
-
-
-
-
-    //     }
-    //     if (incomeTaxServices !== "") {
-    //       servicesHtml += `
-    //       <p class="Declaration_text_head mt-2">
-    //       <b>
-    //       Income Tax Exemption Document Support Services Acknowledgement:     
-    //       </b>
-    //     </p>
-    //     <p class="Declaration_text_data">
-    //     I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and applications, and utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-    //     </p>
-    // `;
-    //     }
-
-    //     return servicesHtml;
-    //   };
     const renderServiceKawali = () => {
       let servicesHtml = "";
       let fundingServicesArray = "";
       let fundingServices = "";
       let incomeTaxServices = "";
+      let gstCertificateServices = "";
 
       for (let i = 0; i < newData.services.length; i++) {
         const service = newData.services[i];
 
         if (service.serviceName === "Start-Up India Certificate" && service.withDSC) {
           servicesHtml += `
-        <p class="Declaration_text_head mt-2">
-          <b>Start-Up India Certification Acknowledgement:</b>
-        </p>
-        <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-        </p>
-        <p class="Declaration_text_data">
-          I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
-        </p>`;
+          <p class="Declaration_text_head mt-2">
+            <b>Start-Up India Certification Acknowledgement:</b>
+          </p>
+          <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+          </p>
+          <p class="Declaration_text_data">
+            I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
+          </p>`;
         } else if (service.serviceName === "Start-Up India Certificate" && !service.withDSC) {
           servicesHtml += `
-        <p class="Declaration_text_head mt-2">
-          <b>Start-Up India Certification Acknowledgement:</b>
-        </p>
-        <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-        </p>
-        <p class="Declaration_text_data">
-          I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
-        </p>`;
+          <p class="Declaration_text_head mt-2">
+            <b>Start-Up India Certification Acknowledgement:</b>
+          </p>
+          <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+          </p>
+          <p class="Declaration_text_data">
+            I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
+          </p>`;
         } else if (allowedServiceNames.includes(service.serviceName)) {
           fundingServicesArray += `${service.serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : service.serviceName + " Document Support"},`;
           fundingServices += `
-        <p class="Declaration_text_head mt-2">
-          <b>${service.serviceName} Acknowledgement:</b>
-        </p>
-        <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-        </p>`;
+          <p class="Declaration_text_head mt-2">
+            <b>${service.serviceName} Acknowledgement:</b>
+          </p>
+          <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          </p>`;
         } else if (service.serviceName === "Income Tax Exemption") {
           incomeTaxServices += `
-        <p class="Declaration_text_head mt-2">
-          <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
-        </p>
-        <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-        </p>`;
+          <p class="Declaration_text_head mt-2">
+            <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
+          </p>
+          <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+          </p>`;
+        } else if (service.serviceName === "GST Registration Application Support") {
+          gstCertificateServices += `
+          <p class="Declaration_text_head mt-2">
+            <b>GST Registration Application Support Acknowledgement:</b>
+          </p>
+          <ol>
+
+          <li>Scope of Work:</li>
+
+          <ul>
+          <li class="Declaration_text_data">I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</li>
+          <li class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</li>
+          </ul>
+
+          <li>Dealing with GST Officers:</li> 
+
+          <ul>
+          <li class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.</li>
+          <li class="Declaration_text_data">If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</li>
+          </ul>
+
+           <li>Non-Refundable Payment:</li> 
+
+          <ul>
+          <li class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable..</li>
+          <li class="Declaration_text_data">I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</li>
+          </ul>
+
+          </ol>
+          `
+
         } else {
           servicesHtml += `<br>`;
         }
@@ -4489,16 +4315,20 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
       if (fundingServicesArray !== "") {
         servicesHtml += `
-      <p class="Declaration_text_head mt-2">
-        <b>${fundingServicesArray} Acknowledgement:</b>
-      </p>
-      <p class="Declaration_text_data">
-        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-      </p>`;
+        <p class="Declaration_text_head mt-2">
+          <b>${fundingServicesArray} Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+        </p>`;
       }
 
       if (incomeTaxServices !== "") {
         servicesHtml += incomeTaxServices;
+      }
+
+      if (gstCertificateServices !== "") {
+        servicesHtml += gstCertificateServices
       }
 
       return servicesHtml;
@@ -4926,12 +4756,12 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       },
       { new: true }
     );
-   
+
     if (deletedBooking) {
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
         "Company Name": deletedBooking["Company Name"],
       });
-      console.log("deleteDraft" , deleteDraft)
+      console.log("deleteDraft", deleteDraft)
     } else {
       return res.status(404).send("Booking not found");
     }
