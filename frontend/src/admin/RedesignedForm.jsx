@@ -730,7 +730,9 @@ export default function RedesignedForm({
     e.target.style.height = "1px";
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
-  console.log(completed, "this is completed");
+  
+  
+  
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -784,7 +786,7 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 1) {
-        console.log(leadData.bookingDate);
+        console.log("bookingDate" , leadData.bookingDate);
         if (
           !leadData.bdeName ||
           !leadData.bdmName ||
