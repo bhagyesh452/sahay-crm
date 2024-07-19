@@ -2087,11 +2087,11 @@ function EmployeeMaturedBookings() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                                              {obj.serviceName}{" "}
-                                              {obj.withDSC &&
-                                                obj.serviceName ===
-                                                "Start Up Certificate" &&
-                                                "With DSC"}
+                                            {obj.serviceName}{" "}
+                                          {obj.withDSC &&
+                                            obj.serviceName ===
+                                            "Start-Up India Certificate" &&
+                                            "With DSC"}
                                             </div>
                                           </div>
                                         </div>
