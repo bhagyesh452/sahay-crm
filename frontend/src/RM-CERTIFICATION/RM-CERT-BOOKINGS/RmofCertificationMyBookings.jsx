@@ -14,6 +14,8 @@ import { useIsFocusVisible } from "@mui/material";
 import RmofCertificationCompanyTaskManage from "./RmofCertificationCompanyTaskManage";
 import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
+import { FaWhatsapp } from "react-icons/fa";
+import StatusDropdown from "../Extra-Components/status-dropdown";
 
 
 function RmofCertificationMyBookings() {
@@ -403,31 +405,50 @@ function RmofCertificationMyBookings() {
                             <div class="tab-pane active" id="General">
                                 <div className="RM-my-booking-lists">
                                     <div className="table table-responsive table-style-3 m-0">
-                                        <table className="table table-vcenter table-nowrap">
+                                        <table className="table table-vcenter table-nowrap rm_table">
                                             <thead>
                                                 <tr className="tr-sticky">
-                                                    <th>Sr.No</th>
-                                                    <th>Company Name</th>
+                                                    <th className="rm-sticky-left-1">Sr.No</th>
+                                                    <th className="rm-sticky-left-2">Booking Date</th>
+                                                    <th className="rm-sticky-left-3">Company Name</th>
                                                     <th>Company Number</th>
-                                                    <th>Booking Date</th>
+                                                    <th>Company Email</th>
+                                                    <th>CA Number</th>
                                                     <th>Service Name</th>
+                                                    <th>Remark</th>
                                                     <th>Status</th>
+                                                    <th>DSC Applicable</th>
                                                     <th>BDE Name</th>
                                                     <th>BDM name</th>
                                                     <th>BDM Type</th>
                                                     <th>Total Payment</th>
-                                                    <th>Action</th>
+                                                    <th>received Payment</th>
+                                                    <th>Pending Payment</th>
+                                                    <th className="rm-sticky-action">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {mycustomloop.map((_, index) => (
                                                     <tr>
-                                                        <td><b>1</b></td>
-                                                        <td><b>India Private Limited</b></td>
-                                                        <td>9924283530</td>
-                                                        <td>20/02/2024</td>
+                                                        <td className="rm-sticky-left-1"><b>1</b></td>
+                                                        <td className="rm-sticky-left-2">20/02/2024</td>
+                                                        <td className="rm-sticky-left-3"><b>India Private Limited</b></td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                                <div>9924283530</div>
+                                                                <a style={{marginLeft:'10px',lineHeight:'14px',fontSize:'14px'}}>
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td>nimesh@incscale.in</td>
+                                                        <td>Not Applicable</td>
                                                         <td><b>Start-up India Certificate</b></td>
-                                                        <td><div>Working</div></td>
+                                                        <td>test remarks</td>
+                                                        <td>
+                                                            <div><StatusDropdown /></div>
+                                                        </td>
+                                                        <td>Yes</td>
                                                         <td>
                                                             <div className="d-flex align-items-center justify-content-center">
                                                                 {/* <div className="tbl-pro-img">
@@ -446,7 +467,9 @@ function RmofCertificationMyBookings() {
                                                         </td>
                                                         <td>Close By</td>
                                                         <td>₹ 8,000/-</td>
-                                                        <td><button className="action-btn action-btn-primary" onClick={()=>setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
+                                                        <td>₹ 3,000/-</td>
+                                                        <td>₹ 5,000/-</td>
+                                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary" onClick={()=>setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
                                                             <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
                                                         </td>
                                                     </tr>

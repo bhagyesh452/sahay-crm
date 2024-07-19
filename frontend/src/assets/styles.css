@@ -1856,6 +1856,7 @@ th.th-sticky1::after {
 .wApp a {
   text-decoration: none !important;
   color: #097c1b !important;
+  cursor: pointer;
   transition: transform .2s
 }
 
@@ -2503,7 +2504,7 @@ td input {
 .table-style-3 table thead tr th
 {
   background: #43474c !important;
-  color: #fff;
+  color: #e4e4e4;
   border: none !important;
   padding: 10px 0px !important;
 }
@@ -2524,21 +2525,20 @@ td input {
   border-bottom-right-radius: 5px;
 }
 .table-style-3 table tbody tr td:first-of-type {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;;
 }
-
 .table-style-3 table tbody tr td:last-of-type {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px !important;;
+  border-bottom-right-radius: 5px !important;;
 }
 .table-style-3 table tbody tr:nth-child(even)
 {
-  background:#ffffff !important ;
+  background:#efefef  !important ;
 }
 .table-style-3 table tbody tr:nth-child(odd)
 {
-  background:#ffffff !important ;
+  background:#e2e2e2  !important ;
 }
 .table-style-3 table tbody tr td
 {
@@ -2752,6 +2752,7 @@ td input {
   width: 38px;
   z-index: 1;
   border: none;
+  box-shadow: 11px -4px 9px -3px #eee;
 }
 .rm_task_section_navitem .nav-link.active::after
 {
@@ -2823,6 +2824,176 @@ td input {
   background: #ffd5d5;
   border: 1px solid #e20808;
   color: #d60000;
+}
+.rm_table
+{
+  width: 2000px !important;
+}
+.rm-sticky-left-1
+{
+  position: sticky;
+  left: 0;
+  width: 50px;
+}
+.rm-sticky-left-2
+{
+  position: sticky;
+  left: 50px;
+  width: 104px;
+}
+.rm-sticky-left-3
+{
+  position: sticky;
+  left: 154px;
+  box-shadow: 3px 0px 4px -4px #898989 !important;
+}
+.rm-sticky-action
+{
+  position: sticky;
+  right: 0;
+  box-shadow: -3px 0px 4px -4px #898989 !important;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(1)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(1)
+{
+  background:#e2e2e2  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(2)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(2)
+{
+  background:#e2e2e2  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(3)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(3)
+{
+  background:#e2e2e2  !important;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:last-child
+{
+  background:#efefef  !important;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:last-child
+{
+  background:#e2e2e2  !important;
+  z-index: 1;
+}
+
+
+
+.rm_status_dropdown .btn:focus {
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid transparent;
+  color: inherit;
+}
+.rm_status_dropdown .btn:hover,.rm_status_dropdown .btn:active
+{
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid transparent;
+  color: inherit;
+}
+.rm_status_dropdown .custom-dropdown,.rm_status_dropdown .dropdown-menu {
+  box-shadow: 0px 2px 5px #0000001A;
+  border: 1px solid #E0E0E0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.custom-dropdown .dropdown-item {
+  color: #414D55;
+  font-size: 12px;
+}
+
+.custom-dropdown .dropdown-item:active {
+  background-color: #414D55;
+  color: #fff;
+}
+
+/* .status_dropdown {
+  min-width: 150px;
+} */
+.status__btn {
+  border-radius: 0px;
+  padding: 2px 4px 2px 6px;
+  background: transparent;
+  width: fit-content;
+  font-size: 12px;
+}
+.status_dropdown.created-status {
+  background-color: #FFD0A7;
+  border: 1px solid #FF7909;
+}
+
+.status_dropdown.support-status {
+  background-color: #E9E9E9;
+  border: 1px solid #34394D;
+}
+
+.status_dropdown.inprogress-status {
+  background-color: #A7D6FF;
+  border: 1px solid #2DBDCA;
+}
+
+.status_dropdown.finished-status {
+  background-color: #B6FFA7;
+  border: 1px solid #72D500;
+}
+
+.status_dropdown.rejected-status {
+  background-color: #FCBDBD;
+  border: 1px solid #FD5252;
+}
+
+@media (max-width: 1528px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 65%;
+  } 
+}
+@media only screen and (max-width: 1527px) and (min-width: 1400px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 68%;
+  } 
+}
+@media only screen and (max-width:1399px) and (min-width: 1200px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 75%;
+  } 
+}
+@media only screen and (max-width:1199px) and (min-width: 50px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 1 1;
+  } 
+  .rm_task_section_navitem .nav-link
+  {
+    width: 93% !important;
+  }
 }
 /*****************************Basic Information Form******************************************/
 .form-control,  
