@@ -3549,7 +3549,7 @@ function EmployeesThisMonthBooking() {
                                                     <td colSpan={2}>Total:</td>
                                                     <td>-</td>
                                                     <td>{totalMaturedCount}</td>
-                                                    <td>₹ {Math.florr(totalTargetAmount).toLocaleString()}</td>
+                                                    <td>₹ {Math.floor(totalTargetAmount).toLocaleString()}</td>
                                                     <td>₹ {Math.floor(totalAchievedAmount).toLocaleString()}</td>
                                                     <td>{((totalAchievedAmount / totalTargetAmount) * 100).toFixed(2)} %</td>
                                                     <td>-</td>
