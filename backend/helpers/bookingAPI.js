@@ -2121,8 +2121,8 @@ router.post(
                                 newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                   newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                     newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                    newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                                    newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                      newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                        newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
                                           newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
@@ -4097,9 +4097,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                           newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                             newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                               newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                              newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                              newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
-                                  newData.services[i].serviceName;
+                                newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                  newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                    newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                        <thead>
@@ -4235,8 +4235,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                           newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                             newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                               newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                              newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                              newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                  newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
                                     newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
@@ -4914,7 +4914,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
     });
-
+    console.log("deletetesting", deletedBooking)
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
@@ -4926,19 +4926,22 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       },
       { new: true }
     );
+   
+    if (deletedBooking) {
+      const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
+        "Company Name": deletedBooking["Company Name"],
+      });
+      console.log("deleteDraft" , deleteDraft)
+    } else {
+      return res.status(404).send("Booking not found");
+    }
+
     if (updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(
         companyId
       )
     } else {
       return true;
-    }
-    if (deletedBooking) {
-      const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
-        "Company Name": deletedBooking["Company Name"],
-      });
-    } else {
-      return res.status(404).send("Booking not found");
     }
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
@@ -5064,6 +5067,8 @@ router.delete(
         { $pull: { moreBookings: { _id: companyId } } },
         { new: true }
       );
+
+
 
       if (!updatedLeadForm) {
         return res.status(404).send("Booking not found");
