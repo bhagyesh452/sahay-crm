@@ -2506,7 +2506,7 @@ td input {
   background: #43474c !important;
   color: #e4e4e4;
   border: none !important;
-  padding: 10px 0px !important;
+  padding: 4px 0px !important;
 }
 .table-style-3 table thead tr td
 {
@@ -2900,7 +2900,7 @@ td input {
   background: transparent;
   outline: none;
   box-shadow: none;
-  border: 1px solid transparent;
+  border: none;
   color: inherit;
 }
 .rm_status_dropdown .btn:hover,.rm_status_dropdown .btn:active
@@ -2908,13 +2908,13 @@ td input {
   background: transparent;
   outline: none;
   box-shadow: none;
-  border: 1px solid transparent;
+  border: none;
   color: inherit;
 }
 .rm_status_dropdown .custom-dropdown,.rm_status_dropdown .dropdown-menu {
   box-shadow: 0px 2px 5px #0000001A;
   border: 1px solid #E0E0E0;
-  border-radius: 5px;
+  border-radius: 45px;
   overflow: hidden;
 }
 
@@ -2933,7 +2933,8 @@ td input {
 } */
 .status__btn {
   border-radius: 0px;
-  padding: 2px 4px 2px 6px;
+  border: none;
+  padding: 3px 8px 3px 8px;
   background: transparent;
   width: fit-content;
   font-size: 12px;

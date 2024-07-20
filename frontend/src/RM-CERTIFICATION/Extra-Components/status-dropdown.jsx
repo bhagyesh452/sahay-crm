@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const StatusDropdown = () => {
   const [status, setStatus] = useState("Created");
@@ -16,59 +15,50 @@ const StatusDropdown = () => {
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
+          id={`dropdownMenuButton1-${status}`} // Making ID unique
+          data-toggle="dropdown"
+          aria-haspopup="true"
           aria-expanded="false"
         >
           {status}
         </button>
-        <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => handleStatusChange("Created", "created-status")}
-              href="#"
-            >
-              Created
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => handleStatusChange("Support", "support-status")}
-              href="#"
-            >
-              Support
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => handleStatusChange("In Progress", "inprogress-status")}
-              href="#"
-            >
-              In Progress
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => handleStatusChange("Finished", "finished-status")}
-              href="#"
-            >
-              Finished
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => handleStatusChange("Rejected", "rejected-status")}
-              href="#"
-            >
-              Rejected
-            </a>
-          </li>
-        </ul>
+        <div className="dropdown-menu status_change" aria-labelledby={`dropdownMenuButton1-${status}`}>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Created", "created-status")}
+            href="#"
+          >
+            Created
+          </a>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Support", "support-status")}
+            href="#"
+          >
+            Support
+          </a>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("In Progress", "inprogress-status")}
+            href="#"
+          >
+            In Progress
+          </a>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Finished", "finished-status")}
+            href="#"
+          >
+            Finished
+          </a>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Rejected", "rejected-status")}
+            href="#"
+          >
+            Rejected
+          </a>
+        </div>
       </div>
     </section>
   );
