@@ -2915,7 +2915,7 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   border: 1px solid #E0E0E0;
   border-radius: 5px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .custom-dropdown .dropdown-item {
