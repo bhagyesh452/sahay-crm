@@ -81,6 +81,11 @@ function ManageLeads() {
     const [totalExtractedCount, setTotalExtractedCount] = useState(0);
     const [extractedData, setExtractedData] = useState([]);
 
+
+    useEffect(() => {
+        document.title = `Datamanager-Sahay-CRM`;
+      }, []);
+      
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)

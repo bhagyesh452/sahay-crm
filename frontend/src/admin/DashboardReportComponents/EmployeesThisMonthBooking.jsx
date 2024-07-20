@@ -1334,106 +1334,12 @@ function EmployeesThisMonthBooking() {
         const currentDate = new Date();
         
         const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
-        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - expanse;
+        totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - finalexpanse;
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
         //console.log("BDE :" , bdeName,  achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense, add_caCommision)
-        // console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), expanse, consoleAchievedAmount)
+        console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), finalexpanse , totalAchievedAmount)
         return consoleAchievedAmount;
     };
-
-    // const functionCalculateAchievedAmount = (bdeName) => {
-    //     let achievedAmount = 0;
-    //     let remainingAmount = 0;
-    //     let expanse = 0;
-    //     let remainingExpense = 0;
-    //     let remainingMoreExpense = 0;
-    //     let add_caCommision = 0;
-    //     redesignedData.map((mainBooking) => {
-    //         const bookingDate = new Date(mainBooking.bookingDate);
-    //         const startDate = new Date(bookingStartDate);
-    //         const endDate = new Date(bookingEndDate);
-    //         bookingDate.setHours(0, 0, 0, 0);
-    //         startDate.setHours(0, 0, 0, 0);
-    //         endDate.setHours(0, 0, 0, 0);
-
-    //         const isSameDayMonthYear = (date1, date2) => {
-    //             return (
-    //                 date1.getDate() === date2.getDate() &&
-    //                 date1.getMonth() === date2.getMonth() &&
-    //                 date1.getFullYear() === date2.getFullYear()
-    //             );
-    //         };
-    //         if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
-    //             if (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName) {
-    //                 if (mainBooking.bdeName === mainBooking.bdmName) {
-    //                     mainBooking.services.map(serv => {
-    //                         if (serv.paymentTerms === "Full Advanced") {
-    //                             achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-    //                         } else {
-    //                             //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-    //                             if (serv.withGST) {
-    //                                 achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-    //                             } else {
-    //                                 achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-    //                             }
-    //                         }
-    //                     })
-    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-    //                     if (serv.paymentTerms === "Full Advanced") {
-    //                         achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-    //                     } else {
-    //                         //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-    //                         if (serv.withGST) {
-    //                             achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-    //                         } else {
-    //                             achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-    //                         }
-    //                     }
-    //                 } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-    //                     if (mainBooking.bdeName === bdeName) {
-    //                         mainBooking.services.map(serv => {
-    //                             if (serv.paymentTerms === "Full Advanced") {
-    //                                 achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-    //                             } else {
-    //                                 if (serv.withGST) {
-    //                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-    //                                 } else {
-    //                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-    //                                 }
-    //                             }
-    //                         });
-
-    //                     }
-    //                 }
-
-
-    //             }
-    //         }
-    //         if (mainBooking.remainingPayments.length !== 0) {
-    //             mainBooking.remainingPayments.map((remainingObj) => {
-    //                 const remainingPaymentDate = new Date(remainingObj.paymentDate);
-    //                 remainingPaymentDate.setHours(0, 0, 0, 0);
-    //                 if (((remainingPaymentDate >= startDate && remainingPaymentDate <= endDate) || (isSameDayMonthYear(remainingPaymentDate, startDate) && isSameDayMonthYear(remainingPaymentDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
-    //                     const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-    //                     const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-    //                     if (mainBooking.bdeName === mainBooking.bdmName) {
-    //                         remainingAmount += Math.floor(tempAmount);
-    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-    //                         remainingAmount += Math.floor(tempAmount) / 2;
-
-    //                     } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-    //                         if (mainBooking.bdeName === bdeName) {
-    //                             remainingAmount += Math.floor(tempAmount);
-    //                         }
-    //                     }
-    //                 }
-    //             })
-
-
-    //         }
-
-    //     })
-    // }
 
     const functionCalculateOnlyAchieved = (bdeName) => {
         let achievedAmount = 0;
@@ -3643,8 +3549,8 @@ function EmployeesThisMonthBooking() {
                                                     <td colSpan={2}>Total:</td>
                                                     <td>-</td>
                                                     <td>{totalMaturedCount}</td>
-                                                    <td>₹ {totalTargetAmount.toLocaleString()}</td>
-                                                    <td>₹ {totalAchievedAmount.toLocaleString()}</td>
+                                                    <td>₹ {Math.floor(totalTargetAmount).toLocaleString()}</td>
+                                                    <td>₹ {Math.floor(totalAchievedAmount).toLocaleString()}</td>
                                                     <td>{((totalAchievedAmount / totalTargetAmount) * 100).toFixed(2)} %</td>
                                                     <td>-</td>
                                                 </tr>

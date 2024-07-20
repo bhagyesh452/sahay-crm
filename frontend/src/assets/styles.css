@@ -9,7 +9,7 @@ body {
   flex-direction: column;
   height: calc(100vh - 112px) !important;
   overflow: hidden !important;
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   position: relative;
 } 
 
@@ -1856,6 +1856,7 @@ th.th-sticky1::after {
 .wApp a {
   text-decoration: none !important;
   color: #097c1b !important;
+  cursor: pointer;
   transition: transform .2s
 }
 
@@ -2487,7 +2488,7 @@ td input {
   border-image: initial;
   border-radius: 0 0 10px 10px;
   overflow-y: auto;
-  padding: 0 1px;
+  padding: 0 0px;
 }
 .table-style-3 table
 {
@@ -2502,8 +2503,8 @@ td input {
 }
 .table-style-3 table thead tr th
 {
-  background: #dadfe5 !important;
-  color: #000;
+  background: #43474c !important;
+  color: #e4e4e4;
   border: none !important;
   padding: 10px 0px !important;
 }
@@ -2515,27 +2516,34 @@ td input {
 {
   background: #fff;
 }
-.table-style-3 table tbody tr td:first-of-type {
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
+.table-style-3 table thead tr th:first-of-type {
+  /* border-top-left-radius: 5px; */
+  border-bottom-left-radius: 5px;
 }
-
+.table-style-3 table thead tr th:last-of-type {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.table-style-3 table tbody tr td:first-of-type {
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;;
+}
 .table-style-3 table tbody tr td:last-of-type {
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
+  border-top-right-radius: 5px !important;;
+  border-bottom-right-radius: 5px !important;;
 }
 .table-style-3 table tbody tr:nth-child(even)
 {
-  background:#ffffff !important ;
+  background:#efefef  !important ;
 }
 .table-style-3 table tbody tr:nth-child(odd)
 {
-  background:#ffffff !important ;
+  background:#e2e2e2  !important ;
 }
 .table-style-3 table tbody tr td
 {
   border: none !important;
-  padding: 10px 2px 10px 2px !important;
+  padding: 4px 2px 4px 2px !important;
 }
 .table-style-3 table tfoot tr td
 {
@@ -2571,6 +2579,17 @@ td input {
   transform-origin: center center;
   transition: .5s;
   width: 100%;
+}
+.rm_Filter {
+  background: #fff;
+  padding: 6px 0 6px 0;
+  border-bottom: 1px solid #dadfe5;
+}
+
+.rm_Dtl_box {
+  height: calc(100vh - 180px);
+  margin: 10px 0;
+  overflow: hidden;
 }
 .rm_bking_list_box_item
 {
@@ -2636,7 +2655,6 @@ td input {
 }
 .rm_bkng_item_no .nav-link
 {
-  padding: 5px 8px;
   background: none !important;
   border: none !important;
 }
@@ -2689,17 +2707,293 @@ td input {
 .rm_task_section_navtabs 
 {
   background: transparent !important;
+  /* margin: 0 0 10px 0; */
+  /* border-radius: 4px !important; */
+  overflow: hidden;
+  /* border: 1px solid #dadfe5; */
+  flex: 0 0 63%;
+  border-bottom: none;
+  padding-right: 10px !important;
 }
+/* .rm_task_section_navitem
+{
+  border-right: 1px solid #eee !important;
+} */
 .rm_task_section_navitem .nav-link
 {
-  padding: 8px 10px !important;
   background: #fff !important;
-  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  border: none !important;
+  border-radius: 4px 4px 0 0 !important;
+  font-size: 12px;
+  width: 140px !important;
+  position: relative;
+  padding: 6px 10px !important;
+  transition: .5s;
+}
+.rm_task_section_navitem .nav-link::after
+{
+  content: "";
+  position: absolute;
+  background: #ffffff;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-color: #eee #0000 #0000 #fff;
+  border-style: solid;
+  border-width: 1px 5px 5px 1px;
+  content: "";
+  height: 26px;
+  position: absolute;
+  rotate: 66deg;
+  top: 9px;
+  right: -14.5px;
+  transition: .5s;
+  width: 38px;
+  z-index: 1;
+  border: none;
+  box-shadow: 11px -4px 9px -3px #eee;
+}
+.rm_task_section_navitem .nav-link.active::after
+{
+  background: #43474c !important;
+}
+.rm_task_section_navitem:last-of-type
+{
+  border-right: none !important;
 }
 .rm_task_section_navitem .nav-link.active
 {
-  background: #43474c ! IMPORTANT;
+  background: #43474c !important;
   color: #fff !important;
+  z-index: 1;
+}
+.rm_txt_tsn
+{
+
+}
+.rm_tsn_bdge
+{
+    width: 23px;
+    height: 23px;
+    line-height: 23px;
+    text-align: center;
+    border-radius: 100px;
+    background: #ffecba;
+    color: #585252;
+    font-size: 10px;
+    z-index: 2;
+}
+.action-btn
+{
+  border: none;
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px -3px #000;
+  height: 22px;
+  line-height: 9px;
+  margin: 3px;
+  padding: 2px;
+  width: 28px;
+}
+.action-btn-primary
+{
+  background: #fff4d5;
+  border: 1px solid #ffba00;
+  color: #d69c00;
+} 
+.action-btn-success
+{
+  background: #ddffd5;
+  border: 1px solid #31e404;
+  color: #2ed600;
+}
+.action-btn-warning
+{
+  background: #ffedd5;
+  border: 1px solid #ff8000;
+  color: #d66700;
+}
+.action-btn-alert
+{
+  background: #d5ebff;
+  border: 1px solid #0084ff;
+  color: #0076d6;
+}
+.action-btn-danger
+{
+  background: #ffd5d5;
+  border: 1px solid #e20808;
+  color: #d60000;
+}
+.rm_table
+{
+  width: 2000px !important;
+}
+.rm-sticky-left-1
+{
+  position: sticky;
+  left: 0;
+  width: 50px;
+}
+.rm-sticky-left-2
+{
+  position: sticky;
+  left: 50px;
+  width: 104px;
+}
+.rm-sticky-left-3
+{
+  position: sticky;
+  left: 154px;
+  box-shadow: 3px 0px 4px -4px #898989 !important;
+}
+.rm-sticky-action
+{
+  position: sticky;
+  right: 0;
+  box-shadow: -3px 0px 4px -4px #898989 !important;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(1)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(1)
+{
+  background:#e2e2e2  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(2)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(2)
+{
+  background:#e2e2e2  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:nth-child(3)
+{
+  background:#efefef  !important ;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:nth-child(3)
+{
+  background:#e2e2e2  !important;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(even) td:last-child
+{
+  background:#efefef  !important;
+  z-index: 1;
+}
+.table-style-3 table tbody tr:nth-child(odd) td:last-child
+{
+  background:#e2e2e2  !important;
+  z-index: 1;
+}
+
+
+
+.rm_status_dropdown .btn:focus {
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid transparent;
+  color: inherit;
+}
+.rm_status_dropdown .btn:hover,.rm_status_dropdown .btn:active
+{
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid transparent;
+  color: inherit;
+}
+.rm_status_dropdown .custom-dropdown,.rm_status_dropdown .dropdown-menu {
+  box-shadow: 0px 2px 5px #0000001A;
+  border: 1px solid #E0E0E0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.custom-dropdown .dropdown-item {
+  color: #414D55;
+  font-size: 12px;
+}
+
+.custom-dropdown .dropdown-item:active {
+  background-color: #414D55;
+  color: #fff;
+}
+
+/* .status_dropdown {
+  min-width: 150px;
+} */
+.status__btn {
+  border-radius: 0px;
+  padding: 2px 4px 2px 6px;
+  background: transparent;
+  width: fit-content;
+  font-size: 12px;
+}
+.status_dropdown.created-status {
+  background-color: #FFD0A7;
+  border: 1px solid #FF7909;
+}
+
+.status_dropdown.support-status {
+  background-color: #E9E9E9;
+  border: 1px solid #34394D;
+}
+
+.status_dropdown.inprogress-status {
+  background-color: #A7D6FF;
+  border: 1px solid #2DBDCA;
+}
+
+.status_dropdown.finished-status {
+  background-color: #B6FFA7;
+  border: 1px solid #72D500;
+}
+
+.status_dropdown.rejected-status {
+  background-color: #FCBDBD;
+  border: 1px solid #FD5252;
+}
+
+@media (max-width: 1528px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 65%;
+  } 
+}
+@media only screen and (max-width: 1527px) and (min-width: 1400px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 68%;
+  } 
+}
+@media only screen and (max-width:1399px) and (min-width: 1200px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 0 1 75%;
+  } 
+}
+@media only screen and (max-width:1199px) and (min-width: 50px)
+{
+  .rm_task_section_navtabs
+  {
+    flex: 1 1;
+  } 
+  .rm_task_section_navitem .nav-link
+  {
+    width: 93% !important;
+  }
 }
 /*****************************Basic Information Form******************************************/
 .form-control,  

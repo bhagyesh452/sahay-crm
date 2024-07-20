@@ -10,7 +10,7 @@ export const options = [
   { value: "NSIC Certificate", label: "NSIC Certificate" },
   { value: "FSSAI Certificate", label: "FSSAI Certificate" },
   { value: "APEDA Certificate", label: "APEDA Certificate" },
-  { value: "GST Certificate", label: "GST Certificate" },
+  { value: "GST Registration Application Support", label: "GST Registration Application Support" },
 
   { value: "Company Incorporation", label: "Company Incorporation" },
   { value: "Trademark Registration", label: "Trademark Registration" },

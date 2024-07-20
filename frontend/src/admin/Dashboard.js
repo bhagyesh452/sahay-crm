@@ -75,6 +75,9 @@ import EmployeesProjectionSummary from "./DashboardReportComponents/EmployeesPro
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
+  useEffect(() => {
+    document.title = `Admin-Sahay-CRM`;
+  }, []);
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [bookingDateFilter, setbookingDateFilter] = useState(
     new Date().toISOString().slice(0, 10)
@@ -153,9 +156,8 @@ function Dashboard() {
       });
   };
 
-  useEffect(() => {
-    document.title = `Admin-Sahay-CRM`;
-  }, []);
+  
+
 
   const [employeeInfo, setEmployeeInfo] = useState([])
   const [forwardEmployeeData, setForwardEmployeeData] = useState([])

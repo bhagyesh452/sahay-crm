@@ -35,6 +35,7 @@ function Header({ name, designation, empProfile }) {
       reconnection: true,
       transports: ['websocket'],
     });
+
     socket.on("connect", () => {
       //console.log("Socket connected with ID:", socket.id);
       console.log('Connection Successful to socket io')
@@ -266,7 +267,7 @@ function Header({ name, designation, empProfile }) {
 
 
             {/* --------------------------notification-box-code--------------------- */}
-            <Notification_box_employee name={name} />
+            {name && <Notification_box_employee name={name} />}
 
 
             {/* --------------------------------display image code---------------------------- */}

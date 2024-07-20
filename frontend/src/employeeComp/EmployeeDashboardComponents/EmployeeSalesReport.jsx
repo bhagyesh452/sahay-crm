@@ -2127,7 +2127,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const calculateImprovement = (Filterby) => {
     let achievedRevenue;
     let comparisonRevenue;
-
+  
     switch (Filterby) {
       case "Today":
         achievedRevenue = functionCalculateAchievedRevenue("Today");
@@ -2142,14 +2142,21 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         comparisonRevenue = functionCalculateAchievedRevenue("Last Month");
         break;
       default:
-        return 0; // Handle default case if needed
+        return { improvement: 0, arrowImprovement: 0 }; // Handle default case if needed
     }
-    const improvement = ((comparisonRevenue - achievedRevenue) / comparisonRevenue) * 100;
-    //console.log(achievedRevenue , comparisonRevenue , improvement);
-    return Math.round(improvement) || 0;
+    
+    const arrowImprovement = (achievedRevenue / comparisonRevenue) * 100;
+    const improvement = ((achievedRevenue - comparisonRevenue) / comparisonRevenue) * 100;
+    // console.log(achievedRevenue, comparisonRevenue, improvement, arrowImprovement);
+    
+    return {
+      improvement: parseFloat(improvement.toFixed(2)) || 0,
+      arrowImprovement: parseFloat(arrowImprovement.toFixed(2)) || 0
+    };
   };
-
-  const improvement = calculateImprovement(Filterby);
+  
+  const { improvement, arrowImprovement } = calculateImprovement(Filterby);
+  
 
   return (
     <div>
@@ -2185,7 +2192,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                       <label className="m-0 dash-Revenue-label">Revenue</label>
                       <h2 className="m-0 dash-Revenue-amnt">₹  {showData ? parseInt(functionCalculateAchievedRevenue(Filterby)).toLocaleString() : "XXXXXX"} /-</h2>
                       <div className="d-flex aling-items-center mt-1">
-                        {improvement > 100 ? <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
+                        {arrowImprovement > 100 ? <div className="dsrd-Revenue-up-ration d-flex aling-items-center">
                           <GoArrowUp />
                           <div>{improvement} %</div>
                         </div> : <div style={{ backgroundColor: "#ffecec", color: '#c61f1f' }} className="dsrd-Revenue-up-ration d-flex aling-items-center">

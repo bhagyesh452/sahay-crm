@@ -21,7 +21,9 @@ function HrLogin({ setHrToken }){
     const[errorMessage , setErrorMessage] = useState("")
     const [ename , setEname] = useState("")
 
-
+    useEffect(() => {
+        document.title = `HR-Sahay-CRM`;
+      }, []);
 
     const fetchData = async () => {
         try {

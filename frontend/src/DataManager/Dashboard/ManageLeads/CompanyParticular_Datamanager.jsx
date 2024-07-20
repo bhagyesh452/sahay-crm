@@ -35,6 +35,10 @@ function CompanyParticular_Datamanager({}) {
     }
   };
 
+  useEffect(() => {
+    document.title = `Datamanager-Sahay-CRM`;
+  }, []);
+
 
   useEffect(() => {
     fetchCompany();

@@ -59,6 +59,8 @@ function AdminEmployeePerformanceReport() {
     fetchEmployeePerformance();
   }, []);
 
+  console.log("filtered" , filteredData)
+
   return (
     <div className="card">
       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">

@@ -50,6 +50,9 @@ function BdmBookings() {
 
   console.log(userId)
 
+  useEffect(() => {
+    document.title = `BDM-Sahay-CRM`;
+  }, []);
 
   const fetchData = async () => {
     try {

@@ -64,6 +64,11 @@ function HrEmployees({ onEyeButtonClick }) {
   // const handleLogin = ()=>{
   //   setIsLoggedIn(true)
   // }
+
+  useEffect(() => {
+    document.title = `HR-Sahay-CRM`;
+  }, []);
+  
   const handleEyeButtonClick = (id) => {
     onEyeButtonClick(id);
     //console.log(id);

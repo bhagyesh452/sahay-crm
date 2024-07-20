@@ -461,7 +461,188 @@ router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
 // Function to calculate achieved revenue
 
 
-const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
+// const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
+//   let achievedAmount = 0;
+//   let expanse = 0;
+//   let caCommission = 0;
+//   let remainingAmount = 0;
+//   let remainingExpense = 0;
+//   const today = new Date();
+
+//   const isDateInRange = (date, filterBy) => {
+//     const bookingDate = new Date(date);
+//     switch (filterBy) {
+//       case 'Today':
+//         return bookingDate.toLocaleDateString() === today.toLocaleDateString();
+//       case 'Last Month':
+//         const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
+//         return bookingDate.getMonth() === lastMonth && bookingDate.getFullYear() === today.getFullYear();
+//       case 'This Month':
+//         return bookingDate.getMonth() === today.getMonth() && bookingDate.getFullYear() === today.getFullYear();
+//       default:
+//         return false;
+//     }
+//   };
+
+//   const processBooking = (booking, ename) => {
+//     if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
+//       if (booking.bdeName === booking.bdmName) {
+//         achievedAmount += Math.round(booking.generatedReceivedAmount);
+//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
+//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
+//       } else if (booking.bdmType === "Close-by") {
+//         achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
+//         expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
+//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission) / 2;
+//       } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
+//         achievedAmount += Math.round(booking.generatedReceivedAmount);
+//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
+//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
+//       }
+//     }else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
+//       let remainingExpanseCondition = false;
+//       switch (filterBy) {
+//         case 'Today':
+//           remainingExpanseCondition = booking.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString());
+//           break;
+//         case 'Last Month':
+//           remainingExpanseCondition = booking.remainingPayments.some(item => {
+//             const paymentDate = new Date(item.paymentDate);
+//             const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
+//             return paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === today.getFullYear();
+//           });
+//           break;
+//         case 'This Month':
+//           remainingExpanseCondition = booking.remainingPayments.some(item => {
+//             const paymentDate = new Date(item.paymentDate);
+//             return paymentDate.getMonth() === today.getMonth() && paymentDate.getFullYear() === today.getFullYear();
+//           });
+//           break;
+//         default:
+//           break;
+//       }
+
+//       if (remainingExpanseCondition && filterBy === "Last Month") {
+//         const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+//         const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+//         booking.services.forEach(serv => {
+//           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
+//             if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
+//               remainingExpense += serv.expanse / 2;
+//             } else if (booking.bdeName === booking.bdmName) {
+//               remainingExpense += serv.expanse;
+//             } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
+//               remainingExpense += serv.expanse;
+//             }
+//           }
+//         });
+//       }
+
+//       booking.remainingPayments.forEach(remainingObj => {
+//         let condition = false;
+//         switch (filterBy) {
+//           case 'Today':
+//             condition = new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString();
+//             break;
+//           case 'Last Month':
+//             condition = new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1);
+//             break;
+//           case 'This Month':
+//             condition = new Date(remainingObj.paymentDate).getMonth() === today.getMonth();
+//             break;
+//           default:
+//             break;
+//         }
+
+//         if (condition) {
+//           const findService = booking.services.find(service => service.serviceName === remainingObj.serviceName);
+//           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
+//           if (booking.bdeName === booking.bdmName) {
+//             remainingAmount += Math.round(tempAmount);
+//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
+//             remainingAmount += Math.round(tempAmount) / 2;
+//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
+//             remainingAmount += Math.round(tempAmount);
+//           }
+//         }
+//       });
+//     }
+//   };
+
+//   data.forEach(mainBooking => {
+//     processBooking(mainBooking, ename);
+//     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
+//   });
+//   console.log(achievedAmount,expanse,remainingAmount,)
+//   console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
+
+//   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
+// };
+
+// router.get('/achieved-details/:ename', async (req, res) => {
+//   const { ename } = req.params;
+
+//   try {
+//     const employeeData = await adminModel.findOne({ ename });
+//     if (!employeeData) {
+//       return res.status(404).json({ error: 'Admin not found' });
+//     }
+
+//     const redesignedData = await RedesignedLeadformModel.find();
+//     if (!redesignedData) {
+//       return res.status(404).json({ error: 'No redesigned data found' });
+//     }
+
+//     const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
+
+//     console.log("achievedAmount" , achievedAmount)
+
+//     const today = new Date();
+//     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+//     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
+
+//     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
+//       if (targetDetail.month === lastMonth) {
+//         targetDetail.achievedAmount = achievedAmount;
+//         targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
+//         const roundedRatio = Math.round(targetDetail.ratio);
+//         if (roundedRatio === 0) {
+//           targetDetail.result = "Poor";
+//         } else if (roundedRatio > 0 && roundedRatio <= 40) {
+//           targetDetail.result = "Poor";
+//         } else if (roundedRatio >= 41 && roundedRatio <= 60) {
+//           targetDetail.result = "Below Average";
+//         } else if (roundedRatio >= 61 && roundedRatio <= 74) {
+//           targetDetail.result = "Average";
+//         } else if (roundedRatio >= 75 && roundedRatio <= 99) {
+//           targetDetail.result = "Good";
+//         } else if (roundedRatio >= 100 && roundedRatio <= 149) {
+//           targetDetail.result = "Excellent";
+//         } else if (roundedRatio >= 150 && roundedRatio <= 199) {
+//           targetDetail.result = "Extraordinary";
+//         } else if (roundedRatio >= 200 && roundedRatio <= 249) {
+//           targetDetail.result = "Outstanding";
+//         } else if (roundedRatio >= 250) {
+//           targetDetail.result = "Exceptional";
+//         }
+//       }
+//       return targetDetail;
+//     });
+
+//     // Update the employee data
+//     const updateResult = await adminModel.findOneAndUpdate(
+//       { ename },
+//       { targetDetails: targetDetailsUpdated },
+//       { new: true }
+//     );
+
+//     res.json({ updateResult });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+const calculateAchievedRevenue = (data, ename, filterBy) => {
   let achievedAmount = 0;
   let expanse = 0;
   let caCommission = 0;
@@ -499,7 +680,7 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
       }
-    }else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
+    } else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
       let remainingExpanseCondition = false;
       switch (filterBy) {
         case 'Today':
@@ -573,8 +754,8 @@ const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
     processBooking(mainBooking, ename);
     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
   });
-  console.log(achievedAmount,expanse,remainingAmount,)
-  console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
+
+  console.log("achieved" , achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
 
   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
 };
@@ -593,18 +774,41 @@ router.get('/achieved-details/:ename', async (req, res) => {
       return res.status(404).json({ error: 'No redesigned data found' });
     }
 
-    const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
-
-    console.log("achievedAmount" , achievedAmount)
+    const lastMonthAchievedAmount = calculateAchievedRevenue(redesignedData, ename, 'Last Month');
+    const thisMonthAchievedAmount = calculateAchievedRevenue(redesignedData, ename, 'This Month');
 
     const today = new Date();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
+    const thisMonth = monthNames[today.getMonth()];
 
     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
       if (targetDetail.month === lastMonth) {
-        targetDetail.achievedAmount = achievedAmount;
-        targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
+        targetDetail.achievedAmount = lastMonthAchievedAmount;
+        targetDetail.ratio = Math.round((parseFloat(lastMonthAchievedAmount) / parseFloat(targetDetail.amount)) * 100);
+        const roundedRatio = Math.round(targetDetail.ratio);
+        if (roundedRatio === 0) {
+          targetDetail.result = "Poor";
+        } else if (roundedRatio > 0 && roundedRatio <= 40) {
+          targetDetail.result = "Poor";
+        } else if (roundedRatio >= 41 && roundedRatio <= 60) {
+          targetDetail.result = "Below Average";
+        } else if (roundedRatio >= 61 && roundedRatio <= 74) {
+          targetDetail.result = "Average";
+        } else if (roundedRatio >= 75 && roundedRatio <= 99) {
+          targetDetail.result = "Good";
+        } else if (roundedRatio >= 100 && roundedRatio <= 149) {
+          targetDetail.result = "Excellent";
+        } else if (roundedRatio >= 150 && roundedRatio <= 199) {
+          targetDetail.result = "Extraordinary";
+        } else if (roundedRatio >= 200 && roundedRatio <= 249) {
+          targetDetail.result = "Outstanding";
+        } else if (roundedRatio >= 250) {
+          targetDetail.result = "Exceptional";
+        }
+      } else if (targetDetail.month === thisMonth) {
+        targetDetail.achievedAmount = thisMonthAchievedAmount;
+        targetDetail.ratio = Math.round((parseFloat(thisMonthAchievedAmount) / parseFloat(targetDetail.amount)) * 100);
         const roundedRatio = Math.round(targetDetail.ratio);
         if (roundedRatio === 0) {
           targetDetail.result = "Poor";

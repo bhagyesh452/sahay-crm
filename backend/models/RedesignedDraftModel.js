@@ -4,8 +4,8 @@ const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
   },
-  withDSC:{
-    type:Boolean
+  withDSC: {
+    type: Boolean
   },
   totalPaymentWOGST: {
     type: Number,
@@ -14,10 +14,10 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
   },
   isoTypeObject: {
-    type:Array,
+    type: Array,
   },
-  withGST:{
-    type:Boolean
+  withGST: {
+    type: Boolean
   },
   paymentTerms: {
     type: String,
@@ -28,13 +28,13 @@ const ServiceSchema = new mongoose.Schema({
   secondPayment: {
     type: Number,
   },
-  secondPaymentRemarks:{
+  secondPaymentRemarks: {
     type: String,
   },
-  thirdPaymentRemarks:{
+  thirdPaymentRemarks: {
     type: String,
   },
-  fourthPaymentRemarks:{
+  fourthPaymentRemarks: {
     type: String,
   },
   thirdPayment: {
@@ -47,17 +47,17 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
     default: "No payment remarks",
   },
-  paymentCount:{
-    type:Number
+  paymentCount: {
+    type: Number
   }
 });
 const TempSchema = new mongoose.Schema({
-  
+
   bdeName: {
     type: String,
   },
-  bdmType:{
-    type:String,
+  bdmType: {
+    type: String,
   },
   bdeEmail: {
     type: String,
@@ -65,8 +65,8 @@ const TempSchema = new mongoose.Schema({
   bdmName: {
     type: String,
   },
-  otherBdmName:{
-    type:String,
+  otherBdmName: {
+    type: String,
   },
   bdmEmail: {
     type: String,
@@ -74,11 +74,14 @@ const TempSchema = new mongoose.Schema({
   bookingDate: {
     type: String,
   },
+  bookingTime: {
+    type: Date,
+  },
   bookingSource: {
     type: String,
   },
-  otherBookingSource:{
-    type:String,
+  otherBookingSource: {
+    type: String,
   },
   numberOfServices: {
     type: Number,
@@ -94,7 +97,7 @@ const TempSchema = new mongoose.Schema({
     type: String,
   },
   caCommission: {
-    type:Number,
+    type: Number,
   },
   paymentMethod: {
     type: String,
@@ -114,40 +117,40 @@ const TempSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  generatedTotalAmount:{
-    type:Number,
+  generatedTotalAmount: {
+    type: Number,
   },
-  generatedReceivedAmount:{
-    type:Number,
+  generatedReceivedAmount: {
+    type: Number,
   },
-  otherDocs : {
-    type : Array
+  otherDocs: {
+    type: Array
   },
   Step1Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step2Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step3Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step4Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step5Status: {
     type: Boolean,
-    default:false
+    default: false
   },
 });
 const RedesignedDraftModelSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    unique:true
+    unique: true
   },
   "Company Number": {
     type: Number,
@@ -155,11 +158,11 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   "Company Email": {
     type: String,
   },
-  panNumber:{
-    type:String,
+  panNumber: {
+    type: String,
   },
-  gstNumber:{
-    type:String
+  gstNumber: {
+    type: String
   },
   incoDate: {
     type: String,
@@ -167,8 +170,8 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bdeName: {
     type: String,
   },
-  bdmType:{
-    type:String,
+  bdmType: {
+    type: String,
   },
   bdeEmail: {
     type: String,
@@ -176,8 +179,8 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bdmName: {
     type: String,
   },
-  otherBdmName:{
-    type:String,
+  otherBdmName: {
+    type: String,
   },
   bdmEmail: {
     type: String,
@@ -188,8 +191,8 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bookingSource: {
     type: String,
   },
-  otherBookingSource:{
-    type:String,
+  otherBookingSource: {
+    type: String,
   },
   numberOfServices: {
     type: Number,
@@ -225,34 +228,34 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  generatedTotalAmount:{
-    type:Number,
+  generatedTotalAmount: {
+    type: Number,
   },
-  generatedReceivedAmount:{
-    type:Number,
+  generatedReceivedAmount: {
+    type: Number,
   },
-  otherDocs : {
-    type : Array
+  otherDocs: {
+    type: Array
   },
   Step1Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step2Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step3Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step4Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   Step5Status: {
     type: Boolean,
-    default:false
+    default: false
   },
   moreBookings: {
     type: TempSchema,

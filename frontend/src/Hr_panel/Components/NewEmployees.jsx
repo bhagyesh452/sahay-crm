@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useState , useEffect} from "react";
 import Header from "../Components/Header/Header";
 import Navbar from "../Components/Navbar/Navbar";
 
@@ -30,7 +30,9 @@ function NewEmployees() {
     // const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
-
+    useEffect(() => {
+        document.title = `HR-Sahay-CRM`;
+      }, []);
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;

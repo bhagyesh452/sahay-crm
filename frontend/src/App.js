@@ -124,13 +124,6 @@ function App() {
           <Route path='/customerLogin' element={<CustomerLogin />}></Route>
           <Route path='/customer/dashboard/:email' element={<CustomerDashboard />}></Route> 
         
-
-          {/* --------------------------------------------------Path for Hr-panel---------------------------------------------------------- */}
-          <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>
-
-
-
-
           {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 
 
@@ -248,6 +241,7 @@ function App() {
           <Route path="/hrdashboard/:userId/" element={<HrDashboard />}></Route>
           <Route path="/hr/hr-navbar/" element={<NewEmployees />} />
           <Route path="/hr/employees/:userId" element={<HrEmployees />} />
+          <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>
         </Routes>
 
       </BrowserRouter>

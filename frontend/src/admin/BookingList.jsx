@@ -81,7 +81,7 @@ function BookingList() {
   useEffect(() => {
     document.title = `Admin-Sahay-CRM`;
   }, []);
-  
+
   useEffect(() => {
     if (currentCompanyName === "") {
       setCurrentLeadform(leadFormData[0]);
@@ -254,7 +254,7 @@ function BookingList() {
 
     if (confirmation.isConfirmed) {
       if (id) {
-        console.log("id" , id)
+        console.log("id", id)
         fetch(
           `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
@@ -275,7 +275,7 @@ function BookingList() {
             console.error("Error during delete request:", error);
           });
       } else {
-        console.log("company" , company)
+        console.log("company", company)
         fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
@@ -541,7 +541,7 @@ function BookingList() {
   };
 
   console.log(leadFormData)
- 
+
 
   return (
     <div>
@@ -672,7 +672,7 @@ function BookingList() {
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
                             }
-                            onClick={() =>{
+                            onClick={() => {
 
                               setCurrentLeadform(
                                 leadFormData.find(
@@ -680,7 +680,7 @@ function BookingList() {
                                     data["Company Name"] === obj["Company Name"]
                                 )
                               )
-              
+
                             }
                             }
                           >
@@ -743,10 +743,10 @@ function BookingList() {
                                     ))}
                               </div>
                               <div className="d-flex align-items-center justify-content-between">
-                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
-                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
-                                  <img src={RemainingAmnt}></img>
-                                </div>}
+                                {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
+                                  <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                    <img src={RemainingAmnt}></img>
+                                  </div>}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
@@ -1158,7 +1158,7 @@ function BookingList() {
                                           {obj.serviceName}{" "}
                                           {obj.withDSC &&
                                             obj.serviceName ===
-                                            "Start Up Certificate" &&
+                                            "Start-Up India Certificate" &&
                                             "With DSC"}
                                         </div>
                                       </div>
@@ -1233,36 +1233,36 @@ function BookingList() {
                                     </div>
                                   </div>
                                 </div>
-                          {(obj.expanse !== 0 && obj.expanse)  && <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-6 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expense
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
-                                            </div>
-                                          </div>
+                                {(obj.expanse !== 0 && obj.expanse) && <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expense
                                         </div>
                                       </div>
-                                      <div className="col-lg-6 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses Date
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
-                                            </div>
-                                          </div>
+                                      <div class="col-sm-8 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                         </div>
                                       </div>
-                                    </div>}
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expanses Date
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>}
                                 <div className="row m-0 bdr-btm-eee">
                                   {obj.paymentTerms === "two-part" && (
                                     <div className="col-lg-6 col-sm-6 p-0">
@@ -1512,7 +1512,7 @@ function BookingList() {
                                                             {formatDatePro(
                                                               paymentObj.paymentDate
                                                             )}
-                                                          </div>  
+                                                          </div>
                                                         </div>
                                                       </div>
                                                     </div>
@@ -2253,7 +2253,7 @@ function BookingList() {
                                               {obj.serviceName}{" "}
                                               {obj.withDSC &&
                                                 obj.serviceName ===
-                                                "Start Up Certificate" &&
+                                                "Start-Up India Certificate" &&
                                                 "With DSC"}
                                             </div>
                                           </div>
@@ -2349,7 +2349,7 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
+                                              {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
                                             </div>
                                           </div>
                                         </div>
@@ -2536,12 +2536,12 @@ function BookingList() {
                                                                   // Add more conditions as needed
                                                                   return ""; // Return default value if none of the conditions match
                                                                 })()}
-                                                              Remaining Payment 
+                                                              Remaining Payment
                                                             </div>
                                                             <div className="d-flex align-items-center">
                                                               <div>
                                                                 {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
-                                                                
+
                                                               </div>
 
                                                               {/* {
@@ -3073,8 +3073,8 @@ function BookingList() {
             companysName={currentLeadform["Company Name"]}
             setNowToFetch={setNowToFetch}
             isAdmin={true}
-            employeeName = {currentLeadform.bdeName}
-            employeeEmail = {currentLeadform.bdeEmail}
+            employeeName={currentLeadform.bdeName}
+            employeeEmail={currentLeadform.bdeEmail}
           />
         </>
       )}
