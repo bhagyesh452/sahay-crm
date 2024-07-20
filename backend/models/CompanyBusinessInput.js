@@ -129,23 +129,29 @@ const userSchema = new mongoose.Schema({
   ValueProposition: {
     type: String,
   },
-  TechInvolvedResponse:{
-    type:String,
-  },
   TechnologyInvolved: {
     type: String,
   },
+  TechnologyDetails:{
+    type:String,
+  },
   UploadPhotos: {
+    type: String,
+  },
+  ProductPhoto: {
     type: Array,
   },
   AnyIpFiledResponse:{
-    type:Boolean,
+    type:String,
   },
   RelevantDocument: {
     type: Array,
   },
   RelevantDocumentComment: {
     type: String,
+  },
+  ItrStatus: {
+    type: String
   },
   UploadAuditedStatement: {
     type: Array,
@@ -180,7 +186,11 @@ const userSchema = new mongoose.Schema({
   UploadRelevantDocs: {
     type: Array,
   },
-  DirectorDetails: [DirectorSchema]
+  DirectorDetails: [DirectorSchema],
+    formSubmitted: {
+      type: Boolean,
+      default: false
+    },
 });
 
 

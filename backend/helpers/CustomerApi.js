@@ -4,7 +4,7 @@ const router = express.Router();
 const nodemailer = require("nodemailer");
 const multer = require('multer');
 const path = require('path');
-const CompanyModel = require("../models/CompanyBusinessInput");
+const CompanyDataModel = require("../models/CompanyBusinessInput");
 const LeadsModel = require("../models/RedesignedLeadform");
 
 const secretKey = "your_secret_key"; // Replace with a secure key
@@ -132,8 +132,11 @@ router.post('/save-company-data', upload.fields([
         //     }
         // });
 
+        // Set formSubmitted to true
+        data.formSubmitted = true;
+        
         // Save or update the user in the database
-        const user = await CompanyModel.findOneAndUpdate(
+        const user = await CompanyDataModel.findOneAndUpdate(
             { CompanyName: data.CompanyName },
             data,
             { new: true, upsert: true }
@@ -150,7 +153,7 @@ router.get('/fetch-company-data/:companyName', async (req, res) => {
     const { companyName } = req.params;
 
     try {
-        const companyData = await CompanyModel.findOne({ CompanyName: companyName });
+        const companyData = await CompanyDataModel.findOne({ CompanyName: companyName });
 
         if (!companyData) {
             return res.status(404).json({ result: false, message: 'Company not found' });
