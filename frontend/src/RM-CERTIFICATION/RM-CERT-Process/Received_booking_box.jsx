@@ -6,7 +6,8 @@ import { SlActionRedo } from "react-icons/sl";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { options } from '../../components/Options.js';
 import Nodata from '../../components/Nodata.jsx';
-
+import { MdDelete } from "react-icons/md";
+import { GrStatusGood } from "react-icons/gr";
 
 
 function Received_booking_box() {
@@ -142,8 +143,46 @@ function Received_booking_box() {
         }
     }, [leadFormData]);
 
+    //------- to caluclate total , recieved and pemding amount ---------------------
+
+    function calculateTotalAmount(obj) {
+        let total = parseInt(obj.totalAmount);
+        if (obj.moreBookings && obj.moreBookings.length > 0) {
+            total += obj.moreBookings.reduce(
+                (acc, curr) => acc + parseInt(curr.totalAmount),
+                0
+            )
+        }
+        return total.toFixed(2)
+    }
+
+    function calculateReceivedAmount(obj) {
+        let total = parseInt(obj.receivedAmount);
+        if (obj.moreBookings && obj.moreBookings.length !== 0) {
+            total += obj.moreBookings.reduce(
+                (acc, curr) => acc + parseInt(curr.receivedAmount),
+                0
+            )
+        }
+        return total.toFixed(2)
+    }
+
+    const calculatePendingAmount = (obj) => {
+        let pending = parseInt(obj.pendingAmount);
+        if (obj.moreBookings && obj.moreBookings.length > 0) {
+            pending += obj.moreBookings.reduce(
+                (acc, booking) => acc + parseInt(booking.pendingAmount),
+                0
+            );
+        }
+        return pending.toFixed(2);
+    };
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+
     console.log("leadformdata", leadFormData)
-    console.log("currentleadform" , currentLeadform)
+    console.log("currentleadform", currentLeadform)
 
     return (
         <div>
@@ -207,25 +246,25 @@ function Received_booking_box() {
                                     </div>
                                     <div className="booking-list-body">
                                         {leadFormData.length !== 0 && leadFormData.map((obj, index) => (
-                                            <div  className={
+                                            <div className={
                                                 currentLeadform &&
                                                     currentLeadform["Company Name"] ===
                                                     obj["Company Name"]
                                                     ? "rm_bking_list_box_item activeBox"
                                                     : "rm_bking_list_box_item"
-                                            } 
-                                            onClick={() =>{
+                                            }
+                                                onClick={() => {
 
-                                                setCurrentLeadform(
-                                                  leadFormData.find(
-                                                    (data) =>
-                                                      data["Company Name"] === obj["Company Name"]
-                                                  )
-                                                )
-                                
-                                              }
-                                              }
-                                              >
+                                                    setCurrentLeadform(
+                                                        leadFormData.find(
+                                                            (data) =>
+                                                                data["Company Name"] === obj["Company Name"]
+                                                        )
+                                                    )
+
+                                                }
+                                                }
+                                            >
                                                 <div className='d-flex justify-content-between align-items-center'>
                                                     <div className='rm_cmpny_name_services'>
                                                         <div className='rm_bking_cmpny_name My_Text_Wrap'>
@@ -250,10 +289,17 @@ function Received_booking_box() {
                                                             ) : null}
                                                         </div>
                                                     </div>
-                                                    <div>
-                                                        <button className='btn btn-sm btn-swap-round d-flex align-items-center'>
+                                                    <div className='d-flex'>
+                                                        <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#b8e8b8" }}>
                                                             <div className='btn-swap-icon'>
-                                                                <SlActionRedo />
+                                                                {/* <SlActionRedo /> */}
+                                                                <GrStatusGood />
+                                                            </div>
+                                                        </button>
+                                                        <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#ffd8d1", color: "red" }}>
+                                                            <div className='btn-swap-icon'>
+                                                                {/* <SlActionRedo /> */}
+                                                                <MdDelete />
                                                             </div>
                                                         </button>
                                                     </div>
@@ -299,7 +345,12 @@ function Received_booking_box() {
                                 <div className="booking-deatils-card">
                                     <div className="booking-deatils-heading">
                                         <div className="d-flex justify-content-between align-items-center">
-                                            <div className="b_dtl_C_name">ABC PVT LTD</div>
+                                            <div className="b_dtl_C_name">{currentLeadform &&
+                                                Object.keys(currentLeadform).length !== 0
+                                                ? currentLeadform["Company Name"]
+                                                : leadFormData && leadFormData.length !== 0
+                                                    ? leadFormData[0]["Company Name"]
+                                                    : "-"}</div>
                                         </div>
                                     </div>
                                     <div className="booking-deatils-body">
@@ -313,12 +364,20 @@ function Received_booking_box() {
                                                         <div className='rm_total_bking'>
                                                             Total Booking :
                                                             <b>
-                                                                2 {/* {Array.isArray(leadFormData.moreBookings) ? leadFormData.moreBookings.length + 1  : 1} */}
+                                                                {Array.isArray(currentLeadform?.moreBookings) && currentLeadform.moreBookings.length !== 0
+                                                                    ? currentLeadform.moreBookings.length + 1
+                                                                    : 1}
                                                             </b>
                                                         </div>
                                                         <div className='rm_total_services'>
-                                                            Total Services : <b>
-
+                                                            Total Services :
+                                                            <b>
+                                                                {currentLeadform && (currentLeadform.services.length !== 0 || currentLeadform.moreBookings.length !== 0) ? (
+                                                                    [
+                                                                        ...currentLeadform.services,
+                                                                        ...(currentLeadform.moreBookings || []).flatMap(booking => booking.services)
+                                                                    ].length
+                                                                ) : null}
                                                             </b>
                                                         </div>
                                                     </div>
@@ -335,7 +394,12 @@ function Received_booking_box() {
                                                             </div>
                                                             <div class="col-lg-9 align-self-stretch p-0">
                                                                 <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                    S KUSHWAH BUILDERS PRIVATE LIMITED
+                                                                    {currentLeadform &&
+                                                                        Object.keys(currentLeadform).length !== 0
+                                                                        ? currentLeadform["Company Name"]
+                                                                        : leadFormData && leadFormData.length !== 0
+                                                                            ? leadFormData[0]["Company Name"]
+                                                                            : "-"}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -347,7 +411,12 @@ function Received_booking_box() {
                                                             </div>
                                                             <div class="col-lg-9 align-self-stretch p-0">
                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                    nsuiyogeshkushwah111@gmail.com
+                                                                    {currentLeadform &&
+                                                                        Object.keys(currentLeadform).length !== 0
+                                                                        ? currentLeadform["Company Email"]
+                                                                        : leadFormData && leadFormData.length !== 0
+                                                                            ? leadFormData[0]["Company Email"]
+                                                                            : "-"}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -362,7 +431,15 @@ function Received_booking_box() {
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretch p-0">
-                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">9753740001</div>
+                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                    {currentLeadform &&
+                                                                        Object.keys(currentLeadform).length !== 0
+                                                                        ? currentLeadform["Company Number"]
+                                                                        : leadFormData &&
+                                                                            leadFormData.length !== 0
+                                                                            ? leadFormData[0]["Company Number"]
+                                                                            : "-"}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -372,7 +449,18 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">Incorporation date</div>
                                                             </div>
                                                             <div class="col-lg-5 align-self-stretch p-0">
-                                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">April 22, 2024</div>
+                                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                    {currentLeadform &&
+                                                                        formatDatePro(
+                                                                            Object.keys(currentLeadform).length !==
+                                                                                0
+                                                                                ? currentLeadform.incoDate
+                                                                                : leadFormData &&
+                                                                                    leadFormData.length !== 0
+                                                                                    ? leadFormData[0].incoDate
+                                                                                    : "-"
+                                                                        )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -382,7 +470,15 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">PAN/GST</div>
                                                             </div>
                                                             <div class="col-lg-7 align-self-stretch p-0">
-                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">ABNCS3122Q</div>
+                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                    {currentLeadform &&
+                                                                        Object.keys(currentLeadform).length !== 0
+                                                                        ? currentLeadform.panNumber
+                                                                        : leadFormData &&
+                                                                            leadFormData.length !== 0
+                                                                            ? leadFormData[0].panNumber
+                                                                            : "-"}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -394,7 +490,9 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h h-100">Total</div>
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretc p-0">
-                                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 22,900</div>
+                                                                {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                    ₹ {parseInt(calculateTotalAmount(currentLeadform)).toLocaleString()}
+                                                                </div>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -404,7 +502,9 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">Received</div>
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretc p-0">
-                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22,900</div>
+                                                                {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                    ₹ {parseInt(calculateReceivedAmount(currentLeadform)).toLocaleString()}
+                                                                </div>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -414,7 +514,11 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretc p-0">
-                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 0</div>
+                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                    {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                        ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
+                                                                    </div>}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -422,22 +526,28 @@ function Received_booking_box() {
                                             </div>
                                         </div>
                                         <div className='rm_all_bkng_right mt-3'>
-                                            <ul class="nav nav-tabs rm_bkng_items align-items-center">
-                                                <li class="nav-item rm_bkng_item_no">
-                                                    <a class="nav-link active" data-bs-toggle="tab" href="#Booking_1">Booking 1</a>
-                                                </li>
-                                                <li class="nav-item rm_bkng_item_no">
-                                                    <a class="nav-link" data-bs-toggle="tab" href="#Booking_2">Booking 2</a>
-                                                </li>
-                                                <li class="nav-item rm_bkng_item_no">
-                                                    <a class="nav-link" data-bs-toggle="tab" href="#Booking_3">Booking 3</a>
-                                                </li>
-                                                <li class="nav-item rm_bkng_item_no ms-auto">
-                                                    <div className='rm_bkng_item_no nav-link clr-ff8800'>Saturday, 06 jun 2024 at 01:00 PM</div>
-                                                </li>
+                                            <ul className="nav nav-tabs rm_bkng_items align-items-center">
+                                                {currentLeadform && currentLeadform.moreBookings && currentLeadform.moreBookings.length !== 0 ? (
+                                                    <>
+                                                        <li className="nav-item rm_bkng_item_no">
+                                                            <a className="nav-link active" data-bs-toggle="tab" href="#Booking_1">Booking 1</a>
+                                                        </li>
+                                                        {currentLeadform.moreBookings.map((obj, index) => (
+                                                            <li key={index} className="nav-item rm_bkng_item_no">
+                                                                <a className="nav-link" data-bs-toggle="tab" href={`#Booking_${index + 2}`}>Booking {index + 2}</a>
+                                                            </li>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <li className="nav-item rm_bkng_item_no">
+                                                        <a className="nav-link active" data-bs-toggle="tab" href="#Booking_1">Booking 1</a>
+                                                    </li>
+                                                )}
                                             </ul>
+
+
                                             <div class="tab-content rm_bkng_item_details">
-                                                <div class="tab-pane active rm_bkng_item_detail_inner" id="Booking_1">
+                                                {currentLeadform && <div class="tab-pane active rm_bkng_item_detail_inner" id="Booking_1">
                                                     <div className='row mt-3'>
                                                         <div className='col-lg-4 col-sm-12'>
                                                             <div className='my-card'>
@@ -447,7 +557,7 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">Booking Date</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">2024-07-10</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">{formatDatePro(currentLeadform.bookingDate)}</div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0'>
@@ -455,7 +565,11 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">Lead Source</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">Existing Client</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">{currentLeadform &&
+                                                                                (currentLeadform.bookingSource ===
+                                                                                    "Other"
+                                                                                    ? currentLeadform.otherBookingSource
+                                                                                    : currentLeadform.bookingSource)}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -467,7 +581,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">BDE Name</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">Ravi Prajapati</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> {currentLeadform &&
+                                                                                currentLeadform.bdeName}</div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0'>
@@ -475,7 +590,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">BDE Email</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">khushi.gandhi@startupsahay.com</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> {currentLeadform &&
+                                                                                currentLeadform.bdeEmail}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -487,7 +603,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">BDM Name</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">Ravi Prajapati <i>(Close By)</i></div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> {currentLeadform &&
+                                                                                currentLeadform.bdmName} <i>({currentLeadform && currentLeadform.bdmType})</i></div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0'>
@@ -495,7 +612,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">BDM Email</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">Ravi@startupsahay.com</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> {currentLeadform &&
+                                                                                currentLeadform.bdmEmail}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -507,7 +625,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">CA Case</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">Yes</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">{currentLeadform &&
+                                                                                currentLeadform.caCase}</div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0 bdr-btm-eee'>
@@ -515,7 +634,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">CA's Number</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">9967249593</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> {currentLeadform &&
+                                                                                currentLeadform.caNumber}</div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0 bdr-btm-eee'>
@@ -523,7 +643,8 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">CA's Email</div>
                                                                         </div>
                                                                         <div className='col-lg-8 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">pcred.comp@gmail.com</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">{currentLeadform &&
+                                                                                currentLeadform.caEmail}</div>
                                                                         </div>
                                                                     </div>
                                                                     <div className='row m-0'>
@@ -531,7 +652,9 @@ function Received_booking_box() {
                                                                             <div class="booking_inner_dtl_h h-100">CA's Commission</div>
                                                                         </div>
                                                                         <div className='col-lg-7 col-sm-12 p-0 align-self-stretch'>
-                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">₹ 0</div>
+                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"> ₹{" "}
+                                                                                {currentLeadform &&
+                                                                                    currentLeadform.caCommission}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -549,7 +672,11 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_h h-100">Total Amount</div>
                                                                                         </div>
                                                                                         <div class="col-lg-6 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 21,240</div>
+                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee"> ₹{" "}
+                                                                                                {currentLeadform &&
+                                                                                                    parseInt(
+                                                                                                        currentLeadform.totalAmount
+                                                                                                    ).toLocaleString()}</div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -559,7 +686,11 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">Received Amount</div>
                                                                                         </div>
                                                                                         <div class="col-lg-5 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 21,240</div>
+                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹{" "}
+                                                                                                {currentLeadform &&
+                                                                                                    parseInt(
+                                                                                                        currentLeadform.receivedAmount
+                                                                                                    ).toLocaleString()}</div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -569,7 +700,13 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending Amount</div>
                                                                                         </div>
                                                                                         <div class="col-lg-5 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 0</div>
+                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                ₹{" "}
+                                                                                                {currentLeadform &&
+                                                                                                    parseInt(
+                                                                                                        currentLeadform.pendingAmount
+                                                                                                    ).toLocaleString()}
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -581,7 +718,11 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_h h-100">Payment Method</div>
                                                                                         </div>
                                                                                         <div class="col-lg-6 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee" title={currentLeadform &&
+                                                                                                currentLeadform.paymentMethod}>
+                                                                                                {currentLeadform &&
+                                                                                                    currentLeadform.paymentMethod}
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -591,8 +732,10 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
                                                                                         </div>
                                                                                         <div class="col-lg-6 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title="FOR CONTACT = 9811033069">
-                                                                                                FOR CONTACT = 9811033069
+                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                                                                                currentLeadform.extraNotes}>
+                                                                                                {currentLeadform &&
+                                                                                                    currentLeadform.extraNotes}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -602,25 +745,37 @@ function Received_booking_box() {
                                                                     </div>
                                                                 </div>
                                                                 <div className='p-0 mul-booking-card rm_bkng_item_detail_inner_services bdr-ededed mt-2'>
-                                                                    <ul class="nav nav-tabs">
-                                                                        <li class="nav-item rmbidis_nav_item">
-                                                                            <a class="nav-link rmbidis_nav_link active My_Text_Wrap" data-bs-toggle="tab" href="#services_1">Start-Up India Certificate</a>
-                                                                        </li>
-                                                                        <li class="nav-item rmbidis_nav_item">
-                                                                            <a class="nav-link rmbidis_nav_link My_Text_Wrap" data-bs-toggle="tab" href="#services_2">Seed Funding Support</a>
-                                                                        </li>
-                                                                        <li class="nav-item rmbidis_nav_item">
-                                                                            <a class="nav-link rmbidis_nav_link My_Text_Wrap" data-bs-toggle="tab" href="#services_3">ISO Certificate IAF 9001 1 YEAR VALIDITY</a>
-                                                                        </li>
-                                                                        <li class="nav-item rmbidis_nav_item ms-auto">
-                                                                            <a class="nav-link rmbidis_nav_link d-flex aling-items-center justify-content-center" data-bs-toggle="tab" href="#booking_docs">
-                                                                                <div style={{ lineHeight: '11px', marginRight: '3px' }}><IoDocumentTextOutline /> </div>
-                                                                                <div>Documnets</div>
+                                                                    <ul className="nav nav-tabs">
+                                                                        {currentLeadform && currentLeadform.services && currentLeadform.services.length !== 0 ? (
+                                                                            currentLeadform.services.map((obj, index) => (
+                                                                                <li key={index} className="nav-item rmbidis_nav_item">
+                                                                                    <a
+                                                                                        className={index === activeIndex ? "nav-link rmbidis_nav_link active My_Text_Wrap" : "nav-link rmbidis_nav_link My_Text_Wrap"}
+                                                                                        data-bs-toggle="tab"
+                                                                                        href={`#services_${index}`}
+                                                                                        onClick={() => setActiveIndex(index)}
+                                                                                    >
+                                                                                        {obj.serviceName}
+                                                                                    </a>
+                                                                                </li>
+                                                                            ))
+                                                                        ) : null}
+                                                                        <li className="nav-item rmbidis_nav_item ms-auto">
+                                                                            <a
+                                                                                className="nav-link rmbidis_nav_link d-flex align-items-center justify-content-center"
+                                                                                data-bs-toggle="tab"
+                                                                                href="#booking_docs"
+                                                                            >
+                                                                                <div style={{ lineHeight: '11px', marginRight: '3px' }}>
+                                                                                    <IoDocumentTextOutline />
+                                                                                </div>
+                                                                                <div>Documents</div>
                                                                             </a>
                                                                         </li>
                                                                     </ul>
+
                                                                     <div class="tab-content">
-                                                                        <div class="tab-pane p-1 active" id="services_1">
+                                                                        <div class="tab-pane p-1 active" id="services_0">
                                                                             <div class="my-card mt-1">
                                                                                 <div class="my-card-body">
                                                                                     <div class="row m-0 bdr-btm-eee">
@@ -848,10 +1003,11 @@ function Received_booking_box() {
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tab-pane p-1 fade" id="services_2">
+
+                                                                        <div class="tab-pane p-1 fade" id="services_1">
 
                                                                         </div>
-                                                                        <div class="tab-pane p-1 fade" id="services_3">
+                                                                        <div class="tab-pane p-1 fade" id="services_2">
 
                                                                         </div>
                                                                         <div class="tab-pane p-1 fade" id="booking_docs">
@@ -882,7 +1038,7 @@ function Received_booking_box() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>}
                                                 <div class="tab-pane fade rm_bkng_item_detail_inner" id="Booking_2">
 
                                                 </div>
