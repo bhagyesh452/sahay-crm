@@ -130,7 +130,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   TechInvolvedResponse:{
-    type:Boolean,
+    type:String,
   },
   TechnologyInvolved: {
     type: String,
@@ -166,7 +166,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   BusinessModel: {
-    type: String,
+    type: Array,
   },
   FinanceCondition:{
     type:String,

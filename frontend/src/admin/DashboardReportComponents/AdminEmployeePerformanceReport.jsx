@@ -22,7 +22,7 @@ function AdminEmployeePerformanceReport() {
       console.error('Error fetching employee performance:', error);
     } finally {
       setCurrentDataLoading(false);
-  }
+    }
   };
 
   const toggleEmployeeDetails = (employeeId) => {
@@ -45,7 +45,6 @@ function AdminEmployeePerformanceReport() {
   let achievedAmount = 0;
 
   const handleFilterBranchOffice = (branch) => {
-    setCurrentDataLoading(true);
     console.log("Employee data in handle filter :", empPerformanceData);
     if (branch === "none") {
       setFilteredData(empPerformanceData);
@@ -177,6 +176,7 @@ function AdminEmployeePerformanceReport() {
       <div className="card-body">
         <div id="table-default" className="row tbl-scroll">
           <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+            
             <thead className="admin-dash-tbl-thead">
               <tr>
                 <th>Sr. No</th>
@@ -276,171 +276,191 @@ function AdminEmployeePerformanceReport() {
               </tr>
             </thead>
 
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((employee, index) => {
-                  const filteredTargetDetails = employee.targetDetails.filter((perData) => {
-
-                    const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
-                    const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                    return monthYear < currentMonthYear;
-                  }).sort((a, b) => {
-                    // Sort by year first, then by month in descending order
-                    if (b.year !== a.year) {
-                      return b.year - a.year;
-                    } else {
-                      return new Date(Date.parse(b.month + " 1, 2020")) - new Date(Date.parse(a.month + " 1, 2020"));
-                    }
-                  });
-
-                  if (filteredTargetDetails.length === 0) return null;
-
-                  return (
-                    <React.Fragment key={employee._id}>
-                      <tr onClick={() => toggleEmployeeDetails(employee._id)} style={{ cursor: 'pointer' }}>
-                        <td>{index + 1}</td>
-
-                        <td>{employee.ename}</td>
-
-                        <td>{filteredTargetDetails.length}</td>
-
-                        <td>₹ {new Intl.NumberFormat('en-IN').format(
-                          targetAmount = filteredTargetDetails.reduce((total, obj) => total + parseFloat(obj.amount || 0), 0)
-                        )}</td>
-
-                        <td>₹ {new Intl.NumberFormat('en-IN').format(
-                          achievedAmount = filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0)
-                        )}</td>
-
-                        <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
-
-                        <td>{(() => {
-                          const ratio = Math.round((achievedAmount / targetAmount) * 100);
-                          if (ratio >= 250) return "Exceptional";
-                          if (ratio >= 200) return "Outstanding";
-                          if (ratio >= 150) return "Extraordinary";
-                          if (ratio >= 100) return "Excellent";
-                          if (ratio >= 75) return "Good";
-                          if (ratio >= 61) return "Average";
-                          if (ratio >= 41) return "Below Average";
-                          return "Poor";
-                        })()}</td>
-                      </tr>
-
-                      {expandedEmployee === employee._id && (
-                        <tr id='expandedId'>
-                          <td colSpan="7" id='parent-TD-Inner'>
-                            <div id='table-default' className="table table-default dash w-100 m-0 arrowsudo">
-                              <table className='table-vcenter table-nowrap admin-dash-tbl w-100 innerTable'  >
-                                <thead>
-                                  <tr>
-                                    <th className='innerTH'>Sr.No</th>
-                                    <th className='innerTH'>Month</th>
-                                    <th className='innerTH'>Target</th>
-                                    <th className='innerTH'>Achievement</th>
-                                    <th className='innerTH'>Ratio</th>
-                                    <th className='innerTH'>Result</th>
-                                  </tr>
-                                </thead>
-
-                                <tbody>
-                                  {filteredTargetDetails.map((perData, index) => (
-                                    <tr className='particular' key={`${employee._id}-${index}`}>
-                                      <td>{index + 1}</td>
-                                      <td>{perData.month}-{perData.year}</td>
-                                      <td>₹ {new Intl.NumberFormat('en-IN').format(perData.amount || 0)}</td>
-                                      <td>₹ {new Intl.NumberFormat('en-IN').format(perData.achievedAmount || 0)}</td>
-                                      <td>{Math.round(perData.ratio) || 0}%</td>
-                                      <td>{perData.result || '-'}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })
-              ) : (
+            {currentDataLoading ? (
+              <tbody>
                 <tr>
-                  <td colSpan="6" className="text-center"><Nodata /></td>
+                  <td colSpan="11" >
+                    <div className="LoaderTDSatyle w-100" >
+                      <ClipLoader
+                        color="lightgrey"
+                        currentDataLoading
+                        size={30}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </div>
+                  </td>
                 </tr>
-              )}
-            </tbody>
-
-            <tfoot className="admin-dash-tbl-tfoot">
-              <tr style={{ fontWeight: 500 }}>
-                <td colSpan="1">Total</td>
-
-                <td>
-                  {filteredData.reduce((count, employee) => {
-                    const filteredTargetDetails = employee.targetDetails.filter((perData) => {
-                      const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
-                      const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                      return monthYear < currentMonthYear;
-                    });
-                    return filteredTargetDetails.length > 0 ? count + 1 : count;
-                  }, 0)}
-                </td>
-
-                <td>
-                  {filteredData.reduce((months, employee) => {
-                    const filteredTargetDetails = employee.targetDetails.filter((perData) => {
-                      const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
-                      const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                      return monthYear < currentMonthYear;
-                    });
-                    return months + filteredTargetDetails.length;
-                  },
-                    0
-                  )}
-                </td>
-
-                <td>
-                  ₹ {new Intl.NumberFormat('en-IN').format(
-                    filteredData.reduce((total, employee) => {
+              </tbody>
+            ) : (
+              <>
+                <tbody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((employee, index) => {
                       const filteredTargetDetails = employee.targetDetails.filter((perData) => {
+
                         const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
                         const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
                         return monthYear < currentMonthYear;
+                      }).sort((a, b) => {
+                        // Sort by year first, then by month in descending order
+                        if (b.year !== a.year) {
+                          return b.year - a.year;
+                        } else {
+                          return new Date(Date.parse(b.month + " 1, 2020")) - new Date(Date.parse(a.month + " 1, 2020"));
+                        }
                       });
-                      targetAmount = total + filteredTargetDetails.reduce((sum, obj) => sum + parseFloat(obj.amount || 0), 0);
-                      return targetAmount;
-                    }, 0)
+
+                      if (filteredTargetDetails.length === 0) return null;
+
+                      return (
+                        <React.Fragment key={employee._id}>
+                          <tr onClick={() => toggleEmployeeDetails(employee._id)} style={{ cursor: 'pointer' }}>
+                            <td>{index + 1}</td>
+
+                            <td>{employee.ename}</td>
+
+                            <td>{filteredTargetDetails.length}</td>
+
+                            <td>₹ {new Intl.NumberFormat('en-IN').format(
+                              targetAmount = filteredTargetDetails.reduce((total, obj) => total + parseFloat(obj.amount || 0), 0)
+                            )}</td>
+
+                            <td>₹ {new Intl.NumberFormat('en-IN').format(
+                              achievedAmount = filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0)
+                            )}</td>
+
+                            <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
+
+                            <td>{(() => {
+                              const ratio = Math.round((achievedAmount / targetAmount) * 100);
+                              if (ratio >= 250) return "Exceptional";
+                              if (ratio >= 200) return "Outstanding";
+                              if (ratio >= 150) return "Extraordinary";
+                              if (ratio >= 100) return "Excellent";
+                              if (ratio >= 75) return "Good";
+                              if (ratio >= 61) return "Average";
+                              if (ratio >= 41) return "Below Average";
+                              return "Poor";
+                            })()}</td>
+                          </tr>
+
+                          {expandedEmployee === employee._id && (
+                            <tr id='expandedId'>
+                              <td colSpan="7" id='parent-TD-Inner'>
+                                <div id='table-default' className="table table-default dash w-100 m-0 arrowsudo">
+                                  <table className='table-vcenter table-nowrap admin-dash-tbl w-100 innerTable'  >
+                                    <thead>
+                                      <tr>
+                                        <th className='innerTH'>Sr.No</th>
+                                        <th className='innerTH'>Month</th>
+                                        <th className='innerTH'>Target</th>
+                                        <th className='innerTH'>Achievement</th>
+                                        <th className='innerTH'>Ratio</th>
+                                        <th className='innerTH'>Result</th>
+                                      </tr>
+                                    </thead>
+
+                                    <tbody>
+                                      {filteredTargetDetails.map((perData, index) => (
+                                        <tr className='particular' key={`${employee._id}-${index}`}>
+                                          <td>{index + 1}</td>
+                                          <td>{perData.month}-{perData.year}</td>
+                                          <td>₹ {new Intl.NumberFormat('en-IN').format(perData.amount || 0)}</td>
+                                          <td>₹ {new Intl.NumberFormat('en-IN').format(perData.achievedAmount || 0)}</td>
+                                          <td>{Math.round(perData.ratio) || 0}%</td>
+                                          <td>{perData.result || '-'}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center"><Nodata /></td>
+                    </tr>
                   )}
-                </td>
+                </tbody>
 
-                <td>
-                  ₹ {new Intl.NumberFormat('en-IN').format(
-                    filteredData.reduce((total, employee) => {
-                      const filteredTargetDetails = employee.targetDetails.filter((perData) => {
-                        const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
-                        const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                        return monthYear < currentMonthYear;
-                      });
-                      achievedAmount = total + filteredTargetDetails.reduce((sum, obj) => sum + parseFloat(obj.achievedAmount || 0), 0);
-                      return achievedAmount;
-                    }, 0)
-                  )}
-                </td>
+                <tfoot className="admin-dash-tbl-tfoot">
+                  <tr style={{ fontWeight: 500 }}>
+                    <td colSpan="1">Total</td>
 
-                <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
+                    <td>
+                      {filteredData.reduce((count, employee) => {
+                        const filteredTargetDetails = employee.targetDetails.filter((perData) => {
+                          const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
+                          const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
+                          return monthYear < currentMonthYear;
+                        });
+                        return filteredTargetDetails.length > 0 ? count + 1 : count;
+                      }, 0)}
+                    </td>
 
-                <td>{(() => {
-                  const ratio = Math.round((achievedAmount / targetAmount) * 100);
-                  if (ratio >= 250) return "Exceptional";
-                  if (ratio >= 200) return "Outstanding";
-                  if (ratio >= 150) return "Extraordinary";
-                  if (ratio >= 100) return "Excellent";
-                  if (ratio >= 75) return "Good";
-                  if (ratio >= 61) return "Average";
-                  if (ratio >= 41) return "Below Average";
-                  return "Poor";
-                })()}</td>
-              </tr>
-            </tfoot>
+                    <td>-
+                      {/* {filteredData.reduce((months, employee) => {
+                        const filteredTargetDetails = employee.targetDetails.filter((perData) => {
+                          const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
+                          const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
+                          return monthYear < currentMonthYear;
+                        });
+                        return months + filteredTargetDetails.length;
+                      },
+                        0
+                      )} */}
+                    </td>
+
+                    <td>
+                      ₹ {new Intl.NumberFormat('en-IN').format(
+                        filteredData.reduce((total, employee) => {
+                          const filteredTargetDetails = employee.targetDetails.filter((perData) => {
+                            const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
+                            const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
+                            return monthYear < currentMonthYear;
+                          });
+                          targetAmount = total + filteredTargetDetails.reduce((sum, obj) => sum + parseFloat(obj.amount || 0), 0);
+                          return targetAmount;
+                        }, 0)
+                      )}
+                    </td>
+
+                    <td>
+                      ₹ {new Intl.NumberFormat('en-IN').format(
+                        filteredData.reduce((total, employee) => {
+                          const filteredTargetDetails = employee.targetDetails.filter((perData) => {
+                            const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
+                            const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
+                            return monthYear < currentMonthYear;
+                          });
+                          achievedAmount = total + filteredTargetDetails.reduce((sum, obj) => sum + parseFloat(obj.achievedAmount || 0), 0);
+                          return achievedAmount;
+                        }, 0)
+                      )}
+                    </td>
+
+                    <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
+
+                    <td>{(() => {
+                      const ratio = Math.round((achievedAmount / targetAmount) * 100);
+                      if (ratio >= 250) return "Exceptional";
+                      if (ratio >= 200) return "Outstanding";
+                      if (ratio >= 150) return "Extraordinary";
+                      if (ratio >= 100) return "Excellent";
+                      if (ratio >= 75) return "Good";
+                      if (ratio >= 61) return "Average";
+                      if (ratio >= 41) return "Below Average";
+                      return "Poor";
+                    })()}</td>
+                  </tr>
+                </tfoot>
+              </>
+            )}
 
           </table>
         </div>

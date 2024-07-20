@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from "sweetalert2";
 import logo from "../static/mainLogo.png";
 
 function CustomerLogin() {
@@ -18,100 +19,62 @@ function CustomerLogin() {
         return re.test(String(email).toLowerCase());
     };
 
-    // const handleSendOtp = async () => {
-    //     if (email.length === 0) {
-    //         setErrorMessage("Please enter your email");
-    //         setShowOtpTextBox(false);
-    //         return;
-    //     }
-
-    //     if (!validateEmail(email)) {
-    //         setErrorMessage("Please enter a valid email");
-    //         setShowOtpTextBox(false);
-    //         return;
-    //     }
-
-    //     try {
-    //         const response = await axios.post(`${secretKey}/customer/send-otp`, { email });
-
-    //         const response2 = await axios.get(`${secretKey}/customer/fetch-lead-from-email/${email}`);
-    //         console.log("Fetched data is :", response2.data.data);
-
-    //         localStorage.setItem("companyEmail", response2.data.data["Company Email"]);
-    //         localStorage.setItem("companyName", response2.data.data["Company Name"]);
-    //         localStorage.setItem("companyPhoneNo", response2.data.data["Company Number"]);
-    //         localStorage.setItem("companyPanNo", response2.data.data["panNumber"]);
-    //         localStorage.setItem("companyServices", response2.data.data["services"]);
-
-    //         if (response.status === 200 && response2.status === 200) {
-    //             setShowOtpTextBox(true);
-    //         } else if (response2.status === 404) {
-    //             setShowOtpTextBox(false);
-    //             setErrorMessage("Email not registered");
-    //         } else {
-    //             setErrorMessage('Error sending OTP. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         setErrorMessage('Error sending OTP. Please try again.');
-    //     }
-    // };
-
     const handleSendOtp = async () => {
         if (email.length === 0) {
-            setErrorMessage("Please enter your email");
+            Swal.fire("Error!", "Please enter your email!", "error");
             setShowOtpTextBox(false);
             return;
         }
-    
+
         if (!validateEmail(email)) {
-            setErrorMessage("Please enter a valid email");
+            Swal.fire("Error!", "Please enter a valid email!", "error");
             setShowOtpTextBox(false);
             return;
         }
-    
+
         try {
             const response2 = await axios.get(`${secretKey}/customer/fetch-lead-from-email/${email}`);
-    
+
             if (response2.status === 200) {
                 console.log("Fetched data is:", response2.data.data);
                 setErrorMessage("");
-                
-                localStorage.setItem("companyEmail", response2.data.data["Company Email"]);
+
                 localStorage.setItem("companyName", response2.data.data["Company Name"]);
+                localStorage.setItem("companyEmail", response2.data.data["Company Email"]);
                 localStorage.setItem("companyPhoneNo", response2.data.data["Company Number"]);
                 localStorage.setItem("companyPanNo", response2.data.data["panNumber"]);
                 localStorage.setItem("companyServices", response2.data.data["services"]);
-    
+
                 const response = await axios.post(`${secretKey}/customer/send-otp`, { email });
-    
+
                 if (response.status === 200) {
                     setShowOtpTextBox(true);
-                    setErrorMessage("");    
                 } else {
                     setShowOtpTextBox(false);
-                    setErrorMessage('Error sending OTP. Please try again.');
+                    Swal.fire("Error!", "Error sending OTP... Please try again!", "error");
                 }
             } else {
                 setShowOtpTextBox(false);
-                setErrorMessage("Email not registered");
+                Swal.fire("Error!", "This Email is not registered...Please login through registered Email", "error");
+
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
                 setShowOtpTextBox(false);
-                setErrorMessage("Email not registered");
+                Swal.fire("Error!", "This Email is not registered...Please login through registered Email!", "error");
             } else {
                 setShowOtpTextBox(false);
-                setErrorMessage('Error sending OTP. Please try again.');
+                Swal.fire("Error!", "Error sending OTP... Please try again!", "error");
             }
         }
     };
-    
 
     const handleSubmit = async (e) => {
+        const companyName = localStorage.getItem("companyName");
         e.preventDefault();
 
         if (otp.length === 0) {
-            setErrorMessage("Please enter otp");
+            Swal.fire("Error!", "Please enter OTP!", "error");
             return;
         }
 
@@ -119,13 +82,17 @@ function CustomerLogin() {
             const response = await axios.post(`${secretKey}/customer/verify-otp`, { email, otp });
 
             if (response.status === 200) {
-                navigate(`/customer/dashboard/${email}`);
+                const token = response.data.token;
+                localStorage.setItem('companyToken', token);
+                navigate(`/customer/dashboard/${companyName}`);
                 setErrorMessage('');
-            } else {
-                setErrorMessage('Invalid OTP. Please try again.');
             }
         } catch (error) {
-            setErrorMessage('Invalid OTP. Please try again.');
+            if (error.response && error.response.status === 400) {
+                Swal.fire("Error!", "Invalid OTP. Please try again!", "error");
+            } else {
+                Swal.fire("Error!", "Error verifying OTP. Please try again!", "error");
+            }
         }
     };
 
