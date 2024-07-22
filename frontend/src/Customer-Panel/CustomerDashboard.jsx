@@ -1,19 +1,28 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import Header from '../components/Header';
-import CustomerNavbar from './CustomerNavbar';
-import BasicForm from '../Client-Basic-Info/BasicForm';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CustomerHeader from './Components/Header/CustomerHeader';
+import CustomerNavbar from './Components/Navbar/CustomerNavbar';
+import CustomerForm from './Components/Form/CustomerForm';
 
 function CustomerDashboard() {
-  const { email } = useParams();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const companyToken = localStorage.getItem("companyToken");
+
+    if (!companyToken) {
+      navigate("/customerLogin");
+    }
+  }, [navigate]);
+
   return (
-    // <div className="admin-dashboard">
     <>
-      <Header />
+      <CustomerHeader />
       <CustomerNavbar />
-      <h1>Welcome : {email}</h1>
+      <CustomerForm />
     </>
-    // </div>
   )
 }
 
