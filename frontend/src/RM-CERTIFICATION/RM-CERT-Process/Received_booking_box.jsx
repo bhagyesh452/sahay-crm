@@ -266,7 +266,10 @@ function Received_booking_box() {
                                                             (data) =>
                                                                 data["Company Name"] === obj["Company Name"]
                                                         )
-                                                    )
+                                                    );
+                                                    setActiveIndexBooking(1);
+                                                    setActiveIndex(0);
+                                                    setActiveIndexMoreBookingServices(0)
 
                                                 }
                                                 }
@@ -536,17 +539,40 @@ function Received_booking_box() {
                                                 {currentLeadform && currentLeadform.moreBookings && currentLeadform.moreBookings.length !== 0 ? (
                                                     <>
                                                         <li className="nav-item rm_bkng_item_no">
-                                                            <a className="nav-link active" data-bs-toggle="tab" href="#Booking_1" onClick={() => setActiveIndexBooking(1)}>Booking 1</a>
+                                                            <a
+                                                                className={activeIndexBooking === 1 ? `nav-link active` : "nav-link"}
+                                                                data-bs-toggle="tab"
+                                                                href="#Booking_1"
+                                                                onClick={() => {
+                                                                    setActiveIndex(0);
+                                                                    setActiveIndexBooking(1)
+                                                                }}>Booking 1</a>
                                                         </li>
                                                         {currentLeadform.moreBookings.map((obj, index) => (
                                                             <li key={index} className="nav-item rm_bkng_item_no">
-                                                                <a className="nav-link" data-bs-toggle="tab" href={`#Booking_${index + 2}`} onClick={() => setActiveIndexBooking(index + 2)}>Booking {index + 2}</a>
+                                                                <a
+                                                                    className={index + 2 === activeIndexBooking ? "nav-link active" : "nav-link"}
+                                                                    data-bs-toggle="tab"
+                                                                    href={`#Booking_${index + 2}`}
+                                                                    onClick={() => {
+                                                                        setActiveIndex(0);
+                                                                        setActiveIndexMoreBookingServices(0);
+                                                                        setActiveIndexBooking(index + 2);
+                                                                    }}
+                                                                >
+                                                                    Booking {index + 2}</a>
                                                             </li>
                                                         ))}
                                                     </>
                                                 ) : (
                                                     <li className="nav-item rm_bkng_item_no">
-                                                        <a className="nav-link active" data-bs-toggle="tab" href="#Booking_1" onClick={() => setActiveIndexBooking(1)}>Booking 1</a>
+                                                        <a
+                                                            className={activeIndexBooking === 1 ? "nav-link active" : "nav-link"}
+                                                            data-bs-toggle="tab"
+                                                            href="#Booking_1"
+                                                            onClick={() => {
+                                                                setActiveIndex(0)
+                                                                setActiveIndexBooking(1)}}>Booking 1</a>
                                                     </li>
                                                 )}
                                             </ul>
@@ -1306,7 +1332,7 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h h-100">Total Amount</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee"> ₹{" "}
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                         ₹{" "}
                                                                                                         {parseInt(
                                                                                                             obj.totalAmount
@@ -1321,7 +1347,7 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">Received Amount</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-5 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹{" "}
+                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                         ₹{" "}
                                                                                                         {parseInt(
                                                                                                             obj.receivedAmount
@@ -1352,10 +1378,10 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h h-100">Payment Method</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
-                                                                                                   title={obj.paymentMethod}
-                                                                                                        >
-                                                                                                      {obj.paymentMethod}
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"
+                                                                                                        title={obj.paymentMethod}
+                                                                                                    >
+                                                                                                        {obj.paymentMethod}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1366,10 +1392,10 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
-                                                                                                    title={obj.extraNotes}
-                                                                                                        >
-                                                                                                         {obj.extraNotes}
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"
+                                                                                                        title={obj.extraNotes}
+                                                                                                    >
+                                                                                                        {obj.extraNotes}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1473,7 +1499,7 @@ function Received_booking_box() {
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-7 align-self-stretch p-0">
                                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                        {obj.paymentTerms === "two-part"
+                                                                                                                        {objServ.paymentTerms === "two-part"
                                                                                                                             ? "Part-Payment"
                                                                                                                             : "Full Advanced"}
                                                                                                                     </div>
@@ -1481,7 +1507,7 @@ function Received_booking_box() {
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    {obj.paymentTerms === "two-part" && (
+                                                                                                    {objServ.paymentTerms === "two-part" && (
                                                                                                         <div class="row m-0 bdr-btm-eee">
                                                                                                             <div class="col-lg-6 col-sm-12 p-0">
                                                                                                                 <div class="row m-0 bdr-btm-eee">
@@ -1492,13 +1518,13 @@ function Received_booking_box() {
                                                                                                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                                             ₹{" "}
                                                                                                                             {parseInt(
-                                                                                                                                obj.firstPayment
+                                                                                                                                objServ.firstPayment
                                                                                                                             ).toLocaleString()}
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                            {obj.secondPayment !== 0 && (<div class="col-lg-6 col-sm-12 p-0">
+                                                                                                            {objServ.secondPayment !== 0 && (<div class="col-lg-6 col-sm-12 p-0">
                                                                                                                 <div class="row m-0 bdr-btm-eee">
                                                                                                                     <div class="col-lg-4 align-self-stretch p-0">
                                                                                                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">2<sup>nd</sup> Payment</div>
@@ -1506,19 +1532,19 @@ function Received_booking_box() {
                                                                                                                     <div class="col-lg-8 align-self-stretch p-0">
                                                                                                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                                             <div class="d-flex align-items-center justify-content-between">
-                                                                                                                                <div className='My_Text_Wrap' title={obj.secondPaymentRemarks}> ₹
+                                                                                                                                <div className='My_Text_Wrap' title={objServ.secondPaymentRemarks}> ₹
                                                                                                                                     {parseInt(
-                                                                                                                                        obj.secondPayment
+                                                                                                                                        objServ.secondPayment
                                                                                                                                     ).toLocaleString()}
                                                                                                                                     {"("}
                                                                                                                                     {isNaN(
                                                                                                                                         new Date(
-                                                                                                                                            obj.secondPaymentRemarks
+                                                                                                                                            objServ.secondPaymentRemarks
                                                                                                                                         )
                                                                                                                                     )
-                                                                                                                                        ? obj.secondPaymentRemarks
+                                                                                                                                        ? objServ.secondPaymentRemarks
                                                                                                                                         : "On " +
-                                                                                                                                        obj.secondPaymentRemarks +
+                                                                                                                                        objServ.secondPaymentRemarks +
                                                                                                                                         ")"}
                                                                                                                                     {")"}
                                                                                                                                 </div>
@@ -1527,7 +1553,7 @@ function Received_booking_box() {
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>)}
-                                                                                                            {obj.thirdPayment !== 0 && (
+                                                                                                            {objServ.thirdPayment !== 0 && (
                                                                                                                 <div class="col-lg-6 col-sm-12 p-0">
                                                                                                                     <div class="row m-0">
                                                                                                                         <div class="col-lg-4 align-self-stretch p-0">
@@ -1539,17 +1565,17 @@ function Received_booking_box() {
                                                                                                                                     <div>
                                                                                                                                         ₹{" "}
                                                                                                                                         {parseInt(
-                                                                                                                                            obj.thirdPayment
+                                                                                                                                            objServ.thirdPayment
                                                                                                                                         ).toLocaleString()}
                                                                                                                                         {"("}
                                                                                                                                         {isNaN(
                                                                                                                                             new Date(
-                                                                                                                                                obj.thirdPaymentRemarks
+                                                                                                                                                objServ.thirdPaymentRemarks
                                                                                                                                             )
                                                                                                                                         )
-                                                                                                                                            ? obj.thirdPaymentRemarks
+                                                                                                                                            ? objServ.thirdPaymentRemarks
                                                                                                                                             : "On " +
-                                                                                                                                            obj.thirdPaymentRemarks +
+                                                                                                                                            objServ.thirdPaymentRemarks +
                                                                                                                                             ")"}
                                                                                                                                     </div>
                                                                                                                                 </div>
@@ -1557,7 +1583,7 @@ function Received_booking_box() {
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>)}
-                                                                                                            {obj.fourthPayment !== 0 && (<div class="col-lg-6 col-sm-12 p-0">
+                                                                                                            {objServ.fourthPayment !== 0 && (<div class="col-lg-6 col-sm-12 p-0">
                                                                                                                 <div class="row m-0">
                                                                                                                     <div class="col-lg-4 align-self-stretch p-0">
                                                                                                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">4<sup>th</sup> Payment</div>
@@ -1568,17 +1594,17 @@ function Received_booking_box() {
                                                                                                                                 <div>
                                                                                                                                     ₹{" "}
                                                                                                                                     {parseInt(
-                                                                                                                                        obj.fourthPayment
+                                                                                                                                        objServ.fourthPayment
                                                                                                                                     ).toLocaleString()}{" "}
                                                                                                                                     {"("}
                                                                                                                                     {isNaN(
                                                                                                                                         new Date(
-                                                                                                                                            obj.fourthPaymentRemarks
+                                                                                                                                            objServ.fourthPaymentRemarks
                                                                                                                                         )
                                                                                                                                     )
-                                                                                                                                        ? obj.fourthPaymentRemarks
+                                                                                                                                        ? objServ.fourthPaymentRemarks
                                                                                                                                         : "On " +
-                                                                                                                                        obj.fourthPaymentRemarks +
+                                                                                                                                        objServ.fourthPaymentRemarks +
                                                                                                                                         ")"}
                                                                                                                                 </div>
                                                                                                                             </div>
@@ -1587,7 +1613,8 @@ function Received_booking_box() {
                                                                                                                 </div>
                                                                                                             </div>)}
                                                                                                         </div>)}
-                                                                                                    {obj.expanse !== 0 && obj.expanse && (<div class="row m-0 bdr-btm-eee">
+                                                                                                    {/* --------------expanse section----------------- */}
+                                                                                                    {objServ.expanse !== 0 && objServ.expanse && (<div class="row m-0 bdr-btm-eee">
                                                                                                         <div class="col-lg-3 col-sm-12 p-0">
                                                                                                             <div class="row m-0">
                                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
@@ -1596,7 +1623,7 @@ function Received_booking_box() {
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100"> - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}</div>
+                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100"> - ₹ {objServ.expanse ? (objServ.expanse).toLocaleString() : "N/A"}</div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
@@ -1607,7 +1634,7 @@ function Received_booking_box() {
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
                                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                        {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                                                                                                        {formatDatePro(objServ.expanseDate ? objServ.expanseDate : obj.bookingDate)}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -1618,10 +1645,10 @@ function Received_booking_box() {
                                                                                                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">Notes</div>
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-9 align-self-stretch p-0">
-                                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                                                                                        ? obj.paymentRemarks
+                                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objServ.paymentRemarks
+                                                                                                                        ? objServ.paymentRemarks
                                                                                                                         : "N/A"}>
-                                                                                                                        {obj.paymentRemarks
+                                                                                                                        {objServ.paymentRemarks
                                                                                                                             ? obj.paymentRemarks
                                                                                                                             : "N/A"}
                                                                                                                     </div>
@@ -1631,8 +1658,9 @@ function Received_booking_box() {
                                                                                                     </div>)}
                                                                                                 </div>
                                                                                             </div>
-                                                                                            {currentLeadform && currentLeadform.remainingPayments && currentLeadform.remainingPayments.length !== 0 && (
-                                                                                                currentLeadform.remainingPayments.some(remainObj => remainObj.serviceName === obj.serviceName) && (
+                                                                                            {/* --------------remaining payment condition----------------- */}
+                                                                                            {obj.remainingPayments && obj.remainingPayments.length !== 0 && (
+                                                                                                obj.remainingPayments.some(remainObj => remainObj.serviceName === objServ.serviceName) && (
                                                                                                     <div class="my-card mt-1">
                                                                                                         <div class="my-card-body accordion"
                                                                                                             id={`accordionExample${index}`}
@@ -1659,14 +1687,14 @@ function Received_booking_box() {
                                                                                                                     aria-labelledby={`headingOne${index}`}
                                                                                                                     data-bs-parent="#accordionExample"
                                                                                                                 >
-                                                                                                                    {currentLeadform && currentLeadform.remainingPayments && currentLeadform.remainingPayments.length !== 0 && (
-                                                                                                                        currentLeadform.remainingPayments.filter(remainObj => remainObj.serviceName === obj.serviceName).map((paymentObj, index) => paymentObj.serviceName === obj.serviceName ? (
+                                                                                                                    {obj.remainingPayments && obj.remainingPayments.length !== 0 && (
+                                                                                                                        obj.remainingPayments.filter(remainObj => remainObj.serviceName === objServ.serviceName).map((paymentObj, index) => paymentObj.serviceName === objServ.serviceName ? (
                                                                                                                             <div class="accordion-body bdr-none p-0">
                                                                                                                                 <div>
                                                                                                                                     <div class="row m-0 bdr-btm-eee bdr-top-eee">
                                                                                                                                         <div class="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
                                                                                                                                             <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
-                                                                                                                                                <div> {currentLeadform.remainingPayments.length !== 0 &&
+                                                                                                                                                <div> {obj.remainingPayments.length !== 0 &&
                                                                                                                                                     (() => {
 
                                                                                                                                                         if (index === 0) return "Second ";
@@ -1701,16 +1729,16 @@ function Received_booking_box() {
                                                                                                                                                 </div>
                                                                                                                                                 <div class="col-sm-7 align-self-stretc p-0">
                                                                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">  ₹{" "}
-                                                                                                                                                        {currentLeadform.remainingPayments.length !== 0 &&
+                                                                                                                                                        {obj.remainingPayments.length !== 0 &&
                                                                                                                                                             (() => {
-                                                                                                                                                                const filteredPayments = currentLeadform.remainingPayments.filter(
-                                                                                                                                                                    (pay) => pay.serviceName === obj.serviceName
+                                                                                                                                                                const filteredPayments = obj.remainingPayments.filter(
+                                                                                                                                                                    (pay) => pay.serviceName === objServ.serviceName
                                                                                                                                                                 );
 
                                                                                                                                                                 const filteredLength = filteredPayments.length;
-                                                                                                                                                                if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
-                                                                                                                                                                else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
-                                                                                                                                                                else if (index === 2) return parseInt(currentLeadform.pendingAmount);
+                                                                                                                                                                if (index === 0) return parseInt(objServ.totalPaymentWGST) - parseInt(objServ.firstPayment) - parseInt(paymentObj.receivedPayment);
+                                                                                                                                                                else if (index === 1) return parseInt(objServ.totalPaymentWGST) - parseInt(objServ.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
+                                                                                                                                                                else if (index === 2) return parseInt(obj.pendingAmount);
                                                                                                                                                                 // Add more conditions as needed
                                                                                                                                                                 return ""; // Return default value if none of the conditions match
                                                                                                                                                             })()}

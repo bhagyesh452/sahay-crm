@@ -394,7 +394,7 @@ router.post(
             IsMainDirector,
           } = DirectorDetails[index];
 
-          //console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
+          console.log(`Director ${index + 1} details:`, DirectorDetails[index]);
 
           if (IsMainDirector === "true") {
             isFirstMainDirectorSet = true;
@@ -629,8 +629,8 @@ router.post(
       const selectedServicePitch = servicesArrayForPitchDeckServiceSendMail5.find(
         (service) => service === "Pitch Deck Development "
       );
-      //console.log(servicesArrayForPitchDeckServiceSendMail5);
-      //console.log("SELECTED" , selectedServicePitch);
+      console.log(servicesArrayForPitchDeckServiceSendMail5);
+      console.log("SELECTED" , selectedServicePitch);
 
 
 
@@ -639,8 +639,8 @@ router.post(
       const selectedServiceIncome = servicesArrayForIncomeTaxExemptionSendMail6.find(
         (service) => service === "Income Tax Exemption"
       );
-      //console.log(servicesArrayForIncomeTaxExemptionSendMail6);
-      //console.log("SELECTED" , selectedServiceIncome);
+      console.log(servicesArrayForIncomeTaxExemptionSendMail6);
+      console.log("SELECTED" , selectedServiceIncome);
 
 
 
@@ -857,8 +857,6 @@ router.post(
           }
         });
 
-        console.log("req.bode" , req.body)
-
       const newUser = new userModel({
         ...req.body,
         DirectorDetails: req.body.DirectorDetails.map((director, index) => ({
@@ -875,7 +873,7 @@ router.post(
         UploadDeclaration,
         UploadRelevantDocs,
       });
-console.log("newUser" , newUser)
+
       await newUser.save();
       res.status(201).send(newUser);
     } catch (error) {

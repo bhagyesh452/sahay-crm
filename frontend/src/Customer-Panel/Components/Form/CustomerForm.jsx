@@ -100,7 +100,7 @@ function CustomerForm() {
         UploadDeclaration: "",
         UploadRelevantDocs: "",
         DirectorDetails: [DirectorForm],
-        formSubmitted:false
+        isFormSubmitted: null
     });
 
     const [errors, setErrors] = useState({});
@@ -199,12 +199,7 @@ function CustomerForm() {
     // console.log(formData);
 
     async function sendDataToBackend() {
-        setOpenBacdrop(true);
-        setFormData((prevState)=>({
-            ...prevState,
-            formSubmitted:true
-        })) // show backdrop loader
-        console.log("formData" , formData)
+        setOpenBacdrop(true); // show backdrop loader
         try {
             const data = new FormData();
 

@@ -180,10 +180,6 @@ const userSchema = new mongoose.Schema({
   UploadRelevantDocs: {
     type: Array,
   },
-  formSubmitted:{
-    type:Boolean,
-    default:true
-  },
   DirectorDetails: [DirectorSchema]
 });
 
