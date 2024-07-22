@@ -19,6 +19,9 @@ function CustomerForm() {
             const response = await axios.get(`${secretKey}/customer/fetch-company-data/${companyName}`);
             console.log("Company data is :", response.data.data);
             setCompanyData(response.data.data);
+            if(response.data.data.formSubmitted){
+                setFormSubmitted(true)
+            }
         } catch (error) {
             console.log("Error fetching company data :", error);
         }
@@ -38,7 +41,7 @@ function CustomerForm() {
             setShowFinance(companyData.FinanceCondition === "Yes");
             setShowLinks(companyData.SocialMedia === "Yes");
             setShowTechnologyDetails(companyData.TechnologyInvolved === "Yes");
-            setShowPhotos(companyData.UploadPhotos === "Yes");
+            setShowPhotos(companyData.ProductPhoto === "Yes");
             setShowIp(companyData.AnyIpFiledResponse === "Yes");
             setShowItr(companyData.ItrStatus === "Yes" ? true : companyData.ItrStatus === "No" ? false : null);
         }
@@ -82,8 +85,8 @@ function CustomerForm() {
         ValueProposition: "",
         TechnologyInvolved: "",
         TechnologyDetails: "",
-        UploadPhotos: "",
-        ProductPhoto: null,
+        ProductPhoto: "",
+        UploadPhotos: null,
         AnyIpFiledResponse: "",
         RelevantDocument: null,
         RelevantDocumentComment: "",
@@ -97,7 +100,7 @@ function CustomerForm() {
         UploadDeclaration: "",
         UploadRelevantDocs: "",
         DirectorDetails: [DirectorForm],
-        isFormSubmitted: formSubmitted
+        isFormSubmitted: null
     });
 
     const [errors, setErrors] = useState({});
@@ -231,13 +234,17 @@ function CustomerForm() {
                 }
             });
 
-            const response = await axios.post(
+            data.append("isFormSubmitted", true);
+
+            const response = await fetch(
                 `${secretKey}/clientform/basicinfo-form/${formData.CompanyName}`,
-                data
+                {
+                    method: "POST",
+                    body: data
+                }
             );
-            console.log("Submitted data is :", response.data);
-    
-            if (response.status === 200) {
+
+            if (response.ok) {
                 // Call function to handle success and show SweetAlert
                 handleSuccess();
             } else {
@@ -445,8 +452,8 @@ function CustomerForm() {
         if (!formData.TechnologyInvolved && formData.TechnologyInvolved !== "") {
             newErrors.TechnologyInvolved = "Enter Your Technology Details";
         }
-        if (showPhotos && !formData.ProductPhoto) {
-            newErrors.ProductPhoto = "Upload Photos of Logo or Product/Prototype";
+        if (showPhotos && !formData.UploadPhotos) {
+            newErrors.UploadPhotos = "Upload Photos of Logo or Product/Prototype";
         }
         if (showIp && !formData.RelevantDocument) {
             newErrors.RelevantDocument = "Upload Relevant Documents";
@@ -628,11 +635,13 @@ function CustomerForm() {
         setShowPhotos(isYesSelected);
         setFormData((prevState) => ({
             ...prevState,
-            UploadPhotos: isYesSelected ? "Yes" : "No",
+            ProductPhoto: isYesSelected ? "Yes" : "No",
             // Reset ProductPhoto if "No" is selected
-            ProductPhoto: !isYesSelected ? null : prevState.ProductPhoto
+            //UploadPhotos: !isYesSelected ? null : prevState.UploadPhotos
+            UploadPhotos: null
         }));
     };
+
 
     const handleIp = (event) => {
         const isYesSelected = event.target.value === "Yes";
@@ -1415,8 +1424,7 @@ function CustomerForm() {
                                                     if (functionShowSizeLimit(file)) {
                                                         setFormData((prevState) => ({
                                                             ...prevState,
-                                                            // UploadMOA: file,
-                                                            UploadMOA: file.name,
+                                                            UploadMOA: file,
                                                         }));
                                                     } else {
                                                         e.target.value = null; // Clear the input value to prevent invalid file selection
@@ -1761,7 +1769,7 @@ function CustomerForm() {
                                                         value="Yes"
                                                         disabled={formSubmitted}
                                                         onChange={handlePhotos}
-                                                        checked={formData.UploadPhotos === "Yes"}
+                                                        checked={formData.ProductPhoto === "Yes"}
                                                     />
                                                     <span class="form-check-label">Yes</span>
                                                 </label>
@@ -1773,7 +1781,7 @@ function CustomerForm() {
                                                         value="No"
                                                         disabled={formSubmitted}
                                                         onChange={handlePhotos}
-                                                        checked={formData.UploadPhotos === "No"}
+                                                        checked={formData.ProductPhoto === "No"}
                                                     />
                                                     <span class="form-check-label">No</span>
                                                 </label>
@@ -1792,11 +1800,22 @@ function CustomerForm() {
                                                     className="form-control mt-1"
                                                     id="Photos-logos"
                                                     disabled={formSubmitted}
-                                                    onChange={(e) => handleFileChange(e, "ProductPhoto")}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        console.log("Upload photos :", formData.UploadPhotos);
+                                                        if (functionShowSizeLimit(file)) {
+                                                          setFormData((prevState) => ({
+                                                            ...prevState,
+                                                            UploadPhotos: file,
+                                                          }));
+                                                        } else {
+                                                          e.target.value = null; // Clear the input value to prevent invalid file selection
+                                                        }
+                                                    }}
                                                 />
                                                 <div className="input-note">(Files size should be less than 24MB)</div>
-                                                {formSubmitted && !formData.ProductPhoto && (
-                                                    <div style={{ color: "red" }}>{errors.ProductPhoto}</div>
+                                                {formSubmitted && !formData.UploadPhotos && (
+                                                    <div style={{ color: "red" }}>{errors.UploadPhotos}</div>
                                                 )}
                                             </div>
                                         </div>
