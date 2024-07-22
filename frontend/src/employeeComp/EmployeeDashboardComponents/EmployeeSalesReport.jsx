@@ -693,7 +693,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-            console.log("findService", findService)
+            console.log("findService", mainBooking["Company Name"] , findService)
             // Check if findService is defined
             if (findService) {
               // Calculate the tempAmount based on whether GST is included
@@ -1688,7 +1688,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-        
+      
             // Check if findService is defined
             if (findService) {
                 // Calculate the tempAmount based on whether GST is included
@@ -1734,7 +1734,6 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             }
 
             if (condition) {
-
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
               if (moreObject.bdeName === moreObject.bdmName) {

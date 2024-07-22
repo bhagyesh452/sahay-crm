@@ -1311,8 +1311,6 @@ function BookingList() {
                                                   ")"}
                                                 {")"}
                                               </div>
-
-
                                             </div>
                                           </div>
                                         </div>
@@ -1391,7 +1389,7 @@ function BookingList() {
                                   )}
                                 </div>
                               </div>
-                              {/* Remaining Payment Viwe Sections */}
+                              {/* Remaining Payment View Sections */}
                               {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
                                 <div
                                   className="my-card-body accordion"
@@ -1496,7 +1494,6 @@ function BookingList() {
                                                               ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment)
                                                               : parseInt(currentLeadform.pendingAmount)} */}
                                                           </div>
-
                                                         </div>
                                                       </div>
                                                     </div>
@@ -1526,9 +1523,11 @@ function BookingList() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
+                                                          title={
                                                             paymentObj.paymentMethod
-                                                          }>
+                                                          }
+                                                          >
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1645,85 +1644,7 @@ function BookingList() {
 
                         <div className="my-card">
                           <div className="my-card-body">
-                            {/* {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 text-center">
-                                        {index+1}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                        Total Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        ₹{" "}
-                                        {currentLeadform &&
-                                          parseInt(
-                                            currentLeadform.totalAmount
-                                          ).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Received Amount
-                                      </div>
-                                    </div>
-                                  {<div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.receivedAmount) -
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>}
-                                 
-                                 
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Pending Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.pendingAmount) +
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )) } */}
                             <div className="row m-0 bdr-btm-eee">
-                              {/* <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100 text-center">
-                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1) }
-                                    </div>
-                                  </div>
-                                </div>
-                              </div> */}
                               <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
