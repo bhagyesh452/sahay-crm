@@ -649,6 +649,7 @@ const calculateAchievedRevenue = (data, ename, filterBy) => {
   let remainingAmount = 0;
   let remainingExpense = 0;
   const today = new Date();
+  console.log("today")
 
   const isDateInRange = (date, filterBy) => {
     const bookingDate = new Date(date);
