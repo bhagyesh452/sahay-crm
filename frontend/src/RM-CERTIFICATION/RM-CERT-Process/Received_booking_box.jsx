@@ -78,6 +78,7 @@ function Received_booking_box() {
     const [currentCompanyName, setCurrentCompanyName] = useState("");
     const [activeIndex, setActiveIndex] = useState(0);
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
+    const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
 
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-07-15");
@@ -144,6 +145,7 @@ function Received_booking_box() {
             setCurrentLeadform(leadFormData[0]);
             setActiveIndex(0)
             setActiveIndexBooking(1)
+            setActiveIndexMoreBookingServices(0)
         }
     }, [leadFormData]);
 
@@ -1307,14 +1309,8 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee"> ₹{" "}
                                                                                                         ₹{" "}
                                                                                                         {parseInt(
-                                                                                                            obj.totalPaymentWGST
+                                                                                                            obj.totalAmount
                                                                                                         ).toLocaleString()}
-                                                                                                        {"("}
-                                                                                                        {obj.totalPaymentWGST !==
-                                                                                                            obj.totalPaymentWOGST
-                                                                                                            ? "With GST"
-                                                                                                            : "Without GST"}
-                                                                                                        {")"}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1326,10 +1322,10 @@ function Received_booking_box() {
                                                                                                 </div>
                                                                                                 <div class="col-lg-5 align-self-stretch p-0">
                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">₹{" "}
-                                                                                                        {currentLeadform &&
-                                                                                                            parseInt(
-                                                                                                                currentLeadform.receivedAmount
-                                                                                                            ).toLocaleString()}</div>
+                                                                                                        ₹{" "}
+                                                                                                        {parseInt(
+                                                                                                            obj.receivedAmount
+                                                                                                        ).toLocaleString()}</div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -1341,10 +1337,9 @@ function Received_booking_box() {
                                                                                                 <div class="col-lg-5 align-self-stretch p-0">
                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                         ₹{" "}
-                                                                                                        {currentLeadform &&
-                                                                                                            parseInt(
-                                                                                                                currentLeadform.pendingAmount
-                                                                                                            ).toLocaleString()}
+                                                                                                        {parseInt(
+                                                                                                            obj.pendingAmount
+                                                                                                        ).toLocaleString()}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1357,10 +1352,10 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h h-100">Payment Method</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee" title={currentLeadform &&
-                                                                                                        currentLeadform.paymentMethod}>
-                                                                                                        {currentLeadform &&
-                                                                                                            currentLeadform.paymentMethod}
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
+                                                                                                   title={obj.paymentMethod}
+                                                                                                        >
+                                                                                                      {obj.paymentMethod}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1371,10 +1366,10 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
                                                                                                 </div>
                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                                                                                        currentLeadform.extraNotes}>
-                                                                                                        {currentLeadform &&
-                                                                                                            currentLeadform.extraNotes}
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
+                                                                                                    title={obj.extraNotes}
+                                                                                                        >
+                                                                                                         {obj.extraNotes}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1385,17 +1380,17 @@ function Received_booking_box() {
                                                                         </div>
                                                                         <div className='p-0 mul-booking-card rm_bkng_item_detail_inner_services bdr-ededed mt-2'>
                                                                             <ul className="nav nav-tabs">
-                                                                                {currentLeadform && currentLeadform.services && currentLeadform.services.length !== 0 ? (
-                                                                                    currentLeadform.services.map((obj, index) => (
-                                                                                        <li key={index} className="nav-item rmbidis_nav_item">
+                                                                                {obj.services && obj.services.length !== 0 ? (
+                                                                                    obj.services.map((objServ, index2) => (
+                                                                                        <li key={index2} className="nav-item rmbidis_nav_item">
                                                                                             <a
-                                                                                                className={index === activeIndex ? "nav-link rmbidis_nav_link active My_Text_Wrap" : "nav-link rmbidis_nav_link My_Text_Wrap"}
+                                                                                                className={index2 === activeIndexMoreBookingServices ? "nav-link rmbidis_nav_link active My_Text_Wrap" : "nav-link rmbidis_nav_link My_Text_Wrap"}
                                                                                                 data-bs-toggle="tab"
-                                                                                                href={`#services_${index}`}
-                                                                                                onClick={() => setActiveIndex(index)}
-                                                                                                title={obj.serviceName}
+                                                                                                href={`#services_${index2}`}
+                                                                                                onClick={() => setActiveIndexMoreBookingServices(index2)}
+                                                                                                title={objServ.serviceName}
                                                                                             >
-                                                                                                {obj.serviceName}
+                                                                                                {objServ.serviceName}
                                                                                             </a>
                                                                                         </li>
                                                                                     ))
@@ -1415,12 +1410,12 @@ function Received_booking_box() {
                                                                             </ul>
 
                                                                             <div class="tab-content">
-                                                                                {currentLeadform && currentLeadform.services && currentLeadform.services.length !== 0 ? (
-                                                                                    currentLeadform.services.map((obj, index) => (
+                                                                                {obj.services && obj.services.length !== 0 ? (
+                                                                                    obj.services.map((objServ, index2) => (
                                                                                         <div
-                                                                                            key={index}
-                                                                                            className={`tab-pane p-1 fade ${index === activeIndex ? "show active" : ""}`}
-                                                                                            id={`services_${index}`}
+                                                                                            key={index2}
+                                                                                            className={`tab-pane p-1 fade ${index2 === activeIndexMoreBookingServices ? "show active" : ""}`}
+                                                                                            id={`services_${index2}`}
                                                                                         >
                                                                                             <div class="my-card mt-1">
                                                                                                 <div class="my-card-body">
@@ -1433,8 +1428,8 @@ function Received_booking_box() {
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-8 align-self-stretch p-0">
-                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name My_Text_Wrap" title={obj.serviceName}>
-                                                                                                                        {obj.serviceName}
+                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name My_Text_Wrap" title={objServ.serviceName}>
+                                                                                                                        {objServ.serviceName}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -1455,11 +1450,11 @@ function Received_booking_box() {
                                                                                                                             <div>
                                                                                                                                 ₹{" "}
                                                                                                                                 {parseInt(
-                                                                                                                                    obj.totalPaymentWGST
+                                                                                                                                    objServ.totalPaymentWGST
                                                                                                                                 ).toLocaleString()}{" "}
                                                                                                                                 {"("}
-                                                                                                                                {obj.totalPaymentWGST !==
-                                                                                                                                    obj.totalPaymentWOGST
+                                                                                                                                {objServ.totalPaymentWGST !==
+                                                                                                                                    objServ.totalPaymentWOGST
                                                                                                                                     ? "With GST"
                                                                                                                                     : "Without GST"}
                                                                                                                                 {")"}

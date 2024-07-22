@@ -2738,7 +2738,7 @@ function BookingList() {
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee" title={objMain.extraNotes}>
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.extraNotes}>
                                             {objMain.extraNotes}
                                           </div>
                                         </div>

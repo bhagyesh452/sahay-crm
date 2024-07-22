@@ -857,6 +857,8 @@ router.post(
           }
         });
 
+        console.log("req.bode" , req.body)
+
       const newUser = new userModel({
         ...req.body,
         DirectorDetails: req.body.DirectorDetails.map((director, index) => ({

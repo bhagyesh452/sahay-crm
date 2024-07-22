@@ -668,97 +668,17 @@ const calculateAchievedRevenue = (data, ename, filterBy) => {
   const processBooking = (booking, ename) => {
     if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
       if (booking.bdeName === booking.bdmName) {
-        mainBooking.services.map(serv => {
-          if (serv.paymentTerms === "Full Advanced") {
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
-              achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-
-          } else {
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-              if (serv.withGST) {
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-              } else {
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-              }
-          }
-
-          // console.log(serv.expanse , bdeName ,"this is services");
-          let expanseDate = null
-          if (serv.expanse) {
-              console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
-              expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
-
-              expanseDate.setHours(0, 0, 0, 0);
-              const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-              expanse = condition ? expanse + serv.expanse : expanse;
-          }
-      });
-      if (mainBooking.caCase === "Yes") {
-          console.log("Ye add hone ja raha commision :", mainBooking['Company Name'], bdeName, mainBooking.caCommission)
-
-          caCommission += parseInt(mainBooking.caCommission);
-      }
-
+        achievedAmount += Math.round(booking.generatedReceivedAmount);
+        expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
+        if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
       } else if (booking.bdmType === "Close-by") {
-        mainBooking.services.map(serv => {
-          if (serv.paymentTerms === "Full Advanced") {
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
-              achievedAmount = achievedAmount + serv.totalPaymentWOGST / 2;
-          } else {
-              if (serv.withGST) {
-                  console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18) / 2;
-              } else {
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment) / 2;
-              }
-          }
-          // console.log(serv.expanse , bdeName ,"this is services");
-          let expanseDate = null
-          if (serv.expanse) {
-              console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
-
-              expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
-
-              expanseDate.setHours(0, 0, 0, 0);
-              const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-              expanse = condition ? expanse + serv.expanse / 2 : expanse;
-          }
-      });
-      if (mainBooking.caCase === "Yes") {
-          console.log("Ye add hone ja raha commision :", mainBooking['Company Name'], bdeName, mainBooking.caCommission)
-
-          caCommission += parseInt(mainBooking.caCommission) / 2;
-      }
+        achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
+        expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
+        if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission) / 2;
       } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-        mainBooking.services.map(serv => {
-          if (serv.paymentTerms === "Full Advanced") {
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
-
-              achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-          } else {
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-              if (serv.withGST) {
-                  //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-              } else {
-                  achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-              }
-          }
-          // console.log(serv.expanse , bdeName ,"this is services");
-          let expanseDate;
-          if (serv.expanse) {
-              console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
-              expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
-              expanseDate.setHours(0, 0, 0, 0);
-              const condition = (expanseDate >= startDate && expanseDate <= endDate || (isSameDayMonthYear(expanseDate, startDate) && isSameDayMonthYear(expanseDate, endDate)))
-              expanse = condition ? expanse + serv.expanse : expanse;
-          }
-      });
-      if (mainBooking.caCase === "Yes") {
-          console.log("Ye add hone ja raha commision :", mainBooking['Company Name'], bdeName, mainBooking.caCommission)
-          caCommission += parseInt(mainBooking.caCommission);
-      }
+        achievedAmount += Math.round(booking.generatedReceivedAmount);
+        expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
+        if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
       }
     } else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
       let remainingExpanseCondition = false;
