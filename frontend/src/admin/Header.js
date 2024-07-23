@@ -88,6 +88,15 @@ function Header({ name, designation }) {
       audioplayer.play();
     });
 
+    socket.on("payment-approval-request" , (res)=>{
+      enqueueSnackbar(`Payment Approval Requests Recieved From ${res}`, {
+        variant: 'reportComplete',
+        persist: true
+      });
+
+      const audioplayer = new Audio(notification_audio);
+      audioplayer.play();
+    })
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();

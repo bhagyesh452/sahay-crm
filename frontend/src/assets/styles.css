@@ -326,6 +326,13 @@ background-color: #ffdede !important;
   background-color: #d7fff4 !important;
 }
 
+.item-act6-noti{
+  color: #817de6 !important;
+  font-weight: bold !important;
+  border: 1px solid #e9e9e9 !important;
+  background-color: #dfd7fb !important;
+}
+
 select:focus,
 input:focus,
 textarea:focus {
@@ -3135,6 +3142,15 @@ td input {
   border: none !important;
   border-bottom: 1px solid #ccc !important;
   color: #a77b7b;
+  font-weight: bold !important;
+}
+
+.Payment-Notification-table thead tr th
+{
+  background: #dfd7fb;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  color: #817de6;
   font-weight: bold !important;
 }
 .EditRequest-table thead tr th

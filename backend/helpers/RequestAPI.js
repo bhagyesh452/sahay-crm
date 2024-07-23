@@ -17,6 +17,7 @@ const InformBDEModel = require("../models/InformBDE.js");
 const NotiModel = require('../models/Notifications.js');
 const adminModel = require('../models/Admin.js');
 const { clouddebugger } = require('googleapis/build/src/apis/clouddebugger/index.js');
+//const PaymentApprovalRequest = require('../models/PaymentApprovalRequest.js')
 
 
 router.post("/requestCompanyData", async (req, res) => {
@@ -1060,5 +1061,28 @@ router.get("/requestCompanyData/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 })
+
+router.get("/paymentApprovalRequestByBde", async (req, res) => {
+  
+  try {
+    // Retrieve all data from RequestModel
+    //const allData = await PaymentApprovalRequest.find();
+    //res.json(allData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+router.get("/paymentApprovalRequestByBde/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    // Retrieve all data from RequestModel
+    //const allData = await PaymentApprovalRequest.find({ename : ename});
+    //res.json(allData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
