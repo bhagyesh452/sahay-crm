@@ -7,6 +7,8 @@ import EmployeeGeneralDataComponent from './EmployeeNotificationComponents/Emplo
 import EmployeeApproveDataComponent from './EmployeeNotificationComponents/EmployeeApproveDataComponent';
 import EmployeeBookingEditCopmonent from './EmployeeNotificationComponents/EmployeeBookingEditCopmonent';
 import EmployeeDeleteBookingComponent from './EmployeeNotificationComponents/EmployeeDeleteBookingComponent';
+import PaymentApprovalComponent from '../admin/NotiComponents/PaymentApprovalComponent';
+import EmployeePaymentApprovalComponent from './EmployeeNotificationComponents/EmployeePaymentApprovalComponent';
 
 
 
@@ -151,6 +153,22 @@ function EmployeeShowNotification() {
                                     Bookings Edit Requests
                                 </a>
                             </li>
+                            <li class="nav-item data-heading">
+                                <a
+                                    href="#tabs-home-5"
+                                    className={
+                                        dataType === "paymentApprovalRequests"
+                                            ? "nav-link item-act6-noti"
+                                            : "nav-link"
+                                    }
+                                    data-bs-toggle="tab"
+                                    onClick={() => {
+                                        setDataType("paymentApprovalRequests");
+                                    }}
+                                >
+                                    Payment Approval Requests
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div className="maincontent"  >
@@ -163,6 +181,7 @@ function EmployeeShowNotification() {
                             editData.length !== 0 && currentBooking && compareBooking &&
                             <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
                         } */}
+                        {dataType === "paymentApprovalRequests" && <EmployeePaymentApprovalComponent/>}
 
                     </div>
                 </div>

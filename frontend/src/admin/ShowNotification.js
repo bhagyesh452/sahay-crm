@@ -16,13 +16,14 @@ import Manual_dataComponent from "./NotiComponents/Manual_dataComponent";
 import Approve_dataComponents from "./NotiComponents/Approve_dataComponents";
 import Booking_editComponents from "./NotiComponents/Booking_editComponents";
 import { useLocation } from 'react-router-dom';
+import PaymentApprovalComponent from "./NotiComponents/PaymentApprovalComponent";
 
 
 function ShowNotification() {
   const location = useLocation();
   const { dataStatus } = location.state || {};
   const [RequestData, setRequestData] = useState([]);
-  const [currentBooking , setCurrentBooking] = useState(null);
+  const [currentBooking, setCurrentBooking] = useState(null);
   const [compareBooking, setCompareBooking] = useState(null);
   const [RequestGData, setRequestGData] = useState([]);
   const [bookingIndex, setBookingIndex] = useState(0);
@@ -46,38 +47,26 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
-  const fetchCompareBooking = async()=>{
-    try{
+  const fetchCompareBooking = async () => {
+    try {
       const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-      if(moreBookingCase){
-        const bookingObject = response.data.find(obj=> obj["Company Name"] === currentCompany);
-        setCompareBooking(bookingObject.moreBooking[bookingIndex-1]);
-      }else{
-        setCompareBooking(response.data.find(obj=> obj["Company Name"] === currentCompany));
+      if (moreBookingCase) {
+        const bookingObject = response.data.find(obj => obj["Company Name"] === currentCompany);
+        setCompareBooking(bookingObject.moreBooking[bookingIndex - 1]);
+      } else {
+        setCompareBooking(response.data.find(obj => obj["Company Name"] === currentCompany));
       }
-     
-    }catch(error){
-      console.error("Error fetching Current Booking" , error.message);
+
+    } catch (error) {
+      console.error("Error fetching Current Booking", error.message);
     }
   }
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3001");
   
-
-  //   socket.on("delete-booking-requested", () => {
-  //     console.log("One delete request came")
-  //     fetchDataDelete(); // Same condition
-  //   });
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
   useEffect(() => {
     fetchCompareBooking();
-   setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
+    setCurrentBooking(totalBookings.find(obj => obj["Company Name"] === currentCompany));
   }, [currentCompany]);
-  
+
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/requestgData`);
@@ -106,7 +95,7 @@ function ShowNotification() {
       }, []);
       setEditData(uniqueEnames);
     } catch (error) {
-      console.error("Error fetching data:", error); 
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -148,12 +137,7 @@ function ShowNotification() {
     fetchEditRequests();
   }, []);
 
-  // useEffect(()=>{
-  //   if(fetchBookingRequests){
-  //     fetchDataDelete();
-  //     setfetchBookingRequests(false);
-  //   }
-  // },[fetchBookingRequests])
+  
   const [expandedRow, setExpandedRow] = useState(null);
 
   const handleRowClick = (index) => {
@@ -169,13 +153,13 @@ function ShowNotification() {
       <div className="page-wrapper">
         <div className="page-header">
           <div className="container-xl">
-             {/* <!-- Page pre-title --> */}
-             <h2 className="page-title">Notifications</h2>
+            {/* <!-- Page pre-title --> */}
+            <h2 className="page-title">Notifications</h2>
           </div>
         </div>
         <div className="container-xl">
           <div class="card-header mt-2">
-            <ul class="nav nav-tabs card-header-tabs nav-fill noti-nav"  data-bs-toggle="tabs"  >
+            <ul class="nav nav-tabs card-header-tabs nav-fill noti-nav" data-bs-toggle="tabs"  >
               <li class="nav-item data-heading">
                 <a
                   href="#tabs-home-5"
@@ -268,110 +252,36 @@ function ShowNotification() {
                   Bookings Edit Requests
                 </a>
               </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "paymentApprovalRequests"
+                      ? "nav-link item-act6-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("paymentApprovalRequests");
+                  }}
+                >
+                Payment Approval Requests
+                </a>
+              </li>
             </ul>
           </div>
           <div className="maincontent"  >
-            {dataType === "Manual" &&  <Manual_dataComponent/>}
-            {/* {dataType === "Manual" &&
-              RequestData.length !== 0 &&
-              RequestData.map((company) => (s
-                <NewCard
-                  name={company.ename}
-                  year={company.year}
-                  ctype={company.ctype}
-                  damount={company.dAmount}
-                  id={company._id}
-                  assignStatus={company.assigned}
-                  cTime={company.cTime}
-                  cDate={company.cDate}
-                />
-              ))} */}
-
-            {/* {RequestGData.length !== 0 &&
-              dataType === "General" &&
-              RequestGData.map((company) => (
-                <NewGCard
-                  name={company.ename}
-                  damount={company.dAmount}
-                  id={company._id}
-                  assignStatus={company.assigned}
-                  cTime={company.cTime}
-                  cDate={company.cDate}
-                />
-              ))} */}
-              {dataType === "General" && <General_dataComponent/>}
-            {/* {dataType === "deleteBookingRequests" &&
-              deleteData.length !== 0 &&
-              deleteData.map((company) => (
-                <DeleteBookingsCard
-                  request={company.request}
-                  Id={company.companyID}
-                  name={company.ename}
-                  companyName={company.companyName}
-                  date={company.date}
-                  bookingIndex={company.bookingIndex}
-                  time={company.time}
-                />
-              ))} */}
-              {dataType === "deleteBookingRequests" && <DeleteBookingComponent/>}
-            {/* {dataType === "editBookingRequests" &&
-              editData.length !== 0 && !currentBooking && !compareBooking &&
-              editData.map((company) => (
-                <EditBookingsCard                   
-                  setCurrentCompany={setCurrentCompany}
-                  date={company.date}
-                  time={company.time}
-                  name={company.ename} 
-                  setBookingIndex = {setBookingIndex}
-                  moreBookingCase={setMoreBookingCase}
-                  bookingIndex={company.bookingIndex}
-                  companyName={company.companyName}
-                />
-              ))} */}
-              {dataType === "editBookingRequests" && <Booking_editComponents/>}
-              {dataType === "editBookingRequests" &&
+            {dataType === "Manual" && <Manual_dataComponent />}
+            {dataType === "General" && <General_dataComponent />}
+            {dataType === "deleteBookingRequests" && <DeleteBookingComponent />}
+            {dataType === "editBookingRequests" && <Booking_editComponents />}
+            {dataType === "editBookingRequests" &&
               editData.length !== 0 && currentBooking && compareBooking &&
-                <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
-              }
-            {/* {mapArray.length !== 0 &&
-              dataType === "AddRequest" &&
-              mapArray.map((company) => (
-                <ApproveCard
-                  name={company.ename}
-                  date={company.date}
-                  time={company.time}
-                /> 
-              ))} */}
-              {dataType === "AddRequest" &&  <Approve_dataComponents/>}
+              <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
+            }
+            {dataType === "AddRequest" && <Approve_dataComponents />}
+            {dataType === "paymentApprovalRequests" && <PaymentApprovalComponent />}
 
-            {/* {RequestData.length === 0 && dataType === "Manual" && (
-              <Nodata />
-            )} */}
-            {/* {RequestGData.length === 0 && dataType === "General" && (
-              <span
-                style={{
-                  textAlign: "center",
-                  fontSize: "25px",
-                  fontWeight: "bold",
-                }}
-              >
-                <Nodata />
-              </span>
-            )} */}
-            
-            {/* {deleteData.length === 0 &&
-              dataType === "deleteBookingRequests" && (
-                <span
-                  style={{
-                    textAlign: "center",
-                    fontSize: "25px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Nodata />
-                </span>
-              )} */}
-            
           </div>
         </div>
       </div>

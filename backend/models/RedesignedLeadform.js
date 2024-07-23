@@ -301,7 +301,8 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   },
   paymentReceipt: {
     type: Array
-  }, otherDocs: {
+  }, 
+  otherDocs: {
     type: Array
   },
   extraNotes: {

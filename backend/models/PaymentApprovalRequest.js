@@ -24,7 +24,7 @@ const PaymentApprovalRequestSchema = new mongoose.Schema({
     },
     requestType: {
         type: String,
-        enum: ["Lesser Price", "Payment Term Change", "GST/Non-GST Issue"] // Array of strings
+        //enum: ["Lesser Price", "Payment Term Change", "GST/Non-GST Issue"] // Array of strings
     },
     reason: {
         type: String

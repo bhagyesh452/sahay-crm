@@ -2985,7 +2985,7 @@ function EmployeePanel() {
   };
 
   const handlePaymentApprovalSubmit = async () => {
-    console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason)
+    console.log(data.ename , data.designation , data.branchOffice , requestedCompanyName , minimumPrice , requestedPrice , requesteType , reason)
     try {
       const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, {
         ename: data.ename,
@@ -3000,13 +3000,15 @@ function EmployeePanel() {
         requestDate: new Date(),
         assigned: "Pending"
       })
+
+      
       Swal.fire("Request Send")
       console.log("response", response.data);
       handleClosePaymentApproval();
       fetchNewData();
 
     } catch (error) {
-      console.log("Error Posting Payment Approval Request", error);
+      console.log("Error Posting Payment Approval Request", error)
     }
   };
 
