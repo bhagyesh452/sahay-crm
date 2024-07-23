@@ -89,7 +89,7 @@ function Header({ name, designation }) {
     });
 
     socket.on("payment-approval-request" , (res)=>{
-      enqueueSnackbar(`Payment Approval Requests Recieved From ${res}`, {
+      enqueueSnackbar(`Payment Approval Requests Recieved From ${res.name}`, {
         variant: 'reportComplete',
         persist: true
       });

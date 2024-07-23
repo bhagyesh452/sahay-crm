@@ -2984,7 +2984,32 @@ function EmployeePanel() {
     setOpenPaymentApproval(false);
   };
 
-  const handlePaymentApprovalSubmit = () => {
+  const handlePaymentApprovalSubmit = async () => {
+    console.log(data.ename , data.designation , data.branchOffice , requestedCompanyName , minimumPrice , requestedPrice , requesteType , reason)
+    try {
+      const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, {
+        ename: data.ename,
+        designation: data.designation,
+        branchOffice: data.branchOffice,
+        companyName: requestedCompanyName,
+        serviceType: [],
+        minimumPrice: minimumPrice,
+        clientRequestedPrice: requestedPrice,
+        requestType: requesteType,
+        reason: reason,
+        requestDate: new Date(),
+        assigned: "Pending"
+      })
+
+      
+      Swal.fire("Request Send")
+      console.log("response", response.data);
+      handleClosePaymentApproval();
+      fetchNewData();
+
+    } catch (error) {
+      console.log("Error Posting Payment Approval Request", error)
+    }
   };
 
   const [requestedCompanyName, setRequestedCompanyName] = useState("");
@@ -6892,7 +6917,7 @@ function EmployeePanel() {
                       <div className="mb-3">
                         <label className="form-label">Remarks
                           <span style={{ color: "red" }}>*</span></label>
-                        <input type="file" name="attachments"/>
+                        <input type="file" name="attachments" />
                       </div>
                     </div>
                   </div>
