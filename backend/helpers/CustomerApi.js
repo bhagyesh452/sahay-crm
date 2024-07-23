@@ -110,7 +110,7 @@ router.post('/save-company-data', upload.fields([
 ]), async (req, res) => {
     try {
         const data = req.body;
-        console.log("Data is :", data);
+        // console.log("Data is :", data);
 
         // Handle file uploads
         // const fileFields = [
@@ -132,16 +132,12 @@ router.post('/save-company-data', upload.fields([
         //     }
         // });
 
-        // Set formSubmitted to true
-        data.formSubmitted = true;
-        
         // Save or update the user in the database
         const user = await CompanyDataModel.findOneAndUpdate(
             { CompanyName: data.CompanyName },
             data,
             { new: true, upsert: true }
         );
-
         res.status(200).json({ result: true, message: 'Data saved successfully', data: user });
     } catch (error) {
         console.error('Error saving data:', error);
@@ -163,6 +159,20 @@ router.get('/fetch-company-data/:companyName', async (req, res) => {
     } catch (error) {
         console.error('Error fetching company data:', error);
         res.status(500).json({ result: false, message: 'Error fetching company data', error: error.message });
+    }
+});
+
+router.get('/fetch-director-files/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const directorData = await CompanyDataModel.findById(id);
+        if (!directorData) {
+            return res.status(404).json({ message: 'Data not found' });
+        }
+        res.status(200).json(directorData);
+        // console.log("Director details :", directorData);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching data', error });
     }
 });
 
