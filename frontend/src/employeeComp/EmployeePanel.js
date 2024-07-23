@@ -2984,7 +2984,30 @@ function EmployeePanel() {
     setOpenPaymentApproval(false);
   };
 
-  const handlePaymentApprovalSubmit = () => {
+  const handlePaymentApprovalSubmit = async () => {
+    console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason)
+    try {
+      const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, {
+        ename: data.ename,
+        designation: data.designation,
+        branchOffice: data.branchOffice,
+        companyName: requestedCompanyName,
+        serviceType: [],
+        minimumPrice: minimumPrice,
+        clientRequestedPrice: requestedPrice,
+        requestType: requesteType,
+        reason: reason,
+        requestDate: new Date(),
+        assigned: "Pending"
+      })
+      Swal.fire("Request Send")
+      console.log("response", response.data);
+      handleClosePaymentApproval();
+      fetchNewData();
+
+    } catch (error) {
+      console.log("Error Posting Payment Approval Request", error);
+    }
   };
 
   const [requestedCompanyName, setRequestedCompanyName] = useState("");
@@ -6807,9 +6830,9 @@ function EmployeePanel() {
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-body">
-                  <div className="row">
 
-                    <div className="col-4">
+                  <div className="row">
+                    <div className="col-6">
                       <div className="mb-3">
                         <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
                         <input
@@ -6822,13 +6845,21 @@ function EmployeePanel() {
                       </div>
                     </div>
 
-                    <div className="col-4">
+                    <div className="col-6">
                       <div className="mb-3">
-                        <label className="form-label">Service Type
-                          <span style={{ color: "red" }}>*</span></label>
+                        <label className="form-label">Service Type <span style={{ color: "red" }}>*</span></label>
+                        <Select
+                          isMulti
+                          options={options}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          onChange={(selectedOptions) => setServiceType(selectedOptions.map(option => option.value))}
+                        />
                       </div>
                     </div>
+                  </div>
 
+                  <div className="row">
                     <div className="col-4">
                       <div className="mb-3">
                         <label className="form-label">Minimum Price
@@ -6856,43 +6887,49 @@ function EmployeePanel() {
                         />
                       </div>
                     </div>
-                  </div>
 
-                  <div className="row">
-                    <div className="col-lg-4">
+                    <div className="col-4">
                       <div className="mb-3">
                         <label className="form-label">Requested Type
                           <span style={{ color: "red" }}>*</span></label>
-                        <select onChange={(e) => setRequesteType(e.target.value)}>
-                          <option name="Select reqested type" disabled>Select reqested type</option>
+                        <select class="form-control" id="exampleFormControlSelect1"
+                          onChange={(e) => setRequesteType(e.target.value)}>
+                          <option name="Select reqested type" disabled selected>Select reqested type</option>
                           <option name="lesser price">Lessar Price</option>
                           <option name="payment term change">Payment Term Change</option>
                           <option name="gst/non-gst issue">GST/Non-GST Issue</option>
                         </select>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="col-lg-4">
+                  <div className="row">
+                    <div className="col-lg-6">
                       <div className="mb-3">
-                        <label className="form-label">Reason
-                          <span style={{ color: "red" }}>*</span></label>
-                        <textarea onChange={(e) => setReason(e.target.value)}></textarea>
+                        <label className="form-label">Reason</label>
+                        <textarea class="form-control"
+                          id="exampleFormControlTextarea1"
+                          rows="3"
+                          onChange={(e) => setReason(e.target.value)}
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div className="col-lg-6">
+                      <div className="mb-3">
+                        <label className="form-label">Remarks</label>
+                        <textarea class="form-control"
+                          id="exampleFormControlTextarea1"
+                          rows="3"
+                          onChange={(e) => setRemarks(e.target.value)}
+                        ></textarea>
                       </div>
                     </div>
 
                     <div className="col-lg-4">
                       <div className="mb-3">
-                        <label className="form-label">Remarks
-                          <span style={{ color: "red" }}>*</span></label>
-                        <textarea onChange={(e) => setRemarks(e.target.value)}></textarea>
-                      </div>
-                    </div>
-
-                    <div className="col-lg-4">
-                      <div className="mb-3">
-                        <label className="form-label">Remarks
-                          <span style={{ color: "red" }}>*</span></label>
-                        <input type="file" name="attachments"/>
+                        <label className="form-label">Attachment</label>
+                        <input type="file" class="form-control-file" id="exampleFormControlFile1" />
                       </div>
                     </div>
                   </div>
