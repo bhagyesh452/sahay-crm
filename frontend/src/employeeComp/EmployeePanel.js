@@ -73,6 +73,7 @@ import { Country, State, City } from 'country-state-city';
 import TodaysCollection from "./TodaysCollection.jsx";
 import { GoPlusCircle } from "react-icons/go";
 import { jwtDecode } from "jwt-decode";
+import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2976,6 +2977,25 @@ function EmployeePanel() {
   };
 
 
+  // Payment Approval Request :
+  const [openPaymentApproval, setOpenPaymentApproval] = useState(false);
+
+  const handleClosePaymentApproval = () => {
+    setOpenPaymentApproval(false);
+  };
+
+  const handlePaymentApprovalSubmit = () => {
+  };
+
+  const [requestedCompanyName, setRequestedCompanyName] = useState("");
+  const [serviceType, setServiceType] = useState([]);
+  const [minimumPrice, setMinimumPrice] = useState(0);
+  const [requestedPrice, setRequestedPrice] = useState(0);
+  const [requesteType, setRequesteType] = useState("");
+  const [reason, setReason] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const [file, setFile] = useState("");
+
   return (
     <div>
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
@@ -3084,6 +3104,12 @@ function EmployeePanel() {
 
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
+                      </button>
+                      <button type="button" className="btn mybtn"
+                        onClick={() => setOpenPaymentApproval(true)}
+
+                      >
+                        <MdPayment className='mr-1' /> Payment Approval
                       </button>
                     </div>
                   </div>
@@ -6762,6 +6788,123 @@ function EmployeePanel() {
           >
             Submit
           </Button>
+        </Dialog>
+
+        {/* -------------------- Dialog for payment request approval -------------------- */}
+        <Dialog className='My_Mat_Dialog' open={openPaymentApproval} onClose={handleClosePaymentApproval} fullWidth maxWidth="md">
+          <DialogTitle>
+            Payment Approval{" "}
+            <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={handleClosePaymentApproval} >
+              <IoIosClose style={{
+                height: "36px",
+                width: "32px",
+                color: "grey"
+              }} />
+            </button>
+          </DialogTitle>
+
+          <DialogContent>
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-body">
+                  <div className="row">
+
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Your Company Name"
+                          onChange={(e) => setRequestedCompanyName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Service Type
+                          <span style={{ color: "red" }}>*</span></label>
+                      </div>
+                    </div>
+
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Minimum Price
+                          <span style={{ color: "red" }}>*</span></label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="0"
+                          onChange={(e) => setMinimumPrice(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Requested Price
+                          <span style={{ color: "red" }}>*</span></label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="0"
+                          onChange={(e) => setRequestedPrice(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-lg-4">
+                      <div className="mb-3">
+                        <label className="form-label">Requested Type
+                          <span style={{ color: "red" }}>*</span></label>
+                        <select onChange={(e) => setRequesteType(e.target.value)}>
+                          <option name="Select reqested type" disabled>Select reqested type</option>
+                          <option name="lesser price">Lessar Price</option>
+                          <option name="payment term change">Payment Term Change</option>
+                          <option name="gst/non-gst issue">GST/Non-GST Issue</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="col-lg-4">
+                      <div className="mb-3">
+                        <label className="form-label">Reason
+                          <span style={{ color: "red" }}>*</span></label>
+                        <textarea onChange={(e) => setReason(e.target.value)}></textarea>
+                      </div>
+                    </div>
+
+                    <div className="col-lg-4">
+                      <div className="mb-3">
+                        <label className="form-label">Remarks
+                          <span style={{ color: "red" }}>*</span></label>
+                        <textarea onChange={(e) => setRemarks(e.target.value)}></textarea>
+                      </div>
+                    </div>
+
+                    <div className="col-lg-4">
+                      <div className="mb-3">
+                        <label className="form-label">Remarks
+                          <span style={{ color: "red" }}>*</span></label>
+                        <input type="file" name="attachments"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+          <button className="btn btn-primary bdr-radius-none"
+            onClick={handlePaymentApprovalSubmit}
+          >
+            Submit
+          </button>
         </Dialog>
       </div>
     </div>
