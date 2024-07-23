@@ -1140,8 +1140,8 @@ router.get("/paymentApprovalRequestByBde", async (req, res) => {
 
   try {
     // Retrieve all data from RequestModel
-    //const allData = await PaymentApprovalRequest.find();
-    //res.json(allData);
+    const allData = await PaymentApprovalRequestModel.find({assigned : "Pending"});
+    res.json(allData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
