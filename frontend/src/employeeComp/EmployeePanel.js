@@ -2985,7 +2985,7 @@ function EmployeePanel() {
   };
 
   const handlePaymentApprovalSubmit = async () => {
-    console.log(data.ename , data.designation , data.branchOffice , requestedCompanyName , minimumPrice , requestedPrice , requesteType , reason)
+    console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason)
     try {
       const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, {
         ename: data.ename,
@@ -3001,7 +3001,7 @@ function EmployeePanel() {
         assigned: "Pending"
       })
 
-      
+
       Swal.fire("Request Send")
       console.log("response", response.data);
       handleClosePaymentApproval();
@@ -6894,7 +6894,7 @@ function EmployeePanel() {
                       <div className="mb-3">
                         <label className="form-label">Requested Type
                           <span style={{ color: "red" }}>*</span></label>
-                        <select class="form-control" id="exampleFormControlSelect1"
+                        <select className="form-control" id="exampleFormControlSelect1"
                           onChange={(e) => setRequesteType(e.target.value)}>
                           <option name="Select reqested type" disabled selected>Select reqested type</option>
                           <option name="lesser price">Lessar Price</option>
@@ -6913,6 +6913,7 @@ function EmployeePanel() {
                           id="exampleFormControlTextarea1"
                           rows="3"
                           onChange={(e) => setReason(e.target.value)}
+                          placeholder="Reason for the discount, modification in payment terms, or GST/NON-GST issue"
                         ></textarea>
                       </div>
                     </div>
