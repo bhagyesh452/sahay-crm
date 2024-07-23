@@ -1036,14 +1036,16 @@ function RmofCertificationBookings() {
                               <div className="d-flex justify-content-between align-items-center">
                                 <div className="b_Services_multipal_services mr-1"
                                   title="Swap Services">
-                                  <MdOutlineSwapHoriz onClick={() => (
+                                  <MdOutlineSwapHoriz 
+                                  onClick={() => (
                                     setOpenServicesPopup(true),
                                     setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
                                     handleOpenServices(
                                       obj["Company Name"],
                                     )
 
-                                  )} />
+                                  )} 
+                                  />
                                 </div>
                                 <div className="b_cmpny_time">
                                   {

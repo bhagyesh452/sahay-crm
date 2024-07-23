@@ -303,7 +303,7 @@ function AdminEmployeePerformanceReport() {
 
                         const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
                         const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                        return monthYear < currentMonthYear;
+                        return monthYear <= currentMonthYear;
                       }).sort((a, b) => {
                         // Sort by year first, then by month in descending order
                         if (b.year !== a.year) {

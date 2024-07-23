@@ -755,12 +755,12 @@ router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
 //     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
 //   });
 
-//   console.log("achieved" , achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
+//   console.log("achieved", achievedAmount + remainingAmount - expanse - remainingExpense - caCommission);
 
 //   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
 // };
 
-const functionCalculateAchievedRevenue = (ename , Filterby) => {
+const functionCalculateAchievedRevenue = (redesignedData , ename , Filterby) => {
   //console.log("yahan chla achieved full function")
   let achievedAmount = 0;
   let remainingAmount = 0;
@@ -1197,13 +1197,17 @@ router.get('/achieved-details/:ename', async (req, res) => {
       return res.status(404).json({ error: 'No redesigned data found' });
     }
 
-    const lastMonthAchievedAmount = functionCalculateAchievedRevenue(ename, 'Last Month');
-    const thisMonthAchievedAmount = functionCalculateAchievedRevenue(ename, 'This Month');
+    const lastMonthAchievedAmount = functionCalculateAchievedRevenue(redesignedData, ename, 'Last Month');
+    const thisMonthAchievedAmount = functionCalculateAchievedRevenue(redesignedData, ename, 'This Month');
 
     const today = new Date();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
     const thisMonth = monthNames[today.getMonth()];
+
+    console.log("Last Month:", lastMonth);
+    console.log("This Month:", thisMonth);
+    console.log("Employee Target Details Before Update:", employeeData.targetDetails);
 
     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
       if (targetDetail.month === lastMonth) {
@@ -1256,6 +1260,8 @@ router.get('/achieved-details/:ename', async (req, res) => {
       return targetDetail;
     });
 
+    console.log("Employee Target Details After Update:", targetDetailsUpdated);
+
     // Update the employee data
     const updateResult = await adminModel.findOneAndUpdate(
       { ename },
@@ -1270,13 +1276,14 @@ router.get('/achieved-details/:ename', async (req, res) => {
   }
 });
 
+
 // 2. Read the Employee
 router.get("/einfo", async (req, res) => {
   try {
     const data = await adminModel.find();
     res.json(data);
   } catch (error) {
-    s
+    
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }

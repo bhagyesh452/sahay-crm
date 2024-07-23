@@ -8,6 +8,10 @@ import { options } from '../../components/Options.js';
 import Nodata from '../../components/Nodata.jsx';
 import { MdDelete } from "react-icons/md";
 import { GrStatusGood } from "react-icons/gr";
+import wordimg from "../../static/my-images/word.png";
+import PdfImageViewerAdmin from "../../admin/PdfViewerAdmin.jsx";
+import pdfimg from "../../static/my-images/pdf.png";
+
 
 
 function Received_booking_box() {
@@ -184,7 +188,84 @@ function Received_booking_box() {
         return pending.toFixed(2);
     };
 
+    const handleViewPdfReceipts = (paymentreciept, companyName) => {
+        const pathname = paymentreciept;
+        //console.log(pathname);
+        window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
+    };
 
+    const handleViewPdOtherDocs = (pdfurl, companyName) => {
+        const pathname = pdfurl;
+        console.log(pathname);
+        window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
+    };
+
+    // -------------------swapping function for rm-------------------
+
+    const [openServicesPopup, setOpenServicesPopup] = useState(false)
+    const [selectServices, setSelectServices] = useState([]);
+    const [serviceNames, setServiceNames] = useState([])
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedCompanyName, setSelectedCompanyName] = useState("")
+    const [dataToSend, setDataToSend] = useState(defaultLeadData)
+    const [selectedCompanyData, setSelectedCompanyData] = useState([]);
+
+    const defaultLeadData = {
+        "Company Name": "",
+        "Company Number": 0,
+        "Company Email": "",
+        panNumber: "",
+        bdeName: "",
+        bdeEmail: "",
+        bdmName: "",
+        bdmType: "Close-by",
+        bookingDate: "",
+        paymentMethod: "",
+        caCase: false,
+        caNumber: 0,
+        caEmail: "",
+        serviceName: "",
+        totalPaymentWOGST: 0,
+        totalPaymentWGST: 0,
+        withGST: "",
+        firstPayment: 0,
+        secondPayment: 0,
+        thirdPayment: 0,
+        fourthPayment: 0,
+        secondPaymentRemarks: "",
+        thirdPaymentRemarks: "",
+        fourthPaymentRemarks: "",
+      };
+
+    const handleCloseServicesPopup = () => {
+        setOpenServicesPopup(false)
+        setSelectedServices([])
+        setSelectedCompanyName("")
+        setSelectedCompanyData([])
+        setDataToSend(defaultLeadData)
+      }
+
+    // const handleOpenServices = (companyName) => {
+    //     // Filter the mainDataSwap array to get the companies that match the provided companyName
+    //     setSelectedCompanyName(companyName)
+    //     const selectedServices = mainDataSwap
+    //       .filter((company) => company["Company Name"] === companyName)
+    //       .flatMap((company) => {
+    //         if (company.moreBookings.length !== 0) {
+    //           return [
+    //             ...company.services,
+    //             ...company.moreBookings.flatMap((item) => item.services),
+    //           ];
+    //         } else {
+    //           return company.services || [];
+    //         }
+    //       });
+    //     //console.log("new slecetd", selectedServices)
+    //     // Map through the selected services to get the service names
+    //     const servicesNames = selectedServices.map((service) => service.serviceName);
+    //     // Log the selected services and service names
+    //     setServiceNames(servicesNames)
+    //   };
 
 
     console.log("leadformdata", leadFormData)
@@ -302,7 +383,15 @@ function Received_booking_box() {
                                                         <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#b8e8b8" }}>
                                                             <div className='btn-swap-icon'>
                                                                 {/* <SlActionRedo /> */}
-                                                                <GrStatusGood />
+                                                                <GrStatusGood
+                                                                    onClick={() => (
+                                                                        setOpenServicesPopup(true),
+                                                                        setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"]))
+                                                                        //handleOpenServices(obj["Company Name"])
+
+                                                                    )
+                                                                }
+                                                                />
                                                             </div>
                                                         </button>
                                                         <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#ffd8d1", color: "red" }}>
@@ -572,7 +661,8 @@ function Received_booking_box() {
                                                             href="#Booking_1"
                                                             onClick={() => {
                                                                 setActiveIndex(0)
-                                                                setActiveIndexBooking(1)}}>Booking 1</a>
+                                                                setActiveIndexBooking(1)
+                                                            }}>Booking 1</a>
                                                     </li>
                                                 )}
                                             </ul>
@@ -1175,29 +1265,165 @@ function Received_booking_box() {
                                                                                 :
                                                                                 null
                                                                             }
-                                                                            <div class="tab-pane p-1 fade" id="booking_docs">
-                                                                                <div className='row m-0'>
-                                                                                    <div class="col-sm-3 mt-2">
-                                                                                        <div class="booking-docs-preview" title="Upload More Documents">
-                                                                                            <div class="upload-Docs-BTN">
-                                                                                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                                                                    <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 112v288m144-144H112"></path>
-                                                                                                </svg>
+
+                                                                            {currentLeadform &&
+                                                                                (currentLeadform.paymentReceipt.length !== 0 ||
+                                                                                    currentLeadform.otherDocs !== 0) && (
+                                                                                    <div class="tab-pane p-1 fade" id="booking_docs">
+                                                                                        <div className='row m-0'>
+                                                                                            {currentLeadform.paymentReceipt.length !==
+                                                                                                0 && (
+                                                                                                    <div className="col-sm-3 mt2">
+                                                                                                        <div className="booking-docs-preview">
+                                                                                                            <div
+                                                                                                                className="booking-docs-preview-img"
+                                                                                                                onClick={() =>
+                                                                                                                    handleViewPdfReceipts(
+                                                                                                                        currentLeadform.paymentReceipt[0]
+                                                                                                                            .filename,
+                                                                                                                        currentLeadform["Company Name"]
+                                                                                                                    )
+                                                                                                                }
+                                                                                                            >
+                                                                                                                {currentLeadform &&
+                                                                                                                    currentLeadform.paymentReceipt[0] &&
+                                                                                                                    (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                                                                                                        ".pdf"
+                                                                                                                    ) ? (
+                                                                                                                        <PdfImageViewerAdmin
+                                                                                                                            type="paymentrecieptpdf"
+                                                                                                                            path={
+                                                                                                                                currentLeadform
+                                                                                                                                    .paymentReceipt[0].filename
+                                                                                                                            }
+                                                                                                                            companyName={
+                                                                                                                                currentLeadform["Company Name"]
+                                                                                                                            }
+                                                                                                                        />
+                                                                                                                    ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                                        ".png"
+                                                                                                                    ) ||
+                                                                                                                        currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                                            ".jpg"
+                                                                                                                        ) ||
+                                                                                                                        currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                                            ".jpeg"
+                                                                                                                        ) ? (
+                                                                                                                        <img
+                                                                                                                            src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                                                                                            alt="Receipt Image"
+                                                                                                                        />
+                                                                                                                    ) : (
+                                                                                                                        <img
+                                                                                                                            src={wordimg}
+                                                                                                                            alt="Default Image"
+                                                                                                                        />
+                                                                                                                    ))}
+                                                                                                            </div>
+                                                                                                            <div className="booking-docs-preview-text">
+                                                                                                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                                    Receipt
+                                                                                                                </p>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                )}
+                                                                                            {currentLeadform.remainingPayments.length !==
+                                                                                                0 &&
+                                                                                                currentLeadform.remainingPayments.some(
+                                                                                                    (obj) => obj.paymentReceipt.length !== 0
+                                                                                                ) &&
+                                                                                                currentLeadform.remainingPayments.map((remainingObject, index) => (
+                                                                                                    remainingObject.paymentReceipt.length !== 0 && (
+                                                                                                        <div className="col-sm-3 mt-2" key={index}>
+                                                                                                            <div className="booking-docs-preview">
+                                                                                                                <div
+                                                                                                                    className="booking-docs-preview-img"
+                                                                                                                    onClick={() =>
+                                                                                                                        handleViewPdfReceipts(
+                                                                                                                            remainingObject.paymentReceipt[0].filename,
+                                                                                                                            currentLeadform["Company Name"]
+                                                                                                                        )
+                                                                                                                    }
+                                                                                                                >
+                                                                                                                    {((remainingObject.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                                                        <PdfImageViewerAdmin
+                                                                                                                            type="paymentrecieptpdf"
+                                                                                                                            path={remainingObject.paymentReceipt[0].filename}
+                                                                                                                            companyName={currentLeadform["Company Name"]}
+                                                                                                                        />
+                                                                                                                    ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
+                                                                                                                        remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
+                                                                                                                        remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
+                                                                                                                        <img
+                                                                                                                            src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
+                                                                                                                            alt="Receipt Image"
+                                                                                                                        />
+                                                                                                                    ) : (
+                                                                                                                        <img src={wordimg} alt="Default Image" />
+                                                                                                                    )}
+                                                                                                                </div>
+                                                                                                                <div className="booking-docs-preview-text">
+                                                                                                                    <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                                        Remaining Payment
+                                                                                                                    </p>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    )
+                                                                                                ))}
+
+                                                                                            {currentLeadform &&
+                                                                                                currentLeadform.otherDocs.map((obj) => (
+                                                                                                    <div className="col-sm-3 mb-2">
+                                                                                                        <div className="booking-docs-preview">
+                                                                                                            <div
+                                                                                                                className="booking-docs-preview-img"
+                                                                                                                onClick={() =>
+                                                                                                                    handleViewPdOtherDocs(
+                                                                                                                        obj.filename,
+                                                                                                                        currentLeadform["Company Name"]
+                                                                                                                    )
+                                                                                                                }
+                                                                                                            >
+                                                                                                                {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                                                    <PdfImageViewerAdmin
+                                                                                                                        type="pdf"
+                                                                                                                        path={obj.filename}
+                                                                                                                        companyName={
+                                                                                                                            currentLeadform["Company Name"]
+                                                                                                                        }
+                                                                                                                    />
+                                                                                                                ) : (
+                                                                                                                    <img
+                                                                                                                        src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                                                                                        alt={pdfimg}
+                                                                                                                    ></img>
+                                                                                                                )}
+                                                                                                            </div>
+                                                                                                            <div className="booking-docs-preview-text">
+                                                                                                                <p
+                                                                                                                    className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
+                                                                                                                    title={obj.originalname}
+                                                                                                                >
+                                                                                                                    {obj.originalname}
+                                                                                                                </p>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                ))}
+
+                                                                                            <div class="col-sm-3 mt-2">
+                                                                                                <div class="booking-docs-preview" title="Upload More Documents">
+                                                                                                    <div class="upload-Docs-BTN">
+                                                                                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                                                                            <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 112v288m144-144H112"></path>
+                                                                                                        </svg>
+                                                                                                    </div>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                    <div class="col-sm-3 mt-2">
-                                                                                        <div class="booking-docs-preview">
-                                                                                            <div class="booking-docs-preview-img">
-                                                                                                <img src="https://startupsahay.in/api/bookings/recieptpdf/SAMYATVA PHARMACEUTICALS PRIVATE LIMITED/1720587188259-WhatsApp Image 2024-07-10 at 10.04.23 AM.jpeg" alt="MyImg" />
-                                                                                            </div>
-                                                                                            <div class="booking-docs-preview-text">
-                                                                                                <p class="booking-img-name-txtwrap text-wrap m-auto m-0">Receipt.pdf</p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+                                                                                    </div>)}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1425,7 +1651,7 @@ function Received_booking_box() {
                                                                                     <a
                                                                                         className="nav-link rmbidis_nav_link d-flex align-items-center justify-content-center"
                                                                                         data-bs-toggle="tab"
-                                                                                        href="#booking_docs"
+                                                                                        href="#booking_docs2"
                                                                                     >
                                                                                         <div style={{ lineHeight: '11px', marginRight: '3px' }}>
                                                                                             <IoDocumentTextOutline />
@@ -1804,24 +2030,94 @@ function Received_booking_box() {
                                                                                     :
                                                                                     null
                                                                                 }
-                                                                                <div class="tab-pane p-1 fade" id="booking_docs">
+                                                                                <div class="tab-pane p-1 fade" id="booking_docs2">
                                                                                     <div className='row m-0'>
+                                                                                        {obj.paymentReceipt &&
+                                                                                            obj.paymentReceipt.length !== 0 && (
+                                                                                                <div className="col-sm-3 mb-2">
+                                                                                                    <div className="booking-docs-preview">
+                                                                                                        <div
+                                                                                                            className="booking-docs-preview-img"
+                                                                                                            onClick={() =>
+                                                                                                                handleViewPdfReceipts(
+                                                                                                                    obj.paymentReceipt[0]
+                                                                                                                        .filename,
+                                                                                                                    currentLeadform["Company Name"]
+                                                                                                                )
+                                                                                                            }
+                                                                                                        >
+                                                                                                            {((obj.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                                                                                                ".pdf"
+                                                                                                            ) ? (
+                                                                                                                <PdfImageViewerAdmin
+                                                                                                                    type="paymentrecieptpdf"
+                                                                                                                    path={
+                                                                                                                        obj.paymentReceipt[0]
+                                                                                                                            .filename
+                                                                                                                    }
+                                                                                                                    companyName={
+                                                                                                                        currentLeadform["Company Name"]
+                                                                                                                    }
+                                                                                                                />
+                                                                                                            ) : (
+                                                                                                                <img
+                                                                                                                    src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${obj.paymentReceipt[0].filename}`}
+                                                                                                                    alt={"MyImg"}
+                                                                                                                ></img>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                        <div className="booking-docs-preview-text">
+                                                                                                            <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                                Receipt.pdf
+                                                                                                            </p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        {obj.otherDocs.map((obj) => (
+                                                                                            <div className="col-sm-3 mb-2">
+                                                                                                <div className="booking-docs-preview">
+                                                                                                    <div
+                                                                                                        className="booking-docs-preview-img"
+                                                                                                        onClick={() =>
+                                                                                                            handleViewPdOtherDocs(
+                                                                                                                obj.filename,
+                                                                                                                currentLeadform["Company Name"]
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                                            <PdfImageViewerAdmin
+                                                                                                                type="pdf"
+                                                                                                                path={obj.filename}
+                                                                                                                companyName={
+                                                                                                                    currentLeadform["Company Name"]
+                                                                                                                }
+                                                                                                            />
+                                                                                                        ) : (
+                                                                                                            <img
+                                                                                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                                                                                alt={pdfimg}
+                                                                                                            ></img>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                    <div className="booking-docs-preview-text">
+                                                                                                        <p
+                                                                                                            className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                                                                                            title={obj.originalname}
+                                                                                                        >
+                                                                                                            {obj.originalname}
+                                                                                                        </p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
                                                                                         <div class="col-sm-3 mt-2">
                                                                                             <div class="booking-docs-preview" title="Upload More Documents">
                                                                                                 <div class="upload-Docs-BTN">
                                                                                                     <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                                                                                         <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 112v288m144-144H112"></path>
                                                                                                     </svg>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-sm-3 mt-2">
-                                                                                            <div class="booking-docs-preview">
-                                                                                                <div class="booking-docs-preview-img">
-                                                                                                    <img src="https://startupsahay.in/api/bookings/recieptpdf/SAMYATVA PHARMACEUTICALS PRIVATE LIMITED/1720587188259-WhatsApp Image 2024-07-10 at 10.04.23 AM.jpeg" alt="MyImg" />
-                                                                                                </div>
-                                                                                                <div class="booking-docs-preview-text">
-                                                                                                    <p class="booking-img-name-txtwrap text-wrap m-auto m-0">Receipt.pdf</p>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>

@@ -235,7 +235,7 @@ function BookingList() {
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
-    console.log(pathname);
+    //console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
