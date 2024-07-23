@@ -16,16 +16,19 @@ function PaymentApprovalComponent() {
   const [deletedData, setDeletedData] = useState([]);
   const [filterBy, setFilterBy] = useState("Pending");
   const [searchText, setSearchText] = useState("");
-  const [data, setData] = useState(deletedData.filter((obj) => obj.request === false));
-  const [totalData, setTotalData] = useState(deletedData.filter((obj) => obj.request === false));
+  const [data, setData] = useState([])
+  // const [data, setData] = useState(deletedData.filter((obj) => obj.request === false));
+  // const [totalData, setTotalData] = useState(deletedData.filter((obj) => obj.request === false));
   
   const fetchPaymentApprovalRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requests/paymentApprovalRequestByBde`);
       const tempData = response.data.reverse();
-      setDeletedData(tempData); // Assuming your data is returned as an array
-      setData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
-      setTotalData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
+      console.log("tempData" , tempData)
+      setData(tempData)
+      // setDeletedData(tempData); // Assuming your data is returned as an array
+      // setData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
+      // setTotalData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
 
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -79,14 +82,14 @@ function PaymentApprovalComponent() {
 
   useEffect(() => {
     setData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
-    setTotalData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
+    //setTotalData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
   }, [filterBy])
 
   useEffect(() => {
     if (searchText !== "") {
-      setData(totalData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
+      //setData(totalData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
     } else {
-      setData(totalData)
+      //setData(totalData)
     }
   }, [searchText])
 
@@ -135,6 +138,14 @@ function PaymentApprovalComponent() {
       // Handle error
     }
   };
+
+  function formatDateNew(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
 
 
@@ -201,18 +212,18 @@ function PaymentApprovalComponent() {
                   <td className="text-muted">
                     <div className="Notification-date d-flex align-items-center justify-content-center">
 
-                      <GrFormView style={{ fontSize: '16px' }} />
+                      <MdDateRange style={{ fontSize: '16px' }} />
 
                       <div style={{ marginLeft: '5px' }} className="noti-text">
                         <b>
-                          {formatDate(obj.date)}
+                          {formatDateNew(obj.requestDate)}
                         </b>
                       </div>
                     </div>
 
                   </td>
                   <td>
-                    {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
+                    {/* {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
                       <div className="Notification_acceptbtn" onClick={() => handleAcceptDeleteRequest(obj.companyID, obj.bookingIndex)}>
                         <TiTick />
                       </div>
@@ -224,7 +235,11 @@ function PaymentApprovalComponent() {
                       <div className="Notification_completedbtn">
                         <IoCheckmarkDoneCircle />
                       </div>
-                    </div>}
+                    </div>} */}
+                    <div>
+                    <GrFormView style={{width:"16px" , height:"16px"}} />
+                      </div>
+                    
                   </td>
                 </tr>
               )) : <tr>
