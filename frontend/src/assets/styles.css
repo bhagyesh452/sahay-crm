@@ -1522,7 +1522,7 @@ th.th-sticky1::after {
   color: #868686;
 }
 
-.bookings_Company_Name:hover .b_Services_multipal_services {
+.bookings_Company_Name:hover .   {
   background: #c4e5ff;
 }
 .b_Service_remaining_receive
@@ -2613,10 +2613,11 @@ td input {
   font-weight: 600;
   color: #5c586e;
   width: 100%;
+  font-size: 14px;
 }
 .btn-swap-icon
 {
-  font-size: 14px;
+  font-size: 12px;
   line-height: 12px;
 }
 .rm_cmpny_name_services
@@ -2627,11 +2628,11 @@ td input {
 {
   font-size: 10px;
   /* font-weight: 500; */
-  padding: 1px 6px 1px 6px;
+  padding: 3px 6px 3px 6px;
   /* border-radius: 3px; */
   border-left: 1px solid transparent;
   margin-right: 6px;
-  max-width: 92px;
+  max-width: 122px;
 }
 .rm_bking_by, .rm_bking_time
 {
@@ -2641,14 +2642,34 @@ td input {
 }
 .btn-swap-round
 {
-  background: #ffd669;
   border: none;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 37px;
+  height: 24px;
+  line-height: 25px;
   text-align: center;
-  border-radius: 100px;
+  border-radius: 3px;
   margin-left: 10px;
+  font-size: 7px !important;
+}
+.btn-swap-round-success
+{
+  background: #b7ffa5;
+  color: #088a08;
+}
+.btn-swap-round-success:hover
+{
+  background: #088a08;
+  color: #b7ffa5;
+}
+.btn-swap-round-reject
+{
+  background: #ffb0b0;
+  color: #ee2222;
+}
+.btn-swap-round-reject:hover
+{
+  background: #ee2222;
+  color: #ffb0b0;
 }
 .rm_total_bking, .rm_total_services
 {

@@ -6,7 +6,7 @@ import { SlActionRedo } from "react-icons/sl";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { options } from '../../components/Options.js';
 import Nodata from '../../components/Nodata.jsx';
-import { MdDelete } from "react-icons/md";
+import { GrClose } from "react-icons/gr";
 import { FaCheck } from "react-icons/fa6";
 import wordimg from "../../static/my-images/word.png";
 import PdfImageViewerAdmin from "../../admin/PdfViewerAdmin.jsx";
@@ -361,27 +361,9 @@ function Received_booking_box() {
                                                         <div className='rm_bking_cmpny_name My_Text_Wrap'>
                                                             {obj["Company Name"]}
                                                         </div>
-                                                        <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
-                                                            {obj.services.length !== 0 || obj.moreBookings.length !== 0 ? (
-                                                                [
-                                                                    ...obj.services,
-                                                                    ...(obj.moreBookings || []).flatMap(booking => booking.services)
-                                                                ].map((service, index) => (
-                                                                    <div
-                                                                        key={index}
-                                                                        className={`rm_bking_item_serices ${certificationLabels.some(label => service.serviceName.includes(label))
-                                                                            ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
-                                                                            : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad'
-                                                                            } My_Text_Wrap mb-1`}
-                                                                    >
-                                                                        {service.serviceName}
-                                                                    </div>
-                                                                ))
-                                                            ) : null}
-                                                        </div>
                                                     </div>
                                                     <div className='d-flex'>
-                                                        <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#b8e8b8" }}>
+                                                        <button className='btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center'>
                                                             <div className='btn-swap-icon'>
                                                                 {/* <SlActionRedo /> */}
                                                                 <FaCheck
@@ -395,13 +377,31 @@ function Received_booking_box() {
                                                                 />
                                                             </div>
                                                         </button>
-                                                        <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#ffd8d1", color: "red" }}>
+                                                        <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'>
                                                             <div className='btn-swap-icon'>
                                                                 {/* <SlActionRedo /> */}
-                                                                <MdDelete />
+                                                                <GrClose  />
                                                             </div>
                                                         </button>
                                                     </div>
+                                                </div>
+                                                <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
+                                                    {obj.services.length !== 0 || obj.moreBookings.length !== 0 ? (
+                                                        [
+                                                            ...obj.services,
+                                                            ...(obj.moreBookings || []).flatMap(booking => booking.services)
+                                                        ].map((service, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className={`rm_bking_item_serices ${certificationLabels.some(label => service.serviceName.includes(label))
+                                                                    ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
+                                                                    : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad'
+                                                                    } My_Text_Wrap mb-1`}
+                                                            >
+                                                                {service.serviceName}
+                                                            </div>
+                                                        ))
+                                                    ) : null}
                                                 </div>
                                                 <div className='d-flex justify-content-between align-items-center mt-1'>
                                                     <div className='rm_bking_time'>
@@ -420,10 +420,11 @@ function Received_booking_box() {
                                                                     ].bookingPublishDate // Get the latest bookingDate from moreBookings
                                                                     : obj.bookingPublishDate
                                                             ) // Use obj.bookingDate if moreBookings is empty or not present
-                                                        }
+                                                        } 
+                                                         <span className='ml-1'>(First Booking)</span>
                                                     </div>
                                                     <div className='rm_bking_by'>
-                                                        {obj.bdeName}
+                                                      By  {obj.bdeName}
                                                     </div>
                                                 </div>
                                             </div>
