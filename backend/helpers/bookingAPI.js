@@ -1050,10 +1050,10 @@ router.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].serviceName === "Start Up Certificate"
+              ${newData.services[i].serviceName === "Start-Up India Certificate"
                   ? newData.services[i].withDSC
-                    ? "Start Up Certificate With DSC"
-                    : "Start Up Certificate Without DSC"
+                    ? "Start-Up India Certificate With DSC"
+                    : "Start-Up India Certificate Without DSC"
                   : newData.services[i].serviceName
                 }
             </div>
@@ -1263,7 +1263,7 @@ router.post(
             `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
             ``,
             ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-        <h3 style="text-align: center">Booking Form Deatils</h3>
+        <h3 style="text-align: center">Booking Form Details</h3>
         <div style="
               width: 95%;
               margin: 0 auto;
@@ -1975,7 +1975,7 @@ router.post(
               `;
               }
 
-              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
+              const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti", "I-Create", "DBS Grant"]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
                   newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
@@ -1986,7 +1986,7 @@ router.post(
                             newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
                               newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                 newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                     newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                                       newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
                                         newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
@@ -2108,7 +2108,7 @@ router.post(
               </tr>
               `;
               }
-              const conditionalServices = ["Seed Funding Application", "Income Tax Exemption Application", "Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
+              const conditionalServices = ["Seed Funding Application", "Income Tax Exemption Application", "Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti", "I-Create", "DBS Grant"]
               const alteredServiceName =
                 newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
                   newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
@@ -2119,7 +2119,7 @@ router.post(
                             newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
                               newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                 newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                                     newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                                       newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
                                         newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
@@ -2450,7 +2450,7 @@ router.post(
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Support",
-            "Chunauti "
+            "Chunauti"
           ];
           const draftCondition = newData.services.some((service) => {
             return includedServices.includes(service.serviceName);
@@ -2507,7 +2507,7 @@ router.post(
             "ERP Development",
             "E-Commerce Website",
             "Product Development",
-            "Chunauti "
+            "Chunauti"
           ];
 
 
@@ -3950,7 +3950,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti", "I-Create", "DBS Grant"]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
             newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
@@ -3961,7 +3961,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
                         newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                           newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                               newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                                 newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
                                   newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
@@ -4088,7 +4088,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
-        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti ", "I-Create", "DBS Grant"]
+        const conditionalServices = ["Seed Funding Support", "Income Tax Exemption", "Raftaar", "Nidhi Prayash Yojna", "Nidhi Seed Support Scheme", "NAIF", "MSME Hackathon", "Stand-Up India", "Chunauti", "I-Create", "DBS Grant"]
         const alteredServiceName =
           newData.services[i].serviceName === "Seed Funding Support" ? "Pitch deck And Financial Model Creation For Seed Fund Scheme Application" :
             newData.services[i].serviceName === "Seed Fund Application" ? "Seed Funding Application Support" :
@@ -4099,7 +4099,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
                         newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                           newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti " ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                            newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
                               newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
                                 newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
                                   newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
@@ -4186,7 +4186,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Support",
-      "Chunauti ",
+      "Chunauti",
     ];
 
     const AuthorizedName = newData.services.some((service) => {
@@ -4432,7 +4432,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Mudra Loan",
       "SIDBI Loan",
       "Incubation Support",
-      "Chunauti "
+      "Chunauti"
     ];
 
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
@@ -4450,7 +4450,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Broucher Design",
       "Business Profile",
       "Seed Funding Support",
-      "Chunauti ",
+      "Chunauti",
       "Angel Funding Support",
       "VC Funding Support",
       "Crowd Funding Support",
