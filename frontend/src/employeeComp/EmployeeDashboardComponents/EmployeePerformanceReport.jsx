@@ -102,16 +102,29 @@ function EmployeePerformanceReport({ redesignedData, data }) {
                         condition = true;
                     }
                     if (condition) {
-                        const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
-                        const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-                        if (mainBooking.bdeName === mainBooking.bdmName) {
-                            remainingAmount += Math.round(tempAmount);
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                            remainingAmount += Math.round(tempAmount) / 2;
-                        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                            if (mainBooking.bdeName === data.ename) {
+                        // Find the service from mainBooking.services
+                        const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
+                        
+                        // Check if findService is defined
+                        if (findService) {
+                            // Calculate the tempAmount based on whether GST is included
+                            const tempAmount = findService.withGST
+                                ? Math.round(remainingObj.receivedPayment) / 1.18
+                                : Math.round(remainingObj.receivedPayment);
+                    
+                            // Update remainingAmount based on conditions
+                            if (mainBooking.bdeName === mainBooking.bdmName) {
                                 remainingAmount += Math.round(tempAmount);
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                                remainingAmount += Math.round(tempAmount) / 2;
+                            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                                if (mainBooking.bdeName === data.ename) {
+                                    remainingAmount += Math.round(tempAmount);
+                                }
                             }
+                        } else {
+                            // Optional: Handle the case where findService is undefined
+                            console.warn(`Service with name ${remainingObj.serviceName} not found.`);
                         }
                     }
                 })

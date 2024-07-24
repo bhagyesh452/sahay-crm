@@ -2516,6 +2516,10 @@ td input {
 {
   background: #fff;
 }
+.table-style-3 table tbody tr:hover td,.table-style-3 table tbody tr:hover td:nth-child(1),.table-style-3 table tbody tr:hover td:nth-child(2),.table-style-3 table tbody tr:hover td:nth-child(3)
+{
+  background: #a1a1a1 !important;
+}
 .table-style-3 table thead tr th:first-of-type {
   /* border-top-left-radius: 5px; */
   border-bottom-left-radius: 5px;
@@ -2914,8 +2918,8 @@ td input {
 .rm_status_dropdown .custom-dropdown,.rm_status_dropdown .dropdown-menu {
   box-shadow: 0px 2px 5px #0000001A;
   border: 1px solid #E0E0E0;
-  border-radius: 45px;
-  overflow: hidden;
+  border-radius: 5px;
+  /* overflow: hidden; */
 }
 
 .custom-dropdown .dropdown-item {
