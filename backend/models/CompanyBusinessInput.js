@@ -172,7 +172,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   BusinessModel: {
-    type: Array,
+    type: [String],
   },
   FinanceCondition: {
     type: String,

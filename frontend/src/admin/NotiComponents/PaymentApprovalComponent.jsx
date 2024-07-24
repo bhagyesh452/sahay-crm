@@ -519,7 +519,6 @@ function PaymentApprovalComponent() {
                           id="exampleFormControlFile1"
                           name="attachment"
                           onChange={(e) => setFile(e.target.files[0])}
-                          disabled
                         />
                         {file && (
                           <a href={`${secretKey}/${file}`} target="_blank" rel="noopener noreferrer">
