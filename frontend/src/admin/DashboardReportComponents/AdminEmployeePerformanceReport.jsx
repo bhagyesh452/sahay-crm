@@ -329,7 +329,7 @@ function AdminEmployeePerformanceReport() {
                             )}</td>
 
                             <td>₹ {new Intl.NumberFormat('en-IN').format(
-                              achievedAmount = filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0)
+                              achievedAmount = Math.floor(filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0))
                             )}</td>
 
                             <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
@@ -369,7 +369,7 @@ function AdminEmployeePerformanceReport() {
                                           <td>{index + 1}</td>
                                           <td>{perData.month}-{perData.year}</td>
                                           <td>₹ {new Intl.NumberFormat('en-IN').format(perData.amount || 0)}</td>
-                                          <td>₹ {new Intl.NumberFormat('en-IN').format(perData.achievedAmount || 0)}</td>
+                                          <td>₹ {new Intl.NumberFormat('en-IN').format(Math.floor(perData.achievedAmount) || 0)}</td>
                                           <td>{Math.round(perData.ratio) || 0}%</td>
                                           <td>{perData.result || '-'}</td>
                                         </tr>
@@ -441,7 +441,7 @@ function AdminEmployeePerformanceReport() {
                             return monthYear < currentMonthYear;
                           });
                           achievedAmount = total + filteredTargetDetails.reduce((sum, obj) => sum + parseFloat(obj.achievedAmount || 0), 0);
-                          return achievedAmount;
+                          return Math.floor(achievedAmount);
                         }, 0)
                       )}
                     </td>

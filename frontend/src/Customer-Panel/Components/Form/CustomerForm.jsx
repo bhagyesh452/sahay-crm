@@ -98,7 +98,7 @@ function CustomerForm() {
         UploadAuditedStatement: null,
         UploadProvisionalStatement: null,
         DirectInDirectMarket: "",
-        BusinessModel: "",
+        BusinessModel: [],
         Finance: "",
         FinanceCondition: "No",
         UploadDeclaration: "",
@@ -207,7 +207,13 @@ function CustomerForm() {
             const data = new FormData();
 
             Object.keys(formData).forEach((key) => {
-                if (!["DirectorDetails", "SelectServices"].includes(key)) {
+                if (key === "BusinessModel") {
+                    // Handle BusinessModel as an array
+                    formData.BusinessModel.forEach((model, index) => {
+                        data.append(`BusinessModel[${index}]`, model);
+                    });
+                }
+                else if (!["DirectorDetails", "SelectServices"].includes(key)) {
                     data.append(key, formData[key]);
                 } else if (key === "SelectServices") {
                     Object.keys(formData.SelectServices).forEach((serviceProp, index) => {
@@ -241,7 +247,7 @@ function CustomerForm() {
             // console.log("data" , formData);
 
             const requestMethod = id ? "PUT" : "POST";
-            // console.log("Id is :", id);
+            console.log("Id is :", id);
             const url = id
                 ? `${secretKey}/clientform/basicinfo-form/${id}`
                 : `${secretKey}/clientform/basicinfo-form/${companyName}`;
@@ -390,7 +396,12 @@ function CustomerForm() {
         console.log("Form data is :", formData);
         try {
             // Post formData using axios
-            const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
+            // const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
+            const response = await axios.post(`${secretKey}/customer/save-company-data`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
 
             Swal.fire("Data successfully saved", "success");
             console.log("Saved data is:", response.data);
@@ -686,10 +697,10 @@ function CustomerForm() {
 
     // console.log("showfinance" , showFinance);
 
-    const getEmailContent = () => {
-        const { BusinessModel } = formData;
-        return <div>{BusinessModel.join(", ")}</div>;
-    };
+    // const getEmailContent = () => {
+    //     const { BusinessModel } = formData;
+    //     return <div>{BusinessModel.join(", ")}</div>;
+    // };
 
     // Director and Team Details code
     const renderDirectorFields = () => {
@@ -954,7 +965,7 @@ function CustomerForm() {
                                         type="file"
                                         className="form-control mt-1"
                                         id={`DirectorPassportPhoto${index}`}
-                                        // value={formData.DirectorDetails[index]?.DirectorPassportPhoto || ""}
+                                        value={formData.DirectorDetails[index]?.DirectorPassportPhoto[0].originalname || ""}
                                         disabled={isFormSuccessfullySubmitted}
                                         onChange={(e) => {
                                             const file = e.target.files[0];
@@ -976,6 +987,12 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
+                                    {formData.DirectorDetails[index]?.DirectorPassportPhoto && (
+                                        <div className="mt-2">
+                                            <strong>Current File:</strong>{" "}
+                                            {formData.DirectorDetails[index].DirectorPassportPhoto[0]?.originalname || "No file selected"}
+                                        </div>
+                                    )}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
                                     </div>
@@ -1432,7 +1449,6 @@ function CustomerForm() {
                                                 disabled={isFormSuccessfullySubmitted}
                                                 onChange={(e) => {
                                                     const file = e.target.files[0];
-                                                    // console.log("file" , file);
                                                     if (functionShowSizeLimit(file)) {
                                                         setFormData((prevState) => ({
                                                             ...prevState,
@@ -2280,9 +2296,9 @@ function CustomerForm() {
 
                     </div>
                 </form>
-                {formSubmitted && formData.BusinessModel && (
+                {/* {formSubmitted && formData.BusinessModel && (
                     <div className="mt-4">{getEmailContent()}</div>
-                )}
+                )} */}
             </div>
 
             <Backdrop

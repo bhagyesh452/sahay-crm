@@ -12,7 +12,10 @@ import { GrFormView } from "react-icons/gr";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
+import PdfImageViewerAdmin from "../PdfViewerAdmin";
+import pdfimg from "../../static/my-images/pdf.png";
+import { FcList } from "react-icons/fc";
+import wordimg from "../../static/my-images/word.png";
 import { IoIosClose } from 'react-icons/io';
 import Select from "react-select";
 import { options } from '../../components/Options';
@@ -41,11 +44,13 @@ function PaymentApprovalComponent() {
   const [file, setFile] = useState("");
   const [assigned, setAssigned] = useState("Pending");
   const [paymentApprovalErrors, setPaymentApprovalErrors] = useState({});
+  const [alreadyAssigned, setAlreadyAssigned] = useState(false)
   // const [data, setData] = useState(deletedData.filter((obj) => obj.request === false));
   // const [totalData, setTotalData] = useState(deletedData.filter((obj) => obj.request === false));
 
   const handleClosePaymentApproval = () => {
     setOpenPaymentApproval(false);
+    setAlreadyAssigned(false)
   };
 
   const handleCloseAdminRemarks = () => {
@@ -69,7 +74,7 @@ function PaymentApprovalComponent() {
     try {
       const response = await axios.get(`${secretKey}/requests/paymentApprovalRequestByBde`);
       const tempData = response.data.reverse();
-      console.log("tempData", tempData);
+
       setData(tempData);
       // setDeletedData(tempData); // Assuming your data is returned as an array
       // setData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
@@ -85,6 +90,11 @@ function PaymentApprovalComponent() {
     try {
       const response = await axios.get(`${secretKey}/requests/fetchPaymentApprovalRequestFromId/${id}`);
       const data = response.data.data;
+      const attachmentFilename = data.attachments && data.attachments[0] ? data.attachments[0].split('\\').pop().split('/').pop() : "";
+      console.log("approvalData", data, data.attachments[0])
+      if (data.assigned === "Approved" || data.assigned === "Rejected") {
+        setAlreadyAssigned(true)
+      }
       // console.log("Fetched data is :", data);
       setEname(data.ename || "");
       setDesignation(data.designation || "");
@@ -96,11 +106,13 @@ function PaymentApprovalComponent() {
       setRequesteType(data.requestType || "");
       setReason(data.reason || "");
       setRemarks(data.remarks || "");
-      setFile(data.attachment || "");
+      setFile(attachmentFilename || "");
     } catch (error) {
       console.log("Error fetching request");
     }
   };
+
+ 
 
   const handleAccept = async () => {
     setAssigned("Approved");
@@ -133,7 +145,7 @@ function PaymentApprovalComponent() {
           formData.append('attachment', file);
         }
 
-        const response = await axios.put(`${secretKey}/requests/paymentApprovalRequestByBde/${id}`, formData, {
+        const response = await axios.put(`${secretKey}/requests/paymentApprovalRequestAcceptByAdmin/${id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -177,6 +189,9 @@ function PaymentApprovalComponent() {
       reconnection: true,
       transports: ['websocket'],
     });
+    socket.on("payment-approval-request", () => {
+      fetchPaymentApprovalRequests();
+    })
 
     socket.on("payment-approval-requets-accept", () => {
       //console.log("One delete request came")
@@ -206,51 +221,8 @@ function PaymentApprovalComponent() {
     }
   }, [searchText]);
 
-  const handleAcceptDeleteRequest = async (Id, bookingIndex) => {
-    // Assuming you have an API endpoint for deleting a company
-    try {
-      const response = await fetch(
-        `${secretKey}/bookings/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
-      Swal.fire({
-        title: "Booking Deleted Successfully",
-        icon: "success",
-      });
-      //fetchDataDelete();
 
-    } catch (error) {
-      Swal.fire({
-        title: "Error Deleting the booking!",
-        icon: "error",
-      });
-      console.error("Error deleting booking:", error);
-      //fetchDataDelete();
-      // Optionally, you can show an error message to the user
-    }
-  };
-
-  const handleDeleteRequest = async (Id, companyName) => {
-    try {
-      const response = await axios.post(`${secretKey}/requests/deleterequestbybde/${Id}`,
-        companyName
-      );
-      console.log("Deleted company:", response.data);
-      Swal.fire({ title: "Request Rejected", icon: "success" });
-      //fetchDataDelete();
-
-      // Handle success or update state as needed
-    } catch (error) {
-      console.error("Error deleting company:", error);
-      // Handle error
-    }
-  };
 
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
@@ -258,6 +230,12 @@ function PaymentApprovalComponent() {
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  function handleViewApprovalDocs(approvaldocs, companyName) {
+    const pathname = approvaldocs;
+    //console.log(pathname);
+    window.open(`${secretKey}/bookings/approvaldocsnew/${companyName}/${pathname}`, "_blank");
   }
 
   return (
@@ -295,6 +273,8 @@ function PaymentApprovalComponent() {
                 <th>Company Name</th>
                 <th>Requested By</th>
                 <th>Requested On</th>
+                <th>Admin Remarks</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -316,7 +296,6 @@ function PaymentApprovalComponent() {
                         </b>
                       </div>
                     </div>
-
                   </td>
                   <td className="text-muted">
                     <div className="Notification-date d-flex align-items-center justify-content-center">
@@ -329,22 +308,12 @@ function PaymentApprovalComponent() {
                         </b>
                       </div>
                     </div>
-
+                  </td>
+                  <td>{obj.adminRemarks && obj.adminRemarks !== "" ? obj.adminRemarks : "N/A"}</td>
+                  <td style={{ color: obj.assigned === "Rejected" ? "red" : "inherit" }}>
+                    {obj.assigned}
                   </td>
                   <td>
-                    {/* {filterBy === "Pending" && <div className='d-flex align-items-center justify-content-center'>
-                      <div className="Notification_acceptbtn" onClick={() => handleAcceptDeleteRequest(obj.companyID, obj.bookingIndex)}>
-                        <TiTick />
-                      </div>
-                      <div className="Notification_rejectbtn" onClick={() => handleDeleteRequest(obj._id , obj.companyName)}>
-                        <ImCross />
-                      </div>
-                    </div>}
-                    {filterBy === "Completed" && <div className='d-flex align-items-center justify-content-center'>
-                      <div className="Notification_completedbtn">
-                        <IoCheckmarkDoneCircle />
-                      </div>
-                    </div>} */}
                     <div>
                       <GrFormView onClick={() => {
                         setOpenPaymentApproval(true)
@@ -503,18 +472,59 @@ function PaymentApprovalComponent() {
                     <div className="col-lg-4">
                       <div className="mb-3">
                         <label className="form-label">Attachment</label>
-                        <input type="file"
+                        {file && (
+                          <div className="col-sm-4 mb-1">
+                          <div className="booking-docs-preview">
+                            <div
+                              className="booking-docs-preview-img"
+                              onClick={() => handleViewApprovalDocs(file, requestedCompanyName)}
+                            >
+                              {file && (
+                                (file.toLowerCase()).endsWith(".pdf") ? (
+                                  <PdfImageViewerAdmin
+                                    type="approvaldocs"
+                                    path={file}
+                                    companyName={requestedCompanyName}
+                                  />
+                                ) : (
+                                  (file.endsWith(".png") ||
+                                    file.endsWith(".jpg") ||
+                                    file.endsWith(".jpeg")) ? (
+                                    <img
+                                      src={`${secretKey}/bookings/approvaldocsnew/${requestedCompanyName}/${file}`}
+                                      alt="Receipt Image"
+                                    />
+                                  ) : (
+                                    <img
+                                      src={wordimg}
+                                      alt="Default Image"
+                                    />
+                                  )
+                                )
+                              )
+                              }
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                {file}
+                              </p>
+                            </div>
+                          </div>
+                          </div>
+                        )}
+
+
+                        {/* <input type="file"
                           class="form-control-file"
                           id="exampleFormControlFile1"
                           name="attachment"
                           onChange={(e) => setFile(e.target.files[0])}
-                          disabled
                         />
                         {file && (
                           <a href={`${secretKey}/${file}`} target="_blank" rel="noopener noreferrer">
                             {file}
                           </a>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -529,6 +539,7 @@ function PaymentApprovalComponent() {
             style={{ width: "100vw", borderRadius: "0px" }}
             onClick={handleAccept}
             className="btn btn-primary ms-auto"
+            disabled={alreadyAssigned}
           >
             Accept
           </button>
@@ -536,6 +547,7 @@ function PaymentApprovalComponent() {
             style={{ width: "100vw", borderRadius: "0px" }}
             onClick={handleReject}
             className="btn btn-danger ms-auto"
+            disabled={alreadyAssigned}
           >
             Reject
           </button>

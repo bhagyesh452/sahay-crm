@@ -181,7 +181,7 @@ function EmployeeShowNotification() {
                             editData.length !== 0 && currentBooking && compareBooking &&
                             <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
                         } */}
-                        {dataType === "paymentApprovalRequests" && <EmployeePaymentApprovalComponent/>}
+                        {dataType === "paymentApprovalRequests" && <EmployeePaymentApprovalComponent ename={employeeName}/>}
 
                     </div>
                 </div>

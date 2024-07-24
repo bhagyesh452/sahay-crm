@@ -591,7 +591,7 @@ function EmployeePanel() {
       const tempData = response.data;
       const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-      console.log("tempData", tempData, data.ename)
+      //console.log("tempData", tempData, data.ename)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date

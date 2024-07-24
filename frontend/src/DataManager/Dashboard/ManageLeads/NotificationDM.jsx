@@ -14,6 +14,7 @@ import Manual_dataComponent from "../../../admin/NotiComponents/Manual_dataCompo
 import General_dataComponent from "../../../admin/NotiComponents/General_dataComponent";
 import Approve_dataComponents from "../../../admin/NotiComponents/Approve_dataComponents";
 import Booking_editComponents from "../../../admin/NotiComponents/Booking_editComponents";
+import PaymentApprovalComponent from "../../../admin/NotiComponents/PaymentApprovalComponent";
 
 
 
@@ -265,6 +266,22 @@ function NotificationDM() {
                   Bookings Edit Requests
                 </a>
               </li>
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataType === "paymentApprovalRequests"
+                      ? "nav-link item-act6-noti"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataType("paymentApprovalRequests");
+                  }}
+                >
+                Payment Approval Requests
+                </a>
+              </li>
             </ul>
           </div>
           <div className="maincontent"  >
@@ -340,6 +357,7 @@ function NotificationDM() {
                 /> 
               ))} */}
               {dataType === "AddRequest" &&  <Approve_dataComponents/>}
+              {dataType === "paymentApprovalRequests" && <PaymentApprovalComponent />}
 
             {/* {RequestData.length === 0 && dataType === "Manual" && (
               <Nodata />

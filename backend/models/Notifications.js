@@ -35,6 +35,9 @@ companyName:{
 },
 employeeRequestType:{
     type:String,
+},
+paymentApprovalServices:{
+    type:Array,
 }
 
 });
