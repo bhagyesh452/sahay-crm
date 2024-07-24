@@ -141,7 +141,14 @@ function Notification_box_employee({ name }) {
         });
         socket.on("bookingbooking-edit-request-delete", () => {
             fetchNotification();
+        });
+        socket.on("payment-approval-requets-accept", () => {
+            fetchNotification();
+        });
+        socket.on("payment-approval-requets-reject", () => {
+            fetchNotification();
         })
+
         // Clean up the socket connection when the component unmounts
         return () => {
             socket.disconnect();

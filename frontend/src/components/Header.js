@@ -178,6 +178,34 @@ function Header({ name, designation, empProfile }) {
       }
 
     });
+
+    socket.on("payment-approval-requets-accept", (res) => {
+      if (name === res.name) {
+        enqueueSnackbar(`Payment Approval Request Accepted ! 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+
+    });
+
+    socket.on("payment-approval-requets-reject", (res) => {
+      if (name === res.name) {
+        enqueueSnackbar(`Payment Approval Request Rejected ! 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+
+    });
+
+    
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();

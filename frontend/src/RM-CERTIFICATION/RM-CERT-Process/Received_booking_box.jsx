@@ -20,6 +20,32 @@ function Received_booking_box() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
     const [currentLeadform, setCurrentLeadform] = useState(null);
+    const defaultLeadData = {
+        "Company Name": "",
+        "Company Number": 0,
+        "Company Email": "",
+        panNumber: "",
+        bdeName: "",
+        bdeEmail: "",
+        bdmName: "",
+        bdmType: "Close-by",
+        bookingDate: "",
+        paymentMethod: "",
+        caCase: false,
+        caNumber: 0,
+        caEmail: "",
+        serviceName: "",
+        totalPaymentWOGST: 0,
+        totalPaymentWGST: 0,
+        withGST: "",
+        firstPayment: 0,
+        secondPayment: 0,
+        thirdPayment: 0,
+        fourthPayment: 0,
+        secondPaymentRemarks: "",
+        thirdPaymentRemarks: "",
+        fourthPaymentRemarks: "",
+      };
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
 
@@ -210,32 +236,7 @@ function Received_booking_box() {
     const [dataToSend, setDataToSend] = useState(defaultLeadData)
     const [selectedCompanyData, setSelectedCompanyData] = useState([]);
 
-    const defaultLeadData = {
-        "Company Name": "",
-        "Company Number": 0,
-        "Company Email": "",
-        panNumber: "",
-        bdeName: "",
-        bdeEmail: "",
-        bdmName: "",
-        bdmType: "Close-by",
-        bookingDate: "",
-        paymentMethod: "",
-        caCase: false,
-        caNumber: 0,
-        caEmail: "",
-        serviceName: "",
-        totalPaymentWOGST: 0,
-        totalPaymentWGST: 0,
-        withGST: "",
-        firstPayment: 0,
-        secondPayment: 0,
-        thirdPayment: 0,
-        fourthPayment: 0,
-        secondPaymentRemarks: "",
-        thirdPaymentRemarks: "",
-        fourthPaymentRemarks: "",
-      };
+   
 
     const handleCloseServicesPopup = () => {
         setOpenServicesPopup(false)

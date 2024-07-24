@@ -76,6 +76,16 @@ function Header({ name }) {
         variant: 'reportComplete',
         persist:true
       });
+
+      socket.on("payment-approval-request" , (res)=>{
+        enqueueSnackbar(`Payment Approval Requests Recieved From ${res.name}`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+  
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      })
     
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
