@@ -102,8 +102,8 @@ const userSchema = new mongoose.Schema({
   UploadAOA: {
     type: Array,
   },
-  SocialMedia:{
-    type:String,
+  SocialMedia: {
+    type: String,
   },
   FacebookLink: {
     type: String,
@@ -129,23 +129,29 @@ const userSchema = new mongoose.Schema({
   ValueProposition: {
     type: String,
   },
-  TechInvolvedResponse:{
-    type:Boolean,
-  },
   TechnologyInvolved: {
+    type: String,
+  },
+  TechnologyDetails: {
+    type: String,
+  },
+  ProductPhoto: {
     type: String,
   },
   UploadPhotos: {
     type: Array,
   },
-  AnyIpFiledResponse:{
-    type:Boolean,
+  AnyIpFiledResponse: {
+    type: String,
   },
   RelevantDocument: {
     type: Array,
   },
   RelevantDocumentComment: {
     type: String,
+  },
+  ItrStatus: {
+    type: String
   },
   UploadAuditedStatement: {
     type: Array,
@@ -166,10 +172,10 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   BusinessModel: {
-    type: String,
+    type: Array,
   },
-  FinanceCondition:{
-    type:String,
+  FinanceCondition: {
+    type: String,
   },
   Financing: {
     type: String,
@@ -180,7 +186,11 @@ const userSchema = new mongoose.Schema({
   UploadRelevantDocs: {
     type: Array,
   },
-  DirectorDetails: [DirectorSchema]
+  DirectorDetails: [DirectorSchema],
+  isFormSubmitted: {
+    type: Boolean,
+    default: false
+  },
 });
 
 

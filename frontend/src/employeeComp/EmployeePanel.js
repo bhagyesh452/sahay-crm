@@ -73,6 +73,7 @@ import { Country, State, City } from 'country-state-city';
 import TodaysCollection from "./TodaysCollection.jsx";
 import { GoPlusCircle } from "react-icons/go";
 import { jwtDecode } from "jwt-decode";
+import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2795,9 +2796,9 @@ function EmployeePanel() {
     //fetchData(1, latestSortCount)
   }
 
+  // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
-
   useEffect(() => {
     const checkAndShowCollection = () => {
       const designation = localStorage.getItem('designation');
@@ -2808,14 +2809,21 @@ function EmployeePanel() {
 
       // Extract current hour and minute
       const currentHour = currentDateTime.getHours();
-      console.log("Current hour is :", currentHour);
-      const currentMinute = currentDateTime.getMinutes();
-
-      // Extract login hour from loginTime
-      const loginHour = loginTime.getHours();
+      // console.log("Current hour is :", currentHour);
 
       // Get current date in YYYY-MM-DD format
       const newCurrentDate = getCurrentDate();
+
+      // Check if there is an old collectionShown flag and remove it if the date has passed
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
+          const storedDate = key.split('_')[1];
+          if (storedDate !== newCurrentDate) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
 
       // Check conditions to show the collection pop-up
       if (
@@ -2829,9 +2837,21 @@ function EmployeePanel() {
       }
     };
 
+    const updateDateAndCheckCollection = () => {
+      const newCurrentDate = getCurrentDate();
+      if (newCurrentDate !== currentDate) {
+        setCurrentDate(newCurrentDate);
+      }
+      checkAndShowCollection();
+    };
+
     checkAndShowCollection(); // Call the function initially
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Set an interval to check every minute
+    const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [userId, currentDate]); // Trigger when userId or currentDate changes
 
   // Function to get current date in YYYY-MM-DD format
@@ -2842,6 +2862,8 @@ function EmployeePanel() {
     const day = now.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
+
+  // Shows today's projection pop-up when button is clicked :
   const [noOfCompany, setNoOfCompany] = useState("");
   const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
   const [offeredPrice, setOffferedPrice] = useState("");
@@ -2908,7 +2930,7 @@ function EmployeePanel() {
     }
   };
 
-  // Auto logout functionality
+  // Auto logout functionality :
   useEffect(() => {
     // Function to check token expiry and initiate logout if expired
     const checkTokenExpiry = () => {
@@ -2954,6 +2976,74 @@ function EmployeePanel() {
     window.location.replace("/"); // Redirect to login page
   };
 
+
+  // Payment Approval Request :
+  const [openPaymentApproval, setOpenPaymentApproval] = useState(false);
+  const [requestedCompanyName, setRequestedCompanyName] = useState("");
+  const [serviceType, setServiceType] = useState([]);
+  const [minimumPrice, setMinimumPrice] = useState(0);
+  const [requestedPrice, setRequestedPrice] = useState(0);
+  const [requesteType, setRequesteType] = useState("");
+  const [reason, setReason] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const [file, setFile] = useState("");
+  const [paymentApprovalErrors, setPaymentApprovalErrors] = useState({});
+
+  const handleClosePaymentApproval = () => {
+    setOpenPaymentApproval(false);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!requestedCompanyName) newErrors.requestedCompanyName = "Company Name is required.";
+    if (serviceType.length === 0) newErrors.serviceType = "At least one Service Type is required.";
+    if (!minimumPrice) newErrors.minimumPrice = "Minimum Price is required.";
+    if (!requestedPrice) newErrors.requestedPrice = "Requested Price is required.";
+    if (!requesteType) newErrors.requesteType = "Requested Type is required.";
+
+    setPaymentApprovalErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePaymentApprovalSubmit = async () => {
+    // console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason, remarks);
+
+    if (validateForm()) {
+      try {
+        // Create FormData instance
+        const formData = new FormData();
+        formData.append('ename', data.ename);
+        formData.append('designation', data.designation);
+        formData.append('branchOffice', data.branchOffice);
+        formData.append('companyName', requestedCompanyName);
+        formData.append('serviceType', serviceType);
+        formData.append('minimumPrice', minimumPrice);
+        formData.append('clientRequestedPrice', requestedPrice);
+        formData.append('requestType', requesteType);
+        formData.append('reason', reason);
+        formData.append('remarks', remarks);
+        formData.append('requestDate', new Date());
+        formData.append('assigned', "Pending");
+        if (file) {
+          formData.append('attachment', file);  // Append the file to FormData
+        }
+
+        const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        Swal.fire("Request Sent");
+        console.log("response", response.data);
+        handleClosePaymentApproval();
+        fetchNewData();
+      } catch (error) {
+        console.log("Error Posting Payment Approval Request", error);
+      }
+    }
+  };
 
   return (
     <div>
@@ -3063,6 +3153,12 @@ function EmployeePanel() {
 
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
+                      </button>
+                      <button type="button" className="btn mybtn"
+                        onClick={() => setOpenPaymentApproval(true)}
+
+                      >
+                        <MdPayment className='mr-1' /> Payment Approval
                       </button>
                     </div>
                   </div>
@@ -6741,6 +6837,151 @@ function EmployeePanel() {
           >
             Submit
           </Button>
+        </Dialog>
+
+        {/* -------------------- Dialog for payment request approval -------------------- */}
+        <Dialog className='My_Mat_Dialog' open={openPaymentApproval} onClose={handleClosePaymentApproval} fullWidth maxWidth="md">
+          <DialogTitle>
+            Payment Approval{" "}
+            <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={handleClosePaymentApproval} >
+              <IoIosClose style={{
+                height: "36px",
+                width: "32px",
+                color: "grey"
+              }} />
+            </button>
+          </DialogTitle>
+
+          <DialogContent>
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-body">
+
+                  <form action="/paymentApprovalRequestByBde" method="post" enctype="multipart/form-data">
+                    <div className="row">
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="Your Company Name"
+                            onChange={(e) => setRequestedCompanyName(e.target.value)}
+                          />
+                          {paymentApprovalErrors.requestedCompanyName && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedCompanyName}</div>}
+                        </div>
+                      </div>
+
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label">Service Type <span style={{ color: "red" }}>*</span></label>
+                          <Select
+                            isMulti
+                            options={options}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(selectedOptions) => setServiceType(selectedOptions.map(option => option.value))}
+                          />
+                          {paymentApprovalErrors.serviceType && <div style={{ color: 'red' }}>{paymentApprovalErrors.serviceType}</div>}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row">
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Minimum Price
+                            <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="0"
+                            onChange={(e) => setMinimumPrice(e.target.value)}
+                          />
+                          {paymentApprovalErrors.minimumPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.minimumPrice}</div>}
+                        </div>
+                      </div>
+
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Requested Price
+                            <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="0"
+                            onChange={(e) => setRequestedPrice(e.target.value)}
+                          />
+                          {paymentApprovalErrors.requestedPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedPrice}</div>}
+                        </div>
+                      </div>
+
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Requested Type
+                            <span style={{ color: "red" }}>*</span></label>
+                          <select className="form-control" id="exampleFormControlSelect1"
+                            onChange={(e) => setRequesteType(e.target.value)}>
+                            <option name="Select reqested type" disabled selected>Select reqested type</option>
+                            <option name="lesser price">Lessar Price</option>
+                            <option name="payment term change">Payment Term Change</option>
+                            <option name="gst/non-gst issue">GST/Non-GST Issue</option>
+                          </select>
+                          {paymentApprovalErrors.requesteType && <div style={{ color: 'red' }}>{paymentApprovalErrors.requesteType}</div>}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="mb-3">
+                          <label className="form-label">Reason</label>
+                          <textarea class="form-control"
+                            id="exampleFormControlTextarea1"
+                            rows="3"
+                            onChange={(e) => setReason(e.target.value)}
+                            placeholder="Reason for the discount, modification in payment terms, or GST/NON-GST issue"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-6">
+                        <div className="mb-3">
+                          <label className="form-label">Remarks</label>
+                          <textarea class="form-control"
+                            id="exampleFormControlTextarea1"
+                            rows="3"
+                            onChange={(e) => setRemarks(e.target.value)}
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-4">
+                        <div className="mb-3">
+                          <label className="form-label">Attachment</label>
+                          <input type="file"
+                            class="form-control-file"
+                            id="exampleFormControlFile1"
+                            name="attachment"
+                            onChange={(e) => setFile(e.target.files[0])}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+          <button className="btn btn-primary bdr-radius-none"
+            onClick={handlePaymentApprovalSubmit}
+          >
+            Submit
+          </button>
         </Dialog>
       </div>
     </div>

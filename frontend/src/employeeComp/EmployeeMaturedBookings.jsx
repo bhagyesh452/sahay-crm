@@ -438,11 +438,11 @@ function EmployeeMaturedBookings() {
   //   }
 
   // },[formData])
-
   // console.log(isDeletedStatus)
+  
+  // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
-
   useEffect(() => {
     const checkAndShowCollection = () => {
       const designation = localStorage.getItem('designation');
@@ -453,14 +453,21 @@ function EmployeeMaturedBookings() {
 
       // Extract current hour and minute
       const currentHour = currentDateTime.getHours();
-      console.log("Current hour is :", currentHour);
-      const currentMinute = currentDateTime.getMinutes();
-
-      // Extract login hour from loginTime
-      const loginHour = loginTime.getHours();
+      // console.log("Current hour is :", currentHour);
 
       // Get current date in YYYY-MM-DD format
       const newCurrentDate = getCurrentDate();
+
+      // Check if there is an old collectionShown flag and remove it if the date has passed
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
+          const storedDate = key.split('_')[1];
+          if (storedDate !== newCurrentDate) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
 
       // Check conditions to show the collection pop-up
       if (
@@ -474,9 +481,21 @@ function EmployeeMaturedBookings() {
       }
     };
 
+    const updateDateAndCheckCollection = () => {
+      const newCurrentDate = getCurrentDate();
+      if (newCurrentDate !== currentDate) {
+        setCurrentDate(newCurrentDate);
+      }
+      checkAndShowCollection();
+    };
+
     checkAndShowCollection(); // Call the function initially
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Set an interval to check every minute
+    const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [userId, currentDate]); // Trigger when userId or currentDate changes
 
   // Function to get current date in YYYY-MM-DD format
@@ -488,7 +507,7 @@ function EmployeeMaturedBookings() {
     return `${year}-${month}-${day}`;
   }
 
-  // Auto logout functionality
+  // Auto logout functionality :
   useEffect(() => {
     // Function to check token expiry and initiate logout if expired
     const checkTokenExpiry = () => {

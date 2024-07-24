@@ -2400,14 +2400,12 @@ function EmployeeReports() {
 
     return finalPayment.toLocaleString();
   }
-
   //console.log(followData)
-
   //console.log(selectedMonthOptionForBdm)
 
+  // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
-
   useEffect(() => {
     const checkAndShowCollection = () => {
       const designation = localStorage.getItem('designation');
@@ -2418,14 +2416,21 @@ function EmployeeReports() {
 
       // Extract current hour and minute
       const currentHour = currentDateTime.getHours();
-      console.log("Current hour is :", currentHour);
-      const currentMinute = currentDateTime.getMinutes();
-
-      // Extract login hour from loginTime
-      const loginHour = loginTime.getHours();
+      // console.log("Current hour is :", currentHour);
 
       // Get current date in YYYY-MM-DD format
       const newCurrentDate = getCurrentDate();
+
+      // Check if there is an old collectionShown flag and remove it if the date has passed
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
+          const storedDate = key.split('_')[1];
+          if (storedDate !== newCurrentDate) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
 
       // Check conditions to show the collection pop-up
       if (
@@ -2439,9 +2444,21 @@ function EmployeeReports() {
       }
     };
 
+    const updateDateAndCheckCollection = () => {
+      const newCurrentDate = getCurrentDate();
+      if (newCurrentDate !== currentDate) {
+        setCurrentDate(newCurrentDate);
+      }
+      checkAndShowCollection();
+    };
+
     checkAndShowCollection(); // Call the function initially
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Set an interval to check every minute
+    const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [userId, currentDate]); // Trigger when userId or currentDate changes
 
   // Function to get current date in YYYY-MM-DD format
@@ -2453,11 +2470,11 @@ function EmployeeReports() {
     return `${year}-${month}-${day}`;
   }
 
+  // Emplpoyee Today's Projection :
   const [todaysProjection, setTodaysProjection] = useState([]);
   const [sortedTodaysProjection, setSortedTodayProjection] = useState([]);
 
-  // Emplpoyee Today's Collection:
-  // fetch today's collection
+  // fetch today's projection :
   const fetchTodaysProjecion = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/showEmployeeTodaysProjection/${userId}`);
