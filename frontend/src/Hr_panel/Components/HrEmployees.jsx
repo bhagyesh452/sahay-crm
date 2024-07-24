@@ -27,6 +27,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import AddEmployee from "./AddEmployees/AddEmployee";
 
 function HrEmployees({ onEyeButtonClick }) {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
@@ -58,7 +59,8 @@ function HrEmployees({ onEyeButtonClick }) {
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
 
-  const [open, openchange] = useState(false);
+  // const [open, openchange] = useState(false);
+  const [openAddEmployee, setOpenAddEmployee] = useState(false);
 
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
   // const handleLogin = ()=>{
@@ -68,7 +70,7 @@ function HrEmployees({ onEyeButtonClick }) {
   useEffect(() => {
     document.title = `HR-Sahay-CRM`;
   }, []);
-  
+
   const handleEyeButtonClick = (id) => {
     onEyeButtonClick(id);
     //console.log(id);
@@ -88,11 +90,11 @@ function HrEmployees({ onEyeButtonClick }) {
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
@@ -221,6 +223,7 @@ function HrEmployees({ onEyeButtonClick }) {
   //   // Cancel the delete operation and close the modal
   //   setIsModalOpen(false);
   // };
+
   const [bdmWork, setBdmWork] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedFormat, setSortedFormat] = useState({
@@ -283,12 +286,12 @@ function HrEmployees({ onEyeButtonClick }) {
       selectedData.targetDetails.length !== 0
         ? selectedData.targetDetails
         : [
-            {
-              year: "",
-              month: "",
-              amount: 0,
-            },
-          ]
+          {
+            year: "",
+            month: "",
+            amount: 0,
+          },
+        ]
     );
 
     // Update the form data with the selected data values
@@ -500,7 +503,7 @@ function HrEmployees({ onEyeButtonClick }) {
       setTargetCount(1);
       setTargetObjects([defaultObject]);
       fetchData();
-      closepopup();
+      // closepopup();
       //console.log("Data sent successfully");
     } catch {
       Swal.fire({
@@ -512,12 +515,13 @@ function HrEmployees({ onEyeButtonClick }) {
     }
   };
 
-  const functionopenpopup = () => {
-    openchange(true);
-  };
-  const closepopup = () => {
-    openchange(false);
-  };
+  // const functionopenpopup = () => {
+  //   openchange(true);
+  // };
+  // const closepopup = () => {
+  //   openchange(false);
+  // };
+
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -737,6 +741,8 @@ function HrEmployees({ onEyeButtonClick }) {
     <div>
       {/* <Header />
       <Navbar number={1} /> */}
+      
+      {openAddEmployee && <AddEmployee openAddEmployee={openAddEmployee}/>}
       <div className="">
         <div className="page-header d-print-none m-0">
           <div className="row g-2 align-items-center">
@@ -776,13 +782,38 @@ function HrEmployees({ onEyeButtonClick }) {
             {/* <!-- Page title actions --> */}
             <div className="col-auto ms-auto d-print-none">
               <div className="btn-list">
+                <button
+                  className="btn btn-primary d-none d-sm-inline-block"
+                  onClick={() => setOpenAddEmployee(true)}
+                >
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                  Add Employees
+                </button>
                 <a
                   href="#"
                   className="btn btn-primary d-sm-none btn-icon"
                   data-bs-toggle="modal"
                   data-bs-target="#modal-report"
                   aria-label="Create new report"
-                ></a>
+                >
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                </a>
               </div>
             </div>
           </div>
@@ -860,7 +891,7 @@ function HrEmployees({ onEyeButtonClick }) {
                         <button
                           // onClick={sortDateByAddedOn}
                           className="table-sort"
-                          // data-sort="sort-date"
+                        // data-sort="sort-date"
                         >
                           Added on
                         </button>
@@ -922,7 +953,8 @@ function HrEmployees({ onEyeButtonClick }) {
           </div>
         </div>
       </div>
-      <Dialog
+
+      {/* <Dialog
         className="My_Mat_Dialog"
         open={open}
         onClose={closepopup}
@@ -1052,7 +1084,6 @@ function HrEmployees({ onEyeButtonClick }) {
                     </div>
                   </div>
                 </div>
-                {/* If the designation is others */}
                 {designation === "Others" && (
                   <div className="mb-3">
                     <input
@@ -1232,7 +1263,8 @@ function HrEmployees({ onEyeButtonClick }) {
         >
           Submit
         </Button>
-      </Dialog>
+      </Dialog> */}
+
     </div>
   );
 }

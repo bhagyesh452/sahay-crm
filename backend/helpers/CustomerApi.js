@@ -11,7 +11,56 @@ const LeadsModel = require("../models/RedesignedLeadform");
 const secretKey = "your_secret_key"; // Replace with a secure key
 let otpStorage = {};
 
+async function createTransporter() {
+    return nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        type: "OAuth2",
+        user: "alerts@startupsahay.com",
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+        accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+      },
+    });
+  }
+
 // Send otp :
+// router.post("/send-otp", async (req, res) => {
+//     const { email } = req.body;
+
+//     // Generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//     // Store OTP with email
+//     otpStorage[email] = otp;
+
+//     // Configure nodemailer
+//     const transporter = nodemailer.createTransport({
+//         service: 'Gmail',
+//         auth: {
+//             user: 'alert@startupsahay.com',
+//             pass: 'shkc khna iiwo pkea',
+//         },
+//     });
+
+//     const mailOptions = {
+//         from: 'kmhthakkar@gmail.com',
+//         to: email,
+//         subject: 'Your OTP Code',
+//         text: `Your OTP code is ${otp}`,
+//     };
+
+//     try {
+//         await transporter.sendMail(mailOptions);
+//         res.status(200).send('OTP sent');
+//     } catch (error) {
+//         res.status(500).send('Error sending OTP');
+//     }
+// });
+
 router.post("/send-otp", async (req, res) => {
     const { email } = req.body;
 
@@ -22,16 +71,15 @@ router.post("/send-otp", async (req, res) => {
     otpStorage[email] = otp;
 
     // Configure nodemailer
-    const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'kmhthakkar@gmail.com',
-            pass: 'shkc khna iiwo pkea',
-        },
-    });
+    let transporter;
+    try {
+        transporter = await createTransporter();
+    } catch (error) {
+        return res.status(500).send('Error creating transporter');
+    }
 
     const mailOptions = {
-        from: 'kmhthakkar@gmail.com',
+        from: 'alerts@startupsahay.com',
         to: email,
         subject: 'Your OTP Code',
         text: `Your OTP code is ${otp}`,
@@ -44,6 +92,7 @@ router.post("/send-otp", async (req, res) => {
         res.status(500).send('Error sending OTP');
     }
 });
+
 
 // Verify otp :
 router.post("/verify-otp", (req, res) => {
