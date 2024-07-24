@@ -133,7 +133,7 @@ function PaymentApprovalComponent() {
           formData.append('attachment', file);
         }
 
-        const response = await axios.put(`${secretKey}/requests/paymentApprovalRequestByBde/${id}`, formData, {
+        const response = await axios.put(`${secretKey}/requests/paymentApprovalRequestAcceptByAdmin/${id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -206,52 +206,9 @@ function PaymentApprovalComponent() {
     }
   }, [searchText]);
 
-  const handleAcceptDeleteRequest = async (Id, bookingIndex) => {
-    // Assuming you have an API endpoint for deleting a company
-    try {
-      const response = await fetch(
-        `${secretKey}/bookings/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+ 
 
-      Swal.fire({
-        title: "Booking Deleted Successfully",
-        icon: "success",
-      });
-      //fetchDataDelete();
-
-    } catch (error) {
-      Swal.fire({
-        title: "Error Deleting the booking!",
-        icon: "error",
-      });
-      console.error("Error deleting booking:", error);
-      //fetchDataDelete();
-      // Optionally, you can show an error message to the user
-    }
-  };
-
-  const handleDeleteRequest = async (Id, companyName) => {
-    try {
-      const response = await axios.post(`${secretKey}/requests/deleterequestbybde/${Id}`,
-        companyName
-      );
-      console.log("Deleted company:", response.data);
-      Swal.fire({ title: "Request Rejected", icon: "success" });
-      //fetchDataDelete();
-
-      // Handle success or update state as needed
-    } catch (error) {
-      console.error("Error deleting company:", error);
-      // Handle error
-    }
-  };
-
+  
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
