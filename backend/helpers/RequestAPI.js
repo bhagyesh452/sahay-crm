@@ -3,7 +3,7 @@ var router = express.Router();
 const dotenv = require('dotenv');
 const path = require("path");
 const multer = require('multer');
-
+const fs = require("fs");
 dotenv.config();
 
 
@@ -1068,15 +1068,32 @@ router.get("/requestCompanyData/:ename", async (req, res) => {
 
 // Payment Approval Request APIs :
 // Configure multer storage
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './Payment-Request');
+//   },
+//   filename: function (req, file, cb) {
+//     // Ensure company name is included in the filename
+//     const companyName = req.body.companyName.replace(/\s+/g, '-'); // Replace spaces with hyphens
+//     const fileName = `${companyName}-${Date.now()}-${file.originalname}`;
+//     cb(null, fileName);
+//   }
+// });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './Payment-Request');
+    const { companyName } = req.body;
+
+    let destinationPath = path.resolve(__dirname, '../Payment-Request', companyName);
+
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+    cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    // Ensure company name is included in the filename
-    const companyName = req.body.companyName.replace(/\s+/g, '-'); // Replace spaces with hyphens
-    const fileName = `${companyName}-${Date.now()}-${file.originalname}`;
-    cb(null, fileName);
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + "-" + file.originalname);
   }
 });
 
@@ -1141,6 +1158,8 @@ router.post('/paymentApprovalRequestByBde', upload.single('attachment'), async (
       status: "Unread",
       employee_status: "Unread",
       img_url: GetEmployeeProfile,
+      companyName:companyName,
+      paymentApprovalServices:serviceType
     };
     const addRequest = new NotiModel(requestCreate);
     await addRequest.save();
@@ -1158,7 +1177,7 @@ router.post('/paymentApprovalRequestByBde', upload.single('attachment'), async (
 router.get("/paymentApprovalRequestByBde", async (req, res) => {
   try {
     // Retrieve all data from RequestModel
-    const allData = await PaymentApprovalRequestModel.find({ assigned: "Pending" });
+    const allData = await PaymentApprovalRequestModel.find();
     res.json(allData);
   } catch (error) {
     console.error(error);
@@ -1168,10 +1187,12 @@ router.get("/paymentApprovalRequestByBde", async (req, res) => {
 
 router.get("/paymentApprovalRequestByBde/:ename", async (req, res) => {
   const { ename } = req.params;
+  
   try {
     // Retrieve all data from RequestModel
-    //const allData = await PaymentApprovalRequest.find({ename : ename});
-    //res.json(allData);
+    const allData = await PaymentApprovalRequestModel.find({ename : ename});
+   
+    res.status(200).json(allData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -1209,7 +1230,7 @@ router.put('/paymentApprovalRequestAcceptByAdmin/:id', upload.single('attachment
     requestDate,
     assigned
   } = req.body;
-
+  const socketIO = req.io;
   const attachment = req.file ? req.file.path : null; // Get the path of the uploaded file
 
   const { id } = req.params;
@@ -1251,31 +1272,40 @@ router.put('/paymentApprovalRequestAcceptByAdmin/:id', upload.single('attachment
         GetEmployeeProfile = EmployeeData[0].filename;
       }
     }
+    const updateNotification = await NotiModel.findOneAndUpdate(
+      {  
+        companyName,
+        ename,
+        paymentApprovalServices: { $all: serviceType } 
+      },
+      {
+        $set: {
+          employeeRequestType: `Payment Approval Request has been ${assigned}`,
+          employee_status: "Unread"
+        }
+      },
+      { new: true }
+    );
+    if (assigned === "Approved") {
+      socketIO.emit("payment-approval-requets-accept", {
+        name: ename,
+        companyName: companyName,
+      });
+    } else if (assigned === "Rejected") {
+      socketIO.emit("payment-approval-requets-reject", {
+        name: ename,
+        companyName: companyName,
+      });
 
-    const requestCreate = {
-      ename: ename,
-      requestType: "Payment Approval",
-      requestTime: new Date(),
-      designation: designation,
-      status: "Unread",
-      employee_status: "Unread",
-      img_url: GetEmployeeProfile,
-    };
-
-    const addRequest = new NotiModel(requestCreate);
-    await addRequest.save();
-
-    // req.io.emit("payment-approval-request", {
-    //   name: ename,
-    //   companyName: companyName,
-    // });
-
+    }
     res.status(200).json({ message: 'Payment approval request updated successfully', data: updatedRequest });
   } catch (error) {
     console.error('Error updating payment approval request', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+//------------------viewpaymentapprovaldocs------------------------
 
 
 

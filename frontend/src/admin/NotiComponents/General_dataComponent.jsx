@@ -9,6 +9,7 @@ import { FcOpenedFolder } from "react-icons/fc";
 import Swal from "sweetalert2";
 import axios from "axios";
 import io from "socket.io-client";
+import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from "../../components/Nodata";
 import {
     Dialog,
@@ -29,7 +30,8 @@ function General_dataComponent() {
     const [open, openchange] = useState(false);
     const [name, setName] = useState("");
     const [id, setId] = useState("");
-    const [damount, setDamount] = useState(0)
+    const [damount, setDamount] = useState(0);
+    const [currentDataLoading, setCurrentDataLoading] = useState(false)
 
     const fetchRequestGDetails = async () => {
         try {
@@ -44,17 +46,20 @@ function General_dataComponent() {
     };
     const fetchData = async (amount) => {
         try {
+            setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/company-data/leads`);
             // Set the retrieved data in the state
             const filteredData = response.data.filter(
                 (item) =>
                     item.ename === "Select Employee" || item.ename === "Not Alloted"
             );
-           
-            setAcceptedData(filteredData.slice(0,amount));
+
+            setAcceptedData(filteredData.slice(0, amount));
 
         } catch (error) {
             console.error("Error fetching data:", error.message);
+        } finally {
+            setCurrentDataLoading(false)
         }
     };
 
@@ -63,22 +68,22 @@ function General_dataComponent() {
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-          secure: true, // Use HTTPS
-          path:'/socket.io',
-          reconnection: true, 
-          transports: ['websocket'],
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
         });
-        
+
         socket.on("newRequest", () => {
-          fetchRequestGDetails()
-          });
-    
-       
+            fetchRequestGDetails()
+        });
+
+
         // Clean up the socket connection when the component unmounts
         return () => {
-          socket.disconnect();
+            socket.disconnect();
         };
-      }, []);
+    }, []);
     useEffect(() => {
         fetchRequestGDetails();
     }, [])
@@ -91,7 +96,7 @@ function General_dataComponent() {
             setAcceptedData([])
             setDamount(0)
         }
-    }, [open,damount])
+    }, [open, damount])
 
 
     // ----------------------------------------------------   Filtering and Searching ---------------------------------------
@@ -139,19 +144,19 @@ function General_dataComponent() {
             });
         }
     };
-    
+
     const handleConfirmAssign = async () => {
         const employeeSelection = name;
         const selectedObjects = selectedRows;
-      
 
-        if(selectedObjects.length===0){
-            Swal.fire('Empty Data!', 'Please Select some data to send','warning');
+
+        if (selectedObjects.length === 0) {
+            Swal.fire('Empty Data!', 'Please Select some data to send', 'warning');
             return true;
         }
-        try{
+        try {
             const response = await axios.post(`${secretKey}/company-data/postData`, {
-                selectedObjects , employeeSelection
+                selectedObjects, employeeSelection
             });
             await axios.put(`${secretKey}/requests/requestgData/${id}`, {
                 read: true,
@@ -164,7 +169,7 @@ function General_dataComponent() {
                 text: `Successfully Assigned Data to ${employeeSelection}`,
                 icon: "success",
             });
-            
+
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire({
@@ -173,10 +178,10 @@ function General_dataComponent() {
                 icon: "error",
             });
         }
-        
+
     };
-    const handleRejectRequest = async() =>{
-        try{
+    const handleRejectRequest = async () => {
+        try {
             const employeeSelection = name;
             await axios.delete(`${secretKey}/requests/requestgData/${id}`);
             fetchRequestGDetails();
@@ -186,7 +191,7 @@ function General_dataComponent() {
                 text: `${employeeSelection}'s Data Request Rejected`,
                 icon: "success",
             });
-            
+
         } catch (err) {
             console.log("Internal server Error", err);
             Swal.fire({
@@ -323,7 +328,7 @@ function General_dataComponent() {
                 </DialogTitle>
                 <DialogContent>
                     {/* Table content */}
-                    <div style={{ overflowX: "auto" , maxHeight:'490px' }}>
+                    <div style={{ overflowX: "auto", maxHeight: '490px' }}>
                         <table
                             style={{
                                 width: "100%",
@@ -377,64 +382,81 @@ function General_dataComponent() {
                                     <th>Remarks</th>
                                 </tr>
                             </thead>
-                            {acceptedData.length === 0 ? (
+                            {currentDataLoading ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan="10" style={{ textAlign: "center" }}>
-                                            No data available
+                                        <td colSpan="14">
+                                            <div className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             ) : (
-                                <tbody>
-                                    {acceptedData.map((company, index) => (
-                                        <tr key={index} style={{ border: "1px solid #ddd" }}>
-                                            <td
-                                                style={{
-                                                    position: "sticky",
-                                                    left: 0,
-                                                    zIndex: 1,
-                                                    backgroundColor: "rgb(242, 242, 242)",
-                                                }}
-                                            >
-                                                <input
-                                                    checked={selectedRows.includes(company)}
-                                                    onChange={() => handleCheckboxChange(company)}
-                                                    type="checkbox"
-                                                />
+                                acceptedData.length === 0 ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="10" style={{ textAlign: "center" }}>
+                                                No data available
                                             </td>
-                                            <td
-                                                style={{
-                                                    position: "sticky",
-                                                    left: "30px",
-                                                    zIndex: 1,
-                                                    backgroundColor: "rgb(242, 242, 242)",
-                                                }}
-                                            >
-                                                {index + 1}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    position: "sticky",
-                                                    left: "80px",
-
-                                                    background: "white",
-                                                }}
-                                            >
-                                                {company["Company Name"]}
-                                            </td>
-                                            <td>{company["Company Number"]}</td>
-                                            <td>{company["Company Email"]}</td>
-                                            <td>
-                                                {formatDate(company["Company Incorporation Date  "])}
-                                            </td>
-                                            <td>{company["City"]}</td>
-                                            <td>{company["State"]}</td>
-                                            <td>{company["Status"]}</td>
-                                            <td>{company["Remarks"]}</td>
                                         </tr>
-                                    ))}
-                                </tbody>
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        {acceptedData.map((company, index) => (
+                                            <tr key={index} style={{ border: "1px solid #ddd" }}>
+                                                <td
+                                                    style={{
+                                                        position: "sticky",
+                                                        left: 0,
+                                                        zIndex: 1,
+                                                        backgroundColor: "rgb(242, 242, 242)",
+                                                    }}
+                                                >
+                                                    <input
+                                                        checked={selectedRows.includes(company)}
+                                                        onChange={() => handleCheckboxChange(company)}
+                                                        type="checkbox"
+                                                    />
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        position: "sticky",
+                                                        left: "30px",
+                                                        zIndex: 1,
+                                                        backgroundColor: "rgb(242, 242, 242)",
+                                                    }}
+                                                >
+                                                    {index + 1}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        position: "sticky",
+                                                        left: "80px",
+                                                        background: "white",
+                                                    }}
+                                                >
+                                                    {company["Company Name"]}
+                                                </td>
+                                                <td>{company["Company Number"]}</td>
+                                                <td>{company["Company Email"]}</td>
+                                                <td>
+                                                    {formatDate(company["Company Incorporation Date  "])}
+                                                </td>
+                                                <td>{company["City"]}</td>
+                                                <td>{company["State"]}</td>
+                                                <td>{company["Status"]}</td>
+                                                <td>{company["Remarks"]}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                )
                             )}
                         </table>
                     </div>
@@ -456,7 +478,7 @@ function General_dataComponent() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     )
 }
 
