@@ -1192,7 +1192,8 @@ router.get("/fetchPaymentApprovalRequestFromId/:id", async (req, res) => {
   }
 });
 
-router.put('/paymentApprovalRequestByBde/:id', upload.single('attachment'), async (req, res) => {
+//---------payment approval accept api------------------------------
+router.put('/paymentApprovalRequestAcceptByAdmin/:id', upload.single('attachment'), async (req, res) => {
   const {
     ename,
     designation,
@@ -1264,10 +1265,10 @@ router.put('/paymentApprovalRequestByBde/:id', upload.single('attachment'), asyn
     const addRequest = new NotiModel(requestCreate);
     await addRequest.save();
 
-    req.io.emit("payment-approval-request", {
-      name: ename,
-      companyName: companyName,
-    });
+    // req.io.emit("payment-approval-request", {
+    //   name: ename,
+    //   companyName: companyName,
+    // });
 
     res.status(200).json({ message: 'Payment approval request updated successfully', data: updatedRequest });
   } catch (error) {

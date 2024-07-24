@@ -3154,7 +3154,7 @@ function EmployeePanel() {
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
                       </button>
-                      <button type="button" className="btn mybtn"
+                      <button type="button" className="btn mybtn d-none"
                         onClick={() => setOpenPaymentApproval(true)}
 
                       >

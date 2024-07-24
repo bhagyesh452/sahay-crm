@@ -3538,7 +3538,7 @@ function EmployeesThisMonthBooking() {
                                                                 <td>{obj.branchOffice}</td>
                                                                 <td>{functionCalculateMatured(obj.ename)}</td>
                                                                 <td>₹ {Math.floor(functionGetAmount(obj)).toLocaleString()}</td>
-                                                                <td>₹ {functionCalculateAchievedAmount(obj.ename).toLocaleString()}</td>
+                                                                <td>₹ {Math.floor(functionCalculateAchievedAmount(obj.ename)).toLocaleString()}</td>
                                                                 <td>{((functionCalculateOnlyAchieved(obj.ename) / functionGetOnlyAmount(obj)) * 100).toFixed(2)} %</td>
                                                                 <td>{functionGetLastBookingDate(obj.ename)}</td>
                                                             </tr>
