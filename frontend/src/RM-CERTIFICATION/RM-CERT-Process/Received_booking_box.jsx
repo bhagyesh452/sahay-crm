@@ -7,7 +7,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { options } from '../../components/Options.js';
 import Nodata from '../../components/Nodata.jsx';
 import { MdDelete } from "react-icons/md";
-import { GrStatusGood } from "react-icons/gr";
+import { FaCheck } from "react-icons/fa6";
 import wordimg from "../../static/my-images/word.png";
 import PdfImageViewerAdmin from "../../admin/PdfViewerAdmin.jsx";
 import pdfimg from "../../static/my-images/pdf.png";
@@ -383,7 +383,7 @@ function Received_booking_box() {
                                                         <button className='btn btn-sm btn-swap-round d-flex align-items-center' style={{ backgroundColor: "#b8e8b8" }}>
                                                             <div className='btn-swap-icon'>
                                                                 {/* <SlActionRedo /> */}
-                                                                <GrStatusGood
+                                                                <FaCheck
                                                                     onClick={() => (
                                                                         setOpenServicesPopup(true),
                                                                         setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"]))

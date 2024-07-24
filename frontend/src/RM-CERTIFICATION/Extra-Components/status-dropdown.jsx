@@ -7,7 +7,7 @@ import "../../dist/css/demo.min.css?1684106062";
 
 
 const StatusDropdown = () => {
-  const [status, setStatus] = useState("Created");
+  const [status, setStatus] = useState("Untouch");
   const [statusClass, setStatusClass] = useState("created-status");
 
   const handleStatusChange = (newStatus, statusClass) => {
@@ -31,46 +31,91 @@ const StatusDropdown = () => {
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Created", "created-status")}
+            onClick={() => handleStatusChange("Untouch", "created-status")}
             href="#"
           >
-            Created
+            Untouch
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Support", "support-status")}
+            onClick={() => handleStatusChange("Call Done Brief Pending", "support-status")}
             href="#"
           >
-            Support
+           Call Done Brief Pending
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("In Progress", "inprogress-status")}
+            onClick={() => handleStatusChange("Client Not Responding", "inprogress-status")}
             href="#"
           >
-            In Progress
+            Client Not Responding
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Finished", "finished-status")}
+            onClick={() => handleStatusChange("Documents Pending", "docs-pending")}
             href="#"
           >
-            Finished
+            Documents Pending
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Rejected", "rejected-status")}
+            onClick={() => handleStatusChange("Ready To Submit", "rejected-status")}
             href="#"
           >
-            Rejected
+            Ready To Submit
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Submitted", "rejected-status")}
+            href="#"
+          >
+            Submitted
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Submitted", "finished-status")}
+            href="#"
+          >
+            Submitted
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Working", "finished-status")}
+            href="#"
+          >
+            Working
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Defaulter", "finished-status")}
+            href="#"
+          >
+            Defaulter
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Need To Call", "rejected-status")}
+            href="#"
+          >
+            Need To Call
           </a>
         </li>
       </ul>
