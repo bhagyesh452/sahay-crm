@@ -244,7 +244,7 @@ function CustomerForm() {
             // console.log("Id is :", id);
             const url = id
                 ? `${secretKey}/clientform/basicinfo-form/${id}`
-                : `${secretKey}/clientform/basicinfo-form`;
+                : `${secretKey}/clientform/basicinfo-form/${companyName}`;
 
             const response = await fetch(url, {
                 method: requestMethod,

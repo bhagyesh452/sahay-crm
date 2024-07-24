@@ -2979,39 +2979,6 @@ function EmployeePanel() {
 
   // Payment Approval Request :
   const [openPaymentApproval, setOpenPaymentApproval] = useState(false);
-
-  const handleClosePaymentApproval = () => {
-    setOpenPaymentApproval(false);
-  };
-
-  const handlePaymentApprovalSubmit = async () => {
-    console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason)
-    try {
-      const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, {
-        ename: data.ename,
-        designation: data.designation,
-        branchOffice: data.branchOffice,
-        companyName: requestedCompanyName,
-        serviceType: [],
-        minimumPrice: minimumPrice,
-        clientRequestedPrice: requestedPrice,
-        requestType: requesteType,
-        reason: reason,
-        requestDate: new Date(),
-        assigned: "Pending"
-      })
-
-
-      Swal.fire("Request Send")
-      console.log("response", response.data);
-      handleClosePaymentApproval();
-      fetchNewData();
-
-    } catch (error) {
-      console.log("Error Posting Payment Approval Request", error)
-    }
-  };
-
   const [requestedCompanyName, setRequestedCompanyName] = useState("");
   const [serviceType, setServiceType] = useState([]);
   const [minimumPrice, setMinimumPrice] = useState(0);
@@ -3020,6 +2987,63 @@ function EmployeePanel() {
   const [reason, setReason] = useState("");
   const [remarks, setRemarks] = useState("");
   const [file, setFile] = useState("");
+  const [paymentApprovalErrors, setPaymentApprovalErrors] = useState({});
+
+  const handleClosePaymentApproval = () => {
+    setOpenPaymentApproval(false);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!requestedCompanyName) newErrors.requestedCompanyName = "Company Name is required.";
+    if (serviceType.length === 0) newErrors.serviceType = "At least one Service Type is required.";
+    if (!minimumPrice) newErrors.minimumPrice = "Minimum Price is required.";
+    if (!requestedPrice) newErrors.requestedPrice = "Requested Price is required.";
+    if (!requesteType) newErrors.requesteType = "Requested Type is required.";
+
+    setPaymentApprovalErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePaymentApprovalSubmit = async () => {
+    // console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason, remarks);
+
+    if (validateForm()) {
+      try {
+        // Create FormData instance
+        const formData = new FormData();
+        formData.append('ename', data.ename);
+        formData.append('designation', data.designation);
+        formData.append('branchOffice', data.branchOffice);
+        formData.append('companyName', requestedCompanyName);
+        formData.append('serviceType', serviceType);
+        formData.append('minimumPrice', minimumPrice);
+        formData.append('clientRequestedPrice', requestedPrice);
+        formData.append('requestType', requesteType);
+        formData.append('reason', reason);
+        formData.append('remarks', remarks);
+        formData.append('requestDate', new Date());
+        formData.append('assigned', "Pending");
+        if (file) {
+          formData.append('attachment', file);  // Append the file to FormData
+        }
+
+        const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        Swal.fire("Request Sent");
+        console.log("response", response.data);
+        handleClosePaymentApproval();
+        fetchNewData();
+      } catch (error) {
+        console.log("Error Posting Payment Approval Request", error);
+      }
+    }
+  };
 
   return (
     <div>
@@ -6833,109 +6857,122 @@ function EmployeePanel() {
               <div className="modal-content">
                 <div className="modal-body">
 
-                  <div className="row">
-                    <div className="col-6">
-                      <div className="mb-3">
-                        <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="Your Company Name"
-                          onChange={(e) => setRequestedCompanyName(e.target.value)}
-                        />
+                  <form action="/paymentApprovalRequestByBde" method="post" enctype="multipart/form-data">
+                    <div className="row">
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="Your Company Name"
+                            onChange={(e) => setRequestedCompanyName(e.target.value)}
+                          />
+                          {paymentApprovalErrors.requestedCompanyName && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedCompanyName}</div>}
+                        </div>
+                      </div>
+
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label">Service Type <span style={{ color: "red" }}>*</span></label>
+                          <Select
+                            isMulti
+                            options={options}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(selectedOptions) => setServiceType(selectedOptions.map(option => option.value))}
+                          />
+                          {paymentApprovalErrors.serviceType && <div style={{ color: 'red' }}>{paymentApprovalErrors.serviceType}</div>}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="col-6">
-                      <div className="mb-3">
-                        <label className="form-label">Service Type <span style={{ color: "red" }}>*</span></label>
-                        <Select
-                          isMulti
-                          options={options}
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                          onChange={(selectedOptions) => setServiceType(selectedOptions.map(option => option.value))}
-                        />
+                    <div className="row">
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Minimum Price
+                            <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="0"
+                            onChange={(e) => setMinimumPrice(e.target.value)}
+                          />
+                          {paymentApprovalErrors.minimumPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.minimumPrice}</div>}
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="row">
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Minimum Price
-                          <span style={{ color: "red" }}>*</span></label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="0"
-                          onChange={(e) => setMinimumPrice(e.target.value)}
-                        />
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Requested Price
+                            <span style={{ color: "red" }}>*</span></label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            placeholder="0"
+                            onChange={(e) => setRequestedPrice(e.target.value)}
+                          />
+                          {paymentApprovalErrors.requestedPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedPrice}</div>}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Requested Price
-                          <span style={{ color: "red" }}>*</span></label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="0"
-                          onChange={(e) => setRequestedPrice(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-4">
-                      <div className="mb-3">
-                        <label className="form-label">Requested Type
-                          <span style={{ color: "red" }}>*</span></label>
-                        <select className="form-control" id="exampleFormControlSelect1"
-                          onChange={(e) => setRequesteType(e.target.value)}>
-                          <option name="Select reqested type" disabled selected>Select reqested type</option>
-                          <option name="lesser price">Lessar Price</option>
-                          <option name="payment term change">Payment Term Change</option>
-                          <option name="gst/non-gst issue">GST/Non-GST Issue</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-lg-6">
-                      <div className="mb-3">
-                        <label className="form-label">Reason</label>
-                        <textarea class="form-control"
-                          id="exampleFormControlTextarea1"
-                          rows="3"
-                          onChange={(e) => setReason(e.target.value)}
-                          placeholder="Reason for the discount, modification in payment terms, or GST/NON-GST issue"
-                        ></textarea>
+                      <div className="col-4">
+                        <div className="mb-3">
+                          <label className="form-label">Requested Type
+                            <span style={{ color: "red" }}>*</span></label>
+                          <select className="form-control" id="exampleFormControlSelect1"
+                            onChange={(e) => setRequesteType(e.target.value)}>
+                            <option name="Select reqested type" disabled selected>Select reqested type</option>
+                            <option name="lesser price">Lessar Price</option>
+                            <option name="payment term change">Payment Term Change</option>
+                            <option name="gst/non-gst issue">GST/Non-GST Issue</option>
+                          </select>
+                          {paymentApprovalErrors.requesteType && <div style={{ color: 'red' }}>{paymentApprovalErrors.requesteType}</div>}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="col-lg-6">
-                      <div className="mb-3">
-                        <label className="form-label">Remarks</label>
-                        <textarea class="form-control"
-                          id="exampleFormControlTextarea1"
-                          rows="3"
-                          onChange={(e) => setRemarks(e.target.value)}
-                        ></textarea>
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="mb-3">
+                          <label className="form-label">Reason</label>
+                          <textarea class="form-control"
+                            id="exampleFormControlTextarea1"
+                            rows="3"
+                            onChange={(e) => setReason(e.target.value)}
+                            placeholder="Reason for the discount, modification in payment terms, or GST/NON-GST issue"
+                          ></textarea>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="col-lg-4">
-                      <div className="mb-3">
-                        <label className="form-label">Attachment</label>
-                        <input type="file" class="form-control-file" id="exampleFormControlFile1" />
+                      <div className="col-lg-6">
+                        <div className="mb-3">
+                          <label className="form-label">Remarks</label>
+                          <textarea class="form-control"
+                            id="exampleFormControlTextarea1"
+                            rows="3"
+                            onChange={(e) => setRemarks(e.target.value)}
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-4">
+                        <div className="mb-3">
+                          <label className="form-label">Attachment</label>
+                          <input type="file"
+                            class="form-control-file"
+                            id="exampleFormControlFile1"
+                            name="attachment"
+                            onChange={(e) => setFile(e.target.files[0])}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </form>
+
                 </div>
               </div>
             </div>

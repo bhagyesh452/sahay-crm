@@ -1,6 +1,9 @@
 var express = require('express');
-var router = express.Router()
-const dotenv = require('dotenv')
+var router = express.Router();
+const dotenv = require('dotenv');
+const path = require("path");
+const multer = require('multer');
+
 dotenv.config();
 
 
@@ -1063,8 +1066,23 @@ router.get("/requestCompanyData/:ename", async (req, res) => {
   }
 })
 
+// Payment Approval Request APIs :
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './Payment-Request');
+  },
+  filename: function (req, file, cb) {
+    // Ensure company name is included in the filename
+    const companyName = req.body.companyName.replace(/\s+/g, '-'); // Replace spaces with hyphens
+    const fileName = `${companyName}-${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  }
+});
 
-router.post('/paymentApprovalRequestByBde', async (req, res) => {
+const upload = multer({ storage: storage });
+
+router.post('/paymentApprovalRequestByBde', upload.single('attachment'), async (req, res) => {
   const {
     ename,
     designation,
@@ -1075,11 +1093,18 @@ router.post('/paymentApprovalRequestByBde', async (req, res) => {
     clientRequestedPrice,
     requestType,
     reason,
+    remarks,
     requestDate,
     assigned
   } = req.body;
-  console.log(ename, designation, branchOffice, companyName, minimumPrice, clientRequestedPrice, requestType, reason, assigned, requestDate)
+
+  const attachments = req.file ? req.file.path : null; // Get the filename of the uploaded file
+
+  // console.log(ename, designation, branchOffice, companyName, minimumPrice, clientRequestedPrice, requestType, reason, assigned, requestDate);
+  // console.log("Attachment is :", attachments);
+
   const socketIO = req.io;
+
   try {
     const newRequest = new PaymentApprovalRequestModel({
       ename,
@@ -1091,26 +1116,22 @@ router.post('/paymentApprovalRequestByBde', async (req, res) => {
       clientRequestedPrice,
       requestType,
       reason,
+      remarks,
       requestDate,
-      assigned
+      assigned,
+      attachments
     });
 
     await newRequest.save();
-    //create new notification
+
+    // Create new notification
     const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
-    let GetEmployeeProfile = "no-image"
+    let GetEmployeeProfile = "no-image";
     if (GetEmployeeData) {
       const EmployeeData = GetEmployeeData.employee_profile;
-
-
       if (EmployeeData && EmployeeData.length > 0) {
         GetEmployeeProfile = EmployeeData[0].filename;
-
-      } else {
-        GetEmployeeProfile = "no-image";
       }
-    } else {
-      GetEmployeeProfile = "no-image";
     }
     const requestCreate = {
       ename: ename,
@@ -1120,9 +1141,9 @@ router.post('/paymentApprovalRequestByBde', async (req, res) => {
       status: "Unread",
       employee_status: "Unread",
       img_url: GetEmployeeProfile,
-    }
+    };
     const addRequest = new NotiModel(requestCreate);
-    const saveRequest = await addRequest.save();
+    await addRequest.save();
     socketIO.emit("payment-approval-request", {
       name: ename,
       companyName: companyName,
@@ -1134,19 +1155,17 @@ router.post('/paymentApprovalRequestByBde', async (req, res) => {
   }
 });
 
-
-
 router.get("/paymentApprovalRequestByBde", async (req, res) => {
-
   try {
     // Retrieve all data from RequestModel
-    const allData = await PaymentApprovalRequestModel.find({assigned : "Pending"});
+    const allData = await PaymentApprovalRequestModel.find({ assigned: "Pending" });
     res.json(allData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 router.get("/paymentApprovalRequestByBde/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
@@ -1158,5 +1177,105 @@ router.get("/paymentApprovalRequestByBde/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.get("/fetchPaymentApprovalRequestFromId/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+
+    const reqestedData = await PaymentApprovalRequestModel.findById(id);
+    if (!reqestedData) {
+      res.status(404).json({ result: false, message: "Request not found" });
+    }
+    res.status(200).json({ result: true, message: "Data successfully fetched", data: reqestedData });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching request", error: error });
+  }
+});
+
+router.put('/paymentApprovalRequestByBde/:id', upload.single('attachment'), async (req, res) => {
+  const {
+    ename,
+    designation,
+    branchOffice,
+    companyName,
+    serviceType,
+    minimumPrice,
+    clientRequestedPrice,
+    requestType,
+    reason,
+    remarks,
+    adminRemarks,
+    requestDate,
+    assigned
+  } = req.body;
+
+  const attachment = req.file ? req.file.path : null; // Get the path of the uploaded file
+
+  const { id } = req.params;
+
+  const updatedData = {
+    ename,
+    designation,
+    branchOffice,
+    companyName,
+    serviceType,
+    minimumPrice,
+    clientRequestedPrice,
+    requestType,
+    reason,
+    remarks,
+    adminRemarks,
+    requestDate,
+    assigned,
+  };
+
+  if (attachment) {
+    updatedData.attachment = attachment;
+  }
+
+  try {
+    const updatedRequest = await PaymentApprovalRequestModel.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: 'Payment approval request not found' });
+    }
+
+    // Create new notification
+    const { ename, designation, branchOffice } = req.body;
+    const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
+    let GetEmployeeProfile = "no-image";
+    if (GetEmployeeData) {
+      const EmployeeData = GetEmployeeData.employee_profile;
+      if (EmployeeData && EmployeeData.length > 0) {
+        GetEmployeeProfile = EmployeeData[0].filename;
+      }
+    }
+
+    const requestCreate = {
+      ename: ename,
+      requestType: "Payment Approval",
+      requestTime: new Date(),
+      designation: designation,
+      status: "Unread",
+      employee_status: "Unread",
+      img_url: GetEmployeeProfile,
+    };
+
+    const addRequest = new NotiModel(requestCreate);
+    await addRequest.save();
+
+    req.io.emit("payment-approval-request", {
+      name: ename,
+      companyName: companyName,
+    });
+
+    res.status(200).json({ message: 'Payment approval request updated successfully', data: updatedRequest });
+  } catch (error) {
+    console.error('Error updating payment approval request', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 module.exports = router;
