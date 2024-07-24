@@ -856,7 +856,7 @@ router.post(
 
       const newUser = new userModel({
         ...req.body,
-        // isFormSubmitted: true,
+        isFormSubmitted: true,
         DirectorDetails: req.body.DirectorDetails.map((director, index) => ({
           ...director,
           DirectorPassportPhoto: DirectorPassportPhoto[index],
@@ -927,8 +927,9 @@ router.put(
         CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
         CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
         LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
-        ValueProposition, TechnologyInvolved, RelevantDocumentComment, DirectInDirectMarket,
-        Finance, FinanceCondition, BusinessModel, DirectorDetails
+        ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
+        AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
+        BusinessModel, Finance, FinanceCondition, DirectorDetails
       } = parsedData;
 
       // Prepare the updated data
@@ -936,8 +937,10 @@ router.put(
         CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
         CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
         LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
-        ValueProposition, TechnologyInvolved, RelevantDocumentComment, DirectInDirectMarket,
-        Finance, FinanceCondition, BusinessModel, isFormSubmitted: true,
+        ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
+        AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
+        BusinessModel: Array.isArray(BusinessModel) ? BusinessModel : [] , 
+        Finance, FinanceCondition, isFormSubmitted: true,
         DirectorDetails: DirectorDetails.map((director, index) => ({
           ...director,
           DirectorPassportPhoto: DirectorPassportPhoto[index],
