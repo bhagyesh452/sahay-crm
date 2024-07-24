@@ -19,7 +19,7 @@ function CustomerForm() {
     const fetchCompanyData = async () => {
         try {
             const response = await axios.get(`${secretKey}/customer/fetch-company-data/${companyName}`);
-            console.log("Company data is :", response.data.data);
+            // console.log("Company data is :", response.data.data);
             setCompanyData(response.data.data);
             setIsFormSuccessfullySubmitted(response.data.data.isFormSubmitted);
             setId(response.data.data._id);
@@ -387,10 +387,15 @@ function CustomerForm() {
     };
 
     const handleSave = async () => {
-        console.log("Form data is :", formData);
+        // console.log("Form data is :", formData);
         try {
             // Post formData using axios
-            const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
+            // const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
+            const response = await axios.post(`${secretKey}/customer/save-company-data`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        });
 
             Swal.fire("Data successfully saved", "success");
             console.log("Saved data is:", response.data);
@@ -399,7 +404,7 @@ function CustomerForm() {
             Swal.fire("Error saving data", "error");
         }
     };
-
+   
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormData((prevState) => ({
@@ -1432,7 +1437,6 @@ function CustomerForm() {
                                                 disabled={isFormSuccessfullySubmitted}
                                                 onChange={(e) => {
                                                     const file = e.target.files[0];
-                                                    // console.log("file" , file);
                                                     if (functionShowSizeLimit(file)) {
                                                         setFormData((prevState) => ({
                                                             ...prevState,

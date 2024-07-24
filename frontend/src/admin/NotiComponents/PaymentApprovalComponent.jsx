@@ -85,7 +85,7 @@ function PaymentApprovalComponent() {
     try {
       const response = await axios.get(`${secretKey}/requests/fetchPaymentApprovalRequestFromId/${id}`);
       const data = response.data.data;
-      // console.log("Fetched data is :", data);
+      console.log("Fetched data is :", data);
       setEname(data.ename || "");
       setDesignation(data.designation || "");
       setBranchOffice(data.branchOffice || "");
@@ -508,13 +508,8 @@ function PaymentApprovalComponent() {
                           id="exampleFormControlFile1"
                           name="attachment"
                           onChange={(e) => setFile(e.target.files[0])}
-                          disabled
                         />
-                        {file && (
-                          <a href={`${secretKey}/${file}`} target="_blank" rel="noopener noreferrer">
-                            {file}
-                          </a>
-                        )}
+                        {file && <a href={`./Payment-Request/${file}`} target="_blank" rel="noopener noreferrer">View Uploaded File</a>}
                       </div>
                     </div>
                   </div>

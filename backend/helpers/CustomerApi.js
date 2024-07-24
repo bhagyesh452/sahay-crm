@@ -4,6 +4,7 @@ const router = express.Router();
 const nodemailer = require("nodemailer");
 const multer = require('multer');
 const path = require('path');
+const fs = require("fs");
 const CompanyDataModel = require("../models/CompanyBusinessInput");
 const LeadsModel = require("../models/RedesignedLeadform");
 
@@ -88,62 +89,145 @@ router.get("/customer/dashboard/:email", (req, res) => {
 // Configure multer for file uploads
 // Set up storage engine
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+    destination: function (req, file, cb) {
+        // Determine the destination path based on the fieldname and company name
+        const companyName = req.params.CompanyName;
+        let destinationPath = "";
+
+        if (file.fieldname === "otherDocs") {
+            destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+        } else if (file.fieldname === "paymentReceipt") {
+            destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+        } else if (
+            file.fieldname === "DirectorAdharCard" ||
+            file.fieldname === "DirectorPassportPhoto"
+        ) {
+            destinationPath = `Client/ClientDocuments/${companyName}/DirectorDocs`;
+        } else {
+            destinationPath = `Client/ClientDocuments/${companyName}/OtherDocs`;
+        }
+
+        // Create the directory if it doesn't exist
+        if (!fs.existsSync(destinationPath)) {
+            fs.mkdirSync(destinationPath, { recursive: true });
+        }
+
+        cb(null, destinationPath);
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now();
+        cb(null, uniqueSuffix + "-" + file.originalname);
+    },
 });
 
 const upload = multer({ storage: storage });
 
-router.post('/save-company-data', upload.fields([
-    { name: 'UploadMOA', maxCount: 1 },
-    { name: 'UploadAOA', maxCount: 1 },
-    { name: 'UploadPhotos', maxCount: 1 },
-    { name: 'RelevantDocument', maxCount: 1 },
-    { name: 'UploadAuditedStatement', maxCount: 1 },
-    { name: 'UploadProvisionalStatement', maxCount: 1 },
-    { name: 'UploadDeclaration', maxCount: 1 },
-    { name: 'UploadRelevantDocs', maxCount: 1 }
-]), async (req, res) => {
-    try {
-        const data = req.body;
-        // console.log("Data is :", data);
+router.post('/save-company-data',
+    upload.fields([
+        { name: "DirectorPassportPhoto", maxCount: 10 },
+        { name: "DirectorAdharCard", maxCount: 10 },
+        { name: "UploadMOA", maxCount: 1 },
+        { name: "UploadAOA", maxCount: 1 },
+        { name: "UploadPhotos", maxCount: 1 },
+        { name: "RelevantDocument", maxCount: 1 },
+        { name: "UploadAuditedStatement", maxCount: 1 },
+        { name: "UploadProvisionalStatement", maxCount: 1 },
+        { name: "UploadDeclaration", maxCount: 1 },
+        { name: "UploadRelevantDocs", maxCount: 1 },
+    ]),
+    async (req, res) => {
+        try {
+            const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
+            const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
+            const UploadMOA = req.files["UploadMOA"] || [];
+            const UploadAOA = req.files["UploadAOA"] || [];
+            const UploadPhotos = req.files["UploadPhotos"] || [];
+            const RelevantDocument = req.files["RelevantDocument"] || [];
+            const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
+            const UploadProvisionalStatement = req.files["UploadProvisionalStatement"] || [];
+            const UploadDeclaration = req.files["UploadDeclaration"] || [];
+            const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
 
-        // Handle file uploads
-        // const fileFields = [
-        //     'UploadMOA',
-        //     'UploadAOA',
-        //     'UploadPhotos',
-        //     'RelevantDocument',
-        //     'UploadAuditedStatement',
-        //     'UploadProvisionalStatement',
-        //     'UploadDeclaration',
-        //     'UploadRelevantDocs'
-        // ];
+            const {
+                CompanyName,
+                CompanyEmail,
+                CompanyNo,
+                BrandName,
+                WebsiteLink,
+                CompanyAddress,
+                CompanyPanNumber,
+                SelectServices,
+                SocialMedia,
+                FacebookLink,
+                InstagramLink,
+                LinkedInLink,
+                YoutubeLink,
+                CompanyActivities,
+                ProductService,
+                CompanyUSP,
+                ValueProposition,
+                TechnologyInvolved,
+                RelevantDocumentComment,
+                DirectInDirectMarket,
+                Finance,
+                FinanceCondition,
+                BusinessModel,
+                DirectorDetails,
+            } = req.body;
 
-        // fileFields.forEach(field => {
-        //     if (req.files[field]) {
-        //         data[field] = req.files[field].map(file => file.path);
-        //     } else {
-        //         data[field] = [];
-        //     }
-        // });
+            const updatedData = {
+                CompanyName,
+                CompanyEmail,
+                CompanyNo,
+                BrandName,
+                WebsiteLink,
+                CompanyAddress,
+                CompanyPanNumber,
+                SelectServices,
+                SocialMedia,
+                FacebookLink,
+                InstagramLink,
+                LinkedInLink,
+                YoutubeLink,
+                CompanyActivities,
+                ProductService,
+                CompanyUSP,
+                ValueProposition,
+                TechnologyInvolved,
+                RelevantDocumentComment,
+                DirectInDirectMarket,
+                Finance,
+                FinanceCondition,
+                BusinessModel,
+                DirectorDetails: DirectorDetails.map((director, index) => ({
+                    // ...JSON.parse(director),
+                    DirectorPassportPhoto: DirectorPassportPhoto[index],
+                    DirectorAdharCard: DirectorAdharCard[index],
+                })),
+                UploadMOA: UploadMOA[0],
+                UploadAOA: UploadAOA[0],
+                UploadPhotos: UploadPhotos[0],
+                RelevantDocument: RelevantDocument[0],
+                UploadAuditedStatement: UploadAuditedStatement[0],
+                UploadProvisionalStatement: UploadProvisionalStatement[0],
+                UploadDeclaration: UploadDeclaration[0],
+                UploadRelevantDocs: UploadRelevantDocs[0],
+            };
 
-        // Save or update the user in the database
-        const user = await CompanyDataModel.findOneAndUpdate(
-            { CompanyName: data.CompanyName },
-            data,
-            { new: true, upsert: true }
-        );
-        res.status(200).json({ result: true, message: 'Data saved successfully', data: user });
-    } catch (error) {
-        console.error('Error saving data:', error);
-        res.status(500).json({ result: false, message: 'Error saving data', error: error.message });
-    }
-});
+            // Save or update the user in the database
+            const user = await CompanyDataModel.findOneAndUpdate(
+                { CompanyName },
+                updatedData,
+                { new: true, upsert: true }
+            );
+
+            res.status(200).json({ result: true, message: 'Data saved successfully', data: user });
+        } catch (error) {
+            console.error('Error saving data:', error);
+            res.status(500).json({ result: false, message: 'Error saving data', error: error.message });
+        }
+    });
+
 
 router.get('/fetch-company-data/:companyName', async (req, res) => {
     const { companyName } = req.params;

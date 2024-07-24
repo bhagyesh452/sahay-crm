@@ -409,11 +409,10 @@ router.post(
                     <div>
                         <div style="display: flex; justify-content: space-between;margin-top: 8px;margin-bottom: 8px;">
                             <div>Director ${index + 1}</div>
-                            <div> ${
-                              IsMainDirector === "true"
-                                ? "Authorized Person"
-                                : ""
-                            } </div>
+                            <div> ${IsMainDirector === "true"
+              ? "Authorized Person"
+              : ""
+            } </div>
                         </div>
                         <div>
                               <div style="display: flex;">
@@ -469,9 +468,8 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">Director's Passport Size Photo</div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${
-                                      DirectorPassportPhoto[index].originalname
-                                    }</div>
+                                    <div style="height: 100%;font-size:12px;">${DirectorPassportPhoto[index].originalname
+            }</div>
                                 </div>
                             </div>
                             <div style="display: flex;">
@@ -479,9 +477,8 @@ router.post(
                                     <div style="height: 100%;font-size:12px;">Director's Aadhaar Card </div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${
-                                      DirectorAdharCard[index].originalname
-                                    }</div>
+                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCard[index].originalname
+            }</div>
                                 </div>
                             </div>
                             <div style="display: flex;">
@@ -532,7 +529,7 @@ router.post(
       );
 
       // UploadPhotos & Logo condition code
-      
+
 
       let finalHTML = sendMain3HTML;
 
@@ -630,7 +627,7 @@ router.post(
         (service) => service === "Pitch Deck Development "
       );
       console.log(servicesArrayForPitchDeckServiceSendMail5);
-      console.log("SELECTED" , selectedServicePitch);
+      console.log("SELECTED", selectedServicePitch);
 
 
 
@@ -640,7 +637,7 @@ router.post(
         (service) => service === "Income Tax Exemption"
       );
       console.log(servicesArrayForIncomeTaxExemptionSendMail6);
-      console.log("SELECTED" , selectedServiceIncome);
+      console.log("SELECTED", selectedServiceIncome);
 
 
 
@@ -687,9 +684,9 @@ router.post(
           <p>Start-Up Sahay Private Limited</p>
           <p>+91-9998992601</p>
     `;
-    
-    // html3 code for Income Tax Exemption Service Then Sending the email draft on CompanyEmail
-    const html3 = `
+
+      // html3 code for Income Tax Exemption Service Then Sending the email draft on CompanyEmail
+      const html3 = `
           <p>Dear Client,</p>
 
           <p>Thank you for submitting the form. We appreciate your cooperation and are excited to begin working on your Income Tax Exemption service for ${CompanyName}. As a first step, we will provide you the content draft for your pitch deck, which will be created by our team to meet the required standards.</p>
@@ -712,15 +709,15 @@ router.post(
 
 
 
-    // Condition for html1 html2 & html3 code
-    let htmlToSend;
-    if (selectedServiceIncome !== undefined && selectedServiceIncome !== null && selectedServiceIncome !== "") {
-      htmlToSend = html3;
-    } else if (selectedServicePitch !== undefined && selectedServicePitch !== null && selectedServicePitch !== "") {
-      htmlToSend = html2;
-    } else {
-      htmlToSend = html1;
-    }
+      // Condition for html1 html2 & html3 code
+      let htmlToSend;
+      if (selectedServiceIncome !== undefined && selectedServiceIncome !== null && selectedServiceIncome !== "") {
+        htmlToSend = html3;
+      } else if (selectedServicePitch !== undefined && selectedServicePitch !== null && selectedServicePitch !== "") {
+        htmlToSend = html2;
+      } else {
+        htmlToSend = html1;
+      }
 
 
 
@@ -843,7 +840,7 @@ router.post(
                   text1,
                   htmlToSend,
                   clientDocument
-                ) .then(() => {
+                ).then(() => {
                   console.log("Email sent successfully");
                 }).catch((error) => {
                   console.error("Error sending email:", error);
@@ -859,6 +856,7 @@ router.post(
 
       const newUser = new userModel({
         ...req.body,
+        // isFormSubmitted: true,
         DirectorDetails: req.body.DirectorDetails.map((director, index) => ({
           ...director,
           DirectorPassportPhoto: DirectorPassportPhoto[index],
@@ -876,6 +874,100 @@ router.post(
 
       await newUser.save();
       res.status(201).send(newUser);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+);
+
+router.put(
+  "/basicinfo-form/:id",
+  upload.fields([
+    { name: "DirectorPassportPhoto", maxCount: 10 },
+    { name: "DirectorAdharCard", maxCount: 10 },
+    { name: "UploadMOA", maxCount: 1 },
+    { name: "UploadAOA", maxCount: 1 },
+    { name: "UploadPhotos", maxCount: 1 },
+    { name: "RelevantDocument", maxCount: 1 },
+    { name: "UploadAuditedStatement", maxCount: 1 },
+    { name: "UploadProvisionalStatement", maxCount: 1 },
+    { name: "UploadDeclaration", maxCount: 1 },
+    { name: "UploadRelevantDocs", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const DirectorPassportPhoto = req.files["DirectorPassportPhoto"] || [];
+      const DirectorAdharCard = req.files["DirectorAdharCard"] || [];
+      const UploadMOA = req.files["UploadMOA"] || [];
+      const UploadAOA = req.files["UploadAOA"] || [];
+      const UploadPhotos = req.files["UploadPhotos"] || [];
+      const RelevantDocument = req.files["RelevantDocument"] || [];
+      const UploadAuditedStatement = req.files["UploadAuditedStatement"] || [];
+      const UploadProvisionalStatement =
+        req.files["UploadProvisionalStatement"] || [];
+      const UploadDeclaration = req.files["UploadDeclaration"] || [];
+      const UploadRelevantDocs = req.files["UploadRelevantDocs"] || [];
+
+      const { id } = req.params;
+
+      const parsedData = {};
+      Object.keys(req.body).forEach((key) => {
+        try {
+          parsedData[key] = JSON.parse(req.body[key]);
+        } catch (e) {
+          parsedData[key] = req.body[key];
+        }
+      });
+
+      // Log parsed data for debugging
+      console.log("Parsed Data: ", parsedData);
+
+      const {
+        CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
+        CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
+        LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
+        ValueProposition, TechnologyInvolved, RelevantDocumentComment, DirectInDirectMarket,
+        Finance, FinanceCondition, BusinessModel, DirectorDetails
+      } = parsedData;
+
+      // Prepare the updated data
+      const updatedData = {
+        CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
+        CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
+        LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
+        ValueProposition, TechnologyInvolved, RelevantDocumentComment, DirectInDirectMarket,
+        Finance, FinanceCondition, BusinessModel, isFormSubmitted: true,
+        DirectorDetails: DirectorDetails.map((director, index) => ({
+          ...director,
+          DirectorPassportPhoto: DirectorPassportPhoto[index],
+          DirectorAdharCard: DirectorAdharCard[index]
+        })),
+        UploadMOA,
+        UploadAOA,
+        UploadPhotos,
+        RelevantDocument,
+        UploadAuditedStatement,
+        UploadProvisionalStatement,
+        UploadDeclaration,
+        UploadRelevantDocs
+      };
+
+      // Log updated data for debugging
+      console.log("Updated Data: ", updatedData);
+
+      // Update the user in the database
+      const updatedUser = await userModel.findByIdAndUpdate(
+        id,
+        updatedData,
+        { new: true, upsert: false }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.status(200).json(updatedUser);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
