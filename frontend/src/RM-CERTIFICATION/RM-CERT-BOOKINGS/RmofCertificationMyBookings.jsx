@@ -16,7 +16,7 @@ import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
-
+import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
 
 function RmofCertificationMyBookings() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -340,10 +340,10 @@ function RmofCertificationMyBookings() {
                                     </a>
                                 </li>
                                 <li class="nav-item rm_task_section_navitem">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#Working">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
                                         <div className="d-flex align-items-center justify-content-between w-100">
                                             <div className="rm_txt_tsn">
-                                                Working
+                                                In Process
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 10
@@ -415,12 +415,11 @@ function RmofCertificationMyBookings() {
                                                     <th>Company Email</th>
                                                     <th>CA Number</th>
                                                     <th>Service Name</th>
-                                                    <th>Remark</th>
                                                     <th>Status</th>
+                                                    <th>Remark</th>
                                                     <th>DSC Applicable</th>
                                                     <th>BDE Name</th>
                                                     <th>BDM name</th>
-                                                    <th>BDM Type</th>
                                                     <th>Total Payment</th>
                                                     <th>received Payment</th>
                                                     <th>Pending Payment</th>
@@ -430,7 +429,7 @@ function RmofCertificationMyBookings() {
                                             <tbody>
                                                 {mycustomloop.map((_, index) => (
                                                     <tr>
-                                                        <td className="rm-sticky-left-1"><b>1</b></td>
+                                                        <td className="rm-sticky-left-1"><div className="rm_sr_no">1</div></td>
                                                         <td className="rm-sticky-left-2">20/02/2024</td>
                                                         <td className="rm-sticky-left-3"><b>India Private Limited</b></td>
                                                         <td>
@@ -444,10 +443,10 @@ function RmofCertificationMyBookings() {
                                                         <td>nimesh@incscale.in</td>
                                                         <td>Not Applicable</td>
                                                         <td><b>Start-up India Certificate</b></td>
-                                                        <td>test remarks</td>
                                                         <td>
                                                             <div><StatusDropdown /></div>
                                                         </td>
+                                                        <td>test remarks</td>
                                                         <td>Yes</td>
                                                         <td>
                                                             <div className="d-flex align-items-center justify-content-center">
@@ -465,7 +464,6 @@ function RmofCertificationMyBookings() {
                                                                 <div> Vishnu  Suthar</div>
                                                             </div>
                                                         </td>
-                                                        <td>Close By</td>
                                                         <td>₹ 8,000/-</td>
                                                         <td>₹ 3,000/-</td>
                                                         <td>₹ 5,000/-</td>
@@ -479,8 +477,100 @@ function RmofCertificationMyBookings() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="Working">
-
+                            <div class="tab-pane" id="InProcess">
+                                <div className="RM-my-booking-lists">
+                                    <div className="table table-responsive table-style-3 m-0">
+                                        <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                                            <thead>
+                                                <tr className="tr-sticky">
+                                                    <th className="rm-sticky-left-1">Sr.No</th>
+                                                    <th className="rm-sticky-left-2">Booking Date</th>
+                                                    <th className="rm-sticky-left-3">Company Name</th>
+                                                    <th>Company Number</th>
+                                                    <th>Company Email</th>
+                                                    <th>CA Number</th>
+                                                    <th>Service Name</th>
+                                                    <th>Status</th>
+                                                    <th>Remark</th>
+                                                    <th>DSC Applicable</th>
+                                                    <th>DSC Status</th>
+                                                    <th>Content Writer</th>
+                                                    <th>Content Status</th>
+                                                    <th>Brochure Designer</th>
+                                                    <th>Brochure Status</th>
+                                                    <th>NSWS Email Id</th>
+                                                    <th>NSWS Password</th>
+                                                    <th>NSWS Email ID</th>
+                                                    <th>NSWS Password</th>
+                                                    <th>BDE Name</th>
+                                                    <th>BDM name</th>
+                                                    <th>Total Payment</th>
+                                                    <th>received Payment</th>
+                                                    <th>Pending Payment</th>
+                                                    <th className="rm-sticky-action">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {mycustomloop.map((_, index) => (
+                                                    <tr>
+                                                        <td className="rm-sticky-left-1"><div className="rm_sr_no">1</div></td>
+                                                        <td className="rm-sticky-left-2">20/02/2024</td>
+                                                        <td className="rm-sticky-left-3"><b>India Private Limited</b></td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                                <div>9924283530</div>
+                                                                <a style={{marginLeft:'10px',lineHeight:'14px',fontSize:'14px'}}>
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td>nimesh@incscale.in</td>
+                                                        <td>Not Applicable</td>
+                                                        <td><b>Start-up India Certificate</b></td>
+                                                        <td>
+                                                            <div><StatusDropdown /></div>
+                                                        </td>
+                                                        <td>test remarks</td>
+                                                        <td>Yes</td>
+                                                        <td>
+                                                            <div><DscStatusDropdown /></div>
+                                                        </td>
+                                                        <td>Content Writer</td>
+                                                        <td>Content Status</td>
+                                                        <td>Brochure Designer</td>
+                                                        <td>Brochure Status</td>
+                                                        <td>NSWS Email Id</td>
+                                                        <td>NSWS Password</td>
+                                                        <td>NSWS Email ID</td>
+                                                        <td>NSWS Password</td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
+                                                                <img src={dummyImg}></img>
+                                                            </div> */}
+                                                                <div> Vishal Gohel</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                {/* <div className="tbl-pro-img">
+                                                                <img src={dummyImg}></img>
+                                                            </div> */}
+                                                                <div> Vishnu  Suthar</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>₹ 8,000/-</td>
+                                                        <td>₹ 3,000/-</td>
+                                                        <td>₹ 5,000/-</td>
+                                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary" onClick={()=>setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
+                                                            <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
+                                                        </td>
+                                                    </tr>   
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane" id="Submited">
 

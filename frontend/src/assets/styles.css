@@ -1522,7 +1522,7 @@ th.th-sticky1::after {
   color: #868686;
 }
 
-.bookings_Company_Name:hover .b_Services_multipal_services {
+.bookings_Company_Name:hover .   {
   background: #c4e5ff;
 }
 .b_Service_remaining_receive
@@ -2513,16 +2513,19 @@ td input {
   background: #43474c !important;
   color: #e4e4e4;
   border: none !important;
-  padding: 10px 0px !important;
+  padding: 4px 0px !important;
 }
 .table-style-3 table thead tr td
 {
   border: none !important;
+  transition: .5s;
 }
 .table-style-3 table tbody tr
 {
   background: #fff;
+  transition: .5s;
 }
+
 .table-style-3 table thead tr th:first-of-type {
   /* border-top-left-radius: 5px; */
   border-bottom-left-radius: 5px;
@@ -2610,10 +2613,11 @@ td input {
   font-weight: 600;
   color: #5c586e;
   width: 100%;
+  font-size: 14px;
 }
 .btn-swap-icon
 {
-  font-size: 14px;
+  font-size: 12px;
   line-height: 12px;
 }
 .rm_cmpny_name_services
@@ -2624,11 +2628,11 @@ td input {
 {
   font-size: 10px;
   /* font-weight: 500; */
-  padding: 1px 6px 1px 6px;
+  padding: 3px 6px 3px 6px;
   /* border-radius: 3px; */
   border-left: 1px solid transparent;
   margin-right: 6px;
-  max-width: 92px;
+  max-width: 122px;
 }
 .rm_bking_by, .rm_bking_time
 {
@@ -2638,14 +2642,34 @@ td input {
 }
 .btn-swap-round
 {
-  background: #ffd669;
   border: none;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 37px;
+  height: 24px;
+  line-height: 25px;
   text-align: center;
-  border-radius: 100px;
+  border-radius: 3px;
   margin-left: 10px;
+  font-size: 7px !important;
+}
+.btn-swap-round-success
+{
+  background: #b7ffa5;
+  color: #088a08;
+}
+.btn-swap-round-success:hover
+{
+  background: #088a08;
+  color: #b7ffa5;
+}
+.btn-swap-round-reject
+{
+  background: #ffb0b0;
+  color: #ee2222;
+}
+.btn-swap-round-reject:hover
+{
+  background: #ee2222;
+  color: #ffb0b0;
 }
 .rm_total_bking, .rm_total_services
 {
@@ -2836,6 +2860,10 @@ td input {
 {
   width: 2000px !important;
 }
+.rm_table_inprocess
+{
+  width: 3000px !important;
+}
 .rm-sticky-left-1
 {
   position: sticky;
@@ -2901,13 +2929,17 @@ td input {
   z-index: 1;
 }
 
-
+.table-style-3 table tbody tr:hover td,.table-style-3 table tbody tr:hover td:nth-child(1),.table-style-3 table tbody tr:hover td:nth-child(2),.table-style-3 table tbody tr:hover td:nth-child(3),.table-style-3 table tbody tr:hover td:last-child
+{
+  background: #b0b0b0 !important;
+  cursor: pointer;
+}
 
 .rm_status_dropdown .btn:focus {
   background: transparent;
   outline: none;
   box-shadow: none;
-  border: 1px solid transparent;
+  border: none;
   color: inherit;
 }
 .rm_status_dropdown .btn:hover,.rm_status_dropdown .btn:active
@@ -2915,12 +2947,11 @@ td input {
   background: transparent;
   outline: none;
   box-shadow: none;
-  border: 1px solid transparent;
+  border: none;
   color: inherit;
 }
 .rm_status_dropdown .custom-dropdown,.rm_status_dropdown .dropdown-menu {
-  box-shadow: 0px 2px 5px #0000001A;
-  border: 1px solid #E0E0E0;
+  /* box-shadow: 0px 2px 5px #0000001A; */
   border-radius: 5px;
   /* overflow: hidden; */
 }
@@ -2939,37 +2970,64 @@ td input {
   min-width: 150px;
 } */
 .status__btn {
-  border-radius: 0px;
-  padding: 2px 4px 2px 6px;
+  border-radius: 100px;
+  border: none;
+  padding: 3px 8px 3px 8px;
   background: transparent;
   width: fit-content;
   font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
 }
-.status_dropdown.created-status {
-  background-color: #FFD0A7;
-  border: 1px solid #FF7909;
-}
-
-.status_dropdown.support-status {
-  background-color: #E9E9E9;
-  border: 1px solid #34394D;
-}
-
-.status_dropdown.inprogress-status {
+.status_dropdown.created-status .status__btn{
   background-color: #A7D6FF;
   border: 1px solid #2DBDCA;
 }
 
-.status_dropdown.finished-status {
+.status_dropdown.support-status .status__btn{
+  background-color: #ffe49d;
+  border: 1px solid #ffba00;
+}
+
+.status_dropdown.inprogress-status .status__btn{
+  background-color: #FFD0A7;
+  border: 1px solid #FF7909;
+}
+
+.status_dropdown.finished-status .status__btn{
   background-color: #B6FFA7;
   border: 1px solid #72D500;
 }
 
-.status_dropdown.rejected-status {
+.status_dropdown.rejected-status .status__btn{
   background-color: #FCBDBD;
   border: 1px solid #FD5252;
 }
-
+.status_dropdown.docs-pending .status__btn{
+  background-color: #faadff;
+  border: 1px solid #ae32ac;
+}
+.rm_sr_no
+{
+  width: 24px;
+  text-align: center;
+  height: 24px;
+  background: #bcbcbc6e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: 600;
+  border-radius: 100px;
+  font-size: 12px;
+  line-height: 24px;
+}
+.rm-sticky-left-1.scrolled,
+.rm-sticky-left-2.scrolled,
+.rm-sticky-left-3.scrolled,
+.rm-sticky-action.scrolled {
+  background-color: yellow; /* Color when scrolled */
+  z-index: 2; /* Ensure sticky elements stay on top */
+}
 @media (max-width: 1528px)
 {
   .rm_task_section_navtabs
