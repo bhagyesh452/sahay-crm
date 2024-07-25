@@ -13,7 +13,7 @@ function CustomerDashboard() {
     const companyToken = localStorage.getItem("companyToken");
 
     if (!companyToken) {
-      navigate("/customerLogin");
+      navigate("/customer/login");
     }
   }, [navigate]);
 
