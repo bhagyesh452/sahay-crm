@@ -121,7 +121,7 @@ function App() {
 
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
-          <Route path='/customerLogin' element={<CustomerLogin />}></Route>
+          <Route path='/customer/login' element={<CustomerLogin />}></Route>
           <Route path='/customer/dashboard/:email' element={<CustomerDashboard />}></Route> 
         
           {/* --------------------------------------------------bdm components---------------------------------------------------------- */}

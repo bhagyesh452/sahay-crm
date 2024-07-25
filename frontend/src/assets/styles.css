@@ -1480,7 +1480,6 @@ th.th-sticky1::after {
   background: #fff;
 }
 
-.b_Services_amount {}
 
 .b_Services_amount .amount {
   padding: 1px 5px;
@@ -1522,7 +1521,7 @@ th.th-sticky1::after {
   color: #868686;
 }
 
-.bookings_Company_Name:hover .b_Services_multipal_services   {
+.bookings_Company_Name:hover .b_Services_multipal_services {
   background: #c4e5ff;
 }
 .b_Service_remaining_receive
@@ -3250,6 +3249,13 @@ td input {
   color: #946969 !important;
   border: none !important;
 }
+.Payment-Notification-table tbody tr td
+{
+  vertical-align: middle;
+  padding: 6px 0px !important;
+  color: #817de6 !important;
+  border: none !important;
+}
 .General-table tbody tr td
 {
   vertical-align: middle;
@@ -3281,6 +3287,10 @@ td input {
 .Notification-table tbody tr:nth-of-type(even)
 {
   background: #ffeeee !important;
+}
+.Payment-Notification-table tbody tr:nth-of-type(even)
+{
+  background: #dfd7fb !important;
 }
 .General-table tbody tr:nth-of-type(even)
 {

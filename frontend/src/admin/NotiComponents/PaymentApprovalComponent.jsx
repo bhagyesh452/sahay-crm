@@ -24,7 +24,7 @@ function PaymentApprovalComponent() {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [deletedData, setDeletedData] = useState([]);
-  const [filterBy, setFilterBy] = useState("Pending");
+  const [filterBy, setFilterBy] = useState("All");
   const [searchText, setSearchText] = useState("");
   const [data, setData] = useState([]);
   const [id, setId] = useState("");
@@ -45,6 +45,7 @@ function PaymentApprovalComponent() {
   const [assigned, setAssigned] = useState("Pending");
   const [paymentApprovalErrors, setPaymentApprovalErrors] = useState({});
   const [alreadyAssigned, setAlreadyAssigned] = useState(false)
+  const [filterApprovalData, setFilterApprovalData] = useState([])
   // const [data, setData] = useState(deletedData.filter((obj) => obj.request === false));
   // const [totalData, setTotalData] = useState(deletedData.filter((obj) => obj.request === false));
 
@@ -76,6 +77,7 @@ function PaymentApprovalComponent() {
       const tempData = response.data.reverse();
 
       setData(tempData);
+      setFilterApprovalData(tempData)
       // setDeletedData(tempData); // Assuming your data is returned as an array
       // setData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
       // setTotalData(filterBy === "Pending" ? tempData.filter(obj => obj.request === false) : tempData.filter(obj => obj.request === true));
@@ -209,15 +211,41 @@ function PaymentApprovalComponent() {
   }, []);
 
   useEffect(() => {
-    setData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
-    //setTotalData(filterBy === "Pending" ? deletedData.filter(obj => obj.request === false) : deletedData.filter(obj => obj.request === true));
+    let filteredData;
+  
+    switch (filterBy) {
+      case "Pending":
+        filteredData = filterApprovalData.filter(obj => obj.assigned === "Pending");
+        break;
+      case "Approved":
+        filteredData = filterApprovalData.filter(obj => obj.assigned === "Approved");
+        break;
+      case "Rejected":
+        filteredData = filterApprovalData.filter(obj => obj.assigned === "Rejected");
+        break;
+        case "All":
+        filteredData = filterApprovalData;
+        break;
+      default:
+        filteredData = [];
+    }
+  
+    // Handle case where data might be empty
+    if (filteredData.length === 0) {
+      setData(filterApprovalData)
+      console.log("No data available for the selected filter.");
+      // Optionally, you can set an empty message or a default state
+    }
+  
+    setData(filteredData);
+  
   }, [filterBy]);
-
+  
   useEffect(() => {
     if (searchText !== "") {
-      //setData(totalData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
+      setData(filterApprovalData.filter(obj => obj.ename.toLowerCase().includes(searchText.toLowerCase())));
     } else {
-      //setData(totalData)
+      setData(filterApprovalData)
     }
   }, [searchText]);
 
@@ -256,8 +284,10 @@ function PaymentApprovalComponent() {
             </div>
             <div className='Notification_filter'>
               <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)} style={{ border: "1px solid #ffc8c8 " }} name="filter_requests" id="filter_requests" className="form-select">
-                <option value="Pending" selected>Pending</option>
-                <option value="Completed" >Completed</option>
+              <option value="All" selected>All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved" >Approved</option>
+                <option value="Rejected" >Rejected</option>
               </select>
             </div>
           </div>

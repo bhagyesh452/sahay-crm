@@ -131,7 +131,7 @@ function CustomerForm() {
         { value: "VC Funding Support", label: "VC Funding Support" },
         { value: "Crowd Funding Support", label: "Crowd Funding Support" },
         { value: "I-Create", label: "I-Create" },
-        { value: "Chunauti ", label: "Chunauti " },
+        { value: "Chunauti", label: "Chunauti" },
         { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme" },
         { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
         { value: "NAIF", label: "NAIF" },
@@ -965,7 +965,7 @@ function CustomerForm() {
                                         type="file"
                                         className="form-control mt-1"
                                         id={`DirectorPassportPhoto${index}`}
-                                        value={formData.DirectorDetails[index]?.DirectorPassportPhoto[0].originalname || ""}
+                                        // value={formData.DirectorDetails[index]?.DirectorPassportPhoto[0].originalname || ""}
                                         disabled={isFormSuccessfullySubmitted}
                                         onChange={(e) => {
                                             const file = e.target.files[0];
@@ -987,12 +987,12 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
-                                    {formData.DirectorDetails[index]?.DirectorPassportPhoto && (
+                                    {/* {formData.DirectorDetails[index]?.DirectorPassportPhoto && (
                                         <div className="mt-2">
                                             <strong>Current File:</strong>{" "}
                                             {formData.DirectorDetails[index].DirectorPassportPhoto[0]?.originalname || "No file selected"}
                                         </div>
-                                    )}
+                                    )} */}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
                                     </div>

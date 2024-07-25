@@ -38,7 +38,7 @@ export const options = [
   { value: "VC Funding Support", label: "VC Funding Support" },
   { value: "Crowd Funding Support", label: "Crowd Funding Support" },
   { value: "I-Create", label: "I-Create" },
-  { value : "Chunauti " , label :"Chunauti "},
+  { value : "Chunauti" , label :"Chunauti"},
   { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme" },
   { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
   { value: "NAIF", label: "NAIF" },

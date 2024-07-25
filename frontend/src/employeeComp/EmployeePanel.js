@@ -6918,19 +6918,25 @@ function EmployeePanel() {
                           {paymentApprovalErrors.requestedPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedPrice}</div>}
                         </div>
                       </div>
-
                       <div className="col-4">
-                        <div className="mb-3">
-                          <label className="form-label">Requested Type
-                            <span style={{ color: "red" }}>*</span></label>
-                          <select className="form-control" id="exampleFormControlSelect1"
-                            onChange={(e) => setRequesteType(e.target.value)}>
-                            <option name="Select reqested type" disabled selected>Select reqested type</option>
-                            <option name="lesser price">Lessar Price</option>
-                            <option name="payment term change">Payment Term Change</option>
-                            <option name="gst/non-gst issue">GST/Non-GST Issue</option>
+                        <div className="mb-3 form-group">
+                          <label htmlFor="exampleFormControlSelect1" className="form-label">Requested Type
+                            <span style={{ color: "red" }}>*</span>
+                          </label>
+                          <select
+                            aria-label="Default select example"
+                            className="form-select"  // Use the correct class for a select element
+                            id="exampleFormControlSelect1"
+                            onChange={(e) => setRequesteType(e.target.value)}
+                          >
+                            <option value="" disabled selected>Select requested type</option>
+                            <option value="lesser price">Lesser Price</option>
+                            <option value="payment term change">Payment Term Change</option>
+                            <option value="gst/non-gst issue">GST/Non-GST Issue</option>
                           </select>
-                          {paymentApprovalErrors.requesteType && <div style={{ color: 'red' }}>{paymentApprovalErrors.requesteType}</div>}
+                          {paymentApprovalErrors.requesteType && (
+                            <div style={{ color: 'red' }}>{paymentApprovalErrors.requesteType}</div>
+                          )}
                         </div>
                       </div>
                     </div>
