@@ -45,7 +45,7 @@ function Received_booking_box() {
         secondPaymentRemarks: "",
         thirdPaymentRemarks: "",
         fourthPaymentRemarks: "",
-      };
+    };
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
 
@@ -236,7 +236,7 @@ function Received_booking_box() {
     const [dataToSend, setDataToSend] = useState(defaultLeadData)
     const [selectedCompanyData, setSelectedCompanyData] = useState([]);
 
-   
+
 
     const handleCloseServicesPopup = () => {
         setOpenServicesPopup(false)
@@ -244,7 +244,7 @@ function Received_booking_box() {
         setSelectedCompanyName("")
         setSelectedCompanyData([])
         setDataToSend(defaultLeadData)
-      }
+    }
 
     // const handleOpenServices = (companyName) => {
     //     // Filter the mainDataSwap array to get the companies that match the provided companyName
@@ -373,14 +373,14 @@ function Received_booking_box() {
                                                                         //handleOpenServices(obj["Company Name"])
 
                                                                     )
-                                                                }
+                                                                    }
                                                                 />
                                                             </div>
                                                         </button>
                                                         <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'>
                                                             <div className='btn-swap-icon'>
                                                                 {/* <SlActionRedo /> */}
-                                                                <GrClose  />
+                                                                <GrClose />
                                                             </div>
                                                         </button>
                                                     </div>
@@ -420,11 +420,11 @@ function Received_booking_box() {
                                                                     ].bookingPublishDate // Get the latest bookingDate from moreBookings
                                                                     : obj.bookingPublishDate
                                                             ) // Use obj.bookingDate if moreBookings is empty or not present
-                                                        } 
-                                                         <span className='ml-1'>(First Booking)</span>
+                                                        }
+                                                        <span className='ml-1'>(First Booking)</span>
                                                     </div>
                                                     <div className='rm_bking_by'>
-                                                      By  {obj.bdeName}
+                                                        By  {obj.bdeName}
                                                     </div>
                                                 </div>
                                             </div>
@@ -615,11 +615,11 @@ function Received_booking_box() {
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretc p-0">
                                                                 {currentLeadform &&
-                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                    
+                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+
                                                                         ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
-                                                                   
-                                                                </div> }
+
+                                                                    </div>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -640,7 +640,14 @@ function Received_booking_box() {
                                                                     setActiveIndexBooking(1)
                                                                 }}>Booking 1</a>
                                                         </li>
-                                                        {currentLeadform.moreBookings.map((obj, index) => (
+                                                        <li className="nav-item rm_bkng_item_no ms-auto">
+                                                            <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                                                {currentLeadform && currentLeadform.bookingPublishDate
+                                                                    ? `${formatTime(currentLeadform.bookingPublishDate)} | ${formatDatePro(currentLeadform.bookingPublishDate)}`
+                                                                    : 'No Date Available'}
+                                                            </div>
+                                                        </li>
+                                                        {currentLeadform.moreBookings.map((obj, index) => (<>
                                                             <li key={index} className="nav-item rm_bkng_item_no">
                                                                 <a
                                                                     className={index + 2 === activeIndexBooking ? "nav-link active" : "nav-link"}
@@ -654,7 +661,10 @@ function Received_booking_box() {
                                                                 >
                                                                     Booking {index + 2}</a>
                                                             </li>
-                                                        ))}
+                                                            <li class="nav-item rm_bkng_item_no ms-auto">
+                                                                <div className='rm_bkng_item_no nav-link clr-ff8800'>Saturday, 06 jun 2024 at 01:00 PM</div>
+                                                            </li>
+                                                        </>))}
                                                     </>
                                                 ) : (
                                                     <li className="nav-item rm_bkng_item_no">
