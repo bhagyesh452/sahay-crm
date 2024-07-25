@@ -88,12 +88,12 @@ function PaymentApprovalComponent() {
   };
 
   const fetchOnePaymentApprovalRequest = async (id) => {
-    setId(id);
+    //setId(id);
     try {
       const response = await axios.get(`${secretKey}/requests/fetchPaymentApprovalRequestFromId/${id}`);
       const data = response.data.data;
       const attachmentFilename = data.attachments && data.attachments[0] ? data.attachments[0].split('\\').pop().split('/').pop() : "";
-      console.log("approvalData", data, data.attachments[0])
+      console.log("approvalData", data)
       if (data.assigned === "Approved" || data.assigned === "Rejected") {
         setAlreadyAssigned(true)
       }
@@ -346,8 +346,8 @@ function PaymentApprovalComponent() {
                   <td>
                     <div>
                       <GrFormView onClick={() => {
-                        setOpenPaymentApproval(true)
                         fetchOnePaymentApprovalRequest(obj._id)
+                        setOpenPaymentApproval(true)
                       }
                       } style={{ width: "16px", height: "16px", cursor: "pointer" }} />
                     </div>
