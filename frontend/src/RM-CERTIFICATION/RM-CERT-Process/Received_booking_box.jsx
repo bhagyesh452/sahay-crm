@@ -614,11 +614,12 @@ function Received_booking_box() {
                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
                                                             </div>
                                                             <div class="col-lg-8 align-self-stretc p-0">
+                                                                {currentLeadform &&
                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                    {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                    
                                                                         ₹ {parseInt(calculatePendingAmount(currentLeadform)).toLocaleString()}
-                                                                    </div>}
-                                                                </div>
+                                                                   
+                                                                </div> }
                                                             </div>
                                                         </div>
                                                     </div>
