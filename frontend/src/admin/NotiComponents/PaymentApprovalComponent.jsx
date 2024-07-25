@@ -114,7 +114,10 @@ function PaymentApprovalComponent() {
     }
   };
 
- 
+  const handleClick = async (id) => {
+    await fetchOnePaymentApprovalRequest(id);
+    setOpenPaymentApproval(true);
+};
 
   const handleAccept = async () => {
     setAssigned("Approved");
@@ -249,9 +252,6 @@ function PaymentApprovalComponent() {
     }
   }, [searchText]);
 
-
-
-
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, "0");
@@ -345,11 +345,8 @@ function PaymentApprovalComponent() {
                   </td>
                   <td>
                     <div>
-                      <GrFormView onClick={() => {
-                        fetchOnePaymentApprovalRequest(obj._id)
-                        setOpenPaymentApproval(true)
-                      }
-                      } style={{ width: "16px", height: "16px", cursor: "pointer" }} />
+                      <GrFormView onClick={() => handleClick(obj._id)}
+                       style={{ width: "16px", height: "16px", cursor: "pointer" }} />
                     </div>
                   </td>
                 </tr>
