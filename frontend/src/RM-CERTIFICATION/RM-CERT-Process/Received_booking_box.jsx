@@ -533,7 +533,7 @@ function Received_booking_box() {
                                             </div>
                                         </div>
                                         <div className="booking-list-body">
-                                            {serviceNames && serviceNames.length !== 0 && leadFormData.length !== 0 && leadFormData.map((obj, index) => (
+                                            {leadFormData.length !== 0 && leadFormData.map((obj, index) => (
                                                 <div className={
                                                     currentLeadform &&
                                                         currentLeadform["Company Name"] ===
