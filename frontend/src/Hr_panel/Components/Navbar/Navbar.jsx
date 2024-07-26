@@ -79,12 +79,12 @@ function Navbar({userId}) {
                                 </li>
                                 <li className="nav-item"
                                     class={
-                                        location.pathname === `/hr/hr-navbar/` ? "nav-item active" : "nav-item"
+                                        location.pathname === `/hr/employees/` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
                                         to={{
-                                            pathname: `/hr/hr-navbar/`,
+                                            pathname: `/hr/employees/`,
                                         }}
                                     >
                                         <a className="nav-link" href="./">

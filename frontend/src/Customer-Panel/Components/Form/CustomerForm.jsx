@@ -11,21 +11,62 @@ function CustomerForm() {
     const companyName = localStorage.getItem("companyName");
     // console.log("Company name is :", companyName);
 
+    const localStorageKeys = [
+        "companyToken",
+        "companyName",
+        "companyEmail",
+        "companyPhoneNo",
+        "companyPanNo",
+        "companyServices",
+        "lastVisitTimestamp"
+    ];
+
+    const timestampKey = "lastVisitTimestamp";
+    // const oneHourInMilliseconds = 60000; // Miliseconds for 1 minute.
+    const oneHourInMilliseconds = 3600000;  // Miliseconds for 1 hour. 
+
+    useEffect(() => {
+        const currentTimestamp = Date.now();
+        const lastVisitTimestamp = localStorage.getItem(timestampKey);
+
+        if (lastVisitTimestamp) {
+            const timeDifference = currentTimestamp - parseInt(lastVisitTimestamp, 10);
+            if (timeDifference > oneHourInMilliseconds) {
+                // More than one hour has passed, remove items from localStorage
+                localStorageKeys.forEach(key => localStorage.removeItem(key));
+            }
+        }
+
+        // Update the timestamp in localStorage
+        localStorage.setItem(timestampKey, currentTimestamp.toString());
+    }, []);
+
     const [companyData, setCompanyData] = useState({});
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [isFormSuccessfullySubmitted, setIsFormSuccessfullySubmitted] = useState(false);
+    const [moaFile, setMoaFile] = useState("");
+    const [aoaFile, setAoaFile] = useState("");
+    const [logo, setLogo] = useState("");
+    const [ipDocs, setIpDocs] = useState("");
+    const [provisionalStatement, setProvisionalStatement] = useState("");
+    const [auditStatement, setAuditStatement] = useState("");
+    const [declaration, setDeclaration] = useState("");
+    const [relevantDocs, setRelevantDocs] = useState("");
+    const [directorPhoto, setDirectorPhoto] = useState("");
+    const [directorAdharCard, setDirectorAdharCard] = useState("");
     const [id, setId] = useState("");
 
     const fetchCompanyData = async () => {
         try {
             const response = await axios.get(`${secretKey}/customer/fetch-company-data/${companyName}`);
+            if (response.data.data.length === 0) {
+                setCompanyData([]);
+                return;
+            }
             console.log("Company data is :", response.data.data);
             setCompanyData(response.data.data);
             setIsFormSuccessfullySubmitted(response.data.data.isFormSubmitted);
             setId(response.data.data._id);
-            if (response.data.data.length === 0) {
-                setCompanyData([]);
-            }
         } catch (error) {
             console.log("Error fetching company data :", error);
         }
@@ -34,6 +75,32 @@ function CustomerForm() {
     useEffect(() => {
         fetchCompanyData();
     }, []);
+
+    const fetchDocuments = async () => {
+        console.log("Id is:", id);
+
+        try {
+            const res = await axios.get(`${secretKey}/customer/fetch-documents/${id}`);
+            console.log("Document details are:", res.data);
+            // Ensure DirectorDetails is an array before mapping
+            if (Array.isArray(res.data.DirectorDetails)) {
+                res.data.DirectorDetails.forEach((document) => {
+                    // console.log(document.DirectorPassportPhoto?.[0]?.originalname);
+                    setDirectorPhoto(document.DirectorPassportPhoto?.[0]?.originalname);
+                    setDirectorAdharCard(document.DirectorAdharCard?.[0]?.originalname);
+                });
+            } else {
+                console.error("DirectorDetails is not an array");
+            }
+        } catch (error) {
+            console.log("Error fetching director details:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDocuments();
+    }, [id]); // Add id to dependencies to refetch if it changes
+
 
     useEffect(() => {
         if (companyData) {
@@ -987,12 +1054,10 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
-                                    {/* {formData.DirectorDetails[index]?.DirectorPassportPhoto && (
-                                        <div className="mt-2">
-                                            <strong>Current File:</strong>{" "}
-                                            {formData.DirectorDetails[index].DirectorPassportPhoto[0]?.originalname || "No file selected"}
-                                        </div>
-                                    )} */}
+                                    {directorPhoto && <div className="mt-2">
+                                        <strong>Current File:</strong>{" "}
+                                        {directorPhoto}
+                                    </div>}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
                                     </div>
@@ -1038,6 +1103,10 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
+                                    {directorAdharCard && <div className="mt-2">
+                                        <strong>Current File:</strong>{" "}
+                                        {directorAdharCard}
+                                    </div>}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
                                     </div>
