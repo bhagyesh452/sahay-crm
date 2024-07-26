@@ -110,16 +110,15 @@ router.post('/post-rmservices-from-listview', async (req, res) => {
 
 })
 
-router.get(`/rm-sevicesgetrequest`, async (req, res) => {
+router.get("/rm-sevicesgetrequest", async (req, res) => {
   try {
-    const response = await RMCertificationModel.find()
-    res.status(200).json(response)
-
+    const response = await RMCertificationModel.find().sort({ addedOn: -1 });
+    res.status(200).json(response);
   } catch (error) {
-    console.log("Error creating data", error)
-    res.status(500).send({ message: "Internal Server Error" })
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
   }
-})
+});
 
 router.delete(`/delete-rm-services`, async (req, res) => {
   const { companyName, serviceName } = req.body;
@@ -391,6 +390,34 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.post(`/update-substatus-rmofcertification/` , async(req , res)=>{
+  const { companyName , serviceName , subCategoryStatus, mainCategoryStatus} = req.body;
+  const socketIO = req.io;
+  try{
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {["Company Name"] : companyName ,
+        serviceName : serviceName
+      },
+      {subCategoryStatus : subCategoryStatus,
+        mainCategoryStatus:mainCategoryStatus
+      },
+      {new : true}
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+    
+  }catch(error){
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 
 

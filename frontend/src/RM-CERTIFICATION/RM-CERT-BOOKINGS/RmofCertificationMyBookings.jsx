@@ -17,6 +17,13 @@ import { CiUndo } from "react-icons/ci";
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
+import RmofCertificationGeneralPanel from "./RmofCertificationGeneralPanel";
+import RmofCertificationProcessPanel from "./RmofCertificationProcessPanel";
+import RmofCertificationSubmittedPanel from "./RmofCertificationSubmittedPanel";
+import RmofCertificationApprovedPanel from "./RmofCertificationApprovedPanel";
+import RmofCertificationDefaulterPanel from "./RmofCertificationDefaulterPanel";
+import RmofCertificationHoldPanel from "./RmofCertificationHoldPanel";
+import io from 'socket.io-client';
 
 function RmofCertificationMyBookings() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -28,6 +35,24 @@ function RmofCertificationMyBookings() {
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
+    }, []);
+
+    useEffect(() => {
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
+
+        socket.on("rm-general-status-updated", (res) => {
+            fetchRMServicesData()
+        });
+
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
 
@@ -116,12 +141,12 @@ function RmofCertificationMyBookings() {
         return formattedDate;
     }
 
-    function formatDate(dateString){
-         dateString = "2024-07-26"
-        const [year , month , date] = dateString.split('-');
+    function formatDate(dateString) {
+        dateString = "2024-07-26"
+        const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
     }
-   
+
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -354,7 +379,7 @@ function RmofCertificationMyBookings() {
                                                     General
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.length : 0}
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "General").length : 0}
                                                 </div>
                                             </div>
                                         </a>
@@ -366,7 +391,8 @@ function RmofCertificationMyBookings() {
                                                     In Process
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    10
+                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
+                                                    
                                                 </div>
                                             </div>
                                         </a>
@@ -378,7 +404,8 @@ function RmofCertificationMyBookings() {
                                                     Submited
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    10
+                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
+                                                    
                                                 </div>
                                             </div>
                                         </a>
@@ -390,7 +417,8 @@ function RmofCertificationMyBookings() {
                                                     Approved
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    10
+                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
+                                                    
                                                 </div>
                                             </div>
                                         </a>
@@ -402,7 +430,8 @@ function RmofCertificationMyBookings() {
                                                     Hold
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    10
+                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
+                                                    
                                                 </div>
                                             </div>
                                         </a>
@@ -414,7 +443,8 @@ function RmofCertificationMyBookings() {
                                                     Defaulter
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    10
+                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
+                                                    
                                                 </div>
                                             </div>
                                         </a>
@@ -423,186 +453,22 @@ function RmofCertificationMyBookings() {
                             </div>
                             <div class="tab-content card-body">
                                 <div class="tab-pane active" id="General">
-                                    <div className="RM-my-booking-lists">
-                                        <div className="table table-responsive table-style-3 m-0">
-                                            <table className="table table-vcenter table-nowrap rm_table">
-                                                <thead>
-                                                    <tr className="tr-sticky">
-                                                        <th className="rm-sticky-left-1">Sr.No</th>
-                                                        <th className="rm-sticky-left-2">Booking Date</th>
-                                                        <th className="rm-sticky-left-3">Company Name</th>
-                                                        <th>Company Number</th>
-                                                        <th>Company Email</th>
-                                                        <th>CA Number</th>
-                                                        <th>Service Name</th>
-                                                        <th>Status</th>
-                                                        <th>Remark</th>
-                                                        <th>DSC Applicable</th>
-                                                        <th>BDE Name</th>
-                                                        <th>BDM name</th>
-                                                        <th>Total Payment</th>
-                                                        <th>received Payment</th>
-                                                        <th>Pending Payment</th>
-                                                        <th className="rm-sticky-action">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
-                                                        <tr key={index}>
-                                                            <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                                            <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
-                                                            <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center wApp">
-                                                                    <div>{obj["Company Number"]}</div>
-                                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                                        <FaWhatsapp />
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                            <td>{obj["Company Email"]}</td>
-                                                            <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
-                                                            <td><b>{obj.serviceName}</b></td>
-                                                            <td>
-                                                                <div><StatusDropdown /></div>
-                                                            </td>
-                                                            <td>test remarks</td>
-                                                            <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center">
-                                                                    {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                    <div>{obj.bdeName}</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center">
-                                                                    {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                    <div>{obj.bdmName}</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>₹ {obj.totalPaymentWGST}/-</td>
-                                                            <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                                            <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
-                                                            <td className="rm-sticky-action"><button className="action-btn action-btn-primary" onClick={() => setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
-                                                                <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
                                 </div>
                                 <div class="tab-pane" id="InProcess">
-                                    <div className="RM-my-booking-lists">
-                                        <div className="table table-responsive table-style-3 m-0">
-                                            <table className="table table-vcenter table-nowrap rm_table_inprocess">
-                                                <thead>
-                                                    <tr className="tr-sticky">
-                                                        <th className="rm-sticky-left-1">Sr.No</th>
-                                                        <th className="rm-sticky-left-2">Booking Date</th>
-                                                        <th className="rm-sticky-left-3">Company Name</th>
-                                                        <th>Company Number</th>
-                                                        <th>Company Email</th>
-                                                        <th>CA Number</th>
-                                                        <th>Service Name</th>
-                                                        <th>Status</th>
-                                                        <th>Remark</th>
-                                                        <th>DSC Applicable</th>
-                                                        <th>DSC Status</th>
-                                                        <th>Content Writer</th>
-                                                        <th>Content Status</th>
-                                                        <th>Brochure Designer</th>
-                                                        <th>Brochure Status</th>
-                                                        <th>NSWS Email Id</th>
-                                                        <th>NSWS Password</th>
-                                                        <th>NSWS Email ID</th>
-                                                        <th>NSWS Password</th>
-                                                        <th>BDE Name</th>
-                                                        <th>BDM name</th>
-                                                        <th>Total Payment</th>
-                                                        <th>received Payment</th>
-                                                        <th>Pending Payment</th>
-                                                        <th className="rm-sticky-action">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {mycustomloop.map((_, index) => (
-                                                        <tr>
-                                                            <td className="rm-sticky-left-1"><div className="rm_sr_no">1</div></td>
-                                                            <td className="rm-sticky-left-2">20/02/2024</td>
-                                                            <td className="rm-sticky-left-3"><b>India Private Limited</b></td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center wApp">
-                                                                    <div>9924283530</div>
-                                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                                        <FaWhatsapp />
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                            <td>nimesh@incscale.in</td>
-                                                            <td>Not Applicable</td>
-                                                            <td><b>Start-up India Certificate</b></td>
-                                                            <td>
-                                                                <div><StatusDropdown /></div>
-                                                            </td>
-                                                            <td>test remarks</td>
-                                                            <td>Yes</td>
-                                                            <td>
-                                                                <div><DscStatusDropdown /></div>
-                                                            </td>
-                                                            <td>Content Writer</td>
-                                                            <td>Content Status</td>
-                                                            <td>Brochure Designer</td>
-                                                            <td>Brochure Status</td>
-                                                            <td>NSWS Email Id</td>
-                                                            <td>NSWS Password</td>
-                                                            <td>NSWS Email ID</td>
-                                                            <td>NSWS Password</td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center">
-                                                                    {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                    <div> Vishal Gohel</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div className="d-flex align-items-center justify-content-center">
-                                                                    {/* <div className="tbl-pro-img">
-                                                                <img src={dummyImg}></img>
-                                                            </div> */}
-                                                                    <div> Vishnu  Suthar</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>₹ 8,000/-</td>
-                                                            <td>₹ 3,000/-</td>
-                                                            <td>₹ 5,000/-</td>
-                                                            <td className="rm-sticky-action"><button className="action-btn action-btn-primary" onClick={() => setOpenCompanyTaskComponent(true)}><FaRegEye /></button>
-                                                                <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
                                 </div>
                                 <div class="tab-pane" id="Submited">
-
+                                    <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} />
                                 </div>
                                 <div class="tab-pane" id="Approved">
-
+                                    <RmofCertificationApprovedPanel rmServicesData={rmServicesData} />
                                 </div>
                                 <div class="tab-pane" id="Hold">
-
+                                    <RmofCertificationHoldPanel rmServicesData={rmServicesData} />
                                 </div>
                                 <div class="tab-pane" id="Defaulter">
-
+                                    <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} />
                                 </div>
                             </div>
                         </div>

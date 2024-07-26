@@ -2487,7 +2487,7 @@ td input {
 }
 .table-style-3
 {
-  max-height: calc(100vh - 240px);
+  height: calc(100vh - 240px);
   /* border-width: 1px;
   border-style: solid;
   border-color: rgb(218, 223, 229); */

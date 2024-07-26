@@ -311,7 +311,7 @@ function Received_booking_box() {
     
                 // Filter out services that are included in servicesTakenByRmOfCertification
                 const filteredServices = allServices.filter((service) => {
-                    const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification.includes(service.serviceName);
+                    const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification?.includes(service.serviceName);
                     const isServiceTakenInMoreBookings = company.moreBookings.some((booking) =>
                         booking.servicesTakenByRmOfCertification?.includes(service.serviceName)
                     );
@@ -450,7 +450,7 @@ function Received_booking_box() {
                         html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
                     });
                 }
-    
+                fetchRedesignedFormData()
                 handleCloseServicesPopup();
             } catch (error) {
                 console.error("Error sending data:", error.message);
@@ -2410,7 +2410,7 @@ function Received_booking_box() {
                         <div className="modal-content">
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    {serviceNames.length !== 0 && serviceNames.map((service, index) => (
+                                    {serviceNames.length !== 0 ? (serviceNames.map((service, index) => (
                                         <div key={index}>
                                             <input
                                                 className="mr-1"
@@ -2423,7 +2423,9 @@ function Received_booking_box() {
                                             />
                                             <label htmlFor={`service-${index}`}>{service}</label>
                                         </div>
-                                    ))}
+                                    ))) :
+                                    (<Nodata/>)
+                                    }
                                 </div>
                             </div>
                         </div>
