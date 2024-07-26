@@ -783,10 +783,7 @@ function HrEmployees({ onEyeButtonClick, onAddEmployeeClick }) {
             {/* <!-- Page title actions --> */}
             <div className="col-auto ms-auto d-print-none">
               <div className="btn-list">
-                {/* <button
-                  className="btn btn-primary d-none d-sm-inline-block"
-                  onClick={() => setOpenAddEmployee(true)}
-                >
+              <button className="btn btn-primary d-none d-sm-inline-block" onClick={onAddEmployeeClick}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="icon"
@@ -803,9 +800,7 @@ function HrEmployees({ onEyeButtonClick, onAddEmployeeClick }) {
                     <path d="M12 5l0 14" />
                     <path d="M5 12l14 0" />
                   </svg>
-                  Add Employees
-                </button> */}
-                <button className="btn btn-primary d-none d-sm-inline-block" onClick={onAddEmployeeClick}>Add Employee</button>
+                Add Employee</button>
                 <a
                   href="#"
                   className="btn btn-primary d-sm-none btn-icon"

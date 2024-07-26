@@ -109,7 +109,14 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
 
 router.post("/einfo", async (req, res) => {
   try {
-    adminModel.create(req.body).then((result) => {
+    const {firstName, lastName, personalPhoneNo, personalEmail, address} = req.body;
+    adminModel.create({
+      ...req.body,
+      ename: `${firstName} ${lastName}`,
+      personal_number: personalPhoneNo,
+      personal_email: personalEmail,
+      personal_address: address
+    }).then((result) => {
       // Change res to result
       res.json(result); // Change res.json(res) to res.json(result)
     });

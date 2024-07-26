@@ -82,13 +82,8 @@ function CustomerForm() {
         try {
             const res = await axios.get(`${secretKey}/customer/fetch-documents/${id}`);
             console.log("Document details are:", res.data);
-            if(Array.isArray(res.data.DirectorDetails)) {
-                res.data.forEach((document) => {
-                    setMoaFile()
-                });
-            }
             // Ensure DirectorDetails is an array before mapping
-            else if (Array.isArray(res.data.DirectorDetails)) {
+            if (Array.isArray(res.data.DirectorDetails)) {
                 res.data.DirectorDetails.forEach((document) => {
                     // console.log(document.DirectorPassportPhoto?.[0]?.originalname);
                     setDirectorPhoto(document.DirectorPassportPhoto?.[0]?.originalname);
