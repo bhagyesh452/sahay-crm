@@ -164,7 +164,7 @@ export default function HorizontalNonLinearStepper() {
           </Step>
         ))}
       </Stepper>
-      
+
       <div className="steprForm-bg">
         <div className="steprForm">
           {allStepsCompleted() ? (
@@ -441,20 +441,10 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                           </div>
                         </div>
-                        <div className="col-sm-12">
+                        <div className="col-sm-3">
                           <div className="form-group mt-2 mb-2">
                             <label>Salary Details<span style={{ color: "red" }}> * </span></label>
-                            <div className="row">
-                              <div className="col">
-                                <input type="text" className="form-control mt-1" name="salary" placeholder="Basic Salary"></input>
-                              </div>
-                              <div className="col">
-                                <input type="text" className="form-control mt-1" name="allowances" placeholder="Allowances"></input>
-                              </div>
-                              <div className="col">
-                                <input type="text" className="form-control mt-1" name="deductions" placeholder="Deductions"></input>
-                              </div>
-                            </div>
+                            <input type="text" className="form-control mt-1" name="salary" placeholder="Basic Salary"></input>
                           </div>
                         </div>
                         <div className="col-sm-3">
@@ -486,17 +476,29 @@ export default function HorizontalNonLinearStepper() {
                         </div>
                         <div className="col-sm-3">
                           <div className="form-group mt-2 mb-2">
+                            <label>Allowances<span style={{ color: "red" }}> * </span></label>
+                            <input type="text" className="form-control mt-1" name="allowances" placeholder="Allowances"></input>
+                          </div>
+                        </div>
+                        <div className="col-sm-3">
+                          <div className="form-group mt-2 mb-2">
+                            <label>Deductions<span style={{ color: "red" }}> * </span></label>
+                            <input type="text" className="form-control mt-1" name="deductions" placeholder="Deductions"></input>
+                          </div>
+                        </div>
+                        <div className="col-sm-4">
+                          <div className="form-group mt-2 mb-2">
                             <label for="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
                             <input type="text" className="form-control mt-1" name="panNumber" id="PANNumber" placeholder="PAN Number"></input>
                           </div>
                         </div>
-                        <div className="col-sm-3">
+                        <div className="col-sm-4">
                           <div className="form-group mt-2 mb-2">
                             <label for="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
                             <input type="text" className="form-control mt-1" name="aadharNumber" id="AdharNumber" placeholder="Adhar Number"></input>
                           </div>
                         </div>
-                        <div className="col-sm-3">
+                        <div className="col-sm-4">
                           <div className="form-group mt-2 mb-2">
                             <label for="UANNumber">UAN  Number<span style={{ color: "red" }}> * </span></label>
                             <input type="text" className="form-control mt-1" name="uanNumber" id="UANNumber" placeholder="Universal Account Number for Provident Fund"></input>
@@ -525,7 +527,17 @@ export default function HorizontalNonLinearStepper() {
                         <div className="col-sm-4">
                           <div className="form-group mt-2 mb-2">
                             <label for="relationship">Relationship<span style={{ color: "red" }}> * </span></label>
-                            <input type="text" className="form-control mt-1" name="relationship" id="relationship" placeholder="Person's Relationship"></input>
+                            <select className="form-select mt-1" name="relationship" id="relationship">
+                              <option>
+                                Father
+                              </option>
+                              <option>
+                                Mother
+                              </option>
+                              <option>
+                                Spouse
+                              </option>
+                            </select>
                           </div>
                         </div>
                         <div className="col-sm-4">
@@ -549,33 +561,33 @@ export default function HorizontalNonLinearStepper() {
                     <form>
                       <div className="row">
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="aadharCard" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="aadharCard" id="aadharCard" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="panCard" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="panCard" id="panCard" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="educationCertificate" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="educationCertificate" id="educationCertificate" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="relievingCertificate">Relieving Certificate<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="relievingCertificate" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group mt-3">
+                            <label class="form-label" for="relievingCertificate">Relieving Certificate<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="relievingCertificate" id="relievingCertificate" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="salarySlip">Salary Slip<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="salarySlip" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group mt-3">
+                            <label class="form-label" for="salarySlip">Salary Slip<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="salarySlip" id="salarySlip" multiple="" />
                           </div>
                         </div>
                       </div>
@@ -593,21 +605,21 @@ export default function HorizontalNonLinearStepper() {
                     <form>
                       <div className="row">
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="offerLetter" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="offerLetter" id="offerLetter" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="joiningLetter">Joining Letter<span style={{ color: "red" }}> * </span></label>
-                            <input type="file" class="custom-file-input" name="joiningLetter" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="joiningLetter">Joining Letter<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="joiningLetter" id="joiningLetter" multiple="" />
                           </div>
                         </div>
                         <div className="col-sm-4">
-                          <div className="form-group mt-2 mb-2">
-                            <label for="nda">NDA<span style={{ color: "red" }}> * </span></label><br />
-                            <input type="file" class="custom-file-input" name="nda" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"></input>
+                          <div class="form-group">
+                            <label class="form-label" for="nda">NDA<span style={{ color: "red" }}> * </span></label>
+                            <input type="file" class="form-control mt-1" name="nda" id="nda" multiple="" />
                           </div>
                         </div>
                       </div>
@@ -733,12 +745,10 @@ export default function HorizontalNonLinearStepper() {
                   </Button>
                 )}
               </Box>
-
             </React.Fragment>
           )}
         </div>
       </div>
     </Box>
-
   );
 }
