@@ -246,9 +246,9 @@ router.get("/filter-rmofcertification-bookings", async (req, res) => {
   const limit = parseInt(req.query.limit) || 10; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
   try {
-    let baseQuery = {} ;
-    if(selectedBdeName) baseQuery.bdeName =  selectedBdeName;
-    if(selectedBdmName) baseQuery.bdmName = selectedBdmName;
+    let baseQuery = {};
+    if (selectedBdeName) baseQuery.bdeName = selectedBdeName;
+    if (selectedBdmName) baseQuery.bdmName = selectedBdmName;
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
@@ -275,24 +275,125 @@ router.get("/filter-rmofcertification-bookings", async (req, res) => {
         $lt: new Date(new Date(bookingDate).setDate(new Date(bookingDate).getDate() + 1)).toISOString().split('T')[0]
       };
     }
-    
+
     const data = await RedesignedLeadformModel.find(baseQuery).skip(skip).limit(limit).lean()
     const dataCount = await RedesignedLeadformModel.countDocuments(baseQuery);
     console.log(baseQuery)
-    console.log("data" , data.length,dataCount)
+    console.log("data", data.length, dataCount)
     res.status(200).json({
-      data : data,
-      currentPage:page,
-      totalPages:Math.ceil((dataCount)/limit)
+      data: data,
+      currentPage: page,
+      totalPages: Math.ceil((dataCount) / limit)
     })
 
   } catch (error) {
     console.log("Internal Server Error", error)
-    res.status(500).json({ message : "Internal Server Error"})
+    res.status(500).json({ message: "Internal Server Error" })
   }
+});
+
+// router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) => {
+//   try {
+//     const companyName = req.params.CompanyName;
+//     const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
+//     const socketIO = req.io;
+//     console.log("rmservicesmainbooking" , rmServicesMainBooking)
+//     console.log("rmservicesmorebooking" , rmServicesMoreBooking)
+//     // Fetch the document
+//     const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
+//     if (!document) {
+//       console.error("Document not found");
+//       return res.status(404).json({ message: "Document not found" });
+//     }
+
+//     // Update the servicesTakenByRmOfCertification
+//     document.servicesTakenByRmOfCertification = rmServicesMainBooking;
+//     console.log("documentofrmservicesmainbooking", document.servicesTakenByRmOfCertification)
+//     // Iterate through moreBookings and update only relevant objects
+//     document.moreBookings.forEach((booking, index) => {
+//       const relevantServices = booking.services.filter(service =>
+//         rmServicesMoreBooking.includes(service.serviceName)
+//       );
+//       console.log("relevantservices", relevantServices)
+
+//       if (relevantServices.length > 0) {
+//         document.moreBookings[index].servicesTakenByRmOfCertification = relevantServices.map(service => service.serviceName);
+//       }
+//     });
+//     //console.log("document", document)
+//     // Save the updated document
+//     const updatedDocument = await document.save();
+
+//     if (!updatedDocument) {
+//       console.error("Failed to save the updated document");
+//       return res.status(500).json({ message: "Failed to save the updated document" });
+//     }
+
+//     // Emit socket event
+//     res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+//   } catch (error) {
+//     console.error("Error updating document:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) => {
+  try {
+    const companyName = req.params.CompanyName;
+    const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
+    const socketIO = req.io;
+    console.log("rmservicesmainbooking", rmServicesMainBooking)
+    console.log("rmservicesmorebooking", rmServicesMoreBooking)
+    // Fetch the document
+    const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
+    if (!document) {
+      console.error("Document not found");
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    // Update the servicesTakenByRmOfCertification for main bookings
+    const uniqueMainServices = Array.from(new Set([
+      ...document.servicesTakenByRmOfCertification,
+      ...rmServicesMainBooking
+    ]));
+    document.servicesTakenByRmOfCertification = uniqueMainServices;
+
+    // Iterate through moreBookings and update only relevant objects
+    document.moreBookings.forEach((booking, index) => {
+      const relevantServices = booking.services.filter(service =>
+        rmServicesMoreBooking.includes(service.serviceName)
+      );
+      console.log("relevantservices", relevantServices)
+      if (relevantServices.length > 0) {
+        const currentServices = booking.servicesTakenByRmOfCertification || [];
+        const uniqueMoreBookingServices = Array.from(new Set([
+          ...currentServices,
+          ...relevantServices.map(service => service.serviceName)
+        ]));
+        document.moreBookings[index].servicesTakenByRmOfCertification = uniqueMoreBookingServices;
+      }
+    });
+
+    // Save the updated document
+    const updatedDocument = await document.save();
+
+    if (!updatedDocument) {
+      console.error("Failed to save the updated document");
+      return res.status(500).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
-})
+
 
 
 

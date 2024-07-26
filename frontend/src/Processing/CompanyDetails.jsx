@@ -31,10 +31,7 @@ import {
   FormControl,
 } from "@mui/material";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const CompanyDetails = ({ companyDetails, duplicateCompany }) => {
   // const [field, setField] = useState(false)
