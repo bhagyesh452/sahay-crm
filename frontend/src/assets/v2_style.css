@@ -688,3 +688,7 @@ table.table.top_5_table tbody tr.myself td {
 {
    font-size: 14px;
 }
+.text-capital
+{
+    text-transform: capitalize;
+}

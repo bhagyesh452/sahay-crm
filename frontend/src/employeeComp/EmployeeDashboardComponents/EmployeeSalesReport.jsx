@@ -26,6 +26,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     return `${day}/${month}/${year}`;
   }
 
+  console.log("employeeData", data)
+
 
   // ********************************************************************  Declarations ***************************************************************** 
 
@@ -498,9 +500,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //   })
   //   return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   // };
- 
 
-  
+
+
 
   const functionCalculateAchievedRevenue = (Filterby) => {
     //console.log("yahan chla achieved full function")
@@ -696,7 +698,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-            console.log("findService", mainBooking["Company Name"] , findService)
+            console.log("findService", mainBooking["Company Name"], findService)
             // Check if findService is defined
             if (findService) {
               // Calculate the tempAmount based on whether GST is included
@@ -721,7 +723,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           }
         })
       }
-      
+
       mainBooking.moreBookings.map((moreObject) => {
         let condition = false;
         switch (Filterby) {
@@ -1691,30 +1693,30 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-      
+
             // Check if findService is defined
             if (findService) {
-                // Calculate the tempAmount based on whether GST is included
-                const tempAmount = findService.withGST
-                    ? Math.round(remainingObj.receivedPayment) / 1.18
-                    : Math.round(remainingObj.receivedPayment);
-        
-                // Update remainingAmount based on conditions
-                if (mainBooking.bdeName === mainBooking.bdmName) {
-                    remainingAmount += Math.round(tempAmount);
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-                    remainingAmount += Math.round(tempAmount) / 2;
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                    if (mainBooking.bdeName === data.ename) {
-                        remainingAmount += Math.round(tempAmount);
-                    }
+              // Calculate the tempAmount based on whether GST is included
+              const tempAmount = findService.withGST
+                ? Math.round(remainingObj.receivedPayment) / 1.18
+                : Math.round(remainingObj.receivedPayment);
+
+              // Update remainingAmount based on conditions
+              if (mainBooking.bdeName === mainBooking.bdmName) {
+                remainingAmount += Math.round(tempAmount);
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                remainingAmount += Math.round(tempAmount) / 2;
+              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
+                if (mainBooking.bdeName === data.ename) {
+                  remainingAmount += Math.round(tempAmount);
                 }
+              }
             } else {
-                // Optional: Handle the case where findService is undefined
-                console.warn(`Service with name ${remainingObj.serviceName} not found.`);
+              // Optional: Handle the case where findService is undefined
+              console.warn(`Service with name ${remainingObj.serviceName} not found.`);
             }
-        }
-        
+          }
+
         })
       }
       mainBooking.moreBookings.map((moreObject) => {
@@ -2185,6 +2187,21 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     };
   };
 
+  const calculateMonthsDifference = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    return months;
+  };
+
+  // Check if the employee has completed 3 months
+  const hasCompletedThreeMonths = (joiningDate) => {
+    const currentDate = new Date();
+    const monthsDifference = calculateMonthsDifference(joiningDate, currentDate);
+    return monthsDifference >= 3;
+  };
+
   const { improvement, arrowImprovement } = calculateImprovement(Filterby);
 
 
@@ -2245,7 +2262,16 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                         </div>}
                       </div>
                       <div className="dsrd-TARGET-INCENTIVE">
-                        TARGET - <b>₹ {showData ? functionGetAmount().toLocaleString() : "XXXXX"}</b> | INCENTIVE - <b>₹ {showData ? (functionGetAmount() < functionCalculateAchievedRevenue(Filterby) ? parseInt((functionCalculateAchievedRevenue(Filterby) - functionGetAmount()) / 10).toLocaleString() : 0) : "XXXXX"}</b>
+                        TARGET - <b>₹ {showData ? functionGetAmount().toLocaleString() : "XXXXX"}</b> |
+                        INCENTIVE - <b>₹
+                          {showData ?
+                            (hasCompletedThreeMonths(data.jdate) ?
+                              (functionGetAmount() < functionCalculateAchievedRevenue(Filterby) ?
+                                parseInt((functionCalculateAchievedRevenue(Filterby) - functionGetAmount()) / 10).toLocaleString()
+                                : 0)
+                              : 0)
+                            : "XXXXX"}
+                        </b>
                       </div>
                     </div>
                   </div>
