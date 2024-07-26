@@ -39,7 +39,7 @@ export default function CustomerNotification() {
         localStorage.removeItem("companyServices");
         localStorage.removeItem("companyToken");
         // Redirect to the login page or any other desired route
-        navigate("/customerLogin");
+        navigate("/customer/login");
     };
 
     return (

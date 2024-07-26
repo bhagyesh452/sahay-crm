@@ -303,7 +303,7 @@ router.get('/fetch-company-data/:companyName', async (req, res) => {
     }
 });
 
-router.get('/fetch-director-files/:id', async (req, res) => {
+router.get('/fetch-documents/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const directorData = await CompanyDataModel.findById(id);
