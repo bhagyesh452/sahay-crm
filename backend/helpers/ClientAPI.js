@@ -111,6 +111,7 @@ router.post(
         CompanyUSP,
         ValueProposition,
         TechnologyInvolved,
+        TechnologyDetails,
         RelevantDocumentComment,
         DirectInDirectMarket,
         Finance,
@@ -203,7 +204,7 @@ router.post(
               <div style="height: 100%; font-size: 12px;">Add Details About Technology Involved</div>
             </div>
             <div style="width: 70%; align-self: stretch; border: 1px solid #ccc; padding: 8px; background: #fff;">
-              <div style="height: 100%; font-size: 12px;">${TechnologyInvolved}</div>
+              <div style="height: 100%; font-size: 12px;">${TechnologyDetails}</div>
             </div>
           </div>
         `;
