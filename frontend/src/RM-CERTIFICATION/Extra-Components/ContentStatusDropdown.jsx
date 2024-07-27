@@ -6,8 +6,8 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,dscStatus}) => {
-  const [status, setStatus] = useState(dscStatus);
+const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,contentStatus}) => {
+  const [status, setStatus] = useState(contentStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -21,28 +21,28 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,dscStat
       let response;
       if (mainStatus === "Process") {
         
-        response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+        response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
           companyName,
           serviceName,
-          dscStatus : newStatus
+          contentStatus : newStatus
         });
     } else if (mainStatus === "Submitted") {
-      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
         companyName,
         serviceName,
-        dscStatus : newStatus
+        contentStatus : newStatus
       });
     } else if (mainStatus === "Defaulter") {
-      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
         companyName,
         serviceName,
-        dscStatus : newStatus
+        contentStatus : newStatus
       });
     } else if (mainStatus === "Approved") {
-      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
         companyName,
         serviceName,
-        dscStatus : newStatus
+        contentStatus : newStatus
       });
     } 
       
@@ -79,57 +79,47 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,dscStat
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("KYC Pending", "support-status")}
+            onClick={() => handleStatusChange("Working", "rejected-status")}
             href="#"
           >
-           KYC Pending
+           Working
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("KYC Incomplete", "inprogress-status")}
+            onClick={() => handleStatusChange("Pending", "inprogress-status")}
             href="#"
           >
-            KYC Incomplete
+            Pending
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Approved", "finished-status")}
+            onClick={() => handleStatusChange("Completed", "finished-status")}
+            href="#"
+          >
+            Completed
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("InApproved", "rejected-status")}
+            href="#"
+          >
+            InApproved
+
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Approved", "support-status")}
             href="#"
           >
             Approved
-          </a>
-        </li>
-        <li>
-          <a
-            className="dropdown-item"
-            onClick={() => handleStatusChange("Not Applicable", "rejected-status")}
-            href="#"
-          >
-            Not Applicable
-
-          </a>
-        </li>
-        <li>
-          <a
-            className="dropdown-item"
-            onClick={() => handleStatusChange("KYC Rejected", "rejected-status")}
-            href="#"
-          >
-            KYC Rejected
-
-          </a>
-        </li>
-        <li>
-          <a
-            className="dropdown-item"
-            onClick={() => handleStatusChange("KYC Document Pending", "inprogress-status")}
-            href="#"
-          >
-            KYC Document Pending
 
           </a>
         </li>

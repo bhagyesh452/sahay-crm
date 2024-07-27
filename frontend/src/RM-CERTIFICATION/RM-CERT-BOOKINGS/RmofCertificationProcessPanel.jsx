@@ -14,6 +14,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
+import { VscSaveAs } from "react-icons/vsc";
 
 function RmofCertificationProcessPanel() {
 
@@ -29,7 +32,8 @@ function RmofCertificationProcessPanel() {
     const [currentServiceName, setCurrentServiceName] = useState("")
     const [remarksHistory, setRemarksHistory] = useState([])
     const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([])
+    const [historyRemarks, setHistoryRemarks] = useState([]);
+    const [email, setEmail] = useState('');
 
 
     function formatDate(dateString) {
@@ -147,6 +151,26 @@ function RmofCertificationProcessPanel() {
 
     console.log("setnewsubstatus", newStatusProcess)
 
+    const handleSubmitNSWSEmail = async (companyName, serviceName) => {
+        console.log("email", email)
+        try {
+            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
+                companyName,
+                serviceName,
+                email
+            });
+            if (response.status === 200) {
+                Swal.fire(
+                    'Email Added!',
+                    'The remarks have been successfully added.',
+                    'success'
+                );
+            }
+        } catch (error) {
+            console.error("Error saving email:", error.message);
+            
+        }
+    };
 
 
 
@@ -177,8 +201,6 @@ function RmofCertificationProcessPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>NSWS Email ID</th>
-                                <th>NSWS Password</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -208,7 +230,7 @@ function RmofCertificationProcessPanel() {
                                     <td><b>{obj.serviceName}</b></td>
                                     <td>
                                         <div>
-                                            
+
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}
@@ -254,22 +276,41 @@ function RmofCertificationProcessPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown 
-                                            companyName = {obj["Company Name"]}
-                                            serviceName = {obj.serviceName}
-                                            mainStatus = {obj.mainCategoryStatus}
-                                            dscStatus = {obj.dscStatus}
+                                            <DscStatusDropdown
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                dscStatus={obj.dscStatus}
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown/></td>
-                                    <td>Content Status</td>
+                                    <td><ContentWriterDropdown /></td>
+                                    <td><ContentStatusDropdown
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        mainStatus={obj.mainCategoryStatus}
+                                        contentStatus={obj.contentStatus}
+                                    /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td>NSWS Email Id</td>
+                                    <td className="d-flex align-items-center justify-content-center wApp">
+                                        <input type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Enter NSWS Email Id"
+                                        />
+                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+                                            onClick={(e) => {
+                                                handleSubmitNSWSEmail(
+                                                    obj["Company Name"],
+                                                    obj.serviceName
+                                                )
+                                            }}
+                                        >
+                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
+                                        </button></td>
                                     <td>NSWS Password</td>
-                                    <td>NSWS Email ID</td>
-                                    <td>NSWS Password</td>
+
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -309,7 +350,7 @@ function RmofCertificationProcessPanel() {
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
-                        { historyRemarks.length !== 0 && (
+                        {historyRemarks.length !== 0 && (
                             historyRemarks.slice().map((historyItem) => (
                                 <div className="col-sm-12" key={historyItem._id}>
                                     <div className="card RemarkCard position-relative">
@@ -326,7 +367,7 @@ function RmofCertificationProcessPanel() {
                                     </div>
                                 </div>
                             ))
-                        )} 
+                        )}
                         {remarksHistory && remarksHistory.length === 0 && (
                             <div class="card-footer">
                                 <div class="mb-3 remarks-input">

@@ -458,9 +458,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   }
 })
 
+
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, dscStatus } = req.body;
-  console.log("dscStatus" , dscStatus)
+  //console.log("dscStatus" , dscStatus)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -480,7 +481,101 @@ router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
 
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+router.post(`/update-content-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, contentStatus } = req.body;
+  //console.log("dscStatus" , contentStatus)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        contentStatus:contentStatus
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+router.post(`/post-save-nswsemail/`, async (req, res) => {
+  const { companyName, serviceName, email } = req.body;
+  console.log("dscStatus" ,email , companyName , serviceName)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        nswsMailId:email
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-nswspassword/`, async (req, res) => {
+  const { companyName, serviceName, password } = req.body;
+  console.log("dscStatus" ,password , companyName , serviceName)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        nswsPaswsord:password
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {

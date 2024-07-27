@@ -15,6 +15,8 @@ import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
+import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
+
 
 
 function RmofCertificationSubmittedPanel() {
@@ -257,7 +259,12 @@ function RmofCertificationSubmittedPanel() {
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown/></td>
-                                    <td>Content Status</td>
+                                    <td><ContentStatusDropdown
+                                    companyName = {obj["Company Name"]}
+                                    serviceName = {obj.serviceName}
+                                    mainStatus = {obj.mainCategoryStatus}
+                                    contentStatus = {obj.contentStatus}
+                                    /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
                                     <td>NSWS Email Id</td>
