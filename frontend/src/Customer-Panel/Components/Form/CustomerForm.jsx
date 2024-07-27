@@ -86,8 +86,8 @@ function CustomerForm() {
             if (Array.isArray(res.data.DirectorDetails)) {
                 res.data.DirectorDetails.forEach((document) => {
                     // console.log(document.DirectorPassportPhoto?.[0]?.originalname);
-                    setDirectorPhoto(document.DirectorPassportPhoto?.[0]?.originalname);
-                    setDirectorAdharCard(document.DirectorAdharCard?.[0]?.originalname);
+                    setDirectorPhoto(document.DirectorPassportPhoto ? document.DirectorPassportPhoto[0]?.originalname : '');
+                setDirectorAdharCard(document.DirectorAdharCard ? document.DirectorAdharCard[0]?.originalname : '');
                 });
             } else {
                 console.error("DirectorDetails is not an array");
@@ -459,25 +459,152 @@ function CustomerForm() {
         });
     };
 
+    // const handleSave = async () => {
+    //     console.log("Form data is :", formData);
+    //     try {
+    //         // Post formData using axios
+    //         // const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
+    //         const response = await axios.post(`${secretKey}/customer/save-company-data`, formData, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         });
+
+    //         Swal.fire("Data successfully saved", "success");
+    //         console.log("Saved data is:", response.data);
+    //     } catch (error) {
+    //         console.error('Error saving data:', error.response || error.message);
+    //         Swal.fire("Error saving data", "error");
+    //     }
+    // };
+
+
+    // const handleSave = async () => {
+    //     setOpenBacdrop(true); // show backdrop loader
+    //     try {
+    //         const data = new FormData();
+    
+    //         // Append form data to FormData object
+    //         Object.keys(formData).forEach((key) => {
+    //             if (key === "BusinessModel") {
+    //                 // Handle BusinessModel as an array
+    //                 formData.BusinessModel.forEach((model, index) => {
+    //                     data.append(`BusinessModel[${index}]`, model);
+    //                 });
+    //             }
+    //             else if (!["DirectorDetails", "SelectServices"].includes(key)) {
+    //                 data.append(key, formData[key]);
+    //             } else if (key === "SelectServices") {
+    //                 Object.keys(formData.SelectServices).forEach((serviceProp, index) => {
+    //                     data.append(
+    //                         `SelectServices[${index}]`,
+    //                         formData.SelectServices[index]
+    //                     );
+    //                 });
+    //             } else {
+    //                 formData.DirectorDetails.forEach((director, index) => {
+    //                     Object.keys(director).forEach((prop) => {
+    //                         if (
+    //                             prop === "DirectorPassportPhoto" ||
+    //                             prop === "DirectorAdharCard"
+    //                         ) {
+    //                             data.append(`${prop}`, director[prop]);
+    //                         } else {
+    //                             data.append(
+    //                                 `DirectorDetails[${index}][${prop}]`,
+    //                                 director[prop]
+    //                             );
+    //                         }
+    //                     });
+    //                 });
+    //             }
+    //         });
+    
+    //         // Post formData using axios
+    //         const response = await axios.post(`${secretKey}/customer/save-company-data`, data, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         });
+    
+    //         Swal.fire("Data successfully saved", "success");
+    //         console.log("Saved data is:", response.data);
+    //     } catch (error) {
+    //         console.error('Error saving data:', error.response || error.message);
+    //         Swal.fire("Error saving data", "error");
+    //     } finally {
+    //         setOpenBacdrop(false); // hide backdrop loader in any case
+    //     }
+    // };
+
     const handleSave = async () => {
-        console.log("Form data is :", formData);
+        setOpenBacdrop(true); // show backdrop loader
         try {
+            const data = new FormData();
+        
+            // Append form data to FormData object
+            Object.keys(formData).forEach((key) => {
+                if (key === "BusinessModel") {
+                    // Handle BusinessModel as an array
+                    formData.BusinessModel.forEach((model, index) => {
+                        data.append(`BusinessModel[${index}]`, model);
+                    });
+                }
+                else if (!["DirectorDetails", "SelectServices"].includes(key)) {
+                    data.append(key, formData[key]);
+                } else if (key === "SelectServices") {
+                    Object.keys(formData.SelectServices).forEach((serviceProp, index) => {
+                        data.append(
+                            `SelectServices[${index}]`,
+                            formData.SelectServices[index]
+                        );
+                    });
+                } else if (key === "DirectorDetails") {
+                    // if(!directorAdharCard && !directorPhoto) 
+                    formData.DirectorDetails.forEach((director, index) => {
+                        Object.keys(director).forEach((prop) => {
+                            if (
+                                prop === "DirectorPassportPhoto" ||
+                                prop === "DirectorAdharCard"
+                            ) {
+                                // Append files if they exist
+                                if (director[prop]) {
+                                    data.append(`${prop}`, director[prop]);
+                                }
+                            } else {
+                                // Append non-file fields
+                                data.append(
+                                    `DirectorDetails[${index}][${prop}]`,
+                                    director[prop]
+                                );
+                            }
+                        });
+                    });
+                }
+            });
+        
             // Post formData using axios
-            // const response = await axios.post(`${secretKey}/customer/save-company-data`, formData);
-            const response = await axios.post(`${secretKey}/customer/save-company-data`, formData, {
+            const response = await axios.post(`${secretKey}/customer/save-company-data`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
+        
             Swal.fire("Data successfully saved", "success");
             console.log("Saved data is:", response.data);
         } catch (error) {
             console.error('Error saving data:', error.response || error.message);
             Swal.fire("Error saving data", "error");
+        } finally {
+            setOpenBacdrop(false); // hide backdrop loader in any case
         }
     };
+    
+    
+    
+    
 
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormData((prevState) => ({

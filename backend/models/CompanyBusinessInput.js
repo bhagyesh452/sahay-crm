@@ -39,7 +39,7 @@ const DirectorSchema = new mongoose.Schema({
     type: String,
   },
   DirectorAdharCardNumber: {
-    type: Number,
+    type: String,
   },
   DirectorGender: {
     type: String,

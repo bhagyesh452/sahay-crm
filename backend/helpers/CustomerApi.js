@@ -13,19 +13,19 @@ let otpStorage = {};
 
 async function createTransporter() {
     return nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        type: "OAuth2",
-        user: "alerts@startupsahay.com",
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-        accessToken: process.env.GOOGLE_ACCESS_TOKEN,
-      },
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+            type: "OAuth2",
+            user: "alerts@startupsahay.com",
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+            accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+        },
     });
-  }
+}
 
 // Send otp :
 // router.post("/send-otp", async (req, res) => {
@@ -258,6 +258,7 @@ router.post('/save-company-data',
                 FinanceCondition,
                 DirectorDetails: DirectorDetails.map((director, index) => ({
                     // ...JSON.parse(director),
+                    ...director,
                     DirectorPassportPhoto: DirectorPassportPhoto[index],
                     DirectorAdharCard: DirectorAdharCard[index],
                 })),
@@ -283,7 +284,57 @@ router.post('/save-company-data',
             console.error('Error saving data:', error);
             res.status(500).json({ result: false, message: 'Error saving data', error: error.message });
         }
-    });
+});
+
+// router.post('/save-company-data',
+//     upload.fields([
+//         { name: "DirectorPassportPhoto", maxCount: 1 },
+//         { name: "DirectorAdharCard", maxCount: 1 },
+//         { name: "UploadMOA", maxCount: 1 },
+//         { name: "UploadAOA", maxCount: 1 },
+//         { name: "UploadPhotos", maxCount: 1 },
+//         { name: "RelevantDocument", maxCount: 1 },
+//         { name: "UploadAuditedStatement", maxCount: 1 },
+//         { name: "UploadProvisionalStatement", maxCount: 1 },
+//         { name: "UploadDeclaration", maxCount: 1 },
+//         { name: "UploadRelevantDocs", maxCount: 1 },
+//     ]),
+//     async (req, res) => {
+//         try {
+//             // Process uploaded files and form fields
+//             const DirectorDetails = req.body.DirectorDetails;
+
+//             const updatedData = {
+//                 ...req.body,
+//                 DirectorDetails: DirectorDetails.map((director, index) => ({
+//                     ...director,
+//                     DirectorPassportPhoto: req.files["DirectorPassportPhoto"] ? req.files["DirectorPassportPhoto"][index] : undefined,
+//                     DirectorAdharCard: req.files["DirectorAdharCard"] ? req.files["DirectorAdharCard"][index] : undefined,
+//                 })),
+//                 UploadMOA: req.files["UploadMOA"] ? req.files["UploadMOA"][0] : undefined,
+//                 UploadAOA: req.files["UploadAOA"] ? req.files["UploadAOA"][0] : undefined,
+//                 UploadPhotos: req.files["UploadPhotos"] ? req.files["UploadPhotos"][0] : undefined,
+//                 RelevantDocument: req.files["RelevantDocument"] ? req.files["RelevantDocument"][0] : undefined,
+//                 UploadAuditedStatement: req.files["UploadAuditedStatement"] ? req.files["UploadAuditedStatement"][0] : undefined,
+//                 UploadProvisionalStatement: req.files["UploadProvisionalStatement"] ? req.files["UploadProvisionalStatement"][0] : undefined,
+//                 UploadDeclaration: req.files["UploadDeclaration"] ? req.files["UploadDeclaration"][0] : undefined,
+//                 UploadRelevantDocs: req.files["UploadRelevantDocs"] ? req.files["UploadRelevantDocs"][0] : undefined,
+//             };
+
+//             // Save or update the user in the database
+//             const user = await CompanyDataModel.findOneAndUpdate(
+//                 { CompanyName: req.body.CompanyName },
+//                 updatedData,
+//                 { new: true, upsert: true }
+//             );
+
+//             res.status(200).json({ result: true, message: 'Data saved successfully', data: user });
+//         } catch (error) {
+//             console.error('Error saving data:', error);
+//             res.status(500).json({ result: false, message: 'Error saving data', error: error.message });
+//         }
+//     });
+
 
 
 router.get('/fetch-company-data/:companyName', async (req, res) => {

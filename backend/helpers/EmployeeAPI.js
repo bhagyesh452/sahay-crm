@@ -13,14 +13,41 @@ const json2csv = require("json2csv").parse;
 const deletedEmployeeModel = require("../models/DeletedEmployee.js");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // Determine the destination path based on the fieldname and company name
+//     // const employeeName = req.params.employeeName;
+//     const {firstName, lastName} = req.body;
+//     const empName = `${firstName} ${lastName}`;
+//     let destinationPath = "";
+
+//     if (file.fieldname === "file" && empName) {
+//       // destinationPath = `EmployeeImages/${employeeName}`;
+//       destinationPath = `EmployeeDocs/${empName}`;
+//     }
+
+//     // Create the directory if it doesn't exist
+//     if (!fs.existsSync(destinationPath)) {
+//       fs.mkdirSync(destinationPath, { recursive: true });
+//     }
+
+//     cb(null, destinationPath);
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now();
+//     cb(null, uniqueSuffix + "-" + `${empName}-${file.originalname}`);
+//   },
+// });
+
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Determine the destination path based on the fieldname and company name
-    const employeeName = req.params.employeeName;
+    const { personalEmail } = req.params;
+    const empName = `${personalEmail}`;
     let destinationPath = "";
 
-    if (file.fieldname === "file" && employeeName) {
-      destinationPath = `EmployeeImages/${employeeName}`;
+    if (file.fieldname && empName) {
+      destinationPath = `EmployeeDocs/${empName}`;
     }
 
     // Create the directory if it doesn't exist
@@ -31,8 +58,10 @@ const storage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
+    const { personalEmail } = req.params;
+    const empName = `${personalEmail}`;
     const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + "-" + file.originalname);
+    cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
   },
 });
 
@@ -109,13 +138,14 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
 
 router.post("/einfo", async (req, res) => {
   try {
-    const {firstName, lastName, personalPhoneNo, personalEmail, address} = req.body;
+    const { firstName, lastName, personalPhoneNo, personalEmail, address } = req.body;
+    console.log("Reqest body is :", req.body);
     adminModel.create({
       ...req.body,
       ename: `${firstName} ${lastName}`,
       personal_number: personalPhoneNo,
       personal_email: personalEmail,
-      personal_address: address
+      personal_address: address,
     }).then((result) => {
       // Change res to result
       res.json(result); // Change res.json(res) to res.json(result)
@@ -123,6 +153,94 @@ router.post("/einfo", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/fetchEmployeeFromPersonalEmail/:personalEmail", async (req, res) => {
+  const { personalEmail } = req.params;
+
+  try {
+    if (!personalEmail) {
+      return res.status(404).json({ result: false, message: "Email not found" });
+    }
+    const emp = await adminModel.findOne({ personal_email: personalEmail });
+
+    if (!emp) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
+    }
+
+    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
+  }
+});
+
+router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip" },
+]), async (req, res) => {
+  const { personalEmail } = req.params;
+  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, personName, relationship, personPhoneNo} = req.body;
+  console.log("Reqest file is :", req.files);
+
+  
+  const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+    fieldname: file.fieldname,
+    originalname: file.originalname,
+    encoding: file.encoding,
+    mimetype: file.mimetype,
+    destination: file.destination,
+    filename: file.filename,
+    path: file.path,
+    size: file.size
+  })) : [];
+
+  const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
+  const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
+  const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
+  const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
+  const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
+  const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
+
+  try {
+    if (!personalEmail) {
+      return res.status(404).json({ result: false, message: "Email not found" });
+    }
+
+    const emp = await adminModel.findOneAndUpdate(
+      { personal_email: personalEmail },
+      {
+        ...req.body,
+        email: officialEmail,
+        number: officialNo,
+        jdate: joiningDate,
+        branchOffice: branch,
+        reportingManager: manager,
+        firstMonthSalaryCondition: firstMonthSalary,
+        offerLetter: offerLetterDetails || [],
+        personal_contact_person: personName,
+        personal_contact_person_relationship: relationship,
+        personal_contact_person_number: personPhoneNo,
+        aadharCard: aadharCardDetails || [],
+        panCard: panCardDetails || [],
+        educationCertificate: educationCertificateDetails || [],
+        relievingCertificate: relievingCertificateDetails || [],
+        salarySlip: salarySlipDetails || []
+      },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!emp) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
+    }
+
+    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
   }
 });
 
@@ -767,7 +885,7 @@ router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
 //   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
 // };
 
-const functionCalculateAchievedRevenue = (redesignedData , ename , Filterby) => {
+const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
   //console.log("yahan chla achieved full function")
   let achievedAmount = 0;
   let remainingAmount = 0;
@@ -961,7 +1079,7 @@ const functionCalculateAchievedRevenue = (redesignedData , ename , Filterby) => 
         if (condition) {
           // Find the service from mainBooking.services
           const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-          console.log("findService", mainBooking["Company Name"] , findService)
+          console.log("findService", mainBooking["Company Name"], findService)
           // Check if findService is defined
           if (findService) {
             // Calculate the tempAmount based on whether GST is included
@@ -986,7 +1104,7 @@ const functionCalculateAchievedRevenue = (redesignedData , ename , Filterby) => 
         }
       })
     }
-    
+
     mainBooking.moreBookings.map((moreObject) => {
       let condition = false;
       switch (Filterby) {
@@ -1290,7 +1408,7 @@ router.get("/einfo", async (req, res) => {
     const data = await adminModel.find();
     res.json(data);
   } catch (error) {
-    
+
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -1582,7 +1700,7 @@ router.get('/showTodaysProjection', async (req, res) => {
     const day = today.getDate();
     const month = today.getMonth() + 1; // Months are zero-based
     const year = today.getFullYear();
-    
+
     // Format the date as "d/m/yyyy"
     const formattedToday = `${day}/${month}/${year}`;
 
@@ -1598,7 +1716,7 @@ router.get('/showTodaysProjection', async (req, res) => {
 
 // Displaying records based on employee id :
 router.get('/showEmployeeTodaysProjection/:empId', async (req, res) => {
-  const {empId} = req.params;
+  const { empId } = req.params;
   try {
     const todaysProjection = await TodaysProjectionModel.find({
       empId: empId

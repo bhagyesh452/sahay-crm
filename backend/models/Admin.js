@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
+const fileSchema = new mongoose.Schema({
+  fieldname: String,
+  originalname: String,
+  encoding: String,
+  mimetype: String,
+  destination: String,
+  filename: String,
+  path: String,
+  size: Number
+});
 
 // Define the schema
 const yourSchema = new mongoose.Schema({
@@ -52,10 +62,10 @@ const yourSchema = new mongoose.Schema({
   password: {
     type: String
   },
-  bankName: {
+  accountNo: {
     type: String
   },
-  accountNo: {
+  bankName: {
     type: String
   },
   ifscCode: {
@@ -64,14 +74,11 @@ const yourSchema = new mongoose.Schema({
   salary: {
     type: Number
   },
-  allowances: {
-    type: String
-  },
-  deductions: {
-    type: String
-  },
   firstMonthSalaryCondition: {
     type: String
+  },
+  offerLetter: {
+    type: [fileSchema]
   },
   panNumber: {
     type: String
@@ -92,28 +99,22 @@ const yourSchema = new mongoose.Schema({
     type: String
   },
   aadharCard: {
-    type: [String]
+    type: [fileSchema]
   },
   panCard: {
-    type: [String]
+    type: [fileSchema]
   },
   educationCertificate: {
-    type: [String]
+    type: [fileSchema]
   },
   relievingCertificate: {
-    type: [String]
+    type: [fileSchema]
   },
   salarySlip: {
-    type: [String]
+    type: [fileSchema]
   },
   offerLetter: {
-    type: [String]
-  },
-  joiningLetter: {
-    type: [String]
-  },
-  nda: {
-    type: [String]
+    type: [fileSchema]
   },
   targetDetails: {
     type: Array
