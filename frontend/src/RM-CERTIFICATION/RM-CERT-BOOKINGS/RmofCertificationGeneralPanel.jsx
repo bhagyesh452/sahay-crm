@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
@@ -6,6 +6,13 @@ import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
 import io from 'socket.io-client';
+import { Drawer, Icon, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import debounce from "lodash/debounce";
+import Swal from "sweetalert2";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function RmofCertificationGeneralPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -15,7 +22,15 @@ function RmofCertificationGeneralPanel() {
     const [isFilter, setIsFilter] = useState(false)
     const [rmServicesData, setRmServicesData] = useState([])
     const [newStatus, setNewStatus] = useState("Untouched")
-    
+    const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
+    const [currentCompanyName, setCurrentCompanyName] = useState("")
+    const [currentServiceName, setCurrentServiceName] = useState("")
+    const [remarksHistory, setRemarksHistory] = useState([])
+    const [changeRemarks, setChangeRemarks] = useState("");
+    const [historyRemarks, setHistoryRemarks] = useState([]);
+
+
+
     
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -86,6 +101,46 @@ function RmofCertificationGeneralPanel() {
 
 console.log("setnewsubstatus" , newStatus)
 
+//------------------------Remarks Popup Section-----------------------------
+const handleOpenRemarksPopup = async (companyName, serviceName) => {
+    console.log("RemarksPopup")
+}
+const functionCloseRemarksPopup = () => {
+    setOpenRemarksPopUp(false)
+}
+const debouncedSetChangeRemarks = useCallback(
+    debounce((value) => {
+        setChangeRemarks(value);
+    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    [] // Empty dependency array to ensure the function is memoized
+);
+
+const handleSubmitRemarks = async () => {
+    console.log("changeremarks", changeRemarks)
+    try {
+        const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+            currentCompanyName,
+            currentServiceName,
+            changeRemarks,
+            updatedOn: new Date()
+        });
+
+        console.log("response", response.data);
+
+        if (response.status === 200) {
+            fetchRMServicesData();
+            functionCloseRemarksPopup();
+            Swal.fire(
+                'Remarks Added!',
+                'The remarks have been successfully added.',
+                'success'
+            );
+        }
+    } catch (error) {
+        console.log("Error Submitting Remarks", error.message);
+    }
+};
+
 
 
 
@@ -145,8 +200,37 @@ console.log("setnewsubstatus" , newStatus)
                                             )}
                                         </div>
                                     </td>
+                                    <td className="d-flex align-items-center justify-content-center wApp" >
+                                        <p
+                                            className="text-wrap m-0"
+                                            title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                        >
+                                            {
+                                                obj.Remarks && obj.Remarks.length > 0
+                                                    ? obj.Remarks
+                                                        .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                    : "No Remarks"
+                                            }
+                                        </p>
+                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+                                            onClick={() => {
+                                                setOpenRemarksPopUp(true)
+                                                setCurrentCompanyName(obj["Company Name"])
+                                                setCurrentServiceName(obj.serviceName)
+                                                setHistoryRemarks(obj.Remarks)
+                                                handleOpenRemarksPopup(
+                                                    obj["Company Name"],
+                                                    obj.serviceName
+                                                )
+                                            }}
+                                        >
+                                            <EditIcon style={{ width: "12px", height: "12px" }} />
+                                        </button>
 
-                                    <td>test remarks</td>
+
+
+
+                                    </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
@@ -174,6 +258,70 @@ console.log("setnewsubstatus" , newStatus)
                     </table>
                 </div>
             </div>
+            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
+
+            <Dialog className='My_Mat_Dialog'
+                open={openRemarksPopUp}
+                onClose={functionCloseRemarksPopup}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    <span style={{ fontSize: "14px" }}>
+                        {currentCompanyName}'s Remarks
+                    </span>
+                    <IconButton onClick={functionCloseRemarksPopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="remarks-content">
+                        { historyRemarks.length !== 0 && (
+                            historyRemarks.slice().map((historyItem) => (
+                                <div className="col-sm-12" key={historyItem._id}>
+                                    <div className="card RemarkCard position-relative">
+                                        <div className="d-flex justify-content-between">
+                                            <div className="reamrk-card-innerText">
+                                                <pre className="remark-text">{historyItem.remarks}</pre>
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex card-dateTime justify-content-between">
+                                            <div className="date">{new Date(historyItem.updatedOn).toLocaleDateString('en-GB')}</div>
+                                            <div className="time">{new Date(historyItem.updatedOn).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )} 
+                        {remarksHistory && remarksHistory.length === 0 && (
+                            <div class="card-footer">
+                                <div class="mb-3 remarks-input">
+                                    <textarea
+                                        placeholder="Add Remarks Here...  "
+                                        className="form-control"
+                                        id="remarks-input"
+                                        rows="3"
+                                        onChange={(e) => {
+                                            debouncedSetChangeRemarks(e.target.value);
+                                        }}
+                                    ></textarea>
+                                </div>
+
+                            </div>
+                        )}
+                    </div>
+
+                </DialogContent>
+                <button
+                    onClick={handleSubmitRemarks}
+                    type="submit"
+                    className="btn btn-primary bdr-radius-none"
+                    style={{ width: "100%" }}
+                >
+                    Submit
+                </button>
+            </Dialog>
         </div>
     )
 }

@@ -76,6 +76,22 @@ const ServiceSchema = new mongoose.Schema({
 
 });
 
+const RemarksSchema = new mongoose.Schema({
+  remarks:{
+    type:"String"
+  },
+  updatedOn:{
+    type:Date,
+    default:new Date()
+  },
+  mainCategoryStatus:{
+    type:String
+  },
+  subCategoryStatus:{
+    type:String
+  }
+})
+
 const RMCertificationServicesSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
@@ -176,6 +192,11 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   addedOn:{
     type:Date,
     default:new Date()
+  },
+  Remarks:[RemarksSchema],
+  dscStatus:{
+    type:String,
+    default:"Not Started"
   }
 })
 

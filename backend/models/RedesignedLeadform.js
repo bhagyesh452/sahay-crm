@@ -336,7 +336,11 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   servicesTakenByRmOfCertification:{
     type:Array,
     default:[]
-  }
+  },
+  isVisibleToRmOfCerification:{
+    type:Boolean,
+    default:true
+  },
 
 });
 

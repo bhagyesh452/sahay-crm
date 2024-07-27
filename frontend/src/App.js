@@ -70,11 +70,12 @@ import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
-import Employee from "./Hr_panel/Components/EmployeeView.jsx";
+//import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
+import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
 
 
 function App() {
@@ -241,7 +242,7 @@ function App() {
           <Route path="/hrdashboard/:userId/" element={<HrDashboard />}></Route>
           <Route path="/hr/employees/" element={<NewEmployees />} />
           <Route path="/hr/employees/:userId" element={<HrEmployees />} />
-          <Route path='/hr/employee/employee-profile-details/:userId' element={<Employee />}></Route>
+          <Route path='/hr/employee/hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
         </Routes>
 
       </BrowserRouter>

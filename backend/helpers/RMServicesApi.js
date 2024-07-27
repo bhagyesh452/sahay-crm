@@ -36,6 +36,42 @@ const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 //   }
 // });
 
+router.get("/redesigned-final-leadData-rm", async (req, res) => {
+  try {
+    const allData = await RedesignedLeadformModel.aggregate([
+      {
+        $addFields: {
+          isVisibleToRmOfCerification: {
+            $ifNull: ["$isVisibleToRmOfCerification", true]
+          },
+          lastActionDateAsDate: {
+            $dateFromString: {
+              dateString: "$lastActionDate",
+              onError: new Date(0),  // Default to epoch if conversion fails
+              onNull: new Date(0)    // Default to epoch if null
+            }
+          }
+        }
+      },
+      {
+        $match: {
+          isVisibleToRmOfCerification: true
+        }
+      },
+      {
+        $sort: {
+          lastActionDateAsDate: -1
+        }
+      }
+    ]);
+
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
+
 router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
@@ -391,18 +427,20 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
   }
 });
 
-router.post(`/update-substatus-rmofcertification/` , async(req , res)=>{
-  const { companyName , serviceName , subCategoryStatus, mainCategoryStatus} = req.body;
+router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus } = req.body;
   const socketIO = req.io;
-  try{
+  try {
     const company = await RMCertificationModel.findOneAndUpdate(
-      {["Company Name"] : companyName ,
-        serviceName : serviceName
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
       },
-      {subCategoryStatus : subCategoryStatus,
-        mainCategoryStatus:mainCategoryStatus
+      {
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus
       },
-      {new : true}
+      { new: true }
     )
     if (!company) {
       console.error("Failed to save the updated document");
@@ -410,14 +448,100 @@ router.post(`/update-substatus-rmofcertification/` , async(req , res)=>{
     }
 
     // Emit socket event
+    console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
     res.status(200).json({ message: "Document updated successfully", data: company });
-    
-  }catch(error){
+
+  } catch (error) {
     console.error("Error updating document:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 })
+
+router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, dscStatus } = req.body;
+  console.log("dscStatus" , dscStatus)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        dscStatus:dscStatus
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+
+  try {
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { isVisibleToRmOfCerification: false },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating data", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/post-remarks-for-rmofcertification", async (req, res) => {
+  const { currentCompanyName, currentServiceName, changeRemarks, updatedOn } = req.body;
+
+  try {
+    const updateDocument = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: currentCompanyName,
+        serviceName: currentServiceName
+      },
+      {
+        $push: {
+          Remarks: {
+            remarks: changeRemarks,
+            updatedOn: updatedOn
+          }
+        }
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (!updateDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.status(200).json({ message: "Remarks added successfully", data: updateDocument });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 
 
 
