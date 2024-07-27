@@ -1,20 +1,20 @@
 const mongoose = require('mongoose');
 
 const isoTypeSchema = new mongoose.Schema({
-  serviceID:{
-    type:Number
+  serviceID: {
+    type: Number
   },
-  type:{
-    type:String
+  type: {
+    type: String
   },
-  IAFtype1:{
-    type:String
+  IAFtype1: {
+    type: String
   },
-  IAFtype2:{
-    type:String
+  IAFtype2: {
+    type: String
   },
-  Nontype:{
-    type:String
+  Nontype: {
+    type: String
   }
 })
 
@@ -32,11 +32,11 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  withGST:{
-    type:Boolean
-  },  
-  withDSC:{
-    type:Boolean
+  withGST: {
+    type: Boolean
+  },
+  withDSC: {
+    type: Boolean
   },
   paymentTerms: {
     type: String,
@@ -54,115 +54,131 @@ const ServiceSchema = new mongoose.Schema({
   fourthPayment: {
     type: Number,
   },
-  secondPaymentRemarks:{
+  secondPaymentRemarks: {
     type: String,
   },
-  thirdPaymentRemarks:{
+  thirdPaymentRemarks: {
     type: String,
   },
-  fourthPaymentRemarks:{
+  fourthPaymentRemarks: {
     type: String,
   },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
   },
-  expanse:{
-    type:Number
+  expanse: {
+    type: Number
   },
-  expanseDate:{
-    type:Date
-  }
+  expanseDate: {
+    type: Date
+  },
+
 });
 
 const RMCertificationServicesSchema = new mongoose.Schema({
-    "Company Name": {
-        type : String,
-        required : true,
-    },
-    "Company Number": {
-      type: Number,
-     
-    },
-    "Company Email": {
-      type: String,
-      
-    },
-    panNumber:{
-      type:String,
-      
-    },
-    bdeName: {
-      type: String,
-      
-    },
-    bdeEmail: {
-      type: String,
-    },
-    bdmName: {
-      type: String,
-     
-    },
-    bdmType:{
-      type:String,
-    },
-      bookingDate: {
-        type: String,
-        
-      },
-      paymentMethod: {
-        type: String,
-      },
-      caCase: {
-        type: String,
-      },
-      caNumber: {
-        type: Number,
-      },
-      caEmail: {
-        type: String,
-      },
-      serviceName: {
-        type: String,
-        required: true,
-      },
-      totalPaymentWOGST: {
-        type: Number,
-        
-      },
-      totalPaymentWGST: {
-        type: Number,
-       
-      },
-      withGST:{
-        type:Boolean
-      },  
-      firstPayment: {
-        type: Number,
-      },
-      secondPayment: {
-        type: Number,
-      },
-      thirdPayment: {
-        type: Number,
-      },
-      fourthPayment: {
-        type: Number,
-      },
-      secondPaymentRemarks:{
-        type: String,
-      },
-      thirdPaymentRemarks:{
-        type: String,
-      },
-      fourthPaymentRemarks:{
-        type: String,
-      },
-      bookingPublishDate: {
-        type: String,
-      },
+  "Company Name": {
+    type: String,
+    required: true,
+  },
+  "Company Number": {
+    type: Number,
+
+  },
+  "Company Email": {
+    type: String,
+
+  },
+  panNumber: {
+    type: String,
+
+  },
+  bdeName: {
+    type: String,
+
+  },
+  bdeEmail: {
+    type: String,
+  },
+  bdmName: {
+    type: String,
+
+  },
+  bdmType: {
+    type: String,
+  },
+  bookingDate: {
+    type: String,
+
+  },
+  paymentMethod: {
+    type: String,
+  },
+  caCase: {
+    type: String,
+  },
+  caNumber: {
+    type: Number,
+  },
+  caEmail: {
+    type: String,
+  },
+  serviceName: {
+    type: String,
+    required: true,
+  },
+  totalPaymentWOGST: {
+    type: Number,
+
+  },
+  totalPaymentWGST: {
+    type: Number,
+
+  },
+  withGST: {
+    type: Boolean
+  },
+  withDSC: {
+    type: Boolean
+  },
+  firstPayment: {
+    type: Number,
+  },
+  secondPayment: {
+    type: Number,
+  },
+  thirdPayment: {
+    type: Number,
+  },
+  fourthPayment: {
+    type: Number,
+  },
+  secondPaymentRemarks: {
+    type: String,
+  },
+  thirdPaymentRemarks: {
+    type: String,
+  },
+  fourthPaymentRemarks: {
+    type: String,
+  },
+  bookingPublishDate: {
+    type: String,
+  },
+  mainCategoryStatus: {
+    type: String,
+    default: "General"
+  },
+  subCategoryStatus: {
+    type: String,
+    default: "Untouched"
+  },
+  addedOn:{
+    type:Date,
+    default:new Date()
+  }
 })
 
-const RMCertificationModel = mongoose.model("RmCertificationModel" , RMCertificationServicesSchema)
+const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)
 
 module.exports = RMCertificationModel;

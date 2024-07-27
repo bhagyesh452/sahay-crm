@@ -206,7 +206,11 @@ const TempSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  remainingPayments: [RemainingPaymentSchema]
+  remainingPayments: [RemainingPaymentSchema],
+  servicesTakenByRmOfCertification:{
+    type:Array,
+    default:[]
+  }
 });
 
 const RedesignedLeadformSchema = new mongoose.Schema({
@@ -328,6 +332,10 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   isDeletedEmployeeCompany: {
     type: Boolean,
     default: false,
+  },
+  servicesTakenByRmOfCertification:{
+    type:Array,
+    default:[]
   }
 
 });

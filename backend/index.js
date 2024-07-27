@@ -111,7 +111,10 @@ app.use('/api/bdm-data', (req , res , next)=>{
 } , bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
-app.use('/api/rm-services', RMServicesAPI)
+app.use('/api/rm-services', (req , res , next)=>{
+  req.io = socketIO;
+  next();
+} , RMServicesAPI)
 app.use('/api/clientform', ClientAPI)
 app.use('/api/customer', CustomerAPI)
 

@@ -201,6 +201,8 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
+
+
 // Get Request for fetching bookings Data for Particular Company
 router.get("/redesigned-final-leadData/:companyName", async (req, res) => {
   try {
@@ -363,9 +365,35 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
         {
           lastActionDate: newTempDate,
           [`moreBookings.${bookingIndex - 1}`]: {
-            bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
-            paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-            generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: newOtherDocs, paymentReceipt: newPaymentReceipt
+            bdeName: newData.bdeName, 
+            bdmType: newData.bdmType, 
+            bdeEmail: newData.bdeEmail, 
+            bdmName: newData.bdmName, 
+            otherBdmName: newData.otherBdmName, 
+            bdmEmail: newData.bdmEmail, 
+            bookingDate: newData.bookingDate, 
+            bookingSource: newData.bookingSource, 
+            otherBookingSource: newData.otherBookingSource, 
+            numberOfServices: newData.numberOfServices, 
+            services: newData.services, 
+            caCase: newData.caCase, 
+            caNumber: newData.caNumber, 
+            caEmail: newData.caEmail, 
+            caCommission: newData.caCommission,
+            paymentMethod: newData.paymentMethod, 
+            totalAmount: newData.totalAmount, 
+            receivedAmount: newData.receivedAmount, 
+            pendingAmount: newData.pendingAmount,
+            generatedTotalAmount: newData.generatedTotalAmount, 
+            generatedReceivedAmount: newData.generatedReceivedAmount, 
+            Step1Status: newData.Step1Status, 
+            Step2Status: newData.Step2Status, 
+            Step3Status: newData.Step3Status, 
+            Step4Status: newData.Step4Status, 
+            Step5Status: newData.Step5Status, 
+            remainingPayments: [], 
+            otherDocs: newOtherDocs, 
+            paymentReceipt: newPaymentReceipt
           }
         }) : await RedesignedLeadformModel.findOneAndUpdate(
           {
@@ -541,7 +569,7 @@ router.post("/redesigned-importData", async (req, res) => {
 
       if (!existingData) {
         // Create a new object if it doesn't exist
-        console.log(item);
+        //console.log(item);
         const lmao = new RedesignedLeadformModel({
           company: companyID,
           "Company Name": item["Company Name"],
@@ -725,7 +753,7 @@ router.post(
             },
             { new: true }
           );
-          console.log("updatedData", updatedData)
+          //console.log("updatedData", updatedData)
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
@@ -842,7 +870,7 @@ router.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-        console.log("Second Step Working");
+        //console.log("Second Step Working");
         if (existingData) {
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
@@ -874,7 +902,7 @@ router.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-        console.log("Third step Working");
+        //console.log("Third step Working");
         if (existingData) {
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
@@ -1013,7 +1041,7 @@ router.post(
           const io = req.io;
           const ename = newData.bdeName;
           io.emit('booking-submitted', ename);
-          console.log('io emmited')
+          //console.log('io emmited')
           const totalAmount = newData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
@@ -2732,7 +2760,7 @@ router.post(
       const companyName = req.params.CompanyName;
       const newData = req.body;
       const Step = req.params.step;
-      console.log(Step, newData);
+      //console.log(Step, newData);
       if (Step === "step1") {
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
@@ -2777,7 +2805,7 @@ router.post(
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
         });
-        console.log("Second Step Working");
+        //console.log("Second Step Working");
         if (existingData) {
           const updatedData = await EditableDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
@@ -2922,7 +2950,7 @@ router.post(
         });
         if (existingData) {
           const date = new Date();
-          console.log(newData.requestBy);
+          //console.log(newData.requestBy);
 
           const updatedData = await EditableDraftModel.findOneAndUpdate(
             { "Company Name": companyName },
@@ -2965,7 +2993,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
     const isAdmin = newData.isAdmin;
-    console.log("Admin :-", isAdmin)
+    //.log("Admin :-", isAdmin)
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
@@ -3009,7 +3037,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     // After all the database operations, socket.io will work(Even if the mail fails, the booking will be matured and socket.io will hit!)
 
     io.emit('booking-submitted', ename);
-    console.log('booking emmited');
+    //console.log('booking emmited');
 
     // Calculate Amounts based on different services 
 
@@ -4643,7 +4671,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-    console.log(clientMail)
+    //console.log(clientMail)
     const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
     pdf
       .create(filledHtml, options)
@@ -4709,7 +4737,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
     });
-    console.log("deletetesting", deletedBooking)
+    //console.log("deletetesting", deletedBooking)
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
       { $set: { Status: "Interested" } },
@@ -4726,7 +4754,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
         "Company Name": deletedBooking["Company Name"],
       });
-      console.log("deleteDraft", deleteDraft)
+      //console.log("deleteDraft", deleteDraft)
     } else {
       return res.status(404).send("Booking not found");
     }
@@ -4754,7 +4782,7 @@ router.delete(
       const bookingIndex = req.params.bookingIndex;
       // Find and delete the booking with the given companyId
       if (bookingIndex == 0) {
-        console.log("I am here in 0 index");
+        //console.log("I am here in 0 index");
         const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
           company: companyID,
         });
@@ -4835,7 +4863,7 @@ router.delete(
 
         const companyName = moreObject["Company Name"];
         socketIO.emit('delete-request-done', companyName);
-        console.log("Delete request emitted")
+        //console.log("Delete request emitted")
 
         return res.status(200).send("booking Deleted Successfuly");
       }
@@ -4852,7 +4880,7 @@ router.delete(
 router.delete(
   "/redesigned-delete-particular-booking/:company/:companyId",
   async (req, res) => {
-    console.log("yahan chala delete wali api")
+    //.log("yahan chala delete wali api")
     try {
       const company = req.params.company;
       const companyId = req.params.companyId;
@@ -4885,7 +4913,7 @@ router.delete("/redesigned-delete-model/:companyName", async (req, res) => {
       "Company Name": companyName,
     });
     if (deletedDraft) {
-      console.log("Draft deleted successfully:", deletedDraft);
+      //console.log("Draft deleted successfully:", deletedDraft);
       res.status(200).json({ message: "Draft deleted successfully" });
     } else {
       console.error("Draft not found or already deleted");
@@ -4949,7 +4977,7 @@ router.post(
 
 
       if (bookingIndex == 0) {
-        console.log("Hi guyz");
+        //.log("Hi guyz");
         const findObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         })
@@ -4981,7 +5009,7 @@ router.post(
           { new: true }
         );
         const bdeName = companyMainObject.bdeName;
-        console.log("Remaining Payment added", bdeName, companyName)
+        //console.log("Remaining Payment added", bdeName, companyName)
         socketIO.emit('Remaining_Payment_Added', { name: bdeName, companyName: companyName })
         return res.status(200).send("Successfully submitted more payments.");
       } else {
@@ -5044,7 +5072,7 @@ router.post(
   async (req, res) => {
     try {
       const objectData = req.body;
-      console.log("Object Data:", objectData);
+      //console.log("Object Data:", objectData);
 
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
@@ -5065,10 +5093,10 @@ router.post(
         paymentDate: objectData.paymentDate,
         publishDate: objectData.publishDate ? objectData.publishDate : publishDate
       };
-      console.log("Sending Object:", sendingObject, bookingIndex);
+      //console.log("Sending Object:", sendingObject, bookingIndex);
 
       if (bookingIndex == 0) {
-        console.log("Hi guyz");
+        //console.log("Hi guyz");
         const findObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         });
@@ -5082,7 +5110,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount);
 
 
-        console.log(newReceivedAmount, newPendingAmount)
+        //console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
@@ -5110,7 +5138,7 @@ router.post(
 
         return res.status(200).send("Successfully submitted more payments.");
       } else {
-        console.log("Hi guyz");
+        //console.log("Hi guyz");
         const mainObject = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         })
@@ -5125,7 +5153,7 @@ router.post(
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) / 1.18 + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(objectData.receivedAmount);
 
 
-        console.log(newReceivedAmount, newPendingAmount)
+        //console.log(newReceivedAmount, newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
 
@@ -5291,12 +5319,12 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
 
   const bookingIndex = req.params.bookingIndex;
   const serviceName = req.params.serviceName;
-  console.log("bookingIndex", bookingIndex)
+  //console.log("bookingIndex", bookingIndex)
 
   const findCompany = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
   if (bookingIndex == 0) {
     try {
-      console.log("bhoom")
+      //console.log("bhoom")
       const newCompany = findCompany;
       const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
       const remainingObject = tempObject[tempObject.length - 1];
@@ -5305,9 +5333,9 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
       const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
       const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
       const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      console.log("this is the required object", newGeneratedReceivedAmount);
+      //console.log("this is the required object", newGeneratedReceivedAmount);
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      console.log("This will be the object ", newRemainingArray)
+      //console.log("This will be the object ", newRemainingArray)
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
@@ -5340,9 +5368,9 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
 
       const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
       const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      console.log("this is the required object", newGeneratedReceivedAmount);
+      //console.log("this is the required object", newGeneratedReceivedAmount);
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      console.log("This will be the object ", newRemainingArray)
+      //console.log("This will be the object ", newRemainingArray)
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
@@ -5429,7 +5457,9 @@ router.get("/approvaldocs/:CompanyName/:filename", (req, res) => {
     `../Payment-Request/${companyName}`,
     filepath
   );
-  console.log(pdfPath);
+  
+  
+  //console.log(pdfPath);
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
     if (err) {
@@ -5476,7 +5506,7 @@ router.get("/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
     `../BookingsDocument/${companyName}/PaymentReceipts`,
     filepath
   );
-  console.log(pdfPath);
+  //console.log(pdfPath);
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
     if (err) {

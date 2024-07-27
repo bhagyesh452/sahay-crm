@@ -253,6 +253,10 @@
 {
   background-color: #4299e124;
 }
+.clr-bg-light-f3f3dd
+{
+  background-color: #f3f3dd;
+}
 .clr-bg-light-1cba19
 {
   background-color:#6df06a24;
@@ -284,6 +288,10 @@
 .bdr-l-clr-4299e1
 {
   border-color:  #4299e1 !important;
+}
+.bdr-l-clr-c5c51f
+{
+  border-color:  #f3f3dd !important;
 }
 .bdr-l-clr-1cba19
 {
