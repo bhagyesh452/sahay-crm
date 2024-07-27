@@ -1463,7 +1463,7 @@ export default function HorizontalNonLinearStepper() {
                               : "Save Draft"}
                           </Button>
                         ))}
-                      {completedSteps() === totalSteps() && (
+                      {/* {completedSteps() === totalSteps() && (
                         <Button
                           onClick={handleSubmit}
                           variant="contained"
@@ -1471,7 +1471,7 @@ export default function HorizontalNonLinearStepper() {
                         >
                           Submit
                         </Button>
-                      )}
+                      )} */}
                     </Box>
                   </React.Fragment>
                 )}
