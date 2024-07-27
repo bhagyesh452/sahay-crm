@@ -246,7 +246,7 @@ function Received_booking_box() {
 
     const handleViewPdOtherDocs = (pdfurl, companyName) => {
         const pathname = pdfurl;
-        console.log(pathname);
+        //console.log(pathname);
         window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
     };
 
@@ -465,6 +465,43 @@ function Received_booking_box() {
         // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
     }
     
+    //----------function to remove company from rm panel-----------------------
+
+   
+
+const handleDisplayOffToRm = async (companyName) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: `Do you want to remove ${companyName} from RM panel?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, remove it!',
+    cancelButtonText: 'No, keep it'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+        console.log(response.data);
+        if (response.status === 200) {
+          fetchRedesignedFormData();
+          Swal.fire(
+            'Removed!',
+            'The company has been removed from RM panel.',
+            'success'
+          );
+        }
+      } catch (error) {
+        console.log("Internal Server Error", error.message);
+        Swal.fire(
+          'Error!',
+          'There was an error removing the company from RM panel.',
+          'error'
+        );
+      }
+    }
+  });
+};
+
 
     console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
     console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
@@ -578,7 +615,11 @@ function Received_booking_box() {
                                                                     />
                                                                 </div>
                                                             </button>
-                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'>
+                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center' 
+                                                            onClick={()=>(
+                                                                handleDisplayOffToRm(obj["Company Name"])
+                                                            )}
+                                                            >
                                                                 <div className='btn-swap-icon'>
                                                                     {/* <SlActionRedo /> */}
                                                                     <GrClose />

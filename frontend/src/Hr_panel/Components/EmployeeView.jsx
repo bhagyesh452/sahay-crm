@@ -32,7 +32,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "./Navbar/Navbar.jsx";
 import { HiPencil } from "react-icons/hi";
 
-function EmployeeProfile() {
+function EmployeeView() {
 
   const { userId } = useParams();
   const { newtoken } = useParams();
@@ -242,9 +242,10 @@ function EmployeeProfile() {
 
   return (
     <div>
-      
-      {data && data.length!==0 &&  <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />}
-      {data && data.length!==0 && <Navbar/>}
+      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />
+      <Navbar/>
+      {/* {data && data.length!==0 &&  }
+      {data && data.length!==0 && }
       {data && data.length!==0 && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
           <div className="container-xl">
@@ -700,9 +701,9 @@ function EmployeeProfile() {
         <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
           Save Changes
         </Button>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }
 
-export default EmployeeProfile;
+export default EmployeeView;

@@ -927,7 +927,7 @@ function HrEmployees({ onEyeButtonClick, onAddEmployeeClick }) {
                         <div className="icons-btn">
                           <Link
                             style={{ color: "black" }}
-                            to={`/hr/employee/employee-profile-details/${item._id}`}
+                            to={`/hr/employee/hr-employee-profile-details/${item._id}`}
                           >
                             <IconButton>
                               <IconEye

@@ -3,17 +3,56 @@ import "../../dist/css/tabler.min.css?1684106062";
 import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
+import axios from 'axios';
 
 
-
-const DscStatusDropdown = () => {
-  const [status, setStatus] = useState("Not Started");
+const DscStatusDropdown = ({ companyName , serviceName , mainStatus ,dscStatus}) => {
+  const [status, setStatus] = useState(dscStatus);
   const [statusClass, setStatusClass] = useState("created-status");
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const handleStatusChange = (newStatus, statusClass) => {
+
+  const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
+    
+
+    try {
+      let response;
+      if (mainStatus === "Process") {
+        
+        response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+          companyName,
+          serviceName,
+          dscStatus : newStatus
+        });
+    } else if (mainStatus === "Submitted") {
+      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+        companyName,
+        serviceName,
+        dscStatus : newStatus
+      });
+    } else if (mainStatus === "Defaulter") {
+      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+        companyName,
+        serviceName,
+        dscStatus : newStatus
+      });
+    } else if (mainStatus === "Approved") {
+      response = await axios.post(`${secretKey}/rm-services/update-dsc-rmofcertification`, {
+        companyName,
+        serviceName,
+        dscStatus : newStatus
+      });
+    } 
+      
+
+      console.log("Status updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error updating status:", error.message);
+    }
   };
+
 
   return (
     <section className="rm_status_dropdown">
@@ -71,6 +110,26 @@ const DscStatusDropdown = () => {
             href="#"
           >
             Not Applicable
+
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("KYC Rejected", "rejected-status")}
+            href="#"
+          >
+            KYC Rejected
+
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("KYC Document Pending", "inprogress-status")}
+            href="#"
+          >
+            KYC Document Pending
 
           </a>
         </li>
