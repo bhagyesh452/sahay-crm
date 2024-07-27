@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
+import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
@@ -261,7 +262,7 @@ function RmofCertificationProcessPanel() {
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td>Content Writer</td>
+                                    <td><ContentWriterDropdown/></td>
                                     <td>Content Status</td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>

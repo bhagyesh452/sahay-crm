@@ -8,7 +8,7 @@ import axios from 'axios';
 
 
 const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName }) => {
-    const [status, setStatus] = useState(subStatus);
+    const [status, setStatus] = useState("Drashti Thakkar");
     const [statusClass, setStatusClass] = useState("created-status");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -17,77 +17,6 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
         setStatus(newStatus);
         setStatusClass(statusClass);
         setNewSubStatus(newStatus);
-
-        try {
-            //   let response;
-            //   if (mainStatus === "General") {
-            //     response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //       companyName,
-            //       serviceName,
-            //       subCategoryStatus: newStatus,
-            //       mainCategoryStatus: "Process"
-            //     });
-            //   } else if (mainStatus === "Process") {
-            //     if (newStatus === "Submitted") {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Submitted"
-            //       });
-            //     } else if (newStatus === "Defaulter") {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Defaulter"
-            //       });
-            //     } else {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Process"
-            //       });
-            //     }
-            //   } else if (mainStatus === "Submitted") {
-            //     if (newStatus === "Approved") {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Approved"
-            //       });
-            //     } else if (newStatus === "Defaulter") {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Defaulter"
-            //       });
-            //     } else {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Submitted"
-            //       });
-            //     }
-            //   }else if (mainStatus === "Defaulter") {
-            //     if (newStatus === "Working") {
-            //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            //         companyName,
-            //         serviceName,
-            //         subCategoryStatus: newStatus,
-            //         mainCategoryStatus: "Defaulter"
-            //       });
-            //     }  
-            //   }
-
-            //   console.log("Status updated successfully:", response.data);
-        } catch (error) {
-            console.error("Error updating status:", error.message);
-        }
     };
 
 
@@ -109,10 +38,10 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
                     <li>
                         <a
                             className="dropdown-item"
-                            onClick={() => handleStatusChange("Not Started", "created-status")}
+                            onClick={() => handleStatusChange("Drashti Thakkar", "created-status")}
                             href="#"
                         >
-                            Not Started
+                            Drashti Thakkar
                         </a>
                     </li>
                     <li>
@@ -121,7 +50,7 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
                             onClick={() => handleStatusChange("KYC Pending", "support-status")}
                             href="#"
                         >
-                            KYC Pending
+                            Drashti Thakkar
                         </a>
                     </li>
                     <li>
@@ -130,48 +59,10 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
                             onClick={() => handleStatusChange("KYC Incomplete", "inprogress-status")}
                             href="#"
                         >
-                            KYC Incomplete
+                            Drashti Thakkar
                         </a>
                     </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("Approved", "finished-status")}
-                            href="#"
-                        >
-                            Approved
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("Not Applicable", "rejected-status")}
-                            href="#"
-                        >
-                            Not Applicable
-
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("KYC Rejected", "rejected-status")}
-                            href="#"
-                        >
-                            KYC Rejected
-
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("KYC Document Pending", "inprogress-status")}
-                            href="#"
-                        >
-                            KYC Document Pending
-
-                        </a>
-                    </li>
+                   
                 </ul>
             </div>
         </section>

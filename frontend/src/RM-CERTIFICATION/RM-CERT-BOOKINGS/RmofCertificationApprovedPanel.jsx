@@ -13,6 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 
 function RmofCertificationApprovedPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -245,7 +246,7 @@ const handleSubmitRemarks = async () => {
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td>Content Writer</td>
+                                    <td><ContentWriterDropdown/></td>
                                     <td>Content Status</td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
