@@ -699,7 +699,7 @@ function EmployeePerformance({ data }) {
               if (condition) {
                 // Find the service from mainBooking.services
                 const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-                console.log("findService", mainBooking["Company Name"], findService)
+                //console.log("findService", mainBooking["Company Name"], findService)
                 // Check if findService is defined
                 if (findService) {
                   // Calculate the tempAmount based on whether GST is included
@@ -929,10 +929,10 @@ function EmployeePerformance({ data }) {
       };
     
 
-    useEffect(() => {
-        const result = functionCalculateOnlyAchieved(data.ename);
-        console.log(`Final Achieved Amount for this month: ${result}`);
-    }, [data.ename])
+    // useEffect(() => {
+    //     const result = functionCalculateOnlyAchieved(data.ename);
+    //     //console.log(`Final Achieved Amount for this month: ${result}`);
+    // }, [data.ename])
 
 
 
@@ -950,8 +950,7 @@ function EmployeePerformance({ data }) {
         }
     };
 
-    console.log("sortedEmployeeData", sortedEmployeeData)
-    console.log("data.ename", data.ename)
+   
 
 
 

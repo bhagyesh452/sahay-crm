@@ -1566,10 +1566,10 @@ function EmployeeDashboard() {
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
+      const cleanString = (str) => (str ? str.replace(/\u00A0/g, ' ').replace(/\s+/g, '').toLowerCase() : '');
 
-
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
-      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => more.bdeName === data.ename || more.bdmName === data.ename))));
+      setRedesignedData(bookingsData.filter(obj => cleanString(obj.bdeName) === cleanString(data.ename) || (cleanString(obj.bdmName) === cleanString(data.ename) && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => cleanString(more.bdeName) === cleanString(data.ename) || cleanString(more.bdmName) === cleanString(data.ename)))));
+      setPermanentFormData(bookingsData.filter(obj => cleanString(obj.bdeName) === cleanString(data.ename) || (cleanString(obj.bdmName) === cleanString(data.ename) && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some((more) => cleanString(more.bdeName) === cleanString(data.ename) || cleanString(more.bdmName) === cleanString(data.ename)))));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
