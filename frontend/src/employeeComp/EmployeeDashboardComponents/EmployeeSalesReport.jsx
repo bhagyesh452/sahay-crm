@@ -26,7 +26,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     return `${day}/${month}/${year}`;
   }
 
-  console.log("employeeData", data)
+  //console.log("employeeData", data)
 
 
   // ********************************************************************  Declarations ***************************************************************** 
@@ -698,7 +698,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-            console.log("findService", mainBooking["Company Name"], findService)
+            //console.log("findService", mainBooking["Company Name"], findService)
             // Check if findService is defined
             if (findService) {
               // Calculate the tempAmount based on whether GST is included
