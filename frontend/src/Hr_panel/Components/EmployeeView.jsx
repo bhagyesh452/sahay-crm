@@ -244,6 +244,54 @@ function EmployeeView() {
     <div>
       <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />
       <Navbar/>
+      <div className="page-wrapper">
+        <div className="page-header rm_Filter m-0">
+          <div className="container-xl">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Employee</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Employee Profile</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <div className="page-body rm_Dtl_box m-0">
+          <div className="container-xl">
+            <div className="row mt-1">
+              <div className="col-sm-3">
+                <div className="E_Id_card">
+
+                </div>
+              </div>
+              <div className="col-sm-12">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {/* {data && data.length!==0 &&  }
       {data && data.length!==0 && }
       {data && data.length!==0 && <div className="page-wrapper">

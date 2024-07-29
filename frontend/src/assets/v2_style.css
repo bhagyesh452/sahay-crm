@@ -647,7 +647,7 @@ table.table.top_5_table tbody tr.myself td {
 }
 
 
-/**********************Employee Form CSS************************/
+/**********************HR Employee Form CSS************************/
 
 .stepper_radio_custom
 {
@@ -708,3 +708,68 @@ table.table.top_5_table tbody tr.myself td {
 {
     font-size: 12px;
 }
+.hr_emply_list_navtabs 
+{
+    background: transparent !important;
+    overflow: hidden;
+    flex: 0 0 43%;
+    border-bottom: none;
+    padding-right: 10px !important;
+}
+.hr_emply_list_navitem .nav-link {
+    background: #fff !important;
+    font-weight: 600;
+    border: none !important;
+    border-radius: 4px 4px 0 0 !important;
+    font-size: 12px;
+    width: 190px !important;
+    position: relative;
+    padding: 6px 10px !important;
+    transition: .5s;
+}
+.hr_emply_list_navitem .nav-link.active {
+    background: #43474c !important;
+    color: #fff !important;
+    z-index: 1;
+}
+.hr_emply_list_navitem .nav-link::after {
+    content: "";
+    position: absolute;
+    background: #ffffff;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-color: #eee #0000 #0000 #fff;
+    border-style: solid;
+    border-width: 1px 5px 5px 1px;
+    content: "";
+    height: 26px;
+    position: absolute;
+    rotate: 66deg;
+    top: 9px;
+    right: -14.5px;
+    transition: .5s;
+    width: 38px;
+    z-index: 1;
+    border: none;
+    box-shadow: 11px -4px 9px -3px #eee;
+}
+.hr_emply_list_navitem .nav-link.active::after {
+    background: #43474c !important;
+}
+.E_Id_card
+{
+    box-shadow: rgb(235, 235, 235) 2px 2px 10px -3px;
+    background: #e6e8e8;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(238, 238, 238);
+    border-image: initial;
+    border-radius: 14px;
+    overflow: hidden;
+    height: 500px;
+    padding: 10px;
+}
+
+/**********************HR Close Employee Form CSS************************/
+
