@@ -15,6 +15,7 @@ import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
+import { VscSaveAs } from "react-icons/vsc";
 
 
 function RmofCertificationHoldPanel() {
@@ -31,7 +32,9 @@ function RmofCertificationHoldPanel() {
     const [currentServiceName, setCurrentServiceName] = useState("")
     const [remarksHistory, setRemarksHistory] = useState([])
     const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([])
+    const [historyRemarks, setHistoryRemarks] = useState([]);
+    const [email, setEmail] = useState('');
+    const [openEmailPopup, setOpenEmailPopup] = useState(false);
 
 
     function formatDate(dateString) {
@@ -147,7 +150,36 @@ function RmofCertificationHoldPanel() {
     };
 
 
-    console.log("setnewsubstatus", newStatusProcess)
+    //--------------------email function----------------------
+    const handleSubmitNSWSEmail = async () => {
+        console.log(currentCompanyName, currentServiceName)
+        try {
+            if (currentCompanyName && currentServiceName) {
+                const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
+                    currentCompanyName,
+                    currentServiceName,
+                    email
+                });
+                if (response.status === 200) {
+                    Swal.fire(
+                        'Email Added!',
+                        'The email has been successfully added.',
+                        'success'
+                    );
+                    fetchRMServicesData()
+                    setOpenEmailPopup(false); // Close the popup on success
+                }
+            }
+
+
+        } catch (error) {
+            console.error("Error saving email:", error.message); // Log only the error message
+        }
+    };
+
+    const handleCloseEmailPopup = () => {
+        setOpenEmailPopup(false)
+    }
 
 
 
@@ -179,8 +211,6 @@ function RmofCertificationHoldPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>NSWS Email ID</th>
-                                <th>NSWS Password</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -210,7 +240,7 @@ function RmofCertificationHoldPanel() {
                                     <td><b>{obj.serviceName}</b></td>
                                     <td>
                                         <div>
-                                            
+
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}
@@ -248,35 +278,47 @@ function RmofCertificationHoldPanel() {
                                         >
                                             <EditIcon style={{ width: "12px", height: "12px" }} />
                                         </button>
-
-
-
-
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown 
-                                            companyName = {obj["Company Name"]}
-                                            serviceName = {obj.serviceName}
-                                            mainStatus = {obj.mainCategoryStatus}
-                                            dscStatus = {obj.dscStatus}
+                                            <DscStatusDropdown
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                dscStatus={obj.dscStatus}
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown/></td>
+                                    <td><ContentWriterDropdown /></td>
                                     <td><ContentStatusDropdown
-                                    companyName = {obj["Company Name"]}
-                                    serviceName = {obj.serviceName}
-                                    mainStatus = {obj.mainCategoryStatus}
-                                    contentStatus = {obj.contentStatus}
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        mainStatus={obj.mainCategoryStatus}
+                                        contentStatus={obj.contentStatus}
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td>NSWS Email Id</td>
+                                    <td className="d-flex align-items-center justify-content-center wApp" >
+                                        <div
+                                            className="My_Text_Wrap"
+                                            title={obj.nswsMailId ? obj.nswsMailId : "No Remarks"}
+                                        >
+                                            {obj.nswsMailId ? obj.nswsMailId : "Please Add Email Address"}
+                                        </div>
+                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+                                            onClick={() => {
+                                                setCurrentCompanyName(obj["Company Name"])
+                                                setCurrentServiceName(obj.serviceName)
+                                                setOpenEmailPopup(true)
+                                            }}
+                                        >
+                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
+                                        </button>
+                                    </td>
                                     <td>NSWS Password</td>
-                                    <td>NSWS Email ID</td>
-                                    <td>NSWS Password</td>
+                                    <td>Industry</td>
+                                    <td>Sector</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -316,7 +358,7 @@ function RmofCertificationHoldPanel() {
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
-                        { historyRemarks.length !== 0 && (
+                        {historyRemarks.length !== 0 && (
                             historyRemarks.slice().map((historyItem) => (
                                 <div className="col-sm-12" key={historyItem._id}>
                                     <div className="card RemarkCard position-relative">
@@ -333,7 +375,7 @@ function RmofCertificationHoldPanel() {
                                     </div>
                                 </div>
                             ))
-                        )} 
+                        )}
                         {remarksHistory && remarksHistory.length === 0 && (
                             <div class="card-footer">
                                 <div class="mb-3 remarks-input">
@@ -361,6 +403,43 @@ function RmofCertificationHoldPanel() {
                 >
                     Submit
                 </button>
+            </Dialog>
+
+            {/* //----------------------emailpopup---------------------------------- */}
+
+            <Dialog
+                open={openEmailPopup}
+                onClose={handleCloseEmailPopup}
+                fullWidth
+                maxWidth="xs"
+            >
+                <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
+                    {currentCompanyName}'s Email
+                    <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary" style={{ width: "16px" }} />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="card-footer">
+                        <div className="mb-3 remarks-input">
+                            <input
+                                type='text'
+                                //placeholder="Add Email Here..."
+                                className="form-control"
+                                //value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+                <Button
+                    onClick={handleSubmitNSWSEmail}
+                    variant="contained"
+                    color="primary"
+                    style={{ width: "100%" }}
+                >
+                    Submit
+                </Button>
             </Dialog>
         </div>
     )
