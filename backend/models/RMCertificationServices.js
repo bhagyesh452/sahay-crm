@@ -197,6 +197,16 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   dscStatus:{
     type:String,
     default:"Not Started"
+  },
+  contentStatus:{
+     type:String,
+    default:"Not Started"
+  },
+  nswsMailId:{
+    type:String
+  },
+  nswsPaswsord:{
+    type:String
   }
 })
 

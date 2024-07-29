@@ -85,22 +85,47 @@ function EmployeeMaturedBookings() {
 
   const fetchRedesignedFormData1 = async () => {
     try {
-
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
+  
+      const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
+  
+      const redesignedData = response.data.filter((obj) => {
+        const cleanedBdeName = cleanString(obj.bdeName);
+        const cleanedBdmName = cleanString(obj.bdmName);
+        const cleanedEname = cleanString(data.ename);
+  
+        if (
+          cleanedBdeName === cleanedEname ||
+          cleanedBdmName === cleanedEname ||
+          (obj.moreBookings.length !== 0 &&
+            obj.moreBookings.some((booking) => {
+              const cleanedBookingBdeName = cleanString(booking.bdeName);
+              const cleanedBookingBdmName = cleanString(booking.bdmName);
+              return cleanedBookingBdeName === cleanedEname || cleanedBookingBdmName === cleanedEname;
+            }))
+        ) {
+          // Log only when the condition matches
+          
+          return true;
+        }
+        return false;
+      });
+  
       const sortedData = redesignedData.sort((a, b) => {
         const dateA = new Date(a.lastActionDate);
         const dateB = new Date(b.lastActionDate);
         return dateB - dateA; // Sort in descending order
       });
+  
       setFormData(sortedData);
-      setInfiniteBooking(sortedData)
+      setInfiniteBooking(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+  
 
   useEffect(() => {
 
@@ -439,7 +464,7 @@ function EmployeeMaturedBookings() {
 
   // },[formData])
   // console.log(isDeletedStatus)
-  
+
   // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
