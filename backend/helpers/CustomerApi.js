@@ -257,7 +257,6 @@ router.post('/save-company-data',
                 Finance,
                 FinanceCondition,
                 DirectorDetails: DirectorDetails.map((director, index) => ({
-                    // ...JSON.parse(director),
                     ...director,
                     DirectorPassportPhoto: DirectorPassportPhoto[index],
                     DirectorAdharCard: DirectorAdharCard[index],

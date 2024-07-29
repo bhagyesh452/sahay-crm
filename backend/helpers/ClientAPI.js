@@ -912,53 +912,128 @@ router.put(
 
       const { id } = req.params;
 
-      const parsedData = {};
-      Object.keys(req.body).forEach((key) => {
-        try {
-          parsedData[key] = JSON.parse(req.body[key]);
-        } catch (e) {
-          parsedData[key] = req.body[key];
-        }
-      });
+      // const parsedData = {};
+      // Object.keys(req.body).forEach((key) => {
+      //   try {
+      //     parsedData[key] = JSON.parse(req.body[key]);
+      //   } catch (e) {
+      //     parsedData[key] = req.body[key];
+      //   }
+      // });
 
-      // Log parsed data for debugging
-      console.log("Parsed Data: ", parsedData);
+      // // Log parsed data for debugging
+      // console.log("Parsed Data: ", parsedData);
+
+      // const {
+      //   CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
+      //   CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
+      //   LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
+      //   ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
+      //   AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
+      //   BusinessModel, Finance, FinanceCondition, DirectorDetails
+      // } = parsedData;
 
       const {
-        CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
-        CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
-        LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
-        ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
-        AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
-        BusinessModel, Finance, FinanceCondition, DirectorDetails
-      } = parsedData;
+        CompanyName,
+        CompanyEmail,
+        CompanyNo,
+        BrandName,
+        WebsiteLink,
+        CompanyAddress,
+        CompanyPanNumber,
+        SelectServices,
+        SocialMedia,
+        FacebookLink,
+        InstagramLink,
+        LinkedInLink,
+        YoutubeLink,
+        CompanyActivities,
+        ProductService,
+        CompanyUSP,
+        ValueProposition,
+        TechnologyInvolved,
+        TechnologyDetails,
+        ProductPhoto,
+        AnyIpFiledResponse,
+        RelevantDocumentComment,
+        ItrStatus,
+        DirectInDirectMarket,
+        BusinessModel,
+        Finance,
+        FinanceCondition,
+        DirectorDetails,
+    } = req.body;
 
       // Prepare the updated data
+      // const updatedData = {
+      //   CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
+      //   CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
+      //   LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
+      //   ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
+      //   AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
+      //   BusinessModel: Array.isArray(BusinessModel) ? BusinessModel : [] , 
+      //   Finance, FinanceCondition, isFormSubmitted: true,
+      //   DirectorDetails: DirectorDetails.map((director, index) => ({
+      //     ...director,
+      //     DirectorPassportPhoto: DirectorPassportPhoto[index],
+      //     DirectorAdharCard: DirectorAdharCard[index]
+      //   })),
+      //   UploadMOA,
+      //   UploadAOA,
+      //   UploadPhotos,
+      //   RelevantDocument,
+      //   UploadAuditedStatement,
+      //   UploadProvisionalStatement,
+      //   UploadDeclaration,
+      //   UploadRelevantDocs
+      // };
+
       const updatedData = {
-        CompanyName, CompanyEmail, CompanyNo, BrandName, WebsiteLink, CompanyAddress,
-        CompanyPanNumber, SelectServices, SocialMedia, FacebookLink, InstagramLink,
-        LinkedInLink, YoutubeLink, CompanyActivities, ProductService, CompanyUSP,
-        ValueProposition, TechnologyInvolved, TechnologyDetails, ProductPhoto,
-        AnyIpFiledResponse, RelevantDocumentComment, ItrStatus, DirectInDirectMarket,
-        BusinessModel: Array.isArray(BusinessModel) ? BusinessModel : [] , 
-        Finance, FinanceCondition, isFormSubmitted: true,
+        CompanyName,
+        CompanyEmail,
+        CompanyNo,
+        BrandName,
+        WebsiteLink,
+        CompanyAddress,
+        CompanyPanNumber,
+        SelectServices,
+        SocialMedia,
+        FacebookLink,
+        InstagramLink,
+        LinkedInLink,
+        YoutubeLink,
+        CompanyActivities,
+        ProductService,
+        CompanyUSP,
+        ValueProposition,
+        TechnologyInvolved,
+        TechnologyDetails,
+        ProductPhoto,
+        AnyIpFiledResponse,
+        RelevantDocumentComment,
+        ItrStatus,
+        DirectInDirectMarket,
+        BusinessModel,
+        Finance,
+        FinanceCondition,
         DirectorDetails: DirectorDetails.map((director, index) => ({
-          ...director,
-          DirectorPassportPhoto: DirectorPassportPhoto[index],
-          DirectorAdharCard: DirectorAdharCard[index]
+            ...director,
+            DirectorPassportPhoto: DirectorPassportPhoto[index],
+            DirectorAdharCard: DirectorAdharCard[index],
         })),
-        UploadMOA,
-        UploadAOA,
-        UploadPhotos,
-        RelevantDocument,
-        UploadAuditedStatement,
-        UploadProvisionalStatement,
-        UploadDeclaration,
-        UploadRelevantDocs
-      };
+        UploadMOA: UploadMOA[0],
+        UploadAOA: UploadAOA[0],
+        UploadPhotos: UploadPhotos[0],
+        RelevantDocument: RelevantDocument[0],
+        UploadAuditedStatement: UploadAuditedStatement[0],
+        UploadProvisionalStatement: UploadProvisionalStatement[0],
+        UploadDeclaration: UploadDeclaration[0],
+        UploadRelevantDocs: UploadRelevantDocs[0],
+        isFormSubmitted: true
+    };
 
       // Log updated data for debugging
-      console.log("Updated Data: ", updatedData);
+      // console.log("Updated Data: ", updatedData);
 
       // Update the user in the database
       const updatedUser = await userModel.findByIdAndUpdate(

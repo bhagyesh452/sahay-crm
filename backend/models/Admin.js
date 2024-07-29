@@ -116,6 +116,9 @@ const yourSchema = new mongoose.Schema({
   offerLetter: {
     type: [fileSchema]
   },
+  profilePhoto: {
+    type: [fileSchema]
+  },
   targetDetails: {
     type: Array
   },

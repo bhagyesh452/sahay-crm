@@ -142,10 +142,11 @@ router.post("/einfo", async (req, res) => {
     console.log("Reqest body is :", req.body);
     adminModel.create({
       ...req.body,
-      ename: `${firstName} ${lastName}`,
+      ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
       personal_number: personalPhoneNo,
       personal_email: personalEmail,
       personal_address: address,
+      AddedOn: new Date()
     }).then((result) => {
       // Change res to result
       res.json(result); // Change res.json(res) to res.json(result)
@@ -181,13 +182,13 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
   { name: "panCard", maxCount: 1 },
   { name: "educationCertificate", maxCount: 1 },
   { name: "relievingCertificate", maxCount: 1 },
-  { name: "salarySlip" },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   const { personalEmail } = req.params;
   const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, personName, relationship, personPhoneNo} = req.body;
-  console.log("Reqest file is :", req.files);
+  // console.log("Reqest file is :", req.files);
 
-  
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
     fieldname: file.fieldname,
     originalname: file.originalname,
@@ -205,6 +206,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
   const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
   const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
   const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
+  const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
 
   try {
     if (!personalEmail) {
@@ -219,7 +221,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
         number: officialNo,
         jdate: joiningDate,
         branchOffice: branch,
-        reportingManager: manager,
+        reportingManager: manager || "",
         firstMonthSalaryCondition: firstMonthSalary,
         offerLetter: offerLetterDetails || [],
         personal_contact_person: personName,
@@ -229,7 +231,8 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
         panCard: panCardDetails || [],
         educationCertificate: educationCertificateDetails || [],
         relievingCertificate: relievingCertificateDetails || [],
-        salarySlip: salarySlipDetails || []
+        salarySlip: salarySlipDetails || [],
+        profilePhoto: profilePhotoDetails || [],
       },
       { new: true } // This option returns the updated document
     );
