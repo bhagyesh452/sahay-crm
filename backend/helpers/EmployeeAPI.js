@@ -924,7 +924,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
   let remainingMoreExpense = 0;
   let add_caCommision = 0;
   const today = new Date();
-
+  const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
 
   redesignedData.map((mainBooking) => {
     let condition = false;
@@ -941,9 +941,9 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
       default:
         break;
     }
-    if (condition && (mainBooking.bdeName === ename || mainBooking.bdmName === ename)) {
+    if (condition && (cleanString(mainBooking.bdeName) === cleanString(ename) || cleanString(mainBooking.bdmName) === cleanString(ename))) {
 
-      if (mainBooking.bdeName === mainBooking.bdmName) {
+      if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
         //achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
         mainBooking.services.map(serv => {
           if (serv.paymentTerms === "Full Advanced") {
@@ -980,7 +980,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         if (mainBooking.caCase === "Yes") {
           add_caCommision += parseInt(mainBooking.caCommission)
         }
-      } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+      } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
         //achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
         mainBooking.services.map(serv => {
           // console.log(serv.expanse , bdeName ,"this is services");
@@ -1017,8 +1017,8 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         if (mainBooking.caCase === "Yes") {
           add_caCommision += parseInt(mainBooking.caCommission) / 2;
         }
-      } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-        if (mainBooking.bdeName === ename) {
+      } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+        if (cleanString(mainBooking.bdeName) === cleanString(ename)) {
           //achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.map(serv => {
             if (serv.paymentTerms === "Full Advanced") {
@@ -1058,7 +1058,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         }
       }
     }
-    if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === ename || mainBooking.bdmName === ename)) {
+    if (mainBooking.remainingPayments.length !== 0 && (cleanString(mainBooking.bdeName) === cleanString(ename) || cleanString(mainBooking.bdmName) === cleanString(ename))) {
       let remainingExpanseCondition = false;
       switch (Filterby) {
         case 'Today':
@@ -1079,11 +1079,11 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
         mainBooking.services.forEach(serv => {
           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-            if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
               remainingExpense += serv.expanse / 2;
-            } else if (mainBooking.bdeName === mainBooking.bdmName) {
+            } else if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
               remainingExpense += serv.expanse;
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === ename) {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === cleanString(ename)) {
               remainingExpense += serv.expanse;
             }
           }
@@ -1118,12 +1118,12 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
               : Math.round(remainingObj.receivedPayment);
 
             // Update remainingAmount based on conditions
-            if (mainBooking.bdeName === mainBooking.bdmName) {
+            if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
               remainingAmount += Math.round(tempAmount);
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
               remainingAmount += Math.round(tempAmount) / 2;
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-              if (mainBooking.bdeName === ename) {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+              if (cleanString(mainBooking.bdeName) === cleanString(ename)) {
                 remainingAmount += Math.round(tempAmount);
               }
             }
@@ -1150,9 +1150,9 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         default:
           break;
       }
-      if (condition && (moreObject.bdeName === ename || moreObject.bdmName === ename)) {
+      if (condition && (cleanString(moreObject.bdeName) === cleanString(ename) || cleanString(moreObject.bdmName) === cleanString(ename))) {
 
-        if (moreObject.bdeName === moreObject.bdmName) {
+        if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
           //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
           moreObject.services.map(serv => {
             if (serv.paymentTerms === "Full Advanced") {
@@ -1189,7 +1189,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
           if (moreObject.caCase === "Yes") {
             add_caCommision += parseInt(moreObject.caCommission);
           }
-        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+        } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
           //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
           moreObject.services.map(serv => {
             if (serv.paymentTerms === "Full Advanced") {
@@ -1226,8 +1226,8 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
           if (moreObject.caCase === "Yes") {
             add_caCommision += parseInt(moreObject.caCommission) / 2;
           }
-        } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-          if (moreObject.bdeName === ename) {
+        } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+          if (cleanString(moreObject.bdeName) === cleanString(ename)) {
             //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
             moreObject.services.map(serv => {
               if (serv.paymentTerms === "Full Advanced") {
@@ -1267,7 +1267,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
           }
         }
       }
-      if (moreObject.remainingPayments.length !== 0 && (moreObject.bdeName === ename || moreObject.bdmName === ename)) {
+      if (moreObject.remainingPayments.length !== 0 && (cleanString(moreObject.bdeName) === cleanString(ename) || cleanString(moreObject.bdmName) === cleanString(ename))) {
 
         let remainingExpanseCondition = false;
         switch (Filterby) {
@@ -1290,11 +1290,11 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
           moreObject.services.forEach(serv => {
 
             if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-              if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                 remainingMoreExpense += serv.expanse / 2;
-              } else if (moreObject.bdeName === moreObject.bdmName) {
+              } else if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                 remainingMoreExpense += serv.expanse;
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === ename) {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Support-by" && moreObject.bdemName === cleanString(ename)) {
                 remainingMoreExpense += serv.expanse;
               }
             }
@@ -1321,12 +1321,12 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
 
             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-            if (moreObject.bdeName === moreObject.bdmName) {
+            if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
               remainingAmount += Math.round(tempAmount);
-            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+            } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
               remainingAmount += Math.round(tempAmount) / 2;
-            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-              if (moreObject.bdeName === ename) {
+            } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+              if (cleanString(moreObject.bdeName) === cleanString(ename)) {
                 remainingAmount += Math.round(tempAmount);
               }
             }
