@@ -48,12 +48,11 @@ function CustomerForm() {
     const [aoaFile, setAoaFile] = useState("");
     const [logo, setLogo] = useState("");
     const [ipDocs, setIpDocs] = useState("");
-    const [provisionalStatement, setProvisionalStatement] = useState("");
     const [auditStatement, setAuditStatement] = useState("");
+    const [provisionalStatement, setProvisionalStatement] = useState("");
     const [declaration, setDeclaration] = useState("");
     const [relevantDocs, setRelevantDocs] = useState("");
-    const [directorPhoto, setDirectorPhoto] = useState("");
-    const [directorAdharCard, setDirectorAdharCard] = useState("");
+    const [directorsDocuments, setDirectorsDocuments] = useState([]);
     const [id, setId] = useState("");
 
     const fetchCompanyData = async () => {
@@ -76,31 +75,7 @@ function CustomerForm() {
         fetchCompanyData();
     }, []);
 
-    const fetchDocuments = async () => {
-        console.log("Id is:", id);
-
-        try {
-            const res = await axios.get(`${secretKey}/customer/fetch-documents/${id}`);
-            console.log("Document details are:", res.data);
-            // Ensure DirectorDetails is an array before mapping
-            if (Array.isArray(res.data.DirectorDetails)) {
-                res.data.DirectorDetails.forEach((document) => {
-                    // console.log(document.DirectorPassportPhoto?.[0]?.originalname);
-                    setDirectorPhoto(document.DirectorPassportPhoto ? document.DirectorPassportPhoto[0]?.originalname : '');
-                setDirectorAdharCard(document.DirectorAdharCard ? document.DirectorAdharCard[0]?.originalname : '');
-                });
-            } else {
-                console.error("DirectorDetails is not an array");
-            }
-        } catch (error) {
-            console.log("Error fetching director details:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchDocuments();
-    }, [id]); // Add id to dependencies to refetch if it changes
-
+    
 
     useEffect(() => {
         if (companyData) {
@@ -157,13 +132,13 @@ function CustomerForm() {
         TechnologyInvolved: "",
         TechnologyDetails: "",
         ProductPhoto: "",
-        UploadPhotos: null,
+        UploadPhotos: "",
         AnyIpFiledResponse: "",
-        RelevantDocument: null,
+        RelevantDocument: "",
         RelevantDocumentComment: "",
         ItrStatus: "",
-        UploadAuditedStatement: null,
-        UploadProvisionalStatement: null,
+        UploadAuditedStatement: "",
+        UploadProvisionalStatement: "",
         DirectInDirectMarket: "",
         BusinessModel: [],
         Finance: "",
@@ -311,7 +286,7 @@ function CustomerForm() {
             });
 
             //data.append("isFormSubmitted", true);
-            // console.log("data" , formData);
+            // console.log("Submitted data is :" , formData);
 
             const requestMethod = id ? "PUT" : "POST";
             console.log("Id is :", id);
@@ -352,7 +327,7 @@ function CustomerForm() {
 
     const handleSuccess = () => {
         // Show success message using SweetAlert
-        setIsFormSuccessfullySubmitted(true);
+        // setIsFormSuccessfullySubmitted(true);
         Swal.fire({
             title: "Success!",
             text: "Form submitted successfully.",
@@ -413,7 +388,7 @@ function CustomerForm() {
             }
         }
     };
-
+    
     const handleInputChange = (e, fieldName) => {
         const value = e.target.value;
         const checked = e.target.checked;
@@ -483,7 +458,7 @@ function CustomerForm() {
     //     setOpenBacdrop(true); // show backdrop loader
     //     try {
     //         const data = new FormData();
-    
+
     //         // Append form data to FormData object
     //         Object.keys(formData).forEach((key) => {
     //             if (key === "BusinessModel") {
@@ -519,14 +494,14 @@ function CustomerForm() {
     //                 });
     //             }
     //         });
-    
+
     //         // Post formData using axios
     //         const response = await axios.post(`${secretKey}/customer/save-company-data`, data, {
     //             headers: {
     //                 'Content-Type': 'multipart/form-data'
     //             }
     //         });
-    
+
     //         Swal.fire("Data successfully saved", "success");
     //         console.log("Saved data is:", response.data);
     //     } catch (error) {
@@ -541,7 +516,7 @@ function CustomerForm() {
         setOpenBacdrop(true); // show backdrop loader
         try {
             const data = new FormData();
-        
+
             // Append form data to FormData object
             Object.keys(formData).forEach((key) => {
                 if (key === "BusinessModel") {
@@ -582,29 +557,24 @@ function CustomerForm() {
                     });
                 }
             });
-        
+
             // Post formData using axios
             const response = await axios.post(`${secretKey}/customer/save-company-data`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-        
-            Swal.fire("Data successfully saved", "success");
+
+            Swal.fire("success", "Data successfully saved", "success");
             console.log("Saved data is:", response.data);
         } catch (error) {
             console.error('Error saving data:', error.response || error.message);
-            Swal.fire("Error saving data", "error");
+            Swal.fire("Error", "Error saving data", "error");
         } finally {
             setOpenBacdrop(false); // hide backdrop loader in any case
         }
     };
-    
-    
-    
-    
 
-    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormData((prevState) => ({
@@ -888,6 +858,61 @@ function CustomerForm() {
             FinanceCondition: event.target.value,
         });
     };
+
+    const fetchDocuments = async () => {
+        console.log("Id is:", id);
+
+        try {
+            const res = await axios.get(`${secretKey}/customer/fetch-documents/${id}`);
+            console.log("Document details are:", res.data);
+
+            setFormData((prevState) => ({
+                ...prevState,
+                ...res.data,
+                UploadMOA: res.data.UploadMOA ? res.data.UploadMOA[0]?.originalname : "",
+                UploadAOA: res.data.UploadAOA ? res.data.UploadAOA[0]?.originalname : "",
+                UploadPhotos: res.data.UploadPhotos ? res.data.UploadPhotos[0]?.originalname : "",
+                RelevantDocument: res.data.RelevantDocument ? res.data.RelevantDocument[0]?.originalname : "",
+                UploadAuditedStatement: res.data.UploadAuditedStatement ? res.data.UploadAuditedStatement[0]?.originalname : "",
+                UploadProvisionalStatement: res.data.UploadProvisionalStatement ? res.data.UploadProvisionalStatement[0]?.originalname : "",
+                UploadDeclaration: res.data.UploadDeclaration ? res.data.UploadDeclaration[0]?.originalname : "",
+                UploadRelevantDocs: res.data.UploadRelevantDocs ? res.data.UploadRelevantDocs[0]?.originalname : "",
+                DirectorDetails: Array.isArray(res.data.DirectorDetails)
+                    ? res.data.DirectorDetails.map((document) => ({
+                        ...DirectorForm,
+                        ...document,
+                        DirectorPassportPhoto: document.DirectorPassportPhoto ? document.DirectorPassportPhoto[0]?.originalname : "",
+                        DirectorAdharCard: document.DirectorAdharCard ? document.DirectorAdharCard[0]?.originalname : "",
+                    }))
+                    : [DirectorForm],
+            }));
+            setMoaFile(res.data.UploadMOA ? res.data.UploadMOA[0]?.originalname : "");
+            setAoaFile(res.data.UploadAOA ? res.data.UploadAOA[0]?.originalname : "");
+            setLogo(res.data.UploadPhotos ? res.data.UploadPhotos[0]?.originalname : "");
+            setIpDocs(res.data.RelevantDocument ? res.data.RelevantDocument[0]?.originalname : "");
+            setAuditStatement(res.data.UploadAuditedStatement ? res.data.UploadAuditedStatement[0]?.originalname : "");
+            setProvisionalStatement(res.data.UploadProvisionalStatement ? res.data.UploadProvisionalStatement[0]?.originalname : "");
+            setDeclaration(res.data.UploadDeclaration ? res.data.UploadDeclaration[0]?.originalname : "");
+            setRelevantDocs(res.data.UploadRelevantDocs ? res.data.UploadRelevantDocs[0]?.originalname : "");
+            // Ensure DirectorDetails is an array before mapping
+            if (Array.isArray(res.data.DirectorDetails)) {
+                const directorsDocs = res.data.DirectorDetails.map((document) => ({
+                    DirectorPassportPhoto: document.DirectorPassportPhoto ? document.DirectorPassportPhoto[0]?.originalname : "",
+                    DirectorAdharCard: document.DirectorAdharCard ? document.DirectorAdharCard[0]?.originalname : ""
+                }));
+                setDirectorsDocuments(directorsDocs);
+            } else {
+                console.error("DirectorDetails is not an array");
+            }
+        } catch (error) {
+            console.log("Error fetching document  details:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDocuments();
+    }, [id]); // Add id to dependency to refetch if it changes
+
 
     // console.log("showfinance" , showFinance);
 
@@ -1181,9 +1206,9 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
-                                    {directorPhoto && <div className="mt-2">
-                                        <strong>Current File:</strong>{" "}
-                                        {directorPhoto}
+                                    {directorsDocuments[index]?.DirectorPassportPhoto && <div className="mt-2">
+                                        <strong>Director {index + 1} Passport Photo : </strong>{" "}
+                                        {directorsDocuments[index]?.DirectorPassportPhoto}
                                     </div>}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
@@ -1200,7 +1225,7 @@ function CustomerForm() {
                             <div className="col-lg-3">
                                 <div className="form-group mt-2 mb-2">
                                     <label htmlFor={`DirectorAdharCard${index}`}>
-                                        Director's Aadhaar Card{" "}
+                                        Director's Aadhar Card{" "}
                                         <span style={{ color: "red" }}>*</span>
                                     </label>
                                     <input
@@ -1230,9 +1255,9 @@ function CustomerForm() {
                                             }
                                         }}
                                     />
-                                    {directorAdharCard && <div className="mt-2">
-                                        <strong>Current File:</strong>{" "}
-                                        {directorAdharCard}
+                                    {directorsDocuments[index]?.DirectorAdharCard && <div className="mt-2">
+                                        <strong>Director {index + 1} Aadhar Card : </strong>{" "}
+                                        {directorsDocuments[index]?.DirectorAdharCard}
                                     </div>}
                                     <div className="input-note">
                                         (Files size should be less than 24MB)
@@ -1655,6 +1680,10 @@ function CustomerForm() {
                                                     }
                                                 }}
                                             />
+                                            {moaFile && <div className="mt-2">
+                                                <strong>Current File : </strong>{" "}
+                                                {moaFile}
+                                            </div>}
                                             <div className="input-note">
                                                 (Files size should be less than 24MB)
                                             </div>
@@ -1688,6 +1717,10 @@ function CustomerForm() {
                                                     }
                                                 }}
                                             />
+                                            {aoaFile && <div className="mt-2">
+                                                <strong>Current File : </strong>{" "}
+                                                {aoaFile}
+                                            </div>}
                                             <div className="input-note">
                                                 (Files size should be less than 24MB)
                                             </div>
@@ -2036,6 +2069,10 @@ function CustomerForm() {
                                                         }
                                                     }}
                                                 />
+                                                {logo && <div className="mt-2">
+                                                    <strong>Current File : </strong>{" "}
+                                                    {logo}
+                                                </div>}
                                                 <div className="input-note">(Files size should be less than 24MB)</div>
                                                 {formSubmitted && !formData.UploadPhotos && (
                                                     <div style={{ color: "red" }}>{errors.UploadPhotos}</div>
@@ -2122,6 +2159,10 @@ function CustomerForm() {
                                                         }
                                                     }}
                                                 />
+                                                {ipDocs && <div className="mt-2">
+                                                    <strong>Current File : </strong>{" "}
+                                                    {ipDocs}
+                                                </div>}
                                                 <div className="input-note">
                                                     (Files size should be less than 24MB)
                                                 </div>
@@ -2193,6 +2234,10 @@ function CustomerForm() {
                                                         disabled={isFormSuccessfullySubmitted}
                                                         onChange={(e) => handleFileChange(e, 'UploadAuditedStatement')}
                                                     />
+                                                    {auditStatement && <div className="mt-2">
+                                                        <strong>Current File : </strong>{" "}
+                                                        {auditStatement}
+                                                    </div>}
                                                     <div className="input-note">
                                                         (Files size should be less than 24MB)
                                                     </div>
@@ -2218,6 +2263,10 @@ function CustomerForm() {
                                                         disabled={isFormSuccessfullySubmitted}
                                                         onChange={(e) => handleFileChange(e, 'UploadProvisionalStatement')}
                                                     />
+                                                    {provisionalStatement && <div className="mt-2">
+                                                        <strong>Current File : </strong>{" "}
+                                                        {provisionalStatement}
+                                                    </div>}
                                                     <div className="input-note">
                                                         (Files size should be less than 24MB)
                                                     </div>
@@ -2377,6 +2426,10 @@ function CustomerForm() {
                                                     }
                                                 }}
                                             />
+                                            {declaration && <div className="mt-2">
+                                                <strong>Current File : </strong>{" "}
+                                                {declaration}
+                                            </div>}
                                             <div className="input-note">
                                                 (Files size should be less than 24MB)
                                             </div>
@@ -2411,6 +2464,10 @@ function CustomerForm() {
                                                     }
                                                 }}
                                             />
+                                            {relevantDocs && <div className="mt-2">
+                                                <strong>Current File : </strong>{" "}
+                                                {relevantDocs}
+                                            </div>}
                                             <div className="input-note">
                                                 (Files size should be less than 24MB)
                                             </div>

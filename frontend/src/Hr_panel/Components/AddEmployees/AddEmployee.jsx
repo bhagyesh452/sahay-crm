@@ -11,6 +11,8 @@ import woman from "../../../static/my-images/woman.png";
 import HrEmployees from "../HrEmployees";
 import NewEmployees from "../NewEmployees";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { FaCopy } from "react-icons/fa";
 
 const steps = ['Personal Information', 'Employment Information',
   'Payroll Information', 'Emergency Contact', ' Employee Documents', 'Preview'];
@@ -21,7 +23,31 @@ export default function HorizontalNonLinearStepper() {
   const [isStepperOpen, setIsStepperOpen] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
+  const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
+  const [isEditable, setIsEditable] = useState(true);
+
+  const navigate = useNavigate();
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidMobileNumber = (mobileNumber) => {
+    const mobileNumberRegex = /^[6-9]\d{9}$/;
+    return mobileNumberRegex.test(mobileNumber);
+  };
+
+  const isValidPAN = (pan) => {
+    const regex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    return regex.test(pan);
+  };
+
+  const isValidAadhar = (aadhar) => {
+    const regex = /^\d{12}$/;
+    return regex.test(aadhar);
+  };
 
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
@@ -30,8 +56,79 @@ export default function HorizontalNonLinearStepper() {
     gender: "",
     personalPhoneNo: "",
     personalEmail: "",
-    address: ""
+    currentAddress: "",
+    permanentAddress: ""
   });
+  const validatePersonalInfo = () => {
+    const newErrors = {};
+    const { firstName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
+
+    if (!firstName) newErrors.firstName = "First name is required";
+    if (!lastName) newErrors.lastName = "Last name is required";
+    if (!dob) newErrors.dob = "Date of birth is required";
+    if (!gender) newErrors.gender = "Gender is required";
+    if (!personalPhoneNo) newErrors.personalPhoneNo = "Phone number is required";
+    else if (!isValidMobileNumber(personalPhoneNo)) newErrors.personalPhoneNo = "Invalid mobile number";
+    if (!personalEmail) newErrors.personalEmail = "Email address is required";
+    else if (!isValidEmail(personalEmail)) newErrors.personalEmail = "Invalid email address";
+    if (!currentAddress) newErrors.currentAddress = "Current Address is required";
+    if (!permanentAddress) newErrors.permanentAddress = "Permanent Address is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const departmentDesignations = {
+    "Start-Up": [
+      "Admin Head",
+      "Accountant",
+      "Data Analyst",
+      "Content Writer",
+      "Graphic Designer",
+      "Company Secretary",
+      "Relationship Manager",
+      "Admin Executive",
+    ],
+    HR: ["HR Manager", "HR Recruiter"],
+    Operation: [
+      "Finance Analyst",
+      "Content Writer",
+      "Relationship Manager",
+      "Graphic Designer",
+      "Research Analyst",
+    ],
+    IT: [
+      "Web Developer",
+      "Software Developer",
+      "SEO Executive",
+      "Graphic Designer",
+      "Content Writer",
+      "App Developer",
+      "Digital Marketing Executive",
+      "Social Media Executive",
+    ],
+    Sales: [
+      "Business Development Executive",
+      "Business Development Manager",
+      "Sales Manager",
+      "Team Leader",
+      "Floor Manager",
+    ],
+    Others: ["Receptionist"],
+  };
+
+  const renderDesignationOptions = () => {
+    const selectedDepartment = employeementInfo.department;
+    if (!selectedDepartment || selectedDepartment === "Select Department") {
+      return <option value="">Select Designation</option>;
+    }
+
+    return departmentDesignations[selectedDepartment]?.map((designation) => (
+      <option key={designation} value={designation}>
+        {designation}
+      </option>
+    ));
+  };
 
   const [employeementInfo, setEmployeementInfo] = useState({
     empId: empId || "",
@@ -44,6 +141,24 @@ export default function HorizontalNonLinearStepper() {
     officialNo: "",
     officialEmail: ""
   });
+  const validateEmploymentInfo = () => {
+    const newErrors = {};
+    const { department, designation, joiningDate, branch, employeementType, manager, officialNo, officialEmail } = employeementInfo;
+
+    if (!department) newErrors.department = "Please select Department";
+    if (!designation) newErrors.designation = "Please select Employee Designation";
+    if (!joiningDate) newErrors.joiningDate = "Date of Joining is required";
+    if (!branch) newErrors.branch = "Please select Branch Office";
+    if (!employeementType) newErrors.employeementType = "Please select Employment Type";
+    if (!manager) newErrors.manager = "Reporting Manager is required";
+    if (!officialNo) newErrors.officialNo = "Mobile Number is required";
+    else if (!isValidMobileNumber(officialNo)) newErrors.officialNo = "Invalid mobile number";
+    if (!officialEmail) newErrors.officialEmail = "Email ID is required";
+    else if (!isValidEmail(officialEmail)) newErrors.officialEmail = "Invalid email address";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const [payrollInfo, setPayrollInfo] = useState({
     accountNo: "",
@@ -51,25 +166,93 @@ export default function HorizontalNonLinearStepper() {
     ifscCode: "",
     salary: "",
     firstMonthSalary: "",
+    salaryCalculation: "",
     offerLetter: "",
     panNumber: "",
     aadharNumber: "",
     uanNumber: ""
   });
+  const validatePayrollInfo = () => {
+    const newErrors = {};
+    const { accountNo, bankName, ifscCode, salary, firstMonthSalary, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+
+    if (!accountNo) newErrors.accountNo = "Account Number is required";
+    if (!bankName) newErrors.bankName = "Bank Name is required";
+    if (!ifscCode) newErrors.ifscCode = "IFSC Code is required";
+
+    // Validate Salary Details
+    if (!salary) newErrors.salary = "Basic Salary is required";
+    else if (isNaN(salary) || salary <= 0) newErrors.salary = "Invalid Salary amount";
+
+    // Validate First Month Salary Condition
+    if (!firstMonthSalary) newErrors.firstMonthSalary = "First Month Salary Condition is required";
+
+    // Validate Offer Letter (File Upload)
+    if (!offerLetter) newErrors.offerLetter = "Offer Letter is required";
+
+    // Validate PAN Number
+    if (!panNumber) newErrors.panNumber = "PAN Number is required";
+    else if (!isValidPAN(panNumber)) newErrors.panNumber = "Invalid PAN Number";
+
+    // Validate Aadhar Number
+    if (!aadharNumber) newErrors.aadharNumber = "Aadhar Number is required";
+    else if (!isValidAadhar(aadharNumber)) newErrors.aadharNumber = "Invalid Aadhar Number";
+
+    // Validate UAN Number
+    // if (!uanNumber) newErrors.uanNumber = "UAN Number is required";
+
+    setErrors(newErrors); // Assuming `setErrors` is used to manage error state
+    return Object.keys(newErrors).length === 0;
+  };
 
   const [emergencyInfo, setEmergencyInfo] = useState({
     personName: "",
     relationship: "",
     personPhoneNo: ""
   });
+  const validateEmergencyInfo = () => {
+    const newErrors = {};
+    const { personName, relationship, personPhoneNo } = emergencyInfo;
+
+    // Validate Emergency Contact Details
+    if (!personName) newErrors.personName = "Emergency Contact Name is required";
+    if (!relationship) newErrors.relationship = "Please select Relationship";
+    if (!personPhoneNo) newErrors.personPhoneNo = "Emergency Contact Number is required";
+    else if (!isValidMobileNumber(personPhoneNo)) newErrors.personPhoneNo = "Invalid Phone Number";
+
+    setErrors(newErrors); // Assuming `setErrors` is used to manage error state
+    return Object.keys(newErrors).length === 0;
+  };
 
   const [empDocumentInfo, setEmpDocumentInfo] = useState({
     aadharCard: "",
     panCard: "",
     educationCertificate: "",
     relievingCertificate: "",
-    salarySlip: ""
+    salarySlip: "",
+    profilePhoto: ""
   });
+  const validateEmpDocumentInfo = () => {
+    const newErrors = {};
+    const { aadharCard, panCard, educationCertificate, relievingCertificate, salarySlip, profilePhoto } = empDocumentInfo;
+
+    // Validate Document Uploads
+    if (!aadharCard) newErrors.aadharCard = "Aadhar Card is required";
+    if (!panCard) newErrors.panCard = "PAN Card is required";
+    if (!educationCertificate) newErrors.educationCertificate = "Education Certificate is required";
+    if (!relievingCertificate) newErrors.relievingCertificate = "Relieving Certificate is required";
+    if (!salarySlip) newErrors.salarySlip = "Salary Slip is required";
+    // if (!profilePhoto) newErrors.profilePhoto = "Profile Photo is required";
+
+    setErrors(newErrors); // Assuming `setErrors` is used to manage error state
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const calculateSalary = (salary, firstMonthSalary) => {
+    if (!salary || !firstMonthSalary) return '';
+    const percentage = parseFloat(firstMonthSalary) / 100;
+    return (parseFloat(salary) * percentage);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target; // name is the name attribute of the input field and value is the current value of the input field.
@@ -81,13 +264,27 @@ export default function HorizontalNonLinearStepper() {
       ...prevState,
       [name]: value
     }));
-    setPayrollInfo(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setPayrollInfo((prevState) => {
+      const updatedState = {
+        ...prevState,
+        [name]: value,
+      };
+      if (name === 'salary' || name === 'firstMonthSalary') {
+        updatedState.salaryCalculation = calculateSalary(
+          updatedState.salary,
+          updatedState.firstMonthSalary
+        );
+      }
+      return updatedState;
+    });
     setEmergencyInfo(prevState => ({
       ...prevState,
       [name]: value
+    }));
+    // Clear error for this field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: ""
     }));
   };
 
@@ -95,29 +292,66 @@ export default function HorizontalNonLinearStepper() {
     const { name, value } = e.target;
 
     // Update the respective state based on radio button selection
-    if (name === 'gender') {
-      setPersonalInfo(prevState => ({
-        ...prevState,
-        gender: value
-      }));
-    } else if (name === 'firstMonthSalary') {
-      setPayrollInfo(prevState => ({
-        ...prevState,
-        firstMonthSalary: value
-      }));
+    if (name === 'firstMonthSalary') {
+      setPayrollInfo((prevState) => {
+        const updatedState = {
+          ...prevState,
+          firstMonthSalary: value,
+        };
+        updatedState.salaryCalculation = calculateSalary(
+          updatedState.salary,
+          value
+        );
+        return updatedState;
+      });
     }
+    // Clear error for this field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: ""
+    }));
   };
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setPayrollInfo(prevState => ({
-      ...prevState,
-      [name]: files[0] // Get the first file selected
-    }));
-    setEmpDocumentInfo(prevState => ({
-      ...prevState,
-      [name]: files[0] // Get the first file selected
-    }));
+    const file = files[0];
+
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+      const maxSizeMB = 24;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+      if (!allowedTypes.includes(file.type)) {
+        // Update the error state if file type is invalid
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Invalid file type. Only JPG, JPEG, PNG, and PDF files are allowed."
+        }));
+        return;
+      }
+
+      if (file.size > maxSizeBytes) {
+        // Update the error state if file size exceeds limit
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `File size exceeds ${maxSizeMB} MB limit.`
+        }));
+        return;
+      }
+      setPayrollInfo(prevState => ({
+        ...prevState,
+        [name]: files[0] // Get the first file selected
+      }));
+      setEmpDocumentInfo(prevState => ({
+        ...prevState,
+        [name]: files[0] // Get the first file selected
+      }));
+      // Clear error for this field
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: ""
+      }));
+    }
   };
 
   const totalSteps = () => steps.length;
@@ -128,12 +362,26 @@ export default function HorizontalNonLinearStepper() {
 
   const allStepsCompleted = () => completedSteps() === totalSteps();
 
+  // const handleNext = () => {
+  //   const newActiveStep =
+  //     isLastStep() && !allStepsCompleted()
+  //       ? steps.findIndex((_, i) => !(i in completed))
+  //       : activeStep + 1;
+  //   setActiveStep(newActiveStep);
+  // };
+
   const handleNext = () => {
-    const newActiveStep =
-      isLastStep() && !allStepsCompleted()
-        ? steps.findIndex((_, i) => !(i in completed))
-        : activeStep + 1;
-    setActiveStep(newActiveStep);
+    if (activeStep === 0 && validatePersonalInfo()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 1 && validateEmploymentInfo()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 2 && validatePayrollInfo()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 3 && validateEmergencyInfo()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 4 && validateEmpDocumentInfo()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -141,7 +389,6 @@ export default function HorizontalNonLinearStepper() {
       setIsStepperOpen(false); // Hide the stepper form
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
-      // handlePrev();
     }
   };
 
@@ -152,61 +399,71 @@ export default function HorizontalNonLinearStepper() {
   // console.log("Active step :", activeStep);
 
   const handleComplete = async () => {
-    setCompleted((prevCompleted) => ({
-      ...prevCompleted,
-      [activeStep]: true
-    }));
-    if (activeStep === 0) {
+    if (activeStep === 0 && validatePersonalInfo()) {
       try {
         const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);
-        console.log("Employee created successfully", res.data);
+        // console.log("Employee created successfully", res.data);
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
       } catch (error) {
-        console.log("Error creating employee :", error);
+        console.log("Error creating employee:", error);
       }
-    }
-    if (activeStep === 1) {
+    } else if (activeStep === 1 && validateEmploymentInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
-        console.log("Employee updated successfully at step-1 :", res.data.data);
+        // console.log("Employee updated successfully at step-1 :", res.data.data);
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
       } catch (error) {
         console.log("Error updating employee :", error);
       }
-    }
-    if (activeStep === 2) {
-      // console.log("Payroll Info is :", payrollInfo);
+    } else if (activeStep === 2 && validatePayrollInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, payrollInfo, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-        console.log("Employee updated successfully at step-2 :", res.data.data);
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        // console.log("Employee updated successfully at step-2 :", res.data.data);
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
       } catch (error) {
-        console.log("Error updating employee :", error);
+        console.log("Error updating employee:", error);
       }
-    }
-    if (activeStep === 3) {
+    } else if (activeStep === 3 && validateEmergencyInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
-        console.log("Employee updated successfully at step-3 :", res.data.data);
+        // console.log("Emergency info updated successfully at step-3 :", res.data.data);
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
       } catch (error) {
-        console.log("Error updating employee :", error);
+        console.log("Error updating emergency info:", error);
       }
-    }
-    if (activeStep === 4) {
+    } else if (activeStep === 4 && validateEmpDocumentInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, empDocumentInfo, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-        console.log("Employee updated successfully at step-4 :", res.data.data);
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        // console.log("Document info updated successfully at step-4 :", res.data.data);
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
       } catch (error) {
-        console.log("Error updating employee :", error);
+        console.log("Error updating document info:", error);
       }
-    }
-    if (activeStep === 5) {
-      if(personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
+    } else if (activeStep === 5) {
+      if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
         Swal.fire({
           icon: "success",
           title: "Form Submitted",
@@ -220,7 +477,9 @@ export default function HorizontalNonLinearStepper() {
         });
       }
     }
-    handleNext();
+    if (activeStep < 5) {
+      handleNext();
+    }
   };
 
   const handleSubmit = async () => {
@@ -250,7 +509,7 @@ export default function HorizontalNonLinearStepper() {
   const fetchEmployee = async () => {
     try {
       const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromPersonalEmail/${personalInfo.personalEmail}`);
-      // console.log("Fetched employee is :", res.data.data);
+      console.log("Fetched employee is :", res.data.data);
       setEmpId(res.data.data._id);
       // console.log("Employee id is :", res.data.data._id);
     } catch (error) {
@@ -279,7 +538,7 @@ export default function HorizontalNonLinearStepper() {
               ))}
             </Stepper>
 
-            <div className="steprForm-bg">
+            <div className="steprForm-bg he_steprForm_e_add">
               <div className="steprForm">
                 {allStepsCompleted() ? (
                   <React.Fragment>
@@ -305,7 +564,7 @@ export default function HorizontalNonLinearStepper() {
                               <div className="row">
                                 <div className="col-sm-5">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Company">Employee's Full Name<span style={{ color: "red" }}> * </span></label>
+                                    <label for="fullName">Full Name<span style={{ color: "red" }}> * </span></label>
                                     <div className="row">
                                       <div className="col">
                                         <input
@@ -313,9 +572,10 @@ export default function HorizontalNonLinearStepper() {
                                           name="firstName"
                                           className="form-control mt-1 text-uppercase"
                                           placeholder="First name"
-                                          value={personalInfo.firstName}
+                                          value={personalInfo.firstName.trim()}
                                           onChange={handleInputChange}
                                         />
+                                        {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
                                       </div>
                                       <div className="col">
                                         <input
@@ -323,16 +583,17 @@ export default function HorizontalNonLinearStepper() {
                                           name="lastName"
                                           className="form-control mt-1 text-uppercase"
                                           placeholder="Last name"
-                                          value={personalInfo.lastName}
+                                          value={personalInfo.lastName.trim()}
                                           onChange={handleInputChange}
                                         />
+                                        {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="col-sm-3">
+                                <div className="col-sm-2">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Company">Date of Birth<span style={{ color: "red" }}> * </span></label>
+                                    <label for="dob">Date of Birth<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="date"
                                       name="dob"
@@ -340,58 +601,27 @@ export default function HorizontalNonLinearStepper() {
                                       value={personalInfo.dob}
                                       onChange={handleInputChange}
                                     />
+                                    {errors.dob && <p style={{ color: "red" }}>{errors.dob}</p>}
                                   </div>
                                 </div>
-                                <div className="col-sm-4">
+                                <div className="col-sm-2">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Company">Select Gender<span style={{ color: "red" }}> * </span></label>
-                                    <div className="d-flex align-items-center">
-                                      <div className="stepper_radio_custom mr-1">
-                                        <input
-                                          type="radio"
-                                          name="gender"
-                                          value="Male"
-                                          id="r1"
-                                          checked={personalInfo.gender === 'Male'}
-                                          onChange={handleRadioChange}
-                                        />
-                                        <label class="stepper_radio-alias" for="r1">
-                                          <div className="d-flex align-items-center justify-content-center">
-                                            <div className="radio-alias-i">
-                                              <img src={man}></img>
-                                            </div>
-                                            <div className="radio-alias-t ">
-                                              Male
-                                            </div>
-                                          </div>
-                                        </label>
-                                      </div>
-                                      <div className="stepper_radio_custom">
-                                        <input
-                                          type="radio"
-                                          name="gender"
-                                          value="Female"
-                                          id="r2"
-                                          checked={personalInfo.gender === 'Female'}
-                                          onChange={handleRadioChange}
-                                        />
-                                        <label class="stepper_radio-alias" for="r2">
-                                          <div className="d-flex align-items-center justify-content-center">
-                                            <div className="radio-alias-i">
-                                              <img src={woman}></img>
-                                            </div>
-                                            <div className="radio-alias-t">
-                                              Female
-                                            </div>
-                                          </div>
-                                        </label>
-                                      </div>
-                                    </div>
+                                    <label for="geneder">Select Gender<span style={{ color: "red" }}> * </span></label>
+                                    <select
+                                      className="form-select mt-1"
+                                      name="gender"
+                                      id="Gender"
+                                      value={personalInfo.gender}
+                                      onChange={handleInputChange}
+                                    >
+                                      <option value="Select Gender" selected> Select Gender</option>
+                                      <option value="Male">Male</option>
+                                      <option value="Female">Female</option>
+                                    </select>
+                                    {errors.gender && <p style={{ color: "red" }}>{errors.gender}</p>}
                                   </div>
                                 </div>
-                              </div>
-                              <div className="row">
-                                <div className="col-sm-4">
+                                <div className="col-sm-3">
                                   <div className="form-group mt-2 mb-2">
                                     <label for="phoneno">Phone No<span style={{ color: "red" }}> * </span></label>
                                     <input
@@ -403,8 +633,11 @@ export default function HorizontalNonLinearStepper() {
                                       value={personalInfo.personalPhoneNo}
                                       onChange={handleInputChange}
                                     />
+                                    {errors.personalPhoneNo && <p style={{ color: "red" }}>{errors.personalPhoneNo}</p>}
                                   </div>
                                 </div>
+                              </div>
+                              <div className="row">
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label for="email">Email Address<span style={{ color: "red" }}> * </span></label>
@@ -417,20 +650,52 @@ export default function HorizontalNonLinearStepper() {
                                       value={personalInfo.personalEmail}
                                       onChange={handleInputChange}
                                     />
+                                    {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
                                   </div>
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="address">Current Address<span style={{ color: "red" }}> * </span></label>
+                                    <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
                                     <textarea
                                       rows={1}
-                                      name="address"
+                                      name="currentAddress"
                                       className="form-control mt-1"
-                                      id="address"
+                                      id="currentAddress"
                                       placeholder="Current address"
-                                      value={personalInfo.address}
+                                      value={personalInfo.currentAddress}
                                       onChange={handleInputChange}
                                     ></textarea>
+                                    {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label for="permanentAddress" className="d-flex align-items-center justify-content-between">
+                                      <div>Permanent Address<span style={{ color: "red" }}> * </span></div>
+                                      <button style={{ border: "none" }}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setPersonalInfo((prevState) => ({
+                                            ...prevState,
+                                            permanentAddress: prevState.currentAddress
+                                          }));
+                                        }}
+                                      >
+                                        <div style={{ fontSize: '11px', cursor: 'pointer', color: '#ffb900' }}>
+                                          Same as Current Address<span><FaCopy /></span>
+                                        </div>
+                                      </button>
+                                    </label>
+                                    <textarea
+                                      rows={1}
+                                      name="permanentAddress"
+                                      className="form-control mt-1"
+                                      id="permanentAddress"
+                                      placeholder="Current address"
+                                      value={personalInfo.permanentAddress}
+                                      onChange={handleInputChange}
+                                    ></textarea>
+                                    {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
                                   </div>
                                 </div>
                               </div>
@@ -473,10 +738,14 @@ export default function HorizontalNonLinearStepper() {
                                     onChange={handleInputChange}
                                   >
                                     <option value="Select Department" selected> Select Department</option>
-                                    <option value="Admin">Admin</option>
+                                    <option value="Start-Up">Start-Up</option>
+                                    <option value="HR">HR</option>
+                                    <option value="Operation">Operation</option>
+                                    <option value="IT">IT</option>
                                     <option value="Sales">Sales</option>
                                     <option value="Others">Others</option>
                                   </select>
+                                  {errors.department && <p style={{ color: "red" }}>{errors.department}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -489,20 +758,10 @@ export default function HorizontalNonLinearStepper() {
                                     value={employeementInfo.designation}
                                     onChange={handleInputChange}
                                   >
-                                    <option value="Select Designation" selected>Select Designation</option>
-                                    <option value="Sales-executive">Sales Exexutive</option>
-                                    <option value="Sales-manager">Sales Manager</option>
-                                    <option value="Graphic-designer">Graphic Designer</option>
-                                    <option value="Software-developer">Software Developer</option>
-                                    <option value="Finance-analyst">Finance Analyst</option>
-                                    <option value="Content-writer">Content Writer</option>
-                                    <option value="Data-manager">Data Manager</option>
-                                    <option value="Admin-team">Admin Team</option>
-                                    <option value="HR">HR</option>
-                                    <option value="RM-certification">RM-Certification</option>
-                                    <option value="RM-funding">RM-Funding</option>
-                                    <option value="Others">Others</option>
+                                    <option value="Select Designation">Select Designation</option>
+                                    {renderDesignationOptions()}
                                   </select>
+                                  {errors.designation && <p style={{ color: "red" }}>{errors.designation}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -517,6 +776,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={employeementInfo.joiningDate}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.joiningDate && <p style={{ color: "red" }}>{errors.joiningDate}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -533,6 +793,7 @@ export default function HorizontalNonLinearStepper() {
                                     <option value="Gota">Gota</option>
                                     <option value="Sindhu Bhavan">Sindhu Bhavan</option>
                                   </select>
+                                  {errors.branch && <p style={{ color: "red" }}>{errors.branch}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -552,11 +813,14 @@ export default function HorizontalNonLinearStepper() {
                                     <option value="Intern">Intern</option>
                                     <option value="Other">Other</option>
                                   </select>
+                                  {errors.employeementType && <p style={{ color: "red" }}>{errors.employeementType}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
                                 <div className="form-group mt-2 mb-2">
-                                  <label for="Reporting">Reporting Manager<span style={{ color: "red" }}> * </span></label>
+                                  <label for="Reporting">Reporting Manager
+                                    <span style={{ color: "red" }}> * </span>
+                                  </label>
                                   <input
                                     type="text"
                                     className="form-control mt-1"
@@ -566,6 +830,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={employeementInfo.manager}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.manager && <p style={{ color: "red" }}>{errors.manager}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -580,6 +845,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={employeementInfo.officialNo}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.officialNo && <p style={{ color: "red" }}>{errors.officialNo}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -594,6 +860,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={employeementInfo.officialEmail}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.officialEmail && <p style={{ color: "red" }}>{errors.officialEmail}</p>}
                                 </div>
                               </div>
                             </div>
@@ -623,6 +890,7 @@ export default function HorizontalNonLinearStepper() {
                                         value={payrollInfo.accountNo}
                                         onChange={handleInputChange}
                                       />
+                                      {errors.accountNo && <p style={{ color: "red" }}>{errors.accountNo}</p>}
                                     </div>
                                     <div className="col">
                                       <input
@@ -633,6 +901,7 @@ export default function HorizontalNonLinearStepper() {
                                         value={payrollInfo.bankName}
                                         onChange={handleInputChange}
                                       />
+                                      {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
                                     </div>
                                     <div className="col">
                                       <input
@@ -643,11 +912,12 @@ export default function HorizontalNonLinearStepper() {
                                         value={payrollInfo.ifscCode}
                                         onChange={handleInputChange}
                                       />
+                                      {errors.ifscCode && <p style={{ color: "red" }}>{errors.ifscCode}</p>}
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-sm-4">
+                              <div className="col-sm-3">
                                 <div className="form-group mt-2 mb-2">
                                   <label>Salary Details<span style={{ color: "red" }}> * </span></label>
                                   <input
@@ -658,9 +928,10 @@ export default function HorizontalNonLinearStepper() {
                                     value={payrollInfo.salary}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.salary && <p style={{ color: "red" }}>{errors.salary}</p>}
                                 </div>
                               </div>
-                              <div className="col-sm-4">
+                              <div className="col-sm-3">
                                 <div className="form-group mt-2 mb-2">
                                   <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
                                   <div className="d-flex align-items-center">
@@ -699,9 +970,24 @@ export default function HorizontalNonLinearStepper() {
                                       </label>
                                     </div>
                                   </div>
+                                  {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
                                 </div>
                               </div>
-                              <div className="col-sm-4">
+                              <div className="col-sm-3">
+                                <div className="form-group mt-2 mb-2">
+                                  <label>1<sup>st</sup> Month's Salary Calculation</label>
+                                  <input
+                                    type="text"
+                                    className="form-control mt-1"
+                                    name="salaryCalculation"
+                                    placeholder="Calculated Salary"
+                                    value={payrollInfo.salaryCalculation}
+                                    onChange={handleInputChange}
+                                    disabled
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-sm-3">
                                 <div class="form-group mt-2">
                                   <label class="form-label" for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
                                   <input
@@ -711,6 +997,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="offerLetter"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -725,6 +1012,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={payrollInfo.panNumber}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.panNumber && <p style={{ color: "red" }}>{errors.panNumber}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -739,11 +1027,14 @@ export default function HorizontalNonLinearStepper() {
                                     value={payrollInfo.aadharNumber}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.aadharNumber && <p style={{ color: "red" }}>{errors.aadharNumber}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
                                 <div className="form-group mt-2 mb-2">
-                                  <label for="UANNumber">UAN  Number<span style={{ color: "red" }}> * </span></label>
+                                  <label for="UANNumber">UAN  Number
+                                    {/* <span style={{ color: "red" }}> * </span> */}
+                                  </label>
                                   <input
                                     type="text"
                                     className="form-control mt-1"
@@ -753,6 +1044,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={payrollInfo.uanNumber}
                                     onChange={handleInputChange}
                                   />
+                                  {/* {errors.uanNumber && <p style={{ color: "red" }}>{errors.uanNumber}</p>} */}
                                 </div>
                               </div>
                             </div>
@@ -781,6 +1073,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={emergencyInfo.personName}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.personName && <p style={{ color: "red" }}>{errors.personName}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -798,6 +1091,7 @@ export default function HorizontalNonLinearStepper() {
                                     <option value="Mother">Mother</option>
                                     <option value="Spouse">Spouse</option>
                                   </select>
+                                  {errors.relationship && <p style={{ color: "red" }}>{errors.relationship}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -812,6 +1106,7 @@ export default function HorizontalNonLinearStepper() {
                                     value={emergencyInfo.personPhoneNo}
                                     onChange={handleInputChange}
                                   />
+                                  {errors.personPhoneNo && <p style={{ color: "red" }}>{errors.personPhoneNo}</p>}
                                 </div>
                               </div>
                             </div>
@@ -838,6 +1133,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="aadharCard"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -850,6 +1146,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="panCard"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -862,6 +1159,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="educationCertificate"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -874,6 +1172,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="relievingCertificate"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>}
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -886,6 +1185,20 @@ export default function HorizontalNonLinearStepper() {
                                     id="salarySlip"
                                     onChange={handleFileChange}
                                   />
+                                  {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>}
+                                </div>
+                              </div>
+                              <div className="col-sm-4">
+                                <div class="form-group mt-3">
+                                  <label class="form-label" for="profilePhoto">Profile Photo</label>
+                                  <input
+                                    type="file"
+                                    className="form-control mt-1"
+                                    name="profilePhoto"
+                                    id="profilePhoto"
+                                    onChange={handleFileChange}
+                                  />
+                                  {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                                 </div>
                               </div>
                             </div>
@@ -982,7 +1295,17 @@ export default function HorizontalNonLinearStepper() {
                                 </div>
                                 <div className="col-sm-9 p-0">
                                   <div className="form-label-data">
-                                    {personalInfo.address || "-"}
+                                    {personalInfo.currentAddress || "-"}
+                                  </div>
+                                </div>
+                                <div className="col-sm-3 p-0">
+                                  <div className="form-label-name">
+                                    <b>Permanent Address</b>
+                                  </div>
+                                </div>
+                                <div className="col-sm-9 p-0">
+                                  <div className="form-label-data">
+                                    {personalInfo.permanentAddress || "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1169,12 +1492,24 @@ export default function HorizontalNonLinearStepper() {
                               <div className="row m-0">
                                 <div className="col-sm-3 p-0">
                                   <div className="form-label-name">
-                                    <b>First Month Salary</b>
+                                    <b>First Month Salary Condition</b>
                                   </div>
                                 </div>
                                 <div className="col-sm-9 p-0">
                                   <div className="form-label-data">
                                     {payrollInfo.firstMonthSalary === "50" ? "50%" : payrollInfo.firstMonthSalary === "100" ? "100%" : "-"}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row m-0">
+                                <div className="col-sm-3 p-0">
+                                  <div className="form-label-name">
+                                    <b>First Month Calculated Salary</b>
+                                  </div>
+                                </div>
+                                <div className="col-sm-9 p-0">
+                                  <div className="form-label-data">
+                                    {payrollInfo.salaryCalculation || "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1348,6 +1683,18 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                 </div>
                               </div>
+                              <div className="row m-0">
+                                <div className="col-sm-3 p-0">
+                                  <div className="form-label-name">
+                                    <b>Profile Photo</b>
+                                  </div>
+                                </div>
+                                <div className="col-sm-9 p-0">
+                                  <div className="form-label-data">
+                                    {empDocumentInfo.profilePhoto ? empDocumentInfo.profilePhoto.name : "-"}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
 
@@ -1427,15 +1774,8 @@ export default function HorizontalNonLinearStepper() {
                       >
                         Reset
                       </Button>
+
                       <Box sx={{ flex: "1 1 auto" }} />
-                      <Button
-                        onClick={handleNext}
-                        variant="contained"
-                        sx={{ mr: 1 }}
-                        disabled={!completed[activeStep]}
-                      >
-                        Next
-                      </Button>
                       {activeStep !== steps.length &&
                         (completed[activeStep] ? (
                           <>
@@ -1463,15 +1803,15 @@ export default function HorizontalNonLinearStepper() {
                               : "Save Draft"}
                           </Button>
                         ))}
-                      {completedSteps() === totalSteps() && (
-                        <Button
-                          onClick={handleSubmit}
-                          variant="contained"
-                          sx={{ background: "#ffba00 " }}
-                        >
-                          Submit
-                        </Button>
-                      )}
+                      <Button
+                        onClick={handleNext}
+                        variant="contained"
+                        sx={{ mr: 1 }}
+                        disabled={!completed[activeStep]}
+                      >
+                        Next
+                      </Button>
+
                     </Box>
                   </React.Fragment>
                 )}

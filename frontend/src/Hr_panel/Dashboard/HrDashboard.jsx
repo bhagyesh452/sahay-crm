@@ -11,6 +11,7 @@ function Dashboard(){
         <div>
             <Header  />
             <Navbar />
+            <h1>Dashboard</h1>
         </div>
     )
 }
