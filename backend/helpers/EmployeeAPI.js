@@ -138,14 +138,13 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
 
 router.post("/einfo", async (req, res) => {
   try {
-    const { firstName, lastName, personalPhoneNo, personalEmail, address } = req.body;
+    const { firstName, lastName, personalPhoneNo, personalEmail } = req.body;
     console.log("Reqest body is :", req.body);
     adminModel.create({
       ...req.body,
       ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
       personal_number: personalPhoneNo,
       personal_email: personalEmail,
-      personal_address: address,
       AddedOn: new Date()
     }).then((result) => {
       // Change res to result
@@ -186,7 +185,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   const { personalEmail } = req.params;
-  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, personName, relationship, personPhoneNo} = req.body;
+  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo} = req.body;
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -223,6 +222,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
         branchOffice: branch,
         reportingManager: manager || "",
         firstMonthSalaryCondition: firstMonthSalary,
+        firstMonthSalary: salaryCalculation,
         offerLetter: offerLetterDetails || [],
         personal_contact_person: personName,
         personal_contact_person_relationship: relationship,
@@ -1643,7 +1643,7 @@ router.post(
   "/post-employee-detail-byhr/:userId",
   async (req, res) => {
     const { userId } = req.params;
-    const { personal_email, personal_number, personal_contact_person, personal_address } = req.body;
+    const { personal_email, personal_number, personal_contact_person, currentAddress } = req.body;
 
     try {
       const updatedEmployee = await adminModel.findByIdAndUpdate(
@@ -1652,7 +1652,7 @@ router.post(
           personal_email,
           personal_number,
           personal_contact_person,
-          personal_address,
+          currentAddress,
         },
         { new: true } // This option returns the updated document
       );

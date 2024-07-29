@@ -30,7 +30,10 @@ const yourSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  personal_address: {
+  currentAddress: {
+    type: String
+  },
+  permanentAddress: {
     type: String
   },
   department: {
@@ -76,6 +79,9 @@ const yourSchema = new mongoose.Schema({
   },
   firstMonthSalaryCondition: {
     type: String
+  },
+  firstMonthSalary: {
+    type: Number
   },
   offerLetter: {
     type: [fileSchema]

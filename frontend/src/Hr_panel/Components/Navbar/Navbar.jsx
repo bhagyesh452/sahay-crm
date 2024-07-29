@@ -43,13 +43,13 @@ function Navbar({userId}) {
                             <ul className="navbar-nav">
                                 <li className="nav-item" 
                                     class={
-                                        location.pathname === `/bdmdashboard/${userId}` ? "nav-item active" : "nav-item"
+                                        location.pathname === `/hr/dashboard` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
-                                        // to={{
-                                        //     pathname: `/bdmdashboard/${userId}`
-                                        // }}
+                                        to={{
+                                            pathname: `/hr/dashboard`
+                                        }}
 
                                     >
                                         <a className="nav-link" href="./">
