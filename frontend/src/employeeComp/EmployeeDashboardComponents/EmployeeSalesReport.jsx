@@ -25,8 +25,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
+  const cleanString = (str) => (str ? str.replace(/\u00A0/g, ' ').replace(/\s+/g, '').toLowerCase() : '');
 
-  console.log("employeeData", data)
+  //console.log("employeeData", data)
 
 
   // ********************************************************************  Declarations ***************************************************************** 
@@ -44,72 +45,72 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const functionCalculateMatured = (istrue) => {
     let maturedCount = 0;
     const today = new Date();
+    
 
     redesignedData.map((mainBooking) => {
-
-      let condition = false;
-      switch (Filterby) {
-        case 'Today':
-          condition = (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-          break;
-        case 'Last Month':
-          condition = (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-          break;
-        case 'This Month':
-          condition = (new Date(mainBooking.bookingDate).getMonth() === today.getMonth())
-          break;
-        default:
-          break;
-      }
-      if (condition) {
-
-        if (mainBooking.bdeName === mainBooking.bdmName) {
-          maturedCount = maturedCount + 1
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-          maturedCount = maturedCount + 0.5;
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-          if (mainBooking.bdeName === data.ename) {
-            maturedCount = maturedCount + 1;
-          }
-        }
-      }
-
-
-
-      mainBooking.moreBookings.map((moreObject) => {
+        const bookingDate = new Date(mainBooking.bookingDate);
         let condition = false;
         switch (Filterby) {
-          case 'Today':
-            condition = (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-            break;
-          case 'Last Month':
-            condition = (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-            break;
-          case 'This Month':
-            condition = (new Date(moreObject.bookingDate).getMonth() === today.getMonth())
-            break;
-          default:
-            break;
+            case 'Today':
+                condition = (bookingDate.toLocaleDateString() === today.toLocaleDateString());
+                break;
+            case 'Last Month':
+                condition = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1));
+                break;
+            case 'This Month':
+                condition = (bookingDate.getMonth() === today.getMonth());
+                break;
+            default:
+                break;
         }
+
         if (condition) {
-
-          if (moreObject.bdeName === moreObject.bdmName) {
-            maturedCount = maturedCount + 1;
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-            maturedCount = maturedCount + 0.5;
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-            if (moreObject.bdeName === data.ename) {
-              maturedCount = maturedCount + 1;
+            if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+                maturedCount = maturedCount + 1;
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+                maturedCount = maturedCount + 0.5;
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+                    maturedCount = maturedCount + 1;
+                }
             }
-          }
         }
-      })
-    }
 
-    )
+        mainBooking.moreBookings.map((moreObject) => {
+            const moreBookingDate = new Date(moreObject.bookingDate);
+            let moreCondition = false;
+            switch (Filterby) {
+                case 'Today':
+                    moreCondition = (moreBookingDate.toLocaleDateString() === today.toLocaleDateString());
+                    break;
+                case 'Last Month':
+                    moreCondition = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1));
+                    break;
+                case 'This Month':
+                    moreCondition = (moreBookingDate.getMonth() === today.getMonth());
+                    break;
+                default:
+                    break;
+            }
+
+            if (moreCondition) {
+                if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+                    maturedCount = maturedCount + 1;
+                } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+                    maturedCount = maturedCount + 0.5;
+                } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                    if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+                        maturedCount = maturedCount + 1;
+                    }
+                }
+            }
+        });
+    });
+
     totalMaturedCount = totalMaturedCount + maturedCount;
     return maturedCount;
-  };
+};
+
   const functionCalculateTotalRevenue = (istrue) => {
     let achievedAmount = 0;
     const today = new Date();
@@ -172,9 +173,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //       default:
   //         break;
   //     }
-  //     if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+  //     if (condition && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
 
-  //       if (mainBooking.bdeName === mainBooking.bdmName) {
+  //       if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //         mainBooking.services.map(serv => {
   //           // console.log(serv.expanse , bdeName ,"this is services");
@@ -202,7 +203,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (mainBooking.caCase === "Yes") {
   //           add_caCommision += parseInt(mainBooking.caCommission)
   //         }
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //         achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
   //         mainBooking.services.map(serv => {
   //           // console.log(serv.expanse , bdeName ,"this is services");
@@ -230,8 +231,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (mainBooking.caCase === "Yes") {
   //           add_caCommision += parseInt(mainBooking.caCommission) / 2;
   //         }
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //         if (mainBooking.bdeName === data.ename) {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //         if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //           mainBooking.services.map(serv => {
   //             // console.log(serv.expanse , bdeName ,"this is services");
@@ -261,7 +262,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           }
   //         }
   //       }
-  //     } else if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+  //     } else if (mainBooking.remainingPayments.length !== 0 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
   //       let remainingExpanseCondition = false;
   //       switch (Filterby) {
   //         case 'Today':
@@ -283,11 +284,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         mainBooking.services.forEach(serv => {
 
   //           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-  //             if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //             if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //               remainingExpense += serv.expanse / 2;
-  //             } else if (mainBooking.bdeName === mainBooking.bdmName) {
+  //             } else if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //               remainingExpense += serv.expanse;
-  //             } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === data.ename) {
+  //             } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === cleanString(data.ename)) {
   //               remainingExpense += serv.expanse;
   //             }
   //           }
@@ -313,12 +314,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (condition) {
   //           const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
   //           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //           if (mainBooking.bdeName === mainBooking.bdmName) {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //             remainingAmount += Math.round(tempAmount);
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //             remainingAmount += Math.round(tempAmount) / 2;
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //             if (mainBooking.bdeName === data.ename) {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //             if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //               remainingAmount += Math.round(tempAmount);
   //             }
   //           }
@@ -340,9 +341,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         default:
   //           break;
   //       }
-  //       if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+  //       if (condition && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
 
-  //         if (moreObject.bdeName === moreObject.bdmName) {
+  //         if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //           moreObject.services.map(serv => {
   //             // console.log(serv.expanse , bdeName ,"this is services");
@@ -370,7 +371,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           if (moreObject.caCase === "Yes") {
   //             add_caCommision += parseInt(moreObject.caCommission);
   //           }
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
   //           moreObject.services.map(serv => {
   //             // console.log(serv.expanse , bdeName ,"this is services");
@@ -398,8 +399,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           if (moreObject.caCase === "Yes") {
   //             add_caCommision += parseInt(moreObject.caCommission) / 2;
   //           }
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //           if (moreObject.bdeName === data.ename) {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //           if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //             moreObject.services.map(serv => {
   //               // console.log(serv.expanse , bdeName ,"this is services");
@@ -430,7 +431,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           }
   //         }
 
-  //       } else if (moreObject.remainingPayments.length !== 0 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+  //       } else if (moreObject.remainingPayments.length !== 0 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
 
   //         let remainingExpanseCondition = false;
   //         switch (Filterby) {
@@ -453,11 +454,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           moreObject.services.forEach(serv => {
 
   //             if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-  //               if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //               if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //                 remainingMoreExpense += serv.expanse / 2;
-  //               } else if (moreObject.bdeName === moreObject.bdmName) {
+  //               } else if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //                 remainingMoreExpense += serv.expanse;
-  //               } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === data.ename) {
+  //               } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Support-by" && moreObject.bdemName === cleanString(data.ename)) {
   //                 remainingMoreExpense += serv.expanse;
   //               }
   //             }
@@ -484,12 +485,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
   //             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //             if (moreObject.bdeName === moreObject.bdmName) {
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //               remainingAmount += Math.round(tempAmount);
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //               remainingAmount += Math.round(tempAmount) / 2;
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //               if (moreObject.bdeName === data.ename) {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //                 remainingAmount += Math.round(tempAmount);
   //               }
   //             }
@@ -530,9 +531,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         default:
           break;
       }
-      if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (condition && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
 
-        if (mainBooking.bdeName === mainBooking.bdmName) {
+        if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
           //achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.map(serv => {
             if (serv.paymentTerms === "Full Advanced") {
@@ -569,7 +570,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission)
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
           //achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
           mainBooking.services.map(serv => {
             // console.log(serv.expanse , bdeName ,"this is services");
@@ -606,8 +607,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission) / 2;
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-          if (mainBooking.bdeName === data.ename) {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+          if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
             //achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
             mainBooking.services.map(serv => {
               if (serv.paymentTerms === "Full Advanced") {
@@ -647,7 +648,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           }
         }
       }
-      if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (mainBooking.remainingPayments.length !== 0 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
         let remainingExpanseCondition = false;
         switch (Filterby) {
           case 'Today':
@@ -668,11 +669,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
           mainBooking.services.forEach(serv => {
             if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-              if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
                 remainingExpense += serv.expanse / 2;
-              } else if (mainBooking.bdeName === mainBooking.bdmName) {
+              } else if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
                 remainingExpense += serv.expanse;
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === data.ename) {
+              } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === cleanString(data.ename)) {
                 remainingExpense += serv.expanse;
               }
             }
@@ -698,7 +699,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (condition) {
             // Find the service from mainBooking.services
             const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-            console.log("findService", mainBooking["Company Name"], findService)
+            //console.log("findService", mainBooking["Company Name"], findService)
             // Check if findService is defined
             if (findService) {
               // Calculate the tempAmount based on whether GST is included
@@ -707,12 +708,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 : Math.round(remainingObj.receivedPayment);
 
               // Update remainingAmount based on conditions
-              if (mainBooking.bdeName === mainBooking.bdmName) {
+              if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
                 remainingAmount += Math.round(tempAmount);
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
                 remainingAmount += Math.round(tempAmount) / 2;
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                if (mainBooking.bdeName === data.ename) {
+              } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
                   remainingAmount += Math.round(tempAmount);
                 }
               }
@@ -739,9 +740,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           default:
             break;
         }
-        if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+        if (condition && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
 
-          if (moreObject.bdeName === moreObject.bdmName) {
+          if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
             //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
             moreObject.services.map(serv => {
               if (serv.paymentTerms === "Full Advanced") {
@@ -778,7 +779,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (moreObject.caCase === "Yes") {
               add_caCommision += parseInt(moreObject.caCommission);
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
             //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
             moreObject.services.map(serv => {
               if (serv.paymentTerms === "Full Advanced") {
@@ -815,8 +816,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (moreObject.caCase === "Yes") {
               add_caCommision += parseInt(moreObject.caCommission) / 2;
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-            if (moreObject.bdeName === data.ename) {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+            if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
               //achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
               moreObject.services.map(serv => {
                 if (serv.paymentTerms === "Full Advanced") {
@@ -856,7 +857,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             }
           }
         }
-        if (moreObject.remainingPayments.length !== 0 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+        if (moreObject.remainingPayments.length !== 0 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
 
           let remainingExpanseCondition = false;
           switch (Filterby) {
@@ -879,11 +880,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             moreObject.services.forEach(serv => {
 
               if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-                if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                   remainingMoreExpense += serv.expanse / 2;
-                } else if (moreObject.bdeName === moreObject.bdmName) {
+                } else if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                   remainingMoreExpense += serv.expanse;
-                } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === data.ename) {
+                } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Support-by" && moreObject.bdemName === cleanString(data.ename)) {
                   remainingMoreExpense += serv.expanse;
                 }
               }
@@ -910,12 +911,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if (moreObject.bdeName === moreObject.bdmName) {
+              if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                 remainingAmount += Math.round(tempAmount);
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                 remainingAmount += Math.round(tempAmount) / 2;
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                if (moreObject.bdeName === data.ename) {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
                   remainingAmount += Math.round(tempAmount);
                 }
               }
@@ -939,6 +940,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     let expanse = 0;
     const today = new Date();
     let add_caCommision = 0;
+    const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
 
     redesignedData.map((mainBooking) => {
       let condition = false;
@@ -955,9 +957,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         default:
           break;
       }
-      if (condition && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (condition && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
 
-        if (mainBooking.bdeName === mainBooking.bdmName) {
+        if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.map(serv => {
             expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -965,7 +967,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission)
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
           mainBooking.services.map(serv => {
             expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
@@ -973,8 +975,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission) / 2;
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-          if (mainBooking.bdeName === data.ename) {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+          if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
             achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
             mainBooking.services.map(serv => {
               expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1000,9 +1002,9 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           default:
             break;
         }
-        if (condition && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+        if (condition && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
 
-          if (moreObject.bdeName === moreObject.bdmName) {
+          if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
             moreObject.services.map(serv => {
               expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1010,7 +1012,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (mainBooking.caCase === "Yes") {
               add_caCommision += parseInt(mainBooking.caCommission);
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
             moreObject.services.map(serv => {
               expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
@@ -1018,8 +1020,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (mainBooking.caCase === "Yes") {
               add_caCommision += parseInt(mainBooking.caCommission) / 2;
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-            if (moreObject.bdeName === data.ename) {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+            if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
               achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
               moreObject.services.map(serv => {
                 expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1050,18 +1052,18 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //   redesignedData.map((mainBooking) => {
   //     if (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) {
-  //       if (mainBooking.bdeName === mainBooking.bdmName) {
+  //       if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //         mainBooking.services.map(serv => {
   //           expanse = serv.expanse ? expanse + serv.expanse : expanse;
   //         })
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
   //         mainBooking.services.map(serv => {
   //           expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
   //         })
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //         if (mainBooking.bdeName === data.ename) {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //         if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //           mainBooking.services.map(serv => {
   //             expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1075,12 +1077,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
 
   //           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //           if (mainBooking.bdeName === mainBooking.bdmName) {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //             remainingAmount += Math.round(tempAmount);
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //             remainingAmount += Math.round(tempAmount) / 2;
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //             if (mainBooking.bdeName === data.ename) {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //             if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //               remainingAmount += Math.round(tempAmount);
   //             }
   //           }
@@ -1091,18 +1093,18 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //       if (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) {
 
-  //         if (moreObject.bdeName === moreObject.bdmName) {
+  //         if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //           moreObject.services.map(serv => {
   //             expanse = serv.expanse ? expanse + serv.expanse : expanse;
   //           })
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
   //           moreObject.services.map(serv => {
   //             expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
   //           })
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //           if (moreObject.bdeName === data.ename) {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //           if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //             moreObject.services.map(serv => {
   //               expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1118,12 +1120,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
   //             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //             if (moreObject.bdeName === moreObject.bdmName) {
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //               remainingAmount += Math.round(tempAmount);
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //               remainingAmount += Math.round(tempAmount) / 2;
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //               if (moreObject.bdeName === data.ename) {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //                 remainingAmount += Math.round(tempAmount);
   //               }
   //             }
@@ -1148,7 +1150,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //   redesignedData.map((mainBooking) => {
   //     if (new Date(mainBooking.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) {
-  //       if (mainBooking.bdeName === mainBooking.bdmName) {
+  //       if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //         mainBooking.services.map(serv => {
   //           let expanseDate = null
@@ -1160,7 +1162,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (mainBooking.caCase === "Yes") {
   //           add_caCommision += parseInt(mainBooking.caCommission)
   //         }
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
   //         mainBooking.services.map(serv => {
   //           let expanseDate = null;
@@ -1172,8 +1174,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (mainBooking.caCase === "Yes") {
   //           add_caCommision += parseInt(mainBooking.caCommission) / 2;
   //         }
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //         if (mainBooking.bdeName === data.ename) {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //         if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //           mainBooking.services.map(serv => {
   //             let expanseDate = null
@@ -1194,12 +1196,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //           const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
 
   //           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //           if (mainBooking.bdeName === mainBooking.bdmName) {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //             remainingAmount += Math.round(tempAmount);
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //             remainingAmount += Math.round(tempAmount) / 2;
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //             if (mainBooking.bdeName === data.ename) {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //             if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //               remainingAmount += Math.round(tempAmount);
   //             }
   //           }
@@ -1210,18 +1212,18 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //       if (new Date(moreObject.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1)) {
 
-  //         if (moreObject.bdeName === moreObject.bdmName) {
+  //         if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //           moreObject.services.map(serv => {
   //             expanse = serv.expanse ? expanse + serv.expanse : expanse;
   //           })
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
   //           moreObject.services.map(serv => {
   //             expanse = serv.expanse ? expanse + serv.expanse / 2 : expanse;
   //           })
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //           if (moreObject.bdeName === data.ename) {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //           if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //             moreObject.services.map(serv => {
   //               expanse = serv.expanse ? expanse + serv.expanse : expanse;
@@ -1237,12 +1239,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
   //             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //             if (moreObject.bdeName === moreObject.bdmName) {
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //               remainingAmount += Math.round(tempAmount);
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //               remainingAmount += Math.round(tempAmount) / 2;
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //               if (moreObject.bdeName === data.ename) {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //                 remainingAmount += Math.round(tempAmount);
   //               }
   //             }
@@ -1267,8 +1269,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       const bookingDate = new Date(mainBooking.bookingDate);
       const isLastMonth = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (bookingDate.getFullYear() === today.getFullYear());
 
-      if (isLastMonth && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
-        if (mainBooking.bdeName === mainBooking.bdmName) {
+      if (isLastMonth && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
+        if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
           achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.forEach((serv) => {
             if (serv.expanse) {
@@ -1281,7 +1283,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission);
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
           achievedAmount += Math.floor(mainBooking.generatedReceivedAmount) / 2;
           mainBooking.services.forEach((serv) => {
             if (serv.expanse) {
@@ -1294,7 +1296,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           if (mainBooking.caCase === "Yes") {
             add_caCommision += parseInt(mainBooking.caCommission) / 2;
           }
-        } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by" && mainBooking.bdeName === data.ename) {
+        } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by" && cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
           achievedAmount += Math.round(mainBooking.generatedReceivedAmount);
           mainBooking.services.forEach((serv) => {
             if (serv.expanse) {
@@ -1308,7 +1310,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             add_caCommision += parseInt(mainBooking.caCommission);
           }
         }
-      } else if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      } else if (mainBooking.remainingPayments.length !== 0 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
         const remainingExpanseCondition = mainBooking.remainingPayments.some(item => {
           const paymentDate = new Date(item.paymentDate);
           return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
@@ -1321,11 +1323,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (serv.expanseDate) {
               const expanseDate = new Date(serv.expanseDate);
               if (expanseDate >= startDate && expanseDate <= endDate) {
-                if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+                if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
                   remainingExpense += serv.expanse / 2;
-                } else if (mainBooking.bdeName === mainBooking.bdmName) {
+                } else if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
                   remainingExpense += serv.expanse;
-                } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === data.ename) {
+                } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === cleanString(data.ename)) {
                   remainingExpense += serv.expanse;
                 }
               }
@@ -1341,11 +1343,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName);
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
 
-            if (mainBooking.bdeName === mainBooking.bdmName) {
+            if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
               remainingAmount += Math.round(tempAmount);
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
               remainingAmount += Math.round(tempAmount) / 2;
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by" && mainBooking.bdeName === data.ename) {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by" && cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
               remainingAmount += Math.round(tempAmount);
             }
           }
@@ -1356,8 +1358,8 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         const moreBookingDate = new Date(moreObject.bookingDate);
         const isLastMonthMoreBooking = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2)) && (moreBookingDate.getFullYear() === today.getFullYear());
 
-        if (isLastMonthMoreBooking && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
-          if (moreObject.bdeName === moreObject.bdmName) {
+        if (isLastMonthMoreBooking && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
+          if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
             achievedAmount += Math.round(moreObject.generatedReceivedAmount);
             moreObject.services.forEach((serv) => {
               if (serv.expanse) {
@@ -1372,7 +1374,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (moreObject.caCase === "Yes") {
               add_caCommision += parseInt(moreObject.caCommission);
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
             achievedAmount += Math.round(moreObject.generatedReceivedAmount) / 2;
             moreObject.services.forEach((serv) => {
               if (serv.expanse) {
@@ -1387,7 +1389,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (moreObject.caCase === "Yes") {
               add_caCommision += parseInt(moreObject.caCommission) / 2;
             }
-          } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by" && moreObject.bdeName === data.ename) {
+          } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by" && cleanString(moreObject.bdeName) === cleanString(data.ename)) {
             achievedAmount += Math.round(moreObject.generatedReceivedAmount);
             moreObject.services.forEach((serv) => {
               if (serv.expanse) {
@@ -1405,7 +1407,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           }
         }
 
-        if (moreObject.remainingPayments.length !== 0 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+        if (moreObject.remainingPayments.length !== 0 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
           const remainingExpanseCondition = moreObject.remainingPayments.some(item => {
             const paymentDate = new Date(item.paymentDate);
             return paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
@@ -1418,11 +1420,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               if (serv.expanseDate) {
                 const expanseDate = new Date(serv.expanseDate);
                 if (expanseDate >= startDate && expanseDate <= endDate) {
-                  if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+                  if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                     remainingMoreExpense += serv.expanse / 2;
-                  } else if (moreObject.bdeName === moreObject.bdmName) {
+                  } else if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                     remainingMoreExpense += serv.expanse;
-                  } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Support-by" && moreObject.bdemName === data.ename) {
+                  } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Support-by" && moreObject.bdemName === cleanString(data.ename)) {
                     remainingMoreExpense += serv.expanse;
                   }
                 }
@@ -1438,11 +1440,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName);
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
 
-              if (moreObject.bdeName === moreObject.bdmName) {
+              if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                 remainingAmount += Math.round(tempAmount);
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                 remainingAmount += Math.round(tempAmount) / 2;
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by" && moreObject.bdeName === data.ename) {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by" && cleanString(moreObject.bdeName) === cleanString(data.ename)) {
                 remainingAmount += Math.round(tempAmount);
               }
             }
@@ -1470,12 +1472,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //   // Set hours, minutes, and seconds to zero
   //   redesignedData.map((mainBooking) => {
   //     if (new Date(mainBooking.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
-  //       if (mainBooking.bdeName === mainBooking.bdmName) {
+  //       if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //         achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount) / 2;
-  //       } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //         if (mainBooking.bdeName === data.ename) {
+  //       } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //         if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //           achievedAmount = achievedAmount + Math.round(mainBooking.generatedReceivedAmount);
   //         }
   //       }
@@ -1484,12 +1486,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //         if (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString()) {
   //           const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName)
   //           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //           if (mainBooking.bdeName === mainBooking.bdmName) {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
   //             remainingAmount += Math.round(tempAmount);
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
   //             remainingAmount += Math.round(tempAmount) / 2;
-  //           } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-  //             if (mainBooking.bdeName === data.ename) {
+  //           } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //             if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
   //               remainingAmount += Math.round(tempAmount);
   //             }
   //           }
@@ -1499,12 +1501,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   //     mainBooking.moreBookings.map((moreObject) => {
   //       if (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString()) {
 
-  //         if (moreObject.bdeName === moreObject.bdmName) {
+  //         if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //           achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount) / 2;
-  //         } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //           if (moreObject.bdeName === data.ename) {
+  //         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //           if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //             achievedAmount = achievedAmount + Math.round(moreObject.generatedReceivedAmount);
   //           }
   //         }
@@ -1516,12 +1518,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
   //             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
   //             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-  //             if (moreObject.bdeName === moreObject.bdmName) {
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
   //               remainingAmount += Math.round(tempAmount);
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
   //               remainingAmount += Math.round(tempAmount) / 2;
-  //             } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-  //               if (moreObject.bdeName === data.ename) {
+  //             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
   //                 remainingAmount += Math.round(tempAmount);
   //               }
   //             }
@@ -1551,16 +1553,16 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       const bookingDate = new Date(mainBooking.bookingDate);
       const isYesterday = bookingDate.toLocaleDateString() === yesterday.toLocaleDateString();
 
-      if (isYesterday && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (isYesterday && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
         mainBooking.services.forEach(serv => {
           let payment = serv.paymentTerms === "Full Advanced" ? serv.totalPaymentWOGST :
             (serv.withGST ? serv.firstPayment / 1.18 : serv.firstPayment);
 
-          if (mainBooking.bdeName === mainBooking.bdmName) {
+          if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
             achievedAmount += payment;
           } else if (mainBooking.bdmType === "Close-by") {
             achievedAmount += payment / 2;
-          } else if (mainBooking.bdmType === "Supported-by" && mainBooking.bdeName === data.ename) {
+          } else if (mainBooking.bdmType === "Supported-by" && cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
             achievedAmount += payment;
           }
 
@@ -1568,11 +1570,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             const expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : bookingDate;
             const isExpanseYesterday = expanseDate.toLocaleDateString() === yesterday.toLocaleDateString();
             if (isExpanseYesterday) {
-              if (mainBooking.bdeName === mainBooking.bdmName) {
+              if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
                 expanse += serv.expanse;
               } else if (mainBooking.bdmType === "Close-by") {
                 expanse += serv.expanse / 2;
-              } else if (mainBooking.bdmType === "Supported-by" && mainBooking.bdeName === data.ename) {
+              } else if (mainBooking.bdmType === "Supported-by" && cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
                 expanse += serv.expanse;
               }
             }
@@ -1581,7 +1583,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
         if (mainBooking.caCase === "Yes") {
           add_caCommision += parseInt(mainBooking.caCommission);
-          if (mainBooking.bdeName !== mainBooking.bdmName) {
+          if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) {
             add_caCommision /= 2;
           }
         }
@@ -1593,11 +1595,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         if (isPaymentYesterday) {
           const findService = mainBooking.services.find((service) => service.serviceName === remainingObj.serviceName);
           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment / 1.18) : Math.round(remainingObj.receivedPayment);
-          if (mainBooking.bdeName === mainBooking.bdmName) {
+          if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
             remainingAmount += tempAmount;
           } else if (mainBooking.bdmType === "Close-by") {
             remainingAmount += tempAmount / 2;
-          } else if (mainBooking.bdmType === "Supported-by" && mainBooking.bdeName === data.ename) {
+          } else if (mainBooking.bdmType === "Supported-by" && cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
             remainingAmount += tempAmount;
           }
         }
@@ -1606,16 +1608,16 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       mainBooking.moreBookings.forEach((moreObject) => {
         const moreBookingDate = new Date(moreObject.bookingDate);
         const isMoreBookingYesterday = moreBookingDate.toLocaleDateString() === yesterday.toLocaleDateString();
-        if (isMoreBookingYesterday && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
+        if (isMoreBookingYesterday && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
           moreObject.services.forEach(serv => {
             let payment = serv.paymentTerms === "Full Advanced" ? serv.totalPaymentWOGST :
               (serv.withGST ? serv.firstPayment / 1.18 : serv.firstPayment);
 
-            if (moreObject.bdeName === moreObject.bdmName) {
+            if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
               achievedAmount += payment;
             } else if (moreObject.bdmType === "Close-by") {
               achievedAmount += payment / 2;
-            } else if (moreObject.bdmType === "Supported-by" && moreObject.bdeName === data.ename) {
+            } else if (moreObject.bdmType === "Supported-by" && cleanString(moreObject.bdeName) === cleanString(data.ename)) {
               achievedAmount += payment;
             }
 
@@ -1623,11 +1625,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               const expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : moreBookingDate;
               const isExpanseYesterday = expanseDate.toLocaleDateString() === yesterday.toLocaleDateString();
               if (isExpanseYesterday) {
-                if (moreObject.bdeName === moreObject.bdmName) {
+                if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                   expanse += serv.expanse;
                 } else if (moreObject.bdmType === "Close-by") {
                   expanse += serv.expanse / 2;
-                } else if (moreObject.bdmType === "Supported-by" && moreObject.bdeName === data.ename) {
+                } else if (moreObject.bdmType === "Supported-by" && cleanString(moreObject.bdeName) === cleanString(data.ename)) {
                   expanse += serv.expanse;
                 }
               }
@@ -1636,23 +1638,23 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
           if (moreObject.caCase === "Yes") {
             add_caCommision += parseInt(moreObject.caCommission);
-            if (moreObject.bdeName !== moreObject.bdmName) {
+            if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) {
               add_caCommision /= 2;
             }
           }
         }
       });
 
-      if (mainBooking.remainingPayments.length !== 0 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
+      if (mainBooking.remainingPayments.length !== 0 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
         const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
         mainBooking.services.forEach(serv => {
           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-            if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+            if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
               remainingExpense += serv.expanse / 2;
-            } else if (mainBooking.bdeName === mainBooking.bdmName) {
+            } else if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
               remainingExpense += serv.expanse;
-            } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === data.ename) {
+            } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Support-by" && mainBooking.bdemName === cleanString(data.ename)) {
               remainingExpense += serv.expanse;
             }
           }
@@ -1702,12 +1704,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                 : Math.round(remainingObj.receivedPayment);
 
               // Update remainingAmount based on conditions
-              if (mainBooking.bdeName === mainBooking.bdmName) {
+              if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
                 remainingAmount += Math.round(tempAmount);
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
+              } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
                 remainingAmount += Math.round(tempAmount) / 2;
-              } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-                if (mainBooking.bdeName === data.ename) {
+              } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
                   remainingAmount += Math.round(tempAmount);
                 }
               }
@@ -1741,12 +1743,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             if (condition) {
               const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-              if (moreObject.bdeName === moreObject.bdmName) {
+              if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                 remainingAmount += Math.round(tempAmount);
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                 remainingAmount += Math.round(tempAmount) / 2;
-              } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-                if (moreObject.bdeName === data.ename) {
+              } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
                   remainingAmount += Math.round(tempAmount);
                 }
               }
@@ -1780,7 +1782,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     let generatedRevenue = 0;
     const requiredObj = moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
     requiredObj.forEach((object) => {
-      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === cleanString(data.ename)) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === cleanString(data.ename));
       if (newObject) {
         generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
       }
@@ -1798,7 +1800,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     let generatedRevenue = 0;
     const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
     requiredObj.forEach((object) => {
-      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === cleanString(data.ename)) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === cleanString(data.ename));
       if (newObject) {
         generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
       }
@@ -1963,146 +1965,286 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
     return datesArray;
   };
+  // const getProjectionData = (newFollowData, xLabels) => {
+  //   const projectionData = new Array(xLabels.length).fill(0);
+  //   const tempAchievedData = new Array(xLabels.length).fill(0);
+
+
+  //   newFollowData.forEach(item => {
+  //     const paymentDate = new Date(item.estPaymentDate);
+  //     const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+  //     const index = xLabels.indexOf(dateStr);
+  //     if (index !== -1) {
+  //       projectionData[index] += item.totalPayment;
+  //     }
+  //   });
+
+  //   redesignedData.forEach(mainBooking => {
+  //     const paymentDate = new Date(mainBooking.bookingDate);
+  //     const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+  //     const index = xLabels.indexOf(dateStr);
+
+  //     // ******************************************************   FOR MAIN BOOKING DATA  *******************************************************************
+  //     if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
+  //       mainBooking.services.forEach(service => {
+  //         if (service.paymentTerms === "Full Advanced") {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+  //             tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+  //           } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
+  //             tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
+  //           } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
+  //             if (mainBooking.btempAchievedDatadeName === cleanString(data.ename)) {
+  //               tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+  //             }
+  //           }
+  //         } else {
+  //           const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
+  //           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+
+  //             tempAchievedData[index] += parseInt(payment);
+  //           } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
+
+  //             tempAchievedData[index] += parseInt(payment) / 2;
+  //           } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
+  //             if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+  //               tempAchievedData[index] += parseInt(payment)
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }
+  //     //  ****************************************************  For main Booking Remaining Payment  ********************************************
+  //     mainBooking.remainingPayments.length !== 0 && mainBooking.remainingPayments.forEach((rmObject) => {
+  //       const paymentDate = new Date(rmObject.paymentDate);
+  //       const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+  //       const index = xLabels.indexOf(dateStr);
+
+  //       if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdeName) === cleanString(data.ename))) {
+  //         const serviceObject = mainBooking.services.filter(service => service.serviceName === rmObject.serviceName)[0];
+  //         if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+  //           const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //           tempAchievedData[index] += parseInt(payment);
+  //         } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+  //           const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //           tempAchievedData[index] += parseInt(payment) / 2;
+  //         } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+  //           if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+  //             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //             tempAchievedData[index] += parseInt(payment);
+  //           }
+  //         }
+  //       }
+  //     })
+  //     //  ******************************************************   For More Booking Objects  *******************************************************
+  //     mainBooking.moreBookings.forEach((moreObject) => {
+  //       const paymentDate = new Date(moreObject.bookingDate);
+  //       const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+  //       const index = xLabels.indexOf(dateStr);
+
+  //       if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
+  //         moreObject.services.forEach(service => {
+  //           if (service.paymentTerms === "Full Advanced") {
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+  //               tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+  //             } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
+  //               tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
+  //             } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+  //                 tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
+  //               }
+  //             }
+  //           } else {
+  //             const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
+  //             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+  //               tempAchievedData[index] += parseInt(payment);
+  //             } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
+
+  //               tempAchievedData[index] += parseInt(payment) / 2;
+  //             } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
+  //               if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+  //                 tempAchievedData[index] += parseInt(payment)
+  //               }
+  //             }
+  //           }
+
+
+
+  //         });
+
+
+
+
+  //       }
+  //       //  ****************************************************  For main Booking Remaining Payment  ********************************************
+  //       moreObject.remainingPayments.length !== 0 && moreObject.remainingPayments.forEach((rmObject) => {
+  //         const paymentDate = new Date(rmObject.paymentDate);
+  //         const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+  //         const index = xLabels.indexOf(dateStr);
+
+  //         if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdeName) === cleanString(data.ename))) {
+  //           const serviceObject = moreObject.services.filter(service => service.serviceName === rmObject.serviceName)[0];
+  //           if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+  //             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //             tempAchievedData[index] += parseInt(payment);
+  //           } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+  //             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //             tempAchievedData[index] += parseInt(payment) / 2;
+  //           } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+  //             if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+  //               const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+  //               tempAchievedData[index] += parseInt(payment);
+  //             }
+
+  //           }
+  //         }
+
+  //       })
+  //     })
+
+  //   })
+  //   setAchievedData(tempAchievedData)
+  //   return projectionData;
+  // };
+
   const getProjectionData = (newFollowData, xLabels) => {
     const projectionData = new Array(xLabels.length).fill(0);
     const tempAchievedData = new Array(xLabels.length).fill(0);
+    const targetDateStr = '7/27'; // 27-07-2024 in mm/dd format
 
+    const cleanString = (str) => (str ? str.replace(/\u00A0/g, ' ').replace(/\s+/g, '').toLowerCase() : '');
 
     newFollowData.forEach(item => {
-      const paymentDate = new Date(item.estPaymentDate);
-      const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-      const index = xLabels.indexOf(dateStr);
-      if (index !== -1) {
-        projectionData[index] += item.totalPayment;
-      }
+        const paymentDate = new Date(item.estPaymentDate);
+        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const index = xLabels.indexOf(dateStr);
+        if (index !== -1) {
+            projectionData[index] += item.totalPayment;
+        }
     });
 
     redesignedData.forEach(mainBooking => {
-      const paymentDate = new Date(mainBooking.bookingDate);
-      const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-      const index = xLabels.indexOf(dateStr);
+        const paymentDate = new Date(mainBooking.bookingDate);
+        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const index = xLabels.indexOf(dateStr);
 
-      // ******************************************************   FOR MAIN BOOKING DATA  *******************************************************************
-      if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdmName === data.ename)) {
-        mainBooking.services.forEach(service => {
-          if (service.paymentTerms === "Full Advanced") {
-            if (mainBooking.bdeName === mainBooking.bdmName) {
-              tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
-            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
-              tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
-            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
-              if (mainBooking.btempAchievedDatadeName === data.ename) {
-                tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
-              }
+        if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
+            mainBooking.services.forEach(service => {
+                if (service.paymentTerms === "Full Advanced") {
+                    if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+                        tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
+                    } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
+                        tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2;
+                    } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
+                        if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+                            tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
+                        }
+                    }
+                } else {
+                    const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment);
+                    if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+                        tempAchievedData[index] += parseInt(payment);
+                    } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
+                        tempAchievedData[index] += parseInt(payment) / 2;
+                    } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
+                        if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+                            tempAchievedData[index] += parseInt(payment);
+                        }
+                    }
+                }
+            });
+        }
+
+        mainBooking.remainingPayments.length !== 0 && mainBooking.remainingPayments.forEach((rmObject) => {
+            const paymentDate = new Date(rmObject.paymentDate);
+            const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+            const index = xLabels.indexOf(dateStr);
+
+            if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdeName) === cleanString(data.ename))) {
+                const serviceObject = mainBooking.services.filter(service => service.serviceName === rmObject.serviceName)[0];
+                if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
+                    const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                    tempAchievedData[index] += parseInt(payment);
+                } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
+                    const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                    tempAchievedData[index] += parseInt(payment) / 2;
+                } else if (cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
+                    if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
+                        const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                        tempAchievedData[index] += parseInt(payment);
+                    }
+                }
             }
-          } else {
-            const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
-            if (mainBooking.bdeName === mainBooking.bdmName) {
-
-              tempAchievedData[index] += parseInt(payment);
-            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Close-by") {
-
-              tempAchievedData[index] += parseInt(payment) / 2;
-            } else if ((mainBooking.bdeName !== mainBooking.bdmName) && mainBooking.bdmType === "Supported-by") {
-              if (mainBooking.bdeName === data.ename) {
-                tempAchievedData[index] += parseInt(payment)
-              }
-            }
-          }
         });
-      }
-      //  ****************************************************  For main Booking Remaining Payment  ********************************************
-      mainBooking.remainingPayments.length !== 0 && mainBooking.remainingPayments.forEach((rmObject) => {
-        const paymentDate = new Date(rmObject.paymentDate);
-        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-        const index = xLabels.indexOf(dateStr);
 
-        if (index !== -1 && (mainBooking.bdeName === data.ename || mainBooking.bdeName === data.ename)) {
-          const serviceObject = mainBooking.services.filter(service => service.serviceName === rmObject.serviceName)[0];
-          if (mainBooking.bdeName === mainBooking.bdmName) {
-            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-            tempAchievedData[index] += parseInt(payment);
-          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Close-by") {
-            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-            tempAchievedData[index] += parseInt(payment) / 2;
-          } else if (mainBooking.bdeName !== mainBooking.bdmName && mainBooking.bdmType === "Supported-by") {
-            if (mainBooking.bdeName === data.ename) {
-              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-              tempAchievedData[index] += parseInt(payment);
+        mainBooking.moreBookings.forEach((moreObject) => {
+            const paymentDate = new Date(moreObject.bookingDate);
+            const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+            const index = xLabels.indexOf(dateStr);
+
+            if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
+                moreObject.services.forEach(service => {
+                    if (service.paymentTerms === "Full Advanced") {
+                        if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+                            tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
+                        } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
+                            tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2;
+                        } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
+                            if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+                                tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
+                            }
+                        }
+                    } else {
+                        const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment);
+                        if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+                            tempAchievedData[index] += parseInt(payment);
+                        } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
+                            tempAchievedData[index] += parseInt(payment) / 2;
+                        } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
+                            if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+                                tempAchievedData[index] += parseInt(payment);
+                            }
+                        }
+                    }
+                });
+
+                moreObject.remainingPayments.length !== 0 && moreObject.remainingPayments.forEach((rmObject) => {
+                    const paymentDate = new Date(rmObject.paymentDate);
+                    const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+                    const index = xLabels.indexOf(dateStr);
+
+                    if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdeName) === cleanString(data.ename))) {
+                        const serviceObject = moreObject.services.filter(service => service.serviceName === rmObject.serviceName)[0];
+                        if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
+                            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                            tempAchievedData[index] += parseInt(payment);
+                        } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+                            const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                            tempAchievedData[index] += parseInt(payment) / 2;
+                        } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
+                            if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
+                                const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
+                                tempAchievedData[index] += parseInt(payment);
+                            }
+                        }
+                    }
+                });
             }
-          }
-        }
-      })
-      //  ******************************************************   For More Booking Objects  *******************************************************
-      mainBooking.moreBookings.forEach((moreObject) => {
-        const paymentDate = new Date(moreObject.bookingDate);
-        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-        const index = xLabels.indexOf(dateStr);
+        });
+    });
 
-        if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdmName === data.ename)) {
-          moreObject.services.forEach(service => {
-            if (service.paymentTerms === "Full Advanced") {
-              if (moreObject.bdeName === moreObject.bdmName) {
-                tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
-              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
-                tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2
-              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
-                if (moreObject.bdeName === data.ename) {
-                  tempAchievedData[index] += parseInt(service.totalPaymentWOGST)
-                }
-              }
-            } else {
-              const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment)
-              if (moreObject.bdeName === moreObject.bdmName) {
-                tempAchievedData[index] += parseInt(payment);
-              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Close-by") {
+    setAchievedData(tempAchievedData);
 
-                tempAchievedData[index] += parseInt(payment) / 2;
-              } else if ((moreObject.bdeName !== moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
-                if (moreObject.bdeName === data.ename) {
-                  tempAchievedData[index] += parseInt(payment)
-                }
-              }
-            }
+    const achievedDataForSpecificDate = {};
+    const specificDateIndex = xLabels.indexOf(targetDateStr);
+    if (specificDateIndex !== -1) {
+        achievedDataForSpecificDate[targetDateStr] = tempAchievedData[specificDateIndex];
+    }
 
+    //console.log(`Achieved Data for ${targetDateStr}:`, achievedDataForSpecificDate);
 
-
-          });
-
-
-
-
-        }
-        //  ****************************************************  For main Booking Remaining Payment  ********************************************
-        moreObject.remainingPayments.length !== 0 && moreObject.remainingPayments.forEach((rmObject) => {
-          const paymentDate = new Date(rmObject.paymentDate);
-          const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
-          const index = xLabels.indexOf(dateStr);
-
-          if (index !== -1 && (moreObject.bdeName === data.ename || moreObject.bdeName === data.ename)) {
-            const serviceObject = moreObject.services.filter(service => service.serviceName === rmObject.serviceName)[0];
-            if (moreObject.bdeName === moreObject.bdmName) {
-              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-              tempAchievedData[index] += parseInt(payment);
-            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Close-by") {
-              const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-              tempAchievedData[index] += parseInt(payment) / 2;
-            } else if (moreObject.bdeName !== moreObject.bdmName && moreObject.bdmType === "Supported-by") {
-              if (moreObject.bdeName === data.ename) {
-                const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
-                tempAchievedData[index] += parseInt(payment);
-              }
-
-            }
-          }
-
-        })
-      })
-
-    })
-    setAchievedData(tempAchievedData)
     return projectionData;
-  };
+};
+
   const normalizeDate = (date) => {
     const normalized = new Date(date);
     normalized.setHours(0, 0, 0, 0);
