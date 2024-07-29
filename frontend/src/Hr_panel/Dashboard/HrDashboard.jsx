@@ -64,7 +64,7 @@ function Dashboard(){
                                         </div>
                                     </a>
                                 </li>
-                                <li class="nav-item rm_task_section_navitem">
+                                <li class="nav-item hr_emply_list_navitem">
                                     <a class="nav-link " data-bs-toggle="tab" href="#DeletedEmployees">
                                         <div className="d-flex align-items-center justify-content-between w-100">
                                             <div className="rm_txt_tsn">
@@ -76,7 +76,7 @@ function Dashboard(){
                                         </div>
                                     </a>
                                 </li>
-                                <li class="nav-item rm_task_section_navitem">
+                                <li class="nav-item hr_emply_list_navitem">
                                     <a class="nav-link " data-bs-toggle="tab" href="#UpcommingEmployees">
                                         <div className="d-flex align-items-center justify-content-between w-100">
                                             <div className="rm_txt_tsn">
