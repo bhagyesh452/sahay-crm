@@ -34,6 +34,7 @@ function RmofCertificationProcessPanel() {
     const [changeRemarks, setChangeRemarks] = useState("");
     const [historyRemarks, setHistoryRemarks] = useState([]);
     const [email, setEmail] = useState('');
+    const [openEmailPopup, setOpenEmailPopup] = useState(false)
 
 
     function formatDate(dateString) {
@@ -168,7 +169,7 @@ function RmofCertificationProcessPanel() {
             }
         } catch (error) {
             console.error("Error saving email:", error.message);
-            
+
         }
     };
 
@@ -294,8 +295,24 @@ function RmofCertificationProcessPanel() {
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
                                     <td className="d-flex align-items-center justify-content-center wApp">
-                                        <input type="email"
-                                            value={email}
+                                        {openEmailPopup ? (<NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            nswsemail={obj.nswsMailId}
+                                            emailPopupOpen={setOpenEmailPopup}
+                                            openedPopup={openEmailPopup}
+                                        />) : (
+                                            <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+                                            onClick={(e) => {
+                                               setOpenEmailPopup(true)
+                                            }}
+                                        > Please Add Email Address
+                                        <VscSaveAs style={{ width: "12px", height: "12px" }} />
+                                        </button> 
+                                        )}
+                                        {/* <input type="email"
+                                            value={obj.nswsMailId ? obj.nswsMailId : email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter NSWS Email Id"
                                         />
@@ -308,9 +325,9 @@ function RmofCertificationProcessPanel() {
                                             }}
                                         >
                                             <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button></td>
+                                        </button> */}
+                                    </td>
                                     <td>NSWS Password</td>
-
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
