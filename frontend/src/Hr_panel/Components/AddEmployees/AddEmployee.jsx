@@ -25,7 +25,11 @@ export default function HorizontalNonLinearStepper() {
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
-  const [isEditable, setIsEditable] = useState(true);
+  const [isPersonalInfoEditable, setIsPersonalInfoEditable] = useState(true);
+  const [isEmployeementInfoEditable, setIsEmployeementInfoEditable] = useState(true);
+  const [isPayrollInfoEditable, setIsPayrollInfoEditable] = useState(true);
+  const [isEmergencyInfoEditable, setIsEmergencyInfoEditable] = useState(true);
+  const [isEmployeeDocsInfoEditable, setIsEmployeeDocsInfoEditable] = useState(true);
 
   const navigate = useNavigate();
 
@@ -401,23 +405,31 @@ export default function HorizontalNonLinearStepper() {
   const handleComplete = async () => {
     if (activeStep === 0 && validatePersonalInfo()) {
       try {
-        const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);
-        // console.log("Employee created successfully", res.data);
+        // if (!empId) {
+          const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);
+          // setEmpId(res.data.empId); // Set the empId after employee creation
+          console.log("Employee created successfully", res.data);
+        // } else {
+        //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
+        //   console.log("Employee updated successfully", res.data);
+        // }
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
         }));
+        setIsPersonalInfoEditable(false);
       } catch (error) {
-        console.log("Error creating employee:", error);
+        console.log("Error creating or updating employee:", error);
       }
     } else if (activeStep === 1 && validateEmploymentInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
-        // console.log("Employee updated successfully at step-1 :", res.data.data);
+        console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
         }));
+        setIsEmployeementInfoEditable(false);
       } catch (error) {
         console.log("Error updating employee :", error);
       }
@@ -428,22 +440,24 @@ export default function HorizontalNonLinearStepper() {
             'Content-Type': 'multipart/form-data'
           }
         });
-        // console.log("Employee updated successfully at step-2 :", res.data.data);
+        console.log("Employee updated successfully at step-2 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
         }));
+        setIsPayrollInfoEditable(false);
       } catch (error) {
         console.log("Error updating employee:", error);
       }
     } else if (activeStep === 3 && validateEmergencyInfo()) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
-        // console.log("Emergency info updated successfully at step-3 :", res.data.data);
+        console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
         }));
+        setIsEmergencyInfoEditable(false);
       } catch (error) {
         console.log("Error updating emergency info:", error);
       }
@@ -454,11 +468,12 @@ export default function HorizontalNonLinearStepper() {
             'Content-Type': 'multipart/form-data'
           }
         });
-        // console.log("Document info updated successfully at step-4 :", res.data.data);
+        console.log("Document info updated successfully at step-4 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
         }));
+        setIsEmployeeDocsInfoEditable(false);
       } catch (error) {
         console.log("Error updating document info:", error);
       }
@@ -481,7 +496,7 @@ export default function HorizontalNonLinearStepper() {
       handleNext();
     }
   };
-
+  
   const handleSubmit = async () => {
     const finalData = {
       personalInfo,
@@ -568,12 +583,13 @@ export default function HorizontalNonLinearStepper() {
                                     <div className="row">
                                       <div className="col">
                                         <input
-                                          type="text"
+                                          type="tefalsext"
                                           name="firstName"
                                           className="form-control mt-1 text-uppercase"
                                           placeholder="First name"
                                           value={personalInfo.firstName.trim()}
                                           onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
                                         />
                                         {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
                                       </div>
@@ -585,6 +601,7 @@ export default function HorizontalNonLinearStepper() {
                                           placeholder="Last name"
                                           value={personalInfo.lastName.trim()}
                                           onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
                                         />
                                         {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
                                       </div>
@@ -600,6 +617,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       value={personalInfo.dob}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     />
                                     {errors.dob && <p style={{ color: "red" }}>{errors.dob}</p>}
                                   </div>
@@ -613,6 +631,7 @@ export default function HorizontalNonLinearStepper() {
                                       id="Gender"
                                       value={personalInfo.gender}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     >
                                       <option value="Select Gender" selected> Select Gender</option>
                                       <option value="Male">Male</option>
@@ -632,6 +651,7 @@ export default function HorizontalNonLinearStepper() {
                                       placeholder="Phone No"
                                       value={personalInfo.personalPhoneNo}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     />
                                     {errors.personalPhoneNo && <p style={{ color: "red" }}>{errors.personalPhoneNo}</p>}
                                   </div>
@@ -649,6 +669,7 @@ export default function HorizontalNonLinearStepper() {
                                       placeholder="Email address"
                                       value={personalInfo.personalEmail}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     />
                                     {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
                                   </div>
@@ -664,6 +685,7 @@ export default function HorizontalNonLinearStepper() {
                                       placeholder="Current address"
                                       value={personalInfo.currentAddress}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     ></textarea>
                                     {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
                                   </div>
@@ -694,6 +716,7 @@ export default function HorizontalNonLinearStepper() {
                                       placeholder="Current address"
                                       value={personalInfo.permanentAddress}
                                       onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
                                     ></textarea>
                                     {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
                                   </div>
@@ -736,6 +759,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="Department"
                                     value={employeementInfo.department}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   >
                                     <option value="Select Department" selected> Select Department</option>
                                     <option value="Start-Up">Start-Up</option>
@@ -757,6 +781,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="Designation"
                                     value={employeementInfo.designation}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   >
                                     <option value="Select Designation">Select Designation</option>
                                     {renderDesignationOptions()}
@@ -775,6 +800,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Date of Joining"
                                     value={employeementInfo.joiningDate}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   />
                                   {errors.joiningDate && <p style={{ color: "red" }}>{errors.joiningDate}</p>}
                                 </div>
@@ -788,6 +814,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="branch"
                                     value={employeementInfo.branch}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   >
                                     <option value="Select Branch" selected>Select Branch</option>
                                     <option value="Gota">Gota</option>
@@ -805,6 +832,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="Employmenttype"
                                     value={employeementInfo.employeementType}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   >
                                     <option value="Select Employeement Type" selected>Select Employeement Type</option>
                                     <option value="Full-time">Full-time</option>
@@ -829,6 +857,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Reporting Manager"
                                     value={employeementInfo.manager}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   />
                                   {errors.manager && <p style={{ color: "red" }}>{errors.manager}</p>}
                                 </div>
@@ -844,6 +873,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Official Mobile Number"
                                     value={employeementInfo.officialNo}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   />
                                   {errors.officialNo && <p style={{ color: "red" }}>{errors.officialNo}</p>}
                                 </div>
@@ -859,6 +889,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Official Email ID"
                                     value={employeementInfo.officialEmail}
                                     onChange={handleInputChange}
+                                    disabled={!isEmployeementInfoEditable}
                                   />
                                   {errors.officialEmail && <p style={{ color: "red" }}>{errors.officialEmail}</p>}
                                 </div>
@@ -889,6 +920,7 @@ export default function HorizontalNonLinearStepper() {
                                         placeholder="Account Number"
                                         value={payrollInfo.accountNo}
                                         onChange={handleInputChange}
+                                        disabled={!isPayrollInfoEditable}
                                       />
                                       {errors.accountNo && <p style={{ color: "red" }}>{errors.accountNo}</p>}
                                     </div>
@@ -900,6 +932,7 @@ export default function HorizontalNonLinearStepper() {
                                         placeholder="Name as per Bank Record"
                                         value={payrollInfo.bankName}
                                         onChange={handleInputChange}
+                                        disabled={!isPayrollInfoEditable}
                                       />
                                       {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
                                     </div>
@@ -911,6 +944,7 @@ export default function HorizontalNonLinearStepper() {
                                         placeholder="IFSC Code"
                                         value={payrollInfo.ifscCode}
                                         onChange={handleInputChange}
+                                        disabled={!isPayrollInfoEditable}
                                       />
                                       {errors.ifscCode && <p style={{ color: "red" }}>{errors.ifscCode}</p>}
                                     </div>
@@ -927,6 +961,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Basic Salary"
                                     value={payrollInfo.salary}
                                     onChange={handleInputChange}
+                                    disabled={!isPayrollInfoEditable}
                                   />
                                   {errors.salary && <p style={{ color: "red" }}>{errors.salary}</p>}
                                 </div>
@@ -943,6 +978,7 @@ export default function HorizontalNonLinearStepper() {
                                         id="r1"
                                         checked={payrollInfo.firstMonthSalary === "50"}
                                         onChange={handleRadioChange}
+                                        disabled={!isPayrollInfoEditable}
                                       />
                                       <label class="stepper_radio-alias" for="r1">
                                         <div className="d-flex align-items-center justify-content-center">
@@ -960,6 +996,7 @@ export default function HorizontalNonLinearStepper() {
                                         id="r2"
                                         checked={payrollInfo.firstMonthSalary === "100"}
                                         onChange={handleRadioChange}
+                                        disabled={!isPayrollInfoEditable}
                                       />
                                       <label class="stepper_radio-alias" for="r2">
                                         <div className="d-flex align-items-center justify-content-center">
@@ -996,6 +1033,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="offerLetter"
                                     id="offerLetter"
                                     onChange={handleFileChange}
+                                    disabled={!isPayrollInfoEditable}
                                   />
                                   {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
                                 </div>
@@ -1011,6 +1049,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="PAN Number"
                                     value={payrollInfo.panNumber}
                                     onChange={handleInputChange}
+                                    disabled={!isPayrollInfoEditable}
                                   />
                                   {errors.panNumber && <p style={{ color: "red" }}>{errors.panNumber}</p>}
                                 </div>
@@ -1026,6 +1065,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Adhar Number"
                                     value={payrollInfo.aadharNumber}
                                     onChange={handleInputChange}
+                                    disabled={!isPayrollInfoEditable}
                                   />
                                   {errors.aadharNumber && <p style={{ color: "red" }}>{errors.aadharNumber}</p>}
                                 </div>
@@ -1043,6 +1083,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Universal Account Number for Provident Fund"
                                     value={payrollInfo.uanNumber}
                                     onChange={handleInputChange}
+                                    disabled={!isPayrollInfoEditable}
                                   />
                                   {/* {errors.uanNumber && <p style={{ color: "red" }}>{errors.uanNumber}</p>} */}
                                 </div>
@@ -1072,6 +1113,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Emergency Contact Person Name"
                                     value={emergencyInfo.personName}
                                     onChange={handleInputChange}
+                                    disabled={!isEmergencyInfoEditable}
                                   />
                                   {errors.personName && <p style={{ color: "red" }}>{errors.personName}</p>}
                                 </div>
@@ -1085,6 +1127,7 @@ export default function HorizontalNonLinearStepper() {
                                     id="relationship"
                                     value={emergencyInfo.relationship}
                                     onChange={handleInputChange}
+                                    disabled={!isEmergencyInfoEditable}
                                   >
                                     <option value="Select Relationship" selected>Select Relationship</option>
                                     <option value="Father">Father</option>
@@ -1105,6 +1148,7 @@ export default function HorizontalNonLinearStepper() {
                                     placeholder="Emergency Contact Number"
                                     value={emergencyInfo.personPhoneNo}
                                     onChange={handleInputChange}
+                                    disabled={!isEmergencyInfoEditable}
                                   />
                                   {errors.personPhoneNo && <p style={{ color: "red" }}>{errors.personPhoneNo}</p>}
                                 </div>
@@ -1132,6 +1176,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="aadharCard"
                                     id="aadharCard"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                                 </div>
@@ -1145,6 +1190,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="panCard"
                                     id="panCard"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                                 </div>
@@ -1158,6 +1204,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="educationCertificate"
                                     id="educationCertificate"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                                 </div>
@@ -1171,6 +1218,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="relievingCertificate"
                                     id="relievingCertificate"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>}
                                 </div>
@@ -1184,6 +1232,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="salarySlip"
                                     id="salarySlip"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>}
                                 </div>
@@ -1197,6 +1246,7 @@ export default function HorizontalNonLinearStepper() {
                                     name="profilePhoto"
                                     id="profilePhoto"
                                     onChange={handleFileChange}
+                                    disabled={!isEmployeeDocsInfoEditable}
                                   />
                                   {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                                 </div>
@@ -1781,6 +1831,11 @@ export default function HorizontalNonLinearStepper() {
                           <>
                             <Button
                               onClick={() => {
+                                setIsPersonalInfoEditable(true);
+                                setIsEmployeementInfoEditable(true);
+                                setIsPayrollInfoEditable(true);
+                                setIsEmergencyInfoEditable(true);
+                                setIsEmployeeDocsInfoEditable(true);
                                 setCompleted((prevCompleted) => ({
                                   ...prevCompleted,
                                   [activeStep]: false,
