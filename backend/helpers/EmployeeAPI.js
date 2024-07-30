@@ -274,6 +274,19 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
   }
 });
 
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+  const {empId} = req.params;
+  try {
+    const emp = await adminModel.findById(empId);
+    if(!emp) {
+      res.status(404).json({result: false, message: "Employee not found"});
+    }
+    res.status(200).json({result: true, message: "Employee fetched successfully", data: emp});
+  } catch (error) {
+    res.status(500).json({result: true, message: "Error fetching employee", error: error});
+  }
+});
+
 router.put("/savedeletedemployee", async (req, res) => {
   const { dataToDelete } = req.body;
 

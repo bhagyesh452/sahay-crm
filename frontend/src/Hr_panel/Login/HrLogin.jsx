@@ -79,7 +79,7 @@ function HrLogin({ setHrToken }){
             localStorage.setItem("hrToken", hrToken)
             localStorage.setItem("hrUserId", userId)
             console.log(userId);
-            window.location.replace(`/hrDashboard/${userId}`)
+            window.location.replace(`/hr/dashboard`);
         } catch (error) {
             console.error("Login Failed", error);
             if (error.response === 401) {

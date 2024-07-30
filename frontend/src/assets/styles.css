@@ -3690,3 +3690,19 @@ border: 1px solid #ffefc6 !important;
 #colorRed{
   color : red !important;
 }
+
+/* CSS for probation status badge in hr-panel employee view */
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: white;
+}
+
+.badge-under-probation {
+  background-color: #ff0707;
+}
+
+.badge-completed {
+  background-color: #28a745;
+}
