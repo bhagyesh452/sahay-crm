@@ -5,48 +5,55 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { VscSaveAs } from "react-icons/vsc";
 
-const NSWSEmailInput = ({ companyName, serviceName, nswsMailId}) => {
+const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword}) => {
     const [email, setEmail] = useState('');
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    const [password, setPassword] = useState('');
+    const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
 
-    const handleSubmitNSWSEmail = async () => {
+    const handleSubmitNSWSPassword = async () => {
+        //console.log(currentCompanyName, currentServiceName)
         try {
-            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                companyName,
-                serviceName,
-                email
-            });
-            if (response.status === 200) {
-                Swal.fire(
-                    'Email Added!',
-                    'The email has been successfully added.',
-                    'success'
-                );
-                setOpenEmailPopup(false); // Close the popup on success
+            if (companyName && serviceName) {
+                const response = await axios.post(`${secretKey}/rm-services/post-save-nswspassword`, {
+                    companyName,
+                    serviceName,
+                    password
+                });
+                if (response.status === 200) {
+                    Swal.fire(
+                        'Password Added!',
+                        'The email has been successfully added.',
+                        'success'
+                    );
+                    //fetchRMServicesData()
+                    setOpenPasswordPopup(false); // Close the popup on success
+                }
             }
+
+
         } catch (error) {
             console.error("Error saving email:", error.message); // Log only the error message
         }
     };
 
-    const handleCloseEmailPopUp = () => {
-              setOpenEmailPopup(false)
-    };
+   const handleClosePasswordPopup = () => {
+        setOpenPasswordPopup(false)
+    }
 
     return (
         <div>
             <div className='d-flex align-item-center justify-content-center'>
             <div
                 className="My_Text_Wrap"
-                title={nswsMailId}
+                title={nswsPassword}
             >
-                {nswsMailId}
+                {nswsPassword}
             </div>
             <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
                 onClick={() => {
                    
-                    setOpenEmailPopup(true)
+                    setOpenPasswordPopup(true)
                 }}
             >
                 <VscSaveAs style={{ width: "12px", height: "12px" }} />
@@ -54,32 +61,32 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId}) => {
             </div>
           
             <Dialog
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopUp}
+                open={openPasswordPopup}
+                onClose={handleClosePasswordPopup}
                 fullWidth
                 maxWidth="xs"
             >
-                <DialogTitle>
+                <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
                     {companyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopUp} style={{ float: "right" }}>
-                        <CloseIcon color="primary" />
+                    <IconButton onClick={handleClosePasswordPopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary" style={{ width: "16px" }} />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent>
                     <div className="card-footer">
                         <div className="mb-3 remarks-input">
                             <input
-                                type='email'
+                                type='text'
                                 //placeholder="Add Email Here..."
                                 className="form-control"
                                 //value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                     </div>
                 </DialogContent>
                 <Button
-                    onClick={handleSubmitNSWSEmail}
+                    onClick={handleSubmitNSWSPassword}
                     variant="contained"
                     color="primary"
                     style={{ width: "100%" }}
@@ -92,5 +99,5 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId}) => {
     );
 };
 
-export default NSWSEmailInput;
+export default NSWSPasswordInput;
 

@@ -523,14 +523,14 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
 
 
 router.post(`/post-save-nswsemail/`, async (req, res) => {
-  const {  currentCompanyName, currentServiceName, email } = req.body;
+  const {  companyName, serviceName, email } = req.body;
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
       {
-        ["Company Name"]:  currentCompanyName,
-        serviceName: currentServiceName
+        ["Company Name"]:  companyName,
+        serviceName: serviceName
       },
       {
         nswsMailId:email
@@ -585,14 +585,14 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
 });
 
 router.post(`/post-save-nswspassword/`, async (req, res) => {
-  const { currentCompanyName, currentServiceName, password } = req.body;
-  console.log("dscStatus" ,password , currentCompanyName , currentServiceName)
+  const { companyName, serviceName, password } = req.body;
+  //console.log("dscStatus" ,password , companyName , serviceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
       {
-        ["Company Name"]: currentCompanyName,
-        serviceName: currentServiceName
+        ["Company Name"]: companyName,
+        serviceName: serviceName
       },
       {
         nswsPaswsord:password
@@ -603,7 +603,6 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
       console.error("Failed to save the updated document");
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
-
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
@@ -613,7 +612,39 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
     console.error("Error updating document:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
+
+router.post(`/post-save-websitelink/`, async (req, res) => {
+  const { companyName, serviceName, link } = req.body;
+  console.log("dscStatus" ,serviceName , companyName , link)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        websiteLink:link
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, res) => {
   const { companyName } = req.params;

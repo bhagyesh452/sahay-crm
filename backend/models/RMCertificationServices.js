@@ -207,6 +207,9 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   nswsPaswsord:{
     type:String
+  },
+  websiteLink:{
+    type:String
   }
 })
 

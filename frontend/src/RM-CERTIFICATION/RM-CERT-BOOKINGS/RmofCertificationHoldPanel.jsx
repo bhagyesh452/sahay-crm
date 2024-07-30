@@ -16,6 +16,11 @@ import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import { VscSaveAs } from "react-icons/vsc";
+import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
+import WebsiteLink from '../Extra-Components/WebsiteLink';
+
+
 
 
 function RmofCertificationHoldPanel() {
@@ -211,6 +216,7 @@ function RmofCertificationHoldPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
+                                <th>Website Link</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -299,24 +305,30 @@ function RmofCertificationHoldPanel() {
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <div
-                                            className="My_Text_Wrap"
-                                            title={obj.nswsMailId ? obj.nswsMailId : "No Remarks"}
-                                        >
-                                            {obj.nswsMailId ? obj.nswsMailId : "Please Add Email Address"}
-                                        </div>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setOpenEmailPopup(true)
-                                            }}
-                                        >
-                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button>
+                                    <td>
+                                        <NSWSEmailInput 
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        //emailPopupOpen={setOpenEmailPopup}
+                                        nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        />
                                     </td>
-                                    <td>NSWS Password</td>
+                                    <td>
+                                        <NSWSPasswordInput 
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        //emailPopupOpen={setOpenEmailPopup}
+                                        nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            //emailPopupOpen={setOpenEmailPopup}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
                                     <td>Industry</td>
                                     <td>Sector</td>
                                     <td>

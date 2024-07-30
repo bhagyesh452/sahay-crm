@@ -17,6 +17,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import { VscSaveAs } from "react-icons/vsc";
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
+import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
+import WebsiteLink from '../Extra-Components/WebsiteLink';
 
 
 
@@ -146,36 +149,36 @@ function RmofCertificationSubmittedPanel() {
         }
     };
 
-    //--------------------email function----------------------
-    const handleSubmitNSWSEmail = async () => {
-        console.log(currentCompanyName , currentServiceName)
-        try {
-            if(currentCompanyName && currentServiceName){
-                const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    email
-                });
-                if (response.status === 200) {
-                    Swal.fire(
-                        'Email Added!',
-                        'The email has been successfully added.',
-                        'success'
-                    );
-                    fetchRMServicesData()
-                    setOpenEmailPopup(false); // Close the popup on success
-                }
-            }
-           
-            
-        } catch (error) {
-            console.error("Error saving email:", error.message); // Log only the error message
-        }
-    };
+    // //--------------------email function----------------------
+    // const handleSubmitNSWSEmail = async () => {
+    //     console.log(currentCompanyName , currentServiceName)
+    //     try {
+    //         if(currentCompanyName && currentServiceName){
+    //             const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
+    //                 currentCompanyName,
+    //                 currentServiceName,
+    //                 email
+    //             });
+    //             if (response.status === 200) {
+    //                 Swal.fire(
+    //                     'Email Added!',
+    //                     'The email has been successfully added.',
+    //                     'success'
+    //                 );
+    //                 fetchRMServicesData()
+    //                 setOpenEmailPopup(false); // Close the popup on success
+    //             }
+    //         }
 
-    const handleCloseEmailPopup = () => {
-        setOpenEmailPopup(false)
-    }
+
+    //     } catch (error) {
+    //         console.error("Error saving email:", error.message); // Log only the error message
+    //     }
+    // };
+
+    // const handleCloseEmailPopup = () => {
+    //     setOpenEmailPopup(false)
+    // }
 
 
 
@@ -206,10 +209,11 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
+                                <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
-                               <th>Submitted By</th>
-                               <th>Submitted On</th>
+                                <th>Submitted By</th>
+                                <th>Submitted On</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -283,24 +287,24 @@ function RmofCertificationSubmittedPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown 
-                                            companyName = {obj["Company Name"]}
-                                            serviceName = {obj.serviceName}
-                                            mainStatus = {obj.mainCategoryStatus}
-                                            dscStatus = {obj.dscStatus}
+                                            <DscStatusDropdown
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                dscStatus={obj.dscStatus}
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown/></td>
+                                    <td><ContentWriterDropdown /></td>
                                     <td><ContentStatusDropdown
-                                    companyName = {obj["Company Name"]}
-                                    serviceName = {obj.serviceName}
-                                    mainStatus = {obj.mainCategoryStatus}
-                                    contentStatus = {obj.contentStatus}
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        mainStatus={obj.mainCategoryStatus}
+                                        contentStatus={obj.contentStatus}
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
+                                    {/* <td className="d-flex align-items-center justify-content-center wApp" >
                                         <div
                                             className="My_Text_Wrap"
                                             title={obj.nswsMailId ? obj.nswsMailId : "No Remarks"}
@@ -316,8 +320,31 @@ function RmofCertificationSubmittedPanel() {
                                         >
                                             <VscSaveAs style={{ width: "12px", height: "12px" }} />
                                         </button>
+                                    </td> */}
+                                    <td>
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            //emailPopupOpen={setOpenEmailPopup}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        />
                                     </td>
-                                    <td>NSWS Password</td>
+                                    <td>
+                                        <NSWSPasswordInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            //emailPopupOpen={setOpenEmailPopup}
+                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            //emailPopupOpen={setOpenEmailPopup}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
                                     <td>Industry</td>
                                     <td>Sector</td>
                                     <td>Submitted By</td>
@@ -410,9 +437,9 @@ function RmofCertificationSubmittedPanel() {
                 </button>
             </Dialog>
 
-              {/* //----------------------emailpopup---------------------------------- */}
+            {/* //----------------------emailpopup---------------------------------- */}
 
-              <Dialog
+            {/* <Dialog
                 open={openEmailPopup}
                 onClose={handleCloseEmailPopup}
                 fullWidth
@@ -445,7 +472,7 @@ function RmofCertificationSubmittedPanel() {
                 >
                     Submit
                 </Button>
-            </Dialog>
+            </Dialog> */}
         </div>
     )
 }

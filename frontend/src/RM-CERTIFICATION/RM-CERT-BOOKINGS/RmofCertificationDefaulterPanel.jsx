@@ -16,6 +16,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import { VscSaveAs } from "react-icons/vsc";
+import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
+import WebsiteLink from '../Extra-Components/WebsiteLink';
+
 
 
 function RmofCertificationDefaulterPanel() {
@@ -207,6 +210,7 @@ function RmofCertificationDefaulterPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
+                                <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>BDE Name</th>
@@ -318,7 +322,22 @@ function RmofCertificationDefaulterPanel() {
                                             <VscSaveAs style={{ width: "12px", height: "12px" }} />
                                         </button>
                                     </td>
-                                    <td>NSWS Password</td>
+                                    <td>
+                                        <NSWSPasswordInput 
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        //emailPopupOpen={setOpenEmailPopup}
+                                        nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <WebsiteLink
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        //emailPopupOpen={setOpenEmailPopup}
+                                        websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
                                     <td>Industry</td>
                                     <td>Sector</td>
                                     <td>
