@@ -271,7 +271,7 @@ function RmofCertificationProcessPanel() {
                                         <WebsiteLink
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
-                                            //emailPopupOpen={setOpenEmailPopup}
+                                            refreshData={refreshData}
                                             websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>
