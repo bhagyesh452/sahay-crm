@@ -42,6 +42,13 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
+        } else if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -81,9 +88,24 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
+        }else if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
+        }
+      }else if (mainStatus === "Hold") {
+        if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
         }
       }
-
       console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating status:", error.message);
@@ -123,6 +145,8 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             return "finished-status";
           case "Defaulter":
             return "finished-status";
+          case "Hold":
+            return "docs-pending";
           default:
             return "created-status";
         }
@@ -151,8 +175,15 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             return "rejected-status";
           case "Defaulter":
             return "rejected-status";
+          case "Hold":
+            return "docs-pending";
           default:
             return "created-status";
+        }case "Hold":
+        switch (subStatus) {
+          case "Hold":
+            return "docs-pending";
+         
         }
       default:
         return "created-status";
@@ -300,6 +331,15 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 Need To Call
               </a>
             </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
+              </a>
+            </li>
           </ul>
         ) : mainStatus === "Submitted" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
@@ -367,7 +407,19 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
               </a>
             </li>
           </ul>
-        ) : mainStatus === "Defaulter" && (
+        ) : mainStatus === "Hold" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
+              </a>
+            </li>
+          </ul>
+        ): mainStatus === "Defaulter" && (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
               <a
@@ -385,6 +437,15 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Defaulter
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
               </a>
             </li>
           </ul>
