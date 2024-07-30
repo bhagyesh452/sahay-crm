@@ -299,7 +299,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "rejected-status")}
+                onClick={() => handleStatusChange("Submitted", "finished-status")}
                 href="#"
               >
                 Submitted

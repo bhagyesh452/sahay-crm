@@ -272,7 +272,7 @@ function RmofCertificationProcessPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Add Website Link"}
                                         />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>

@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName }) => {
     const [status, setStatus] = useState("Drashti Thakkar");
-    const [statusClass, setStatusClass] = useState("created-status");
+    const [statusClass, setStatusClass] = useState("e_task_assign");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -38,25 +38,7 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
                     <li>
                         <a
                             className="dropdown-item"
-                            onClick={() => handleStatusChange("Drashti Thakkar", "created-status")}
-                            href="#"
-                        >
-                            Drashti Thakkar
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("KYC Pending", "support-status")}
-                            href="#"
-                        >
-                            Drashti Thakkar
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="dropdown-item"
-                            onClick={() => handleStatusChange("KYC Incomplete", "inprogress-status")}
+                            onClick={() => handleStatusChange("Drashti Thakkar", "e_task_assign")}
                             href="#"
                         >
                             Drashti Thakkar
