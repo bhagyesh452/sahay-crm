@@ -136,20 +136,47 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   }
 });
 
+// router.post("/einfo", async (req, res) => {
+//   try {
+//     const { firstName, lastName, personalPhoneNo, personalEmail } = req.body;
+//     // console.log("Reqest body is :", req.body);
+
+//     adminModel.create({
+//       ...req.body,
+//       ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
+//       personal_number: personalPhoneNo,
+//       personal_email: personalEmail,
+//       AddedOn: new Date()
+//     }).then((result) => {
+//       // Change res to result
+//       res.json(result); // Change res.json(res) to res.json(result)
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
 router.post("/einfo", async (req, res) => {
   try {
     const { firstName, lastName, personalPhoneNo, personalEmail } = req.body;
-    console.log("Reqest body is :", req.body);
-    adminModel.create({
+    const updateData = {
       ...req.body,
       ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
       personal_number: personalPhoneNo,
       personal_email: personalEmail,
       AddedOn: new Date()
-    }).then((result) => {
-      // Change res to result
-      res.json(result); // Change res.json(res) to res.json(result)
-    });
+    };
+
+    // Check if the document already exists and update it, otherwise create a new one
+    const result = await adminModel.findOneAndUpdate(
+      { personal_email: personalEmail },
+      updateData,
+      { new: true, upsert: true } // upsert option creates a new document if no match is found
+    );
+
+    res.json(result);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -185,7 +212,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   const { personalEmail } = req.params;
-  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo} = req.body;
+  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({

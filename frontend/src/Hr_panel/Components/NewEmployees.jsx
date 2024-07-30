@@ -171,7 +171,7 @@ function NewEmployees() {
 
     return (
         <div>
-            <Header />
+            {/* <Header />
             <Navbar number={1} />
             <div className="page-wrapper">
                 <div className="container-xl">
@@ -199,7 +199,7 @@ function NewEmployees() {
                         </CustomTabPanel>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

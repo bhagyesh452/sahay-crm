@@ -51,7 +51,7 @@ function Header({ hrName }) {
                 aria-label="Open user menu"
               >
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>
+                  <div style={{ textTransform: "capitalize" , textAlign:"left"}}>
                     {hname ? hname : hrName}
                   </div>
                   <div
