@@ -29,7 +29,7 @@ const ContentWriterDropdown = ({ mainStatus, subStatus, setNewSubStatus, company
                     className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
                     type="button"
                     id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" // Bootstrap data attribute to toggle dropdown
+                    //data-bs-toggle="dropdown" // Bootstrap data attribute to toggle dropdown
                     aria-expanded="false"
                 >
                     {status}

@@ -43,6 +43,12 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
         serviceName,
         contentStatus : newStatus
       });
+    } else if (mainStatus === "Hold") {
+      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+        companyName,
+        serviceName,
+        contentStatus : newStatus
+      });
     } 
       
 
