@@ -768,8 +768,92 @@ table.table.top_5_table tbody tr.myself td {
     border-radius: 14px;
     overflow: hidden;
     height: 500px;
-    padding: 10px;
+    padding: 30px 16px 16px 16px;
 }
-
+.E_Id_card_bg
+{
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background: #eff0f1;
+    border-radius: 10px;
+    padding: 5px;
+}
+.main_logo_For_ID
+{
+    background: #eff0f1;
+    width: 100px;
+    height: 100px;
+    line-height: 96px;
+    text-align: center;
+    border-radius: 0 25px 25px 25px;
+    position: absolute;
+    top: -16px;
+    z-index: 2;
+    left: 0;
+}
+.main_logo_For_ID img
+{
+    width: 85px;
+}
+.E_id_top_black_bg
+{
+    background: #000;
+    width: 87%;
+    height: 40%;
+    border-radius: 20px;
+    position: absolute;
+    left: 8px;
+    top: 28px;
+    z-index: 0;
+}
+.E_id_profile
+{
+    z-index: 1;
+    position: relative;
+    background: #fbba1c;
+    border-radius: 20px;
+    width: 90%;
+    margin: 36px 0px 0px 16px;
+}
+.E_id_profile_inner
+{
+    padding: 15px;
+}
+.E_id_profile_img
+{
+    background: #eee;
+    height: 120px;
+    overflow: hidden;
+    width: 120px;
+    border-radius: 100px;
+    margin: 0 auto;
+}
+.E_id_profile_img img
+{
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    position: relative;
+    transform-origin: center center;
+    transition: .5s;
+    width: 100%;
+}
+.E_id_profile_Name
+{
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin: 8px 0 0 0;
+    font-size: 16px;
+}
+.E_id_profile_designation
+{
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: bold;
+    margin: 0px 0 2px 0;
+    font-size: 12px;
+}
 /**********************HR Close Employee Form CSS************************/
 
