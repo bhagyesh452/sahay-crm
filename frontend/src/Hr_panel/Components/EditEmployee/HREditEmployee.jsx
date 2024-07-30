@@ -18,9 +18,8 @@ const steps = ['Personal Information', 'Employment Information',
 export default function HREditEmployee() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const {empId} = useParams();
+  const { empId } = useParams();
 
-  const [isStepperOpen, setIsStepperOpen] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
@@ -40,30 +39,23 @@ export default function HREditEmployee() {
 
   const navigate = useNavigate();
 
-  const fetchEmployee = async () => {
-    try {
-      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
-      // console.log("Fetched employee is :", res.data.data);
-      setEmployee(res.data.data);
-      setOfferLetter(res.data.data.offerLetter ? res.data.data.offerLetter[0] : "");
-      setAadharCard(res.data.data.aadharCard ? res.data.data.aadharCard[0] : "");
-      setPanCard(res.data.data.panCard ? res.data.data.panCard[0] : "");
-      setEducationCertificate(res.data.data.educationCertificate ? res.data.data.educationCertificate[0] : "");
-      setRelievingCertificate(res.data.data.relievingCertificate ? res.data.data.relievingCertificate[0] : "");
-      setSalarySlip(res.data.data.salarySlip ? res.data.data.salarySlip[0] : "");
-      setProfilePhoto(res.data.data.profilePhoto ? res.data.data.profilePhoto[0] : "");
-    } catch (error) {
-      console.log("Error fetching employee", error);
-    }
+  const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const convertToDateInputFormat = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
   
-  const fullName = (employee.ename || "").split(" ");
-  console.log("Full name is :", fullName);
-
-  useEffect(() => {
-    fetchEmployee();
-  }, [empId]);
-
 
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -199,7 +191,7 @@ export default function HREditEmployee() {
   };
 
   const [employeementInfo, setEmployeementInfo] = useState({
-    empId: empId || "",
+    empId: "",
     department: "",
     designation: "",
     joiningDate: "",
@@ -315,6 +307,81 @@ export default function HREditEmployee() {
     setErrors(newErrors); // Assuming `setErrors` is used to manage error state
     return Object.keys(newErrors).length === 0;
   };
+
+  const fetchEmployee = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
+      const data = res.data.data;
+      // console.log("Fetched employee is :", res.data.data);
+      // setEmployee(res.data.data);
+
+      // Update personalInfo state with fetched data
+      setPersonalInfo({
+        firstName: (data.ename || "").split(" ")[0] || "",
+        lastName: (data.ename || "").split(" ")[1] || "",
+        dob: data.dob ? formatDate(data.dob) : "",
+        gender: data.gender || "",
+        personalPhoneNo: data.personal_number || "",
+        personalEmail: data.personal_email || "",
+        currentAddress: data.currentAddress || "",
+        permanentAddress: data.permanentAddress || ""
+      });
+
+      setEmployeementInfo({
+        empId: "",
+        department: data.department || "",
+        designation: data.designation || "",
+        joiningDate: data.jdate ? formatDate(data.jdate) : "",
+        branch: data.branchOffice || "",
+        employeementType: data.employeementType || "",
+        manager: data.reportingManager || "",
+        officialNo: data.number || "",
+        officialEmail: data.email || ""
+      });
+
+      setPayrollInfo({
+        accountNo: data.accountNo || "",
+        bankName: data.bankName || "",
+        ifscCode: data.ifscCode || "",
+        salary: data.salary || "",
+        firstMonthSalary: data.firstMonthSalaryCondition || "",
+        salaryCalculation: data.firstMonthSalary || "",
+        offerLetter: "",
+        panNumber: data.panNumber || "",
+        aadharNumber: data.aadharNumber || "",
+        uanNumber: data.uanNumber || ""
+      });
+
+      setEmergencyInfo({
+        personName: data.personal_contact_person || "",
+        relationship: data.personal_contact_person_relationship || "",
+        personPhoneNo: data.personal_contact_person_number || ""
+      });
+
+      setEmpDocumentInfo({
+        aadharCard: "",
+        panCard: "",
+        educationCertificate: "",
+        relievingCertificate: "",
+        salarySlip: "",
+        profilePhoto: ""
+      });
+
+      setOfferLetter(res.data.data.offerLetter ? res.data.data.offerLetter[0] : "");
+      setAadharCard(res.data.data.aadharCard ? res.data.data.aadharCard[0] : "");
+      setPanCard(res.data.data.panCard ? res.data.data.panCard[0] : "");
+      setEducationCertificate(res.data.data.educationCertificate ? res.data.data.educationCertificate[0] : "");
+      setRelievingCertificate(res.data.data.relievingCertificate ? res.data.data.relievingCertificate[0] : "");
+      setSalarySlip(res.data.data.salarySlip ? res.data.data.salarySlip[0] : "");
+      setProfilePhoto(res.data.data.profilePhoto ? res.data.data.profilePhoto[0] : "");
+    } catch (error) {
+      console.log("Error fetching employee", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployee();
+  }, [empId]);
 
   const calculateSalary = (salary, firstMonthSalary) => {
     if (!salary || !firstMonthSalary) return '';
@@ -461,14 +528,8 @@ export default function HREditEmployee() {
   const handleComplete = async () => {
     if (activeStep === 0 && validatePersonalInfo()) {
       try {
-        // if (!empId) {
-        const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);
-        // setEmpId(res.data.empId); // Set the empId after employee creation
-        console.log("Employee created successfully", res.data);
-        // } else {
-        //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
-        //   console.log("Employee updated successfully", res.data);
-        // }
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, personalInfo);
+        console.log("Employee updated successfully at step-0 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -479,7 +540,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 1 && validateEmploymentInfo()) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, employeementInfo);
         console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -491,7 +552,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 2 && validatePayrollInfo()) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, payrollInfo, {
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payrollInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -507,7 +568,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 3 && validateEmergencyInfo()) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, emergencyInfo);
         console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -519,7 +580,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 4 && validateEmpDocumentInfo()) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, empDocumentInfo, {
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, empDocumentInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -638,7 +699,7 @@ export default function HREditEmployee() {
                                   type="date"
                                   name="dob"
                                   className="form-control mt-1"
-                                  value={personalInfo.dob}
+                                  value={convertToDateInputFormat(personalInfo.dob)}
                                   onChange={handleInputChange}
                                   disabled={!isPersonalInfoEditable}
                                 />
@@ -821,7 +882,7 @@ export default function HREditEmployee() {
                                 name="joiningDate"
                                 id="DateofJoining"
                                 placeholder="Date of Joining"
-                                value={employeementInfo.joiningDate}
+                                value={convertToDateInputFormat(employeementInfo.joiningDate)}
                                 onChange={handleInputChange}
                                 disabled={!isEmployeementInfoEditable}
                               />
@@ -1349,7 +1410,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {personalInfo.dob || "-"}
+                                {convertToDateInputFormat(personalInfo.dob) || "-"}
                               </div>
                             </div>
                           </div>
@@ -1466,7 +1527,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {employeementInfo.joiningDate || "-"}
+                                {convertToDateInputFormat(employeementInfo.joiningDate) || "-"}
                               </div>
                             </div>
                           </div>

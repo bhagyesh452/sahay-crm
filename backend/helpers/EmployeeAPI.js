@@ -247,7 +247,7 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
         number: officialNo,
         jdate: joiningDate,
         branchOffice: branch,
-        reportingManager: manager || "",
+        reportingManager: manager,
         firstMonthSalaryCondition: firstMonthSalary,
         firstMonthSalary: salaryCalculation,
         offerLetter: offerLetterDetails || [],
@@ -275,15 +275,103 @@ router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
 });
 
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
-  const {empId} = req.params;
+  const { empId } = req.params;
   try {
     const emp = await adminModel.findById(empId);
-    if(!emp) {
-      res.status(404).json({result: false, message: "Employee not found"});
+    if (!emp) {
+      res.status(404).json({ result: false, message: "Employee not found" });
     }
-    res.status(200).json({result: true, message: "Employee fetched successfully", data: emp});
+    res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
   } catch (error) {
-    res.status(500).json({result: true, message: "Error fetching employee", error: error});
+    res.status(500).json({ result: true, message: "Error fetching employee", error: error });
+  }
+});
+
+router.put("/updateEmployeeFromId/:empId", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
+]), async (req, res) => {
+  const { empId } = req.params;
+  const { firstName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
+  // console.log("Reqest file is :", req.files);
+
+  const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+    fieldname: file.fieldname,
+    originalname: file.originalname,
+    encoding: file.encoding,
+    mimetype: file.mimetype,
+    destination: file.destination,
+    filename: file.filename,
+    path: file.path,
+    size: file.size
+  })) : [];
+
+  const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
+  const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
+  const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
+  const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
+  const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
+  const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
+  const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
+
+  try {
+    if (!empId) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
+    }
+
+    const formatDate = (dateStr) => {
+      if (!dateStr) return null;
+      const [day, month, year] = dateStr.split("-");
+      return `${year}-${month}-${day}`;
+    };
+
+    const formattedDob = formatDate(dob);
+    const formattedJoiningDate = formatDate(joiningDate);
+
+    console.log("Formatted DOB:", formattedDob); // Add logging
+    console.log("Formatted Joining Date:", formattedJoiningDate); // Add logging
+
+    const emp = await adminModel.findOneAndUpdate(
+      { _id: empId },
+      {
+        ...req.body,
+        ename: `${firstName} ${lastName}`,
+        dob: new Date(formattedDob),
+        personal_number: personalPhoneNo,
+        personal_email: personalEmail,
+        email: officialEmail,
+        number: officialNo,
+        jdate: new Date(formattedJoiningDate),
+        branchOffice: branch,
+        reportingManager: manager,
+        firstMonthSalaryCondition: firstMonthSalary,
+        firstMonthSalary: salaryCalculation,
+        offerLetter: offerLetterDetails || [],
+        personal_contact_person: personName,
+        personal_contact_person_relationship: relationship,
+        personal_contact_person_number: personPhoneNo,
+        aadharCard: aadharCardDetails || [],
+        panCard: panCardDetails || [],
+        educationCertificate: educationCertificateDetails || [],
+        relievingCertificate: relievingCertificateDetails || [],
+        salarySlip: salarySlipDetails || [],
+        profilePhoto: profilePhotoDetails || [],
+      },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!emp) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
+    }
+
+    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
   }
 });
 
@@ -1373,9 +1461,9 @@ router.get('/achieved-details/:ename', async (req, res) => {
     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
     const thisMonth = monthNames[today.getMonth()];
 
-    console.log("Last Month:", lastMonth);
-    console.log("This Month:", thisMonth);
-    console.log("Employee Target Details Before Update:", employeeData.targetDetails);
+    // console.log("Last Month:", lastMonth);
+    // console.log("This Month:", thisMonth);
+    // console.log("Employee Target Details Before Update:", employeeData.targetDetails);
 
     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
       if (targetDetail.month === lastMonth) {
@@ -1428,7 +1516,7 @@ router.get('/achieved-details/:ename', async (req, res) => {
       return targetDetail;
     });
 
-    console.log("Employee Target Details After Update:", targetDetailsUpdated);
+    // console.log("Employee Target Details After Update:", targetDetailsUpdated);
 
     // Update the employee data
     const updateResult = await adminModel.findOneAndUpdate(

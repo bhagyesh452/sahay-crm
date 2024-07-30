@@ -172,7 +172,7 @@ export default function HorizontalNonLinearStepper() {
   };
 
   const [employeementInfo, setEmployeementInfo] = useState({
-    empId: empId || "",
+    empId: "",
     department: "",
     designation: "",
     joiningDate: "",
@@ -1843,6 +1843,7 @@ export default function HorizontalNonLinearStepper() {
                         onClick={handleComplete}
                         variant="contained"
                         sx={{ mr: 1, background: "#ffba00 " }}
+                        disabled
                       >
                         {completedSteps() === totalSteps() - 1
                           ? "Submit"
@@ -1853,7 +1854,7 @@ export default function HorizontalNonLinearStepper() {
                     onClick={handleNext}
                     variant="contained"
                     sx={{ mr: 1 }}
-                    disabled={!completed[activeStep]}
+                    // disabled={!completed[activeStep]}
                   >
                     Next
                   </Button>
