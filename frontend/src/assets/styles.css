@@ -2861,7 +2861,7 @@ td input {
 }
 .rm_table_inprocess
 {
-  width: 3300px !important;
+  width: 3500px !important;
 }
 .rm-sticky-left-1
 {
@@ -2872,7 +2872,7 @@ td input {
 .rm-sticky-left-2
 {
   position: sticky;
-  left: 50px;
+  left: 54px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 /* .rm-sticky-left-3
@@ -2890,14 +2890,14 @@ td input {
 .G_rm-sticky-left-2
 {
   position: sticky;
-  left: 50px;
+  left: 54px;
   width: 104px;
   
 }
 .G_rm-sticky-left-3
 {
   position: sticky;
-  left: 154px;
+  left: 162px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 .rm-sticky-action
@@ -3023,6 +3023,10 @@ td input {
 .status_dropdown.docs-pending .status__btn{
   background-color: #faadff;
   border: 1px solid #ae32ac;
+}
+.status_dropdown.e_task_assign .status__btn{
+  background-color: #cfcfcf;
+  border: 1px solid #9b9b9b;
 }
 .rm_sr_no
 {
@@ -3732,4 +3736,20 @@ border: 1px solid #ffefc6 !important;
 
 #colorRed{
   color : red !important;
+}
+
+/* CSS for probation status badge in hr-panel employee view */
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: white;
+}
+
+.badge-under-probation {
+  background-color: #ff0707;
+}
+
+.badge-completed {
+  background-color: #28a745;
 }
