@@ -43,7 +43,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
 
     return (
         <section className="rm_status_dropdown">
-            <div className={`dropdown custom-dropdown status_dropdown ${statusClass}`}>
+            <div className={`dropdown custom-dropdown status_dropdown`}>
                 <button
                     className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
                     type="button"
