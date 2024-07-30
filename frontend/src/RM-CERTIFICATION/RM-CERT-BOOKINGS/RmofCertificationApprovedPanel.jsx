@@ -19,7 +19,8 @@ import { VscSaveAs } from "react-icons/vsc";
 import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
-
+import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
+import SectorDropdown from '../Extra-Components/SectorDropdown';
 
 
 function RmofCertificationApprovedPanel() {
@@ -38,6 +39,8 @@ function RmofCertificationApprovedPanel() {
     const [historyRemarks, setHistoryRemarks] = useState([]);
     const [email, setEmail] = useState('');
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [sectorOptions, setSectorOptions] = useState([]);
 
 
 
@@ -108,6 +111,11 @@ function RmofCertificationApprovedPanel() {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
     }
+
+    const handleIndustryChange = (industry, options) => {
+        setSelectedIndustry(industry);
+        setSectorOptions(options);
+    };
 
 
     console.log("setnewsubstatus", newStatusApproved)
@@ -213,11 +221,15 @@ const handleCloseEmailPopup = () => {
                                 <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
+                                <th>Submitted By</th>
+                                <th>Submitted On</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
+                                <th>No of Attempt</th>
+                                <th>Date and Time of Application</th>
                                 {/* <th className="rm-sticky-action">Action</th> */}
                             </tr>
                         </thead>
@@ -318,8 +330,23 @@ const handleCloseEmailPopup = () => {
                                             websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>
-                                    <td>Industry</td>
-                                    <td>Sector</td>
+                                    <td>
+                                        <IndustryDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            onIndustryChange={handleIndustryChange}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                        /></td>
+                                    <td>
+                                        <SectorDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            sectorOptions={sectorOptions}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            sector={obj.sector ? obj.sector : "Others"} />
+                                    </td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -335,7 +362,10 @@ const handleCloseEmailPopup = () => {
                                     <td>₹ {obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>1</td>
+                                    <td>July 27,2024</td>
                                 </tr>
+
                             ))}
                         </tbody>
                     </table>
