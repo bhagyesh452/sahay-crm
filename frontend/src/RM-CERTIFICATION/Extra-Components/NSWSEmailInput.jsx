@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { VscSaveAs } from "react-icons/vsc";
 
-const NSWSEmailInput = ({ companyName, serviceName, nswsMailId}) => {
+const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) => {
     const [email, setEmail] = useState('');
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
@@ -23,6 +23,7 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId}) => {
                     'The email has been successfully added.',
                     'success'
                 );
+                refreshData();
                 setOpenEmailPopup(false); // Close the popup on success
             }
         } catch (error) {

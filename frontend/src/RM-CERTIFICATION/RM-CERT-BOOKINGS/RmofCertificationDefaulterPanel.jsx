@@ -18,7 +18,7 @@ import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import { VscSaveAs } from "react-icons/vsc";
 import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
-
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 
 
 function RmofCertificationDefaulterPanel() {
@@ -100,6 +100,9 @@ function RmofCertificationDefaulterPanel() {
 
     }, [employeeData])
 
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
 
     function formatDate(dateString) {
@@ -250,6 +253,7 @@ function RmofCertificationDefaulterPanel() {
                                                     setNewSubStatus={setNewStatusDefaulter}
                                                     companyName={obj["Company Name"]}
                                                     serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
                                                 />
                                             )}
                                         </div>
@@ -305,28 +309,19 @@ function RmofCertificationDefaulterPanel() {
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <div
-                                            className="My_Text_Wrap"
-                                            title={obj.nswsMailId ? obj.nswsMailId : "No Remarks"}
-                                        >
-                                            {obj.nswsMailId ? obj.nswsMailId : "Please Add Email Address"}
-                                        </div>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setOpenEmailPopup(true)
-                                            }}
-                                        >
-                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button>
+                                    <td>
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        />
                                     </td>
                                     <td>
                                         <NSWSPasswordInput 
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
-                                        //emailPopupOpen={setOpenEmailPopup}
+                                        refresData={refreshData}
                                         nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
@@ -334,7 +329,7 @@ function RmofCertificationDefaulterPanel() {
                                         <WebsiteLink
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
-                                        //emailPopupOpen={setOpenEmailPopup}
+                                        refreshData={refreshData}
                                         websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>

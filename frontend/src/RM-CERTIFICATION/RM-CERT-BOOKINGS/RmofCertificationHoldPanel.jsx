@@ -107,7 +107,9 @@ function RmofCertificationHoldPanel() {
 
     }, [employeeData])
 
-
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
@@ -254,6 +256,7 @@ function RmofCertificationHoldPanel() {
                                                     setNewSubStatus={setNewStatusProcess}
                                                     companyName={obj["Company Name"]}
                                                     serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
                                                 />
                                             )}
                                         </div>
@@ -306,26 +309,26 @@ function RmofCertificationHoldPanel() {
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
                                     <td>
-                                        <NSWSEmailInput 
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        //emailPopupOpen={setOpenEmailPopup}
-                                        nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
                                         />
                                     </td>
                                     <td>
-                                        <NSWSPasswordInput 
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        //emailPopupOpen={setOpenEmailPopup}
-                                        nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                        <NSWSPasswordInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refresData={refreshData}
+                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
                                     <td>
                                         <WebsiteLink
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
-                                            //emailPopupOpen={setOpenEmailPopup}
+                                            refreshData={refreshData}
                                             websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>
@@ -415,43 +418,6 @@ function RmofCertificationHoldPanel() {
                 >
                     Submit
                 </button>
-            </Dialog>
-
-            {/* //----------------------emailpopup---------------------------------- */}
-
-            <Dialog
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopup}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
-                    {currentCompanyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{ width: "16px" }} />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-footer">
-                        <div className="mb-3 remarks-input">
-                            <input
-                                type='text'
-                                //placeholder="Add Email Here..."
-                                className="form-control"
-                                //value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <Button
-                    onClick={handleSubmitNSWSEmail}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
             </Dialog>
         </div>
     )

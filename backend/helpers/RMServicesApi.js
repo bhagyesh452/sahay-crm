@@ -448,7 +448,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     }
 
     // Emit socket event
-    console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
     res.status(200).json({ message: "Document updated successfully", data: company });
 

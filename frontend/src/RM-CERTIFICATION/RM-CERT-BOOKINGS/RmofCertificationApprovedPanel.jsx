@@ -18,7 +18,7 @@ import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import { VscSaveAs } from "react-icons/vsc";
 import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
-
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 
 
 
@@ -100,7 +100,9 @@ function RmofCertificationApprovedPanel() {
 
     }, [employeeData])
 
-
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
@@ -271,10 +273,6 @@ const handleCloseEmailPopup = () => {
                                         >
                                             <EditIcon style={{ width: "12px", height: "12px" }} />
                                         </button>
-
-
-
-
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
@@ -296,28 +294,19 @@ const handleCloseEmailPopup = () => {
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <div
-                                            className="My_Text_Wrap"
-                                            title={obj.nswsMailId ? obj.nswsMailId : "No Remarks"}
-                                        >
-                                            {obj.nswsMailId ? obj.nswsMailId : "Please Add Email Address"}
-                                        </div>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setOpenEmailPopup(true)
-                                            }}
-                                        >
-                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button>
+                                    <td>
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        />
                                     </td>
                                     <td>
                                         <NSWSPasswordInput 
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
-                                        //emailPopupOpen={setOpenEmailPopup}
+                                        refresData={refreshData}
                                         nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
@@ -325,7 +314,7 @@ const handleCloseEmailPopup = () => {
                                         <WebsiteLink
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
-                                            //emailPopupOpen={setOpenEmailPopup}
+                                            refreshData={refreshData}
                                             websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>
@@ -417,42 +406,7 @@ const handleCloseEmailPopup = () => {
                 </button>
             </Dialog>
 
-              {/* //----------------------emailpopup---------------------------------- */}
-
-              <Dialog
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopup}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle style={{fontSize:"12px"}} className='d-flex align-items-center justify-content-between'>
-                    {currentCompanyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{width:"16px"}} />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-footer">
-                        <div className="mb-3 remarks-input">
-                            <input
-                                type='text'
-                                //placeholder="Add Email Here..."
-                                className="form-control"
-                                //value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <Button
-                    onClick={handleSubmitNSWSEmail}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
-            </Dialog>
+            
         </div>
     )
 }

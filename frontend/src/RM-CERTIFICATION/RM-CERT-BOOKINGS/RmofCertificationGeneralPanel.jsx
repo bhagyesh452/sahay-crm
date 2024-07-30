@@ -91,7 +91,9 @@ function RmofCertificationGeneralPanel() {
 
     }, [employeeData])
 
-
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
@@ -196,41 +198,11 @@ const handleSubmitRemarks = async () => {
                                                     setNewSubStatus={setNewStatus}
                                                     companyName = {obj["Company Name"]}
                                                     serviceName = {obj.serviceName}
+                                                    refreshData={refreshData}
                                                 />
                                             )}
                                         </div>
                                     </td>
-                                    {/* <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <p
-                                            className="text-wrap m-0"
-                                            title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                        >
-                                            {
-                                                obj.Remarks && obj.Remarks.length > 0
-                                                    ? obj.Remarks
-                                                        .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                    : "No Remarks"
-                                            }
-                                        </p>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setOpenRemarksPopUp(true)
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setHistoryRemarks(obj.Remarks)
-                                                handleOpenRemarksPopup(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            }}
-                                        >
-                                            <EditIcon style={{ width: "12px", height: "12px" }} />
-                                        </button>
-
-
-
-
-                                    </td> */}
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">

@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { VscSaveAs } from "react-icons/vsc";
 
-const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword}) => {
+const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData}) => {
     const [email, setEmail] = useState('');
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [password, setPassword] = useState('');
@@ -26,7 +26,8 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword}) => {
                         'The email has been successfully added.',
                         'success'
                     );
-                    //fetchRMServicesData()
+                    
+                    refresData();
                     setOpenPasswordPopup(false); // Close the popup on success
                 }
             }
@@ -67,7 +68,7 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword}) => {
                 maxWidth="xs"
             >
                 <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
-                    {companyName}'s Email
+                    {companyName}'s Password
                     <IconButton onClick={handleClosePasswordPopup} style={{ float: "right" }}>
                         <CloseIcon color="primary" style={{ width: "16px" }} />
                     </IconButton>

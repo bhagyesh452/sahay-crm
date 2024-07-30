@@ -7,7 +7,7 @@ import axios from 'axios';
 
 
 
-const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName }) => {
+const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData }) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -88,7 +88,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
-        }else if (newStatus === "Hold") {
+        } else if (newStatus === "Hold") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
@@ -96,7 +96,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             mainCategoryStatus: "Hold"
           });
         }
-      }else if (mainStatus === "Hold") {
+      } else if (mainStatus === "Hold") {
         if (newStatus === "Hold") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -106,6 +106,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
           });
         }
       }
+      refreshData();
       console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating status:", error.message);
@@ -183,7 +184,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
         switch (subStatus) {
           case "Hold":
             return "docs-pending";
-         
+
         }
       default:
         return "created-status";
@@ -419,7 +420,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
               </a>
             </li>
           </ul>
-        ): mainStatus === "Defaulter" && (
+        ) : mainStatus === "Defaulter" && (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
               <a

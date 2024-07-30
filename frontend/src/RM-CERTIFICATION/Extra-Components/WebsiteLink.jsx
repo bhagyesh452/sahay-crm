@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { VscSaveAs } from "react-icons/vsc";
 
-const WebsiteLink = ({ companyName, serviceName, websiteLink }) => {
+const WebsiteLink = ({ companyName, serviceName, websiteLink , refreshData }) => {
     //const [email, setEmail] = useState('');
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [link, setLink] = useState('');
@@ -27,6 +27,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink }) => {
                         'success'
                     );
                     //fetchRMServicesData()
+                    refreshData();
                     setOpenWebsitePopup(false); // Close the popup on success
                 }
             }
@@ -67,7 +68,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink }) => {
                 maxWidth="xs"
             >
                 <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
-                    {companyName}'s Email
+                    {companyName}'s Link
                     <IconButton onClick={handleCloseWebsiteLinkPopup} style={{ float: "right" }}>
                         <CloseIcon color="primary" style={{ width: "16px" }} />
                     </IconButton>

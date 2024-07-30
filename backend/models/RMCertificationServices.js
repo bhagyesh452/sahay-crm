@@ -210,6 +210,12 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   websiteLink:{
     type:String
+  },
+  industry:{
+    type:String
+  },
+  sector:{
+    type:String
   }
 })
 
