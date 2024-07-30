@@ -73,7 +73,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             mainCategoryStatus: "Submitted"
           });
         }
-      }else if (mainStatus === "Defaulter") {
+      } else if (mainStatus === "Defaulter") {
         if (newStatus === "Working") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -81,7 +81,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
-        }  
+        }
       }
 
       console.log("Status updated successfully:", response.data);
@@ -89,6 +89,79 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
       console.error("Error updating status:", error.message);
     }
   };
+
+  const getStatusClass = (mainStatus, subStatus) => {
+    switch (mainStatus) {
+      case "General":
+        switch (subStatus) {
+          case "Untouched":
+            return "created-status";
+          case "Call Done Brief Pending":
+            return "support-status";
+          case "Client Not Responding":
+            return "inprogress-status";
+          case "Documents Pending":
+            return "docs-pending";
+          case "Need To Call":
+            return "rejected-status";
+          default:
+            return "created-status";
+        }
+      case "Process":
+        switch (subStatus) {
+          case "Call Done Brief Pending":
+            return "support-status";
+          case "Client Not Responding":
+            return "inprogress-status";
+          case "Documents Pending":
+            return "docs-pending";
+          case "Ready To Submit":
+            return "rejected-status";
+          case "Submitted":
+            return "rejected-status";
+          case "Working":
+            return "finished-status";
+          case "Defaulter":
+            return "finished-status";
+          default:
+            return "created-status";
+        }
+      case "Submitted":
+        switch (subStatus) {
+          case "Submitted":
+            return "rejected-status";
+          case "Incomplete":
+            return "inprogress-status";
+          case "Approved":
+            return "docs-pending";
+          case "2nd Time Submitted":
+            return "rejected-status";
+          case "3rd Time Submitted":
+            return "finished-status";
+          case "Rejected":
+            return "rejected-status";
+          case "Defaulter":
+            return "rejected-status";
+          default:
+            return "created-status";
+        }
+      case "Defaulter":
+        switch (subStatus) {
+          case "Working":
+            return "rejected-status";
+          case "Defaulter":
+            return "rejected-status";
+          default:
+            return "created-status";
+        }
+      default:
+        return "created-status";
+    }
+  };
+
+  useEffect(() => {
+    setStatusClass(getStatusClass(mainStatus, subStatus));
+  }, [mainStatus, subStatus]);
 
 
   //console.log("mainStatus" , mainStatus)

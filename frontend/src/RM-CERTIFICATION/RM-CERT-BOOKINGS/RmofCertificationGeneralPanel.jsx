@@ -159,7 +159,7 @@ const handleSubmitRemarks = async () => {
                                 <th>CA Number</th>
                                 <th>Service Name</th>
                                 <th>Status</th>
-                                <th>Remark</th>
+                                {/* <th>Remark</th> */}
                                 <th>DSC Applicable</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -200,7 +200,7 @@ const handleSubmitRemarks = async () => {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
+                                    {/* <td className="d-flex align-items-center justify-content-center wApp" >
                                         <p
                                             className="text-wrap m-0"
                                             title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
@@ -230,7 +230,7 @@ const handleSubmitRemarks = async () => {
 
 
 
-                                    </td>
+                                    </td> */}
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
