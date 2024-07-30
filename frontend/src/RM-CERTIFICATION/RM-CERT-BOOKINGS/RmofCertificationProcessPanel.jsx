@@ -20,6 +20,7 @@ import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
+import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 
 function RmofCertificationProcessPanel() {
 
@@ -307,11 +308,11 @@ function RmofCertificationProcessPanel() {
                                     {/* For Brochure */}
                                     <td><ContentWriterDropdown /></td>
                                     <td>
-                                        <ContentStatusDropdown
+                                        <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentStatus}
+                                            brochureStatus={obj.brochureStatus}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput

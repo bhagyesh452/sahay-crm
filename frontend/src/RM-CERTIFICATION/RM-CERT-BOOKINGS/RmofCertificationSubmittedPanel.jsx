@@ -22,6 +22,7 @@ import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
+import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 
 
 function RmofCertificationSubmittedPanel() {
@@ -159,6 +160,11 @@ function RmofCertificationSubmittedPanel() {
         setSectorOptions(options);
     };
 
+    const formatDateISO = (date) => {
+        // Customize the date formatting as needed
+        return new Intl.DateTimeFormat('en-US').format(date);
+    }
+
 
 
 
@@ -282,7 +288,13 @@ function RmofCertificationSubmittedPanel() {
                                         contentStatus={obj.contentStatus}
                                     /></td>
                                     <td>Brochure Designer</td>
-                                    <td>Brochure Status</td>
+                                    <td>
+                                        <BrochureStatusDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            brochureStatus={obj.brochureStatus}
+                                        /></td>
                                     <td>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
@@ -324,8 +336,8 @@ function RmofCertificationSubmittedPanel() {
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
-                                    <td>Submitted By</td>
-                                    <td>Submitted On</td>
+                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                                    <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -341,7 +353,11 @@ function RmofCertificationSubmittedPanel() {
                                     <td>₹ {obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
-                                    <td>1</td>
+                                    <td>
+                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2" :
+                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
+                                                "1"} 
+                                    </td>
                                     <td>July 27,2024</td>
                                 </tr>
                             ))}
