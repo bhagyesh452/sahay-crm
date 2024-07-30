@@ -8,7 +8,7 @@ import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { FaPencilAlt } from "react-icons/fa";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
@@ -161,12 +161,12 @@ function RmofCertificationSubmittedPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                    <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Booking Date</th>
-                                <th className="rm-sticky-left-3">Company Name</th>
+                                
+                                <th className="rm-sticky-left-2">Company Name</th>
                                 <th>Company Number</th>
                                 <th>Company Email</th>
                                 <th>CA Number</th>
@@ -186,6 +186,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Sector</th>
                                 <th>Submitted By</th>
                                 <th>Submitted On</th>
+                                <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -193,16 +194,16 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
                                 <th>Date and Time of Application</th>
-                                {/* <th className="rm-sticky-action">Action</th> */}
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
+                                    
 
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
+                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
 
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
@@ -230,32 +231,34 @@ function RmofCertificationSubmittedPanel() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <p
-                                            className="text-wrap m-0"
-                                            title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                        >
-                                            {
-                                                obj.Remarks && obj.Remarks.length > 0
-                                                    ? obj.Remarks
-                                                        .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                    : "No Remarks"
-                                            }
-                                        </p>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setOpenRemarksPopUp(true)
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setHistoryRemarks(obj.Remarks)
-                                                handleOpenRemarksPopup(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            }}
-                                        >
-                                            <EditIcon style={{ width: "12px", height: "12px" }} />
-                                        </button>
+                                    <td className='td_of_remarks'>
+                                        <div className="d-flex align-items-center justify-content-between wApp">
+                                            <div
+                                                className="My_Text_Wrap"
+                                                title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                            >
+                                                {
+                                                    obj.Remarks && obj.Remarks.length > 0
+                                                        ? obj.Remarks
+                                                            .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                        : "No Remarks"
+                                                }
+                                            </div>
+                                            <button className='td_add_remarks_btn'
+                                                onClick={() => {
+                                                    setOpenRemarksPopUp(true)
+                                                    setCurrentCompanyName(obj["Company Name"])
+                                                    setCurrentServiceName(obj.serviceName)
+                                                    setHistoryRemarks(obj.Remarks)
+                                                    handleOpenRemarksPopup(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                }}
+                                            >
+                                                <FaPencilAlt />
+                                            </button>
+                                        </div>
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
@@ -305,6 +308,7 @@ function RmofCertificationSubmittedPanel() {
                                     <td>Sector</td>
                                     <td>Submitted By</td>
                                     <td>Submitted On</td>
+                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -322,6 +326,8 @@ function RmofCertificationSubmittedPanel() {
                                     <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
                                     <td>1</td>
                                     <td>July 27,2024</td>
+                                    <td className="rm-sticky-action"><button className="action-btn action-btn-primary"><FaRegEye /></button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

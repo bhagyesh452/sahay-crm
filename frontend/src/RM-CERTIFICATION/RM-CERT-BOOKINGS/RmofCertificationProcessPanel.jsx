@@ -21,6 +21,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 
+
 function RmofCertificationProcessPanel() {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
