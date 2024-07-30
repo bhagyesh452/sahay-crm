@@ -4,11 +4,10 @@ import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import { FaRegEye } from "react-icons/fa";
-import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { FaPencilAlt } from "react-icons/fa";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
@@ -17,6 +16,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
 import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import { VscSaveAs } from "react-icons/vsc";
+import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
+import WebsiteLink from '../Extra-Components/WebsiteLink';
+import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
+import SectorDropdown from '../Extra-Components/SectorDropdown';
 
 function RmofCertificationProcessPanel() {
 
@@ -34,7 +37,11 @@ function RmofCertificationProcessPanel() {
     const [changeRemarks, setChangeRemarks] = useState("");
     const [historyRemarks, setHistoryRemarks] = useState([]);
     const [email, setEmail] = useState('');
-    const [openEmailPopup, setOpenEmailPopup] = useState(false)
+    const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    const [password, setPassword] = useState('');
+    const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
+    const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [sectorOptions, setSectorOptions] = useState([]);
 
 
     function formatDate(dateString) {
@@ -102,6 +109,9 @@ function RmofCertificationProcessPanel() {
 
     }, [employeeData])
 
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
 
     function formatDate(dateString) {
@@ -149,31 +159,15 @@ function RmofCertificationProcessPanel() {
         }
     };
 
-
-    console.log("setnewsubstatus", newStatusProcess)
-
-    const handleSubmitNSWSEmail = async (companyName, serviceName) => {
-        console.log("email", email)
-        try {
-            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                companyName,
-                serviceName,
-                email
-            });
-            if (response.status === 200) {
-                Swal.fire(
-                    'Email Added!',
-                    'The remarks have been successfully added.',
-                    'success'
-                );
-            }
-        } catch (error) {
-            console.error("Error saving email:", error.message);
-
-        }
+    const handleIndustryChange = (industry, options) => {
+        setSelectedIndustry(industry);
+        setSectorOptions(options);
     };
 
 
+
+
+    console.log("setnewsubstatus", newStatusProcess)
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -186,14 +180,14 @@ function RmofCertificationProcessPanel() {
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Booking Date</th>
-                                <th className="rm-sticky-left-3">Company Name</th>
+                                <th className="rm-sticky-left-2">Company Name</th>
                                 <th>Company Number</th>
                                 <th>Company Email</th>
                                 <th>CA Number</th>
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
+                                <th>Website Link</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -202,22 +196,22 @@ function RmofCertificationProcessPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
+                                <th>Industry</th>
+                                <th>Sector</th>
+                                <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
-                                <th>received Payment</th>
+                                <th>Received Payment</th>
                                 <th>Pending Payment</th>
-                                {/* <th className="rm-sticky-action">Action</th> */}
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
-
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-
+                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
                                             <div>{obj["Company Number"]}</div>
@@ -228,10 +222,10 @@ function RmofCertificationProcessPanel() {
                                     </td>
                                     <td>{obj["Company Email"]}</td>
                                     <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
+
                                     <td><b>{obj.serviceName}</b></td>
                                     <td>
                                         <div>
-
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}
@@ -239,40 +233,47 @@ function RmofCertificationProcessPanel() {
                                                     setNewSubStatus={setNewStatusProcess}
                                                     companyName={obj["Company Name"]}
                                                     serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
                                                 />
                                             )}
                                         </div>
                                     </td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <div
-                                            className="My_Text_Wrap"
-                                            title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                        >
-                                            {
-                                                obj.Remarks && obj.Remarks.length > 0
-                                                    ? obj.Remarks
-                                                        .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                    : "No Remarks"
-                                            }
+                                    <td className='td_of_remarks'>
+                                        <div className="d-flex align-items-center justify-content-between wApp">
+                                            <div
+                                                className="My_Text_Wrap"
+                                                title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                            >
+                                                {
+                                                    obj.Remarks && obj.Remarks.length > 0
+                                                        ? obj.Remarks
+                                                            .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                        : "No Remarks"
+                                                }
+                                            </div>
+                                            <button className='td_add_remarks_btn'
+                                                onClick={() => {
+                                                    setOpenRemarksPopUp(true)
+                                                    setCurrentCompanyName(obj["Company Name"])
+                                                    setCurrentServiceName(obj.serviceName)
+                                                    setHistoryRemarks(obj.Remarks)
+                                                    handleOpenRemarksPopup(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                }}
+                                            >
+                                                <FaPencilAlt />
+                                            </button>
                                         </div>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setOpenRemarksPopUp(true)
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setHistoryRemarks(obj.Remarks)
-                                                handleOpenRemarksPopup(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            }}
-                                        >
-                                            <EditIcon style={{ width: "12px", height: "12px" }} />
-                                        </button>
-
-
-
-
+                                    </td>
+                                    <td className='td_of_weblink'>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Add Website Link"}
+                                        />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
@@ -282,70 +283,74 @@ function RmofCertificationProcessPanel() {
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
                                                 dscStatus={obj.dscStatus}
+                                                classForStatus={""}
                                             />) :
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown /></td>
-                                    <td><ContentStatusDropdown
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        mainStatus={obj.mainCategoryStatus}
-                                        contentStatus={obj.contentStatus}
-                                    /></td>
-                                    <td>Brochure Designer</td>
-                                    <td>Brochure Status</td>
-                                    <td className="d-flex align-items-center justify-content-center wApp">
-                                        {openEmailPopup ? (<NSWSEmailInput
+                                    <td>
+                                        <ContentStatusDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            nswsemail={obj.nswsMailId}
-                                            emailPopupOpen={setOpenEmailPopup}
-                                            openedPopup={openEmailPopup}
-                                        />) : (
-                                            <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={(e) => {
-                                               setOpenEmailPopup(true)
-                                            }}
-                                        > Please Add Email Address
-                                        <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button> 
-                                        )}
-                                        {/* <input type="email"
-                                            value={obj.nswsMailId ? obj.nswsMailId : email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="Enter NSWS Email Id"
+                                            contentStatus={obj.contentStatus}
+                                        /></td>
+                                        {/* For Brochure */}
+                                   <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentStatusDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            contentStatus={obj.contentStatus}
+                                        /></td>
+                                    <td className='td_of_NSWSeMAIL'>
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Enter Email"}
                                         />
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={(e) => {
-                                                handleSubmitNSWSEmail(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            }}
-                                        >
-                                            <VscSaveAs style={{ width: "12px", height: "12px" }} />
-                                        </button> */}
                                     </td>
-                                    <td>NSWS Password</td>
+                                    <td className='td_of_weblink'>
+                                        <NSWSPasswordInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refresData={refreshData}
+                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <IndustryDropdown
+                                            onIndustryChange={handleIndustryChange}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                        /></td>
+                                    <td>
+                                        <SectorDropdown
+                                            sectorOptions={sectorOptions} />
+                                    </td>
+                                    <td>{formatDate(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
-
                                             <div>{obj.bdeName}</div>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
-
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
                                     <td>₹ {obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
                                     <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
+
+                                    ><FaRegEye /></button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
                 </div>
             </div>

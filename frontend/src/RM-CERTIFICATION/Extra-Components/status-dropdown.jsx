@@ -7,7 +7,7 @@ import axios from 'axios';
 
 
 
-const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName }) => {
+const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData }) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -42,6 +42,13 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
+        } else if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -73,7 +80,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             mainCategoryStatus: "Submitted"
           });
         }
-      }else if (mainStatus === "Defaulter") {
+      } else if (mainStatus === "Defaulter") {
         if (newStatus === "Working") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -81,14 +88,112 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
-        }  
+        } else if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
+        }
+      } else if (mainStatus === "Hold") {
+        if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
+          });
+        }
       }
-
+      refreshData();
       console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating status:", error.message);
     }
   };
+
+  const getStatusClass = (mainStatus, subStatus) => {
+    switch (mainStatus) {
+      case "General":
+        switch (subStatus) {
+          case "Untouched":
+            return "created-status";
+          case "Call Done Brief Pending":
+            return "support-status";
+          case "Client Not Responding":
+            return "inprogress-status";
+          case "Documents Pending":
+            return "docs-pending";
+          case "Need To Call":
+            return "rejected-status";
+          default:
+            return "created-status";
+        }
+      case "Process":
+        switch (subStatus) {
+          case "Call Done Brief Pending":
+            return "support-status";
+          case "Client Not Responding":
+            return "inprogress-status";
+          case "Documents Pending":
+            return "docs-pending";
+          case "Ready To Submit":
+            return "rejected-status";
+          case "Submitted":
+            return "rejected-status";
+          case "Working":
+            return "finished-status";
+          case "Defaulter":
+            return "finished-status";
+          case "Hold":
+            return "docs-pending";
+          default:
+            return "created-status";
+        }
+      case "Submitted":
+        switch (subStatus) {
+          case "Submitted":
+            return "rejected-status";
+          case "Incomplete":
+            return "inprogress-status";
+          case "Approved":
+            return "docs-pending";
+          case "2nd Time Submitted":
+            return "rejected-status";
+          case "3rd Time Submitted":
+            return "finished-status";
+          case "Rejected":
+            return "rejected-status";
+          case "Defaulter":
+            return "rejected-status";
+          default:
+            return "created-status";
+        }
+      case "Defaulter":
+        switch (subStatus) {
+          case "Working":
+            return "rejected-status";
+          case "Defaulter":
+            return "rejected-status";
+          case "Hold":
+            return "docs-pending";
+          default:
+            return "created-status";
+        }case "Hold":
+        switch (subStatus) {
+          case "Hold":
+            return "docs-pending";
+
+        }
+      default:
+        return "created-status";
+    }
+  };
+
+  useEffect(() => {
+    setStatusClass(getStatusClass(mainStatus, subStatus));
+  }, [mainStatus, subStatus]);
 
 
   //console.log("mainStatus" , mainStatus)
@@ -194,7 +299,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "rejected-status")}
+                onClick={() => handleStatusChange("Submitted", "finished-status")}
                 href="#"
               >
                 Submitted
@@ -225,6 +330,15 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Need To Call
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
               </a>
             </li>
           </ul>
@@ -294,6 +408,18 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
               </a>
             </li>
           </ul>
+        ) : mainStatus === "Hold" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
+              </a>
+            </li>
+          </ul>
         ) : mainStatus === "Defaulter" && (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
@@ -312,6 +438,15 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Defaulter
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                href="#"
+              >
+                Hold
               </a>
             </li>
           </ul>

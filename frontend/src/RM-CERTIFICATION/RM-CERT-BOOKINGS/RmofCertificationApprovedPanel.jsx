@@ -15,6 +15,11 @@ import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
+import { VscSaveAs } from "react-icons/vsc";
+import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
+import WebsiteLink from '../Extra-Components/WebsiteLink';
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
+
 
 
 function RmofCertificationApprovedPanel() {
@@ -30,7 +35,9 @@ function RmofCertificationApprovedPanel() {
     const [currentServiceName, setCurrentServiceName] = useState("")
     const [remarksHistory, setRemarksHistory] = useState([])
     const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([])
+    const [historyRemarks, setHistoryRemarks] = useState([]);
+    const [email, setEmail] = useState('');
+    const [openEmailPopup, setOpenEmailPopup] = useState(false);
 
 
 
@@ -93,7 +100,9 @@ function RmofCertificationApprovedPanel() {
 
     }, [employeeData])
 
-
+    const refreshData = () => {
+        fetchRMServicesData();
+    };
 
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
@@ -143,6 +152,37 @@ const handleSubmitRemarks = async () => {
     }
 };
 
+//--------------------email function----------------------
+const handleSubmitNSWSEmail = async () => {
+    console.log(currentCompanyName , currentServiceName)
+    try {
+        if(currentCompanyName && currentServiceName){
+            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
+                currentCompanyName,
+                currentServiceName,
+                email
+            });
+            if (response.status === 200) {
+                Swal.fire(
+                    'Email Added!',
+                    'The email has been successfully added.',
+                    'success'
+                );
+                fetchRMServicesData()
+                setOpenEmailPopup(false); // Close the popup on success
+            }
+        }
+       
+        
+    } catch (error) {
+        console.error("Error saving email:", error.message); // Log only the error message
+    }
+};
+
+const handleCloseEmailPopup = () => {
+    setOpenEmailPopup(false)
+}
+
 
 
 
@@ -170,8 +210,9 @@ const handleSubmitRemarks = async () => {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>NSWS Email ID</th>
-                                <th>NSWS Password</th>
+                                <th>Website Link</th>
+                                <th>Industry</th>
+                                <th>Sector</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -232,10 +273,6 @@ const handleSubmitRemarks = async () => {
                                         >
                                             <EditIcon style={{ width: "12px", height: "12px" }} />
                                         </button>
-
-
-
-
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
@@ -257,10 +294,32 @@ const handleSubmitRemarks = async () => {
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td>NSWS Email Id</td>
-                                    <td>NSWS Password</td>
-                                    <td>NSWS Email ID</td>
-                                    <td>NSWS Password</td>
+                                    <td>
+                                        <NSWSEmailInput
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <NSWSPasswordInput 
+                                        companyName={obj["Company Name"]}
+                                        serviceName={obj.serviceName}
+                                        refresData={refreshData}
+                                        nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                        />
+                                    </td>
+                                    <td>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
+                                    <td>Industry</td>
+                                    <td>Sector</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -346,6 +405,8 @@ const handleSubmitRemarks = async () => {
                     Submit
                 </button>
             </Dialog>
+
+            
         </div>
     )
 }

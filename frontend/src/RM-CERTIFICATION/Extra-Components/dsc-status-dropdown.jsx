@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import "../../dist/css/tabler.min.css?1684106062";
 import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
@@ -52,6 +52,30 @@ const DscStatusDropdown = ({ companyName , serviceName , mainStatus ,dscStatus})
       console.error("Error updating status:", error.message);
     }
   };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Not Started":
+        return "created-status";
+      case "KYC Pending":
+        return "support-status";
+      case "KYC Incomplete":
+        return "inprogress-status";
+      case "Approved":
+        return "finished-status";
+      case "Not Applicable":
+      case "KYC Rejected":
+        return "rejected-status";
+      case "KYC Document Pending":
+        return "inprogress-status";
+      default:
+        return "created-status";
+    }
+  };
+
+  useEffect(() => {
+    setStatusClass(getStatusClass(dscStatus));
+  }, [dscStatus]);
 
 
   return (

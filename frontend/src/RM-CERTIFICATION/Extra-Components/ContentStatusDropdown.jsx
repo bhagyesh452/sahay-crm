@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import "../../dist/css/tabler.min.css?1684106062";
 import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
@@ -20,7 +20,6 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
     try {
       let response;
       if (mainStatus === "Process") {
-        
         response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
           companyName,
           serviceName,
@@ -44,6 +43,12 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
         serviceName,
         contentStatus : newStatus
       });
+    } else if (mainStatus === "Hold") {
+      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+        companyName,
+        serviceName,
+        contentStatus : newStatus
+      });
     } 
       
 
@@ -52,6 +57,30 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
       console.error("Error updating status:", error.message);
     }
   };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Not Started":
+        return "created-status";
+      case "Working":
+        return "rejected-status";
+      case "Pending":
+        return "inprogress-status";
+      case "Approved":
+        return "Completed";
+      case "finished-status":
+      case "InApproved":
+        return "rejected-status";
+      case "Approved":
+        return "support-status";
+      default:
+        return "created-status";
+    }
+  };
+
+  useEffect(() => {
+    setStatusClass(getStatusClass(contentStatus));
+  }, [contentStatus]);
 
 
   return (

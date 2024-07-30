@@ -8,6 +8,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
 import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
+import logo from "../../static/mainLogo.png"
 import { FaCamera } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaRegCircleUser } from "react-icons/fa6";
@@ -260,7 +261,26 @@ function EmployeeView() {
             <div className="row mt-1">
               <div className="col-sm-3">
                 <div className="E_Id_card">
-
+                  <div className="E_Id_card_bg">
+                    <div className="main_logo_For_ID">
+                      <img src={logo}></img>
+                    </div>
+                    <div className="E_id_top_black_bg">
+                    </div>
+                    <div className="E_id_profile d-flex align-items-center justify-content-center"> 
+                      <div className="E_id_profile_inner">
+                        <div className="E_id_profile_img">
+                          <img src={EmpImg1}></img>
+                        </div>
+                        <div className="E_id_profile_Name">
+                          Nimesh Parekh
+                        </div>
+                        <div className="E_id_profile_designation">
+                          CTO
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="col-sm-12">
