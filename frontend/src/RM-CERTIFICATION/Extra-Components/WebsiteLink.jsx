@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
 import Swal from "sweetalert2";
-import { VscSaveAs } from "react-icons/vsc";
+import { FaPencilAlt } from "react-icons/fa";
 
 const WebsiteLink = ({ companyName, serviceName, websiteLink , refreshData }) => {
     //const [email, setEmail] = useState('');
@@ -44,41 +43,39 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink , refreshData }) =>
 
     return (
         <div>
-            <div className='d-flex align-item-center justify-content-center'>
+            <div className='d-flex align-items-center justify-content-between'>
                 <div
                     className="My_Text_Wrap"
                     title={websiteLink}
                 >
                     {websiteLink}
                 </div>
-                <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+                <button className='td_add_remarks_btn'
                     onClick={() => {
 
                         setOpenWebsitePopup(true)
                     }}
                 >
-                    <VscSaveAs style={{ width: "12px", height: "12px" }} />
+                    <FaPencilAlt/>
                 </button>
             </div>
 
             <Dialog
+                className='My_Mat_Dialog'
                 open={openWebsiteLinkPopup}
                 onClose={handleCloseWebsiteLinkPopup}
                 fullWidth
                 maxWidth="xs"
             >
-                <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
-                    {companyName}'s Link
-                    <IconButton onClick={handleCloseWebsiteLinkPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{ width: "16px" }} />
-                    </IconButton>
+                <DialogTitle>
+                    <h3 className='m-0'>{companyName}</h3>
                 </DialogTitle>
                 <DialogContent>
                     <div className="card-footer">
-                        <div className="mb-3 remarks-input">
+                        <div className="remarks-input">
                             <input
                                 type='text'
-                                //placeholder="Add Email Here..."
+                                placeholder="Enter Website link"
                                 className="form-control"
                                 //value={email}
                                 onChange={(e) => setLink(e.target.value)}
@@ -86,14 +83,22 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink , refreshData }) =>
                         </div>
                     </div>
                 </DialogContent>
-                <Button
-                    onClick={handleSubmitWesbiteLink}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
+                <DialogActions className='p-0'>
+                    <Button onClick={handleCloseWebsiteLinkPopup}
+                        variant="contained"
+                        color="error"
+                        style={{ width: "100%",borderRadius:"0px" }} className='m-0'>Close</Button>
+                    <Button
+                        onClick={handleSubmitWesbiteLink}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: "100%",borderRadius:"0px" }}
+                        className='m-0'
+                    >
+                        Submit
+                    </Button>
+                </DialogActions>
+                
             </Dialog>
         </div>
 

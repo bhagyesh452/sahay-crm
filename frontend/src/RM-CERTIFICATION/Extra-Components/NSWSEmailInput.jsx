@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
-import { VscSaveAs } from "react-icons/vsc";
+
+import { FaPencilAlt } from "react-icons/fa";
 
 const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) => {
     const [email, setEmail] = useState('');
@@ -37,41 +38,39 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) =>
 
     return (
         <div>
-            <div className='d-flex align-item-center justify-content-center'>
+            <div className='d-flex align-items-center justify-content-between'>
             <div
                 className="My_Text_Wrap"
                 title={nswsMailId}
             >
                 {nswsMailId}
             </div>
-            <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
+            <button className='td_add_remarks_btn'
                 onClick={() => {
                    
                     setOpenEmailPopup(true)
                 }}
             >
-                <VscSaveAs style={{ width: "12px", height: "12px" }} />
+                <FaPencilAlt/>
             </button>
             </div>
           
             <Dialog
+                className='My_Mat_Dialog'
                 open={openEmailPopup}
                 onClose={handleCloseEmailPopUp}
                 fullWidth
                 maxWidth="xs"
             >
                 <DialogTitle>
-                    {companyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopUp} style={{ float: "right" }}>
-                        <CloseIcon color="primary" />
-                    </IconButton>
+                <h3 className='m-0'>{companyName}</h3>
                 </DialogTitle>
                 <DialogContent>
                     <div className="card-footer">
-                        <div className="mb-3 remarks-input">
+                        <div className="remarks-input">
                             <input
                                 type='email'
-                                //placeholder="Add Email Here..."
+                                placeholder="Enter NSWS Email Address"
                                 className="form-control"
                                 //value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -79,14 +78,22 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) =>
                         </div>
                     </div>
                 </DialogContent>
-                <Button
-                    onClick={handleSubmitNSWSEmail}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
+                <DialogActions className='p-0'>
+                    <Button onClick={handleCloseEmailPopUp}
+                        variant="contained"
+                        color="error"
+                        style={{ width: "100%",borderRadius:"0px" }} className='m-0'>Close</Button>
+                    
+                    <Button
+                        onClick={handleSubmitNSWSEmail}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: "100%",borderRadius:"0px" }}
+                        className='m-0'
+                    >
+                        Submit
+                    </Button>
+                </DialogActions>
             </Dialog>
         </div>
 

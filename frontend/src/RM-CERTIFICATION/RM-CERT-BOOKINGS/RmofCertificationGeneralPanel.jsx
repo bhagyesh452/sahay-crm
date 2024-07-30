@@ -153,9 +153,9 @@ const handleSubmitRemarks = async () => {
                     <table className="table table-vcenter table-nowrap rm_table">
                         <thead>
                             <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Booking Date</th>
-                                <th className="rm-sticky-left-3">Company Name</th>
+                                <th className="G_rm-sticky-left-1">Sr.No</th>
+                                <th className="G_rm-sticky-left-2">Booking Date</th>
+                                <th className="G_rm-sticky-left-3">Company Name</th>
                                 <th>Company Number</th>
                                 <th>Company Email</th>
                                 <th>CA Number</th>
@@ -174,9 +174,9 @@ const handleSubmitRemarks = async () => {
                         <tbody>
                             {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
-                                    <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
+                                    <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                    <td className='G_rm-sticky-left-2'>{formatDate(obj.bookingDate)}</td>
+                                    <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
                                             <div>{obj["Company Number"]}</div>
@@ -187,6 +187,7 @@ const handleSubmitRemarks = async () => {
                                     </td>
                                     <td>{obj["Company Email"]}</td>
                                     <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
+                                    
                                     <td><b>{obj.serviceName}</b></td>
                                     <td>
                                         <div>

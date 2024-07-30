@@ -2512,12 +2512,22 @@ td input {
   background: #43474c !important;
   color: #e4e4e4;
   border: none !important;
-  padding: 4px 0px !important;
+  padding: 4px 8px 4px 8px !important;
+  border-right: 1px solid #292929 !important;
 }
-.table-style-3 table thead tr td
+.table-style-3 table tbody tr td
 {
   border: none !important;
+  padding: 4px 8px 4px 8px !important;
+  border-right: 1px solid #f6f8fb !important;
   transition: .5s;
+}
+.table-style-3 table tfoot tr td
+{
+  background: #dadfe5 !important;
+  color: #000;
+  border: none !important;
+  padding: 3px 6px !important;
 }
 .table-style-3 table tbody tr
 {
@@ -2543,23 +2553,13 @@ td input {
 }
 .table-style-3 table tbody tr:nth-child(even)
 {
-  background:#efefef  !important ;
+  /* background:#efefef  !important ; */
+  background: #fff !important;
 }
 .table-style-3 table tbody tr:nth-child(odd)
 {
-  background:#e2e2e2  !important ;
-}
-.table-style-3 table tbody tr td
-{
-  border: none !important;
-  padding: 4px 2px 4px 2px !important;
-}
-.table-style-3 table tfoot tr td
-{
-  background: #dadfe5 !important;
-  color: #000;
-  border: none !important;
-  padding: 3px 6px !important;
+  /* background:#e2e2e2  !important ; */
+  background: #fff !important;
 }
 .tbl-pro-img
 {
@@ -2861,7 +2861,7 @@ td input {
 }
 .rm_table_inprocess
 {
-  width: 3000px !important;
+  width: 3300px !important;
 }
 .rm-sticky-left-1
 {
@@ -2873,64 +2873,83 @@ td input {
 {
   position: sticky;
   left: 50px;
-  width: 104px;
+  box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
-.rm-sticky-left-3
+/* .rm-sticky-left-3
 {
   position: sticky;
   left: 154px;
-  box-shadow: 3px 0px 4px -4px #898989 !important;
+} */
+
+.G_rm-sticky-left-1
+{
+  position: sticky;
+  left: 0;
+  width: 50px;
+}
+.G_rm-sticky-left-2
+{
+  position: sticky;
+  left: 50px;
+  width: 104px;
+  
+}
+.G_rm-sticky-left-3
+{
+  position: sticky;
+  left: 154px;
+  box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 .rm-sticky-action
 {
   position: sticky;
   right: 0;
-  box-shadow: -3px 0px 4px -4px #898989 !important;
+  box-shadow: -3px 0px 4px -4px #cccccc !important;
 }
 .table-style-3 table tbody tr:nth-child(even) td:nth-child(1)
 {
-  background:#efefef  !important ;
+  background:#fff  !important ;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(odd) td:nth-child(1)
 {
-  background:#e2e2e2  !important ;
+  background:#fff  !important ;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(even) td:nth-child(2)
 {
-  background:#efefef  !important ;
+  background:#fff  !important ;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(odd) td:nth-child(2)
 {
-  background:#e2e2e2  !important ;
+  background:#fff  !important ;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(even) td:nth-child(3)
 {
-  background:#efefef  !important ;
+  background:#fff  !important ;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(odd) td:nth-child(3)
 {
-  background:#e2e2e2  !important;
+  background:#fff  !important;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(even) td:last-child
 {
-  background:#efefef  !important;
+  background:#fff  !important;
   z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(odd) td:last-child
 {
-  background:#e2e2e2  !important;
+  background:#fff  !important;
   z-index: 1;
 }
 
 .table-style-3 table tbody tr:hover td,.table-style-3 table tbody tr:hover td:nth-child(1),.table-style-3 table tbody tr:hover td:nth-child(2),.table-style-3 table tbody tr:hover td:nth-child(3),.table-style-3 table tbody tr:hover td:last-child
 {
-  background: #b0b0b0 !important;
+  background: #ededed !important;
   cursor: pointer;
 }
 
@@ -3026,6 +3045,30 @@ td input {
 .rm-sticky-action.scrolled {
   background-color: yellow; /* Color when scrolled */
   z-index: 2; /* Ensure sticky elements stay on top */
+}
+.td_of_remarks
+{
+  width: 155px;
+}
+.td_add_remarks_btn
+{
+  border: none;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 19px;
+  border-radius: 100px;
+  background: #eee;
+  font-size: 10px;
+  color: #0071cb;
+}
+.td_of_weblink
+{
+  width: 210px;
+}
+.td_of_NSWSeMAIL
+{
+  width: 250px;
 }
 @media (max-width: 1528px)
 {
