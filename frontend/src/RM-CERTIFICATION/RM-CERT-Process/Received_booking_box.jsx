@@ -51,7 +51,7 @@ function Received_booking_box() {
         totalPaymentWOGST: 0,
         totalPaymentWGST: 0,
         withGST: "",
-        withDSC:false,
+        withDSC: false,
         firstPayment: 0,
         secondPayment: 0,
         thirdPayment: 0,
@@ -129,16 +129,16 @@ function Received_booking_box() {
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-07-15");
         today.setHours(0, 0, 0, 0); // Set to start of today
-
+    
         try {
-            const response = await axios.get(
-                `${secretKey}/bookings/redesigned-final-leadData`
-            );
-
-            const filteredAndSortedData = response.data
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+            const data = response.data;
+    
+            // Filter and sort data based on lastActionDate
+            const filteredAndSortedData = data
                 .filter(item => {
                     const lastActionDate = new Date(item.lastActionDate);
-                    lastActionDate.setHours(0, 0, 0, 0)
+                    lastActionDate.setHours(0, 0, 0, 0);
                     return lastActionDate >= today; // Compare directly
                 })
                 .sort((a, b) => {
@@ -146,22 +146,83 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
+    
+            // Process each document to combine services and filter them
+            const processedData = filteredAndSortedData.map(item => {
+                // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
+                const combinedServices = [
+                    ...(item.servicesTakenByRmOfCertification || []),
+                    ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByRmOfCertification || [])
+                ];
+    
+                // Remove duplicates
+                const uniqueServices = [...new Set(combinedServices)];
+    
+                return {
+                    ...item,
+                    combinedServices: uniqueServices // Add combined services to the document
+                };
+            });
+    
+            // Create an array of filtered service names for each document
+            const filteredServicesData = filteredAndSortedData.map(item => {
+                // Extract primary services
+                const primaryServices = item.services || [];
+    
+                // Combine services from moreBookings
+                const moreBookingServices = item.moreBookings
+                    ? item.moreBookings.flatMap((booking) => booking.services || [])
+                    : [];
+    
+                // Combine services
+                const combinedServices = [
+                    ...primaryServices,
+                    ...moreBookingServices
+                ];
+    
+                // Filter services based on certificationLabels
+                const filteredServices = combinedServices.filter((service) =>
+                    certificationLabels.includes(service.serviceName)
+                );
+    
+                // Map through the filtered services to get service names
+                return filteredServices.map((service) => service.serviceName);
+            });
+    
+            // Find companies that do not match the filteredServices
+            const nonMatchingCompanies = processedData.filter((item, index) => {
+                // Find the filtered services for the same index
+                const filteredServiceNames = filteredServicesData[index];
+    
+                // Compare combinedServices with filteredServiceNames
+                return !(item.combinedServices.length === filteredServiceNames.length &&
+                         item.combinedServices.every(service => filteredServiceNames.includes(service)));
+            });
 
             const completeData = response.data
-                .sort((a, b) => {
-                    const dateA = new Date(a.lastActionDate);
-                    const dateB = new Date(b.lastActionDate);
-                    return dateB - dateA; // Sort in descending order
-                });
-
-            setRedesignedData(filteredAndSortedData);
-            setLeadFormData(filteredAndSortedData)
-            setCompleteRedesignedData(completeData)
-            //setCurrentCompanyName(filteredAndSortedData[0]["Company Name"])
+            .sort((a, b) => {
+                const dateA = new Date(a.lastActionDate);
+                const dateB = new Date(b.lastActionDate);
+                return dateB - dateA; // Sort in descending order
+            });
+    
+            // Log or use the non-matching data
+            console.log("Non-Matching Companies:", nonMatchingCompanies);
+    
+            // Set state or use non-matching data as needed
+            setLeadFormData(nonMatchingCompanies);
+            setRedesignedData(nonMatchingCompanies);
+            setCompleteRedesignedData(completeData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+    
+    
+
+
+
+
 
     useEffect(() => {
         fetchRedesignedFormData();
@@ -298,7 +359,7 @@ function Received_booking_box() {
     const handleOpenServices = (companyName) => {
         // Filter the mainDataSwap array to get the companies that match the provided companyName
         setSelectedCompanyName(companyName);
-    
+
         const selectedServices = redesignedData
             .filter((company) => company["Company Name"] === companyName)
             .flatMap((company) => {
@@ -308,29 +369,29 @@ function Received_booking_box() {
                         ...company.moreBookings.flatMap((item) => item.services),
                     ]
                     : company.services || [];
-    
+
                 // Filter out services that are included in servicesTakenByRmOfCertification
                 const filteredServices = allServices.filter((service) => {
                     const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification?.includes(service.serviceName);
                     const isServiceTakenInMoreBookings = company.moreBookings.some((booking) =>
                         booking.servicesTakenByRmOfCertification?.includes(service.serviceName)
                     );
-    
+
                     return !isServiceTakenByRmOfCertification && !isServiceTakenInMoreBookings;
                 });
-    
+
                 return filteredServices.filter((service) => certificationLabels.includes(service.serviceName));
             });
-    
+
         console.log("new selected", selectedServices);
-    
+
         // Map through the selected services to get the service names
         const servicesNames = selectedServices.map((service) => service.serviceName);
-    
+
         // Log the selected services and service names
         setServiceNames(servicesNames);
     };
-    
+
     console.log("serviceNames", serviceNames)
 
     const handleCheckboxChange = (service) => {
@@ -349,19 +410,19 @@ function Received_booking_box() {
             console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
             return;
         }
-        
+
         const combinedServices = [
             ...(selectedCompanyData.services || []),
             ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
         ];
-    
+
         const primaryServices = selectedCompanyData.services || [];
-    
+
         // Combine services from selectedCompanyData.moreBookings
         const moreBookingServices = selectedCompanyData.moreBookings
             ? selectedCompanyData.moreBookings.flatMap((item) => item.services)
             : [];
-    
+
         // Filter services based on certificationLabels
         const filteredPrimaryServices = primaryServices.filter((service) =>
             selectedServices.includes(service.serviceName)
@@ -369,23 +430,23 @@ function Received_booking_box() {
         const filteredMoreBookingServices = moreBookingServices.filter((service) =>
             selectedServices.includes(service.serviceName)
         );
-    
+
         // Map through the selected services to get the service names
         const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
         const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
-    
+
         // Set the service names in the state
         // setrmSelectedServiceMainBooking(primaryServiceNames);
         // setRmSelectedServiceMoreBooking(moreBookingServiceNames);
-    
+
         // Initialize an array to store objects for each selected service
         const dataToSend = [];
-    
+
         // Iterate through selectedServices (which contain only service names)
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in selectedCompanyData.services
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-    
+
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -407,7 +468,7 @@ function Received_booking_box() {
                     totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
                     totalPaymentWGST: serviceData.totalPaymentWGST || 0,
                     withGST: serviceData.withGST,
-                    withDSC:serviceData.withDSC,// Default to 0 if not provided
+                    withDSC: serviceData.withDSC,// Default to 0 if not provided
                     firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
                     secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
                     thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
@@ -417,14 +478,14 @@ function Received_booking_box() {
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "", // Default to 0 if not provided
                     bookingPublishDate: serviceData.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
                 };
-    
+
                 // Push the created object to dataToSend array
                 dataToSend.push(serviceToSend);
             } else {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
             }
         });
-    
+
         if (dataToSend.length !== 0) {
             try {
                 const responses = await Promise.all([
@@ -436,10 +497,10 @@ function Received_booking_box() {
                         rmServicesMoreBooking: moreBookingServiceNames || []
                     })
                 ]);
-    
+
                 const response = responses[0];
                 const response2 = responses[1];
-    
+
                 console.log("response", response2.data);
                 if (response.data.successEntries === 0) {
                     Swal.fire("Please Select Unique Services");
@@ -459,48 +520,48 @@ function Received_booking_box() {
         } else {
             console.log("No data to send.");
         }
-    
+
         // Assuming setDataToSend updates state to store dataToSend array
         setDataToSend(dataToSend);
         // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
     }
-    
+
     //----------function to remove company from rm panel-----------------------
 
-   
 
-const handleDisplayOffToRm = async (companyName) => {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: `Do you want to remove ${companyName} from RM panel?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, remove it!',
-    cancelButtonText: 'No, keep it'
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-        console.log(response.data);
-        if (response.status === 200) {
-          fetchRedesignedFormData();
-          Swal.fire(
-            'Removed!',
-            'The company has been removed from RM panel.',
-            'success'
-          );
-        }
-      } catch (error) {
-        console.log("Internal Server Error", error.message);
-        Swal.fire(
-          'Error!',
-          'There was an error removing the company from RM panel.',
-          'error'
-        );
-      }
-    }
-  });
-};
+
+    const handleDisplayOffToRm = async (companyName) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to remove ${companyName} from RM panel?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, keep it'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                    console.log(response.data);
+                    if (response.status === 200) {
+                        fetchRedesignedFormData();
+                        Swal.fire(
+                            'Removed!',
+                            'The company has been removed from RM panel.',
+                            'success'
+                        );
+                    }
+                } catch (error) {
+                    console.log("Internal Server Error", error.message);
+                    Swal.fire(
+                        'Error!',
+                        'There was an error removing the company from RM panel.',
+                        'error'
+                    );
+                }
+            }
+        });
+    };
 
 
     console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
@@ -615,10 +676,10 @@ const handleDisplayOffToRm = async (companyName) => {
                                                                     />
                                                                 </div>
                                                             </button>
-                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center' 
-                                                            onClick={()=>(
-                                                                handleDisplayOffToRm(obj["Company Name"])
-                                                            )}
+                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
+                                                                onClick={() => (
+                                                                    handleDisplayOffToRm(obj["Company Name"])
+                                                                )}
                                                             >
                                                                 <div className='btn-swap-icon'>
                                                                     {/* <SlActionRedo /> */}
@@ -2465,7 +2526,7 @@ const handleDisplayOffToRm = async (companyName) => {
                                             <label htmlFor={`service-${index}`}>{service}</label>
                                         </div>
                                     ))) :
-                                    (<Nodata/>)
+                                        (<Nodata />)
                                     }
                                 </div>
                             </div>
