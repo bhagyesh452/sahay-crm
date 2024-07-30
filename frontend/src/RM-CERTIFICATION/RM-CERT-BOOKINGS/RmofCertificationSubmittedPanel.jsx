@@ -173,6 +173,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
+                                <th>Website Link</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -181,7 +182,6 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
@@ -260,6 +260,14 @@ function RmofCertificationSubmittedPanel() {
                                             </button>
                                         </div>
                                     </td>
+                                    <td className='td_of_weblink'>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
@@ -280,7 +288,7 @@ function RmofCertificationSubmittedPanel() {
                                     /></td>
                                     <td>Brochure Designer</td>
                                     <td>Brochure Status</td>
-                                    <td>
+                                    <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -288,7 +296,7 @@ function RmofCertificationSubmittedPanel() {
                                             nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
                                         />
                                     </td>
-                                    <td>
+                                    <td className='td_of_weblink'>
                                         <NSWSPasswordInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -296,19 +304,11 @@ function RmofCertificationSubmittedPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    <td>
-                                        <WebsiteLink
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
-                                        />
-                                    </td>
                                     <td>Industry</td>
                                     <td>Sector</td>
                                     <td>Submitted By</td>
                                     <td>Submitted On</td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDate(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
