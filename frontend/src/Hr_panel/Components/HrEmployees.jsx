@@ -1,21 +1,64 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Components/Header/Header";
 import Navbar from "../Components/Navbar/Navbar";
+import axios from "axios";
 import { IoFilterOutline } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
-import { CiUndo } from "react-icons/ci";
+import { MdModeEdit } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
 function HrEmployees() {
+
   useEffect(() => {
     document.title = `HR-Sahay-CRM`;
   }, []);
+
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   const navigate = useNavigate();
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
   };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
+  };
+
+  const calculateProbationStatus = (joiningDate) => {
+    const joinDate = new Date(joiningDate);
+    const probationEndDate = new Date(joinDate);
+    probationEndDate.setMonth(joinDate.getMonth() + 3);
+
+    const currentDate = new Date();
+    return currentDate <= probationEndDate ? 'Under Probation' : 'Completed';
+  };
+
+  const getBadgeClass = (status) => {
+    return status === 'Under Probation' ? 'badge badge-under-probation' : 'badge badge-completed';
+  };
+  
+  const handleEditClick = (empId) => {
+    navigate(`/hr/edit/employee/${empId}`);
+  };
+
+  const [employee, setEmployee] = useState([]);
+
+  const fetchEmployee = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/einfo`);
+      setEmployee(res.data);
+      // console.log("Fetched Employees are :", res.data);
+    } catch (error) {
+      console.log("Error fetching employees data :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployee();
+  }, []);
 
   return (
     <div>
@@ -118,22 +161,25 @@ function HrEmployees() {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>1</td>
-                          <td>Nimesh</td>
-                          <td>Gota</td>
-                          <td>Department</td>
-                          <td>Designation</td>
-                          <td>Date Of Joining</td>
-                          <td>Monthly Salary</td>
-                          <td>Probation Status</td>
-                          <td>Official Number</td>
-                          <td>Official Email ID</td>
-                          <td>
-                            <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                            <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
-                          </td>
-                        </tr>
+                        {employee.map((emp, index) => {
+                          return <tr key={emp._id}>
+                            <td>{index + 1}</td>
+                            <td>{emp.ename || ""}</td>
+                            <td>{emp.branchOffice || ""}</td>
+                            <td>{emp.department || ""}</td>
+                            <td>{emp.designation || ""}</td>
+                            <td>{formatDate(emp.jdate) || ""}</td>
+                            <td>{emp.salary || ""}</td>
+                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
+                            <td>{emp.number || ""}</td>
+                            <td>{emp.email || ""}</td>
+                            <td>
+                              <button className="action-btn action-btn-primary"><FaRegEye /></button>
+                              <button className="action-btn action-btn-success ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                              <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
+                            </td>
+                          </tr>
+                        })}
                       </tbody>
                     </table>
                   </div>
