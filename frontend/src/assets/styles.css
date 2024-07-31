@@ -2517,7 +2517,7 @@ td input {
 .table-style-3 table tbody tr td
 {
   border: none !important;
-  padding: 4px 8px 4px 8px !important;
+  padding: 6px 8px 6px 8px !important;
   transition: .5s;
   border-top: 1px solid #eee !important;
   border-bottom: 1px solid #eee !important;
@@ -2879,7 +2879,7 @@ td input {
 .rm-sticky-left-2
 {
   position: sticky;
-  left: 57px;
+  left: 56px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 /* .rm-sticky-left-3
@@ -3080,6 +3080,10 @@ td input {
 .td_of_NSWSeMAIL
 {
   width: 250px;
+}
+.rm-mybookingmain .table-style-3 table tbody tr td
+{
+  border-right: 1px solid #eee;
 }
 @media (max-width: 1528px)
 {

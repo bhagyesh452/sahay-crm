@@ -158,7 +158,7 @@ function RmofCertificationMyBookings() {
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
            
             {!openCompanyTaskComponent &&
-                <div className="page-wrapper">
+                <div className="page-wrapper rm-mybookingmain">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
                             <div className="d-flex">

@@ -179,7 +179,7 @@ function HrEmployees() {
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                              <button style={{backgroundColor: "cyan", border: "1px solid blue", color: "blue"}}className="action-btn ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
                               <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>
                           </tr>

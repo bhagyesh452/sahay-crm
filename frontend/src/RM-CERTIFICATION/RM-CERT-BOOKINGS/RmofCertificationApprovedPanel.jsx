@@ -250,7 +250,7 @@ const handleCloseEmailPopup = () => {
                                     </td>
                                     <td>{obj["Company Email"]}</td>
                                     <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
