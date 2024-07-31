@@ -21,7 +21,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
-
+import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 
 function RmofCertificationDefaulterPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -317,7 +317,13 @@ function RmofCertificationDefaulterPanel() {
                                     contentStatus = {obj.contentStatus}
                                     /></td>
                                     <td>Brochure Designer</td>
-                                    <td>Brochure Status</td>
+                                    <td>
+                                        <BrochureStatusDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            brochureStatus={obj.brochureStatus}
+                                        /></td>
                                     <td>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}

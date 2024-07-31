@@ -430,33 +430,54 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, subCategoryStatus, mainCategoryStatus } = req.body;
   const socketIO = req.io;
+
   try {
-    const company = await RMCertificationModel.findOneAndUpdate(
+    // Step 1: Find the company document
+    const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+    
+    if (!company) {
+      console.error("Company not found");
+      return res.status(400).json({ message: "Company not found" });
+    }
+
+    // Step 2: Determine the submittedOn date based on conditions
+    const submittedOn = (mainCategoryStatus === "Submitted")
+      ? company.submittedOn || new Date()  // Use existing submittedOn or current date
+      : (subCategoryStatus === "Submitted")
+      ? new Date()  // Set to current date if mainCategoryStatus is not "Submitted" and subCategoryStatus is "Submitted"
+      : company.submittedOn;  // Retain existing submittedOn otherwise
+
+    // Step 3: Update the document with the calculated submittedOn date
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName
       },
       {
         subCategoryStatus: subCategoryStatus,
-        mainCategoryStatus: mainCategoryStatus
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        submittedOn: submittedOn
       },
       { new: true }
-    )
-    if (!company) {
+    );
+
+    if (!updatedCompany) {
       console.error("Failed to save the updated document");
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
 
     // Emit socket event
-    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
-    res.status(200).json({ message: "Document updated successfully", data: company });
+    socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
     console.error("Error updating document:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
+
+
 
 
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
@@ -502,6 +523,37 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
       },
       {
         contentStatus:contentStatus
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, brochureStatus } = req.body;
+  //console.log("dscStatus" , contentStatus)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        brochureStatus:brochureStatus
       },
       { new: true }
     )

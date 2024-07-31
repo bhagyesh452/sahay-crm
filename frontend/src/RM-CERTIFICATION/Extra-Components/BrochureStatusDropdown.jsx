@@ -6,8 +6,8 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,contentStatus}) => {
-  const [status, setStatus] = useState(contentStatus);
+const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochureStatus}) => {
+  const [status, setStatus] = useState(brochureStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -20,34 +20,38 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
     try {
       let response;
       if (mainStatus === "Process") {
-        response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+        response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
           companyName,
           serviceName,
-          contentStatus : newStatus
+          brochureStatus : newStatus
         });
     } else if (mainStatus === "Submitted") {
-      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
         companyName,
         serviceName,
-        contentStatus : newStatus
+        brochureStatus : newStatus
+
       });
     } else if (mainStatus === "Defaulter") {
-      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
         companyName,
         serviceName,
-        contentStatus : newStatus
+        brochureStatus : newStatus
+
       });
     } else if (mainStatus === "Approved") {
-      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
         companyName,
         serviceName,
-        contentStatus : newStatus
+        brochureStatus : newStatus
+
       });
     } else if (mainStatus === "Hold") {
-      response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+      response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
         companyName,
         serviceName,
-        contentStatus : newStatus
+        brochureStatus : newStatus
+
       });
     } 
       
@@ -78,8 +82,8 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
   };
 
   useEffect(() => {
-    setStatusClass(getStatusClass(contentStatus));
-  }, [contentStatus]);
+    setStatusClass(getStatusClass(brochureStatus));
+  }, [brochureStatus]);
 
 
   return (
@@ -157,4 +161,4 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
   );
 };
 
-export default ContentStatusDropdown;
+export default BrochureStatusDropdown;

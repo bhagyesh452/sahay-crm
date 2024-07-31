@@ -21,7 +21,7 @@ import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
-
+import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 
 
 function RmofCertificationHoldPanel() {
@@ -315,7 +315,13 @@ function RmofCertificationHoldPanel() {
                                         contentStatus={obj.contentStatus}
                                     /></td>
                                     <td>Brochure Designer</td>
-                                    <td>Brochure Status</td>
+                                    <td>
+                                        <BrochureStatusDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            brochureStatus={obj.brochureStatus}
+                                        /></td>
                                     <td>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}

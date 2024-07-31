@@ -33,7 +33,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Submitted"
+            mainCategoryStatus: "Submitted",
           });
         } else if (newStatus === "Defaulter") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
