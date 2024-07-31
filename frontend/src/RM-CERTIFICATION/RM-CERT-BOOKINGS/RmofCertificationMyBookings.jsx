@@ -194,7 +194,7 @@ function RmofCertificationMyBookings() {
                     </div>
                     <div className="page-body rm_Dtl_box m-0">
                         <div className="container-xl mt-2">
-                            <div className="">
+                            <div className="rm_main_card">
                                 <div className="my-tab card-header">
                                     <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
                                         <li class="nav-item rm_task_section_navitem">

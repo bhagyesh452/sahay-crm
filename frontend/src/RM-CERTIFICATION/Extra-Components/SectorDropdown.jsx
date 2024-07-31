@@ -367,21 +367,19 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sector, sectorO
     
 
     return (
-        <div className="custom-dropdown status_dropdown">
         <select
-            className="form-select status_change"
+            className="form-select sec-indu-select"
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
             value={status}
         >
-            <option value="" disabled>Select a status</option>
+            <option value="">Select a status</option>
             {options.map((option, index) => (
                 <option key={index} value={option}>
                     {option}
                 </option>
             ))}
         </select>
-    </div>
     );
 };
 
