@@ -52,6 +52,15 @@ function RmofCertificationApprovedPanel() {
         return formattedDate;
     }
 
+    function formatDatePro(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
+
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
@@ -237,26 +246,15 @@ const handleCloseEmailPopup = () => {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-<<<<<<< HEAD
-                              
-                                {/* <th className="rm-sticky-action">Action</th> */}
-=======
-                                <th>Date and Time of Application</th>
+                               
                                 <th className="rm-sticky-action">Action</th>
->>>>>>> 548336ae0d16ff21c04e97fe0a0231127ea253c5
                             </tr>
                         </thead>
                         <tbody>
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-<<<<<<< HEAD
-                                    <td className="rm-sticky-left-2">{formatDatePro(obj.bookingDate)}</td>
-
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-=======
                                     <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
->>>>>>> 548336ae0d16ff21c04e97fe0a0231127ea253c5
 
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
@@ -316,12 +314,14 @@ const handleCloseEmailPopup = () => {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown 
-                                            companyName = {obj["Company Name"]}
-                                            serviceName = {obj.serviceName}
-                                            mainStatus = {obj.mainCategoryStatus}
-                                            dscStatus = {obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown/></td>
@@ -375,7 +375,7 @@ const handleCloseEmailPopup = () => {
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -396,15 +396,12 @@ const handleCloseEmailPopup = () => {
                                             obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
                                                 "1"} 
                                     </td>
-<<<<<<< HEAD
-=======
-                                    <td>July 27,2024</td>
+                                   
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
                                         </button>
                                     </td>
->>>>>>> 548336ae0d16ff21c04e97fe0a0231127ea253c5
                                 </tr>
 
                             ))}

@@ -317,12 +317,14 @@ function RmofCertificationHoldPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown /></td>
@@ -374,7 +376,7 @@ function RmofCertificationHoldPanel() {
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -387,9 +389,9 @@ function RmofCertificationHoldPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />

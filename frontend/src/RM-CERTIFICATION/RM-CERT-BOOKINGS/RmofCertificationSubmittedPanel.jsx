@@ -44,7 +44,14 @@ function RmofCertificationSubmittedPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
 
-
+    function formatDatePro(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
@@ -213,7 +220,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-                                <th>Date and Time of Application</th>
+                               
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -288,12 +295,14 @@ function RmofCertificationSubmittedPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown /></td>
@@ -347,7 +356,7 @@ function RmofCertificationSubmittedPanel() {
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -368,7 +377,7 @@ function RmofCertificationSubmittedPanel() {
                                             obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
                                                 "1"} 
                                     </td>
-                                    <td>July 27,2024</td>
+                                  
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
@@ -444,43 +453,6 @@ function RmofCertificationSubmittedPanel() {
                     Submit
                 </button>
             </Dialog>
-
-            {/* //----------------------emailpopup---------------------------------- */}
-
-            {/* <Dialog
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopup}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle style={{fontSize:"12px"}} className='d-flex align-items-center justify-content-between'>
-                    {currentCompanyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{width:"16px"}} />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-footer">
-                        <div className="mb-3 remarks-input">
-                            <input
-                                type='text'
-                                //placeholder="Add Email Here..."
-                                className="form-control"
-                                //value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <Button
-                    onClick={handleSubmitNSWSEmail}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
-            </Dialog> */}
         </div>
     )
 }

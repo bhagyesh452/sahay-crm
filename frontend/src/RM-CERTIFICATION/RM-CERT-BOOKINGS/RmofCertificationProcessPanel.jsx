@@ -298,13 +298,14 @@ function RmofCertificationProcessPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                                classForStatus={""}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td><ContentWriterDropdown /></td>
@@ -329,7 +330,7 @@ function RmofCertificationProcessPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Enter Email"}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
                                         />
                                     </td>
                                     <td className='td_of_weblink'>
