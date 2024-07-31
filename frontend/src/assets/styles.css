@@ -38,14 +38,14 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #ffb900;
+  background: #ffb900;
   border-radius: 10px;
   border: 3px solid #ffffff;
 }
 
 /* Track */
 *::-webkit-scrollbar-track {
-  background: #f1f1f1 !important;
+  background: #dcdcdc !important;
 }
 
 /* Handle on hover */
@@ -2746,6 +2746,7 @@ td input {
   /* border: 1px solid #dadfe5; */
   flex: 0 0 63%;
   border-bottom: none;
+  margin-bottom: -1px;
   padding-right: 10px !important;
 }
 /* .rm_task_section_navitem
@@ -3069,7 +3070,7 @@ td input {
   text-align: center;
   line-height: 19px;
   border-radius: 100px;
-  background: #f1f1f1;
+  background: #fff;
   font-size: 10px;
   color: #838383;
 }
@@ -3083,7 +3084,7 @@ td input {
 }
 .rm-mybookingmain .table-style-3 table tbody tr td
 {
-  border-right: 1px solid #eee;
+  border-right: 1px solid #eee  !important;
 }
 @media (max-width: 1528px)
 {
