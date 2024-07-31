@@ -20,6 +20,8 @@ import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
+import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
+
 
 function RmofCertificationProcessPanel() {
 
@@ -91,14 +93,22 @@ function RmofCertificationProcessPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Process"))
-            //console.log(response.data)
+            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Process");
+            setRmServicesData(servicesData);
+            // if (servicesData.length > 0) {
+            //     // Initialize sector options based on the first item's industry
+            //     const initialIndustry = servicesData[0].industry ? servicesData[0].industry : "Aeronautics/Aerospace & Defence";
+            //     const options = getSectorOptionsForIndustry(initialIndustry); // Assuming this function gets sector options for an industry
+            //     setSectorOptions(options);
+            // }
         } catch (error) {
             console.error("Error fetching data", error.message)
         } finally {
             setCurrentDataLoading(false)
         }
     }
+
+    console.log("sectorOptions" , sectorOptions)
 
     useEffect(() => {
         fetchData();
@@ -163,6 +173,7 @@ function RmofCertificationProcessPanel() {
         setSelectedIndustry(industry);
         setSectorOptions(options);
     };
+    
 
 
 
@@ -295,14 +306,14 @@ function RmofCertificationProcessPanel() {
                                             mainStatus={obj.mainCategoryStatus}
                                             contentStatus={obj.contentStatus}
                                         /></td>
-                                        {/* For Brochure */}
-                                   <td><ContentWriterDropdown /></td>
+                                    {/* For Brochure */}
+                                    <td><ContentWriterDropdown /></td>
                                     <td>
-                                        <ContentStatusDropdown
+                                        <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentStatus}
+                                            brochureStatus={obj.brochureStatus}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
@@ -322,12 +333,20 @@ function RmofCertificationProcessPanel() {
                                     </td>
                                     <td>
                                         <IndustryDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                         /></td>
                                     <td>
                                         <SectorDropdown
-                                            sectorOptions={sectorOptions} />
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            sectorOptions={sectorOptions}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
                                     <td>{formatDate(obj.bookingDate)}</td>
                                     <td>

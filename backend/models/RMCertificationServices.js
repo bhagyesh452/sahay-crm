@@ -202,6 +202,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
      type:String,
     default:"Not Started"
   },
+  brochureStatus:{
+    type:String,
+   default:"Not Started"
+ },
   nswsMailId:{
     type:String
   },
@@ -216,7 +220,14 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   sector:{
     type:String
-  }
+  },
+  lastActionDate:{
+    type:Date,
+    default: new Date()
+  },
+  submittedOn:{
+    type:Date
+  },
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

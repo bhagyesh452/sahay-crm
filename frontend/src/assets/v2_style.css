@@ -855,5 +855,37 @@ table.table.top_5_table tbody tr.myself td {
     margin: 0px 0 2px 0;
     font-size: 12px;
 }
+@media (max-width: 1528px)
+{
+    .hr_emply_list_navtabs
+    {
+      flex: 0 0 47%;
+    }
+}
+@media only screen and (max-width: 1527px) and (min-width: 1450px)
+{
+  .hr_emply_list_navtabs
+  {
+    flex: 0 0 45%;
+  }
+}
+@media only screen and (max-width:1449px) and (min-width: 1370px)
+{
+  .hr_emply_list_navtabs
+  {
+    flex: 0 1 47%;
+  }
+}
+@media only screen and (max-width:1369px) and (min-width: 50px)
+{
+  .hr_emply_list_navtabs
+  {
+    flex: 0 1 51%;
+  } 
+  /* .hr_emply_list_navtabs .nav-link
+  {
+    width: 60% !important;
+  } */
+}
 /**********************HR Close Employee Form CSS************************/
 
