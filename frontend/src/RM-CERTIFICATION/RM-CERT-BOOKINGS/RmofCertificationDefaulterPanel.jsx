@@ -19,6 +19,8 @@ import { VscSaveAs } from "react-icons/vsc";
 import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
+import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
+import SectorDropdown from '../Extra-Components/SectorDropdown';
 
 
 function RmofCertificationDefaulterPanel() {
@@ -37,6 +39,8 @@ function RmofCertificationDefaulterPanel() {
     const [historyRemarks, setHistoryRemarks] = useState([])
     const [email, setEmail] = useState('');
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [sectorOptions, setSectorOptions] = useState([]);
 
 
 
@@ -183,7 +187,12 @@ function RmofCertificationDefaulterPanel() {
 
     const handleCloseEmailPopup = () => {
         setOpenEmailPopup(false)
-    }
+    };
+
+    const handleIndustryChange = (industry, options) => {
+        setSelectedIndustry(industry);
+        setSectorOptions(options);
+    };
 
 
 
@@ -333,8 +342,23 @@ function RmofCertificationDefaulterPanel() {
                                         websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
                                         />
                                     </td>
-                                    <td>Industry</td>
-                                    <td>Sector</td>
+                                    <td>
+                                        <IndustryDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            onIndustryChange={handleIndustryChange}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                        /></td>
+                                    <td>
+                                        <SectorDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            sectorOptions={sectorOptions}
+                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            sector={obj.sector ? obj.sector : "Others"} />
+                                    </td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
