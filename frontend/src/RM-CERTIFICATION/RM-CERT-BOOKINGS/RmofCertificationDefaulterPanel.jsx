@@ -80,9 +80,9 @@ function RmofCertificationDefaulterPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -122,7 +122,7 @@ function RmofCertificationDefaulterPanel() {
     }
 
 
-    console.log("setnewsubstatus", newStatusDefaulter)
+    //console.log("setnewsubstatus", newStatusDefaulter)
 
     //------------------------Remarks Popup Section-----------------------------
     const handleOpenRemarksPopup = async (companyName, serviceName) => {
@@ -139,7 +139,7 @@ function RmofCertificationDefaulterPanel() {
     );
 
     const handleSubmitRemarks = async () => {
-        console.log("changeremarks", changeRemarks)
+        //console.log("changeremarks", changeRemarks)
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
                 currentCompanyName,
@@ -148,7 +148,7 @@ function RmofCertificationDefaulterPanel() {
                 updatedOn: new Date()
             });
 
-            console.log("response", response.data);
+            //console.log("response", response.data);
 
             if (response.status === 200) {
                 fetchRMServicesData();
@@ -167,7 +167,7 @@ function RmofCertificationDefaulterPanel() {
      //--------------------email function----------------------
 
      const handleSubmitNSWSEmail = async () => {
-        console.log(currentCompanyName , currentServiceName)
+       
         try {
             if(currentCompanyName && currentServiceName){
                 const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
@@ -266,7 +266,7 @@ function RmofCertificationDefaulterPanel() {
                                     <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
-                                            {console.log("mainCategoryStatus:", obj.mainCategoryStatus)}
+                                           
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}

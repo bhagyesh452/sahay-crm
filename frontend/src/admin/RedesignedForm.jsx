@@ -195,8 +195,8 @@ export default function RedesignedForm({
         const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
-          
-          if(!isNaN(new Date(service.secondPaymentRemarks))){
+
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.secondPaymentRemarks
@@ -210,7 +210,7 @@ export default function RedesignedForm({
               setSecondTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.thirdPaymentRemarks
@@ -224,7 +224,7 @@ export default function RedesignedForm({
               setThirdTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.fourthPaymentRemarks
@@ -239,7 +239,7 @@ export default function RedesignedForm({
             }
           }
 
-          
+
 
           return {
             ...service,
@@ -277,7 +277,7 @@ export default function RedesignedForm({
           setIsoType(service.isoTypeObject);
 
 
-          if(!isNaN(new Date(service.secondPaymentRemarks))){
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.secondPaymentRemarks
@@ -291,7 +291,7 @@ export default function RedesignedForm({
               setSecondTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.thirdPaymentRemarks
@@ -305,7 +305,7 @@ export default function RedesignedForm({
               setThirdTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.fourthPaymentRemarks
@@ -372,7 +372,7 @@ export default function RedesignedForm({
     }
   }, [fetchBDE])
 
-  
+
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -730,9 +730,9 @@ export default function RedesignedForm({
     e.target.style.height = "1px";
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
-  
-  
-  
+
+
+
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -752,7 +752,7 @@ export default function RedesignedForm({
           isEmptyOrNull(leadData["Company Name"]) ||
           isEmptyOrNull(leadData["Company Number"]) ||
           isEmptyOrNull(leadData.incoDate) ||
-          isEmptyOrNull(leadData.panNumber) 
+          isEmptyOrNull(leadData.panNumber)
         ) {
           Swal.fire({
             title: "Please fill all the details",
@@ -786,7 +786,7 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 1) {
-        console.log("bookingDate" , leadData.bookingDate);
+        console.log("bookingDate", leadData.bookingDate);
         if (
           !leadData.bdeName ||
           !leadData.bdmName ||
@@ -834,17 +834,22 @@ export default function RedesignedForm({
           Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
           return true;
         }
-        if(leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)){
-          Swal.fire("Please Enter CA Commission"); 
+        if (leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)) {
+          Swal.fire("Please Enter CA Commission");
           return true;
         }
         let isValid = true;
         for (let service of leadData.services) {
-
+          const totalPayment = Number(service.totalPaymentWGST);
           const firstPayment = Number(service.firstPayment);
           const secondPayment = Number(service.secondPayment);
           const thirdPayment = Number(service.thirdPayment);
           const fourthPayment = Number(service.fourthPayment);
+          if (isNaN(parseInt(service.totalPaymentWOGST)) || parseInt(service.totalPaymentWOGST) < 0) {
+            isValid = false;
+            break;
+          }
+
           if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
             isValid = false;
             break;
@@ -1031,7 +1036,7 @@ export default function RedesignedForm({
             `${secretKey}/bookings/redesigned-leadData/${companysName}/step5`
           );
 
-         
+
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -1082,14 +1087,14 @@ export default function RedesignedForm({
         for (let i = 0; i < leadData.otherDocs.length; i++) {
           formData.append("otherDocs", leadData.otherDocs[i]);
         }
-       
-        
+
+
       } else if (activeStep === 1) {
         dataToSend = {
           ...dataToSend,
           bookingSource: selectedValues,
         };
-   
+
       } else if (activeStep === 2) {
         const totalAmount = leadData.services.reduce(
           (acc, curr) => acc + curr.totalPaymentWOGST,
@@ -1152,7 +1157,7 @@ export default function RedesignedForm({
             `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             leadData
           );
-         
+
           Swal.fire({
             icon: "success",
             title: "Form Submitted",
@@ -1214,7 +1219,7 @@ export default function RedesignedForm({
         }
       );
       if (response.ok) {
-     
+
         setCompleted({});
         setActiveStep(0);
         setIsoType([])
@@ -1340,7 +1345,7 @@ export default function RedesignedForm({
                         setIsoType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select ISO VALIDITY</option>
+                      <option value="" selected disabled>Select ISO VALIDITY</option>
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
                       <option value="3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
@@ -1772,21 +1777,21 @@ export default function RedesignedForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                   value={secondTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
-                                   onChange={(e) => {
-                                     const tempState = {
-                                       serviceID: i,
-                                       value: e.target.value
-                                     };
-                                     const prevState = secondTempRemarks.find(obj => obj.serviceID === i);
-                                     if (prevState) {
-                                       setSecondTempRemarks(prev =>
-                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
-                                       );
-                                     } else {
-                                       setSecondTempRemarks(prev => [...prev, tempState]);
-                                     }
-                                   }}
+                                  value={secondTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = secondTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setSecondTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setSecondTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -1996,21 +2001,21 @@ export default function RedesignedForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                   value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
-                                   onChange={(e) => {
-                                     const tempState = {
-                                       serviceID: i,
-                                       value: e.target.value
-                                     };
-                                     const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
-                                     if (prevState) {
-                                       setFourthTempRemarks(prev =>
-                                         prev.map(obj => (obj.serviceID === i ? tempState : obj))
-                                       );
-                                     } else {
-                                       setFourthTempRemarks(prev => [...prev, tempState]);
-                                     }
-                                   }}
+                                  value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = fourthTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setFourthTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setFourthTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
                                   className="form-control"
                                   type="date"
                                   placeholder="dd/mm/yyyy"
@@ -2162,20 +2167,20 @@ export default function RedesignedForm({
     });
   };
 
-  const functionShowSizeLimit = (e)=>{
+  const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-  
-    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
-      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+
+    if (Math.round(file.size / (1024 * 1024)) > maxSizeMB) {
+      Swal.fire('Size limit exceeded!', 'Please Upload file less than 24MB', 'warning');
       return false;
-    }else {
+    } else {
       return true;
     }
   }
 
-console.log("leadDatacacase" , leadData.caCase)
+  console.log("leadDatacacase", leadData.caCase)
 
 
 
@@ -3078,7 +3083,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                         className="form-control mt-1"
                                         id="Company"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               paymentReceipt: [
@@ -3089,8 +3094,8 @@ console.log("leadDatacacase" , leadData.caCase)
                                             }));
                                           }
                                           // Update the state with the selected files
-                                         
-                                          
+
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3184,7 +3189,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                       <input
                                         type="file"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               otherDocs: [
@@ -3194,7 +3199,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                             }));
                                           }
                                           // Update the state with the selected files
-                                         
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3561,7 +3566,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                            <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                 ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
@@ -3580,7 +3585,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
@@ -3600,7 +3605,7 @@ console.log("leadDatacacase" , leadData.caCase)
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
@@ -3681,56 +3686,56 @@ console.log("leadDatacacase" , leadData.caCase)
                                       </div>
                                     </div>
                                   ))}
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>CA Case</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        {leadData.caCase}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {leadData.caCase === "Yes" && <>
                                     <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Case</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCase}
-                                          </div>
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Number</b>
                                         </div>
                                       </div>
-                                      {leadData.caCase === "Yes" && <>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Number</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caNumber}
-                                            </div>
-                                          </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caNumber}
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Email</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caEmail}
-                                            </div>
-                                          </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Email</b>
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Commission</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caCommission}
-                                            </div>
-                                          </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caEmail}
                                         </div>
-                                      </>}
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Commission</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caCommission}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>}
 
                                   {/* total amount */}
                                 </div>
@@ -4114,11 +4119,11 @@ console.log("leadDatacacase" , leadData.caCase)
       </div>
       {/* --------------------------------backedrop------------------------- */}
       {loader && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={loader}
-                onClick={()=> setLoader(false)}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loader}
+        onClick={() => setLoader(false)}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
     </div>
   );
 }

@@ -89,9 +89,9 @@ function RmofCertificationSubmittedPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -130,7 +130,7 @@ function RmofCertificationSubmittedPanel() {
     }
 
 
-    console.log("setnewsubstatus", newStatusSubmitted)
+    //console.log("setnewsubstatus", newStatusSubmitted)
 
     const handleOpenRemarksPopup = async (companyName, serviceName) => {
         console.log("RemarksPopup")
@@ -242,7 +242,6 @@ function RmofCertificationSubmittedPanel() {
                                     <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
-                                            {console.log("mainCategoryStatus:", obj.mainCategoryStatus)}
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}

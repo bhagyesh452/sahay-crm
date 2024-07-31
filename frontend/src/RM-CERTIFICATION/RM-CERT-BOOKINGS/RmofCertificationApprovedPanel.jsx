@@ -89,9 +89,9 @@ function RmofCertificationApprovedPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -135,7 +135,7 @@ function RmofCertificationApprovedPanel() {
     };
 
 
-    console.log("setnewsubstatus", newStatusApproved)
+    //.log("setnewsubstatus", newStatusApproved)
 
  //------------------------Remarks Popup Section-----------------------------
  const handleOpenRemarksPopup = async (companyName, serviceName) => {
@@ -152,7 +152,7 @@ const debouncedSetChangeRemarks = useCallback(
 );
 
 const handleSubmitRemarks = async () => {
-    console.log("changeremarks", changeRemarks)
+    //console.log("changeremarks", changeRemarks)
     try {
         const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
             currentCompanyName,
@@ -161,7 +161,7 @@ const handleSubmitRemarks = async () => {
             updatedOn: new Date()
         });
 
-        console.log("response", response.data);
+        //console.log("response", response.data);
 
         if (response.status === 200) {
             fetchRMServicesData();
@@ -177,36 +177,6 @@ const handleSubmitRemarks = async () => {
     }
 };
 
-//--------------------email function----------------------
-const handleSubmitNSWSEmail = async () => {
-    console.log(currentCompanyName , currentServiceName)
-    try {
-        if(currentCompanyName && currentServiceName){
-            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                currentCompanyName,
-                currentServiceName,
-                email
-            });
-            if (response.status === 200) {
-                Swal.fire(
-                    'Email Added!',
-                    'The email has been successfully added.',
-                    'success'
-                );
-                fetchRMServicesData()
-                setOpenEmailPopup(false); // Close the popup on success
-            }
-        }
-       
-        
-    } catch (error) {
-        console.error("Error saving email:", error.message); // Log only the error message
-    }
-};
-
-const handleCloseEmailPopup = () => {
-    setOpenEmailPopup(false)
-}
 
 
 

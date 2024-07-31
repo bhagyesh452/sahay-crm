@@ -89,14 +89,18 @@ function RmofCertificationProcessPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+           
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+           
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const fetchRMServicesData = async () => {
         try {
@@ -104,12 +108,6 @@ function RmofCertificationProcessPanel() {
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data.filter(item => item.mainCategoryStatus === "Process");
             setRmServicesData(servicesData);
-            // if (servicesData.length > 0) {
-            //     // Initialize sector options based on the first item's industry
-            //     const initialIndustry = servicesData[0].industry ? servicesData[0].industry : "Aeronautics/Aerospace & Defence";
-            //     const options = getSectorOptionsForIndustry(initialIndustry); // Assuming this function gets sector options for an industry
-            //     setSectorOptions(options);
-            // }
         } catch (error) {
             console.error("Error fetching data", error.message)
         } finally {
@@ -117,22 +115,14 @@ function RmofCertificationProcessPanel() {
         }
     }
 
-    console.log("sectorOptions" , sectorOptions)
-
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const refreshData = () => { 
+        fetchRMServicesData();
+    };
 
     useEffect(() => {
         fetchRMServicesData()
 
     }, [employeeData])
-
-    const refreshData = () => {
-        fetchRMServicesData();
-    };
-
-
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
@@ -153,7 +143,6 @@ function RmofCertificationProcessPanel() {
     );
 
     const handleSubmitRemarks = async () => {
-        console.log("changeremarks", changeRemarks)
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
                 currentCompanyName,
@@ -161,9 +150,6 @@ function RmofCertificationProcessPanel() {
                 changeRemarks,
                 updatedOn: new Date()
             });
-
-            console.log("response", response.data);
-
             if (response.status === 200) {
                 fetchRMServicesData();
                 functionCloseRemarksPopup();
@@ -182,12 +168,6 @@ function RmofCertificationProcessPanel() {
         setSelectedIndustry(industry);
         setSectorOptions(options);
     };
-    
-
-
-
-
-    console.log("setnewsubstatus", newStatusProcess)
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -248,6 +228,7 @@ function RmofCertificationProcessPanel() {
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusProcess}
