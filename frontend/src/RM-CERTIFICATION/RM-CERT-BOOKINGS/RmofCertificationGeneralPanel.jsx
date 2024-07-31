@@ -37,12 +37,11 @@ function RmofCertificationGeneralPanel() {
     }, []);
 
     function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
     }
 
     useEffect(() => {
@@ -226,9 +225,9 @@ const handleSubmitRemarks = async () => {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
                                     //onClick={() => setOpenCompanyTaskComponent(true)}
                                     ><FaRegEye /></button>

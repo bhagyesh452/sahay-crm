@@ -22,7 +22,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
-
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 function RmofCertificationHoldPanel() {
 
@@ -45,12 +45,11 @@ function RmofCertificationHoldPanel() {
     const [sectorOptions, setSectorOptions] = useState([]);
     
     function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
     }
 
     function formatDate(dateString) {
@@ -327,14 +326,26 @@ function RmofCertificationHoldPanel() {
                                         ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                     <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -389,9 +400,9 @@ function RmofCertificationHoldPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />

@@ -17,7 +17,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
     setStatus(newStatus);
     setStatusClass(statusClass);
     setNewSubStatus(newStatus);
-    console.log("Handling status change:", newStatus);
+
     try {
       let response;
       if (mainStatus === "General") {
@@ -113,8 +113,6 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
     }
   };
 
-  
-
   const getStatusClass = (mainStatus, subStatus) => {
     switch (mainStatus) {
       case "General":
@@ -185,7 +183,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
         }case "Hold":
         switch (subStatus) {
           case "Hold":
-            return "docs-pending";
+            return "docs-pending"
         }
       default:
         return "created-status";
@@ -193,8 +191,6 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   };
 
   useEffect(() => {
-    console.log("Status changed:", status);
-  console.log("Status class changed:", statusClass);
     setStatusClass(getStatusClass(mainStatus, subStatus));
   }, [mainStatus, subStatus]);
 

@@ -22,6 +22,7 @@ import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 function RmofCertificationDefaulterPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -44,13 +45,13 @@ function RmofCertificationDefaulterPanel() {
 
 
     function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
     }
+
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -93,7 +94,9 @@ function RmofCertificationDefaulterPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Defaulter"))
+            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Defaulter")
+            console.log("servicesdata" , servicesData)
+            setRmServicesData(servicesData)
             //console.log(response.data)
         } catch (error) {
             console.error("Error fetching data", error.message)
@@ -329,14 +332,26 @@ function RmofCertificationDefaulterPanel() {
                                         ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown/></td>
+                                  <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td><ContentStatusDropdown
                                     companyName = {obj["Company Name"]}
                                     serviceName = {obj.serviceName}
                                     mainStatus = {obj.mainCategoryStatus}
                                     contentStatus = {obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                    <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -391,9 +406,9 @@ function RmofCertificationDefaulterPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />

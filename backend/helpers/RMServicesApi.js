@@ -542,6 +542,70 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
   }
 });
 
+router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, contentWriter } = req.body;
+  console.log("here" , companyName , serviceName ,contentWriter)
+  //console.log("dscStatus" , contentStatus)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        contentWriter:contentWriter
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
+  const { companyName, serviceName, brochuredesigner } = req.body;
+  console.log("here" , companyName , serviceName ,brochuredesigner)
+  //console.log("dscStatus" , contentStatus)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        brochuredesigner:brochuredesigner
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, brochureStatus } = req.body;
   //console.log("dscStatus" , contentStatus)

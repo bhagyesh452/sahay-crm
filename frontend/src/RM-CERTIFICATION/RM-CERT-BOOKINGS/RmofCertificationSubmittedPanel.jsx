@@ -23,6 +23,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 
 function RmofCertificationSubmittedPanel() {
@@ -45,25 +46,39 @@ function RmofCertificationSubmittedPanel() {
     const [sectorOptions, setSectorOptions] = useState([]);
 
     function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
     }
+
+    function formatDateNew(inputDate) {
+        const date = new Date(inputDate);
+        const day = String(date.getUTCDate()).padStart(2, '0'); // Ensures day is two digits
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getUTCFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
+    const formatTime = (dateString) => {
+        //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
+        const date = new Date(dateString)
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+
+        const strTime = `${hours}:${minutes} ${ampm}`;
+        return strTime;
+    }
+    
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
-
-    function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
-    }
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -102,7 +117,9 @@ function RmofCertificationSubmittedPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Submitted"))
+            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Submitted")
+            console.log("servicesData" , servicesData)
+            setRmServicesData(servicesData)
             //console.log(response.data)
         } catch (error) {
             console.error("Error fetching data", error.message)
@@ -212,7 +229,6 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
-                                <th>Submitted On</th>
                                 <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -220,7 +236,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-                               
+                                <th>Submitted On</th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -304,14 +320,26 @@ function RmofCertificationSubmittedPanel() {
                                         ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                      <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -354,7 +382,6 @@ function RmofCertificationSubmittedPanel() {
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
-                                    <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
@@ -368,20 +395,21 @@ function RmofCertificationSubmittedPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td>
-                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2" :
-                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
-                                                "1"} 
+                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
+                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
+                                                "1st"} 
                                     </td>
-                                  
+                                    <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
                                         </button>
                                     </td>
+                                   
                                 </tr>
                             ))}
                         </tbody>

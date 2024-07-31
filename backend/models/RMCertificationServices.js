@@ -202,10 +202,16 @@ const RMCertificationServicesSchema = new mongoose.Schema({
      type:String,
     default:"Not Started"
   },
+  contentWriter:{
+    type:String,
+ },
   brochureStatus:{
     type:String,
    default:"Not Started"
  },
+ brochureDesigner:{
+  type:String,
+},
   nswsMailId:{
     type:String
   },
