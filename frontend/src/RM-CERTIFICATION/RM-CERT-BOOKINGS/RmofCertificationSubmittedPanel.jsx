@@ -8,7 +8,7 @@ import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { FaPencilAlt } from "react-icons/fa";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
@@ -173,18 +173,18 @@ function RmofCertificationSubmittedPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                    <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Booking Date</th>
-                                <th className="rm-sticky-left-3">Company Name</th>
+                                <th className="rm-sticky-left-2">Company Name</th>
                                 <th>Company Number</th>
                                 <th>Company Email</th>
                                 <th>CA Number</th>
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
+                                <th>Website Link</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -193,11 +193,11 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
                                 <th>Submitted On</th>
+                                <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
                                 <th>Total Payment</th>
@@ -205,17 +205,14 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
                                 <th>Date and Time of Application</th>
-                                {/* <th className="rm-sticky-action">Action</th> */}
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
-
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-
+                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
                                             <div>{obj["Company Number"]}</div>
@@ -242,32 +239,42 @@ function RmofCertificationSubmittedPanel() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="d-flex align-items-center justify-content-center wApp" >
-                                        <p
-                                            className="text-wrap m-0"
-                                            title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                        >
-                                            {
-                                                obj.Remarks && obj.Remarks.length > 0
-                                                    ? obj.Remarks
-                                                        .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                    : "No Remarks"
-                                            }
-                                        </p>
-                                        <button className='bdr-none' style={{ lineHeight: '10px', fontSize: '10px', backgroundColor: "transparent" }}
-                                            onClick={() => {
-                                                setOpenRemarksPopUp(true)
-                                                setCurrentCompanyName(obj["Company Name"])
-                                                setCurrentServiceName(obj.serviceName)
-                                                setHistoryRemarks(obj.Remarks)
-                                                handleOpenRemarksPopup(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            }}
-                                        >
-                                            <EditIcon style={{ width: "12px", height: "12px" }} />
-                                        </button>
+                                    <td className='td_of_remarks'>
+                                        <div className="d-flex align-items-center justify-content-between wApp">
+                                            <div
+                                                className="My_Text_Wrap"
+                                                title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                            >
+                                                {
+                                                    obj.Remarks && obj.Remarks.length > 0
+                                                        ? obj.Remarks
+                                                            .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                        : "No Remarks"
+                                                }
+                                            </div>
+                                            <button className='td_add_remarks_btn'
+                                                onClick={() => {
+                                                    setOpenRemarksPopUp(true)
+                                                    setCurrentCompanyName(obj["Company Name"])
+                                                    setCurrentServiceName(obj.serviceName)
+                                                    setHistoryRemarks(obj.Remarks)
+                                                    handleOpenRemarksPopup(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                }}
+                                            >
+                                                <FaPencilAlt />
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td className='td_of_weblink'>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
@@ -295,7 +302,7 @@ function RmofCertificationSubmittedPanel() {
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
                                         /></td>
-                                    <td>
+                                    <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -303,7 +310,7 @@ function RmofCertificationSubmittedPanel() {
                                             nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
                                         />
                                     </td>
-                                    <td>
+                                    <td className='td_of_weblink'>
                                         <NSWSPasswordInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -311,14 +318,7 @@ function RmofCertificationSubmittedPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    <td>
-                                        <WebsiteLink
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
-                                        />
-                                    </td>
+                                    
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
@@ -338,6 +338,7 @@ function RmofCertificationSubmittedPanel() {
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
+                                    <td>{formatDate(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -359,6 +360,11 @@ function RmofCertificationSubmittedPanel() {
                                                 "1"} 
                                     </td>
                                     <td>July 27,2024</td>
+                                    <td className="rm-sticky-action">
+                                        <button className="action-btn action-btn-primary">
+                                            <FaRegEye />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
