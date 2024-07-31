@@ -44,7 +44,14 @@ function RmofCertificationHoldPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     
-
+    function formatDatePro(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
 
     function formatDate(dateString) {
         dateString = "2024-07-26"
@@ -239,7 +246,7 @@ function RmofCertificationHoldPanel() {
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
+                                    <td className="rm-sticky-left-2">{formatDatePro(obj.bookingDate)}</td>
 
                                     <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
 
@@ -375,9 +382,9 @@ function RmofCertificationHoldPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
                                 </tr>
                             ))}
                         </tbody>

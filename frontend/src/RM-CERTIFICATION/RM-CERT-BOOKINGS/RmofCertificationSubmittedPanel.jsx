@@ -49,6 +49,15 @@ function RmofCertificationSubmittedPanel() {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
 
+    function formatDatePro(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
+
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
@@ -204,7 +213,6 @@ function RmofCertificationSubmittedPanel() {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-                                <th>Date and Time of Application</th>
                                 {/* <th className="rm-sticky-action">Action</th> */}
                             </tr>
                         </thead>
@@ -212,7 +220,7 @@ function RmofCertificationSubmittedPanel() {
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2">{formatDate(obj.bookingDate)}</td>
+                                    <td className="rm-sticky-left-2">{formatDatePro(obj.bookingDate)}</td>
 
                                     <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
 
@@ -350,15 +358,15 @@ function RmofCertificationSubmittedPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
                                     <td>
                                         {obj.subCategoryStatus === "2nd Time Submitted" ? "2" :
                                             obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
                                                 "1"} 
                                     </td>
-                                    <td>July 27,2024</td>
+                                   
                                 </tr>
                             ))}
                         </tbody>

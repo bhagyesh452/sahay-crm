@@ -36,6 +36,15 @@ function RmofCertificationGeneralPanel() {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
 
+    function formatDatePro(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
+
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
           secure: true, // Use HTTPS
@@ -175,7 +184,7 @@ const handleSubmitRemarks = async () => {
                             {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className='G_rm-sticky-left-2'>{formatDate(obj.bookingDate)}</td>
+                                    <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
                                     <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
@@ -217,9 +226,9 @@ const handleSubmitRemarks = async () => {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}/-</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}/-</td>
                                     <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
                                     //onClick={() => setOpenCompanyTaskComponent(true)}
                                     ><FaRegEye /></button>

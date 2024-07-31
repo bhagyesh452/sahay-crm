@@ -193,10 +193,15 @@ function Received_booking_box() {
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 // Find the filtered services for the same index
                 const filteredServiceNames = filteredServicesData[index];
+
+                const noCertificationServices = !(
+                    item.servicesTakenByRmOfCertification && item.servicesTakenByRmOfCertification.length > 0 ||
+                    (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByRmOfCertification && booking.servicesTakenByRmOfCertification.length > 0))
+                );
     
                 // Compare combinedServices with filteredServiceNames
                 return !(item.combinedServices.length === filteredServiceNames.length &&
-                         item.combinedServices.every(service => filteredServiceNames.includes(service)));
+                         item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
             });
 
             const completeData = response.data
