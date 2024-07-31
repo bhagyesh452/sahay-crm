@@ -2865,7 +2865,7 @@ td input {
 }
 .rm_table_inprocess
 {
-  width: 3500px !important;
+  width: 3721px !important;
 }
 .rm_table_submited
 {
@@ -2880,7 +2880,7 @@ td input {
 .rm-sticky-left-2
 {
   position: sticky;
-  left: 56px;
+  left: 60px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 /* .rm-sticky-left-3
@@ -2898,14 +2898,14 @@ td input {
 .G_rm-sticky-left-2
 {
   position: sticky;
-  left: 57px;
+  left: 60px;
   width: 104px;
   
 }
 .G_rm-sticky-left-3
 {
   position: sticky;
-  left: 154px;
+  left: 167px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
 }
 .rm-sticky-action
