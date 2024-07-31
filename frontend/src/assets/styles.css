@@ -29,8 +29,8 @@ body {
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  height: 10px;
-  width: 16px;
+  height: 6px;
+  width: 6px;
 }
 
 *::-webkit-scrollbar-track {
@@ -38,9 +38,9 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #ffb900;
+  background: #989898;
   border-radius: 10px;
-  border: 3px solid #ffffff;
+  border: 1px solid #ffffff;
 }
 
 /* Track */
@@ -50,7 +50,7 @@ body {
 
 /* Handle on hover */
 *::-webkit-scrollbar-thumb:hover {
-  background: #ffb900 !important;
+  background: #868686 !important;
 }
 
 
@@ -2196,6 +2196,7 @@ td input {
   max-width: 100%;
   overflow: hidden;
   text-align: left;
+  text-wrap: wrap;
 }
 .listgrridradio_main
 {
@@ -2746,7 +2747,7 @@ td input {
   /* border: 1px solid #dadfe5; */
   flex: 0 0 63%;
   border-bottom: none;
-  margin-bottom: -1px;
+  margin-bottom: -1px !important;
   padding-right: 10px !important;
 }
 /* .rm_task_section_navitem
@@ -3076,11 +3077,15 @@ td input {
 }
 .td_of_weblink
 {
-  width: 210px;
+  width: 180px;
 }
 .td_of_NSWSeMAIL
 {
   width: 250px;
+}
+.td_of_Industry
+{
+  width: 240px;
 }
 .rm-mybookingmain .table-style-3 table tbody tr td
 {
@@ -3088,9 +3093,28 @@ td input {
 }
 .rm_main_card
 {
-  padding: 8px;
-  box-shadow: 1px 1px 13px -3px #cfcfcfcc;
   border-radius: 8px;
+  box-shadow: 0px 1px 8px -3px #cfcfcfcc;
+  padding: 8px;
+  border: 1px solid #eee;
+}
+.sec-indu-select
+{
+  font-size: 12px;
+  padding: 3px 8px !important;
+  border-radius: 26px !important;
+  width: 100%;
+  background-position: right 7px center;
+  background-size: 8px 11px;
+  background-color: #f4f4f4;
+  border: none !important;
+  color: #414141;
+}
+.sec-indu-select:focus
+{
+    outline: none  !important;
+    box-shadow: none !important;
+    background: inherit;
 }
 @media (max-width: 1528px)
 {

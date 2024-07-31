@@ -341,7 +341,7 @@ function RmofCertificationProcessPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
                                         />
                                     </td>
-                                    <td>
+                                    <td className='td_of_Industry'>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -349,7 +349,7 @@ function RmofCertificationProcessPanel() {
                                             onIndustryChange={handleIndustryChange}
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                         /></td>
-                                    <td>
+                                    <td className='td_of_Industry'>
                                         <SectorDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}

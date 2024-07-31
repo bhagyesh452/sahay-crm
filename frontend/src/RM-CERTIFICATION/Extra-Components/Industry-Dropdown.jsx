@@ -470,12 +470,11 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     };
 
     return (
-        <section className="rm_status_dropdown">
-        <div className={`custom-dropdown status_dropdown`}>
+       
             <select
-                className="form-select status_change"
+                className="form-select sec-indu-select"
                 aria-labelledby="dropdownMenuButton1"
-                onChange={(e) => handleStatusChange(e.target.value, "created-status", dropdownItems.find(item => item.name === e.target.value)?.options)}
+                onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
                 value={status} // Set the current value as selected
             >
                 <option value="">Select an option</option>
@@ -485,8 +484,6 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                     </option>
                 ))}
             </select>
-        </div>
-    </section>
     );
 };
 
