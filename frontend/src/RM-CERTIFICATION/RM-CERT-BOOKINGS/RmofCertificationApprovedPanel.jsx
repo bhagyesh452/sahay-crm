@@ -199,7 +199,7 @@ const handleCloseEmailPopup = () => {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                    <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -210,6 +210,7 @@ const handleCloseEmailPopup = () => {
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
+                                <th>Website Link</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -218,7 +219,6 @@ const handleCloseEmailPopup = () => {
                                 <th>Brochure Status</th>
                                 <th>NSWS Email Id</th>
                                 <th>NSWS Password</th>
-                                <th>Website Link</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
@@ -231,16 +231,14 @@ const handleCloseEmailPopup = () => {
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
                                 <th>Date and Time of Application</th>
-                                {/* <th className="rm-sticky-action">Action</th> */}
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rmServicesData && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    
-
-                                    <td className="rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
+                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
 
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
@@ -289,6 +287,14 @@ const handleCloseEmailPopup = () => {
                                             </button>
                                         </div>
                                     </td>
+                                    <td className='td_of_weblink'>
+                                        <WebsiteLink
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                        />
+                                    </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
@@ -315,7 +321,7 @@ const handleCloseEmailPopup = () => {
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
                                         /></td>
-                                    <td>
+                                    <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -323,7 +329,7 @@ const handleCloseEmailPopup = () => {
                                             nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
                                         />
                                     </td>
-                                    <td>
+                                    <td className='td_of_weblink'>
                                         <NSWSPasswordInput 
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
@@ -331,14 +337,7 @@ const handleCloseEmailPopup = () => {
                                         nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    <td>
-                                        <WebsiteLink
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
-                                        />
-                                    </td>
+                                    
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
@@ -380,6 +379,11 @@ const handleCloseEmailPopup = () => {
                                                 "1"} 
                                     </td>
                                     <td>July 27,2024</td>
+                                    <td className="rm-sticky-action">
+                                        <button className="action-btn action-btn-primary">
+                                            <FaRegEye />
+                                        </button>
+                                    </td>
                                 </tr>
 
                             ))}
