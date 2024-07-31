@@ -39,6 +39,10 @@ export default function HREditEmployee() {
 
   const navigate = useNavigate();
 
+  const formatSalary = (amount) => {
+    return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+  };
+
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const day = String(date.getDate()).padStart(2, '0');

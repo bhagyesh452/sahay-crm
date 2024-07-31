@@ -22,6 +22,7 @@ import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 
+
 function RmofCertificationProcessPanel() {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -242,7 +243,7 @@ function RmofCertificationProcessPanel() {
                                     <td>{obj["Company Email"]}</td>
                                     <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
 
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (

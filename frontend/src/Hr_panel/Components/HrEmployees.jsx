@@ -22,6 +22,10 @@ function HrEmployees() {
     navigate("/hr/add/employee");
   };
 
+  const formatSalary = (amount) => {
+    return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+  };
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
@@ -109,7 +113,7 @@ function HrEmployees() {
                         Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        50
+                        {employee.length}
                       </div>
                     </div>
                   </a>
@@ -169,13 +173,13 @@ function HrEmployees() {
                             <td>{emp.department || ""}</td>
                             <td>{emp.designation || ""}</td>
                             <td>{formatDate(emp.jdate) || ""}</td>
-                            <td>{emp.salary || ""}</td>
+                            <td>₹ {formatSalary(emp.salary || 0)}</td>
                             <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
                             <td>{emp.number || ""}</td>
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                              <button className="action-btn action-btn-success ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
                               <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>
                           </tr>

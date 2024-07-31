@@ -158,7 +158,7 @@ function RmofCertificationMyBookings() {
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
            
             {!openCompanyTaskComponent &&
-                <div className="page-wrapper">
+                <div className="page-wrapper rm-mybookingmain">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
                             <div className="d-flex">
@@ -194,105 +194,107 @@ function RmofCertificationMyBookings() {
                     </div>
                     <div className="page-body rm_Dtl_box m-0">
                         <div className="container-xl mt-2">
-                            <div className="my-tab card-header">
-                                <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link active" data-bs-toggle="tab" href="#General">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    General
+                            <div className="">
+                                <div className="my-tab card-header">
+                                    <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link active" data-bs-toggle="tab" href="#General">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        General
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "General").length : 0}
+                                                    </div>
                                                 </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "General").length : 0}
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        In Process
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
+                                                        
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    In Process
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Submited">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        Submited
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
+                                                        
+                                                    </div>
                                                 </div>
-                                                <div className="rm_tsn_bdge">
-                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
-                                                    
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Approved">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        Approved
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
+                                                        
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Submited">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Submited
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        Hold
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
+                                                        
+                                                    </div>
                                                 </div>
-                                                <div className="rm_tsn_bdge">
-                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
-                                                    
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Defaulter">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        Defaulter
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
+                                                        
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Approved">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Approved
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
-                                                    
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Hold">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Hold
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
-                                                    
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Defaulter">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Defaulter
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
-                                                    
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-content card-body">
-                                <div class="tab-pane active" id="General">
-                                    <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="tab-pane" id="InProcess">
-                                    <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
-                                </div>
-                                <div class="tab-pane" id="Submited">
-                                    <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} />
-                                </div>
-                                <div class="tab-pane" id="Approved">
-                                    <RmofCertificationApprovedPanel rmServicesData={rmServicesData} />
-                                </div>
-                                <div class="tab-pane" id="Hold">
-                                    <RmofCertificationHoldPanel rmServicesData={rmServicesData} />
-                                </div>
-                                <div class="tab-pane" id="Defaulter">
-                                    <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} />
+                                <div class="tab-content card-body">
+                                    <div class="tab-pane active" id="General">
+                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="InProcess">
+                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="Submited">
+                                        <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="Approved">
+                                        <RmofCertificationApprovedPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="Hold">
+                                        <RmofCertificationHoldPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="Defaulter">
+                                        <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} />
+                                    </div>
                                 </div>
                             </div>
                         </div>

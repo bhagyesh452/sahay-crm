@@ -160,10 +160,10 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
 
 router.post("/einfo", async (req, res) => {
   try {
-    const { firstName, lastName, personalPhoneNo, personalEmail } = req.body;
+    const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
     const updateData = {
       ...req.body,
-      ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
+      ename: `${firstName} ${middleName} ${lastName}`,
       personal_number: personalPhoneNo,
       personal_email: personalEmail,
       AddedOn: new Date()
@@ -333,8 +333,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
     const formattedDob = formatDate(dob);
     const formattedJoiningDate = formatDate(joiningDate);
 
-    console.log("Formatted DOB:", formattedDob); // Add logging
-    console.log("Formatted Joining Date:", formattedJoiningDate); // Add logging
+    console.log("Formatted DOB:", formattedDob);
+    console.log("Formatted Joining Date:", formattedJoiningDate);
 
     const emp = await adminModel.findOneAndUpdate(
       { _id: empId },
