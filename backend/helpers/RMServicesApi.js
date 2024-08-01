@@ -483,7 +483,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           serviceName: serviceName
         },
         {
-          subCategoryStatus: company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
+          subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
           mainCategoryStatus: company.previousMainCategoryStatus,  // Restore previous mainCategoryStatus
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
@@ -617,7 +617,7 @@ router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, brochuredesigner } = req.body;
-  console.log("here" , companyName , serviceName ,brochuredesigner)
+  //console.log("here" , companyName , serviceName ,brochuredesigner)
   //console.log("dscStatus" , contentStatus)
   const socketIO = req.io;
   try {

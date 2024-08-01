@@ -191,48 +191,67 @@ export default function AddLeadForm({
         } else if (booking.Step3Status === true && booking.Step4Status === false) {
 
           console.log("bookings", booking)
-          const servicestoSend = leadData.services.map((service, index) => {
-            // Find the corresponding isoType object for the current index
-            const iso = isoType.find(obj => obj.serviceID === index);
-
-            // Determine the updated serviceName based on the conditions
-            let updatedServiceName = service.serviceName;
-            if (service.serviceName === "ISO Certificate" && iso) {
-              if (
-                iso.type === "" ||
-                (iso.type === "IAF" && iso.IAFtype1 === "") ||
-                (iso.type === "Non IAF" && iso.IAFtype2 === "") ||
-                (iso.type === "IAF" && iso.IAFtype1 !== "" && iso.Nontype === '') ||
-                (iso.type === "Non IAF" && iso.IAFtype2 !== "" && iso.Nontype === '') 
-              ) {
-                Swal.fire("Select Complete ISO Service Fields!");
-                return true; // Use a placeholder or specific value if needed
+          const servicestoSend = booking.services.map((service, index) => {
+            // Call setIsoType for each service's isoTypeObject
+            setIsoType(service.isoTypeObject);
+            console.log(service.secondPaymentRemarks, "TEST")
+            if (!isNaN(new Date(service.secondPaymentRemarks))) {
+              const tempState = {
+                serviceID: index,
+                value: service.secondPaymentRemarks
+              };
+              const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setSecondTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
               } else {
-                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                setSecondTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if (!isNaN(new Date(service.thirdPaymentRemarks))) {
+              const tempState = {
+                serviceID: index,
+                value: service.thirdPaymentRemarks
+              };
+              const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setThirdTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setThirdTempRemarks(prev => [...prev, tempState]);
+              }
+            }
+            if (!isNaN(new Date(service.fourthPaymentRemarks))) {
+              const tempState = {
+                serviceID: index,
+                value: service.fourthPaymentRemarks
+              };
+              const prevState = fourthTempRemarks.find(obj => obj.serviceID === index);
+              if (prevState) {
+                setFourthTempRemarks(prev =>
+                  prev.map(obj => (obj.serviceID === index ? tempState : obj))
+                );
+              } else {
+                setFourthTempRemarks(prev => [...prev, tempState]);
               }
             }
 
-            // Update the payment remarks based on specific conditions
-            const secondRemark = service.secondPaymentRemarks === "On Particular Date"
-              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
-              : service.secondPaymentRemarks;
 
-            const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
-              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
-              : service.thirdPaymentRemarks;
 
-            const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
-              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
-              : service.fourthPaymentRemarks;
-
-            // Return the updated service object
             return {
               ...service,
-              serviceName: updatedServiceName,
-              secondPaymentRemarks: secondRemark,
-              thirdPaymentRemarks: thirdRemark,
-              fourthPaymentRemarks: fourthRemark,
-              isoTypeObject: isoType
+              serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+              secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
+                ? service.secondPaymentRemarks
+                : "On Particular Date",
+              thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
+                ? service.thirdPaymentRemarks
+                : "On Particular Date",
+              fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
+                ? service.fourthPaymentRemarks
+                : "On Particular Date",
             };
           });
           updatedLeadData = {
@@ -781,10 +800,6 @@ export default function AddLeadForm({
           const secondPayment = Number(service.secondPayment);
           const thirdPayment = Number(service.thirdPayment);
           const fourthPayment = Number(service.fourthPayment);
-          if (isNaN(parseInt(service.totalPaymentWOGST)) || parseInt(service.totalPaymentWOGST) < 0) {
-            isValid = false;
-            break;
-          }
           if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
             isValid = false;
             break;
@@ -828,23 +843,48 @@ export default function AddLeadForm({
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
-          const servicestoSend = leadData.services.map((service, index) => ({
-            ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
-                : service.fourthPaymentRemarks,
-            isoTypeObject: isoType
-          }));
+          const servicestoSend = leadData.services.map((service, index) => {
+            // Find the corresponding isoType object for the current index
+            const iso = isoType.find(obj => obj.serviceID === index);
+
+            // Determine the updated serviceName based on the conditions
+            let updatedServiceName = service.serviceName;
+            if (service.serviceName === "ISO Certificate" && iso) {
+              if (
+                iso.type === "" ||
+                (iso.type === "IAF" && iso.IAFtype1 === "") ||
+                (iso.type === "Non IAF" && iso.Nontype === "")
+              ) {
+                Swal.fire("Select Complete ISO Service Fields!");
+                return true; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+              }
+            }
+
+            // Update the payment remarks based on specific conditions
+            const secondRemark = service.secondPaymentRemarks === "On Particular Date"
+              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+              : service.secondPaymentRemarks;
+
+            const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
+              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+              : service.thirdPaymentRemarks;
+
+            const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
+              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+              : service.fourthPaymentRemarks;
+
+            // Return the updated service object
+            return {
+              ...service,
+              serviceName: updatedServiceName,
+              secondPaymentRemarks: secondRemark,
+              thirdPaymentRemarks: thirdRemark,
+              fourthPaymentRemarks: fourthRemark,
+              isoTypeObject: isoType
+            };
+          });
 
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
@@ -1150,6 +1190,7 @@ export default function AddLeadForm({
           },
         }
       );
+      console.log("response", response)
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
@@ -1220,9 +1261,11 @@ export default function AddLeadForm({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select 
+                className="form-select mt-1 ml-1" style={{ width: '120px' }} 
+                value={isoType.find(obj => obj.serviceID === i)?.type || ''}
+                onChange={(e) => {
                   const currentObject = isoType.find(obj => obj.serviceID === i);
-
                   if (currentObject) {
                     const remainingObject = isoType.filter(obj => obj.serviceID !== i);
                     const newCurrentObject = {
@@ -1232,13 +1275,18 @@ export default function AddLeadForm({
                     remainingObject.push(newCurrentObject);
                     setIsoType(remainingObject);
                   }
-                }}>
+                }}
+                >
                   <option value="">Select ISO Body </option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
                 </select>
                   {/* IAF ISO LIST */}
-                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <>
+                  <select 
+                  value={isoType.find(obj => obj.serviceID === i)?.IAFtype1 || ''} 
+                  className="form-select mt-1 ml-1" 
+                  onChange={(e) => {
                     const currentObject = isoType.find(obj => obj.serviceID === i);
 
                     if (currentObject) {
@@ -1262,7 +1310,9 @@ export default function AddLeadForm({
                     <option value="50001">50001</option>
                   </select>
                     {/* IAF ISO TYPES */}
-                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
+                    <select className="form-select mt-1 ml-1" 
+                    value={isoType.find(obj => obj.serviceID === i)?.IAFtype2 || ''} 
+                    onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
                       if (currentObject) {
@@ -1279,7 +1329,9 @@ export default function AddLeadForm({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
                       <option value="3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                    </select></> : <>  <select className="form-select mt-1 ml-1" 
+                    value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "} 
+                    onChange={(e) => {
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
                       if (currentObject) {
@@ -1328,7 +1380,6 @@ export default function AddLeadForm({
                       <option value="PCMM 5">PCMM 5</option>
                       <option value="RIOS">RIOS</option>
                       <option value="ROHS">ROHS</option>
-                      <option value="IEC 17020">IEC 17020</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}

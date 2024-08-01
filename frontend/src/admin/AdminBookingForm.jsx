@@ -619,9 +619,7 @@ export default function AdminBookingForm({
               if (
                 iso.type === "" ||
                 (iso.type === "IAF" && iso.IAFtype1 === "") ||
-                (iso.type === "Non IAF" && iso.IAFtype2 === "") ||
-                (iso.type === "IAF" && iso.IAFtype1 !== "" && iso.Nontype === '') ||
-                (iso.type === "Non IAF" && iso.IAFtype2 !== "" && iso.Nontype === '') 
+                (iso.type === "Non IAF" && iso.Nontype === "") 
               ) {
                 Swal.fire("Select Complete ISO Service Fields!");
                 return true; // Use a placeholder or specific value if needed
@@ -961,6 +959,7 @@ export default function AdminBookingForm({
           },
         }
       );
+      console.log("response" , response.data)
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
