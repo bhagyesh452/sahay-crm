@@ -8,7 +8,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import { Button, Dialog, DialogContent, DialogTitle , FormHelperText } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, FormHelperText } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -44,7 +44,7 @@ function RmofCertificationProcessPanel() {
     const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
-const [error, setError] = useState('')
+    const [error, setError] = useState('')
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -88,9 +88,9 @@ const [error, setError] = useState('')
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-           
+
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-           
+
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -106,7 +106,7 @@ const [error, setError] = useState('')
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data.filter(item => item.mainCategoryStatus === "Process");
-            console.log("servicesData" , servicesData)
+            console.log("servicesData", servicesData)
             setRmServicesData(servicesData);
         } catch (error) {
             console.error("Error fetching data", error.message)
@@ -115,7 +115,7 @@ const [error, setError] = useState('')
         }
     }
 
-    const refreshData = () => { 
+    const refreshData = () => {
         fetchRMServicesData();
     };
 
@@ -195,7 +195,7 @@ const [error, setError] = useState('')
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
-                                <th>Website Link</th>
+                                <th>Website Link/Brief</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -290,7 +290,7 @@ const [error, setError] = useState('')
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj["Company Email"]}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
                                             companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
                                         />
                                     </td>
@@ -309,11 +309,11 @@ const [error, setError] = useState('')
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                        /></td>
                                     <td>
                                         <ContentStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -323,19 +323,23 @@ const [error, setError] = useState('')
                                         /></td>
                                     {/* For Brochure */}
                                     <td>
-                                    <BrochureDesignerDropdown 
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                    />
-                                   </td>
+                                        <BrochureDesignerDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                            refreshData={refreshData}
+                                        />
+                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
+                                            designername={obj.brochureDesigner}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
@@ -359,7 +363,7 @@ const [error, setError] = useState('')
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            industry={obj.industry ? obj.industry : "Select Industry"}
                                         /></td>
                                     <td className='td_of_Industry'>
                                         <SectorDropdown
@@ -367,8 +371,8 @@ const [error, setError] = useState('')
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
-                                            sector={obj.sector ? obj.sector : "Others"} />
+                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            sector={obj.sector ? obj.sector : "Select Sector"} />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>

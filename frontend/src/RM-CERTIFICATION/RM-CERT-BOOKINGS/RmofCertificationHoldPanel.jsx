@@ -231,7 +231,7 @@ function RmofCertificationHoldPanel() {
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
-                                <th>Website Link</th>
+                                <th>Website Link/Brief</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -328,7 +328,7 @@ function RmofCertificationHoldPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj["Company Email"]}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
                                             companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
                                         />
                                     </td>
@@ -360,18 +360,22 @@ function RmofCertificationHoldPanel() {
                                     /></td>
                                     <td>
                                         <BrochureDesignerDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                             />
+                                            refreshData={refreshData}
+                                        />
                                     </td>
                                     <td>
                                         <BrochureStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
+                                            designername={obj.brochureDesigner}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
@@ -396,7 +400,7 @@ function RmofCertificationHoldPanel() {
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            industry={obj.industry ? obj.industry : "Select Industry"}
                                         /></td>
                                     <td>
                                         <SectorDropdown
@@ -404,8 +408,8 @@ function RmofCertificationHoldPanel() {
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
-                                            sector={obj.sector ? obj.sector : "Others"} />
+                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            sector={obj.sector ? obj.sector : "Select Sector"} />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
