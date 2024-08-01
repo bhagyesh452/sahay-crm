@@ -7,6 +7,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
 
@@ -169,10 +170,18 @@ function HrEmployees() {
                           return <tr key={emp._id}>
                             <td>{index + 1}</td>
                             <td>
-                              {(() => {
-                                const names = (emp.ename || "").split(" ");
-                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                              })()}
+                              <div className="d-flex align-items-center">
+                                <div className="tbl-pro-img">
+                                  <img src={EmpDfaullt}></img>
+                                </div>
+                                <div className="">
+                                  {(() => {
+                                    const names = (emp.ename || "").split(" ");
+                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                  })()}
+                                </div>
+                              </div>
+                              
                             </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
