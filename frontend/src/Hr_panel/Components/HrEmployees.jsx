@@ -7,6 +7,9 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import Nodata from '../../components/Nodata';
+import ClipLoader from "react-spinners/ClipLoader";
+
 
 function HrEmployees() {
 
@@ -18,6 +21,9 @@ function HrEmployees() {
 
   const navigate = useNavigate();
 
+  const [employee, setEmployee] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
   };
@@ -28,8 +34,12 @@ function HrEmployees() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
   };
+
 
   const calculateProbationStatus = (joiningDate) => {
     const joinDate = new Date(joiningDate);
@@ -48,15 +58,17 @@ function HrEmployees() {
     navigate(`/hr/edit/employee/${empId}`);
   };
 
-  const [employee, setEmployee] = useState([]);
-
   const fetchEmployee = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/einfo`);
       setEmployee(res.data);
       // console.log("Fetched Employees are :", res.data);
     } catch (error) {
+      setIsLoading(false);
       console.log("Error fetching employees data :", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -164,32 +176,57 @@ function HrEmployees() {
                           <th>Action</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {employee.map((emp, index) => {
-                          return <tr key={emp._id}>
-                            <td>{index + 1}</td>
-                            <td>
-                              {(() => {
-                                const names = (emp.ename || "").split(" ");
-                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                              })()}
-                            </td>
-                            <td>{emp.branchOffice || ""}</td>
-                            <td>{emp.department || ""}</td>
-                            <td>{emp.designation || ""}</td>
-                            <td>{formatDate(emp.jdate) || ""}</td>
-                            <td>₹ {formatSalary(emp.salary || 0)}</td>
-                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td>{emp.number || ""}</td>
-                            <td>{emp.email || ""}</td>
-                            <td>
-                              <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
-                              <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
+                      {isLoading ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" >
+                              <div className="LoaderTDSatyle w-100" >
+                                <ClipLoader
+                                  color="lightgrey"
+                                  isLoading
+                                  size={30}
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </div>
                             </td>
                           </tr>
-                        })}
-                      </tbody>
+                        </tbody>
+                      ) : (
+                        <>
+                          <tbody>
+                            {employee.length > 0 ? (
+                              employee.map((emp, index) => {
+                              return <tr key={emp._id}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  {(() => {
+                                    const names = (emp.ename || "").split(" ");
+                                    return `${names[0] || ""} ${names[2] || ""}`;
+                                  })()}
+                                </td>
+                                <td>{emp.branchOffice || ""}</td>
+                                <td>{emp.department || ""}</td>
+                                <td>{emp.designation || ""}</td>
+                                <td>{formatDate(emp.jdate) || ""}</td>
+                                <td>₹ {formatSalary(emp.salary || 0)}</td>
+                                <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
+                                <td>{emp.number || ""}</td>
+                                <td>{emp.email || ""}</td>
+                                <td>
+                                  <button className="action-btn action-btn-primary"><FaRegEye /></button>
+                                  <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                                  <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
+                                </td>
+                              </tr>
+                            })) : (
+                              <tr>
+                                <td colSpan="11" className="text-center"><Nodata /></td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </>
+                      )}
                     </table>
                   </div>
                 </div>

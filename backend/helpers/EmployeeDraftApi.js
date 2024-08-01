@@ -38,7 +38,7 @@ const upload = multer({ storage: storage });
 
 router.post("/saveEmployeeDraft/", async (req, res) => {
     try {
-        const { firstName, middleName, lastName, personalPhoneNo, personalEmail, activeStep } = req.body;
+        const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
         const emp = {
             ...req.body,
             ename: `${firstName} ${middleName} ${lastName}`,
