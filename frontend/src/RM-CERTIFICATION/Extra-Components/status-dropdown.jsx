@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData }) => {
   const [status, setStatus] = useState(subStatus);
-  const [statusClass, setStatusClass] = useState("created-status");
+  const [statusClass, setStatusClass] = useState("untouched_status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -187,7 +187,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
       case "General":
         switch (subStatus) {
           case "Untouched":
-            return "created-status";
+            return "untouched_status";
           case "Call Done Brief Pending":
             return "support-status";
           case "Client Not Responding":
@@ -197,7 +197,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
           case "Need To Call":
             return "rejected-status";
           default:
-            return "created-status";
+            return "untouched_status";
         }
       case "Process":
         switch (subStatus) {
@@ -291,7 +291,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Untouched", "created-status")}
+                onClick={() => handleStatusChange("Untouched", "untouched_status")}
                 href="#"
               >
                 Untouched
