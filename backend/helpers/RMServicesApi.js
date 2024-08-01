@@ -518,9 +518,6 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   }
 });
 
-
-
-
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, dscStatus } = req.body;
   //console.log("dscStatus" , dscStatus)
@@ -863,7 +860,34 @@ router.post(`/post-save-sector/`, async (req, res) => {
   }
 });
 
+router.delete('/delete-remark-rmcert', async (req, res) => {
+  const { remarks_id, companyName, serviceName } = req.body;
 
+  try {
+    const company = await RMCertificationModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    if (!company) {
+      return res.status(404).json({ message: "Company or service not found" });
+    }
+
+    // Remove the specific remark from the array
+    const updatedRemarks = company.Remarks.filter(remark => remark._id.toString() !== remarks_id);
+
+    // Update the company document
+    await RMCertificationModel.updateOne(
+      { ["Company Name"]: companyName, serviceName: serviceName },
+      { $set: { Remarks: updatedRemarks } }
+    );
+
+    res.json({ message: "Remark deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting remark:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 
 router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, res) => {

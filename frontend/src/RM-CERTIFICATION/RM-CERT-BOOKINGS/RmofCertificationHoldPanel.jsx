@@ -173,42 +173,30 @@ function RmofCertificationHoldPanel() {
             console.log("Error Submitting Remarks", error.message);
         }
     };
+
+    const handleDeleteRemarks = async (remarks_id) => {
+        try {
+          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+          });
+          if(response.status === 200){
+            fetchRMServicesData();
+            functionCloseRemarksPopup(); 
+          }
+         // Refresh the list
+        } catch (error) {
+          console.error("Error deleting remark:", error);
+        }
+      };
+
+      
     const handleIndustryChange = (industry, options) => {
         setSelectedIndustry(industry);
         setSectorOptions(options);
     };
 
 
-    //--------------------email function----------------------
-    const handleSubmitNSWSEmail = async () => {
-        console.log(currentCompanyName, currentServiceName)
-        try {
-            if (currentCompanyName && currentServiceName) {
-                const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    email
-                });
-                if (response.status === 200) {
-                    Swal.fire(
-                        'Email Added!',
-                        'The email has been successfully added.',
-                        'success'
-                    );
-                    fetchRMServicesData()
-                    setOpenEmailPopup(false); // Close the popup on success
-                }
-            }
-
-
-        } catch (error) {
-            console.error("Error saving email:", error.message); // Log only the error message
-        }
-    };
-
-    const handleCloseEmailPopup = () => {
-        setOpenEmailPopup(false)
-    }
+   
 
 
 
@@ -400,7 +388,8 @@ function RmofCertificationHoldPanel() {
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+
                                         /></td>
                                     <td>
                                         <SectorDropdown
@@ -463,6 +452,21 @@ function RmofCertificationHoldPanel() {
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
+                                            </div>
+                                            <div className="dlticon">
+                                                <DeleteIcon
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color: "#f70000",
+                                                        width: "14px",
+                                                    }}
+                                                    onClick={() => {
+                                                        handleDeleteRemarks(
+                                                            historyItem._id,
+                                                            historyItem.remarks
+                                                        );
+                                                    }}
+                                                />
                                             </div>
                                         </div>
 

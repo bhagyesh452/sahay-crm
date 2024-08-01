@@ -197,6 +197,21 @@ function RmofCertificationApprovedPanel() {
         }
     };
 
+    const handleDeleteRemarks = async (remarks_id) => {
+        try {
+          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+          });
+          if(response.status === 200){
+            fetchRMServicesData();
+            functionCloseRemarksPopup(); 
+          }
+         // Refresh the list
+        } catch (error) {
+          console.error("Error deleting remark:", error);
+        }
+      };
+
 
 
 
@@ -227,7 +242,6 @@ function RmofCertificationApprovedPanel() {
                                 <th>NSWS Password</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
-                                <th>Submitted By</th>
                                 <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -236,6 +250,7 @@ function RmofCertificationApprovedPanel() {
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
                                 <th>Submitted On</th>
+                                <th>Submitted By</th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -378,7 +393,8 @@ function RmofCertificationApprovedPanel() {
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+
                                         /></td>
                                     <td>
                                         <SectorDropdown
@@ -389,7 +405,6 @@ function RmofCertificationApprovedPanel() {
                                             industry={obj.industry ? obj.industry : "Select Industry"}
                                             sector={obj.sector ? obj.sector : "Select Sector"} />
                                     </td>
-                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
@@ -412,14 +427,13 @@ function RmofCertificationApprovedPanel() {
                                                 "1st"}
                                     </td>
                                     <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
-
+                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
                                         </button>
                                     </td>
                                 </tr>
-
                             ))}
                         </tbody>
                     </table>
@@ -450,6 +464,21 @@ function RmofCertificationApprovedPanel() {
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
+                                            </div>
+                                            <div className="dlticon">
+                                                <DeleteIcon
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color: "#f70000",
+                                                        width: "14px",
+                                                    }}
+                                                    onClick={() => {
+                                                        handleDeleteRemarks(
+                                                            historyItem._id,
+                                                            historyItem.remarks
+                                                        );
+                                                    }}
+                                                />
                                             </div>
                                         </div>
 

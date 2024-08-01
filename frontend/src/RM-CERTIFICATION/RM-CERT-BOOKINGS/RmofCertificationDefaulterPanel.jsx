@@ -172,6 +172,21 @@ const [error, setError] = useState('')
         }
     };
 
+    const handleDeleteRemarks = async (remarks_id) => {
+        try {
+          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+          });
+          if(response.status === 200){
+            fetchRMServicesData();
+            functionCloseRemarksPopup(); 
+          }
+         // Refresh the list
+        } catch (error) {
+          console.error("Error deleting remark:", error);
+        }
+      };
+
      //--------------------email function----------------------
 
      const handleSubmitNSWSEmail = async () => {
@@ -403,7 +418,8 @@ const [error, setError] = useState('')
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+
                                         /></td>
                                     <td>
                                         <SectorDropdown
@@ -466,6 +482,21 @@ const [error, setError] = useState('')
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
+                                            </div>
+                                            <div className="dlticon">
+                                                <DeleteIcon
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color: "#f70000",
+                                                        width: "14px",
+                                                    }}
+                                                    onClick={() => {
+                                                        handleDeleteRemarks(
+                                                            historyItem._id,
+                                                            historyItem.remarks
+                                                        );
+                                                    }}
+                                                />
                                             </div>
                                         </div>
 

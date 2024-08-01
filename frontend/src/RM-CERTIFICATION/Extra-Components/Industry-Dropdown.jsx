@@ -9,7 +9,7 @@ import axios from 'axios';
 
 
 const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, serviceName, refreshData, onIndustryChange }) => {
-    const [status, setStatus] = useState(industry);
+    const [status, setStatus] = useState(industry || "");
     const [statusClass, setStatusClass] = useState("created-status");
     const [options, setOptions] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -442,7 +442,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         { name: "Indic Language Startup", options: indicLanguageStartup }
     ];
 
-    console.log("industry", industry)
+    
 
 
 
@@ -477,9 +477,9 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
             onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
             value={status} // Ensure this matches one of the option values
         >
-            <option value="" disabled>Select Industry</option>
-            {dropdownItems.map((item) => (
-                <option key={item.name} value={item.name}>
+            <option disabled selected value="">Select Industry</option>
+            {dropdownItems.map((item , index) => (
+                <option key={index} value={item.name}>
                     {item.name}
                 </option>
             ))}
