@@ -22,7 +22,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
-
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 function RmofCertificationHoldPanel() {
 
@@ -44,7 +44,13 @@ function RmofCertificationHoldPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     
-
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
 
     function formatDate(dateString) {
         dateString = "2024-07-26"
@@ -253,8 +259,17 @@ function RmofCertificationHoldPanel() {
                                         </div>
                                     </td>
                                     <td>{obj["Company Email"]}</td>
-                                    <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>
+                                        <div className="d-flex align-items-center justify-content-center wApp">
+                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                            {obj.caCase === "Yes" && (
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
 
@@ -310,22 +325,36 @@ function RmofCertificationHoldPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                     <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -367,7 +396,7 @@ function RmofCertificationHoldPanel() {
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -380,9 +409,9 @@ function RmofCertificationHoldPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />

@@ -36,6 +36,14 @@ function RmofCertificationGeneralPanel() {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
 
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
           secure: true, // Use HTTPS
@@ -60,9 +68,9 @@ function RmofCertificationGeneralPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -101,7 +109,7 @@ function RmofCertificationGeneralPanel() {
     }
 
 
-console.log("setnewsubstatus" , newStatus)
+//console.log("setnewsubstatus" , newStatus)
 
 //------------------------Remarks Popup Section-----------------------------
 const handleOpenRemarksPopup = async (companyName, serviceName) => {
@@ -118,7 +126,7 @@ const debouncedSetChangeRemarks = useCallback(
 );
 
 const handleSubmitRemarks = async () => {
-    console.log("changeremarks", changeRemarks)
+
     try {
         const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
             currentCompanyName,
@@ -127,7 +135,7 @@ const handleSubmitRemarks = async () => {
             updatedOn: new Date()
         });
 
-        console.log("response", response.data);
+       
 
         if (response.status === 200) {
             fetchRMServicesData();
@@ -175,7 +183,7 @@ const handleSubmitRemarks = async () => {
                             {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
                                 <tr key={index}>
                                     <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className='G_rm-sticky-left-2'>{formatDate(obj.bookingDate)}</td>
+                                    <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
                                     <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
@@ -186,12 +194,21 @@ const handleSubmitRemarks = async () => {
                                         </div>
                                     </td>
                                     <td>{obj["Company Email"]}</td>
-                                    <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
+                                    <td>
+                                        <div className="d-flex align-items-center justify-content-center wApp">
+                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                            {obj.caCase === "Yes" && (
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </td>
                                     
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
-                                            {console.log("mainCategoryStatus:", obj.mainCategoryStatus)}
+                                           
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}
@@ -217,9 +234,9 @@ const handleSubmitRemarks = async () => {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
                                     //onClick={() => setOpenCompanyTaskComponent(true)}
                                     ><FaRegEye /></button>

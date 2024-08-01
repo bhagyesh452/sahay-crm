@@ -470,32 +470,20 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     };
 
     return (
-        <section className="rm_status_dropdown">
-            <div className={`dropdown custom-dropdown status_dropdown`}>
-                <button
-                    className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-                    type="button"
-                    id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" // Bootstrap data attribute to toggle dropdown
-                    aria-expanded="false"
-                >
-                    {status}
-                </button>
-                <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-                    {dropdownItems.map((item) => (
-                        <li key={item.name}>
-                            <a
-                                className="dropdown-item"
-                                onClick={() => handleStatusChange(item.name, "created-status", item.options)}
-                                href="#"
-                            >
-                                {item.name}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </section>
+       
+            <select
+                className="form-select sec-indu-select"
+                aria-labelledby="dropdownMenuButton1"
+                onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
+                value={status} // Set the current value as selected
+            >
+                <option value="">Select an option</option>
+                {dropdownItems.map((item) => (
+                    <option key={item.name} value={item.name}>
+                        {item.name}
+                    </option>
+                ))}
+            </select>
     );
 };
 

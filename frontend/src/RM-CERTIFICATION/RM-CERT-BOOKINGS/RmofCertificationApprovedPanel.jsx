@@ -22,6 +22,7 @@ import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown.jsx';
 
 
 function RmofCertificationApprovedPanel() {
@@ -43,7 +44,36 @@ function RmofCertificationApprovedPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
 
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
 
+    function formatDateNew(inputDate) {
+        const date = new Date(inputDate);
+        const day = String(date.getUTCDate()).padStart(2, '0'); // Ensures day is two digits
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getUTCFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
+    const formatTime = (dateString) => {
+        //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
+        const date = new Date(dateString)
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+
+        const strTime = `${hours}:${minutes} ${ampm}`;
+        return strTime;
+    }
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -73,9 +103,9 @@ function RmofCertificationApprovedPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -119,7 +149,7 @@ function RmofCertificationApprovedPanel() {
     };
 
 
-    console.log("setnewsubstatus", newStatusApproved)
+    //.log("setnewsubstatus", newStatusApproved)
 
  //------------------------Remarks Popup Section-----------------------------
  const handleOpenRemarksPopup = async (companyName, serviceName) => {
@@ -136,7 +166,7 @@ const debouncedSetChangeRemarks = useCallback(
 );
 
 const handleSubmitRemarks = async () => {
-    console.log("changeremarks", changeRemarks)
+    //console.log("changeremarks", changeRemarks)
     try {
         const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
             currentCompanyName,
@@ -145,7 +175,7 @@ const handleSubmitRemarks = async () => {
             updatedOn: new Date()
         });
 
-        console.log("response", response.data);
+        //console.log("response", response.data);
 
         if (response.status === 200) {
             fetchRMServicesData();
@@ -161,36 +191,6 @@ const handleSubmitRemarks = async () => {
     }
 };
 
-//--------------------email function----------------------
-const handleSubmitNSWSEmail = async () => {
-    console.log(currentCompanyName , currentServiceName)
-    try {
-        if(currentCompanyName && currentServiceName){
-            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
-                currentCompanyName,
-                currentServiceName,
-                email
-            });
-            if (response.status === 200) {
-                Swal.fire(
-                    'Email Added!',
-                    'The email has been successfully added.',
-                    'success'
-                );
-                fetchRMServicesData()
-                setOpenEmailPopup(false); // Close the popup on success
-            }
-        }
-       
-        
-    } catch (error) {
-        console.error("Error saving email:", error.message); // Log only the error message
-    }
-};
-
-const handleCloseEmailPopup = () => {
-    setOpenEmailPopup(false)
-}
 
 
 
@@ -222,7 +222,6 @@ const handleCloseEmailPopup = () => {
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
-                                <th>Submitted On</th>
                                 <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -230,7 +229,7 @@ const handleCloseEmailPopup = () => {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-                                <th>Date and Time of Application</th>
+                                <th>Submitted On</th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -249,8 +248,17 @@ const handleCloseEmailPopup = () => {
                                         </div>
                                     </td>
                                     <td>{obj["Company Email"]}</td>
-                                    <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>
+                                        <div className="d-flex align-items-center justify-content-center wApp">
+                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                            {obj.caCase === "Yes" && (
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
@@ -298,22 +306,36 @@ const handleCloseEmailPopup = () => {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown 
-                                            companyName = {obj["Company Name"]}
-                                            serviceName = {obj.serviceName}
-                                            mainStatus = {obj.mainCategoryStatus}
-                                            dscStatus = {obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown/></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td><ContentStatusDropdown
                                     companyName = {obj["Company Name"]}
                                     serviceName = {obj.serviceName}
                                     mainStatus = {obj.mainCategoryStatus}
                                     contentStatus = {obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                   <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -356,8 +378,7 @@ const handleCloseEmailPopup = () => {
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
-                                    <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -370,15 +391,16 @@ const handleCloseEmailPopup = () => {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td>
-                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2" :
-                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
-                                                "1"} 
+                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
+                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
+                                                "1st"} 
                                     </td>
-                                    <td>July 27,2024</td>
+                                    <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
+
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />

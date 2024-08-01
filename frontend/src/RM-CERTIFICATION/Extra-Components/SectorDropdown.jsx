@@ -367,30 +367,19 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sector, sectorO
     
 
     return (
-        <div className="dropdown custom-dropdown status_dropdown">
-            <button
-                className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-                type="button"
-                id="dropdownMenuButton1"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                {status}
-            </button>
-            <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-                {options.map((option, index) => (
-                    <li key={index}>
-                        <a
-                            className="dropdown-item"
-                            href="#"
-                            onClick={() => handleStatusChange(option)}
-                        >
-                            {option}
-                        </a>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <select
+            className="form-select sec-indu-select"
+            aria-labelledby="dropdownMenuButton1"
+            onChange={(e) => handleStatusChange(e.target.value)}
+            value={status}
+        >
+            <option value="">Select a status</option>
+            {options.map((option, index) => (
+                <option key={index} value={option}>
+                    {option}
+                </option>
+            ))}
+        </select>
     );
 };
 

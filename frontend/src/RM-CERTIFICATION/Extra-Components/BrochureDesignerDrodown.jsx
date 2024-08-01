@@ -7,8 +7,8 @@ import axios from 'axios';
 
 
 
-const ContentWriterDropdown = ({ mainStatus, writername , subStatus, setNewSubStatus, companyName, serviceName }) => {
-    const [status, setStatus] = useState(writername);
+const BrochureDesignerDropdown = ({ mainStatus, designername , subStatus, setNewSubStatus, companyName, serviceName }) => {
+    const [status, setStatus] = useState(designername);
     const [statusClass, setStatusClass] = useState("e_task_assign");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -19,34 +19,34 @@ const ContentWriterDropdown = ({ mainStatus, writername , subStatus, setNewSubSt
         try {
             let response;
             if (mainStatus === "Process") {
-              response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+              response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
                 companyName,
                 serviceName,
-                contentWriter : newStatus
+                brochureDesigner : newStatus
               });
           } else if (mainStatus === "Submitted") {
-            response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+            response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
               companyName,
               serviceName,
-              contentWriter : newStatus
+              brochureDesigner : newStatus
             });
           } else if (mainStatus === "Defaulter") {
-            response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+            response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
               companyName,
               serviceName,
-              contentWriter : newStatus
+              brochureDesigner : newStatus
             });
           } else if (mainStatus === "Approved") {
-            response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+            response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
               companyName,
               serviceName,
-              contentWriter : newStatus
+              brochureDesigner : newStatus
             });
           } else if (mainStatus === "Hold") {
-            response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+            response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
               companyName,
               serviceName,
-              contentWriter : newStatus
+              brochureDesigner : newStatus
             });
           } 
             
@@ -98,4 +98,4 @@ const ContentWriterDropdown = ({ mainStatus, writername , subStatus, setNewSubSt
     );
 };
 
-export default ContentWriterDropdown;
+export default BrochureDesignerDropdown;

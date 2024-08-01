@@ -21,7 +21,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
-
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 function RmofCertificationProcessPanel() {
 
@@ -45,6 +45,14 @@ function RmofCertificationProcessPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
 
+
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
 
     function formatDate(dateString) {
         dateString = "2024-07-26"
@@ -80,27 +88,26 @@ function RmofCertificationProcessPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+           
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+           
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const fetchRMServicesData = async () => {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data.filter(item => item.mainCategoryStatus === "Process");
+            console.log("servicesData" , servicesData)
             setRmServicesData(servicesData);
-            // if (servicesData.length > 0) {
-            //     // Initialize sector options based on the first item's industry
-            //     const initialIndustry = servicesData[0].industry ? servicesData[0].industry : "Aeronautics/Aerospace & Defence";
-            //     const options = getSectorOptionsForIndustry(initialIndustry); // Assuming this function gets sector options for an industry
-            //     setSectorOptions(options);
-            // }
         } catch (error) {
             console.error("Error fetching data", error.message)
         } finally {
@@ -108,22 +115,14 @@ function RmofCertificationProcessPanel() {
         }
     }
 
-    console.log("sectorOptions" , sectorOptions)
-
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const refreshData = () => { 
+        fetchRMServicesData();
+    };
 
     useEffect(() => {
         fetchRMServicesData()
 
     }, [employeeData])
-
-    const refreshData = () => {
-        fetchRMServicesData();
-    };
-
-
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
@@ -144,7 +143,6 @@ function RmofCertificationProcessPanel() {
     );
 
     const handleSubmitRemarks = async () => {
-        console.log("changeremarks", changeRemarks)
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
                 currentCompanyName,
@@ -152,9 +150,6 @@ function RmofCertificationProcessPanel() {
                 changeRemarks,
                 updatedOn: new Date()
             });
-
-            console.log("response", response.data);
-
             if (response.status === 200) {
                 fetchRMServicesData();
                 functionCloseRemarksPopup();
@@ -173,12 +168,6 @@ function RmofCertificationProcessPanel() {
         setSelectedIndustry(industry);
         setSectorOptions(options);
     };
-    
-
-
-
-
-    console.log("setnewsubstatus", newStatusProcess)
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -232,13 +221,23 @@ function RmofCertificationProcessPanel() {
                                         </div>
                                     </td>
                                     <td>{obj["Company Email"]}</td>
-                                    <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
+                                    <td>
+                                        <div className="d-flex align-items-center justify-content-center wApp">
+                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                            {obj.caCase === "Yes" && (
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </td>
 
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusProcess}
@@ -289,16 +288,23 @@ function RmofCertificationProcessPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                                classForStatus={""}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                      companyName={obj["Company Name"]}
+                                      serviceName={obj.serviceName}
+                                      mainStatus={obj.mainCategoryStatus}
+                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                     /></td>
                                     <td>
                                         <ContentStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -307,7 +313,13 @@ function RmofCertificationProcessPanel() {
                                             contentStatus={obj.contentStatus}
                                         /></td>
                                     {/* For Brochure */}
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                    <BrochureDesignerDropdown 
+                                    companyName={obj["Company Name"]}
+                                    serviceName={obj.serviceName}
+                                    mainStatus={obj.mainCategoryStatus}
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                   </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -320,7 +332,7 @@ function RmofCertificationProcessPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Enter Email"}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
                                         />
                                     </td>
                                     <td className='td_of_weblink'>
@@ -331,7 +343,7 @@ function RmofCertificationProcessPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
                                         />
                                     </td>
-                                    <td>
+                                    <td className='td_of_Industry'>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -339,7 +351,7 @@ function RmofCertificationProcessPanel() {
                                             onIndustryChange={handleIndustryChange}
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                         /></td>
-                                    <td>
+                                    <td className='td_of_Industry'>
                                         <SectorDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
@@ -348,7 +360,7 @@ function RmofCertificationProcessPanel() {
                                             industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
                                             <div>{obj.bdeName}</div>
@@ -359,9 +371,9 @@ function RmofCertificationProcessPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
                                     <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
 
                                     ><FaRegEye /></button>

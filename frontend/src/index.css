@@ -49,3 +49,34 @@
   width: 100px;
   background-color: aliceblue;
 } */
+ /* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #eee transparent;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #989898  !important;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #dcdcdc !important;
+}
+
+/* Handle on hover */
+*::-webkit-scrollbar-thumb:hover {
+  background: #868686 !important;
+}

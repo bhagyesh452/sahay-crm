@@ -202,10 +202,16 @@ const RMCertificationServicesSchema = new mongoose.Schema({
      type:String,
     default:"Not Started"
   },
+  contentWriter:{
+    type:String,
+ },
   brochureStatus:{
     type:String,
    default:"Not Started"
  },
+ brochureDesigner:{
+  type:String,
+},
   nswsMailId:{
     type:String
   },
@@ -228,6 +234,14 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   submittedOn:{
     type:Date
   },
+  previousMainCategoryStatus:{
+    type:String,
+    default:"General"
+  },
+  previousSubCategoryStatus:{
+    type:String,
+    default:"Not Started"
+  }
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

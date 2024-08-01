@@ -23,6 +23,7 @@ import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
+import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 
 
 function RmofCertificationSubmittedPanel() {
@@ -44,6 +45,36 @@ function RmofCertificationSubmittedPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
 
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
+    function formatDateNew(inputDate) {
+        const date = new Date(inputDate);
+        const day = String(date.getUTCDate()).padStart(2, '0'); // Ensures day is two digits
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getUTCFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
+    const formatTime = (dateString) => {
+        //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
+        const date = new Date(dateString)
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+
+        const strTime = `${hours}:${minutes} ${ampm}`;
+        return strTime;
+    }
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -73,9 +104,9 @@ function RmofCertificationSubmittedPanel() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -86,7 +117,9 @@ function RmofCertificationSubmittedPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Submitted"))
+            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Submitted")
+            console.log("servicesData", servicesData)
+            setRmServicesData(servicesData)
             //console.log(response.data)
         } catch (error) {
             console.error("Error fetching data", error.message)
@@ -114,7 +147,7 @@ function RmofCertificationSubmittedPanel() {
     }
 
 
-    console.log("setnewsubstatus", newStatusSubmitted)
+    //console.log("setnewsubstatus", newStatusSubmitted)
 
     const handleOpenRemarksPopup = async (companyName, serviceName) => {
         console.log("RemarksPopup")
@@ -196,7 +229,6 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Industry</th>
                                 <th>Sector</th>
                                 <th>Submitted By</th>
-                                <th>Submitted On</th>
                                 <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -204,7 +236,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>received Payment</th>
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
-                                <th>Date and Time of Application</th>
+                                <th>Submitted On</th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -222,11 +254,19 @@ function RmofCertificationSubmittedPanel() {
                                         </div>
                                     </td>
                                     <td>{obj["Company Email"]}</td>
-                                    <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
-                                    <td><b>{obj.serviceName}</b></td>
+                                    <td>
+                                        <div className="d-flex align-items-center justify-content-center wApp">
+                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                            {obj.caCase === "Yes" && (
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
-                                            {console.log("mainCategoryStatus:", obj.mainCategoryStatus)}
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
                                                     mainStatus={obj.mainCategoryStatus}
@@ -279,22 +319,36 @@ function RmofCertificationSubmittedPanel() {
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
                                     <td>
                                         <div>{obj.withDSC ? (
-                                            <DscStatusDropdown
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                dscStatus={obj.dscStatus}
-                                            />) :
+                                            // <DscStatusDropdown 
+                                            // companyName = {obj["Company Name"]}
+                                            // serviceName = {obj.serviceName}
+                                            // mainStatus = {obj.mainCategoryStatus}
+                                            // dscStatus = {obj.dscStatus}
+                                            // />
+                                            "Not Started"
+                                        ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                    <td><ContentWriterDropdown /></td>
+                                    <td>
+                                        <ContentWriterDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                        /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                    <td>Brochure Designer</td>
+                                    <td>
+                                        <BrochureDesignerDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"} />
+                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -318,7 +372,7 @@ function RmofCertificationSubmittedPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    
+
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
@@ -337,8 +391,7 @@ function RmofCertificationSubmittedPanel() {
                                             sector={obj.sector ? obj.sector : "Others"} />
                                     </td>
                                     <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
-                                    <td>{obj.submittedOn ? new Date(obj.submittedOn).toLocaleDateString() : new Date().toLocaleDateString()}</td>
-                                    <td>{formatDate(obj.bookingDate)}</td>
+                                    <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
 
@@ -351,20 +404,34 @@ function RmofCertificationSubmittedPanel() {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment : obj.totalPaymentWGST}/-</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST - obj.firstPayment) : 0}/-</td>
+                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
                                     <td>
-                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2" :
-                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3" :
-                                                "1"} 
+                                        ₹ {(() => {
+                                            // Convert values to numbers and handle cases where they might be falsy
+                                            const totalPayment = parseFloat(obj.totalPaymentWGST) || 0;
+                                            const firstPayment = parseFloat(obj.firstPayment) || 0;
+
+                                            // Calculate the difference
+                                            const result = totalPayment - firstPayment;
+
+                                            // Return '0' if the result is zero, otherwise format the result
+                                            return result === 0 ? '0' : result.toLocaleString('en-IN');
+                                        })()}
                                     </td>
-                                    <td>July 27,2024</td>
+
+                                    <td>
+                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
+                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
+                                                "1st"}
+                                    </td>
+                                    <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
                                         </button>
                                     </td>
+
                                 </tr>
                             ))}
                         </tbody>
@@ -435,43 +502,6 @@ function RmofCertificationSubmittedPanel() {
                     Submit
                 </button>
             </Dialog>
-
-            {/* //----------------------emailpopup---------------------------------- */}
-
-            {/* <Dialog
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopup}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle style={{fontSize:"12px"}} className='d-flex align-items-center justify-content-between'>
-                    {currentCompanyName}'s Email
-                    <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{width:"16px"}} />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-footer">
-                        <div className="mb-3 remarks-input">
-                            <input
-                                type='text'
-                                //placeholder="Add Email Here..."
-                                className="form-control"
-                                //value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <Button
-                    onClick={handleSubmitNSWSEmail}
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </Button>
-            </Dialog> */}
         </div>
     )
 }
