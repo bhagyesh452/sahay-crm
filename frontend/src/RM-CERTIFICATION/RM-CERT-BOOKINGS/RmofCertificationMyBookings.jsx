@@ -161,7 +161,7 @@ function RmofCertificationMyBookings() {
                 <div className="page-wrapper rm-mybookingmain">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
-                            <div className="d-flex">
+                            <div className="d-flex aling-items-center justify-content-between">
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn mybtn"  >
                                         <IoFilterOutline className='mr-1' /> Filter

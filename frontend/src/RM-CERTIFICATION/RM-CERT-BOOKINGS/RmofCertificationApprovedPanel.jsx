@@ -260,7 +260,7 @@ const handleSubmitRemarks = async () => {
                                     </td>
                                     <td>{obj.serviceName}</td>
                                     <td>
-                                        <div>
+                                        <div className='default-approved-status'>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 obj.subCategoryStatus
                                             )}
