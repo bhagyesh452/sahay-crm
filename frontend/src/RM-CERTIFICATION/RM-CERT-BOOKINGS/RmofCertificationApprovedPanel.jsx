@@ -266,7 +266,7 @@ function RmofCertificationApprovedPanel() {
                                     </td>
                                     <td>{obj.serviceName}</td>
                                     <td>
-                                        <div className='default-approved-status'>
+                                        <div className='dfault_approved-status'>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 obj.subCategoryStatus
                                             )}
@@ -474,7 +474,7 @@ function RmofCertificationApprovedPanel() {
                                         }}
                                     ></textarea>
                                 </div>
-                                {error && <FormHelperText error>{error}</FormHelperText>}
+
                             </div>
                         )}
                     </div>
