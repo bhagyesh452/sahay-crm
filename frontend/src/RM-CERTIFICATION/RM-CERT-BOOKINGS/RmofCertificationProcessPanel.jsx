@@ -8,7 +8,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle , FormHelperText } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -44,7 +44,7 @@ function RmofCertificationProcessPanel() {
     const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
-
+const [error, setError] = useState('')
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -143,27 +143,35 @@ function RmofCertificationProcessPanel() {
     );
 
     const handleSubmitRemarks = async () => {
+        //console.log("changeremarks", changeRemarks)
         try {
-            const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                currentCompanyName,
-                currentServiceName,
-                changeRemarks,
-                updatedOn: new Date()
-            });
-            if (response.status === 200) {
-                fetchRMServicesData();
-                functionCloseRemarksPopup();
-                Swal.fire(
-                    'Remarks Added!',
-                    'The remarks have been successfully added.',
-                    'success'
-                );
+            if (changeRemarks) {
+                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+                    currentCompanyName,
+                    currentServiceName,
+                    changeRemarks,
+                    updatedOn: new Date()
+                });
+
+                //console.log("response", response.data);
+
+                if (response.status === 200) {
+                    fetchRMServicesData();
+                    functionCloseRemarksPopup();
+                    // Swal.fire(
+                    //     'Remarks Added!',
+                    //     'The remarks have been successfully added.',
+                    //     'success'
+                    // );
+                }
+            } else {
+                setError('Remarks Cannot Be Empty!')
             }
+
         } catch (error) {
             console.log("Error Submitting Remarks", error.message);
         }
     };
-
     const handleIndustryChange = (industry, options) => {
         setSelectedIndustry(industry);
         setSectorOptions(options);
@@ -319,7 +327,8 @@ function RmofCertificationProcessPanel() {
                                     companyName={obj["Company Name"]}
                                     serviceName={obj.serviceName}
                                     mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                    />
                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
@@ -435,6 +444,7 @@ function RmofCertificationProcessPanel() {
                                         }}
                                     ></textarea>
                                 </div>
+                                {error && <FormHelperText error>{error}</FormHelperText>}
 
                             </div>
                         )}

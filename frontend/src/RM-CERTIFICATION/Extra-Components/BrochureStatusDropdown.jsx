@@ -6,7 +6,7 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochureStatus}) => {
+const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochureStatus,designername}) => {
   const [status, setStatus] = useState(brochureStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -93,7 +93,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
         type="button"
         id="dropdownMenuButton1"
-        data-bs-toggle="dropdown" // Bootstrap data attribute to toggle dropdown
+        data-bs-toggle={!designername || designername === "Not Applicable" ? "" : "dropdown"} // Bootstrap data attribute to toggle dropdown
         aria-expanded="false"
       >
         {status}

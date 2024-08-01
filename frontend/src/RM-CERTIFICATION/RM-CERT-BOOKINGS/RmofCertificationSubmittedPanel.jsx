@@ -355,7 +355,8 @@ function RmofCertificationSubmittedPanel() {
                                     companyName={obj["Company Name"]}
                                     serviceName={obj.serviceName}
                                     mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
+                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                    />
                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
@@ -363,13 +364,14 @@ function RmofCertificationSubmittedPanel() {
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
+                                            designername={obj.brochureDesigner}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
                                         />
                                     </td>
                                     <td className='td_of_weblink'>

@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { FaPencilAlt } from "react-icons/fa";
 
 const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) => {
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(nswsMailId);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
 
@@ -72,7 +72,7 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) =>
                                 type='email'
                                 placeholder="Enter NSWS Email Address"
                                 className="form-control"
-                                //value={email}
+                                value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>

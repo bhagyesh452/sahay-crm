@@ -616,8 +616,8 @@ router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
 });
 
 router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
-  const { companyName, serviceName, brochuredesigner } = req.body;
-  //console.log("here" , companyName , serviceName ,brochuredesigner)
+  const { companyName, serviceName, brochureDesigner } = req.body;
+  console.log("here" , companyName , serviceName ,brochureDesigner)
   //console.log("dscStatus" , contentStatus)
   const socketIO = req.io;
   try {
@@ -627,7 +627,7 @@ router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        brochuredesigner:brochuredesigner
+        brochureDesigner:brochureDesigner
       },
       { new: true }
     )
