@@ -19,9 +19,6 @@ function HrEmployees() {
 
   const navigate = useNavigate();
 
-  const [employee, setEmployee] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
   };
@@ -32,12 +29,8 @@ function HrEmployees() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
+    return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
   };
-
 
   const calculateProbationStatus = (joiningDate) => {
     const joinDate = new Date(joiningDate);
@@ -56,17 +49,15 @@ function HrEmployees() {
     navigate(`/hr/edit/employee/${empId}`);
   };
 
+  const [employee, setEmployee] = useState([]);
+
   const fetchEmployee = async () => {
     try {
-      setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/einfo`);
       setEmployee(res.data);
       // console.log("Fetched Employees are :", res.data);
     } catch (error) {
-      setIsLoading(false);
       console.log("Error fetching employees data :", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -179,10 +170,18 @@ function HrEmployees() {
                           return <tr key={emp._id}>
                             <td>{index + 1}</td>
                             <td>
-                              {(() => {
-                                const names = (emp.ename || "").split(" ");
-                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                              })()}
+                              <div className="d-flex align-items-center">
+                                <div className="tbl-pro-img">
+                                  <img src={EmpDfaullt}></img>
+                                </div>
+                                <div className="">
+                                  {(() => {
+                                    const names = (emp.ename || "").split(" ");
+                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                  })()}
+                                </div>
+                              </div>
+                              
                             </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
