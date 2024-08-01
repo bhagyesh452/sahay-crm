@@ -234,6 +234,14 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   submittedOn:{
     type:Date
   },
+  previousMainCategoryStatus:{
+    type:String,
+    default:"General"
+  },
+  previousSubCategoryStatus:{
+    type:String,
+    default:"Not Started"
+  }
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

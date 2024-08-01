@@ -914,10 +914,12 @@ export default function RedesignedForm({
               if (
                 iso.type === "" ||
                 (iso.type === "IAF" && iso.IAFtype1 === "") ||
-                (iso.type === "Non IAF" && iso.IAFtype2 === "")
+                (iso.type === "Non IAF" && iso.IAFtype2 === "") ||
+                (iso.type === "IAF" && iso.IAFtype1 !== "" && iso.Nontype === '') ||
+                (iso.type === "Non IAF" && iso.IAFtype2 !== "" && iso.Nontype === '') 
               ) {
-                Swal.fire("Invalid IAF value");
-                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+                Swal.fire("Select Complete ISO Service Fields!");
+                return true; // Use a placeholder or specific value if needed
               } else {
                 updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
               }
@@ -1423,6 +1425,7 @@ export default function RedesignedForm({
                       <option value="PCMM 5">PCMM 5</option>
                       <option value="RIOS">RIOS</option>
                       <option value="ROHS">ROHS</option>
+                      <option value="IEC 17020">IEC 17020</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
@@ -1663,7 +1666,6 @@ export default function RedesignedForm({
                     }}
                     disabled={completed[activeStep] === true}
                   />
-
                   <span className="form-check-label">Part Payment</span>
                 </label>
               </div>

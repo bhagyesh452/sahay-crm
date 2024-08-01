@@ -23,13 +23,13 @@ export default function HorizontalNonLinearStepper() {
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-  const [offerLetter, setOfferLetter] = useState({});
-  const [aadharCard, setAadharCard] = useState({});
-  const [panCard, setPanCard] = useState({});
-  const [educationCertificate, setEducationCertificate] = useState({});
-  const [relievingCertificate, setRelievingCertificate] = useState({});
-  const [salarySlip, setSalarySlip] = useState({});
-  const [profilePhoto, setProfilePhoto] = useState({});
+  const [offerLetterDocument, setOfferLetterDocument] = useState([]);
+  const [aadharCardDocument, setAadharCardDocument] = useState([]);
+  const [panCardDocument, setPanCardDocument] = useState([]);
+  const [educationCertificateDocument, setEducationCertificateDocument] = useState([]);
+  const [relievingCertificateDocument, setRelievingCertificateDocument] = useState([]);
+  const [salarySlipDocument, setSalarySlipDocument] = useState([]);
+  const [profilePhotoDocument, setProfilePhotoDocument] = useState([]);
   const [isPersonalInfoEditable, setIsPersonalInfoEditable] = useState(true);
   const [isEmployeementInfoEditable, setIsEmployeementInfoEditable] = useState(true);
   const [isDesignationEnabled, setIsDesignationEnabled] = useState(false);
@@ -90,13 +90,15 @@ export default function HorizontalNonLinearStepper() {
     personalPhoneNo: "",
     personalEmail: "",
     currentAddress: "",
+    isAddressSame: "",
     permanentAddress: ""
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
-    const { firstName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
+    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, isAddressSame, permanentAddress } = personalInfo;
 
     if (!firstName) newErrors.firstName = "First name is required";
+    if (!middleName) newErrors.middleName = "Middle name is required";
     if (!lastName) newErrors.lastName = "Last name is required";
     if (!dob) newErrors.dob = "Date of birth is required";
     if (!gender) newErrors.gender = "Gender is required";
@@ -105,6 +107,7 @@ export default function HorizontalNonLinearStepper() {
     if (!personalEmail) newErrors.personalEmail = "Email address is required";
     else if (!isValidEmail(personalEmail)) newErrors.personalEmail = "Invalid email address";
     if (!currentAddress) newErrors.currentAddress = "Current Address is required";
+    if (!isAddressSame) newErrors.isAddressSame = "Please Select the Option";
     if (!permanentAddress) newErrors.permanentAddress = "Permanent Address is required";
 
     setErrors(newErrors);
@@ -253,7 +256,7 @@ export default function HorizontalNonLinearStepper() {
     if (!firstMonthSalary) newErrors.firstMonthSalary = "First Month Salary Condition is required";
 
     // Validate Offer Letter (File Upload)
-    if (!offerLetter) newErrors.offerLetter = "Offer Letter is required";
+    if (!offerLetter || !offerLetterDocument) newErrors.offerLetter = "Offer Letter is required";
 
     // Validate PAN Number
     if (!panNumber) newErrors.panNumber = "PAN Number is required";
@@ -308,12 +311,12 @@ export default function HorizontalNonLinearStepper() {
     const { aadharCard, panCard, educationCertificate, relievingCertificate, salarySlip, profilePhoto } = empDocumentInfo;
 
     // Validate Document Uploads
-    if (!aadharCard) newErrors.aadharCard = "Aadhar Card is required";
-    if (!panCard) newErrors.panCard = "PAN Card is required";
-    if (!educationCertificate) newErrors.educationCertificate = "Education Certificate is required";
-    if (!relievingCertificate) newErrors.relievingCertificate = "Relieving Certificate is required";
-    if (!salarySlip) newErrors.salarySlip = "Salary Slip is required";
-    // if (!profilePhoto) newErrors.profilePhoto = "Profile Photo is required";
+    if (!aadharCard || !aadharCardDocument) newErrors.aadharCard = "Aadhar Card is required";
+    if (!panCard || !panCardDocument) newErrors.panCard = "PAN Card is required";
+    if (!educationCertificate || !educationCertificateDocument) newErrors.educationCertificate = "Education Certificate is required";
+    if (!relievingCertificate || !relievingCertificateDocument) newErrors.relievingCertificate = "Relieving Certificate is required";
+    if (!salarySlip || !salarySlipDocument) newErrors.salarySlip = "Salary Slip is required";
+    // if (!profilePhoto || !profilePhotoDocument) newErrors.profilePhoto = "Profile Photo is required";
 
     setErrors(newErrors); // Assuming `setErrors` is used to manage error state
     return Object.keys(newErrors).length === 0;
@@ -363,21 +366,17 @@ export default function HorizontalNonLinearStepper() {
     }));
   };
 
-  const handleCheckboxChange = (e) => {
-    const checked = e.target.checked;
-    setIsChecked(checked);
-    if (checked) {
-      setPersonalInfo((prevState) => ({
-        ...prevState,
-        permanentAddress: prevState.currentAddress,
-      }));
-    }
-    else {
-      setPersonalInfo((prevState) => ({
-        ...prevState,
-        permanentAddress: "",
-      }))
-    }
+  const handleAddressChange = (e) => {
+    const { value } = e.target;
+    setPersonalInfo((prevInfo) => ({
+      ...prevInfo,
+      isAddressSame: value,
+      permanentAddress: value === "yes" ? prevInfo.currentAddress : ""
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      isAddressSame: ""
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -433,83 +432,83 @@ export default function HorizontalNonLinearStepper() {
 
   const handleNext = async () => {
     if (activeStep === 0 && validatePersonalInfo()) {
-      try {
-        // if (!empId) {
-        const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);  // store data in local storage
-        // setEmpId(res.data.empId); // Set the empId after employee creation
-        console.log("Employee created successfully", res.data);
-        // } else {
-        //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
-        //   console.log("Employee updated successfully", res.data);
-        // }
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsPersonalInfoEditable(false);
-      } catch (error) {
-        console.log("Error creating or updating employee:", error);
-      }
+      // try {
+      // if (!empId) {
+      // const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);  // store data in local storage
+      // setEmpId(res.data.empId); // Set the empId after employee creation
+      // console.log("Employee created successfully", res.data);
+      // } else {
+      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
+      //   console.log("Employee updated successfully", res.data);
+      // }
+      //   setCompleted((prevCompleted) => ({
+      //     ...prevCompleted,
+      //     [activeStep]: true
+      //   }));
+      //   setIsPersonalInfoEditable(false);
+      // } catch (error) {
+      //   console.log("Error creating or updating employee:", error);
+      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 1 && validateEmploymentInfo()) {
-      try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
-        console.log("Employee updated successfully at step-1 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmployeementInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating employee :", error);
-      }
+      // try {
+      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
+      //   console.log("Employee updated successfully at step-1 :", res.data.data);
+      //   setCompleted((prevCompleted) => ({
+      //     ...prevCompleted,
+      //     [activeStep]: true
+      //   }));
+      //   setIsEmployeementInfoEditable(false);
+      // } catch (error) {
+      //   console.log("Error updating employee :", error);
+      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 2 && validatePayrollInfo()) {
-      try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, payrollInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Employee updated successfully at step-2 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsPayrollInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating employee:", error);
-      }
+      // try {
+      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, payrollInfo, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data'
+      //     }
+      //   });
+      //   console.log("Employee updated successfully at step-2 :", res.data.data);
+      //   setCompleted((prevCompleted) => ({
+      //     ...prevCompleted,
+      //     [activeStep]: true
+      //   }));
+      //   setIsPayrollInfoEditable(false);
+      // } catch (error) {
+      //   console.log("Error updating employee:", error);
+      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 3 && validateEmergencyInfo()) {
-      try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
-        console.log("Emergency info updated successfully at step-3 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmergencyInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating emergency info:", error);
-      }
+      // try {
+      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
+      //   console.log("Emergency info updated successfully at step-3 :", res.data.data);
+      //   setCompleted((prevCompleted) => ({
+      //     ...prevCompleted,
+      //     [activeStep]: true
+      //   }));
+      //   setIsEmergencyInfoEditable(false);
+      // } catch (error) {
+      //   console.log("Error updating emergency info:", error);
+      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 4 && validateEmpDocumentInfo()) {
-      try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, empDocumentInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Document info updated successfully at step-4 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmployeeDocsInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating document info:", error);
-      }
+      // try {
+      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, empDocumentInfo, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data'
+      //     }
+      //   });
+      //   console.log("Document info updated successfully at step-4 :", res.data.data);
+      //   setCompleted((prevCompleted) => ({
+      //     ...prevCompleted,
+      //     [activeStep]: true
+      //   }));
+      //   setIsEmployeeDocsInfoEditable(false);
+      // } catch (error) {
+      //   console.log("Error updating document info:", error);
+      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
@@ -531,18 +530,17 @@ export default function HorizontalNonLinearStepper() {
   const saveDraft = async () => {
     if (activeStep === 0) {
       try {
-        // if (!empId) {
-        const res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
-        // setEmpId(res.data.empId); // Set the empId after employee creation
-        console.log("Employee created successfully", res.data);
-        // } else {
-        //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
-        //   console.log("Employee updated successfully", res.data);
-        // }
-        // setCompleted((prevCompleted) => ({
-        //   ...prevCompleted,
-        //   [activeStep]: true
-        // }));
+        if (!empId) {
+          const res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
+          console.log("Employee created successfully", res.data);
+        } else {
+          const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
+          console.log("Employee updated successfully", res.data);
+        }
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
         setIsPersonalInfoEditable(false);
       } catch (error) {
         console.log("Error creating or updating employee:", error);
@@ -604,49 +602,35 @@ export default function HorizontalNonLinearStepper() {
         console.log("Error updating document info:", error);
       }
     }
-    // else if (activeStep === 5) {
-    //   if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
-    //     Swal.fire({
-    //       icon: "success",
-    //       title: "Form Submitted",
-    //       text: "Employee created successfully!",
-    //     });
-    //   } else {
-    //     Swal.fire({
-    //       icon: "error",
-    //       title: "Error",
-    //       text: "There was an error submitting the form. Please try again later.",
-    //     });
-    //   }
-    // }
-    // if (activeStep < 5) {
-    //   // handleNext();
-    // }
   };
 
   const handleComplete = async () => {
-    // if (activeStep === 0) {
-    // try {
-    //   const res1 = await axios.post(`${secretKey}/employee/einfo`, personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo);
-    //   console.log("Created employee is :",res1.data);
-    //   const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
-    //   console.log("Employee successfully deleted from draft model :",res2.data);
+    try {
+      // Create the employee
+      const res1 = await axios.post(`${secretKey}/employee/einfo`, {
+        personalInfo,
+        employeementInfo,
+        payrollInfo,
+        emergencyInfo,
+        empDocumentInfo
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
-    //   // Assuming you have similar API calls for other steps
-    //   if (res1.status === 200) {
-    //     Swal.fire("success","Employee created successfully!");
-    //     navigate("/hr/employees");
-    //   }
-    // } catch (error) {
-    //   console.log("Error creating or updating employee:", error);
-    //   Swal.fire("error","Error creating employee");
-    // }
-    // }
-    if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && empDocumentInfo) {
-      Swal.fire("success", "Employee created successfully!");
-      navigate("/hr/employees");
-    }
-    else {
+      console.log("Created employee is :", res1.data);
+
+      // If creation is successful, delete from draft
+      if (res1.status === 200) {
+        const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
+        console.log("Employee successfully deleted from draft model :", res2.data);
+
+        Swal.fire("success", "Employee created successfully!");
+        navigate("/hr/employees");
+      }
+    } catch (error) {
+      console.log("Error creating employee:", error);
       Swal.fire("error", "Error creating employee");
     }
   };
@@ -658,71 +642,73 @@ export default function HorizontalNonLinearStepper() {
 
   const fetchEmployee = async () => {
     try {
-      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromPersonalEmail/${personalInfo.personalEmail}`);
-      const data = res.data.data;
-      // console.log("Fetched employees are :", res.data.data);
+      const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeDraft/`);
+      const data = res.data.data[0];
+      console.log("Fetched employee is :", data);
       setEmpId(data._id);
       // setActiveStep(data.activeStep);
 
-      // setPersonalInfo({
-      //   firstName: (data.ename || "").split(" ")[0] || "",
-      //   lastName: (data.ename || "").split(" ")[2] || "",
-      //   dob: data.dob ? formatDate(data.dob) : "",
-      //   gender: data.gender || "",
-      //   personalPhoneNo: data.personal_number || "",
-      //   personalEmail: data.personal_email || "",
-      //   currentAddress: data.currentAddress || "",
-      //   permanentAddress: data.permanentAddress || ""
-      // });
+      setPersonalInfo({
+        firstName: (data.ename || "").split(" ")[0] || "",
+        middleName: (data.ename || "").split(" ")[1] || "",
+        lastName: (data.ename || "").split(" ")[2] || "",
+        dob: convertToDateInputFormat(data.dob) || "",
+        gender: data.gender || "",
+        personalPhoneNo: data.personal_number || "",
+        personalEmail: data.personal_email || "",
+        currentAddress: data.currentAddress || "",
+        isAddressSame: data.isAddressSame || "",
+        permanentAddress: data.permanentAddress || ""
+      });
 
-      // setEmployeementInfo({
-      //   empId: "",
-      //   department: data.department || "",
-      //   designation: data.designation || "",
-      //   joiningDate: data.jdate ? formatDate(data.jdate) : "",
-      //   branch: data.branchOffice || "",
-      //   employeementType: data.employeementType || "",
-      //   manager: data.reportingManager || "",
-      //   officialNo: data.number || "",
-      //   officialEmail: data.email || ""
-      // });
+      setEmployeementInfo({
+        empId: "",
+        department: data.department || "",
+        designation: data.designation || "",
+        joiningDate: (data.jdate) || "",
+        branch: data.branchOffice || "",
+        employeementType: data.employeementType || "",
+        manager: data.reportingManager || "",
+        officialNo: data.number || "",
+        officialEmail: data.email || ""
+      });
 
-      // setPayrollInfo({
-      //   accountNo: data.accountNo || "",
-      //   bankName: data.bankName || "",
-      //   ifscCode: data.ifscCode || "",
-      //   salary: data.salary || "",
-      //   firstMonthSalary: data.firstMonthSalaryCondition || "",
-      //   salaryCalculation: data.firstMonthSalary || "",
-      //   offerLetter: "",
-      //   panNumber: data.panNumber || "",
-      //   aadharNumber: data.aadharNumber || "",
-      //   uanNumber: data.uanNumber || ""
-      // });
+      setPayrollInfo({
+        accountNo: data.accountNo || "",
+        bankName: data.bankName || "",
+        ifscCode: data.ifscCode || "",
+        salary: data.salary || "",
+        firstMonthSalary: data.firstMonthSalaryCondition || "",
+        salaryCalculation: data.firstMonthSalary || "",
+        offerLetter: offerLetterDocument,
+        panNumber: data.panNumber || "",
+        aadharNumber: data.aadharNumber || "",
+        uanNumber: data.uanNumber || ""
+      });
 
-      // setEmergencyInfo({
-      //   personName: data.personal_contact_person || "",
-      //   relationship: data.personal_contact_person_relationship || "",
-      //   personPhoneNo: data.personal_contact_person_number || ""
-      // });
+      setEmergencyInfo({
+        personName: data.personal_contact_person || "",
+        relationship: data.personal_contact_person_relationship || "",
+        personPhoneNo: data.personal_contact_person_number || ""
+      });
 
-      // setEmpDocumentInfo({
-      //   aadharCard: "",
-      //   panCard: "",
-      //   educationCertificate: "",
-      //   relievingCertificate: "",
-      //   salarySlip: "",
-      //   profilePhoto: ""
-      // });
+      setEmpDocumentInfo({
+        aadharCard: aadharCardDocument,
+        panCard: panCardDocument,
+        educationCertificate: educationCertificateDocument,
+        relievingCertificate: relievingCertificateDocument,
+        salarySlip: salarySlipDocument,
+        profilePhoto: profilePhotoDocument
+      });
 
-      setOfferLetter(res.data.data.offerLetter ? res.data.data.offerLetter[0] : "");
-      setAadharCard(res.data.data.aadharCard ? res.data.data.aadharCard[0] : "");
-      setPanCard(res.data.data.panCard ? res.data.data.panCard[0] : "");
-      setEducationCertificate(res.data.data.educationCertificate ? res.data.data.educationCertificate[0] : "");
-      setRelievingCertificate(res.data.data.relievingCertificate ? res.data.data.relievingCertificate[0] : "");
-      setSalarySlip(res.data.data.salarySlip ? res.data.data.salarySlip[0] : "");
-      setProfilePhoto(res.data.data.profilePhoto ? res.data.data.profilePhoto[0] : "");
-      // console.log("Employee id is :", res.data.data._id);
+      setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
+      // console.log("Offer letter is :", data.offerLetter);
+      setAadharCardDocument(data.aadharCard ? data.aadharCard : []);
+      setPanCardDocument(data.panCard ? data.panCard : []);
+      setEducationCertificateDocument(data.educationCertificate ? data.educationCertificate : []);
+      setRelievingCertificateDocument(data.relievingCertificate ? data.relievingCertificate : []);
+      setSalarySlipDocument(data.salarySlip ? data.salarySlip : []);
+      setProfilePhotoDocument(data.profilePhoto ? data.profilePhoto : []);
     } catch (error) {
       console.log("Error fetching employee", error);
     }
@@ -784,7 +770,7 @@ export default function HorizontalNonLinearStepper() {
                                       name="firstName"
                                       className="form-control mt-1"
                                       placeholder="First name"
-                                      value={personalInfo.firstName.trim()}
+                                      value={personalInfo.firstName?.trim()}
                                       onChange={handleInputChange}
                                       disabled={!isPersonalInfoEditable}
                                     />
@@ -796,10 +782,11 @@ export default function HorizontalNonLinearStepper() {
                                       name="middleName"
                                       className="form-control mt-1"
                                       placeholder="Middle name"
-                                      value={personalInfo.middleName.trim()}
+                                      value={personalInfo.middleName?.trim()}
                                       onChange={handleInputChange}
                                       disabled={!isPersonalInfoEditable}
                                     />
+                                    {errors.middleName && <p style={{ color: "red" }}>{errors.middleName}</p>}
                                   </div>
                                   <div className="col">
                                     <input
@@ -882,54 +869,62 @@ export default function HorizontalNonLinearStepper() {
                                 {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
                               </div>
                             </div>
-                            <div className="col-sm-6">
+                            <div className="col-sm-3">
                               <div className="form-group mt-2 mb-2">
                                 <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
-                                <div className="d-flex align-items-center">
-                                  <div className="total-payment-inputs">
-                                    <textarea
-                                      rows={1}
-                                      name="currentAddress"
-                                      className="form-control mt-1"
-                                      id="currentAddress"
-                                      placeholder="Current address"
-                                      value={personalInfo.currentAddress}
-                                      onChange={handleInputChange}
-                                      disabled={!isPersonalInfoEditable}
-                                    ></textarea>
-                                    {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
-                                  </div>
-                                  <div class="form-check ml-2 mt-2">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value={isChecked}
-                                      checked={isChecked}
-                                      onChange={handleCheckboxChange}
-                                    />
-                                    <label class="form-check-label" htmlFor="Copy as current address">Copy as current address</label>
-                                  </div>
+                                <div>
+                                  <textarea
+                                    rows={1}
+                                    name="currentAddress"
+                                    className="form-control mt-1"
+                                    id="currentAddress"
+                                    placeholder="Current address"
+                                    value={personalInfo.currentAddress}
+                                    onChange={handleInputChange}
+                                    disabled={!isPersonalInfoEditable}
+                                  ></textarea>
+                                  {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
                                 </div>
                               </div>
                             </div>
                             <div className="col-sm-3">
                               <div className="form-group mt-2 mb-2">
-                                <label for="permanentAddress" className="d-flex align-items-center justify-content-between">
-                                  <div>Permanent Address<span style={{ color: "red" }}> * </span></div>
-                                </label>
-                                <textarea
-                                  rows={1}
-                                  name="permanentAddress"
-                                  className="form-control mt-1"
-                                  id="permanentAddress"
-                                  placeholder="Current address"
-                                  value={personalInfo.permanentAddress}
-                                  onChange={handleInputChange}
+                                <label>Is permanent address same as current?</label>
+                                <select
+                                  className="form-select mt-1"
+                                  name="isAddressSame"
+                                  id="isAddressSame"
+                                  value={personalInfo.isAddressSame}
+                                  onChange={handleAddressChange}
                                   disabled={!isPersonalInfoEditable}
-                                ></textarea>
-                                {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
+                                >
+                                  <option value="Select Option" selected>Select Option</option>
+                                  <option value="yes">Yes</option>
+                                  <option value="no">No</option>
+                                </select>
+                                {errors.isAddressSame && <p style={{ color: "red" }}>{errors.isAddressSame}</p>}
                               </div>
                             </div>
+                            {personalInfo.isAddressSame === "no" && (
+                              <div className="col-sm-3">
+                                <div className="form-group mt-2 mb-2">
+                                  <label htmlFor="permanentAddress">
+                                    Permanent Address<span style={{ color: "red" }}> *</span>
+                                  </label>
+                                  <textarea
+                                    rows={1}
+                                    name="permanentAddress"
+                                    className="form-control mt-1"
+                                    id="permanentAddress"
+                                    placeholder="Permanent address"
+                                    value={personalInfo.permanentAddress}
+                                    onChange={handleInputChange}
+                                    disabled={!isPersonalInfoEditable}
+                                  ></textarea>
+                                  {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </form>
                       </div>
@@ -990,7 +985,7 @@ export default function HorizontalNonLinearStepper() {
                                 id="Designation"
                                 value={employeementInfo.designation}
                                 onChange={handleInputChange}
-                                disabled={!isDesignationEnabled}
+                                disabled={!isDesignationEnabled || !isEmployeementInfoEditable}
                               >
                                 <option value="Select Designation">Select Designation</option>
                                 {renderDesignationOptions()}
@@ -1007,7 +1002,7 @@ export default function HorizontalNonLinearStepper() {
                                 name="joiningDate"
                                 id="DateofJoining"
                                 placeholder="Date of Joining"
-                                value={employeementInfo.joiningDate}
+                                value={convertToDateInputFormat(employeementInfo.joiningDate)}
                                 onChange={handleInputChange}
                                 disabled={!isEmployeementInfoEditable}
                               />
@@ -1064,7 +1059,7 @@ export default function HorizontalNonLinearStepper() {
                                 id="Reporting"
                                 value={employeementInfo.manager}
                                 onChange={handleInputChange}
-                                disabled={!isManagerEnabled}
+                                disabled={!isManagerEnabled || !isEmployeementInfoEditable}
                               >
                                 <option value="Select Manager">Select Manager</option>
                                 {renderManagerOptions()}
@@ -1226,18 +1221,14 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
                             </div>
-                            {/* <div class="uploaded-filename-main d-flex flex-wrap">
+                            {offerLetterDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
                               <div class="uploaded-fileItem d-flex align-items-center">
-                                <p class="m-0">{offerLetter.originalname}</p>
+                                <p class="m-0">{offerLetterDocument[0]?.originalname}</p>
                                 <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                   <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                 </button>
                               </div>
-                            </div> */}
-                            {/* {offerLetter && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {offerLetter.originalname}
-                            </div>} */}
+                            </div>}
                           </div>
                           <div className="col-sm-4">
                             <div className="form-group mt-2 mb-2">
@@ -1381,9 +1372,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                             </div>
-                            {aadharCard && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {aadharCard.originalname}
+                            {aadharCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{aadharCardDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1399,9 +1394,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                             </div>
-                            {panCard && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {panCard.originalname}
+                            {panCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{panCardDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1417,9 +1416,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                             </div>
-                            {educationCertificate && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {educationCertificate.originalname}
+                            {educationCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{educationCertificateDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1435,9 +1438,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>}
                             </div>
-                            {relievingCertificate && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {relievingCertificate.originalname}
+                            {relievingCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{relievingCertificateDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1453,9 +1460,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>}
                             </div>
-                            {salarySlip && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {salarySlip.originalname}
+                            {salarySlipDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{salarySlipDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1471,9 +1482,13 @@ export default function HorizontalNonLinearStepper() {
                               />
                               {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>}
                             </div>
-                            {profilePhoto && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {profilePhoto.originalname}
+                            {profilePhotoDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{profilePhotoDocument[0]?.originalname}</p>
+                                <button class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                         </div>
@@ -1799,7 +1814,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.offerLetter ? payrollInfo.offerLetter.name : "-"}
+                                {offerLetterDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1909,7 +1924,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.aadharCard ? empDocumentInfo.aadharCard.name : "-"}
+                                {aadharCardDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1921,7 +1936,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.panCard ? empDocumentInfo.panCard.name : "-"}
+                                {panCardDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1933,7 +1948,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.educationCertificate ? empDocumentInfo.educationCertificate.name : "-"}
+                                {educationCertificateDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1945,7 +1960,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.relievingCertificate ? empDocumentInfo.relievingCertificate.name : "-"}
+                                {relievingCertificateDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1957,7 +1972,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.salarySlip ? empDocumentInfo.salarySlip.name : "-"}
+                                {salarySlipDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1969,7 +1984,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.profilePhoto ? empDocumentInfo.profilePhoto.name : "-"}
+                                {profilePhotoDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -2081,7 +2096,6 @@ export default function HorizontalNonLinearStepper() {
                       }}
                       variant="contained"
                       sx={{ mr: 1, background: "#ffba00 " }}
-                      disabled
                     >
                       Save Draft
                     </Button>

@@ -75,7 +75,7 @@ function RmofCertificationSubmittedPanel() {
         const strTime = `${hours}:${minutes} ${ampm}`;
         return strTime;
     }
-    
+
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
@@ -118,7 +118,7 @@ function RmofCertificationSubmittedPanel() {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data.filter(item => item.mainCategoryStatus === "Submitted")
-            console.log("servicesData" , servicesData)
+            console.log("servicesData", servicesData)
             setRmServicesData(servicesData)
             //console.log(response.data)
         } catch (error) {
@@ -351,24 +351,24 @@ function RmofCertificationSubmittedPanel() {
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                        /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                      <td>
-                                    <BrochureDesignerDropdown 
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
-                                   </td>
+                                    <td>
+                                        <BrochureDesignerDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"} />
+                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -392,7 +392,7 @@ function RmofCertificationSubmittedPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    
+
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
@@ -426,11 +426,24 @@ function RmofCertificationSubmittedPanel() {
                                     </td>
                                     <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
                                     <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                    <td>
+                                        ₹ {(() => {
+                                            // Convert values to numbers and handle cases where they might be falsy
+                                            const totalPayment = parseFloat(obj.totalPaymentWGST) || 0;
+                                            const firstPayment = parseFloat(obj.firstPayment) || 0;
+
+                                            // Calculate the difference
+                                            const result = totalPayment - firstPayment;
+
+                                            // Return '0' if the result is zero, otherwise format the result
+                                            return result === 0 ? '0' : result.toLocaleString('en-IN');
+                                        })()}
+                                    </td>
+
                                     <td>
                                         {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                             obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
-                                                "1st"} 
+                                                "1st"}
                                     </td>
                                     <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
                                     <td className="rm-sticky-action">
@@ -438,7 +451,7 @@ function RmofCertificationSubmittedPanel() {
                                             <FaRegEye />
                                         </button>
                                     </td>
-                                   
+
                                 </tr>
                             ))}
                         </tbody>
