@@ -3004,34 +3004,72 @@ td input {
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
 }
+/*Untouch*/
 .status_dropdown.untouched_status .status__btn{
   background-color: #ececec;
   border: 1px solid #c3c3c3;
 }
-.status_dropdown.created-status .status__btn{
-  background-color: #A7D6FF;
-  border: 1px solid #2DBDCA;
+/*Call Done Brief Pending*/
+.status_dropdown.cdbp-status .status__btn{
+  background-color: #fffec4;
+  border: 1px solid #cfc022;
 }
+/*Client Not Responding*/
+.status_dropdown.clnt_no_repond_status .status__btn{
+  background-color: #ffe1ed;
+  border: 1px solid #f393ba;
+}
+/*Documents Pending*/
 .status_dropdown.support-status .status__btn{
   background-color: #ffe49d;
   border: 1px solid #ffba00;
 }
+/*Need To Call*/
+.status_dropdown.need_to_call .status__btn{
+  background-color: #e7dcff;
+  border: 1px solid #a391cc;
+}
+/*Ready To Submit*/
+.status_dropdown.ready_to_submit .status__btn{
+  background-color: #e7e3d3;
+  border: 1px solid #64615b;
+}
+/* working */
 .status_dropdown.inprogress-status .status__btn{
   background-color: #FFD0A7;
   border: 1px solid #FF7909;
 }
-.status_dropdown.finished-status .status__btn{
+/* hold */
+.status_dropdown.created-status .status__btn{
+  background-color: #A7D6FF;
+  border: 1px solid #2DBDCA;
+}
+/*Submitted*/
+.status_dropdown.submited-status .status__btn{
   background-color: #B6FFA7;
   border: 1px solid #72D500;
 }
+/*approved*/
+.status_dropdown.approved-status .status__btn{
+  background-color: #7ee48c;
+  border: 1px solid #1cbd27;
+}
+/*rejected*/
 .status_dropdown.rejected-status .status__btn{
   background-color: #FCBDBD;
   border: 1px solid #FD5252;
 }
-.status_dropdown.docs-pending .status__btn{
+/*dfaulter*/
+.status_dropdown.dfaulter-status .status__btn{
+  background-color: #ee9a9a;
+  border: 1px solid #d81d1d;
+}
+/*incomplete status*/
+.status_dropdown.incomplete_status .status__btn{
   background-color: #faadff;
   border: 1px solid #ae32ac;
 }
+/*when we select assignie*/
 .status_dropdown.e_task_assign .status__btn{
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
