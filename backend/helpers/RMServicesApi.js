@@ -428,7 +428,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
 });
 
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus } = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus , previousMainCategoryStatus,previousSubCategoryStatus } = req.body;
   const socketIO = req.io;
 
   try {
@@ -457,7 +457,9 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         subCategoryStatus: subCategoryStatus,
         mainCategoryStatus: mainCategoryStatus,
         lastActionDate: new Date(),
-        submittedOn: submittedOn
+        submittedOn: submittedOn,
+        previousMainCategoryStatus:previousMainCategoryStatus,
+        previousSubCategoryStatus:previousSubCategoryStatus
       },
       { new: true }
     );
