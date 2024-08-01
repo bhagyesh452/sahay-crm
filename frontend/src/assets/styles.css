@@ -3004,6 +3004,10 @@ td input {
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
 }
+.status_dropdown.untouched_status .status__btn{
+  background-color: #ececec;
+  border: 1px solid #c3c3c3;
+}
 .status_dropdown.created-status .status__btn{
   background-color: #A7D6FF;
   border: 1px solid #2DBDCA;
