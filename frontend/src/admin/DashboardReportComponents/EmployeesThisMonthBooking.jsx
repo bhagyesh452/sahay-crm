@@ -2039,29 +2039,68 @@ function EmployeesThisMonthBooking() {
         }
     };
 
-    function functionGetLastBookingDate(bdeName) {
+    // function functionGetLastBookingDate(bdeName = "Vishnu Suthar") {
+    //     let tempBookingDate = null;
+    //     const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
+    //     // Filter objects based on bdeName
+    //     redesignedData.map((mainBooking) => {
+    //         if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+    //             if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
+    //                 const bookingDate = new Date(mainBooking.bookingDate);
+    //                 tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+    //                 console.log("tempBookingDate" , mainBooking["Company Name"] , tempBookingDate , mainBooking.bdeName)
+    //             }
+    //         }
+    //         mainBooking.moreBookings.map((moreObject) => {
+    //             if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+    //                 if (cleanString(moreObject.bdeName) === cleanString(bdeName) || cleanString(moreObject.bdmName) === cleanString(bdeName)) {
+    //                     const bookingDate = new Date(moreObject.bookingDate);
+    //                     tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+    //                     console.log("tempBookingDate" , mainBooking["Company Name"] , tempBookingDate ,moreObject.bdeName)
+    //                 }
+    //             }
+    //         })
+    //     })
+      
+        
+    //     return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
+    // }
+
+    function functionGetLastBookingDate(bdeName = "Vishnu Suthar") {
         let tempBookingDate = null;
         const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
+        const currentYear = new Date().getFullYear(); // Get the current year
+        
         // Filter objects based on bdeName
         redesignedData.map((mainBooking) => {
-            if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
+            const mainBookingDate = new Date(mainBooking.bookingDate);
+            const mainBookingYear = mainBookingDate.getFullYear();
+            const mainBookingMonth = monthNames[mainBookingDate.getMonth()];
+    
+            if (mainBookingMonth === currentMonth && mainBookingYear === currentYear) {
                 if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
-                    const bookingDate = new Date(mainBooking.bookingDate);
-                    tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+                    tempBookingDate = mainBookingDate > tempBookingDate ? mainBookingDate : tempBookingDate;
+                    console.log("tempBookingDate", mainBooking["Company Name"], tempBookingDate, mainBooking.bdeName);
                 }
             }
+    
             mainBooking.moreBookings.map((moreObject) => {
-                if (monthNames[new Date(moreObject.bookingDate).getMonth()] === currentMonth) {
+                const moreObjectDate = new Date(moreObject.bookingDate);
+                const moreObjectYear = moreObjectDate.getFullYear();
+                const moreObjectMonth = monthNames[moreObjectDate.getMonth()];
+    
+                if (moreObjectMonth === currentMonth && moreObjectYear === currentYear) {
                     if (cleanString(moreObject.bdeName) === cleanString(bdeName) || cleanString(moreObject.bdmName) === cleanString(bdeName)) {
-                        const bookingDate = new Date(moreObject.bookingDate);
-                        tempBookingDate = bookingDate > tempBookingDate ? bookingDate : tempBookingDate;
+                        tempBookingDate = moreObjectDate > tempBookingDate ? moreObjectDate : tempBookingDate;
+                        console.log("tempBookingDate", mainBooking["Company Name"], tempBookingDate, moreObject.bdeName);
                     }
                 }
-            })
-        })
-        
+            });
+        });
+    
         return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
     }
+    
 
     let generatedTotalRevenue = 0;
 
