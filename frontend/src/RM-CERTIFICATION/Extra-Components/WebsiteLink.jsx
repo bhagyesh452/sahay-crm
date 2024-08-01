@@ -4,12 +4,12 @@ import { Button, Dialog, DialogContent, DialogTitle, DialogActions, FormHelperTe
 import Swal from "sweetalert2";
 import { FaPencilAlt } from "react-icons/fa";
 
-const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData }) => {
+const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , companyBriefing }) => {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [link, setLink] = useState(websiteLink);
     const [error, setError] = useState('');
     const [openWebsiteLinkPopup, setOpenWebsitePopup] = useState(false);
-    const [briefing, setBriefing] = useState('');
+    const [briefing, setBriefing] = useState(companyBriefing);
 
     const isValidUrl = (url) => {
         try {
@@ -53,7 +53,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData }) => 
                         briefing
                     });
                     if (response.status === 200) {
-                        Swal.fire('Link Added!', 'The link has been successfully added.', 'success');
+                        //Swal.fire('Link Added!', 'The link has been successfully added.', 'success');
                         setError('');
                         refreshData();
                         setOpenWebsitePopup(false);

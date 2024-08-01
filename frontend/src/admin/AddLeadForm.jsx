@@ -1207,7 +1207,7 @@ export default function AddLeadForm({
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
-        setIsoType([])
+        //setIsoType([])
 
         fetchData();
       } else {
