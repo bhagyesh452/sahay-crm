@@ -40,14 +40,40 @@ const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 // });
 
 
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     const { personalEmail } = req.params;
+//     const empName = `${personalEmail}`;
+//     let destinationPath = "";
+
+//     if (file.fieldname && empName) {
+//       destinationPath = `EmployeeDocs/${empName}`;
+//     }
+
+//     // Create the directory if it doesn't exist
+//     if (!fs.existsSync(destinationPath)) {
+//       fs.mkdirSync(destinationPath, { recursive: true });
+//     }
+
+//     cb(null, destinationPath);
+//   },
+//   filename: function (req, file, cb) {
+//     const { personalEmail } = req.params;
+//     const empName = `${personalEmail}`;
+//     const uniqueSuffix = Date.now();
+//     cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
+//   },
+// });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const { personalEmail } = req.params;
-    const empName = `${personalEmail}`;
+    // const { firstName, lastName } = req.body;
+    // const empName = `${firstName}-${lastName}`;
+    const { empId } = req.params;
     let destinationPath = "";
 
-    if (file.fieldname && empName) {
-      destinationPath = `EmployeeDocs/${empName}`;
+    if (file.fieldname && empId) {
+      destinationPath = `EmployeeDocs/${empId}`;
     }
 
     // Create the directory if it doesn't exist
@@ -58,13 +84,13 @@ const storage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const { personalEmail } = req.params;
-    const empName = `${personalEmail}`;
+    // const { firstName, lastName } = req.body;
+    // const empName = `${firstName}-${lastName}`;
+    const { empId } = req.params;
     const uniqueSuffix = Date.now();
-    cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
+    cb(null, `${uniqueSuffix}-${empId}-${file.originalname}`);
   },
 });
-
 const upload = multer({ storage: storage });
 
 router.put("/online-status/:id/:socketID", async (req, res) => {
@@ -136,52 +162,131 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   }
 });
 
-// router.post("/einfo", async (req, res) => {
-//   try {
-//     const { firstName, lastName, personalPhoneNo, personalEmail } = req.body;
-//     // console.log("Reqest body is :", req.body);
-
-//     adminModel.create({
-//       ...req.body,
-//       ename: `${firstName.toUpperCase()} ${lastName.toUpperCase()}`,
-//       personal_number: personalPhoneNo,
-//       personal_email: personalEmail,
-//       AddedOn: new Date()
-//     }).then((result) => {
-//       // Change res to result
-//       res.json(result); // Change res.json(res) to res.json(result)
-//     });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-
-router.post("/einfo", async (req, res) => {
+router.post("/einfo", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
+]), async (req, res) => {
   try {
-    const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
-    const updateData = {
+    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo } = req.body;
+    // console.log("Personal Info is :", personalInfo);
+    // console.log("Employeement Info is :", employeementInfo);
+    // console.log("Payroll info is :", payrollInfo);
+    // console.log("Emergency info is :", emergencyInfo);
+    // console.log("Employee document info is :", empDocumentInfo);
+
+    const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      destination: file.destination,
+      filename: file.filename,
+      path: file.path,
+      size: file.size
+    })) : [];
+
+    const payrollInfoArray = Array.isArray(payrollInfo) ? payrollInfo : [payrollInfo];
+    payrollInfoArray.forEach(info => {
+      if (req.files && req.files["offerLetter"]) {
+        info.offerLetter = getFileDetails(req.files["offerLetter"]);
+      }
+    });
+
+    const empDocumentInfoArray = Array.isArray(empDocumentInfo) ? empDocumentInfo : [empDocumentInfo];
+    empDocumentInfoArray.forEach(info => {
+      if (info.fieldname === 'aadharCard') {
+        info.aadharCard = getFileDetails(req.files ? req.files["aadharCard"] : []);
+      } else if (info.fieldname === 'panCard') {
+        info.panCard = getFileDetails(req.files ? req.files["panCard"] : []);
+      } else if (info.fieldname === 'educationCertificate') {
+        info.educationCertificate = getFileDetails(req.files ? req.files["educationCertificate"] : []);
+      } else if (info.fieldname === 'relievingCertificate') {
+        info.relievingCertificate = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
+      } else if (info.fieldname === 'salarySlip') {
+        info.salarySlip = getFileDetails(req.files ? req.files["salarySlip"] : []);
+      } else if (info.fieldname === 'profilePhoto') {
+        info.profilePhoto = getFileDetails(req.files ? req.files["profilePhoto"] : []);
+      }
+    });
+
+    const emp = {
       ...req.body,
-      ename: `${firstName} ${middleName} ${lastName}`,
-      personal_number: personalPhoneNo,
-      personal_email: personalEmail,
-      AddedOn: new Date()
+      ...(personalInfo.firstName || personalInfo.middleName || personalInfo.lastName) && {
+        ename: `${personalInfo.firstName || ""} ${personalInfo.middleName || ""} ${personalInfo.lastName || ""}`
+      },
+      ...(personalInfo.dob && { dob: personalInfo.dob }),
+      ...(personalInfo.personalPhoneNo && { personal_number: personalInfo.personalPhoneNo }),
+      ...(personalInfo.personalEmail && { personal_email: personalInfo.personalEmail }),
+      ...(personalInfo.currentAddress && { currentAddress: personalInfo.currentAddress }),
+      ...(personalInfo.isAddressSame && { isAddressSame: personalInfo.isAddressSame }),
+      ...(personalInfo.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
+      ...(employeementInfo.department && { department: employeementInfo.department }),
+      ...(employeementInfo.designation && { designation: employeementInfo.designation }),
+      ...(employeementInfo.joiningDate && { jdate: employeementInfo.joiningDate }),
+      ...(employeementInfo.branch && { branchOffice: employeementInfo.branch }),
+      ...(employeementInfo.employeementType && { employeementType: employeementInfo.employeementType }),
+      ...(employeementInfo.manager && { reportingManager: employeementInfo.manager }),
+      ...(employeementInfo.officialNo && { number: employeementInfo.officialNo }),
+      ...(employeementInfo.officialEmail && { email: employeementInfo.officialEmail }),
+      ...(payrollInfo.accountNo && { accountNo: payrollInfo.accountNo }),
+      ...(payrollInfo.bankName && { bankName: payrollInfo.bankName }),
+      ...(payrollInfo.ifscCode && { ifscCode: payrollInfo.ifscCode }),
+      ...(payrollInfo.salary && { salary: payrollInfo.salary }),
+      ...(payrollInfo.firstMonthSalary && { firstMonthSalaryCondition: payrollInfo.firstMonthSalary }),
+      ...(payrollInfo.salaryCalculation && { firstMonthSalary: payrollInfo.salaryCalculation }),
+      ...(payrollInfo.panNumber && { panNumber: payrollInfo.panNumber }),
+      ...(payrollInfo.aadharNumber && { aadharNumber: payrollInfo.aadharNumber }),
+      ...(payrollInfo.uanNumber && { uanNumber: payrollInfo.uanNumber }),
+      ...(emergencyInfo.personName && { personal_contact_person: emergencyInfo.personName }),
+      ...(emergencyInfo.relationship && { personal_contact_person_relationship: emergencyInfo.relationship }),
+      ...(emergencyInfo.personPhoneNo && { personal_contact_person_number: emergencyInfo.personPhoneNo }),
+      ...(payrollInfo.offerLetter?.length > 0 && { offerLetter: payrollInfo.offerLetter }),
+      ...(empDocumentInfo.aadharCard?.length > 0 && { aadharCard: empDocumentInfo.aadharCard }),
+      ...(empDocumentInfo.panCard?.length > 0 && { panCard: empDocumentInfo.panCard }),
+      ...(empDocumentInfo.educationCertificate?.length > 0 && { educationCertificate: empDocumentInfo.educationCertificate }),
+      ...(empDocumentInfo.relievingCertificate?.length > 0 && { relievingCertificate: empDocumentInfo.relievingCertificate }),
+      ...(empDocumentInfo.salarySlip?.length > 0 && { salarySlip: empDocumentInfo.salarySlip }),
+      ...(empDocumentInfo.profilePhoto?.length > 0 && { profilePhoto: empDocumentInfo.profilePhoto })
     };
-
-    // Check if the document already exists and update it, otherwise create a new one
-    const result = await adminModel.findOneAndUpdate(
-      { personal_email: personalEmail },
-      updateData,
-      { new: true, upsert: true } // upsert option creates a new document if no match is found
-    );
-
-    res.json(result);
+    const result = await adminModel.create(emp); // Changed .then() to await
+    res.json(result); // Ensure you respond with the result
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+// router.post("/einfo", async (req, res) => {
+//   try {
+//     const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
+//     const updateData = {
+//       ...req.body,
+//       ename: `${firstName} ${middleName} ${lastName}`,
+//       personal_number: personalPhoneNo,
+//       personal_email: personalEmail,
+//       AddedOn: new Date()
+//     };
+
+//     // Check if the document already exists and update it, otherwise create a new one
+//     const result = await adminModel.findOneAndUpdate(
+//       { personal_email: personalEmail },
+//       updateData,
+//       { new: true, upsert: true } // upsert option creates a new document if no match is found
+//     );
+
+//     res.json(result);
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 router.get("/fetchEmployeeFromPersonalEmail/:personalEmail", async (req, res) => {
   const { personalEmail } = req.params;

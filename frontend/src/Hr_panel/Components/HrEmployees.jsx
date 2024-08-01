@@ -25,7 +25,7 @@ function HrEmployees() {
   const formatSalary = (amount) => {
     return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
   };
-  
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
@@ -43,7 +43,7 @@ function HrEmployees() {
   const getBadgeClass = (status) => {
     return status === 'Under Probation' ? 'badge badge-under-probation' : 'badge badge-completed';
   };
-  
+
   const handleEditClick = (empId) => {
     navigate(`/hr/edit/employee/${empId}`);
   };
@@ -168,7 +168,12 @@ function HrEmployees() {
                         {employee.map((emp, index) => {
                           return <tr key={emp._id}>
                             <td>{index + 1}</td>
-                            <td>{emp.ename || ""}</td>
+                            <td>
+                              {(() => {
+                                const names = (emp.ename || "").split(" ");
+                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                              })()}
+                            </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
                             <td>{emp.designation || ""}</td>
@@ -179,7 +184,7 @@ function HrEmployees() {
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                              <button style={{backgroundColor: "cyan", border: "1px solid blue", color: "blue"}}className="action-btn ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
                               <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>
                           </tr>
