@@ -7,9 +7,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import Nodata from '../../components/Nodata';
-import ClipLoader from "react-spinners/ClipLoader";
-
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
 
@@ -176,57 +174,32 @@ function HrEmployees() {
                           <th>Action</th>
                         </tr>
                       </thead>
-                      {isLoading ? (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" >
-                              <div className="LoaderTDSatyle w-100" >
-                                <ClipLoader
-                                  color="lightgrey"
-                                  isLoading
-                                  size={30}
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </div>
+                      <tbody>
+                        {employee.map((emp, index) => {
+                          return <tr key={emp._id}>
+                            <td>{index + 1}</td>
+                            <td>
+                              {(() => {
+                                const names = (emp.ename || "").split(" ");
+                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                              })()}
+                            </td>
+                            <td>{emp.branchOffice || ""}</td>
+                            <td>{emp.department || ""}</td>
+                            <td>{emp.designation || ""}</td>
+                            <td>{formatDate(emp.jdate) || ""}</td>
+                            <td>₹ {formatSalary(emp.salary || 0)}</td>
+                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
+                            <td>{emp.number || ""}</td>
+                            <td>{emp.email || ""}</td>
+                            <td>
+                              <button className="action-btn action-btn-primary"><FaRegEye /></button>
+                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
+                              <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>
                           </tr>
-                        </tbody>
-                      ) : (
-                        <>
-                          <tbody>
-                            {employee.length > 0 ? (
-                              employee.map((emp, index) => {
-                              return <tr key={emp._id}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  {(() => {
-                                    const names = (emp.ename || "").split(" ");
-                                    return `${names[0] || ""} ${names[2] || ""}`;
-                                  })()}
-                                </td>
-                                <td>{emp.branchOffice || ""}</td>
-                                <td>{emp.department || ""}</td>
-                                <td>{emp.designation || ""}</td>
-                                <td>{formatDate(emp.jdate) || ""}</td>
-                                <td>₹ {formatSalary(emp.salary || 0)}</td>
-                                <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                                <td>{emp.number || ""}</td>
-                                <td>{emp.email || ""}</td>
-                                <td>
-                                  <button className="action-btn action-btn-primary"><FaRegEye /></button>
-                                  <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
-                                  <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
-                                </td>
-                              </tr>
-                            })) : (
-                              <tr>
-                                <td colSpan="11" className="text-center"><Nodata /></td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </>
-                      )}
+                        })}
+                      </tbody>
                     </table>
                   </div>
                 </div>
