@@ -193,6 +193,7 @@ export default function AddLeadForm({
           console.log("bookings", booking)
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
+            console.log("isotypeobject" , service.isoTypeObject)
             setIsoType(service.isoTypeObject);
             console.log(service.secondPaymentRemarks, "TEST")
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -800,6 +801,10 @@ export default function AddLeadForm({
           const secondPayment = Number(service.secondPayment);
           const thirdPayment = Number(service.thirdPayment);
           const fourthPayment = Number(service.fourthPayment);
+          if (isNaN(parseInt(service.totalPaymentWOGST)) || parseInt(service.totalPaymentWOGST) < 0) {
+            isValid = false;
+            break;
+          }
           if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
             isValid = false;
             break;
@@ -843,48 +848,56 @@ export default function AddLeadForm({
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
+          
+          
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-
+        
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
-              if (
-                iso.type === "" ||
-                (iso.type === "IAF" && iso.IAFtype1 === "") ||
-                (iso.type === "Non IAF" && iso.Nontype === "")
-              ) {
-                Swal.fire("Select Complete ISO Service Fields!");
-                return true; // Use a placeholder or specific value if needed
-              } else {
-                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
-              }
+                if (
+                    iso.type === "" ||
+                    (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
+                    (iso.type === "Non IAF" && iso.Nontype === "")
+                ) {
+                    updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+                } else {
+                    updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                }
             }
-
+        
             // Update the payment remarks based on specific conditions
             const secondRemark = service.secondPaymentRemarks === "On Particular Date"
-              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
-              : service.secondPaymentRemarks;
-
+                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+                : service.secondPaymentRemarks;
+        
             const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
-              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
-              : service.thirdPaymentRemarks;
-
+                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+                : service.thirdPaymentRemarks;
+        
             const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
-              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
-              : service.fourthPaymentRemarks;
-
+                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+                : service.fourthPaymentRemarks;
+        
             // Return the updated service object
             return {
-              ...service,
-              serviceName: updatedServiceName,
-              secondPaymentRemarks: secondRemark,
-              thirdPaymentRemarks: thirdRemark,
-              fourthPaymentRemarks: fourthRemark,
-              isoTypeObject: isoType
+                ...service,
+                serviceName: updatedServiceName,
+                secondPaymentRemarks: secondRemark,
+                thirdPaymentRemarks: thirdRemark,
+                fourthPaymentRemarks: fourthRemark,
+                isoTypeObject: isoType
             };
-          });
+        });
+        
+        // Check if any service has an "Invalid" serviceName
+        if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
+            Swal.fire("Select Complete ISO Service Fields!");
+            return true; // Assuming this is inside a function and you want to exit early
+        }
+        
 
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
@@ -1380,6 +1393,8 @@ export default function AddLeadForm({
                       <option value="PCMM 5">PCMM 5</option>
                       <option value="RIOS">RIOS</option>
                       <option value="ROHS">ROHS</option>
+                      <option value="IEC 17020">IEC 17020</option>
+                      <option value="GFSI">GFSI</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}

@@ -1424,6 +1424,7 @@ export default function RedesignedForm({
                       <option value="RIOS">RIOS</option>
                       <option value="ROHS">ROHS</option>
                       <option value="IEC 17020">IEC 17020</option>
+                      <option value="GFSI">GFSI</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
