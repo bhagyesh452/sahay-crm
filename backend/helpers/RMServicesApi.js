@@ -428,7 +428,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
 });
 
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus , previousMainCategoryStatus,previousSubCategoryStatus } = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus } = req.body;
   const socketIO = req.io;
 
   try {
@@ -441,37 +441,76 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     }
 
     // Step 2: Determine the submittedOn date based on conditions
-    const submittedOn = (mainCategoryStatus === "Submitted")
-      ? company.submittedOn || new Date()  // Use existing submittedOn or current date
-      : (subCategoryStatus === "Submitted")
-      ? new Date()  // Set to current date if mainCategoryStatus is not "Submitted" and subCategoryStatus is "Submitted"
-      : company.submittedOn;  // Retain existing submittedOn otherwise
+    let submittedOn = company.submittedOn;
+    if (subCategoryStatus !== "Undo") {
+      submittedOn = (mainCategoryStatus === "Submitted")
+        ? company.submittedOn || new Date()  // Use existing submittedOn or current date
+        : (subCategoryStatus === "Submitted")
+        ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
+        : company.submittedOn;  // Retain existing submittedOn otherwise
 
-    // Step 3: Update the document with the calculated submittedOn date
-    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
-      {
-        ["Company Name"]: companyName,
-        serviceName: serviceName
-      },
-      {
-        subCategoryStatus: subCategoryStatus,
-        mainCategoryStatus: mainCategoryStatus,
-        lastActionDate: new Date(),
-        submittedOn: submittedOn,
-        previousMainCategoryStatus:previousMainCategoryStatus,
-        previousSubCategoryStatus:previousSubCategoryStatus
-      },
-      { new: true }
-    );
+      // Step 3: Update the document with the calculated submittedOn date
+      const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+        {
+          ["Company Name"]: companyName,
+          serviceName: serviceName
+        },
+        {
+          subCategoryStatus: subCategoryStatus,
+          mainCategoryStatus: mainCategoryStatus,
+          lastActionDate: new Date(),
+          submittedOn: submittedOn,
+          previousMainCategoryStatus: previousMainCategoryStatus,
+          previousSubCategoryStatus: previousSubCategoryStatus
+        },
+        { new: true }
+      );
 
-    if (!updatedCompany) {
-      console.error("Failed to save the updated document");
-      return res.status(400).json({ message: "Failed to save the updated document" });
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res.status(400).json({ message: "Failed to save the updated document" });
+      }
+      
+      // Emit socket event
+      socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+      res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+      
+    } else {
+      // If subCategoryStatus is "Undo", update with previous statuses and no new date
+      const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+        {
+          ["Company Name"]: companyName,
+          serviceName: serviceName
+        },
+        {
+          subCategoryStatus: company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
+          mainCategoryStatus: company.previousMainCategoryStatus,  // Restore previous mainCategoryStatus
+          lastActionDate: new Date(),
+          submittedOn: company.submittedOn,
+          Remarks:[],
+          dscStatus:"Not Started",
+          contentStatus:"Not Started",
+          contentWriter:"",
+          brochureStatus:"Not Started",
+          brochureDesigner:"",
+          nswsMailId:"",
+          nswsPaswsord:"",
+          websiteLink:"",
+          industry:"",
+          sector:""  // Retain existing submittedOn
+        },
+        { new: true }
+      );
+
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res.status(400).json({ message: "Failed to save the updated document" });
+      }
+      
+      // Emit socket event
+      socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+      res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
     }
-
-    // Emit socket event
-    socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
-    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
     console.error("Error updating document:", error);

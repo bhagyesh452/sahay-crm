@@ -919,7 +919,7 @@ export default function RedesignedForm({
                 (iso.type === "Non IAF" && iso.IAFtype2 !== "" && iso.Nontype === '') 
               ) {
                 Swal.fire("Select Complete ISO Service Fields!");
-                return updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+                return true; // Use a placeholder or specific value if needed
               } else {
                 updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
               }

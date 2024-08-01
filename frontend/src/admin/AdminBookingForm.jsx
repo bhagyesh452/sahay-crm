@@ -553,6 +553,10 @@ export default function AdminBookingForm({
           const secondPayment = Number(service.secondPayment);
           const thirdPayment = Number(service.thirdPayment);
           const fourthPayment = Number(service.fourthPayment);
+          if (isNaN(parseInt(service.totalPaymentWOGST)) || parseInt(service.totalPaymentWOGST) < 0) {
+            isValid = false;
+            break;
+          }
           if (service.secondPayment !== 0 && service.secondPaymentRemarks === "") {
             isValid = false;
             break;
@@ -605,23 +609,50 @@ export default function AdminBookingForm({
               ? acc + parseInt(curr.totalPaymentWOGST)
               : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
-          const servicestoSend = leadData.services.map((service, index) => ({
-            ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
-                : service.fourthPaymentRemarks,
-            isoTypeObject: isoType
-          }));
+          const servicestoSend = leadData.services.map((service, index) => {
+            // Find the corresponding isoType object for the current index
+            const iso = isoType.find(obj => obj.serviceID === index);
+
+            // Determine the updated serviceName based on the conditions
+            let updatedServiceName = service.serviceName;
+            if (service.serviceName === "ISO Certificate" && iso) {
+              if (
+                iso.type === "" ||
+                (iso.type === "IAF" && iso.IAFtype1 === "") ||
+                (iso.type === "Non IAF" && iso.IAFtype2 === "") ||
+                (iso.type === "IAF" && iso.IAFtype1 !== "" && iso.Nontype === '') ||
+                (iso.type === "Non IAF" && iso.IAFtype2 !== "" && iso.Nontype === '') 
+              ) {
+                Swal.fire("Select Complete ISO Service Fields!");
+                return true; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+              }
+            }
+
+            // Update the payment remarks based on specific conditions
+            const secondRemark = service.secondPaymentRemarks === "On Particular Date"
+              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+              : service.secondPaymentRemarks;
+
+            const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
+              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+              : service.thirdPaymentRemarks;
+
+            const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
+              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+              : service.fourthPaymentRemarks;
+
+            // Return the updated service object
+            return {
+              ...service,
+              serviceName: updatedServiceName,
+              secondPaymentRemarks: secondRemark,
+              thirdPaymentRemarks: thirdRemark,
+              fourthPaymentRemarks: fourthRemark,
+              isoTypeObject: isoType
+            };
+          });
 
           dataToSend = {
             services: servicestoSend,
