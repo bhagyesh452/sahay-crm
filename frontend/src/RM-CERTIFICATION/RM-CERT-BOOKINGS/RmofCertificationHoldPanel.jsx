@@ -9,7 +9,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle , FormHelperText } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -43,7 +43,10 @@ function RmofCertificationHoldPanel() {
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
-    
+    const [error, setError] = useState('')
+
+
+
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
         const day = date.getDate();
@@ -141,26 +144,31 @@ function RmofCertificationHoldPanel() {
     );
 
     const handleSubmitRemarks = async () => {
-        console.log("changeremarks", changeRemarks)
+        //console.log("changeremarks", changeRemarks)
         try {
-            const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                currentCompanyName,
-                currentServiceName,
-                changeRemarks,
-                updatedOn: new Date()
-            });
+            if (changeRemarks) {
+                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+                    currentCompanyName,
+                    currentServiceName,
+                    changeRemarks,
+                    updatedOn: new Date()
+                });
 
-            console.log("response", response.data);
+                //console.log("response", response.data);
 
-            if (response.status === 200) {
-                fetchRMServicesData();
-                functionCloseRemarksPopup();
-                Swal.fire(
-                    'Remarks Added!',
-                    'The remarks have been successfully added.',
-                    'success'
-                );
+                if (response.status === 200) {
+                    fetchRMServicesData();
+                    functionCloseRemarksPopup();
+                    // Swal.fire(
+                    //     'Remarks Added!',
+                    //     'The remarks have been successfully added.',
+                    //     'success'
+                    // );
+                }
+            } else {
+                setError('Remarks Cannot Be Empty!')
             }
+
         } catch (error) {
             console.log("Error Submitting Remarks", error.message);
         }
@@ -275,7 +283,7 @@ function RmofCertificationHoldPanel() {
 
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusProcess}
@@ -320,7 +328,8 @@ function RmofCertificationHoldPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj["Company Email"]}
+                                            companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
                                         />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
@@ -338,24 +347,24 @@ function RmofCertificationHoldPanel() {
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                        /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                     <td>
-                                    <BrochureDesignerDropdown 
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
-                                   </td>
+                                    <td>
+                                        <BrochureDesignerDropdown
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"} />
+                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
                                             companyName={obj["Company Name"]}
@@ -379,7 +388,7 @@ function RmofCertificationHoldPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    
+
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
@@ -473,6 +482,7 @@ function RmofCertificationHoldPanel() {
                                         }}
                                     ></textarea>
                                 </div>
+                                {error && <FormHelperText error>{error}</FormHelperText>}
 
                             </div>
                         )}

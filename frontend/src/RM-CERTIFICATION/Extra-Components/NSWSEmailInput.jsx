@@ -19,11 +19,11 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) =>
                 email
             });
             if (response.status === 200) {
-                Swal.fire(
-                    'Email Added!',
-                    'The email has been successfully added.',
-                    'success'
-                );
+                // Swal.fire(
+                //     'Email Added!',
+                //     'The email has been successfully added.',
+                //     'success'
+                // );
                 refreshData();
                 setOpenEmailPopup(false); // Close the popup on success
             }

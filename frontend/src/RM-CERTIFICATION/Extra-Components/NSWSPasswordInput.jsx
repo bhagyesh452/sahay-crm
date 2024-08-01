@@ -21,11 +21,11 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData
                     password
                 });
                 if (response.status === 200) {
-                    Swal.fire(
-                        'Password Added!',
-                        'The email has been successfully added.',
-                        'success'
-                    );
+                    // Swal.fire(
+                    //     'Password Added!',
+                    //     'The email has been successfully added.',
+                    //     'success'
+                    // );
                     
                     refresData();
                     setOpenPasswordPopup(false); // Close the popup on success

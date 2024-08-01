@@ -772,7 +772,7 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
 });
 
 router.post(`/post-save-websitelink/`, async (req, res) => {
-  const { companyName, serviceName, link } = req.body;
+  const { companyName, serviceName, link ,briefing} = req.body;
   console.log("dscStatus" ,serviceName , companyName , link)
   const socketIO = req.io;
   try {
@@ -782,7 +782,9 @@ router.post(`/post-save-websitelink/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        websiteLink:link
+        websiteLink:link,
+        companyBriefing:briefing
+
       },
       { new: true }
     )
