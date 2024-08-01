@@ -118,7 +118,7 @@ app.use('/api/rm-services', (req , res , next)=>{
 } , RMServicesAPI)
 app.use('/api/clientform', ClientAPI)
 app.use('/api/customer', CustomerAPI)
-app.use('/api/emplyeeDraft', EmployeeDraftAPI);
+app.use('/api/employeeDraft', EmployeeDraftAPI);
 
 
 

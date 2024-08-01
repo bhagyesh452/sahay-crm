@@ -14,7 +14,8 @@ const fileSchema = new mongoose.Schema({
 // Define the schema
 const EmployeeDraftSchema = new mongoose.Schema({
   activeStep: {
-    type: Number
+    type: Number,
+    default: 0
   },
   ename: {
     type: String
@@ -34,6 +35,9 @@ const EmployeeDraftSchema = new mongoose.Schema({
     unique: true
   },
   currentAddress: {
+    type: String
+  },
+  isAddressSame: {
     type: String
   },
   permanentAddress: {

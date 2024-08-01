@@ -7,6 +7,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
 
@@ -25,7 +26,7 @@ function HrEmployees() {
   const formatSalary = (amount) => {
     return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
   };
-  
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
@@ -43,7 +44,7 @@ function HrEmployees() {
   const getBadgeClass = (status) => {
     return status === 'Under Probation' ? 'badge badge-under-probation' : 'badge badge-completed';
   };
-  
+
   const handleEditClick = (empId) => {
     navigate(`/hr/edit/employee/${empId}`);
   };
@@ -168,7 +169,20 @@ function HrEmployees() {
                         {employee.map((emp, index) => {
                           return <tr key={emp._id}>
                             <td>{index + 1}</td>
-                            <td>{emp.ename || ""}</td>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <div className="tbl-pro-img">
+                                  <img src={EmpDfaullt}></img>
+                                </div>
+                                <div className="">
+                                  {(() => {
+                                    const names = (emp.ename || "").split(" ");
+                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                  })()}
+                                </div>
+                              </div>
+                              
+                            </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
                             <td>{emp.designation || ""}</td>

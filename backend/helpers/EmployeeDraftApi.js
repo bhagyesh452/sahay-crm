@@ -9,12 +9,13 @@ const EmployeeDraftModel = require("../models/EmployeeDraftModel");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const { personalEmail } = req.params;
-        const empName = `${personalEmail}`;
+        // const { firstName, lastName } = req.body;
+        // const empName = `${firstName}-${lastName}`;
+        const { empId } = req.params;
         let destinationPath = "";
 
-        if (file.fieldname && empName) {
-            destinationPath = `EmployeeDocs/${empName}`;
+        if (file.fieldname && empId) {
+            destinationPath = `EmployeeDocs/${empId}`;
         }
 
         // Create the directory if it doesn't exist
@@ -25,19 +26,20 @@ const storage = multer.diskStorage({
         cb(null, destinationPath);
     },
     filename: function (req, file, cb) {
-        const { personalEmail } = req.params;
-        const empName = `${personalEmail}`;
+        // const { firstName, lastName } = req.body;
+        // const empName = `${firstName}-${lastName}`;
+        const { empId } = req.params;
         const uniqueSuffix = Date.now();
-        cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
+        cb(null, `${uniqueSuffix}-${empId}-${file.originalname}`);
     },
 });
 
 const upload = multer({ storage: storage });
 
-router.post("/saveEmployeeDraft", async (req, res) => {
+router.post("/saveEmployeeDraft/", async (req, res) => {
     try {
-        const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
-        const updateData = {
+        const { firstName, middleName, lastName, personalPhoneNo, personalEmail, activeStep } = req.body;
+        const emp = {
             ...req.body,
             ename: `${firstName} ${middleName} ${lastName}`,
             personal_number: personalPhoneNo,
@@ -46,10 +48,8 @@ router.post("/saveEmployeeDraft", async (req, res) => {
         };
 
         // Check if the document already exists and update it, otherwise create a new one
-        const result = await EmployeeDraftModel.findOneAndUpdate(
-            { personal_email: personalEmail },
-            updateData,
-            { new: true, upsert: true } // upsert option creates a new document if no match is found
+        const result = await EmployeeDraftModel.create(emp
+            // { new: true, upsert: true } // upsert option creates a new document if no match is found
         );
 
         res.json(result);
@@ -60,17 +60,11 @@ router.post("/saveEmployeeDraft", async (req, res) => {
 });
 
 router.get("/fetchEmployeeDraft/", async (req, res) => {
-
     try {
-        if (!personalEmail) {
-            return res.status(404).json({ result: false, message: "Email not found" });
-        }
         const emp = await EmployeeDraftModel.find();
-
         if (!emp) {
             return res.status(404).json({ result: false, message: "Employee not found" });
         }
-
         res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
     } catch (error) {
         res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
@@ -87,7 +81,7 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
     { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
     const { empId } = req.params;
-    const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
+    const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
     // console.log("Reqest file is :", req.files);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -114,41 +108,37 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             return res.status(404).json({ result: false, message: "Employee not found" });
         }
 
-        const formatDate = (dateStr) => {
-            if (!dateStr) return null;
-            const [day, month, year] = dateStr.split("-");
-            return `${year}-${month}-${day}`;
-          };
-      
-          const formattedDob = formatDate(dob);
-          const formattedJoiningDate = formatDate(joiningDate);
-
-          console.log("Formatted DOB:", formattedDob);
-          console.log("Formatted Joining Date:", formattedJoiningDate);
+        const updateFields = {
+            ...req.body,
+            ...(firstName || middleName || lastName) && {
+                ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+            },
+            ...(dob && { dob }),
+            ...(personalPhoneNo && { personal_number: personalPhoneNo }),
+            ...(personalEmail && { personal_email: personalEmail }),
+            ...(officialNo && { number: officialNo }),
+            ...(officialEmail && { email: officialEmail }),
+            ...(joiningDate && { jdate: joiningDate }),
+            ...(branch && { branchOffice: branch }),
+            ...(manager && { reportingManager: manager }),
+            ...(firstMonthSalary && { firstMonthSalaryCondition: firstMonthSalary }),
+            ...(salaryCalculation && { firstMonthSalary: salaryCalculation }),
+            ...(personName && { personal_contact_person: personName }),
+            ...(relationship && { personal_contact_person_relationship: relationship }),
+            ...(personPhoneNo && { personal_contact_person_number: personPhoneNo }),
+            ...(offerLetterDetails.length > 0 && { offerLetter: offerLetterDetails }),
+            ...(aadharCardDetails.length > 0 && { aadharCard: aadharCardDetails }),
+            ...(panCardDetails.length > 0 && { panCard: panCardDetails }),
+            ...(educationCertificateDetails.length > 0 && { educationCertificate: educationCertificateDetails }),
+            ...(relievingCertificateDetails.length > 0 && { relievingCertificate: relievingCertificateDetails }),
+            ...(salarySlipDetails.length > 0 && { salarySlip: salarySlipDetails }),
+            ...(profilePhotoDetails.length > 0 && { profilePhoto: profilePhotoDetails })
+        };
 
         const emp = await EmployeeDraftModel.findOneAndUpdate(
             { _id: empId },
-            {
-                ...req.body,
-                email: officialEmail,
-                number: officialNo,
-                jdate: new Date(formattedJoiningDate),
-                branchOffice: branch,
-                reportingManager: manager,
-                firstMonthSalaryCondition: firstMonthSalary,
-                firstMonthSalary: salaryCalculation,
-                offerLetter: offerLetterDetails || [],
-                personal_contact_person: personName,
-                personal_contact_person_relationship: relationship,
-                personal_contact_person_number: personPhoneNo,
-                aadharCard: aadharCardDetails || [],
-                panCard: panCardDetails || [],
-                educationCertificate: educationCertificateDetails || [],
-                relievingCertificate: relievingCertificateDetails || [],
-                salarySlip: salarySlipDetails || [],
-                profilePhoto: profilePhotoDetails || [],
-            },
-            { new: true } // This option returns the updated document
+            updateFields,
+            { new: true } // Return the updated document
         );
 
         if (!emp) {
@@ -161,17 +151,17 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
     }
 });
 
-router.delete("/deleteEmployeeDraft/:empId", async(req, res) => {
-    const {empId} = req.params;
+router.delete("/deleteEmployeeDraft/:empId", async (req, res) => {
+    const { empId } = req.params;
 
     try {
         if (!empId) {
             return res.status(404).json({ result: false, message: "Employee not found" });
         }
         const emp = await EmployeeDraftModel.findByIdAndDelete(empId);
-        res.status(200).json({result: true, message: "Employee successfully deleted", data: emp});
+        res.status(200).json({ result: true, message: "Employee successfully deleted", data: emp });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error deleting employee", error: error});  
+        res.status(500).json({ result: false, message: "Error deleting employee", error: error });
     }
 });
 
