@@ -6,9 +6,9 @@ import Swal from "sweetalert2";
 import { FaPencilAlt } from "react-icons/fa";
 
 const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData}) => {
-    const [email, setEmail] = useState('');
+   
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState(nswsPassword);
     const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
 
     const handleSubmitNSWSPassword = async () => {
@@ -78,7 +78,7 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData
                                 type='text'
                                 placeholder="Enter NSWS Password"
                                 className="form-control"
-                                //value={email}
+                                value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>

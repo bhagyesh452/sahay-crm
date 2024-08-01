@@ -51,7 +51,7 @@ const BrochureDesignerDropdown = ({ mainStatus, designername , subStatus, setNew
           } 
             
       
-            console.log("Writer updated successfully:", response.data);
+            console.log("Writer updated successfully:", response.data , companyName , serviceName , newStatus);
           } catch (error) {
             console.error("Error updating status:", error.message);
           }
