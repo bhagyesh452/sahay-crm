@@ -275,6 +275,7 @@ function RmofCertificationHoldPanel() {
 
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusProcess}
