@@ -1425,6 +1425,7 @@ export default function RedesignedForm({
                       <option value="PCMM 5">PCMM 5</option>
                       <option value="RIOS">RIOS</option>
                       <option value="ROHS">ROHS</option>
+                      <option value="IEC 17020">IEC 17020</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}

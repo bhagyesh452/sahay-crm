@@ -346,9 +346,9 @@ function EmployeesThisMonthBooking() {
         const cleanString = (str) => {
             return str.replace(/\u00A0/g, ' ').trim();
         };
-    
+
         let maturedCount = 0;
-    
+
         redesignedData.map((mainBooking) => {
             const bookingDate = new Date(mainBooking.bookingDate);
             const startDate = new Date(bookingStartDate);
@@ -356,7 +356,7 @@ function EmployeesThisMonthBooking() {
             bookingDate.setHours(0, 0, 0, 0);
             startDate.setHours(0, 0, 0, 0);
             endDate.setHours(0, 0, 0, 0);
-    
+
             const isSameDayMonthYear = (date1, date2) => {
                 return (
                     date1.getDate() === date2.getDate() &&
@@ -364,7 +364,7 @@ function EmployeesThisMonthBooking() {
                     date1.getFullYear() === date2.getFullYear()
                 );
             };
-    
+
             if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                 if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
                     if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
@@ -378,7 +378,7 @@ function EmployeesThisMonthBooking() {
                     }
                 }
             }
-    
+
             mainBooking.moreBookings.map((moreObject) => {
                 const moreBookingDate = new Date(moreObject.bookingDate);
                 moreBookingDate.setHours(0, 0, 0, 0);
@@ -397,12 +397,12 @@ function EmployeesThisMonthBooking() {
                 }
             });
         });
-    
+
         totalMaturedCount = totalMaturedCount + maturedCount;
-    
+
         return maturedCount;
     };
-    
+
 
 
 
@@ -410,9 +410,9 @@ function EmployeesThisMonthBooking() {
         const cleanString = (str) => {
             return str.replace(/\u00A0/g, ' ').trim();
         };
-    
+
         let maturedCount = 0;
-    
+
         redesignedData.map((mainBooking) => {
             const bookingDate = new Date(mainBooking.bookingDate);
             const startDate = new Date(bookingStartDate);
@@ -420,7 +420,7 @@ function EmployeesThisMonthBooking() {
             bookingDate.setHours(0, 0, 0, 0);
             startDate.setHours(0, 0, 0, 0);
             endDate.setHours(0, 0, 0, 0);
-    
+
             const isSameDayMonthYear = (date1, date2) => {
                 return (
                     date1.getDate() === date2.getDate() &&
@@ -428,7 +428,7 @@ function EmployeesThisMonthBooking() {
                     date1.getFullYear() === date2.getFullYear()
                 );
             };
-    
+
             if (bookingDate >= startDate && bookingDate <= endDate || (isSameDayMonthYear(bookingDate, startDate) && isSameDayMonthYear(bookingDate, endDate))) {
                 if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
                     if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
@@ -442,7 +442,7 @@ function EmployeesThisMonthBooking() {
                     }
                 }
             }
-    
+
             mainBooking.moreBookings.map((moreObject) => {
                 const moreBookingDate = new Date(moreObject.bookingDate);
                 moreBookingDate.setHours(0, 0, 0, 0);
@@ -461,10 +461,10 @@ function EmployeesThisMonthBooking() {
                 }
             });
         });
-    
+
         return maturedCount;
     };
-    
+
 
     // const functionCalculateAchievedAmount = (bdeName) => {
     //     let achievedAmount = 0;
@@ -1353,7 +1353,7 @@ function EmployeesThisMonthBooking() {
 
         const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - finalexpanse;
-        console.log("totalAchievedAmount" , totalAchievedAmount , bdeName)
+        console.log("totalAchievedAmount", totalAchievedAmount, bdeName)
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
         //console.log("BDE :" , bdeName,  achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense, add_caCommision)
         //console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), finalexpanse , totalAchievedAmount)
@@ -2029,10 +2029,10 @@ function EmployeesThisMonthBooking() {
                 (item) =>
                     Math.floor(item.year) === thisYear && item.month === thisMonth
             );
-            if (object.ename === "Swapnil Gurjar"){
-                console.log("foundObject" , foundObject)
+            if (object.ename === "Swapnil Gurjar") {
+                console.log("foundObject", foundObject)
             }
-            
+
             return foundObject ? foundObject.amount : 0;
         } else {
             return 0;
@@ -2044,7 +2044,6 @@ function EmployeesThisMonthBooking() {
         const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
         // Filter objects based on bdeName
         redesignedData.map((mainBooking) => {
-
             if (monthNames[new Date(mainBooking.bookingDate).getMonth()] === currentMonth) {
                 if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
                     const bookingDate = new Date(mainBooking.bookingDate);
@@ -2059,9 +2058,8 @@ function EmployeesThisMonthBooking() {
                     }
                 }
             })
-
-
         })
+        
         return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
     }
 
@@ -2071,7 +2069,7 @@ function EmployeesThisMonthBooking() {
 
 
 
-   
+
     //-------------------this months booking bde search filter---------------------------
 
 
@@ -3370,7 +3368,8 @@ function EmployeesThisMonthBooking() {
                                                     lastbookingdate: updatedSortType,
                                                 }));
                                                 handleSortMaturedCases(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}>
+                                            <div className="d-flex align-items-center justify-content-between">
                                                 <div>LAST BOOKING DATE</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
