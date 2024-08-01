@@ -3009,22 +3009,18 @@ td input {
   background-color: #A7D6FF;
   border: 1px solid #2DBDCA;
 }
-
 .status_dropdown.support-status .status__btn{
   background-color: #ffe49d;
   border: 1px solid #ffba00;
 }
-
 .status_dropdown.inprogress-status .status__btn{
   background-color: #FFD0A7;
   border: 1px solid #FF7909;
 }
-
 .status_dropdown.finished-status .status__btn{
   background-color: #B6FFA7;
   border: 1px solid #72D500;
 }
-
 .status_dropdown.rejected-status .status__btn{
   background-color: #FCBDBD;
   border: 1px solid #FD5252;
@@ -3115,6 +3111,12 @@ td input {
     outline: none  !important;
     box-shadow: none !important;
     background: inherit;
+}
+
+.table-container.scrolled .rm-sticky-left-1,
+.table-container.scrolled .rm-sticky-left-2,
+.table-container.scrolled .rm-sticky-action {
+  background: rgb(123, 123, 123) !important; /* Change this to your desired color */
 }
 @media (max-width: 1528px)
 {

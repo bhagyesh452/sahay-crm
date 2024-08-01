@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect,useRef, useCallback } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
@@ -198,14 +198,34 @@ function RmofCertificationSubmittedPanel() {
         return new Intl.DateTimeFormat('en-US').format(date);
     }
 
+    const [isScrolled, setIsScrolled] = useState(false);
+    const tableContainerRef = useRef(null);
 
-
+    useEffect(() => {
+        const handleScroll = () => {
+          if (tableContainerRef.current.scrollLeft > 0) {
+            setIsScrolled(true);
+          } else {
+            setIsScrolled(false);
+          }
+        };
+    
+        const container = tableContainerRef.current;
+        container.addEventListener('scroll', handleScroll);
+    
+        return () => {
+          container.removeEventListener('scroll', handleScroll);
+        };
+      }, []);
 
 
     return (
         <div>
             <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0">
+                <div className="{`table-container table table-responsive table-style-3 m-0 ${
+        isScrolled ? 'scrolled' : ''
+      }`}
+      ref={tableContainerRef}">
                     <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
