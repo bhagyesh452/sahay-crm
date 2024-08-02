@@ -70,7 +70,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchData()
         });
 
 
@@ -81,51 +81,34 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
 
 
     const fetchData = async () => {
+        setOpenBacdrop(true);
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            //console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            //console.log(userData)
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
 
-    const fetchRMServicesData = async () => {
-        try {
-            setOpenBacdrop(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data
-            .filter(item => item.mainCategoryStatus === "Defaulter")
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "Defaulter"))
             .sort((a, b) => {
                 const dateA = new Date(a.dateOfChangingMainStatus);
                 const dateB = new Date(b.dateOfChangingMainStatus);
                 return dateB - dateA; // Sort in descending order
             });
-            console.log("servicesdata" , servicesData)
-            setRmServicesData(servicesData)
-            //console.log(response.data)
         } catch (error) {
-            console.error("Error fetching data", error.message)
+            console.error("Error fetching data", error.message);
         } finally {
-            setOpenBacdrop(false)
+            setOpenBacdrop(false);
         }
-    }
+    };
+
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [rmCertificationUserId, secretKey]);
 
-    useEffect(() => {
-        fetchRMServicesData()
-
-    }, [employeeData])
 
     const refreshData = () => {
-        fetchRMServicesData();
+        fetchData();
     };
 
 
@@ -165,7 +148,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                 //console.log("response", response.data);
         
                 if (response.status === 200) {
-                    fetchRMServicesData();
+                    fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -188,7 +171,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
           });
           if(response.status === 200){
-            fetchRMServicesData();
+            fetchData();
             functionCloseRemarksPopup(); 
           }
          // Refresh the list
@@ -214,7 +197,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                         'The email has been successfully added.',
                         'success'
                     );
-                    fetchRMServicesData()
+                    fetchData()
                     setOpenEmailPopup(false); // Close the popup on success
                 }
             }
@@ -254,7 +237,15 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                   { rmServicesData && rmServicesData.length > 0 ? ( <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                   {rmServicesData.length > 0 ? ( <table className="table table-vcenter table-nowrap rm_table_inprocess">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -482,12 +473,12 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                             ))}
                         </tbody>
                     </table>)
-                    :(
+                    :(!openBacdrop && (
                         <table className='no_data_table'>
                                 <div className='no_data_table_inner'>
                                     <Nodata />
                                 </div>
-                            </table>
+                            </table>)
                     )}
                 </div>
             </div>

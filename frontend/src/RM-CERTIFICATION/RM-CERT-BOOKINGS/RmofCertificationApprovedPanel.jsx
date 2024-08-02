@@ -93,7 +93,7 @@ function RmofCertificationApprovedPanel() {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchData()
         });
 
 
@@ -104,50 +104,33 @@ function RmofCertificationApprovedPanel() {
 
 
     const fetchData = async () => {
+        setOpenBacdrop(true);
         try {
-           
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            //console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            //console.log(userData)
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
+
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "Approved"));
         } catch (error) {
-            console.error("Error fetching data:", error.message);
+            console.error("Error fetching data", error.message);
+        } finally {
+            setOpenBacdrop(false);
         }
     };
 
-    const fetchRMServicesData = async () => {
-        try {
-            setOpenBacdrop(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data
-                .filter(item => item.mainCategoryStatus === "Approved"))
-                .sort((a, b) => {
-                    const dateA = new Date(a.dateOfChangingMainStatus);
-                    const dateB = new Date(b.dateOfChangingMainStatus);
-                    return dateB - dateA; // Sort in descending order
-                });
-            //console.log(response.data)
-        } catch (error) {
-            console.error("Error fetching data", error.message)
-        } finally {
-            setOpenBacdrop(false)
-        }
-    }
-
+    // useEffect to fetch data on component mount
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [rmCertificationUserId, secretKey]);
 
-    useEffect(() => {
-        fetchRMServicesData()
 
-    }, [employeeData])
+   
+
+    
 
     const refreshData = () => {
-        fetchRMServicesData();
+        fetchData();
     };
 
     function formatDate(dateString) {
@@ -191,7 +174,7 @@ function RmofCertificationApprovedPanel() {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-                    fetchRMServicesData();
+                    fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -214,7 +197,7 @@ function RmofCertificationApprovedPanel() {
             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
           });
           if(response.status === 200){
-            fetchRMServicesData();
+            fetchData();
             functionCloseRemarksPopup(); 
           }
          // Refresh the list
@@ -233,7 +216,15 @@ function RmofCertificationApprovedPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    {rmServicesData && rmServicesData.length > 0 ? (
+                {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                    {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
@@ -462,12 +453,12 @@ function RmofCertificationApprovedPanel() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>) :(
+                    </table>) :(!openBacdrop && (
                         <table className='no_data_table'>
                         <div className='no_data_table_inner'>
                             <Nodata />
                         </div>
-                    </table>
+                    </table>)
                     )}
                 </div>
             </div>
